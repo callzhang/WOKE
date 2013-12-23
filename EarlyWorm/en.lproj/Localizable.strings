@@ -1,0 +1,30 @@
+/*
+  ew.strings
+  EarlyWorm
+
+  Created by shenslu on 13-8-15.
+  Copyright (c) 2013年 Shens. All rights reserved.
+*/
+
+// Default
+"EarlyWorm" = "EarlyWorm";
+
+// Common
+"Common_Cancel" = "Cancel";
+"Common_OK" = "OK";
+
+// Alarm
+"Alarms" = "Alarms";
+"AddAlarm" = "Add Alarm";
+"EditAlarm" = "Edit Alarm";
+"Alarm_Is_To_Delete" = "Are you sure to delete this alarm ? ";
+"Alarm_Name" = "Name";
+"Alarm_Delete" = "Delete Alarm";
+"Alarm_Default_Name" = "Alarm";
+
+// Task
+"Tasks" = "Tasks";
+
+// Setting
+"Settings" = "Settings";
+"Setting_Version" = "Version";

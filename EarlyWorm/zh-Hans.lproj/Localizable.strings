@@ -1,0 +1,47 @@
+
+/*
+  ew.strings
+  EarlyWorm
+
+  Created by shenslu on 13-8-15.
+  Copyright (c) 2013年 Shens. All rights reserved.
+*/
+
+// 简体中文
+
+// Default
+"EarlyWorm" = "早起的虫子";
+
+// Common
+"Common_Cancel" = "取消";
+"Common_OK" = "确定";
+"Common_Error" = "错误";
+
+// Alarm
+"Alarms" = "闹钟";
+"AddAlarm" = "添加闹钟";
+"EditAlarm" = "编辑闹钟";
+"Alarm_Is_To_Delete" = "亲，你确定要删除这个闹钟了么 ? 手别抖哦！";
+"Alarm_Name" = "给闹钟起个名儿";
+"Alarm_Delete" = "滚蛋吧这个闹钟我不想再看到你";
+"Alarm_Default_Name" = "闹钟";
+"History_Title" = "历史记录";
+
+// Explore
+"Explore" = "探索";
+
+
+// Setting
+"Settings" = "设置";
+"Setting_Version" = "版本";
+
+// Weibo
+"Weibo_Logout_Success" = "注销微博账号授权成功";
+"Weibo_Logout_Error" = "注销微博账号授权失败";
+"Weibo_Send_Content_Success" = "发送微博成功";
+"Weibo_Send_Content_Error" = "发送微博失败";
+"Weibo_Auth_Success" = "授权成功";
+"Weibo_Auth_Error" = "授权失败";
+
+// Facebook
+"Facebook_Auth_Success" = "Facebook授权成功";

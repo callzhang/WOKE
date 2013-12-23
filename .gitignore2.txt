@@ -1,0 +1,16 @@
+syntax: glob
+build
+*.swp
+*.pbxuser
+*.perspective
+xcuserdata
+
+*~.nib
+
+*.DS_Store
+
+.DS_Store
+
+EarlyWorm/Test/EarlyWorm2.ipa
+
+EarlyWorm/Resources/Resources/
