@@ -6,7 +6,6 @@
 
 extern const struct EWMediaItemAttributes {
 	__unsafe_unretained NSString *audioKey;
-	__unsafe_unretained NSString *created;
 	__unsafe_unretained NSString *createddate;
 	__unsafe_unretained NSString *ewmediaitem_id;
 	__unsafe_unretained NSString *imageKey;
@@ -40,7 +39,6 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-
 @interface EWMediaItemID : NSManagedObjectID {}
 @end
 
@@ -59,16 +57,6 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 //- (BOOL)validateAudioKey:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* created;
-
-
-
-//- (BOOL)validateCreated:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -197,12 +185,6 @@ extern const struct EWMediaItemFetchedProperties {
 
 - (NSString*)primitiveAudioKey;
 - (void)setPrimitiveAudioKey:(NSString*)value;
-
-
-
-
-- (NSDate*)primitiveCreated;
-- (void)setPrimitiveCreated:(NSDate*)value;
 
 
 

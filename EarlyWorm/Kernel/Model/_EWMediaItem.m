@@ -5,7 +5,6 @@
 
 const struct EWMediaItemAttributes EWMediaItemAttributes = {
 	.audioKey = @"audioKey",
-	.created = @"created",
 	.createddate = @"createddate",
 	.ewmediaitem_id = @"ewmediaitem_id",
 	.imageKey = @"imageKey",
@@ -59,13 +58,6 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 
 @dynamic audioKey;
-
-
-
-
-
-
-@dynamic created;
 
 
 
