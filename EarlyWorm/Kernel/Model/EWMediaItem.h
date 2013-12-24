@@ -13,6 +13,7 @@
 @interface EWMediaItem : NSManagedObject
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic, retain) UIImage *thumbnail;
+@property (nonatomic, retain) NSData *audio;
 @property (nonatomic, retain) NSString * audioKey;
 @property (nonatomic, retain) NSDate * created;
 @property (nonatomic, retain) NSDate * createddate;

@@ -48,6 +48,7 @@
     EWMediaItem *m = [NSEntityDescription insertNewObjectForEntityForName:@"EWMediaItem" inManagedObjectContext:context];
     [m assignObjectId];
     m.author = [EWPersonStore sharedInstance].currentUser;
+    /*
     //TODO: update method here
     NSInteger k = arc4random() % 6;
     NSArray *vmList = @[@"vm1.m4a", @"vm2.m4a", @"vm3.m4a", @"vm3.m4a", @"vm5.m4a", @"vm6.m4a"];
@@ -55,8 +56,9 @@
     //NSArray *nameArray = [vmName componentsSeparatedByString:@"."];
     //PFFile *f = [PFFile fileWithName:vmName contentsAtPath:[[NSBundle mainBundle] pathForResource:nameArray[0] ofType:nameArray[1]]];
     m.audioKey = vmName;
+     */
     [context saveOnSuccess:^{
-        NSLog(@"Media created with name: %@", vmName);
+        NSLog(@"Media created");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
     }];

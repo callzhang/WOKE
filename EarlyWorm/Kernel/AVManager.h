@@ -13,26 +13,36 @@
 
 @class EWMediaViewCell;
 
-@interface AVManager : NSObject <UIPickerViewDelegate, AVAudioPlayerDelegate>
+@interface AVManager : NSObject <AVAudioPlayerDelegate, AVAudioRecorderDelegate, AVAudioSessionDelegate>
 {
     //CALevelMeter *lvlMeter_in;
     NSTimer *updateTimer;
+    NSURL *recordingFileUrl;
 }
 
 +(AVManager *)sharedManager;
 
 //-(void)playSound:(NSString *)fileName;
--(void)playMedia:(NSString *)fileName;
--(void)playSoundFromFile:(NSString *)fileName;
--(void)playForCell:(EWMediaViewCell *)cell;
--(void)pausePlaybackForPlayer:(AVAudioPlayer *)player;
--(void)updateViewForPlayerState:(AVAudioPlayer *)player;
+/**
+ Use AVPlayer to play assets via HTTP live stream(advanced)
+ */
+- (void)playMedia:(NSString *)fileName;
+- (void)playSoundFromFile:(NSString *)fileName;
+- (void)playSoundFromURL:(NSURL *)url;
+- (void)playForCell:(EWMediaViewCell *)cell;
+- (void)pausePlaybackForPlayer:(AVAudioPlayer *)player;
+- (void)updateViewForPlayerState:(AVAudioPlayer *)player;
+- (NSURL *)record;
 
-// TODO: 需要停止播放的接口
+
 // - (void)stopPlaying:(NSString *)fileName;
 - (void)stopAllPlaying;
 
 @property (retain, nonatomic) AVAudioPlayer *player;
+@property (retain, nonatomic) AVAudioRecorder *recorder;
 @property (weak, nonatomic) UISlider *progressBar;
+@property (weak, nonatomic) UIButton *playStopBtn;
+@property (weak, nonatomic) UIButton *recordStopBtn;
+
 //@property (strong) id playerObserver;
 @end

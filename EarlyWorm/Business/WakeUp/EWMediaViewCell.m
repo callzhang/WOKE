@@ -38,4 +38,14 @@
 }
 
 
+- (IBAction)like:(id)sender {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Like" message:@"Like function is not available yet." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+}
+
+- (IBAction)profile:(id)sender{
+    NSLog(@"Profile");
+    //need to figure out how to call tableViewController from here
+}
+
 @end

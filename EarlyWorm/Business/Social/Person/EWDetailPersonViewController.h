@@ -12,9 +12,10 @@
 @class EWTaskItem;
 @class ShinobiChart;
 
-@interface EWDetailPersonViewController : EWViewController {
+@interface EWDetailPersonViewController : EWViewController<UIAlertViewDelegate> {
     //ShinobiChart *_chart;
     NSArray *tasks;
+    EWPerson *me;
 }
 //PersonInfoView
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;

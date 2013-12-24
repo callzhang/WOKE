@@ -137,7 +137,7 @@
         //nav item
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(onGroup)];
     }
-    NSLog(@"Task group switched to %d", socialList);
+    //NSLog(@"Task group switched to %d", socialList);
     
     //refresh table
     [self.tableView reloadData];

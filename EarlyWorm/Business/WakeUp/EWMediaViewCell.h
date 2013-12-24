@@ -26,6 +26,7 @@
 //action
 - (IBAction)mediaPlay:(id)sender;
 - (IBAction)profile:(id)sender;
+- (IBAction)like:(id)sender;
 
 //content
 @property (weak, nonatomic) EWMediaItem *media;

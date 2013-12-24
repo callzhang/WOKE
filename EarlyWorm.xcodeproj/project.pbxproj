@@ -125,6 +125,12 @@
 		AB198C961861818B008C1F15 /* EWMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8B1861818B008C1F15 /* EWMessage.m */; };
 		AB198C971861818B008C1F15 /* EWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8D1861818B008C1F15 /* EWPerson.m */; };
 		AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8F1861818B008C1F15 /* EWTaskItem.m */; };
+		AB19E9F3186952D1000FBDD1 /* liked.png in Resources */ = {isa = PBXBuildFile; fileRef = AB19E9EF186952D1000FBDD1 /* liked.png */; };
+		AB19E9F4186952D1000FBDD1 /* like.png in Resources */ = {isa = PBXBuildFile; fileRef = AB19E9F0186952D1000FBDD1 /* like.png */; };
+		AB19E9F5186952D1000FBDD1 /* liked@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AB19E9F1186952D1000FBDD1 /* liked@2x.png */; };
+		AB19E9F6186952D1000FBDD1 /* like@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AB19E9F2186952D1000FBDD1 /* like@2x.png */; };
+		AB19E9FB18698359000FBDD1 /* EWRecordingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB19E9F918698359000FBDD1 /* EWRecordingViewController.m */; };
+		AB19E9FC18698359000FBDD1 /* EWRecordingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB19E9FA18698359000FBDD1 /* EWRecordingViewController.xib */; };
 		AB207E5E182F4D9E0076D93F /* ImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB207E5D182F4D9E0076D93F /* ImageViewController.m */; };
 		AB207E69182FFFB60076D93F /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AB207E68182FFFB60076D93F /* MBProgressHUD.m */; };
 		AB340A611864165200B7C06A /* personInfoBG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AB340A601864165200B7C06A /* personInfoBG@2x.png */; };
@@ -389,6 +395,13 @@
 		AB198C8D1861818B008C1F15 /* EWPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPerson.m; sourceTree = "<group>"; };
 		AB198C8E1861818B008C1F15 /* EWTaskItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTaskItem.h; sourceTree = "<group>"; };
 		AB198C8F1861818B008C1F15 /* EWTaskItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTaskItem.m; sourceTree = "<group>"; };
+		AB19E9EF186952D1000FBDD1 /* liked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = liked.png; sourceTree = "<group>"; };
+		AB19E9F0186952D1000FBDD1 /* like.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = like.png; sourceTree = "<group>"; };
+		AB19E9F1186952D1000FBDD1 /* liked@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "liked@2x.png"; sourceTree = "<group>"; };
+		AB19E9F2186952D1000FBDD1 /* like@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "like@2x.png"; sourceTree = "<group>"; };
+		AB19E9F818698359000FBDD1 /* EWRecordingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWRecordingViewController.h; path = Recording/EWRecordingViewController.h; sourceTree = "<group>"; };
+		AB19E9F918698359000FBDD1 /* EWRecordingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWRecordingViewController.m; path = Recording/EWRecordingViewController.m; sourceTree = "<group>"; };
+		AB19E9FA18698359000FBDD1 /* EWRecordingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWRecordingViewController.xib; path = Recording/EWRecordingViewController.xib; sourceTree = "<group>"; };
 		AB207E5C182F4D9E0076D93F /* ImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageViewController.h; path = ImageController/ImageViewController.h; sourceTree = "<group>"; };
 		AB207E5D182F4D9E0076D93F /* ImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImageViewController.m; path = ImageController/ImageViewController.m; sourceTree = "<group>"; };
 		AB207E67182FFFB60076D93F /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = ../../../../WOKE/EarlyWorm/MBProgressHUD/MBProgressHUD.h; sourceTree = "<group>"; };
@@ -895,6 +908,7 @@
 		56FEA55517A5763200FC2938 /* Business */ = {
 			isa = PBXGroup;
 			children = (
+				AB19E9F718698316000FBDD1 /* Recording */,
 				ABA728B11831F71500595CFD /* FirstTime */,
 				ABEEA94517DFCD4B0035DF4A /* Statistics */,
 				56FEA55617A5763200FC2938 /* Alarms */,
@@ -1013,6 +1027,16 @@
 				AB1745BF17F7D974009B4DB0 /* WeiboSDK.h */,
 			);
 			path = libWeiboSDK;
+			sourceTree = "<group>";
+		};
+		AB19E9F718698316000FBDD1 /* Recording */ = {
+			isa = PBXGroup;
+			children = (
+				AB19E9F818698359000FBDD1 /* EWRecordingViewController.h */,
+				AB19E9F918698359000FBDD1 /* EWRecordingViewController.m */,
+				AB19E9FA18698359000FBDD1 /* EWRecordingViewController.xib */,
+			);
+			name = Recording;
 			sourceTree = "<group>";
 		};
 		AB207E5B182F4D690076D93F /* ImageController */ = {
@@ -1155,6 +1179,10 @@
 		ABCCE67E17EFF37B0078F8AA /* UI elements */ = {
 			isa = PBXGroup;
 			children = (
+				AB19E9EF186952D1000FBDD1 /* liked.png */,
+				AB19E9F0186952D1000FBDD1 /* like.png */,
+				AB19E9F1186952D1000FBDD1 /* liked@2x.png */,
+				AB19E9F2186952D1000FBDD1 /* like@2x.png */,
 				AB721C601867D12F000B716D /* 37x-Checkmark.png */,
 				AB721C611867D12F000B716D /* 37x-Checkmark@2x.png */,
 				ABC5E37B181788D0000F5898 /* logoTest.png */,
@@ -1351,14 +1379,17 @@
 				AB94331517C3015C00ADC702 /* Drive.mp3 in Resources */,
 				AB94331617C3015C00ADC702 /* Morning Dew.mp3 in Resources */,
 				AB94331717C3015C00ADC702 /* Nature at night.mp3 in Resources */,
+				AB19E9F3186952D1000FBDD1 /* liked.png in Resources */,
 				AB13C1D21862D32400231159 /* EWPersonInfoView.xib in Resources */,
 				AB07402218126EC200AAFC90 /* workGroup.png in Resources */,
+				AB19E9F6186952D1000FBDD1 /* like@2x.png in Resources */,
 				ABCCE67D17EFF2CA0078F8AA /* color_round_btn@2x.png in Resources */,
 				AB721C621867D12F000B716D /* 37x-Checkmark.png in Resources */,
 				AB94331817C3015C00ADC702 /* Ocean Breeze.mp3 in Resources */,
 				AB94331917C3015C00ADC702 /* Ocean tides.mp3 in Resources */,
 				AB94331A17C3015C00ADC702 /* Overture.mp3 in Resources */,
 				AB94331B17C3015C00ADC702 /* Parisian Dream.mp3 in Resources */,
+				AB19E9FC18698359000FBDD1 /* EWRecordingViewController.xib in Resources */,
 				AB94331C17C3015C00ADC702 /* Robots in Love.mp3 in Resources */,
 				AB94331D17C3015C00ADC702 /* Sunny Afternoon.mp3 in Resources */,
 				AB0EFFBC18022B8D00A8A5C2 /* Default.png in Resources */,
@@ -1392,8 +1423,10 @@
 				ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */,
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
 				ABEEA96617E027E90035DF4A /* vm3.m4a in Resources */,
+				AB19E9F5186952D1000FBDD1 /* liked@2x.png in Resources */,
 				ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */,
 				ABEEA96817E027E90035DF4A /* vm5.m4a in Resources */,
+				AB19E9F4186952D1000FBDD1 /* like.png in Resources */,
 				AB721C631867D12F000B716D /* 37x-Checkmark@2x.png in Resources */,
 				AB07401818125B4D00AAFC90 /* EWGroupCell.xib in Resources */,
 				ABEEA96917E027E90035DF4A /* vm6.m4a in Resources */,
@@ -1503,6 +1536,7 @@
 				AB198C951861818B008C1F15 /* EWMediaItem.m in Sources */,
 				5671BE4218085C4100F35DF9 /* ASICloudFilesObjectRequest.m in Sources */,
 				AB13C1CF1862D32400231159 /* EWDetailPersonViewController.m in Sources */,
+				AB19E9FB18698359000FBDD1 /* EWRecordingViewController.m in Sources */,
 				AB198C971861818B008C1F15 /* EWPerson.m in Sources */,
 				AB7807A418393A66007C8BFD /* EWPersonStore.m in Sources */,
 				ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */,

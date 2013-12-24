@@ -18,11 +18,15 @@
 #import "EWAlarmItem.h"
 #import "EWMediaItem.h"
 #import "NSDate+Extend.h"
+
 //manager
 #import "EWTaskStore.h"
 #import "EWAlarmManager.h"
 #import "EWPersonStore.h"
 #import "EWMediaStore.h"
+
+//view
+#import "EWRecordingViewController.h"
 
 @interface EWDetailPersonViewController ()
 
@@ -46,7 +50,7 @@
 
 
 - (void)initData {
-    
+    me = [EWPersonStore sharedInstance].currentUser;
 }
 
 - (void)initChartView {
@@ -85,6 +89,7 @@
     //tasks: only tasks that turned on
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"state == %@", [NSNumber numberWithBool:YES]];
     tasks = [[person.tasks allObjects] filteredArrayUsingPredicate:predicate];
+    tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
     
     //UI
     self.profilePic.image = person.profilePic;
@@ -121,7 +126,13 @@
     [self.view addSubview:_tableView];
     
     //Right side bar button
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addPerson)];
+    if ([me.friends containsObject:person]) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(unfriend)];
+
+    }else{
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addPerson)];
+    }
+    
     
     //=========Person=========
     self.person = person;
@@ -143,18 +154,64 @@
 }
 
 - (void)addPerson{
-    EWPerson *me = [EWPersonStore sharedInstance].currentUser;
-    [me addFriendsObject:person];
-    [[SMClient defaultClient].coreDataStore.contextForCurrentThread saveOnSuccess:^{
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success"
-                                    message:[NSString stringWithFormat:@"%@ has been added as your friends!", person.name]
-                                    delegate:self
-                         cancelButtonTitle:@"OK"
-                         otherButtonTitles:nil];
-        [alert show];
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Error saving friendship" format:@"Reason: %@", error.description];
-    }];
+    
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Add friend"
+                                message:[NSString stringWithFormat:@"Add %@ as your friend?", person.name]
+                                delegate:self
+                     cancelButtonTitle:@"OK"
+                     otherButtonTitles:@"Cancel", nil];
+    [alert show];
+    
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if ([alertView.title isEqualToString:@"Add friend"]) {
+        switch (buttonIndex) {
+            case 0:
+            {
+                //OK
+                MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                me = [EWPersonStore sharedInstance].currentUser;
+                [me addFriendsObject:person];
+                [[SMClient defaultClient].coreDataStore.contextForCurrentThread saveOnSuccess:^{
+                    hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+                    hud.mode = MBProgressHUDModeCustomView;
+                    hud.labelText = @"Added";
+                    [hud hide:YES afterDelay:1.5];
+                } onFailure:^(NSError *error) {
+                    [NSException raise:@"Error saving friendship" format:@"Reason: %@", error.description];
+                }];
+            }
+                break;
+                
+            default:
+                break;
+        }
+    }else if ([alertView.title isEqualToString:@"Unfriend"]){
+        if (buttonIndex == 0) {
+            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            me = [EWPersonStore sharedInstance].currentUser;
+            [me removeFriendedObject:person];
+            [[SMClient defaultClient].coreDataStore.contextForCurrentThread saveOnSuccess:^{
+                hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+                hud.mode = MBProgressHUDModeCustomView;
+                hud.labelText = @"Unfriended";
+                [hud hide:YES afterDelay:1.5];
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"Error saving friendship" format:@"Reason: %@", error.description];
+            }];
+        }
+    }
+}
+
+- (void)unfriend{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Unfriend"
+                                                    message:[NSString stringWithFormat:@"Really unfriend %@?", person.name]
+                                                   delegate:self
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:@"Cancel", nil];
+    [alert show];
 }
 
 @end
@@ -199,7 +256,7 @@
     cell.textLabel.textColor = kCustomGray;
     cell.detailTextLabel.textColor = kColorMediumGray;
     cell.detailTextLabel.text = @"Alarm description";
-    cell.accessoryType = UITableViewCellAccessoryDetailButton;
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
 }
 //display cell
@@ -208,7 +265,7 @@
     UITableViewCell *cell = [self makePersonInfoCellForTableView:tableView];
     
     EWTaskItem *task = [tasks objectAtIndex:indexPath.row];
-    cell.textLabel.text = [task.alarm.time date2detailDateString];
+    cell.textLabel.text = [task.time date2detailDateString];
     if (task.statement) {
         cell.detailTextLabel.text = task.statement;
     }else{
@@ -220,6 +277,10 @@
 }
 //tap cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithNibName:nil bundle:nil];
+    controller.task = tasks[indexPath.row];
+    [self presentViewController:controller animated:YES completion:NULL];
+    /*
     //voice message
     EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];//with ramdom audio
     media.author = [EWPersonStore sharedInstance].currentUser;
@@ -238,7 +299,7 @@
         [context refreshObject:media mergeChanges:YES];
     } onFailure:^(NSError *error) {
         [NSException raise:@"Unable to send media" format:@"Reason: %@", error.description];
-    }];
+    }];*/
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{

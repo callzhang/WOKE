@@ -11,46 +11,8 @@
 #import <AVFoundation/AVAudioPlayer.h>
 
 @implementation AVManager
-@synthesize player, progressBar;
+@synthesize player, recorder, progressBar, playStopBtn;
 
-void RouteChangeListener(void *                  inClientData,
-                         AudioSessionPropertyID  inID,
-                         UInt32                  inDataSize,
-                         const void *            inData);
-
--(id)init{
-    //static AVManager *sharedManager_ = nil;
-    self = [super init];
-    if (self) {
-        //regist the player
-        NSError *err = nil;
-        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:NULL error:&err];
-        if (self.player)
-        {
-            //NSLog(@"Playr URL: %@\n", player.url);
-            //fileName.text = [NSString stringWithFormat: @"%@ (%d ch.)", [[player.url relativePath] lastPathComponent], player.numberOfChannels, nil];
-            //[self updateViewForPlayerInfo:player];
-            [self updateViewForPlayerState:player];
-            player.numberOfLoops = 0; //no repeat
-            player.delegate = self;
-        }
-        
-        OSStatus result = AudioSessionInitialize(NULL, NULL, NULL, NULL);
-        if (result)
-            NSLog(@"Error initializing audio session! %ld", result);
-        
-        [[AVAudioSession sharedInstance] setDelegate: self];
-        NSError *setCategoryError = nil;
-        [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: &setCategoryError];
-        if (setCategoryError)
-            NSLog(@"Error setting category! %@", setCategoryError);
-        
-        result = AudioSessionAddPropertyListener (kAudioSessionProperty_AudioRouteChange, RouteChangeListener, (__bridge void *)(self));  //?????
-        if (result) 
-            NSLog(@"Could not add property listener! %ld", result);
-    }
-    return self;
-}
 
 +(AVManager *)sharedManager{
     static AVManager *sharedManager_ = nil;
@@ -61,65 +23,153 @@ void RouteChangeListener(void *                  inClientData,
     return sharedManager_;
 }
 
+-(id)init{
+    //static AVManager *sharedManager_ = nil;
+    self = [super init];
+    if (self) {
+        //regist the player
+        /*
+        NSError *err = nil;
+        player = [[AVAudioPlayer alloc] initWithContentsOfURL:NULL error:&err];
+        if (player)
+        {
+            [self updateViewForPlayerState:player];
+            player.numberOfLoops = 0; //no repeat
+            player.delegate = self;
+        }*/
+        
+        //recorder
+        NSString *tempDir = NSTemporaryDirectory ();
+        NSString *soundFilePath =  [tempDir stringByAppendingString: @"recording.m4a"];
+        recordingFileUrl = [[NSURL alloc] initFileURLWithPath: soundFilePath];
+        
+        //audio session
+        [[AVAudioSession sharedInstance] setDelegate: self];
+        NSError *error = nil;
+        BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord error: &error];
+        if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
+        success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
+                                                                     error:&error];
+        NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
+        [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    }
+    return self;
+}
+
+
+#pragma mark - PLAY FUNCTIONS
 //play for cell with progress
 -(void)playForCell:(EWMediaViewCell *)cell{
-    NSArray *array = [cell.media.audioKey componentsSeparatedByString:@"."];
+    NSData *audioData = cell.media.audio;//TODO network background task
     
-    NSString *file = nil;
-    NSString *type = nil;
-    if (array.count == 2) {
-        file = [array firstObject];
-        type = [array lastObject];
-    }
-    else {
-        [NSException raise:@"Unexpected file format" format:@"Please provide a who file name with extension"];
-    }
     //link progress bar with cell's progress bar
     progressBar = cell.progressBar;
-    if (player.playing) {
-        [player stop];
-    } else {
-        NSString *url = [[NSBundle mainBundle] pathForResource:file ofType:type];
-        NSURL *soundURL = [NSURL fileURLWithPath:url];
-        NSError *err;
-        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:soundURL error:&err];
-        [player prepareToPlay];
-        if ([player play])
-        {
-            progressBar.maximumValue = player.duration;
-            [self updateViewForPlayerState:player];
-        }
-        else
-            NSLog(@"Could not play %@\n", player.url);
+    NSError *err;
+    player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
+    if (err) {
+        NSLog(@"Cannot init player. Reason: %@", err.description);
     }
+    self.player.delegate = self;
+    [player prepareToPlay];
+    if (![player play]) NSLog(@"Could not play media.");
 }
+
+
 
 //play for file in main bundle
 -(void)playSoundFromFile:(NSString *)fileName {
-    NSArray *array = [fileName componentsSeparatedByString:@"."];
     
-    NSString *file = nil;
-    NSString *type = nil;
-    if (array.count >= 2) {
-        file = [array firstObject];
-        type = [array lastObject];
-    }
-    else {
-        file = fileName;
-        type = @"";
-    }
-    NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:file ofType:type]];
-    if (player.playing && player.url == soundURL) {
+    if (player.playing) {
         [player stop];
     } else {
-        NSError *err;
-        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:soundURL error:&err];
-        [player prepareToPlay];
-        if (![player play]) NSLog(@"Could not play %@\n", player.url);
+        NSArray *array = [fileName componentsSeparatedByString:@"."];
+        
+        NSString *file = nil;
+        NSString *type = nil;
+        if (array.count >= 2) {
+            file = [array firstObject];
+            type = [array lastObject];
+        }
+        else {
+            file = fileName;
+            type = @"";
+        }
+        NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:file ofType:type]];
+        //call the core play function
+        [self playSoundFromURL:soundURL];
     }
 }
 
+//main play function
+- (void)playSoundFromURL:(NSURL *)url{
+    NSLog(@"About to play %@", [url path]);
+    if ([url isFileURL]) {
+        
+        if (!progressBar) {
+            NSLog(@"Progress bar not set! Remember to add it before playing.");
+        }
+        NSError *err;
+        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
+        if (err) {
+            NSLog(@"Cannot init player. Reason: %@", err.description);
+        }
+        self.player.delegate = self;
+        [player prepareToPlay];
+        if (![player play]) NSLog(@"Could not play %@\n", url);
+    }else{
+        //network url
+        NSLog(@"Network URL streaming not supported yet");
+    }
+}
 
+//UI event from UISlider
+- (IBAction)sliderChanged:(UISlider *)sender {
+    // Fast skip the music when user scroll the UISlider
+    [player stop];
+    [player setCurrentTime:progressBar.value];
+    [player prepareToPlay];
+    [player play];
+}
+
+#pragma mark - Record
+- (NSURL *)record{
+    if (recorder.isRecording) {
+        
+        [recorder stop];
+        recorder = nil;
+        
+        [[AVAudioSession sharedInstance] setActive: NO error: nil];
+        
+        return recordingFileUrl;
+    } else {
+        
+        
+        NSDictionary *recordSettings = @{AVEncoderAudioQualityKey: [NSNumber numberWithInt:kAudioFormatLinearPCM],
+                                         AVEncoderBitRateKey: @64,
+                                         AVSampleRateKey: @44100.0,
+                                         AVFormatIDKey: [NSNumber numberWithInt: kAudioFormatMPEG4AAC]}; //,
+                                         //AVEncoderBitRateStrategyKey: AVAudioBitRateStrategy_Variable};
+        NSError *err;
+        AVAudioRecorder *newRecorder = [[AVAudioRecorder alloc] initWithURL: recordingFileUrl
+                                                                   settings: recordSettings
+                                                                      error: &err];
+        self.recorder = newRecorder;
+        
+        recorder.delegate = self;
+        
+        if (![recorder record]){
+            int errorCode = CFSwapInt32HostToBig ([err code]);
+            NSLog(@"Error: %@ [%4.4s])" , [err localizedDescription], (char*)&errorCode);
+        }
+        
+        
+    }
+    NSLog(@"Recording");
+    
+    return nil;
+}
+
+#pragma mark - update UI
 - (void)updateViewForPlayerState:(AVAudioPlayer *)p
 {
     if (progressBar) {
@@ -151,13 +201,29 @@ void RouteChangeListener(void *                  inClientData,
 	progressBar.value = player.currentTime;
 }
 
-#pragma mark AVAudioPlayer delegate method
-- (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)myaudio successfully:(BOOL)flag {
-    //soundplay = 0;
+#pragma mark - AVAudioPlayer delegate method
+- (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)player successfully:(BOOL)flag {
+    [updateTimer invalidate];
     NSLog(@"sound fnished");
 }
 
-//AVManager
+- (void)playerItemDidReachEnd:(NSNotification *)notification {
+    self.player.currentTime = 0.0;
+}
+
+- (void)stopAllPlaying{
+    [player stop];
+}
+
+- (void)audioPlayerBeginInterruption:(AVAudioPlayer *)player{
+    [self.player stop];
+}
+
+- (void)audioPlayerEndInterruption:(AVAudioPlayer *)player{
+    [self.player play];
+}
+
+#pragma mark - AVPlayer (Advanced, for stream audio, future)
 //use AVPlayer to play assets via HTTP live stream(advanced)
 -(void)playMedia:(NSString *)fileName{
     NSURL *url = [NSURL URLWithString:@"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"];
@@ -213,15 +279,10 @@ void RouteChangeListener(void *                  inClientData,
 }
 */
 
-- (void)playerItemDidReachEnd:(NSNotification *)notification {
-    self.player.currentTime = 0.0;
-}
 
-- (void)stopAllPlaying{
-    [player stop];
-}
 
 #pragma mark AudioSession handlers
+/*
 void RouteChangeListener(	void *inClientData,
                          AudioSessionPropertyID	inID,
                          UInt32 inDataSize,
@@ -241,10 +302,10 @@ void RouteChangeListener(	void *inClientData,
 			[This pausePlaybackForPlayer:This.player];
 		}
 	}
-}
+}*/
 
 - (void)pausePlaybackForPlayer:(AVAudioPlayer *)player {
-    
+    NSLog(@"未知情况");
 }
 
 @end

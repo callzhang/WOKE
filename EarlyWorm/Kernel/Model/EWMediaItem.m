@@ -21,6 +21,7 @@
 @synthesize image;
 @dynamic imageKey;
 @dynamic videoKey;
+@synthesize audio;
 @dynamic audioKey;
 @dynamic message;
 @dynamic mediaType;
@@ -82,6 +83,50 @@
         [NSException raise:@"Unable to save image" format:@"Reason: %@", error.description];
     }];
 }
+
+#pragma mark - AUDIO
+- (NSData *)audio{
+    if(!audio){
+        __block NSData *data;
+        if ([SMBinaryDataConversion stringContainsURL:self.audioKey]) {
+            //read from url
+            NSURL *audioURL = [NSURL URLWithString:self.audioKey];
+            NSString *key = [audioURL.absoluteString MD5Hash];
+            data = [FTWCache objectForKey:key];
+            if (data) {
+                self.audio = data;
+            }else{
+                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+                dispatch_async(queue, ^{
+                    data = [NSData dataWithContentsOfURL:audioURL];
+                    [FTWCache setObject:data forKey:key];
+                });
+            }
+        }else if(self.audioKey.length > 200){
+            //string contains data
+            data = [SMBinaryDataConversion dataForString:self.audioKey];
+        }else{
+            //string is a local file
+            NSArray *array = [self.audioKey componentsSeparatedByString:@"."];
+            
+            NSString *file = nil;
+            NSString *type = nil;
+            if (array.count == 2) {
+                file = [array firstObject];
+                type = [array lastObject];
+            }else{
+                [NSException raise:@"Unexpected file format" format:@"Please provide a who file name with extension"];
+            }
+            NSString *filePath = [[NSBundle mainBundle] pathForResource:file ofType:type];
+            data = [NSData dataWithContentsOfFile:filePath];
+        }
+        
+        //save data
+        self.audio = data;
+    }
+    return audio;
+}
+
 
 - (UIImage *)thumbnail{
     if (!thumbnail && self.image) {

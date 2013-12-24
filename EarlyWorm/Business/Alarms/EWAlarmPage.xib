@@ -80,6 +80,7 @@
                     <rect key="frame" x="145" y="66" width="155" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <state key="normal">
+                        <color key="titleColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>

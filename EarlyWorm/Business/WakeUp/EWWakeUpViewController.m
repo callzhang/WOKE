@@ -16,6 +16,7 @@
 #import "ImageViewController.h"
 #import "AVManager.h"
 #import "NSDate+Extend.h"
+#import "MBProgressHUD.h"
 
 @interface EWWakeUpViewController ()
 @property (nonatomic, strong) EWShakeManager *shakeManager;
@@ -44,6 +45,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    //media
+    medias = [[NSMutableArray alloc] init];
+    
     [self initData];
     [self initView];
 }
@@ -54,9 +58,15 @@
 }
 
 - (void)initData {
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //depend on whether passed in with task or person, the media will populaeed accordingly
     if (task) {
-        medias = [task.medias mutableCopy];
+        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
+        request.predicate = [NSPredicate predicateWithFormat:@"ANY tasks == %@", task];
+        request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"createddate" ascending:NO]];
+        NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+        NSError *err;
+        medias = [[context executeFetchRequestAndWait:request error:&err] mutableCopy];
     }else{
         medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
     }
@@ -64,6 +74,8 @@
     //_shakeManager = [[EWShakeManager alloc] init];
     //_shakeManager.delegate = self;
     //[_shakeManager register];
+    
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
 }
 
 - (void)initView {
@@ -82,6 +94,11 @@
     [self.tableView registerNib:nib forCellReuseIdentifier:@"EWMediaViewCell"];
     //cancel btn
     self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
+}
+
+- (void)setTask:(EWTaskItem *)t{
+    task = t;
+    [self initData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -108,7 +125,7 @@
 #pragma mark - tableViewController delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return EWMediaStore.sharedInstance.allMedias.count;
+    return medias.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -128,7 +145,7 @@
     }
     
     //get media item
-    EWMediaItem *mi = [EWMediaStore.sharedInstance.allMedias objectAtIndex:indexPath.row];
+    EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
     
     //text
     cell.title.text = mi.author.name;
@@ -162,7 +179,7 @@
         EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
         //remove from data source
         [medias removeObject:mi];
-        [self initData];//refresh
+        
         //[[EWPersonStore sharedInstance].currentUser removeMediasObject:mi];
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -170,7 +187,7 @@
         NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
         [context deleteObject:mi];
         [context saveOnSuccess:^{
-            //
+            [self initData];//refresh
         } onFailure:^(NSError *error) {
             [NSException raise:@"Unable to delete the row" format:@"Reason: %@", error.description];
         }];

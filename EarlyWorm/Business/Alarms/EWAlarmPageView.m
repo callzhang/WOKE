@@ -59,7 +59,7 @@
 }
 
 - (IBAction)playMessage:(id)sender {
-    if (task.medias) {
+    if (task.medias.count) {
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
         
@@ -83,8 +83,10 @@
         NSLog(@"Unexpected task with %d hour to now", h);
     }
     //media
-    if (task.medias) {
-        self.messages.titleLabel.text = [NSString stringWithFormat:@"%d voices", task.medias.count];
+    NSInteger mCount = task.medias.count;
+    if (mCount > 0) {
+        NSLog(@"%d voice tones on %@", task.medias.count, [task.time date2dayString]);
+        [self.messages setTitle:[NSString stringWithFormat:@"%d voice tones", task.medias.count] forState:UIControlStateNormal];
     }
     self.editBtn.backgroundColor = [UIColor clearColor];
     self.dateText.text = [t.time date2dayString];
