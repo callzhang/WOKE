@@ -74,7 +74,7 @@
                         </connections>
                     </button>
                     <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" id="155">
-                        <rect key="frame" x="51" y="87" width="264" height="29"/>
+                        <rect key="frame" x="51" y="87" width="226" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </slider>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="UNh-aX-O06">
@@ -86,6 +86,13 @@
                             <action selector="like:" destination="3" eventType="touchUpInside" id="ovg-AR-vWa"/>
                         </connections>
                     </button>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="03:15" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EX3-tB-ZX1">
+                        <rect key="frame" x="283" y="94" width="41" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
             </tableViewCellContentView>
             <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
@@ -93,8 +100,10 @@
                 <outlet property="date" destination="117" id="119"/>
                 <outlet property="description" destination="17" id="112"/>
                 <outlet property="like" destination="UNh-aX-O06" id="iiX-ph-9M0"/>
+                <outlet property="playBtn" destination="29" id="hWO-5y-rfu"/>
                 <outlet property="profilePic" destination="4" id="122"/>
                 <outlet property="progressBar" destination="155" id="156"/>
+                <outlet property="time" destination="EX3-tB-ZX1" id="XYb-W7-lWx"/>
                 <outlet property="title" destination="14" id="120"/>
             </connections>
         </tableViewCell>

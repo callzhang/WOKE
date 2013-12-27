@@ -20,6 +20,7 @@
 @property (weak, nonatomic) IBOutlet UISlider *progressBar;
 @property (weak, nonatomic) IBOutlet UIButton *playBtn;
 @property (weak, nonatomic) IBOutlet UIButton *recordBtn;
+@property (weak, nonatomic) IBOutlet UITextField *message;
 
 - (IBAction)play:(id)sender;
 - (IBAction)record:(id)sender;

@@ -29,6 +29,7 @@
 - (NSArray *)getTasksByPerson:(EWPerson *)person;
 - (EWTaskItem *)nextTaskAtDayCount:(NSInteger)n ForPerson:(EWPerson *)person;
 - (NSArray *)pastTasksByPerson:(EWPerson *)person;
+- (EWTaskItem *)getTaskByID:(NSString *)taskID;
 
 //Schedule
 /**

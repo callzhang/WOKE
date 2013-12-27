@@ -18,7 +18,9 @@
 #import "NSDate+Extend.h"
 #import "MBProgressHUD.h"
 
-@interface EWWakeUpViewController ()
+@interface EWWakeUpViewController (){
+    NSManagedObjectContext *context;
+}
 @property (nonatomic, strong) EWShakeManager *shakeManager;
 @end
 
@@ -47,6 +49,8 @@
     
     //media
     medias = [[NSMutableArray alloc] init];
+    //context
+    context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     
     [self initData];
     [self initView];
@@ -60,22 +64,27 @@
 - (void)initData {
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //depend on whether passed in with task or person, the media will populaeed accordingly
-    if (task) {
-        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
-        request.predicate = [NSPredicate predicateWithFormat:@"ANY tasks == %@", task];
-        request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"createddate" ascending:NO]];
-        NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
-        NSError *err;
-        medias = [[context executeFetchRequestAndWait:request error:&err] mutableCopy];
-    }else{
-        medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if (task) {
+            NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
+            request.predicate = [NSPredicate predicateWithFormat:@"ANY tasks == %@", task];
+            request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"createddate" ascending:NO]];
+            NSError *err;
+            medias = [[context executeFetchRequestAndWait:request error:&err] mutableCopy];
+        }else{
+            medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        });
+    });
     
     //_shakeManager = [[EWShakeManager alloc] init];
     //_shakeManager.delegate = self;
     //[_shakeManager register];
     
-    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    
 }
 
 - (void)initView {
@@ -184,8 +193,9 @@
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         //save in bg
-        NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
-        [context deleteObject:mi];
+        //[context deleteObject:mi];//do not delete the media
+        //remove from task relation
+        [task removeMediasObject:mi];
         [context saveOnSuccess:^{
             [self initData];//refresh
         } onFailure:^(NSError *error) {

@@ -60,6 +60,7 @@
         //listen to user log in
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadView) name:kTaskNewNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadView) name:kTaskChangedNotification object:nil];
         //UI
         
         self.hidesBottomBarWhenPushed = NO;

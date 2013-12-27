@@ -7,6 +7,8 @@
 //
 
 #import "EWRecordingViewController.h"
+#import "EWAppDelegate.h"
+
 //object
 #import "EWTaskItem.h"
 #import "EWMediaItem.h"
@@ -69,6 +71,9 @@
 }
 
 - (IBAction)record:(id)sender {
+    manager.progressBar = progressBar;
+    progressBar.maximumValue = kMaxRecordTime;
+    manager.playStopBtn = recordBtn;
     recordingFileUrl = [manager record];
     if (manager.recorder.isRecording) {
         [recordBtn setTitle:@"Stop" forState:UIControlStateNormal];
@@ -90,8 +95,8 @@
         NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:@"voicetone.m4a" contentType:@"media/m4a"];
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
         media.author = [EWPersonStore sharedInstance].currentUser;
-        media.title = @"Recording";
-        media.message = @"Hello";
+        media.title = @"Voice Tone";
+        media.message = self.message.text;
         [media addTasksObject:task];
         media.audioKey = recordDataString;
         
@@ -106,11 +111,25 @@
             //clean
             recordingFileUrl = nil;
             if ([media.audioKey length]<100) {
-                NSLog(@"media's audioKey after merge is %@", media.audioKey);
+                //NSLog(@"media's audioKey after merge is %@", media.audioKey);
             }else{
                 NSLog(@"audioKey failed to upload to S3 server and remained as string data");
             }
             
+            //send push notification
+            EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
+            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New voice tone sent from %@", [EWPersonStore sharedInstance].currentUser.username],
+                                          @"badge": @1,
+                                          @"taskID": task.ewtaskitem_id};
+            
+            [delegate.pushClient sendMessage:pushMessage toUsers:@[task.owner.username] onSuccess:^{
+                NSLog(@"Push notification successfully sent to %@", task.owner.username);
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"Failed to send push notification" format:@"Reason: %@", error.description];
+            }];
+            
+            //dismiss
+            [self dismissViewControllerAnimated:YES completion:NULL];
             
         } onFailure:^(NSError *error) {
             [NSException raise:@"Error in saving new Meida object" format:@"Reason: %@", err.description];

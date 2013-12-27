@@ -11,13 +11,15 @@
 #import <FacebookSDK/FacebookSDK.h>
 //StackMob
 #import "StackMob.h"
+#import "SMPushClient.h"
 
-@interface EWAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, WeiboSDKDelegate,WeiboSDKJSONDelegate>
+@interface EWAppDelegate : UIResponder <UIApplicationDelegate, WeiboSDKDelegate,WeiboSDKJSONDelegate, UIAlertViewDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
 @property (strong, nonatomic) UITabBarController *tabBarController;
 @property (nonatomic) SMClient *client;
+@property (nonatomic) SMPushClient *pushClient;
 @property (nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic) SMCoreDataStore *coreDataStore;
 

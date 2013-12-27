@@ -59,11 +59,11 @@
     socialList = socialViewNews;
     
     //progress hud
-    /*
+    
     refreshHUD = [[MBProgressHUD alloc] initWithView:self.view];
     [self.view addSubview:refreshHUD];
     refreshHUD.delegate = self;
-     */
+    
     
     //UISegmentedControl
     UISegmentedControl *taskGroupController = [[UISegmentedControl alloc] initWithItems:@[@"News", @"Around Me", @"Groups"]];
@@ -100,15 +100,24 @@
 }
 
 - (void)loadData{
-    me = [EWPersonStore sharedInstance].currentUser;
-    NSSet *friendsSet = me.friends;
-    friends = [friendsSet allObjects];
-    NSMutableSet *everyoneSet = [NSMutableSet setWithArray:[[EWPersonStore sharedInstance] everyone]];
-    [everyoneSet minusSet:me.friends];
-    everyone = [everyoneSet allObjects];//exclude friends
-    nNews = friends.count; //TODO: currently the only news if friends' alarm time
-    nAroundMe = (everyone.count>20) ? 20:everyone.count; //arbitrage number
-    nGroup = 1; //wakeup together group
+    [refreshHUD show:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        me = [EWPersonStore sharedInstance].currentUser;
+        NSSet *friendsSet = me.friends;
+        friends = [friendsSet allObjects];
+        NSMutableSet *everyoneSet = [NSMutableSet setWithArray:[[EWPersonStore sharedInstance] everyone]];
+        [everyoneSet minusSet:me.friends];
+        everyone = [everyoneSet allObjects];//exclude friends
+        nNews = friends.count; //TODO: currently the only news if friends' alarm time
+        nAroundMe = (everyone.count>20) ? 20:everyone.count; //arbitrage number
+        nGroup = 1; //wakeup together group
+        
+        //main thread
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+            [refreshHUD hide:YES];
+        });
+    });
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -127,36 +136,37 @@
 #pragma mark - UI events
 -(void)changeTaskGroup:(id)sender{
     socialList = [sender selectedSegmentIndex];
-    if (socialList == socialViewNews) {
-        //nav item
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(onNewActions)];
-    }else if (socialList == socialViewEveryone) {
-        //nav item
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(onSearchPerson)];
-    }else if(socialList == socialViewGroups){
-        //nav item
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(onGroup)];
-    }
-    //NSLog(@"Task group switched to %d", socialList);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (socialList == socialViewNews) {
+            //nav item
+            self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(onNewActions)];
+        }else if (socialList == socialViewEveryone) {
+            //nav item
+            self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(onSearchPerson)];
+        }else if(socialList == socialViewGroups){
+            //nav item
+            self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(onGroup)];
+        }
+        //NSLog(@"Task group switched to %d", socialList);
+        
+        //refresh table
+        [self.tableView reloadData];
+        [refreshHUD hide:YES];
+    });
     
-    //refresh table
-    [self.tableView reloadData];
+    
 }
 
 
 //page switch
 - (void)onNewsActions{
-    refreshHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     NSLog(@"News page refresh");
 }
 
 
 
 - (void)onSearchPerson{
-    refreshHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-
-    
-    
+    NSLog(@"Searching person");
 }
 /*
 - (void)onAddTask {
@@ -168,7 +178,6 @@
 }
 */
 - (void)onSearchGroup{
-    refreshHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     NSLog(@"Group page");
 }
 @end

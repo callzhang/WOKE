@@ -31,6 +31,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskState:) name:kAlarmStateChangedNotification object:nil];
         //watch tone change
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateNotifTone:) name:kAlarmToneChangedNotification object:nil];
+        //watch media change
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTaskMedia:) name:kMediaNewNotification object:nil];
     });
     return sharedTaskStore_;
 }
@@ -107,6 +109,16 @@
     
 }
 
+- (EWTaskItem *)getTaskByID:(NSString *)taskID{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"EWTaskItem"];
+    request.predicate = [NSPredicate predicateWithFormat:@"ewtaskitem_id == %@", taskID];
+    NSError *err;
+    NSArray *tasks = [context executeFetchRequestAndWait:request error:&err];
+    if (tasks.count == 1) {
+        return tasks[0];
+    }
+    return nil;
+}
 
 
 #pragma mark - SCHEDULE
@@ -272,6 +284,14 @@
             NSLog(@"Notification tone updated to: %@", a.tone);
         }
     }
+}
+
+- (void)updateTaskMedia:(NSNotification *)notif{
+    EWTaskItem *task = [notif object];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [context refreshObject:task mergeChanges:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": task}];
+    });
 }
 
 #pragma mark - DELETE

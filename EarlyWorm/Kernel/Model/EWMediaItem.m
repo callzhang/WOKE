@@ -102,23 +102,20 @@
                     [FTWCache setObject:data forKey:key];
                 });
             }
+            //local data
+            if(!data){
+                //string is a local file
+                NSArray *array = [self.audioKey componentsSeparatedByString:@"."];
+                if (array.count != 2) {
+                    [NSException raise:@"Unexpected file format" format:@"Please provide a who file name with extension"];
+                }
+                NSString *filePath = [[NSBundle mainBundle] pathForResource:array[0] ofType:array[1]];
+                data = [NSData dataWithContentsOfFile:filePath];
+            }
+            
         }else if(self.audioKey.length > 200){
             //string contains data
             data = [SMBinaryDataConversion dataForString:self.audioKey];
-        }else{
-            //string is a local file
-            NSArray *array = [self.audioKey componentsSeparatedByString:@"."];
-            
-            NSString *file = nil;
-            NSString *type = nil;
-            if (array.count == 2) {
-                file = [array firstObject];
-                type = [array lastObject];
-            }else{
-                [NSException raise:@"Unexpected file format" format:@"Please provide a who file name with extension"];
-            }
-            NSString *filePath = [[NSBundle mainBundle] pathForResource:file ofType:type];
-            data = [NSData dataWithContentsOfFile:filePath];
         }
         
         //save data

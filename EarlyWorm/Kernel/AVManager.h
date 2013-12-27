@@ -43,6 +43,7 @@
 @property (weak, nonatomic) UISlider *progressBar;
 @property (weak, nonatomic) UIButton *playStopBtn;
 @property (weak, nonatomic) UIButton *recordStopBtn;
+@property (weak, nonatomic) UILabel *currentTime;
 
 //@property (strong) id playerObserver;
 @end

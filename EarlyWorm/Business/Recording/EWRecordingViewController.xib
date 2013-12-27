@@ -6,6 +6,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EWRecordingViewController">
             <connections>
+                <outlet property="message" destination="1FK-xe-nxZ" id="utC-BV-Enx"/>
                 <outlet property="playBtn" destination="r2h-Py-vN0" id="RHz-yZ-e0l"/>
                 <outlet property="progressBar" destination="nAL-3J-liG" id="2jw-gV-QmD"/>
                 <outlet property="recordBtn" destination="7Gm-XY-EfQ" id="2Bg-Oz-1GH"/>
@@ -62,8 +63,14 @@
                         <action selector="back:" destination="-1" eventType="touchUpInside" id="6EW-5N-yGM"/>
                     </connections>
                 </button>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Message to the receiver" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1FK-xe-nxZ">
+                    <rect key="frame" x="29" y="307" width="270" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
             </subviews>
-            <color key="backgroundColor" white="0.25" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <color key="backgroundColor" white="0.33333333333333331" alpha="0.5" colorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
         </view>

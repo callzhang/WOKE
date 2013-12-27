@@ -8,6 +8,7 @@
 
 #import "TestViewController.h"
 #import "EWUIUtil.h"
+#import "EWAppDelegate.h"
 
 // 业务界面
 #import "EWWakeUpViewController.h"
@@ -44,7 +45,7 @@
 }
 
 - (void)initData {
-    _dataSource = @[@"Voicetone View", @"Shake test", @"Social Network API", @"Local Notifications", @"Clear Alarms & Tasks"];
+    _dataSource = @[@"Voicetone View", @"Shake test", @"Social Network API", @"Local Notifications", @"Clear Alarms & Tasks", @"Test push notification"];
 }
 
 - (void)initView {
@@ -171,6 +172,25 @@
             }];
             [self presentViewController:controller animated:YES completion:NULL];
              */
+        }
+            break;
+            
+        case 5:{
+            //testing
+            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"You got a message from %@", [EWPersonStore sharedInstance].currentUser.name],
+                                          @"badge": @1,
+                                          @"title": @"WOKE",
+                                          @"task": @"029062E9-5280-4CD2-ADA0-2C4D775FBD83"};
+            NSArray *users = @[[EWPersonStore sharedInstance].currentUser.username];
+            EWAppDelegate *appDelegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
+            [appDelegate.pushClient sendMessage:pushMessage toUsers:users onSuccess:^{
+                NSLog(@"Notification sent");
+            } onFailure:^(NSError *error){
+                NSLog(@"Notification failed to send");
+            }];
+            
+            //dismiss self to present popup view
+            [self dismissViewControllerAnimated:YES completion:NULL];
         }
             break;
         default:

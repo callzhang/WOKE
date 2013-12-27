@@ -22,6 +22,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *description;
 @property (weak, nonatomic) IBOutlet UISlider *progressBar;
 @property (weak, nonatomic) IBOutlet UIButton *like;
+@property (weak, nonatomic) IBOutlet UIButton *playBtn;
+@property (weak, nonatomic) IBOutlet UILabel *time;
 
 //action
 - (IBAction)mediaPlay:(id)sender;

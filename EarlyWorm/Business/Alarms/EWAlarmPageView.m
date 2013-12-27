@@ -85,8 +85,9 @@
     //media
     NSInteger mCount = task.medias.count;
     if (mCount > 0) {
-        NSLog(@"%d voice tones on %@", task.medias.count, [task.time date2dayString]);
         [self.messages setTitle:[NSString stringWithFormat:@"%d voice tones", task.medias.count] forState:UIControlStateNormal];
+    }else{
+        [self.messages setTitle:@"" forState:UIControlStateNormal];
     }
     self.editBtn.backgroundColor = [UIColor clearColor];
     self.dateText.text = [t.time date2dayString];

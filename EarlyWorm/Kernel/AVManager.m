@@ -11,7 +11,7 @@
 #import <AVFoundation/AVAudioPlayer.h>
 
 @implementation AVManager
-@synthesize player, recorder, progressBar, playStopBtn;
+@synthesize player, recorder, progressBar, playStopBtn, currentTime;
 
 
 +(AVManager *)sharedManager{
@@ -52,8 +52,14 @@
                                                                      error:&error];
         NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
         [[AVAudioSession sharedInstance] setActive:YES error:nil];
+
     }
     return self;
+}
+
+- (void)setProgressBar:(UISlider *)slider{
+    progressBar = slider;
+    [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
 }
 
 
@@ -64,6 +70,8 @@
     
     //link progress bar with cell's progress bar
     progressBar = cell.progressBar;
+    currentTime = cell.time;
+    playStopBtn = cell.playBtn;
     NSError *err;
     player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
     if (err) {
@@ -72,6 +80,7 @@
     self.player.delegate = self;
     [player prepareToPlay];
     if (![player play]) NSLog(@"Could not play media.");
+    [self updateViewForPlayerState:player];
 }
 
 
@@ -79,25 +88,21 @@
 //play for file in main bundle
 -(void)playSoundFromFile:(NSString *)fileName {
     
-    if (player.playing) {
-        [player stop];
-    } else {
-        NSArray *array = [fileName componentsSeparatedByString:@"."];
-        
-        NSString *file = nil;
-        NSString *type = nil;
-        if (array.count >= 2) {
-            file = [array firstObject];
-            type = [array lastObject];
-        }
-        else {
-            file = fileName;
-            type = @"";
-        }
-        NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:file ofType:type]];
-        //call the core play function
-        [self playSoundFromURL:soundURL];
+    NSArray *array = [fileName componentsSeparatedByString:@"."];
+    
+    NSString *file = nil;
+    NSString *type = nil;
+    if (array.count >= 2) {
+        file = [array firstObject];
+        type = [array lastObject];
     }
+    else {
+        file = fileName;
+        type = @"";
+    }
+    NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:file ofType:type]];
+    //call the core play function
+    [self playSoundFromURL:soundURL];
 }
 
 //main play function
@@ -116,6 +121,7 @@
         self.player.delegate = self;
         [player prepareToPlay];
         if (![player play]) NSLog(@"Could not play %@\n", url);
+        [self updateViewForPlayerState:player];
     }else{
         //network url
         NSLog(@"Network URL streaming not supported yet");
@@ -127,8 +133,10 @@
     // Fast skip the music when user scroll the UISlider
     [player stop];
     [player setCurrentTime:progressBar.value];
+    currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
     [player prepareToPlay];
     [player play];
+    
 }
 
 #pragma mark - Record
@@ -141,6 +149,7 @@
         [[AVAudioSession sharedInstance] setActive: NO error: nil];
         
         return recordingFileUrl;
+        NSLog(@"Recording finished: %@", recordingFileUrl);
     } else {
         
         
@@ -156,15 +165,17 @@
         self.recorder = newRecorder;
         
         recorder.delegate = self;
-        
+        NSTimeInterval maxTime = kMaxRecordTime;
+        [recorder recordForDuration:maxTime];
         if (![recorder record]){
             int errorCode = CFSwapInt32HostToBig ([err code]);
             NSLog(@"Error: %@ [%4.4s])" , [err localizedDescription], (char*)&errorCode);
         }
-        
-        
+        //update
+        [self updateViewForRecorderState:recorder];
+        NSLog(@"Recording");
     }
-    NSLog(@"Recording");
+    
     
     return nil;
 }
@@ -174,53 +185,89 @@
 {
     if (progressBar) {
         [self updateCurrentTime];
+        progressBar.maximumValue = player.duration;
     }
-	
     
 	if (updateTimer)
 		[updateTimer invalidate];
     
 	if (p.playing)
 	{
-		//[playButton setImage:((p.playing == YES) ? pauseBtnBG : playBtnBG) forState:UIControlStateNormal];
 		//[lvlMeter_in setPlayer:p];
-		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(updateCurrentTime) userInfo:p repeats:YES];
+		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTime) userInfo:p repeats:YES];
 	}
 	else
 	{
-		//[playButton setImage:((p.playing == YES) ? pauseBtnBG : playBtnBG) forState:UIControlStateNormal];
 		//[lvlMeter_in setPlayer:nil];
 		updateTimer = nil;
 	}
-	
+}
+
+- (void)updateViewForRecorderState:(AVAudioRecorder *)r{
+    if (progressBar) {
+        [self updateCurrentTimeForRecorder];
+        progressBar.maximumValue = kMaxRecordTime;
+    }
+    
+	if (updateTimer)
+		[updateTimer invalidate];
+    
+	if (r.recording)
+	{
+		//[lvlMeter_in setPlayer:p];
+		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTimeForRecorder) userInfo:r repeats:YES];
+	}
+	else
+	{
+		//[lvlMeter_in setPlayer:nil];
+		updateTimer = nil;
+	}
 }
 
 -(void)updateCurrentTime
 {
-	//currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)p.currentTime / 60, (NSInteger)p.currentTime % 60, nil];
-	progressBar.value = player.currentTime;
+    if (!progressBar.isTouchInside) {
+        progressBar.value = player.currentTime;
+        currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)player.currentTime / 60, (NSInteger)player.currentTime % 60, nil];
+    }
 }
+
+-(void)updateCurrentTimeForRecorder
+{
+    if (!progressBar.isTouchInside) {
+        progressBar.value = recorder.currentTime;
+        currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)recorder.currentTime / 60, (NSInteger)recorder.currentTime % 60, nil];
+    }
+}
+
 
 #pragma mark - AVAudioPlayer delegate method
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)player successfully:(BOOL)flag {
     [updateTimer invalidate];
+    self.player.currentTime = 0.0;
+    [self.playStopBtn setTitle:@"Play" forState:UIControlStateNormal];
     NSLog(@"sound fnished");
 }
 
-- (void)playerItemDidReachEnd:(NSNotification *)notification {
-    self.player.currentTime = 0.0;
+- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
+    [updateTimer invalidate];
+    [self.playStopBtn setTitle:@"Record" forState:UIControlStateNormal];
+    NSLog(@"Recording reached max length");
+    
 }
 
+
+#pragma mark - UI Events
 - (void)stopAllPlaying{
     [player stop];
 }
 
-- (void)audioPlayerBeginInterruption:(AVAudioPlayer *)player{
-    [self.player stop];
+- (void)audioPlayerBeginInterruption:(AVAudioPlayer *)p{
+    [p stop];
 }
 
-- (void)audioPlayerEndInterruption:(AVAudioPlayer *)player{
-    [self.player play];
+- (void)audioPlayerEndInterruption:(AVAudioPlayer *)p{
+    [p play];
 }
 
 #pragma mark - AVPlayer (Advanced, for stream audio, future)

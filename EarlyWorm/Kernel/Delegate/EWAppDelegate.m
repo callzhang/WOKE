@@ -7,6 +7,7 @@
 //
 
 #import "EWAppDelegate.h"
+
 //view controller
 #import "EWAlarmsViewController.h"
 #import "EWSocialViewController.h"
@@ -31,8 +32,10 @@
 #import "EWDatabaseDefault.h"
 #import "EWDefines.h"
 
-
-@interface EWAppDelegate()
+//Private
+@interface EWAppDelegate(){
+    EWTaskItem *taskInAction;
+}
 
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 @property (nonatomic) UIBackgroundTaskIdentifier oldBackgroundTaskIdentifier;
@@ -52,7 +55,7 @@
 @synthesize oldBackgroundTaskIdentifier;
 @synthesize myTimer;
 @synthesize count;
-@synthesize client, managedObjectModel, coreDataStore;
+@synthesize client, pushClient, managedObjectModel, coreDataStore;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
@@ -61,6 +64,28 @@
     self.client = [[SMClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment];
     self.client.userSchema = @"EWPerson";
     self.coreDataStore = [self.client coreDataStoreWithManagedObjectModel:[self managedObjectModel]];
+    
+    //cache related
+    self.coreDataStore.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
+    [client.session.networkMonitor setNetworkStatusChangeBlockWithFetchPolicyReturn:^SMFetchPolicy(SMNetworkStatus status) {
+        // Customize this block to fit your application's needs
+        if (status == SMNetworkStatusReachable) {
+            return SMFetchPolicyTryNetworkElseCache;
+        } else {
+            return SMFetchPolicyCacheOnly;
+        }
+    }];
+    
+    //background fetch
+    [application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval]; //fetch
+    
+    //push
+    pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
+    //user login
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
+    
+    
     
     // Weibo SDK
     EWWeiboManager *weiboMgr = [EWWeiboManager sharedInstance];
@@ -197,7 +222,8 @@
     if ([self.myTimer isValid]) {
         [self.myTimer invalidate];
     }
-    self.myTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerMethod:) userInfo:nil repeats:YES];
+    self.myTimer = [NSTimer scheduledTimerWithTimeInterval:1800 target:self selector:@selector(timerMethod:) userInfo:nil repeats:YES];
+    NSLog(@"Scheduled background task");
 //    self.myTimer = nil;
 
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
@@ -224,30 +250,7 @@
     [FBSession.activeSession close];
 }
 
-//entrance of LocalNotification
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-    if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
-        UIAlertView *alert = [[UIAlertView alloc]
-                              initWithTitle:@"Alarm"
-                              message:@"Time's up"
-                              delegate:nil
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil];
-        [alert show];
-    } else {
-        NSLog(@"Entered by local notification");
-        
-        
-        if (self.musicList.count > 0) {
-            [self playDownloadedMusic:[self.musicList objectAtIndex:self.musicList.count-1]];
-        }
-        
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-        [self.window.rootViewController presentViewController:navigationController animated:YES completion:^(void){}];
-        controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
-    }
-}
+
 
 - (void)OnCancel {
     [self.window.rootViewController dismissViewControllerAnimated:YES completion:^(void){}];
@@ -293,19 +296,18 @@
 #pragma mark - Background download
 - (void) timerMethod:(NSTimer *)paramSender{
     count++;
-    if (count % 600 == 0) {
-        UIApplication *application = [UIApplication sharedApplication];
+    UIApplication *application = [UIApplication sharedApplication];
+    
+    //开启一个新的后台
+    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
         
-        //开启一个新的后台
-        backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-            
-            // Download
+        // Download
 //            [self backgroundDownload];
-        }];
-        //结束旧的后台任务
-        [application endBackgroundTask:backgroundTaskIdentifier];
-        oldBackgroundTaskIdentifier = backgroundTaskIdentifier;
-    }
+    }];
+    
+    //结束旧的后台任务
+    [application endBackgroundTask:backgroundTaskIdentifier];
+    oldBackgroundTaskIdentifier = backgroundTaskIdentifier;
     
 #ifdef BACKGROUND_TEST
 
@@ -324,6 +326,7 @@
         fileName = [NSString stringWithFormat:@"%@.mp3",mgr.description];
     }
     else {
+        //get file name
         NSArray *array = [mgr.urlString componentsSeparatedByString:@"/"];
         if (array && array.count > 0) {
             fileName = [array objectAtIndex:array.count-1];
@@ -391,32 +394,136 @@
     [player performSelectorOnMainThread:@selector(play) withObject:nil waitUntilDone:NO];
 }
 
-//- (void)applicationDidEnterBackground:(UIApplication *)application
-//{
-//    if ([self isMultitaskingSupported] == NO){
-//        
-//        return; }
-//    //开启一个后台任务
-//    
-//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-//    }];
-//    oldBackgroundTaskIdentifier = backgroundTaskIdentifier;
-//    if ([self.myTimer isValid]) {
-//        [self.myTimer invalidate];
-//    }
-//    self.myTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerMethod:) userInfo:nil repeats:YES];
-//}
-//
-//- (void)applicationWillEnterForeground:(UIApplication *)application
-//{
-//    if (backgroundTaskIdentifier != UIBackgroundTaskInvalid){
-//        [application endBackgroundTask:backgroundTaskIdentifier];
-//        if ([self.myTimer isValid]) {
-//            [self.myTimer invalidate];
-//        }
-//    }
-//}
-//
+#pragma mark - Push Notification
+//Presist the device token
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
+    NSString *token = [[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+    token = [[token componentsSeparatedByString:@" "] componentsJoinedByString:@""];
+    
+    // Persist token if needed
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:token forKey:@"DeviceToken"];
+    [defaults synchronize];
+    
+    // Register the token with StackMob.  User is an arbitrary string to associate with the token.
+    if ([EWPersonStore sharedInstance].currentUser) {
+        NSString *username = [EWPersonStore sharedInstance].currentUser.username;
+        [self.pushClient registerDeviceToken:token withUser:username onSuccess:^{
+            NSLog(@"APP registered push token and assigned to StackMob server");
+        } onFailure:^(NSError *error) {
+            [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
+        }];
+    }
+    
+}
+
+- (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
+    [NSException raise:@"Failed to regiester push token with apple" format:@"Reason: %@", err.description];
+}
+
+//entrance of Local Notification
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
+    NSLog(@"Received local notification: %@", notification);
+    if ([application applicationState] == UIApplicationStateActive) {
+        UIAlertView *alert = [[UIAlertView alloc]
+                              initWithTitle:@"Alarm"
+                              message:@"It's time to get up!"
+                              delegate:self
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil];
+        [alert show];
+    } else {
+        NSLog(@"Entered by local notification");
+        
+        
+        if (self.musicList.count > 0) {
+            [self playDownloadedMusic:[self.musicList objectAtIndex:self.musicList.count-1]];
+        }
+        
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+        [self.window.rootViewController presentViewController:navigationController animated:YES completion:^(void){}];
+        controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
+    }
+}
+
+//Receive remote notification
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
+    NSLog(@"Notification received: %@", userInfo);
+    //if ([application applicationState] == UIApplicationStateActive) {
+        NSString *message = [[userInfo valueForKey:@"aps"] valueForKey:@"alert"];
+        NSString *title = @"New Voice Tone";
+        NSString *taskID = userInfo[@"taskID"];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+            NSString *btnTitle;
+            if (taskInAction) {
+                btnTitle = @"Show";
+            }else{
+                btnTitle = nil;
+            }
+            
+            //notification
+            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": taskInAction}];
+            
+            //main thread
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                                    message:message
+                                                                   delegate:self
+                                                          cancelButtonTitle:@"Close"
+                                                          otherButtonTitles:btnTitle, nil];
+                [alertView show];
+            });
+        });
+        
+        
+        
+    //}else{
+    //    NSLog(@"Push notification received while app in background");
+    //}
+}
+
+
+- (void)userLoggedIn{
+    //register notification
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *token;
+    @try {
+        token = [defaults objectForKey:@"DeviceToken"];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"Exception caught: %@", exception.description);
+        return;
+    }
+    NSString *username = [EWPersonStore sharedInstance].currentUser.username;
+    
+    [self.pushClient registerDeviceToken:token withUser:username onSuccess:^{
+        NSLog(@"APP registered push token and assigned to StackMob server");
+    } onFailure:^(NSError *error) {
+        [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
+    }];
+    
+    
+}
+
+#pragma mark - Alert Delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if ([alertView.title isEqualToString:@"New Voice Tone"]) {
+        if (buttonIndex == 1) {
+            //show
+            if (taskInAction) {
+                //got taskInAction
+                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+                controller.task = taskInAction;
+                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+                [self.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
+            }
+            taskInAction = nil;
+        }
+    }
+    
+}
 
 
 #pragma mark - Weibo SDK
@@ -458,14 +565,4 @@
     //
 }
 
-
-#pragma mark - TAB DELEGATE
-- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController{
-    [MBProgressHUD showHUDAddedTo:self.window.rootViewController.view animated:YES];
-    return YES;
-}
-
-- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController{
-    [MBProgressHUD hideAllHUDsForView:self.window.rootViewController.view animated:YES];
-}
 @end

@@ -20,8 +20,12 @@
 #define kCustomLightGray    EWSTR2COLOR(@"#DDDDDD")
 
 // Keys
-#define kStackMobKeyDevelopment @"4757c535-5583-46f9-8a55-3b8276d96f06"
+#define kStackMobKeyDevelopment         @"4757c535-5583-46f9-8a55-3b8276d96f06"
+#define kStackMobKeyDevelopmentPrivate  @"63be438d-9a8a-428c-9d64-e1df9844da7d"
 #define kStackMobKeyProduction  @""
+
+//background fetch
+#define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
 
 // 开关宏
 /*
@@ -67,5 +71,10 @@
 #define kTaskChangedNotification        @"EWTaskChanged" //key: task
 
 #define kPersonLoggedIn                 @"PersonLoggedIn"
+
+#define kMediaNewNotification           @"EWMediaNew" //key: task & media
+
+//Audio & Video
+#define kMaxRecordTime                  20.0;
 
 #endif
