@@ -80,10 +80,19 @@
     [application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval]; //fetch
     
     //push
+#if TARGET_IPHONE_SIMULATOR
+    
+    //Code specific to simulator
+    
+#else
+    
     pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
     //user login
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
+    
+#endif
+    
     
     
     
@@ -110,12 +119,13 @@
     UINavigationController *settingsNavigationController = [[UINavigationController alloc] initWithRootViewController:settingsController];
     
     self.tabBarController = [[UITabBarController alloc] init];
-    self.tabBarController.delegate = self;
+    //self.tabBarController.delegate = self;
     self.tabBarController.viewControllers = @[alarmsNavigationController, tasksNavigationController, settingsNavigationController];
     self.window.rootViewController = self.tabBarController;
     
     
     //local notification entry
+    NSLog(@"LaunchOption: %@", launchOptions);
     UILocalNotification *localNotif =
     [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
     //TODO ??? why it doesn't work? 
@@ -146,7 +156,7 @@
         [alarmController presentViewController:controller animated:YES completion:NULL];
         
     }else{
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.window.rootViewController.view animated:YES];
+        [MBProgressHUD showHUDAddedTo:self.window.rootViewController.view animated:YES];
         [[SMClient defaultClient] getLoggedInUserOnSuccess:^(NSDictionary *result) {
             //get the full user object
             EWPerson *me = [[EWPersonStore sharedInstance] getPersonByID:result[@"username"]];

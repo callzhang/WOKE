@@ -74,6 +74,9 @@
 
 #define kMediaNewNotification           @"EWMediaNew" //key: task & media
 
+//Notification key
+#define kLocalNotificationUserInfoKey   @"task_ID"  //store task id
+
 //Audio & Video
 #define kMaxRecordTime                  20.0;
 

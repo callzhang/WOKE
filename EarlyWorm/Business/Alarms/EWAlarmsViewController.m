@@ -61,8 +61,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadView) name:kTaskNewNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadView) name:kTaskChangedNotification object:nil];
-        //UI
         
+        //UI
         self.hidesBottomBarWhenPushed = NO;
         
         //alarmPages
@@ -146,8 +146,10 @@
 }
 
 #pragma mark - launch option
-- (void)presentWakeUpView{
+- (void)presentWakeUpView:(NSNotification *)notification{
     EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+    EWTaskItem *task = notification.userInfo[kLocalNotificationUserInfoKey];
+    controller.task  = task;
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
     

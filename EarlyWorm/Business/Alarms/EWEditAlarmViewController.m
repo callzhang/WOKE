@@ -163,11 +163,11 @@ static NSString *g_textFieldCellIdentifier = @"textFieldCell";
     //save alarm
     if (![newTime isEqual:self.alarm.time]) {
         self.alarm.time = newTime;//TODO
-        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self.alarm userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": self.alarm}];
     }
     if (newState == [self.alarm.state boolValue]) {
         self.alarm.state = [NSNumber numberWithBool:newState];//TODO
-        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self.alarm userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": self.alarm}];
     }
     //text
     //newDescrition = alarmDesText.text;
@@ -176,7 +176,7 @@ static NSString *g_textFieldCellIdentifier = @"textFieldCell";
     //tone
     if (![newTone isEqualToString:_alarm.tone]) {
         _alarm.tone = newTone;
-        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:self.alarm userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:self userInfo:@{@"alarm": self.alarm}];
         self.alarm.tone = newTone;
     }
     

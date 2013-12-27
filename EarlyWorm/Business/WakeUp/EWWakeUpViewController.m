@@ -75,6 +75,12 @@
             medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
+            [task addMedias:[NSSet setWithArray:medias]];
+            [context saveOnSuccess:^{
+                //
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"Unable to update task" format:@"Reason: %@", error.description];
+            }];
             [self.tableView reloadData];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         });

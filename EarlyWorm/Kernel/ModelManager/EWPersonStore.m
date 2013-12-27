@@ -70,7 +70,8 @@
 
 -(EWPerson *)getPersonByID:(NSString *)ID{
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    [userFetch setPredicate:[NSPredicate predicateWithFormat:@"username == %@", ID]];
+    userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", ID];
+    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks"];
     NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
     userFetch.returnsObjectsAsFaults = NO;
     NSError *err;

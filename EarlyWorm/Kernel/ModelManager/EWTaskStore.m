@@ -218,6 +218,7 @@
 
 - (void)updateTaskState:(NSNotification *)notif{
     EWAlarmItem *a = notif.userInfo[@"alarm"];
+    if (!a) [NSException raise:@"No alarm info" format:@"Check notification"];
     [self updateTaskStateForAlarm:a];
 }
 
@@ -247,7 +248,8 @@
 }
 
 - (void)updateTaskTime:(NSNotification *)notif{
-    EWAlarmItem *a = [notif object];
+    EWAlarmItem *a = notif.userInfo[@"alarm"];
+    if (!a) [NSException raise:@"No alarm info" format:@"Check notification"];
     [self updateTaskTimeForAlarm:a];
 }
 
@@ -276,7 +278,8 @@
 }
 
 - (void)updateNotifTone:(NSNotification *)notif{
-    EWAlarmItem *a = [notif object];
+    EWAlarmItem *a = notif.userInfo[@"alarm"];
+    if (!a) [NSException raise:@"No alarm info" format:@"Check notification"];
     for (EWTaskItem *t in a.tasks) {
         for (UILocalNotification *localNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
             [self cancelNotificationForTask:t];
@@ -325,7 +328,7 @@
     }
     //check existing
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-        if ([aNotif.userInfo[@"task_ID"]isEqualToString: task.ewtaskitem_id]) {
+        if ([aNotif.userInfo[kLocalNotificationUserInfoKey] isEqualToString: task.ewtaskitem_id]) {
             NSLog(@"Task %@ already scheduled local notification", task.ewtaskitem_id);
             return;
         }
@@ -342,7 +345,7 @@
     localNotif.soundName = alarm.tone;
     localNotif.applicationIconBadgeNumber = 1;
     //user information passed to app delegate
-    localNotif.userInfo = @{@"task_ID": task.ewtaskitem_id};
+    localNotif.userInfo = @{kLocalNotificationUserInfoKey: task.ewtaskitem_id};
     if (nWeeksToScheduleTask == 1) {
         localNotif.repeatInterval = NSWeekCalendarUnit; //TODO: if last one
     }
@@ -355,7 +358,7 @@
 
 - (void)cancelNotificationForTask:(EWTaskItem *)task{
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-        if([aNotif.userInfo[@"task_ID"] isEqualToString:task.ewtaskitem_id]) {
+        if([aNotif.userInfo[kLocalNotificationUserInfoKey] isEqualToString:task.ewtaskitem_id]) {
             NSLog(@"Local Notification cancelled for weekday: %d", [aNotif.fireDate weekdayNumber]);
             [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
             return;
@@ -399,13 +402,13 @@
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
         BOOL del = YES;
         for (EWTaskItem *t in _allTasks) {
-            if([aNotif.userInfo[@"task_ID"] isEqualToString:t.ewtaskitem_id] && [aNotif.fireDate isEqualToDate:t.time]){
+            if([aNotif.userInfo[kLocalNotificationUserInfoKey] isEqualToString:t.ewtaskitem_id] && [aNotif.fireDate isEqualToDate:t.time]){
                 del=NO;
                 break;
             }
         }
         if (del) {
-            NSLog(@"========System scheduled Local Notification on %@(%@) will be deleted due to no paired stored info========", aNotif.fireDate, aNotif.userInfo[@"task_ID"]);
+            NSLog(@"========System scheduled Local Notification on %@(%@) will be deleted due to no paired stored info========", aNotif.fireDate, aNotif.userInfo[kLocalNotificationUserInfoKey]);
             [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
         }
     }
@@ -413,7 +416,7 @@
     for (EWTaskItem *t in _allTasks) {
         BOOL createNotif = YES;
         for (UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-            if ([[aNotif.userInfo objectForKey:@"task_ID"] isEqualToString:t.ewtaskitem_id] &&
+            if ([[aNotif.userInfo objectForKey:kLocalNotificationUserInfoKey] isEqualToString:t.ewtaskitem_id] &&
                 [aNotif.fireDate isEqualToDate:t.time]) {
                 createNotif = NO;
                 break;
