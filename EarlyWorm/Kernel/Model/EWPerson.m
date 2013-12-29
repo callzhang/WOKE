@@ -41,6 +41,7 @@
 @dynamic weibo;
 @dynamic alarms;
 @dynamic friends;
+@dynamic friended;
 @dynamic groups;
 @dynamic groupsManaging;
 @dynamic groupTasks;

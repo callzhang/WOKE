@@ -18,7 +18,7 @@
 
 @implementation EWRingtoneSelectionViewController
 @synthesize ringtoneList;
-@synthesize selectedRingtone;
+@synthesize selected;
 @synthesize delegate;
 //@synthesize prefArray;
 
@@ -26,7 +26,7 @@
 {
     self = [super init];
     if (self) {
-        ringtoneList = @[@"Autumn Spring.mp3", @"Daybreak.mp3", @"Drive.mp3", @"Morning Dew.mp3", @"Nature at night.mp3", @"Ocean Breeze.mp3", @"Ocean tides.mp3", @"Overture.mp3", @"Parisian Dream.mp3", @"Robots in Love.mp3", @"Sunny Afternoon.mp3", @"Tropical Delight.mp3", @"Walk the Dog.mp3", @"Wind in the trees.mp3"];
+        ringtoneList = ringtoneNameList;
     }
     return self;
 }
@@ -50,15 +50,12 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
-    if (selectedRingtone) {
-        //save 
-        [self.delegate ViewController:self didFinishSelectRingtone:selectedRingtone];
-        //stop play
-        [AVManager.sharedManager stopAllPlaying];
-        //save to defaults
-        [NSUserDefaults.standardUserDefaults setObject:selectedRingtone forKey:@"OfflineTone"];
-        
-    }
+    //save
+    [self.delegate ViewController:self didFinishSelectRingtone:ringtoneList[selected]];
+    //stop play
+    [AVManager.sharedManager stopAllPlaying];
+    //save to defaults
+    [NSUserDefaults.standardUserDefaults setObject:ringtoneList[selected] forKey:@"OfflineTone"];
     
 }
 
@@ -86,11 +83,11 @@
         cell.backgroundColor = kCustomLightGray;
     }
     // Configure the cell...
-    if ([selectedRingtone isEqualToString: [ringtoneList objectAtIndex:indexPath.row]]) {
+    if ([ringtoneList[selected] isEqualToString: [ringtoneList objectAtIndex:indexPath.row]]) {
         [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
     }
-    NSArray *fileString = [[ringtoneList objectAtIndex:indexPath.row] componentsSeparatedByString:@"."];
-    NSString *file = [fileString objectAtIndex:0];
+    NSArray *fileString = [ringtoneList[indexPath.row] componentsSeparatedByString:@"."];
+    NSString *file = fileString[0];
     cell.textLabel.text = file;
     
     return cell;
@@ -139,11 +136,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
     NSString *tone = [ringtoneList objectAtIndex:indexPath.row];
-    selectedRingtone = tone;
+    selected = indexPath.row;
     [AVManager.sharedManager playSoundFromFile:tone];
-    
 }
 
 @end

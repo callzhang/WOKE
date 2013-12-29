@@ -75,7 +75,7 @@
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         NSLog(@"Starting to log in fb with cached info");
         [self.indicator startAnimating];
-        [self.btnLoginLogout setTitle:@"Logging in..." forState:UIControlStateNormal];
+        [self.btnLoginLogout setTitle:@"Loading..." forState:UIControlStateNormal];
         
         [FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
             [self sessionStateChanged:session state:status error:error];
@@ -119,13 +119,15 @@
     [[[SMClient defaultClient].coreDataStore contextForCurrentThread] saveOnSuccess:^{
         //check default
         [[EWDatabaseDefault sharedInstance] setDefault];
+        
         //leaving
         [self dismissViewControllerAnimated:YES completion:NULL];
-        //broadcasting
         
+        //broadcasting
         [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{@"User": [EWPersonStore sharedInstance].currentUser}];
+        
         //hide hud if possible
-        EWAppDelegate *delegate = [UIApplication sharedApplication].delegate;
+        EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
         [MBProgressHUD hideAllHUDsForView:delegate.window.rootViewController.view animated:YES];
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error on saving new user info" format:@"Reason: %@", error.description];
@@ -184,9 +186,7 @@
      }];
 }
 
-- (void)sessionStateChanged:(FBSession *)session
-                      state:(FBSessionState) state
-                      error:(NSError *)error
+- (void)sessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error
 {
     switch (state) {
         case FBSessionStateOpen:
@@ -221,64 +221,65 @@
 //after fb login, fetch user managed object
 - (void)updateUserData:(NSDictionary<FBGraphUser> *)user{
     [[SMClient defaultClient] getLoggedInUserOnSuccess:^(NSDictionary *result){
-        // Result contains a dictionary representation of the user object
-        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-        request.predicate = [NSPredicate predicateWithFormat:@"username == %@", user.username];
-        request.returnsObjectsAsFaults = NO;
-        [context executeFetchRequest:request onSuccess:^(NSArray *results) {
-            [self.indicator stopAnimating];
-            if (results.count == 0) {
-                //no user has been found
-                [NSException raise:@"User not found" format:@"For username: %@", user.username];
-                [[EWPersonStore sharedInstance] createPersonWIthUsername:user.username];
-            }else if(results.count > 1){
-                [NSException raise:@"Unexpected number of users" format:@"For username: %@", user.username];
-            }else{
-                
-                //update user for fb information
-                EWPerson *person = results[0];
-                [EWPersonStore sharedInstance].currentUser = person;
-                if (person.email) {
-                    //return;
-                }
-                //email
-                person.email = user[@"email"];
-                //name
-                person.name = user.name;
-                self.name.text = user.name;
-                //birthday = "01/21/1984";
+        self.name.text = user.name;
+        
+        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+            [EWPersonStore sharedInstance].currentUser = person;
+            if (!person.email) person.email = user[@"email"];
+            //name
+            if(!person.name) person.name = user.name;
+            //birthday = "01/21/1984";
+            if (!person.birthday) {
                 NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
                 formatter.dateFormat = @"mm/dd/yyyy";
                 person.birthday = [formatter dateFromString:user[@"birthday"]];
-                //facebook link
-                person.facebook = user.link;
-                //preference
-                person.preference = [[EWDatabaseDefault sharedInstance].defaults mutableCopy];
-                //profile pic, async download, need to assign img to person before leave
-                NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", user.id];
-                [self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
-                
-                /*[self.profileView setImageWithURLRequest:[NSURL URLWithString:imageUrl]
-                                        placeholderImage:[UIImage imageNamed:@"profile.jpg"]
-                                                 success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-                                                     [self.indicator stopAnimating];
-                                                     [self proceed:nil];//auto login
-                                                 }
-                                                 failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-                                                     //
-                                                 }];*/
-                //gender
-                person.gender = user[@"gender"];
-                //city
-                person.city = user.location[@"name"];
-                
+            }
+            //facebook link
+            person.facebook = user.link;
+            //gender
+            person.gender = user[@"gender"];
+            //city
+            if (!person.city) person.city = user.location[@"name"];
+            //preference
+            if(!person.preference) person.preference = [[EWDatabaseDefault sharedInstance].defaults mutableCopy];
+            //profile pic, async download, need to assign img to person before leave
+            NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", user.id];
+            //[self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
+        
+            [self.profileView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]] placeholderImage:[UIImage imageNamed:@"profile.png"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                //stop indicator
+                [self.indicator stopAnimating];
                 //show proceed btn
                 self.proceedBtn.alpha = 1;
-            }
-
-        } onFailure:^(NSError *error) {
-            [NSException raise:@"User fetch error" format:@"For username: %@", user.username];
-        }];
+                //save image
+                [EWPersonStore sharedInstance].currentUser.profilePic = image;
+                
+                //check default
+                [[EWDatabaseDefault sharedInstance] setDefault];
+                
+                //leaving
+                
+                [self dismissViewControllerAnimated:YES completion:^{
+                    [[[SMClient defaultClient].coreDataStore contextForCurrentThread] saveOnSuccess:^{
+                        NSLog(@"User info has been saved");
+                    } onFailure:^(NSError *error) {
+                        NSLog(@"Unable to save user info");
+                    }];
+                }];
+                
+                //broadcasting
+                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{@"User": [EWPersonStore sharedInstance].currentUser}];
+                
+                //hide hud if possible
+                EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
+                [MBProgressHUD hideAllHUDsForView:delegate.window.rootViewController.view animated:YES];
+                
+            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+                //
+            }];
+            
+        //});
         
     } onFailure:^(NSError *err){
         // Error

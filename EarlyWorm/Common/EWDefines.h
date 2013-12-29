@@ -49,7 +49,9 @@
 
 #pragma mark - DATA
 
-#define ringtoneNameList @[@"Autumn Spring.mp3", @"Daybreak.mp3", @"Drive.mp3", @"Morning Dew.mp3", @"Nature at night.mp3", @"Ocean Breeze.mp3", @"Ocean tides.mp3", @"Overture.mp3", @"Parisian Dream.mp3", @"Robots in Love.mp3", @"Sunny Afternoon.mp3", @"Tropical Delight.mp3", @"Walk the Dog.mp3", @"Wind in the trees.mp3"];
+//#define ringtoneNameList @[@"Autumn Spring.mp3", @"Daybreak.mp3", @"Drive.mp3", @"Morning Dew.mp3", @"Nature at night.mp3", @"Ocean Breeze.mp3", @"Ocean tides.mp3", @"Overture.mp3", @"Parisian Dream.mp3", @"Robots in Love.mp3", @"Sunny Afternoon.mp3", @"Tropical Delight.mp3", @"Walk the Dog.mp3", @"Wind in the trees.mp3"];
+
+#define ringtoneNameList @[@"Autumn Spring.caf", @"Daybreak.caf", @"Drive.caf", @"Parisian Dream.caf", @"Sunny Afternoon.caf", @"Tropical Delight.caf"];
 
 #define weekdays @[@"Sunday", @"Monday", @"Tuesday", @"Wednesday", @"Thursday", @"Friday", @"Saturday"];
 
@@ -76,8 +78,10 @@
 
 //Notification key
 #define kLocalNotificationUserInfoKey   @"task_ID"  //store task id
+#define kFinishedSync                   @"FinishedSync" //server has finished syncing (usually at startup)
 
 //Audio & Video
 #define kMaxRecordTime                  20.0;
+#define kAudioPlayerDidFinishPlaying    @"audio_finished_playing"
 
 #endif

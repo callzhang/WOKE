@@ -41,6 +41,7 @@
     self = [super init];
     if (self) {
         context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+        NSLog(@"Context for TaskStore is :%@", context);
         //[self checkTasks];
     }
     return self;
@@ -64,7 +65,7 @@
 #pragma mark - SEARCH
 - (NSArray *)getTasksByPerson:(EWPerson *)person{
     NSArray *tasks = [[NSArray alloc] init];
-    if (person.pastTasks) {
+    if (person.tasks) {
         tasks = [person.tasks allObjects];
     }else{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
@@ -156,6 +157,12 @@
                 [self scheduleNotificationForTask:t];
                 //prepare to broadcast
                 newTaskNotify = YES;
+                
+                //check receiprocal relationship
+                if (![a.tasks containsObject:t]) {
+                    NSLog(@"====Alarm->Task relation has not been set automatically!=====");
+                    [a addTasksObject:t];
+                }
             }
         }
     }
@@ -254,6 +261,10 @@
 }
 
 - (void)updateTaskTimeForAlarm:(EWAlarmItem *)a{
+    if (!a.tasks.count) {
+        [context refreshObject:a mergeChanges:YES];
+        NSLog(@"Alarm's tasks not fetched, refresh from server. New tasks relation has %d tasks", a.tasks.count);
+    }
     NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
     NSArray *sortedTasks = [a.tasks sortedArrayUsingDescriptors:@[des]];
     for (unsigned i=0; i<nWeeksToScheduleTask; i++) {
@@ -279,12 +290,16 @@
 
 - (void)updateNotifTone:(NSNotification *)notif{
     EWAlarmItem *a = notif.userInfo[@"alarm"];
-    if (!a) [NSException raise:@"No alarm info" format:@"Check notification"];
+    if (!a.tasks.count){
+        //[NSException raise:@"No task in alarm" format:@"Check notification"];
+        NSLog(@"alarm's task not fetched, refresh it from server");
+        [context refreshObject:a mergeChanges:YES];
+    }
     for (EWTaskItem *t in a.tasks) {
         for (UILocalNotification *localNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
             [self cancelNotificationForTask:t];
             [self scheduleNotificationForTask:t];
-            NSLog(@"Notification tone updated to: %@", a.tone);
+            NSLog(@"Notification on %@ tone updated to: %@", t.time.date2String, a.tone);
         }
     }
 }
@@ -370,23 +385,25 @@
 #pragma mark - check
 - (BOOL)checkTasks{
     NSLog(@"Checking tasks");
-    if (self.allTasks.count == 0) {
-        [self scheduleTasks];
+    NSArray *tasks = [self getTasksByPerson:[EWPersonStore sharedInstance].currentUser];
+    if (tasks.count < 7*nWeeksToScheduleTask) {
+        return NO;
     }
     //check if any task has past
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
-    NSArray *filteredTask = [self.allTasks filteredArrayUsingPredicate:predicate];
-    if (filteredTask.count > 0) {
+    NSArray *pastTasks = [tasks filteredArrayUsingPredicate:predicate];
+    if (pastTasks.count > 0) {
         //change task relationship
         EWPerson *me = [EWPersonStore sharedInstance].currentUser;
-        for (EWTaskItem *t in filteredTask) {
+        for (EWTaskItem *t in pastTasks) {
             t.owner = nil;
             t.pastOwner = me;
             t.alarm = nil;
             [_allTasks removeObject:t];
             NSLog(@"Task %@ has been moved to past tasks", [t.time date2detailDateString]);
         }
-        [self scheduleTasks];
+        //[self scheduleTasks];
+        return NO;
     }
     //time stemp for last check
     self.lastChecked = [NSDate date];

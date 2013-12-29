@@ -15,7 +15,7 @@
 
 @interface EWRingtoneSelectionViewController : UITableViewController
 @property NSArray *ringtoneList;
-@property NSString *selectedRingtone;
+@property NSInteger selected;
 //@property NSMutableArray *prefArray;
 @property (nonatomic, weak) id <EWRingtoneSelectionDelegate> delegate;
 @end

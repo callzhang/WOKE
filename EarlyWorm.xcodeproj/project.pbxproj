@@ -154,20 +154,6 @@
 		AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079A18393A66007C8BFD /* EWStatsManager.m */; };
 		AB7807A618393A66007C8BFD /* EWStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079C18393A66007C8BFD /* EWStore.m */; };
 		AB7807A718393A66007C8BFD /* EWTaskStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079E18393A66007C8BFD /* EWTaskStore.m */; };
-		AB94331317C3015C00ADC702 /* Autumn Spring.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330517C3015C00ADC702 /* Autumn Spring.mp3 */; };
-		AB94331417C3015C00ADC702 /* Daybreak.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330617C3015C00ADC702 /* Daybreak.mp3 */; };
-		AB94331517C3015C00ADC702 /* Drive.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330717C3015C00ADC702 /* Drive.mp3 */; };
-		AB94331617C3015C00ADC702 /* Morning Dew.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330817C3015C00ADC702 /* Morning Dew.mp3 */; };
-		AB94331717C3015C00ADC702 /* Nature at night.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330917C3015C00ADC702 /* Nature at night.mp3 */; };
-		AB94331817C3015C00ADC702 /* Ocean Breeze.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330A17C3015C00ADC702 /* Ocean Breeze.mp3 */; };
-		AB94331917C3015C00ADC702 /* Ocean tides.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330B17C3015C00ADC702 /* Ocean tides.mp3 */; };
-		AB94331A17C3015C00ADC702 /* Overture.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330C17C3015C00ADC702 /* Overture.mp3 */; };
-		AB94331B17C3015C00ADC702 /* Parisian Dream.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330D17C3015C00ADC702 /* Parisian Dream.mp3 */; };
-		AB94331C17C3015C00ADC702 /* Robots in Love.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330E17C3015C00ADC702 /* Robots in Love.mp3 */; };
-		AB94331D17C3015C00ADC702 /* Sunny Afternoon.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94330F17C3015C00ADC702 /* Sunny Afternoon.mp3 */; };
-		AB94331E17C3015C00ADC702 /* Tropical Delight.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94331017C3015C00ADC702 /* Tropical Delight.mp3 */; };
-		AB94331F17C3015C00ADC702 /* Walk the Dog.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94331117C3015C00ADC702 /* Walk the Dog.mp3 */; };
-		AB94332017C3015C00ADC702 /* Wind in the trees.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AB94331217C3015C00ADC702 /* Wind in the trees.mp3 */; };
 		AB94332317C302C500ADC702 /* EWRingtoneSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB94332217C302C400ADC702 /* EWRingtoneSelectionViewController.m */; };
 		AB94332D17C9AC4C00ADC702 /* icon_s.png in Resources */ = {isa = PBXBuildFile; fileRef = AB94332C17C9AC4B00ADC702 /* icon_s.png */; };
 		AB94332F17C9AC5100ADC702 /* icon_r.png in Resources */ = {isa = PBXBuildFile; fileRef = AB94332E17C9AC5000ADC702 /* icon_r.png */; };
@@ -204,6 +190,12 @@
 		ABF0289B1859846E00A7D38E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABF0289A1859846E00A7D38E /* QuartzCore.framework */; };
 		ABF1261217C1D8BC00C0FDAC /* portrait2_s.png in Resources */ = {isa = PBXBuildFile; fileRef = ABF1261117C1D8BC00C0FDAC /* portrait2_s.png */; };
 		ABF1261517C1DD5800C0FDAC /* EWIO.m in Sources */ = {isa = PBXBuildFile; fileRef = ABF1261417C1DD5800C0FDAC /* EWIO.m */; };
+		ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2D9186E956900355781 /* Autumn Spring.caf */; };
+		ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DB186E957100355781 /* Daybreak.caf */; };
+		ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DC186E957100355781 /* Parisian Dream.caf */; };
+		ABFCB2E2186E957100355781 /* Tropical Delight.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DD186E957100355781 /* Tropical Delight.caf */; };
+		ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DE186E957100355781 /* Sunny Afternoon.caf */; };
+		ABFCB2E4186E957100355781 /* Drive.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DF186E957100355781 /* Drive.caf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -375,6 +367,7 @@
 		AB13C1CC1862D32400231159 /* EWPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPersonCell.m; sourceTree = "<group>"; };
 		AB13C1CD1862D32400231159 /* EWPersonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPersonCell.xib; sourceTree = "<group>"; };
 		AB13C1CE1862D32400231159 /* EWPersonInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPersonInfoView.xib; sourceTree = "<group>"; };
+		AB15A43B186FE95B00C4547E /* EarlyWorm 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = file; path = "EarlyWorm 2.xcdatamodel"; sourceTree = "<group>"; };
 		AB1745BD17F7D974009B4DB0 /* libWeiboSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libWeiboSDK.a; sourceTree = "<group>"; };
 		AB1745BE17F7D974009B4DB0 /* WeiboSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = WeiboSDK.bundle; sourceTree = "<group>"; };
 		AB1745BF17F7D974009B4DB0 /* WeiboSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeiboSDK.h; sourceTree = "<group>"; };
@@ -439,20 +432,6 @@
 		AB78079C18393A66007C8BFD /* EWStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWStore.m; path = EarlyWorm/Kernel/ModelManager/EWStore.m; sourceTree = SOURCE_ROOT; };
 		AB78079D18393A66007C8BFD /* EWTaskStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWTaskStore.h; path = EarlyWorm/Kernel/ModelManager/EWTaskStore.h; sourceTree = SOURCE_ROOT; };
 		AB78079E18393A66007C8BFD /* EWTaskStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWTaskStore.m; path = EarlyWorm/Kernel/ModelManager/EWTaskStore.m; sourceTree = SOURCE_ROOT; };
-		AB94330517C3015C00ADC702 /* Autumn Spring.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Autumn Spring.mp3"; sourceTree = "<group>"; };
-		AB94330617C3015C00ADC702 /* Daybreak.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Daybreak.mp3; sourceTree = "<group>"; };
-		AB94330717C3015C00ADC702 /* Drive.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Drive.mp3; sourceTree = "<group>"; };
-		AB94330817C3015C00ADC702 /* Morning Dew.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Morning Dew.mp3"; sourceTree = "<group>"; };
-		AB94330917C3015C00ADC702 /* Nature at night.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Nature at night.mp3"; sourceTree = "<group>"; };
-		AB94330A17C3015C00ADC702 /* Ocean Breeze.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Ocean Breeze.mp3"; sourceTree = "<group>"; };
-		AB94330B17C3015C00ADC702 /* Ocean tides.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Ocean tides.mp3"; sourceTree = "<group>"; };
-		AB94330C17C3015C00ADC702 /* Overture.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Overture.mp3; sourceTree = "<group>"; };
-		AB94330D17C3015C00ADC702 /* Parisian Dream.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Parisian Dream.mp3"; sourceTree = "<group>"; };
-		AB94330E17C3015C00ADC702 /* Robots in Love.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Robots in Love.mp3"; sourceTree = "<group>"; };
-		AB94330F17C3015C00ADC702 /* Sunny Afternoon.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Sunny Afternoon.mp3"; sourceTree = "<group>"; };
-		AB94331017C3015C00ADC702 /* Tropical Delight.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Tropical Delight.mp3"; sourceTree = "<group>"; };
-		AB94331117C3015C00ADC702 /* Walk the Dog.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Walk the Dog.mp3"; sourceTree = "<group>"; };
-		AB94331217C3015C00ADC702 /* Wind in the trees.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Wind in the trees.mp3"; sourceTree = "<group>"; };
 		AB94332117C302C400ADC702 /* EWRingtoneSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWRingtoneSelectionViewController.h; path = EarlyWorm/Business/Settings/EWRingtoneSelectionViewController.h; sourceTree = SOURCE_ROOT; };
 		AB94332217C302C400ADC702 /* EWRingtoneSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWRingtoneSelectionViewController.m; path = EarlyWorm/Business/Settings/EWRingtoneSelectionViewController.m; sourceTree = SOURCE_ROOT; };
 		AB94332C17C9AC4B00ADC702 /* icon_s.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_s.png; sourceTree = "<group>"; };
@@ -551,6 +530,12 @@
 		ABF1261117C1D8BC00C0FDAC /* portrait2_s.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = portrait2_s.png; sourceTree = "<group>"; };
 		ABF1261317C1DD5800C0FDAC /* EWIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWIO.h; path = EarlyWorm/Kernel/EWIO.h; sourceTree = SOURCE_ROOT; };
 		ABF1261417C1DD5800C0FDAC /* EWIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWIO.m; path = EarlyWorm/Kernel/EWIO.m; sourceTree = SOURCE_ROOT; };
+		ABFCB2D9186E956900355781 /* Autumn Spring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Autumn Spring.caf"; sourceTree = "<group>"; };
+		ABFCB2DB186E957100355781 /* Daybreak.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Daybreak.caf; sourceTree = "<group>"; };
+		ABFCB2DC186E957100355781 /* Parisian Dream.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Parisian Dream.caf"; sourceTree = "<group>"; };
+		ABFCB2DD186E957100355781 /* Tropical Delight.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Tropical Delight.caf"; sourceTree = "<group>"; };
+		ABFCB2DE186E957100355781 /* Sunny Afternoon.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sunny Afternoon.caf"; sourceTree = "<group>"; };
+		ABFCB2DF186E957100355781 /* Drive.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Drive.caf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1111,20 +1096,12 @@
 		AB94330417C3013F00ADC702 /* Ringtone */ = {
 			isa = PBXGroup;
 			children = (
-				AB94330517C3015C00ADC702 /* Autumn Spring.mp3 */,
-				AB94330617C3015C00ADC702 /* Daybreak.mp3 */,
-				AB94330717C3015C00ADC702 /* Drive.mp3 */,
-				AB94330817C3015C00ADC702 /* Morning Dew.mp3 */,
-				AB94330917C3015C00ADC702 /* Nature at night.mp3 */,
-				AB94330A17C3015C00ADC702 /* Ocean Breeze.mp3 */,
-				AB94330B17C3015C00ADC702 /* Ocean tides.mp3 */,
-				AB94330C17C3015C00ADC702 /* Overture.mp3 */,
-				AB94330D17C3015C00ADC702 /* Parisian Dream.mp3 */,
-				AB94330E17C3015C00ADC702 /* Robots in Love.mp3 */,
-				AB94330F17C3015C00ADC702 /* Sunny Afternoon.mp3 */,
-				AB94331017C3015C00ADC702 /* Tropical Delight.mp3 */,
-				AB94331117C3015C00ADC702 /* Walk the Dog.mp3 */,
-				AB94331217C3015C00ADC702 /* Wind in the trees.mp3 */,
+				ABFCB2DB186E957100355781 /* Daybreak.caf */,
+				ABFCB2DC186E957100355781 /* Parisian Dream.caf */,
+				ABFCB2DD186E957100355781 /* Tropical Delight.caf */,
+				ABFCB2DE186E957100355781 /* Sunny Afternoon.caf */,
+				ABFCB2DF186E957100355781 /* Drive.caf */,
+				ABFCB2D9186E956900355781 /* Autumn Spring.caf */,
 			);
 			name = Ringtone;
 			sourceTree = "<group>";
@@ -1374,29 +1351,17 @@
 				561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */,
 				ABF1261217C1D8BC00C0FDAC /* portrait2_s.png in Resources */,
 				AB13C1D11862D32400231159 /* EWPersonCell.xib in Resources */,
-				AB94331317C3015C00ADC702 /* Autumn Spring.mp3 in Resources */,
-				AB94331417C3015C00ADC702 /* Daybreak.mp3 in Resources */,
-				AB94331517C3015C00ADC702 /* Drive.mp3 in Resources */,
-				AB94331617C3015C00ADC702 /* Morning Dew.mp3 in Resources */,
-				AB94331717C3015C00ADC702 /* Nature at night.mp3 in Resources */,
 				AB19E9F3186952D1000FBDD1 /* liked.png in Resources */,
 				AB13C1D21862D32400231159 /* EWPersonInfoView.xib in Resources */,
 				AB07402218126EC200AAFC90 /* workGroup.png in Resources */,
 				AB19E9F6186952D1000FBDD1 /* like@2x.png in Resources */,
 				ABCCE67D17EFF2CA0078F8AA /* color_round_btn@2x.png in Resources */,
+				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
 				AB721C621867D12F000B716D /* 37x-Checkmark.png in Resources */,
-				AB94331817C3015C00ADC702 /* Ocean Breeze.mp3 in Resources */,
-				AB94331917C3015C00ADC702 /* Ocean tides.mp3 in Resources */,
-				AB94331A17C3015C00ADC702 /* Overture.mp3 in Resources */,
-				AB94331B17C3015C00ADC702 /* Parisian Dream.mp3 in Resources */,
 				AB19E9FC18698359000FBDD1 /* EWRecordingViewController.xib in Resources */,
-				AB94331C17C3015C00ADC702 /* Robots in Love.mp3 in Resources */,
-				AB94331D17C3015C00ADC702 /* Sunny Afternoon.mp3 in Resources */,
 				AB0EFFBC18022B8D00A8A5C2 /* Default.png in Resources */,
-				AB94331E17C3015C00ADC702 /* Tropical Delight.mp3 in Resources */,
-				AB94331F17C3015C00ADC702 /* Walk the Dog.mp3 in Resources */,
-				AB94332017C3015C00ADC702 /* Wind in the trees.mp3 in Resources */,
 				AB94332D17C9AC4C00ADC702 /* icon_s.png in Resources */,
+				ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */,
 				ABCCE67C17EFF2CA0078F8AA /* color_round_btn.png in Resources */,
 				AB94332F17C9AC5100ADC702 /* icon_r.png in Resources */,
 				AB0EFFC018022C0F00A8A5C2 /* Default-568h@2x~iphone.png in Resources */,
@@ -1409,6 +1374,7 @@
 				AB07BC0617D6B3D900E23F44 /* social_icon@2x.png in Resources */,
 				AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */,
 				AB0EFFBE18022B8D00A8A5C2 /* gradient_bg@2x.png in Resources */,
+				ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */,
 				ABCCE68217EFF4D10078F8AA /* sleep_trend_mock.png in Resources */,
 				5671BE4418085C4100F35DF9 /* README-GHUnit in Resources */,
 				AB07BC0917D6C19E00E23F44 /* pref_icon@2x.png in Resources */,
@@ -1416,6 +1382,7 @@
 				ABC5E37C181788D0000F5898 /* logoTest.png in Resources */,
 				AB198C6C18603B0F008C1F15 /* profile.png in Resources */,
 				AB07BC0F17D6F7FF00E23F44 /* EWTextFieldCell.xib in Resources */,
+				ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */,
 				AB39BF0B17D99483006C31C5 /* star.png in Resources */,
 				AB39BF0C17D99483006C31C5 /* star@2x.png in Resources */,
 				ABEEA95917E013640035DF4A /* personInfoBG.png in Resources */,
@@ -1426,11 +1393,13 @@
 				AB19E9F5186952D1000FBDD1 /* liked@2x.png in Resources */,
 				ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */,
 				ABEEA96817E027E90035DF4A /* vm5.m4a in Resources */,
+				ABFCB2E2186E957100355781 /* Tropical Delight.caf in Resources */,
 				AB19E9F4186952D1000FBDD1 /* like.png in Resources */,
 				AB721C631867D12F000B716D /* 37x-Checkmark@2x.png in Resources */,
 				AB07401818125B4D00AAFC90 /* EWGroupCell.xib in Resources */,
 				ABEEA96917E027E90035DF4A /* vm6.m4a in Resources */,
 				AB07402018125DBE00AAFC90 /* tennisGroup.png in Resources */,
+				ABFCB2E4186E957100355781 /* Drive.caf in Resources */,
 				ABBA978B17EFC6AD0037439B /* EWAlarmsView.xib in Resources */,
 				AB49BC931854248E004A38DB /* EWLogInViewController.xib in Resources */,
 				AB05BCA317F90313006579AC /* EWAlarmPage.xib in Resources */,
@@ -1755,9 +1724,10 @@
 		ABBC47AA18530F35009A2E7D /* EarlyWorm.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				AB15A43B186FE95B00C4547E /* EarlyWorm 2.xcdatamodel */,
 				ABBC47AB18530F35009A2E7D /* EarlyWorm.xcdatamodel */,
 			);
-			currentVersion = ABBC47AB18530F35009A2E7D /* EarlyWorm.xcdatamodel */;
+			currentVersion = AB15A43B186FE95B00C4547E /* EarlyWorm 2.xcdatamodel */;
 			path = EarlyWorm.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

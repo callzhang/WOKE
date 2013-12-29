@@ -29,6 +29,7 @@
 @property (nonatomic, retain) NSString * statement;
 @property (nonatomic, retain) NSString * username;
 @property (nonatomic, retain) NSString * weibo;
+//relation
 @property (nonatomic, retain) NSSet *alarms;
 @property (nonatomic, retain) NSSet *friends;
 @property (nonatomic, retain) NSSet *friended; //shadow relation acted as reverse of friends relation, should never be called
@@ -36,12 +37,13 @@
 @property (nonatomic, retain) NSSet *groupsManaging;
 @property (nonatomic, retain) NSSet *groupTasks;
 @property (nonatomic, retain) NSSet *medias;
+@property (nonatomic, retain) NSSet *pastTasks;
 @property (nonatomic, retain) NSSet *receivedMessages;
 @property (nonatomic, retain) NSSet *sentMessages;
 @property (nonatomic, retain) NSSet *tasks;
 @property (nonatomic, retain) NSSet *tasksHelped;
-@property (nonatomic, retain) NSSet *pastTasks;
 
+//local properties
 @property (nonatomic) UIImage *profilePic;
 @property (nonatomic) UIImage *bgImage;
 @property (nonatomic) NSMutableDictionary *preference;

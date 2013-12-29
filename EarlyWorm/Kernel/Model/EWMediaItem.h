@@ -29,7 +29,11 @@
 @property (nonatomic, retain) NSSet *tasks;
 
 -(UIImage *)setThumbnailDataFromImage:(UIImage *)image;
-
+//Data
+/**
+ Prepare audio data from audioKey
+ */
+- (void)prepareAudio;
 
 @end
 

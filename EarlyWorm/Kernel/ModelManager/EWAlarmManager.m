@@ -40,6 +40,7 @@
     self = [super init];
     if (self) {
         context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+        NSLog(@"Context for Alarm Store is %@", context);
         //[self checkAlarms];
     }
     return self;
@@ -59,6 +60,7 @@
 //add new alarm, save, add to current user, save user
 - (EWAlarmItem *)newAlarm{
     NSLog(@"Create new Alarm");
+    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     EWAlarmItem *a = [NSEntityDescription insertNewObjectForEntityForName:@"EWAlarmItem" inManagedObjectContext:context];
     //assign id
     [a assignObjectId];
@@ -81,9 +83,12 @@
 
 #pragma mark - SEARCH
 - (NSArray *)allAlarmsForUser:(EWPerson *)user{
+    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWAlarmItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"owner == %@", [EWPersonStore sharedInstance].currentUser];
+    request.relationshipKeyPathsForPrefetching = @[@"tasks"];
     NSArray *alarms = [context executeFetchRequestAndWait:request error:NULL];
+    //user.alarms = [NSSet setWithArray:alarms];
     return alarms;
 }
 
@@ -104,7 +109,7 @@
 #pragma mark - SCHEDULE
 //schedule according to alarms array. If array is empty, schedule according to default template.
 - (NSArray *)scheduleAlarm{
-    
+    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     //schedule alarm from Sunday to Saturday of current week
     NSMutableArray *newAlarms = [[NSMutableArray alloc] initWithCapacity:7];
     for (NSInteger i=0; i<7; i++) {
@@ -124,7 +129,7 @@
         //set alarm time
         a.time = time;
         a.state = @YES;
-        a.tone = [EWPersonStore sharedInstance].currentUser.preference[@"tone"];
+        a.tone = [EWPersonStore sharedInstance].currentUser.preference[@"DefaultTone"];
         //add to temp array
         [newAlarms addObject:a];
     }
@@ -140,6 +145,7 @@
 
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
+    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     [context deleteObject:alarm];
     [context saveOnSuccess:^{
         NSLog(@"Deleting successful");
@@ -149,6 +155,7 @@
 }
 
 - (void)deleteAllAlarms{
+    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     for (EWAlarmItem *a in self.allAlarms) {
         [context deleteObject:a];
     }
@@ -161,7 +168,10 @@
 
 #pragma mark - CHECK
 - (BOOL)checkAlarms{
-    return (self.allAlarms.count == 7) ? YES: NO;
+    //fetch again
+    NSArray *alarms = [self allAlarmsForUser:[EWPersonStore sharedInstance].currentUser];
+    
+    return (alarms.count == 7) ? YES: NO;
 }
 
 #pragma mark - KVO

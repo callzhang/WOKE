@@ -96,26 +96,25 @@
             if (data) {
                 self.audio = data;
             }else{
-                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
-                dispatch_async(queue, ^{
-                    data = [NSData dataWithContentsOfURL:audioURL];
-                    [FTWCache setObject:data forKey:key];
-                });
+                //get from net
+                data = [NSData dataWithContentsOfURL:audioURL];
+                [FTWCache setObject:data forKey:key];
+                //NSLog(@"audio ready: %@",data);
             }
-            //local data
-            if(!data){
-                //string is a local file
-                NSArray *array = [self.audioKey componentsSeparatedByString:@"."];
-                if (array.count != 2) {
-                    [NSException raise:@"Unexpected file format" format:@"Please provide a who file name with extension"];
-                }
-                NSString *filePath = [[NSBundle mainBundle] pathForResource:array[0] ofType:array[1]];
-                data = [NSData dataWithContentsOfFile:filePath];
-            }
+            
             
         }else if(self.audioKey.length > 200){
             //string contains data
             data = [SMBinaryDataConversion dataForString:self.audioKey];
+        }else if(![self.audioKey hasPrefix:@"http"]){
+            //local data
+            //string is a local file
+            NSArray *array = [self.audioKey componentsSeparatedByString:@"."];
+            if (array.count != 2) {
+                [NSException raise:@"Unexpected file format" format:@"Please provide a who file name with extension"];
+            }
+            NSString *filePath = [[NSBundle mainBundle] pathForResource:array[0] ofType:array[1]];
+            data = [NSData dataWithContentsOfFile:filePath];
         }
         
         //save data
@@ -174,6 +173,18 @@
     UIGraphicsEndImageContext();
     
     return smallImage;
+}
+
+
+#pragma mark - Data
+- (void)prepareAudio{
+    if (!self.audio) {
+        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+        dispatch_async(queue, ^{
+            NSLog(@"Downloading audio from internet: %@", self.audio);
+        });
+    }
+    
 }
 
 

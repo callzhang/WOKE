@@ -20,6 +20,8 @@
 
 @interface EWWakeUpViewController (){
     NSManagedObjectContext *context;
+    NSInteger currentCellToPlay;
+    NSMutableArray *cellArray;
 }
 @property (nonatomic, strong) EWShakeManager *shakeManager;
 @end
@@ -40,6 +42,9 @@
         self.navigationItem.title = @"WakeUpView";
         //[self.navigationItem setLeftBarButtonItem:self.editButtonItem];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
+        
+        //notification
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nextVoice:) name:kAudioPlayerDidFinishPlaying object:nil];
     }
     return self;
 }
@@ -62,6 +67,10 @@
 }
 
 - (void)initData {
+    //song index
+    currentCellToPlay = 0;
+    cellArray = [[NSMutableArray alloc] init];
+    
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //depend on whether passed in with task or person, the media will populaeed accordingly
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -83,6 +92,7 @@
             }];
             [self.tableView reloadData];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+            
         });
     });
     
@@ -109,6 +119,13 @@
     [self.tableView registerNib:nib forCellReuseIdentifier:@"EWMediaViewCell"];
     //cancel btn
     self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
+}
+
+//refrash data after edited
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.tableView reloadData];
 }
 
 - (void)setTask:(EWTaskItem *)t{
@@ -184,6 +201,16 @@
     //mediafile
     cell.media = mi;
     
+    //save
+    cellArray[indexPath.row] = cell;
+    
+    
+    //play
+    if (indexPath.row == 0) {
+        [cell mediaPlay:nil];
+    }
+    
+    
     return cell;
 }
 
@@ -217,15 +244,10 @@
 //when click one item in table, push view to detail page
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    //
 }
 
-//refrash data after edited
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self.tableView reloadData];
-}
+
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -253,6 +275,21 @@
 - (void)EWShakeManagerDidShaked {
     // TODO: Shake 之后做什么：
     // 解锁
+}
+
+#pragma mark - Notification actions
+- (void)nextVoice:(NSNotification *)notification{
+    NSString *song = [notification userInfo][@"track"];
+    NSLog(@"Received song %@ finish notification", song);
+    
+}
+
+- (void)playNextCell{
+    if (currentCellToPlay++ < medias.count) {
+        EWMediaViewCell *cell = cellArray[currentCellToPlay];
+        [cell mediaPlay:nil];
+        NSLog(@"Play next song");
+    }
 }
 
 @end

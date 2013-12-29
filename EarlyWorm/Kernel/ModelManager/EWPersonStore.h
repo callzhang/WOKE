@@ -20,4 +20,6 @@
 - (EWPerson *)createPersonWIthUsername:(NSString *)username;
 - (EWPerson *)getPersonByID:(NSString *)ID;
 - (NSArray *)everyone;
+
+- (void)checkRelations;
 @end

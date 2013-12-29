@@ -108,7 +108,6 @@
         NSMutableSet *everyoneSet = [NSMutableSet setWithArray:[[EWPersonStore sharedInstance] everyone]];
         [everyoneSet minusSet:me.friends];
         everyone = [everyoneSet allObjects];//exclude friends
-        nNews = friends.count; //TODO: currently the only news if friends' alarm time
         nAroundMe = (everyone.count>20) ? 20:everyone.count; //arbitrage number
         nGroup = 1; //wakeup together group
         
@@ -252,7 +251,7 @@
     
     switch (socialList){
         case socialViewNews:
-            return nNews;
+            return friends.count;
             break;
         case socialViewEveryone:
             if (section == 0) {

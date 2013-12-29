@@ -8,6 +8,7 @@
 
 #import "EWPersonStore.h"
 #import "EWMediaStore.h"
+#import "EWMediaItem.h"
 #import "EWPerson.h"
 #import "EWIO.h"
 #import "EWDatabaseDefault.h"
@@ -71,7 +72,7 @@
 -(EWPerson *)getPersonByID:(NSString *)ID{
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", ID];
-    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks"];
+    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];
     NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
     userFetch.returnsObjectsAsFaults = NO;
     NSError *err;
@@ -80,7 +81,7 @@
         // There should only be one result
         [NSException raise:@"More than one user fetched" format:@"Check username:%@",ID];
     };
-    
+    NSLog(@"User %@ data has fetched", ID);
     return (EWPerson *)result[0];
 }
 
@@ -88,6 +89,18 @@
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
     return [context executeFetchRequestAndWait:userFetch error:NULL];
+}
+
+- (void)checkRelations{
+    //friends
+    for (EWPerson *friend in currentUser.friends) {
+        NSLog(@"You have friend %@", friend.name);
+    }
+    
+    //media
+    for (EWMediaItem *media in currentUser.medias) {
+        NSLog(@"You are the author of media %@", media.title);
+    }
 }
 
 @end

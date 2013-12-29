@@ -63,29 +63,43 @@
     SM_CACHE_ENABLED = YES;//enable cache
     self.client = [[SMClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment];
     self.client.userSchema = @"EWPerson";
+    self.client.userPrimaryKeyField = @"username";
     self.coreDataStore = [self.client coreDataStoreWithManagedObjectModel:[self managedObjectModel]];
     
-    //cache related
-    self.coreDataStore.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
-    [client.session.networkMonitor setNetworkStatusChangeBlockWithFetchPolicyReturn:^SMFetchPolicy(SMNetworkStatus status) {
-        // Customize this block to fit your application's needs
+    
+    //cache policy
+    
+    __block SMCoreDataStore *blockCoreDataStore = self.coreDataStore;
+    //self.coreDataStore.fetchPolicy = SMFetchPolicyCacheOnly; //initial fetch should from cache
+    self.coreDataStore.defaultSMMergePolicy = SMMergePolicyLastModifiedWins;
+    [self.client.networkMonitor setNetworkStatusChangeBlock:^(SMNetworkStatus status) {
         if (status == SMNetworkStatusReachable) {
-            return SMFetchPolicyTryNetworkElseCache;
-        } else {
-            return SMFetchPolicyCacheOnly;
+            NSLog(@"Connected to server, strat syncing");
+            [blockCoreDataStore syncWithServer];
+        }
+        else {
+            NSLog(@"Disconnected from server, enter cache only mode");
+            [blockCoreDataStore setFetchPolicy:SMFetchPolicyCacheOnly];
         }
     }];
+    
+    [self.coreDataStore setSyncCompletionCallback:^(NSArray *objects){
+        NSLog(@"Syncing is complete, item synced: %@. Change the policy to fetch from the network", objects);
+        [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
+        // Notify other views that they should reload their data from the network
+        [[NSNotificationCenter defaultCenter] postNotificationName:kFinishedSync object:nil];
+    }];
+    
+    //save policy
     
     //background fetch
     [application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval]; //fetch
     
     //push
 #if TARGET_IPHONE_SIMULATOR
-    
     //Code specific to simulator
     
 #else
-    
     pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
     //user login
@@ -93,12 +107,9 @@
     
 #endif
     
-    
-    
-    
     // Weibo SDK
-    EWWeiboManager *weiboMgr = [EWWeiboManager sharedInstance];
-    [weiboMgr registerApp];
+    //EWWeiboManager *weiboMgr = [EWWeiboManager sharedInstance];
+    //[weiboMgr registerApp];
     
     //background download
     count = 0;
@@ -161,7 +172,7 @@
             //get the full user object
             EWPerson *me = [[EWPersonStore sharedInstance] getPersonByID:result[@"username"]];
             //merge changes
-            [[self.client.coreDataStore contextForCurrentThread] refreshObject:me mergeChanges:YES];
+            [[self.coreDataStore contextForCurrentThread] refreshObject:me mergeChanges:YES];
             NSLog(@"Current logged in user: %@",me.name);
             [EWPersonStore sharedInstance].currentUser = me;
             
@@ -172,7 +183,7 @@
             
             
             //log in with facebook
-            [[EWLogInViewController sharedInstance] viewDidLoad];
+            //[[EWLogInViewController sharedInstance] viewDidLoad];
             
             //refresh view
             [alarmController.view setNeedsDisplay];
@@ -273,7 +284,11 @@
         return managedObjectModel;
     }
     //Returns a model created by merging all the models found in given bundles. If you specify nil, then the main bundle is searched.
-    managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+    //managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+    
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"EarlyWorm" withExtension:@"momd"];
+    managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    
     return managedObjectModel;
 }
 

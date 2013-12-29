@@ -165,7 +165,7 @@ static NSString *g_textFieldCellIdentifier = @"textFieldCell";
         self.alarm.time = newTime;//TODO
         [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": self.alarm}];
     }
-    if (newState == [self.alarm.state boolValue]) {
+    if (newState != [self.alarm.state boolValue]) {
         self.alarm.state = [NSNumber numberWithBool:newState];//TODO
         [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": self.alarm}];
     }
@@ -388,8 +388,12 @@ static NSString *g_textFieldCellIdentifier = @"textFieldCell";
                      */
                 case 1: {
                     EWRingtoneSelectionViewController *ringtoneVC = [[EWRingtoneSelectionViewController alloc] init];
-                    ringtoneVC.selectedRingtone = newTone;
-                    
+                    NSArray *ringtones = ringtoneNameList;
+                    NSInteger selected = [ringtones indexOfObject:newTone];
+                    if (selected<0) {
+                        selected = 0;
+                    }
+                    ringtoneVC.selected = selected;
                     
                     ringtoneVC.delegate = self;
                     [self.navigationController pushViewController:ringtoneVC animated:YES];

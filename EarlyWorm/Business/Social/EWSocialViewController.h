@@ -21,7 +21,6 @@ typedef enum socialViewList{
     EWPerson *me;
     NSArray *friends;
     NSArray *everyone;
-    NSInteger nNews;
     NSInteger nAroundMe;
     NSInteger nGroup;
     NSManagedObjectContext *context;

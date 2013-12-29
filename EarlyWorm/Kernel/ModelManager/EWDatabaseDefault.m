@@ -50,18 +50,17 @@
 
 - (NSDictionary *)defaults {
     
-    return @{@"DefaultTone": @"Autumn Spring.mp3",
-                              @"SocialLevel":@"Social Network Only",
-                              @"DownloadConnection":@"Cellular and Wifi",
-                              @"BedTimeNotification":@YES,
-                              @"SleepDuration":@8.0,
-                              @"PrivacyLevel":@"Privacy info",
-                              @"SystemID":@"0",
-                              @"FirstTime":@YES,
-                              @"SkipTutorial":@NO,
-                              @"Region":@"America",
-                              @"alarmTime":@"08:00",
-                              @"tone":@"Drive.mp3"};
+    return @{@"DefaultTone": @"Autumn Spring.caf",
+              @"SocialLevel":@"Social Network Only",
+              @"DownloadConnection":@"Cellular and Wifi",
+              @"BedTimeNotification":@YES,
+              @"SleepDuration":@8.0,
+              @"PrivacyLevel":@"Privacy info",
+              @"SystemID":@"0",
+              @"FirstTime":@YES,
+              @"SkipTutorial":@NO,
+              @"Region":@"America",
+              @"alarmTime":@"08:00"};
 }
 
 - (void)setDefault{
@@ -78,6 +77,9 @@
         NSLog(@"Task not set up yet");
         [EWTaskStore.sharedInstance scheduleTasks];
     }
+    
+    //check friends
+    [[EWPersonStore sharedInstance] checkRelations];
     
     //check local notif
     [EWTaskStore.sharedInstance checkScheduledNotifications];
