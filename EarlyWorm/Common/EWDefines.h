@@ -42,7 +42,7 @@
 
 //Global parameters
 #define nWeeksToScheduleTask 1
-#define serverUpdateInterval 1800 //30 min
+#define serverUpdateInterval 60 //30 min
 #define alarmInterval 600 //10min
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."

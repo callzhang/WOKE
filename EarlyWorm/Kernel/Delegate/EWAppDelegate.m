@@ -250,7 +250,7 @@
     if ([self.myTimer isValid]) {
         [self.myTimer invalidate];
     }
-    self.myTimer = [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(timerMethod:) userInfo:nil repeats:YES];
+    self.myTimer = [NSTimer scheduledTimerWithTimeInterval:serverUpdateInterval target:self selector:@selector(timerMethod:) userInfo:nil repeats:YES];
     NSLog(@"Scheduled background task");
 //    self.myTimer = nil;
 
