@@ -24,7 +24,10 @@
 #import "EWTaskItem.h"
 #import "EWTaskStore.h"
 
+//Util
 #import "EWIO.h"
+#import "MBProgressHUD.h"
+#import "FTWCache.h"
 
 #import "EWLogInViewController.h"
 #import "EWAppDelegate.h"
@@ -86,18 +89,30 @@
 }
 
 - (void)cleanData{
+    [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].delegate.window animated:YES];
     NSLog(@"Cleaning all cache and server data");
+    NSManagedObjectContext *context = [SMClient defaultClient].coreDataStore.contextForCurrentThread;
+    [context deleteObject:[EWPersonStore sharedInstance].currentUser];
+    [context saveAndWait:NULL];
     //Alarm
     [EWAlarmManager.sharedInstance deleteAllAlarms];
     //task
     [EWTaskStore.sharedInstance deleteAllTasks];
-    
-    //alert
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alert show];
+    //media
+    [EWMediaStore.sharedInstance deleteAllMedias];
+    //check
+    [EWTaskStore.sharedInstance checkScheduledNotifications];
     
     [[SMClient defaultClient].coreDataStore.contextForCurrentThread saveOnSuccess:^{
-        //log out
+        //person
+        [EWPersonStore sharedInstance].currentUser = nil;
+        //cache clear
+        [[SMClient defaultClient].coreDataStore resetCache];
+        [FTWCache resetCache];
+        //alert
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        //logout
         [[SMClient defaultClient] logoutOnSuccess:^(NSDictionary *result) {
             EWLogInViewController *controller = [[EWLogInViewController alloc] init];
             EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;

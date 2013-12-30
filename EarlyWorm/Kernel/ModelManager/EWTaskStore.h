@@ -26,7 +26,13 @@
 
 + (EWTaskStore *)sharedInstance;
 //find
+/**
+ get future task for person
+ */
 - (NSArray *)getTasksByPerson:(EWPerson *)person;
+/**
+ get task for next n'th day
+ */
 - (EWTaskItem *)nextTaskAtDayCount:(NSInteger)n ForPerson:(EWPerson *)person;
 - (NSArray *)pastTasksByPerson:(EWPerson *)person;
 - (EWTaskItem *)getTaskByID:(NSString *)taskID;

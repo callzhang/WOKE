@@ -367,7 +367,7 @@
 		AB13C1CC1862D32400231159 /* EWPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPersonCell.m; sourceTree = "<group>"; };
 		AB13C1CD1862D32400231159 /* EWPersonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPersonCell.xib; sourceTree = "<group>"; };
 		AB13C1CE1862D32400231159 /* EWPersonInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPersonInfoView.xib; sourceTree = "<group>"; };
-		AB15A43B186FE95B00C4547E /* EarlyWorm 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = file; path = "EarlyWorm 2.xcdatamodel"; sourceTree = "<group>"; };
+		AB15A43B186FE95B00C4547E /* EarlyWorm 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "EarlyWorm 2.xcdatamodel"; sourceTree = "<group>"; };
 		AB1745BD17F7D974009B4DB0 /* libWeiboSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libWeiboSDK.a; sourceTree = "<group>"; };
 		AB1745BE17F7D974009B4DB0 /* WeiboSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = WeiboSDK.bundle; sourceTree = "<group>"; };
 		AB1745BF17F7D974009B4DB0 /* WeiboSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeiboSDK.h; sourceTree = "<group>"; };
@@ -893,6 +893,7 @@
 		56FEA55517A5763200FC2938 /* Business */ = {
 			isa = PBXGroup;
 			children = (
+				AB3120AF187130380099738C /* Notification */,
 				AB19E9F718698316000FBDD1 /* Recording */,
 				ABA728B11831F71500595CFD /* FirstTime */,
 				ABEEA94517DFCD4B0035DF4A /* Statistics */,
@@ -1043,6 +1044,13 @@
 			path = EarlyWorm/BasicLib;
 			sourceTree = "<group>";
 		};
+		AB3120AF187130380099738C /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Notification;
+			sourceTree = "<group>";
+		};
 		AB39BEEC17D96143006C31C5 /* Social */ = {
 			isa = PBXGroup;
 			children = (
@@ -1139,12 +1147,12 @@
 				AB78079018393A66007C8BFD /* EWDatabaseDefault.m */,
 				AB78079718393A66007C8BFD /* EWPersonStore.h */,
 				AB78079818393A66007C8BFD /* EWPersonStore.m */,
+				AB78079518393A66007C8BFD /* EWMediaStore.h */,
+				AB78079618393A66007C8BFD /* EWMediaStore.m */,
 				AB78079118393A66007C8BFD /* EWGroupStore.h */,
 				AB78079218393A66007C8BFD /* EWGroupStore.m */,
 				AB78079318393A66007C8BFD /* EWImageStore.h */,
 				AB78079418393A66007C8BFD /* EWImageStore.m */,
-				AB78079518393A66007C8BFD /* EWMediaStore.h */,
-				AB78079618393A66007C8BFD /* EWMediaStore.m */,
 				AB78079918393A66007C8BFD /* EWStatsManager.h */,
 				AB78079A18393A66007C8BFD /* EWStatsManager.m */,
 				AB78079B18393A66007C8BFD /* EWStore.h */,

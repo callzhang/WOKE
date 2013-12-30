@@ -64,10 +64,10 @@
     static NSString *CellIdentifier = @"localNotifCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"localNotifCell"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"localNotifCell"];
     }
     UILocalNotification *notif = notifications[indexPath.row];
-    cell.textLabel.text = [[notif.fireDate date2dayString] stringByAppendingString:[notif.fireDate date2String]];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [notif.fireDate date2dayString], [notif.fireDate date2String]];
     cell.detailTextLabel.text = notif.soundName;
     return cell;
 }

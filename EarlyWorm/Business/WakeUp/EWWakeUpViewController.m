@@ -44,7 +44,7 @@
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
         
         //notification
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nextVoice:) name:kAudioPlayerDidFinishPlaying object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
     }
     return self;
 }
@@ -206,8 +206,13 @@
     
     
     //play
+    
     if (indexPath.row == 0) {
-        [cell mediaPlay:nil];
+        if (currentCellToPlay == 0 ) {
+            [cell mediaPlay:nil];
+            currentCellToPlay ++;
+        }
+        
     }
     
     
@@ -248,8 +253,6 @@
 }
 
 
-
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return 120;
 }
@@ -285,10 +288,11 @@
 }
 
 - (void)playNextCell{
-    if (currentCellToPlay++ < medias.count) {
+    NSLog(@"Play next song");
+    if (currentCellToPlay < medias.count) {
         EWMediaViewCell *cell = cellArray[currentCellToPlay];
         [cell mediaPlay:nil];
-        NSLog(@"Play next song");
+        currentCellToPlay++;
     }
 }
 

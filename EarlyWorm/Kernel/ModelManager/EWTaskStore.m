@@ -160,8 +160,8 @@
                 
                 //check receiprocal relationship
                 if (![a.tasks containsObject:t]) {
-                    NSLog(@"====Alarm->Task relation has not been set automatically!=====");
-                    [a addTasksObject:t];
+                    [context refreshObject:a mergeChanges:YES];
+                    NSLog(@"====Alarm->Task relation was not fetched. After refresh, alarm has %d tasks=====", a.tasks.count);
                 }
             }
         }
@@ -317,7 +317,7 @@
     [self cancelNotificationForTask:task];
     [context deleteObject:task];
     [context saveOnSuccess:^{
-        NSLog(@"Task time deleted");
+        NSLog(@"Task deleted");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Task deletion error" format:@"Reason: %@", error.description];
     }];
@@ -325,11 +325,12 @@
 
 - (void)deleteAllTasks{
     for (EWTaskItem *t in self.allTasks) {
+        [self cancelNotificationForTask:t];
         [context deleteObject:t];
     }
     //save
     [context saveOnSuccess:^{
-        //
+        NSLog(@"All tasks has been purged");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Unable to delete all tasks" format:@"Reason: %@", error.description];
     }];
@@ -355,7 +356,12 @@
     //set fire time
     localNotif.fireDate = time;
     localNotif.timeZone = [NSTimeZone defaultTimeZone];
-    localNotif.alertBody = [NSString stringWithFormat:LOCALSTR(alarm.alarmDescription)];
+    if (alarm.alarmDescription) {
+        localNotif.alertBody = [NSString stringWithFormat:LOCALSTR(alarm.alarmDescription)];
+    }else{
+        localNotif.alertBody = @"It's time to get up!";
+    }
+    
     localNotif.alertAction = LOCALSTR(@"Get up!");//TODO
     localNotif.soundName = alarm.tone;
     localNotif.applicationIconBadgeNumber = 1;
@@ -386,11 +392,16 @@
 - (BOOL)checkTasks{
     NSLog(@"Checking tasks");
     NSArray *tasks = [self getTasksByPerson:[EWPersonStore sharedInstance].currentUser];
-    if (tasks.count < 7*nWeeksToScheduleTask) {
+    if (tasks.count != 7*nWeeksToScheduleTask) {
+        if(tasks.count > 7*nWeeksToScheduleTask) NSLog(@"Something is wrong with scheduled task: excessive tasks(%d), please check.", tasks.count);
         return NO;
     }
     //check if any task has past
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
+    NSDateComponents* deltaComps = [[NSDateComponents alloc] init];
+    deltaComps.hour = -2;
+    NSDate *time = [[NSCalendar currentCalendar] dateByAddingComponents:deltaComps toDate:[NSDate date] options:0];
+
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"time < %@", time];
     NSArray *pastTasks = [tasks filteredArrayUsingPredicate:predicate];
     if (pastTasks.count > 0) {
         //change task relationship

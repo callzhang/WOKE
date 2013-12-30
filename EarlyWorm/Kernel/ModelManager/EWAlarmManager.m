@@ -148,7 +148,7 @@
     //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     [context deleteObject:alarm];
     [context saveOnSuccess:^{
-        NSLog(@"Deleting successful");
+        NSLog(@"Alarm deleted");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error in deleting Alarm" format:@"Alarm:%@", alarm];
     }];
@@ -160,7 +160,7 @@
         [context deleteObject:a];
     }
     [context saveOnSuccess:^{
-        NSLog(@"Deleting successful");
+        NSLog(@"Delete all alarms successful");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error in deleting Alarm" format:@"Reason: %@", error.description];
     }];

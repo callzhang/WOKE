@@ -85,6 +85,18 @@
     return medias;
 }
 
-
+#pragma mark - DELETE
+- (void)deleteAllMedias{
+    EWPerson *me = [EWPersonStore sharedInstance].currentUser;
+    NSArray *medias = [self mediaCreatedByPerson:me];
+    for (EWMediaItem *m in medias) {
+        [context deleteObject:m];
+    }
+    [context saveOnSuccess:^{
+        NSLog(@"All media for person: %@ has been purged", me.name);
+    } onFailure:^(NSError *error) {
+        [NSException raise:@"Unable to delete media" format:@"Reason: %@", error.description];
+    }];
+}
 
 @end

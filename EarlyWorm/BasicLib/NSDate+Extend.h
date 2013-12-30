@@ -55,4 +55,5 @@
  HHMM in interger format
  */
 - (NSInteger)HHMM;
+
 @end

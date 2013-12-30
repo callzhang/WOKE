@@ -9,6 +9,9 @@
 #import "EWRecordingViewController.h"
 #import "EWAppDelegate.h"
 
+//Util
+#import "NSDate+Extend.h"
+
 //object
 #import "EWTaskItem.h"
 #import "EWMediaItem.h"
@@ -47,8 +50,8 @@
     self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
     self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
 }
 
@@ -92,7 +95,8 @@
         }
         //save data to task
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:@"voicetone.m4a" contentType:@"media/m4a"];
+        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", [EWPersonStore sharedInstance].currentUser.username, [NSString stringWithFormat:@"%d",(NSInteger)[NSDate timeIntervalSinceReferenceDate]]];
+        NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:fileName contentType:@"audio/aac"];
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
         media.author = [EWPersonStore sharedInstance].currentUser;
         media.title = @"Voice Tone";
@@ -110,7 +114,7 @@
             [hud hide:YES afterDelay:1.5];
             //clean
             recordingFileUrl = nil;
-            if ([media.audioKey length]<100) {
+            if ([media.audioKey length]<200) {
                 //NSLog(@"media's audioKey after merge is %@", media.audioKey);
             }else{
                 NSLog(@"audioKey failed to upload to S3 server and remained as string data");
@@ -120,7 +124,7 @@
             EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
             NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New voice tone sent from %@", [EWPersonStore sharedInstance].currentUser.username],
                                           @"badge": @1,
-                                          @"taskID": task.ewtaskitem_id};
+                                          kLocalNotificationUserInfoKey: task.ewtaskitem_id};
             
             [delegate.pushClient sendMessage:pushMessage toUsers:@[task.owner.username] onSuccess:^{
                 NSLog(@"Push notification successfully sent to %@", task.owner.username);

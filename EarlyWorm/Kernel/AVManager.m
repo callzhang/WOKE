@@ -113,8 +113,16 @@
         if (!progressBar) {
             NSLog(@"Progress bar not set! Remember to add it before playing.");
         }
+        
+        //data
         NSError *err;
-        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
+        NSData *audioData = [NSData dataWithContentsOfFile:[url path]];
+        if (audioData) {
+            self.player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
+        }else{
+            self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
+        }
+        
         if (err) {
             NSLog(@"Cannot init player. Reason: %@", err.description);
         }
@@ -124,7 +132,7 @@
         [self updateViewForPlayerState:player];
     }else{
         //network url
-        NSLog(@"Network URL streaming not supported yet");
+        NSLog(@"Network URL streaming is not supported yet");
     }
 }
 
@@ -151,11 +159,9 @@
         return recordingFileUrl;
         NSLog(@"Recording finished: %@", recordingFileUrl);
     } else {
-        
-        
         NSDictionary *recordSettings = @{AVEncoderAudioQualityKey: [NSNumber numberWithInt:kAudioFormatLinearPCM],
                                          AVEncoderBitRateKey: @64,
-                                         AVSampleRateKey: @44100.0,
+                                         AVSampleRateKey: @24000.0,
                                          AVFormatIDKey: [NSNumber numberWithInt: kAudioFormatMPEG4AAC]}; //,
                                          //AVEncoderBitRateStrategyKey: AVAudioBitRateStrategy_Variable};
         NSError *err;
@@ -175,8 +181,6 @@
         [self updateViewForRecorderState:recorder];
         NSLog(@"Recording");
     }
-    
-    
     return nil;
 }
 
@@ -246,13 +250,14 @@
     [updateTimer invalidate];
     self.player.currentTime = 0.0;
     [self.playStopBtn setTitle:@"Play" forState:UIControlStateNormal];
-    NSLog(@"sound fnished");
+    NSLog(@"Playback fnished");
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
     [updateTimer invalidate];
     [self.playStopBtn setTitle:@"Record" forState:UIControlStateNormal];
-    NSLog(@"Recording reached max length");
+    //NSLog(@"Recording reached max length");
     
 }
 

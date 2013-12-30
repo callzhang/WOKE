@@ -145,16 +145,7 @@
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark - launch option
-- (void)presentWakeUpView:(NSNotification *)notification{
-    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-    EWTaskItem *task = notification.userInfo[kLocalNotificationUserInfoKey];
-    controller.task  = task;
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-    controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
-    
-    [self presentViewController:navigationController animated:YES completion:^{}];
-}
+
 
 #pragma mark - Accessors
 - (EWPerson *)me{
@@ -294,7 +285,16 @@
 }
 
 
-
+#pragma mark - launch option
+- (void)presentWakeUpView:(NSNotification *)notification{
+    NSLog(@"Entered app with local notification");
+    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+    EWTaskItem *task = notification.userInfo[kLocalNotificationUserInfoKey];
+    controller.task  = task;
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    
+    [self presentViewController:navigationController animated:YES completion:NULL];
+}
 
 
 

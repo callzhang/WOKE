@@ -92,8 +92,13 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    //[super viewWillAppear:animated]; no need to call super
-    [self loadData];
+    [super viewWillAppear:animated]; //no need to call super
+    if (!me) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self loadData];
+        });
+    }
+    
     //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     //    [self loadData];
     //});
@@ -101,7 +106,7 @@
 
 - (void)loadData{
     [refreshHUD show:YES];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         me = [EWPersonStore sharedInstance].currentUser;
         NSSet *friendsSet = me.friends;
         friends = [friendsSet allObjects];
@@ -116,7 +121,7 @@
             [self.tableView reloadData];
             [refreshHUD hide:YES];
         });
-    });
+    //});
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -352,7 +357,9 @@
 - (void)tableView:(UITableViewController *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (socialList == socialViewNews) {
         //send voice tone
-        //unsigned r = arc4random() % 6;
+        EWDetailPersonViewController *controller = [[EWDetailPersonViewController alloc] init];
+        controller.person = friends[indexPath.row];
+        [self.navigationController pushViewController:controller animated:YES];
     } else if (socialList == socialViewEveryone) {
         //view person
         
@@ -362,7 +369,6 @@
         }else if (indexPath.section == 1){
             controller.person = everyone[indexPath.row];
         }
-        
         
         [self.navigationController pushViewController:controller animated:YES];
         

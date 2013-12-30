@@ -3,7 +3,7 @@
     <entity name="EWAlarmItem" representedClassName="EWAlarmItem" syncable="YES">
         <attribute name="alarmDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="ewalarmitem_id" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="ewalarmitem_id" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="important" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="state" optional="YES" attributeType="Boolean" syncable="YES"/>

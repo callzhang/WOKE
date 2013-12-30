@@ -16,7 +16,7 @@
     <entity name="EWGroup" representedClassName="EWGroup" syncable="YES">
         <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="ewgroup_id" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="ewgroup_id" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="imageKey" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -30,7 +30,7 @@
         <attribute name="added" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="ewgrouptask_id" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="ewgrouptask_id" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="region" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
@@ -41,7 +41,7 @@
     <entity name="EWMediaItem" representedClassName="EWMediaItem" syncable="YES">
         <attribute name="audioKey" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="ewmediaitem_id" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="ewmediaitem_id" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="imageKey" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="mediaType" optional="YES" attributeType="String" syncable="YES"/>
@@ -54,7 +54,7 @@
     </entity>
     <entity name="EWMessage" representedClassName="EWMessage" syncable="YES">
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="ewmessage_id" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="ewmessage_id" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="media" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
@@ -80,7 +80,7 @@
         <attribute name="profilePicKey" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="region" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="username" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="username" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="weibo" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="alarms" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="EWAlarmItem" inverseName="owner" inverseEntity="EWAlarmItem" syncable="YES"/>
         <relationship name="friended" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="friends" inverseEntity="EWPerson" syncable="YES"/>
@@ -99,7 +99,7 @@
         <attribute name="added" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="completed" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="ewtaskitem_id" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="ewtaskitem_id" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="length" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="state" optional="YES" attributeType="Boolean" syncable="YES"/>

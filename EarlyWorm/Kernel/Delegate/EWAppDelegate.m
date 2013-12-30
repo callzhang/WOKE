@@ -139,18 +139,25 @@
     NSLog(@"LaunchOption: %@", launchOptions);
     UILocalNotification *localNotif =
     [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-    //TODO ??? why it doesn't work? 
+    //This block only works when app starts at the first time
     if (localNotif) {
-        NSString *alarmID = [localNotif.userInfo objectForKey:@"alarmID"];
-        //[viewController displayItem:itemName];  // custom method
-        //app.applicationIconBadgeNumber = localNotif.applicationIconBadgeNumber-1;
-
+        NSString *taskID = [localNotif.userInfo objectForKey:kLocalNotificationUserInfoKey];
+        
+        /*
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Local notification"
-            message:alarmID
+            message:taskID
             delegate:nil
             cancelButtonTitle:@"OK"
             otherButtonTitles:nil];
-        [alert show];
+        [alert show];*/
+        
+        NSLog(@"Entered app with local notification when app is not alive");
+        NSLog(@"Get task id: %@", taskID);
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+        controller.task  = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+        
+        [self.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
     }
     
     
@@ -173,7 +180,7 @@
             EWPerson *me = [[EWPersonStore sharedInstance] getPersonByID:result[@"username"]];
             //merge changes
             [[self.coreDataStore contextForCurrentThread] refreshObject:me mergeChanges:YES];
-            NSLog(@"Current logged in user: %@",me.name);
+            NSLog(@"Get current user: %@ from CoreData store",me.name);
             [EWPersonStore sharedInstance].currentUser = me;
             
             //check default
@@ -243,7 +250,7 @@
     if ([self.myTimer isValid]) {
         [self.myTimer invalidate];
     }
-    self.myTimer = [NSTimer scheduledTimerWithTimeInterval:1800 target:self selector:@selector(timerMethod:) userInfo:nil repeats:YES];
+    self.myTimer = [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(timerMethod:) userInfo:nil repeats:YES];
     NSLog(@"Scheduled background task");
 //    self.myTimer = nil;
 
@@ -321,6 +328,7 @@
 #pragma mark - Background download
 - (void) timerMethod:(NSTimer *)paramSender{
     count++;
+    NSLog(@"Background downloading is still working");
     UIApplication *application = [UIApplication sharedApplication];
     
     //开启一个新的后台
@@ -419,7 +427,7 @@
     [player performSelectorOnMainThread:@selector(play) withObject:nil waitUntilDone:NO];
 }
 
-#pragma mark - Push Notification
+#pragma mark - Push Notification registration
 //Presist the device token
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
     NSString *token = [[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
@@ -448,10 +456,10 @@
 
 //entrance of Local Notification
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-    NSLog(@"Received local notification: %@", notification);
+    NSLog(@"Received local notification: %@ when app is in background", notification);
     if ([application applicationState] == UIApplicationStateActive) {
         UIAlertView *alert = [[UIAlertView alloc]
-                              initWithTitle:@"Alarm"
+                              initWithTitle:@"Woke Alarm"
                               message:@"It's time to get up!"
                               delegate:self
                               cancelButtonTitle:@"OK"
@@ -464,8 +472,10 @@
         if (self.musicList.count > 0) {
             [self playDownloadedMusic:[self.musicList objectAtIndex:self.musicList.count-1]];
         }
-        
+        NSString *taskID = [notification.userInfo objectForKey:kLocalNotificationUserInfoKey];
+        NSLog(@"The task is %@", taskID);
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+        controller.task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
         [self.window.rootViewController presentViewController:navigationController animated:YES completion:^(void){}];
         controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
@@ -474,35 +484,34 @@
 
 //Receive remote notification
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
-    NSLog(@"Notification received: %@", userInfo);
+    NSLog(@"Push Notification received: %@ when app in in background", userInfo);
     //if ([application applicationState] == UIApplicationStateActive) {
-        NSString *message = [[userInfo valueForKey:@"aps"] valueForKey:@"alert"];
-        NSString *title = @"New Voice Tone";
-        NSString *taskID = userInfo[@"taskID"];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-            NSString *btnTitle;
-            if (taskInAction) {
-                btnTitle = @"Show";
-            }else{
-                btnTitle = nil;
-            }
-            
-            //notification
-            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": taskInAction}];
-            
-            //main thread
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                                    message:message
-                                                                   delegate:self
-                                                          cancelButtonTitle:@"Close"
-                                                          otherButtonTitles:btnTitle, nil];
-                [alertView show];
-            });
+    NSString *message = [[userInfo valueForKey:@"aps"] valueForKey:@"alert"];
+    NSString *title = @"New Voice Tone";
+    NSString *taskID = userInfo[kLocalNotificationUserInfoKey];
+    NSLog(@"The task is %@", taskID);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        NSString *btnTitle;
+        if (taskInAction) {
+            btnTitle = @"Show";
+        }else{
+            btnTitle = nil;
+        }
+        
+        //notification
+        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": taskInAction}];
+        
+        //main thread
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                                message:[message stringByAppendingString:@" (The show option will be removed in release)"]
+                                                               delegate:self
+                                                      cancelButtonTitle:@"Close"
+                                                      otherButtonTitles:btnTitle, nil];
+            [alertView show];
         });
-        
-        
+    });
         
     //}else{
     //    NSLog(@"Push notification received while app in background");
@@ -535,6 +544,18 @@
 #pragma mark - Alert Delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if ([alertView.title isEqualToString:@"New Voice Tone"]) {
+        if (buttonIndex == 1) {
+            //show
+            if (taskInAction) {
+                //got taskInAction
+                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+                controller.task = taskInAction;
+                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+                [self.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
+            }
+            taskInAction = nil;
+        }
+    }else if ([alertView.title isEqualToString:@"Woke Alarm"]) {
         if (buttonIndex == 1) {
             //show
             if (taskInAction) {

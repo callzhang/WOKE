@@ -26,6 +26,7 @@
 
 //delete
 //- (void)removeMediaItem:(EWMediaItem *)mi;
+- (void)deleteAllMedias;
 
 //search
 /**
