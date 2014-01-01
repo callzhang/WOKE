@@ -33,6 +33,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateNotifTone:) name:kAlarmToneChangedNotification object:nil];
         //watch media change
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTaskMedia:) name:kMediaNewNotification object:nil];
+        //watch alarm deletion
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(alarmRemoved) name:kAlarmDeleteNotification object:nil];
     });
     return sharedTaskStore_;
 }
@@ -313,6 +315,13 @@
     });
 }
 
+- (void)alarmRemoved:(NSNotification *)notif{
+    NSArray *tasks = notif.userInfo[@"tasks"];
+    for (EWTaskItem *t in tasks) {
+        [self removeTask:t];
+    }
+}
+
 #pragma mark - DELETE
 - (void)removeTask:(EWTaskItem *)task{
     [self cancelNotificationForTask:task];
@@ -394,13 +403,14 @@
     NSLog(@"Checking tasks");
     NSArray *tasks = [self getTasksByPerson:[EWPersonStore sharedInstance].currentUser];
     if (tasks.count != 7*nWeeksToScheduleTask) {
-        if(tasks.count > 7*nWeeksToScheduleTask) NSLog(@"Something is wrong with scheduled task: excessive tasks(%d), please check.", tasks.count);
+        if(tasks.count > 7*nWeeksToScheduleTask){
+            NSLog(@"Something is wrong with scheduled task: excessive tasks(%d), please check.", tasks.count);
+            [self deleteAllTasks];
+        }
         return NO;
     }
     //check if any task has past
-    NSDateComponents* deltaComps = [[NSDateComponents alloc] init];
-    deltaComps.hour = -2;
-    NSDate *time = [[NSCalendar currentCalendar] dateByAddingComponents:deltaComps toDate:[NSDate date] options:0];
+    NSDate *time = [[NSDate date] timeByAddingMinutes:-120];
 
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"time < %@", time];
     NSArray *pastTasks = [tasks filteredArrayUsingPredicate:predicate];

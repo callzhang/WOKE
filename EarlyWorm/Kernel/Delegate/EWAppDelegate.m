@@ -69,7 +69,7 @@
     
     
     //cache policy
-    
+    self.coreDataStore.fetchPolicy = SMFetchPolicyCacheOnly;
     __block SMCoreDataStore *blockCoreDataStore = self.coreDataStore;
     //self.coreDataStore.fetchPolicy = SMFetchPolicyCacheOnly; //initial fetch should from cache
     self.coreDataStore.defaultSMMergePolicy = SMMergePolicyLastModifiedWins;
@@ -501,25 +501,29 @@
     NSLog(@"The task is %@", taskID);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-        NSString *btnTitle;
         if (taskInAction) {
-            btnTitle = @"Show";
+            //notification
+            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": taskInAction}];
+            //main thread
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                                    message:[message stringByAppendingString:@" (The show option will be removed in release)"]
+                                                                   delegate:self
+                                                          cancelButtonTitle:@"Close"
+                                                          otherButtonTitles:@"Show", nil];
+                [alertView show];
+            });
         }else{
-            btnTitle = nil;
+            //main thread
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil];
+                [alertView show];
+            });
         }
         
-        //notification
-        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": taskInAction}];
         
-        //main thread
-        dispatch_async(dispatch_get_main_queue(), ^{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                                message:[message stringByAppendingString:@" (The show option will be removed in release)"]
-                                                               delegate:self
-                                                      cancelButtonTitle:@"Close"
-                                                      otherButtonTitles:btnTitle, nil];
-            [alertView show];
-        });
+        
+        
     });
         
     //}else{

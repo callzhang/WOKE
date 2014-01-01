@@ -12,6 +12,7 @@
 #import "NSString+Extend.h"
 #import "EWIO.h"
 #import "EWAlarmItem.h"
+#import "EWTaskItem.h"
 #import "EWTaskStore.h"
 #import "EWPerson.h"
 #import "EWPersonStore.h"
@@ -145,8 +146,11 @@
 
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
-    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:nil userInfo:@{@"tasks":alarm.tasks}];
     [context deleteObject:alarm];
+    for (EWTaskItem *t in alarm.tasks) {
+        [context deleteObject:t];
+    }
     [context saveOnSuccess:^{
         NSLog(@"Alarm deleted");
     } onFailure:^(NSError *error) {
@@ -157,7 +161,7 @@
 - (void)deleteAllAlarms{
     //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     for (EWAlarmItem *a in self.allAlarms) {
-        [context deleteObject:a];
+        [self removeAlarm:a];
     }
     [context saveOnSuccess:^{
         NSLog(@"Delete all alarms successful");
@@ -171,7 +175,17 @@
     //fetch again
     NSArray *alarms = [self allAlarmsForUser:[EWPersonStore sharedInstance].currentUser];
     
-    return (alarms.count == 7) ? YES: NO;
+    if (alarms.count == 0) {
+        //need set up
+        return NO;
+    }else if (alarms.count == 7){
+        return YES;
+    }else{
+        //something wrong
+        NSLog(@"Something wrong with alarms, delete all");
+        [self deleteAllAlarms];
+        return NO;
+    }
 }
 
 #pragma mark - KVO

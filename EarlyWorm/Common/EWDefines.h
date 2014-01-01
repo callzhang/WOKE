@@ -61,7 +61,7 @@
 #define kAlarmNewNotification           @"EWAlarmNew" //key: alarm
 #define kAlarmStateChangedNotification  @"EWAlarmStateChanged"//key: alarm
 #define kAlarmTimeChangedNotification   @"EWAlarmTimeChanged"//key: alarm
-#define kAlarmDeleteNotification        @"EWAlarmDelete" //key: alarm
+#define kAlarmDeleteNotification        @"EWAlarmDelete" //key: tasks
 #define kAlarmChangedNotification       @"EWAlarmChanged" //key: alarm
 #define kAlarmToneChangedNotification   @"EWAlarmToneChanged" //key: alarm
 
