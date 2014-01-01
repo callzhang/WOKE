@@ -42,7 +42,7 @@
     if (self) {
         context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
         NSLog(@"Context for TaskStore is :%@", context);
-        //[self checkTasks];
+        [NSTimer timerWithTimeInterval:3600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -125,6 +125,7 @@
 #pragma mark - SCHEDULE
 //schedule new task in the future
 - (NSArray *)scheduleTasks{
+    NSLog(@"Start scheduling tasks");
     //forfeit if no alarm scheduled
     if (EWAlarmManager.sharedInstance.allAlarms.count == 0) {
         return nil;

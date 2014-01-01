@@ -37,7 +37,7 @@
     self.view.backgroundColor = kCustomGray;
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -57,6 +57,10 @@
     //save to defaults
     [NSUserDefaults.standardUserDefaults setObject:ringtoneList[selected] forKey:@"OfflineTone"];
     
+}
+
+- (void)OnDone{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark - Table view data source
@@ -83,8 +87,12 @@
         cell.backgroundColor = kCustomLightGray;
     }
     // Configure the cell...
-    if ([ringtoneList[selected] isEqualToString: [ringtoneList objectAtIndex:indexPath.row]]) {
-        [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+    if (selected > 100) {
+        NSLog(@"Something wrong when getting the music index. Action abord");
+    }else{
+        if ([ringtoneList[selected] isEqualToString: [ringtoneList objectAtIndex:indexPath.row]]) {
+            [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+        }
     }
     NSArray *fileString = [ringtoneList[indexPath.row] componentsSeparatedByString:@"."];
     NSString *file = fileString[0];

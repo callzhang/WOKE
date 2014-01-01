@@ -11,21 +11,17 @@
 #import "EWTaskItem.h"
 #import "EWAlarmManager.h"
 #import "EWAlarmItem.h"
+#import "EWAlarmEditCell.h"
 
+//Util
 #import "NSDate+Extend.h"
+#import "StackMob.h"
 
-@implementation EWAlarmScheduleViewController
-- (id)init{
-    self = [super init];
-    if(self){
-        //data source
-        alarms = EWAlarmManager.sharedInstance.allAlarms;
-        //view
-        self.title = LOCALSTR(@"Schedule Alarm");
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
-    }
-    return self;
+static NSString *cellIdentifier = @"scheduleAlarmCell";
+
+@implementation EWAlarmScheduleViewController{
+    NSInteger selected;
+    NSMutableArray *cellArray;
 }
 
 - (void)viewDidLoad{
@@ -34,6 +30,34 @@
     _tableView.dataSource = self;
     _tableView.delegate = self;
     [self.view addSubview:_tableView];
+    
+    //view
+    self.title = LOCALSTR(@"Schedule Alarm");
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
+    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(OnDone)];
+    //register cell
+    UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
+    [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
+    
+    //data
+    [self initData];
+}
+
+- (void)initData{
+    //data source
+    context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+    alarms = EWAlarmManager.sharedInstance.allAlarms;
+    tasks = [EWTaskStore sharedInstance].allTasks;
+    cellArray = [[NSMutableArray alloc] initWithCapacity:7];
+    selected = 99;
+}
+
+#pragma mark - View life cycle
+//refrash data after edited
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [_tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -41,21 +65,64 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    if (self.presentedViewController) {
+        return;//skip on modal view
+    }
+    for (EWAlarmEditCell *cell in cellArray) {
+        //state
+        if (cell.alarmOn != [cell.alarm.state boolValue]) {
+            NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmOn?@"ON":@"OFF");
+            cell.alarm.state = [NSNumber numberWithBool:cell.alarmOn];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
+        }
+        //music
+        if (![cell.myMusic isEqualToString:cell.alarm.tone]) {
+            NSLog(@"Music changed to %@", cell.myMusic);
+            cell.alarm.tone = cell.myMusic;
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
+        }
+        //time
+        if (![cell.myTime isEqual:cell.task.time]) {
+            NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
+            cell.alarm.time = cell.myTime;//TODO: ask if the time change is once or for all
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
+        }
+        //statement
+        if (cell.statement.text.length && ![cell.statement.text isEqualToString:cell.task.statement]) {
+            cell.task.statement = cell.statement.text;
+            [context saveOnSuccess:^{
+                //
+            } onFailure:^(NSError *error) {
+                //
+            }];
+        }
+    }
+
+    [super viewWillDisappear:animated];
+}
+
 #pragma mark - UI events
 - (void)OnDone{
-    EWAlarmManager.sharedInstance.allAlarms = [alarms mutableCopy];
-    [self dismissViewControllerAnimated:YES completion:NULL];
+    //[self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)OnCancel{
-    [self dismissViewControllerAnimated:YES completion:NULL];
+    //[self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item{
+    
+    return YES;
 }
 
 
 #pragma mark - tableViewController delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 7;
+    return alarms.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -63,37 +130,50 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *cellIdentifier = @"scheduleAlarmCell";
+    
     //reusable cell
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    EWAlarmEditCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+        cell = [[EWAlarmEditCell alloc] init];
     }
     //data
-    EWAlarmItem *alarm = alarms[indexPath.row];
-    cell.textLabel.text = [alarm.time date2String];
-    cell.detailTextLabel.text = [alarm.time weekday];
-    UISwitch *alarmSwitch = [[UISwitch alloc] init];
-    alarmSwitch.on = (BOOL)alarm.state;
-    alarmSwitch.onTintColor = kCustomGray;
-    [alarmSwitch addTarget:self action:@selector(OnAlarmStateSwitchChanged:) forControlEvents:UIControlEventValueChanged];
-    cell.accessoryView = alarmSwitch;
+    if (!cell.task) {
+        cell.task = tasks[indexPath.row];
+    }
+    
+    //breaking MVC pattern to get ringtonVC work
+    cell.presentingViewController = self;
+    //save to list
+    cellArray[indexPath.row] = cell;
     //return
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	// If our cell is selected, return double height
+	if(selected == indexPath.row    ) {
+		return 120.0;
+	}
+	
+	// Cell isn't selected so return single height
+	return 44.0;
 }
 
 //when click one item in table, push view to detail page
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //TODO: expand cell to change details
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (selected == indexPath.row) {
+        selected = 99;
+    }else{
+        selected = indexPath.row;
+    }
+    
+    [tableView beginUpdates];
+    [tableView endUpdates];
 }
 
-//refrash data after edited
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [_tableView reloadData];
-}
+
 
 
 

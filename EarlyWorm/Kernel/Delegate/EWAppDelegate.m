@@ -20,6 +20,7 @@
 #import "EWDefines.h"
 #import "EWUIUtil.h"
 #import "MBProgressHUD.h"
+#import "TestFlight.h"
 
 //#import "AVManager.h"
 #import "EWAlarmManager.h"
@@ -55,7 +56,7 @@
 @synthesize oldBackgroundTaskIdentifier;
 @synthesize myTimer;
 @synthesize count;
-@synthesize client, pushClient, managedObjectModel, coreDataStore;
+@synthesize client, managedObjectModel, coreDataStore;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
@@ -90,22 +91,15 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:kFinishedSync object:nil];
     }];
     
+    //test flight
+    [TestFlight takeOff:@"e1ffe70a-26bf-4db0-91c8-eb2d1d362cb3"];
+    
     //save policy
     
     //background fetch
     [application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval]; //fetch
     
-    //push
-#if TARGET_IPHONE_SIMULATOR
-    //Code specific to simulator
-    
-#else
-    pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
-    //user login
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
-    
-#endif
+
     
     // Weibo SDK
     //EWWeiboManager *weiboMgr = [EWWeiboManager sharedInstance];
@@ -433,25 +427,40 @@
     NSString *token = [[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
     token = [[token componentsSeparatedByString:@" "] componentsJoinedByString:@""];
     
-    // Persist token if needed
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:token forKey:@"DeviceToken"];
-    [defaults synchronize];
-    
-    // Register the token with StackMob.  User is an arbitrary string to associate with the token.
-    if ([EWPersonStore sharedInstance].currentUser) {
-        NSString *username = [EWPersonStore sharedInstance].currentUser.username;
+    // Register the token with StackMob.
+    NSString *username = [EWPersonStore sharedInstance].currentUser.username;
+    if (username) {
+        // Persist token
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSDictionary *tokenByUser = @{kPushTokenUserKey: username, kPushTokenByUserKey: token};
+        NSMutableArray *tokenByUserArray = (NSMutableArray *)[defaults objectForKey:kPushTokenKey];
+        [tokenByUserArray addObject:tokenByUser];
+        [defaults setObject:tokenByUserArray forKey:kPushTokenKey];
+        [defaults synchronize];
+        //Register Push on StackMob
         [self.pushClient registerDeviceToken:token withUser:username onSuccess:^{
             NSLog(@"APP registered push token and assigned to StackMob server");
+            //send welcome message
+            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"Welcome new user %@ to join our family!", [EWPersonStore sharedInstance].currentUser.name],
+                                          @"badge": @1,
+                                          @"title": @"WOKE"};
+            [self.pushClient broadcastMessage:pushMessage onSuccess:^{
+                NSLog(@"Welcome message sent");
+            } onFailure:^(NSError *error) {
+                NSLog(@"Failed to send welcome message");
+            }];
         } onFailure:^(NSError *error) {
             [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
         }];
+    }else{
+        NSLog(@"Tried to register push to StackMob, but user is not logged in.");
     }
     
 }
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
-    [NSException raise:@"Failed to regiester push token with apple" format:@"Reason: %@", err.description];
+    //[NSException raise:@"Failed to regiester push token with apple" format:@"Reason: %@", err.description];
+    NSLog(@"Failed to regiester push token with apple. Error: %@", err.description);
 }
 
 //entrance of Local Notification
@@ -519,27 +528,8 @@
 }
 
 
-- (void)userLoggedIn{
-    //register notification
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *token;
-    @try {
-        token = [defaults objectForKey:@"DeviceToken"];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"Exception caught: %@", exception.description);
-        return;
-    }
-    NSString *username = [EWPersonStore sharedInstance].currentUser.username;
-    
-    [self.pushClient registerDeviceToken:token withUser:username onSuccess:^{
-        NSLog(@"APP registered push token and assigned to StackMob server");
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
-    }];
-    
-    
-}
+
+
 
 #pragma mark - Alert Delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{

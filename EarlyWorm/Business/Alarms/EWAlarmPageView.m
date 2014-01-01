@@ -43,7 +43,7 @@
 #pragma mark - UI actions
 - (IBAction)editAlarm:(id)sender {
     NSLog(@"Edit task: %@", task.time);
-    [self.delegate editTask:task forPage:self];
+    //[self.delegate editTask:task forPage:self];
 }
 
 - (IBAction)OnAlarmSwitchChanged:(UISwitch *)sender {
@@ -53,7 +53,7 @@
     EWTaskItem *t = EWTaskStore.sharedInstance.allTasks[sender.tag];
     EWAlarmItem *a = t.alarm;
     a.state = [NSNumber numberWithBool:sender.on];
-    t.state = a.state;
+    //t.state = a.state;
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": a}];
     NSLog(@"Alarm #%d changed to %hhd", a.time.weekdayNumber, sender.on);
 }
@@ -72,15 +72,14 @@
     //actions after setting the task
     task = t;
     self.alarm = task.alarm;
-    
+    self.alarmState.on = t.state.boolValue;
     self.timeText.text = [t.time date2String];
     NSInteger h = ([t.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
     if (h > 0) {
         self.timeLeftText.text = [NSString stringWithFormat:@"%d hours left", h];
     }
     else {
-        self.timeLeftText.text = @"";
-        NSLog(@"Unexpected task with %d hour to now", h);
+        self.timeLeftText.text = @"Just alarmed";
     }
     //media
     NSInteger mCount = task.medias.count;
@@ -93,6 +92,10 @@
     self.dateText.text = [t.time date2dayString];
     self.descriptionText.text = t.statement;
     [self.descriptionText sizeToFit];
+}
+
+- (void)setAlarm:(EWAlarmItem *)a{
+    self.alarmState.on = a.state.boolValue;
 }
 
 #pragma mark - NOTIFICATION

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <FacebookSDK/FacebookSDK.h>
 #import "SMClient.h"
+#import "SMPushClient.h"
 
 @interface EWLogInViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UIButton *btnLoginLogout;

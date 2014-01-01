@@ -8,8 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface EWAlarmScheduleViewController : EWViewController<UITableViewDelegate, UITableViewDataSource>{
+@interface EWAlarmScheduleViewController : EWViewController<UITableViewDelegate, UITableViewDataSource, UINavigationBarDelegate>{
     UITableView *_tableView;
     NSArray *alarms;
+    NSArray *tasks;
+    NSManagedObjectContext *context;
 }
 @end

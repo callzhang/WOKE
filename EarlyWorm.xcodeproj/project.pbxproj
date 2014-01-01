@@ -133,6 +133,13 @@
 		AB19E9FC18698359000FBDD1 /* EWRecordingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB19E9FA18698359000FBDD1 /* EWRecordingViewController.xib */; };
 		AB207E5E182F4D9E0076D93F /* ImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB207E5D182F4D9E0076D93F /* ImageViewController.m */; };
 		AB207E69182FFFB60076D93F /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AB207E68182FFFB60076D93F /* MBProgressHUD.m */; };
+		AB2C18B0187145D10058BFAD /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2C18AA187145D10058BFAD /* libTestFlight.a */; };
+		AB2C18B1187145D10058BFAD /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18AB187145D10058BFAD /* README.md */; };
+		AB2C18B2187145D10058BFAD /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18AC187145D10058BFAD /* release_notes.md */; };
+		AB2C18B41871464E0058BFAD /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2C18B31871464D0058BFAD /* libz.dylib */; };
+		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
+		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
+		AB2C18CD18737F670058BFAD /* EWAlarmEditCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */; };
 		AB340A611864165200B7C06A /* personInfoBG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AB340A601864165200B7C06A /* personInfoBG@2x.png */; };
 		AB39BF0017D96143006C31C5 /* EWSocialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB39BEF517D96143006C31C5 /* EWSocialViewController.m */; };
 		AB39BF0B17D99483006C31C5 /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = AB39BF0917D99483006C31C5 /* star.png */; };
@@ -399,6 +406,17 @@
 		AB207E5D182F4D9E0076D93F /* ImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImageViewController.m; path = ImageController/ImageViewController.m; sourceTree = "<group>"; };
 		AB207E67182FFFB60076D93F /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = ../../../../WOKE/EarlyWorm/MBProgressHUD/MBProgressHUD.h; sourceTree = "<group>"; };
 		AB207E68182FFFB60076D93F /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = ../../../../WOKE/EarlyWorm/MBProgressHUD/MBProgressHUD.m; sourceTree = "<group>"; };
+		AB2C18AA187145D10058BFAD /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		AB2C18AB187145D10058BFAD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		AB2C18AC187145D10058BFAD /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
+		AB2C18AD187145D10058BFAD /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
+		AB2C18AE187145D10058BFAD /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
+		AB2C18AF187145D10058BFAD /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		AB2C18B31871464D0058BFAD /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		AB2C18C218733C7F0058BFAD /* image.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = image.xcassets; sourceTree = "<group>"; };
+		AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmEditCell.xib; sourceTree = "<group>"; };
+		AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmEditCell.h; sourceTree = "<group>"; };
+		AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmEditCell.m; sourceTree = "<group>"; };
 		AB340A601864165200B7C06A /* personInfoBG@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "personInfoBG@2x.png"; path = "../../../../WOKE/EarlyWorm/EarlyWorm/Resources/personInfoBG@2x.png"; sourceTree = "<group>"; };
 		AB39BEF417D96143006C31C5 /* EWSocialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialViewController.h; sourceTree = "<group>"; };
 		AB39BEF517D96143006C31C5 /* EWSocialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialViewController.m; sourceTree = "<group>"; };
@@ -543,6 +561,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB2C18B41871464E0058BFAD /* libz.dylib in Frameworks */,
 				AB1951AD185AB2E5003C7EE0 /* MobileCoreServices.framework in Frameworks */,
 				568CC788178DD2C900AB1579 /* UIKit.framework in Frameworks */,
 				AB1951AC185AB2AD003C7EE0 /* CoreGraphics.framework in Frameworks */,
@@ -552,6 +571,7 @@
 				ABF028961859834700A7D38E /* AVFoundation.framework in Frameworks */,
 				AB49BC8E18542402004A38DB /* Accounts.framework in Frameworks */,
 				AB49BC8C185423F8004A38DB /* AdSupport.framework in Frameworks */,
+				AB2C18B0187145D10058BFAD /* libTestFlight.a in Frameworks */,
 				AB49BC8A185423E6004A38DB /* Social.framework in Frameworks */,
 				ABDD0BC11852E374005EA59B /* CoreLocation.framework in Frameworks */,
 				ABDD0BBD1852E360005EA59B /* SystemConfiguration.framework in Frameworks */,
@@ -643,6 +663,7 @@
 				AB44569E17E6A5870077FE45 /* Voice Message */,
 				AB94330417C3013F00ADC702 /* Ringtone */,
 				ABCCE68117EFF4D10078F8AA /* sleep_trend_mock.png */,
+				AB2C18C218733C7F0058BFAD /* image.xcassets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -787,6 +808,8 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AB2C18B31871464D0058BFAD /* libz.dylib */,
+				AB2C18A9187145D10058BFAD /* TestFlightSDK2.1.3 */,
 				AB198C69186034EC008C1F15 /* FacebookSDK.framework */,
 				AB207E6A182FFFC40076D93F /* MBProgressHUD */,
 				ABD34DAA185C054C008CD2B8 /* FTWCache */,
@@ -923,6 +946,9 @@
 				AB07BC0E17D6F7FF00E23F44 /* EWTextFieldCell.xib */,
 				AB0740111810FA3C00AAFC90 /* EWAlarmScheduleViewController.h */,
 				AB0740121810FA3C00AAFC90 /* EWAlarmScheduleViewController.m */,
+				AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */,
+				AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */,
+				AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */,
 			);
 			path = Alarms;
 			sourceTree = "<group>";
@@ -1042,6 +1068,19 @@
 			);
 			name = MBProgressHUD;
 			path = EarlyWorm/BasicLib;
+			sourceTree = "<group>";
+		};
+		AB2C18A9187145D10058BFAD /* TestFlightSDK2.1.3 */ = {
+			isa = PBXGroup;
+			children = (
+				AB2C18AA187145D10058BFAD /* libTestFlight.a */,
+				AB2C18AB187145D10058BFAD /* README.md */,
+				AB2C18AC187145D10058BFAD /* release_notes.md */,
+				AB2C18AD187145D10058BFAD /* TestFlight+AsyncLogging.h */,
+				AB2C18AE187145D10058BFAD /* TestFlight+ManualSessions.h */,
+				AB2C18AF187145D10058BFAD /* TestFlight.h */,
+			);
+			path = TestFlightSDK2.1.3;
 			sourceTree = "<group>";
 		};
 		AB3120AF187130380099738C /* Notification */ = {
@@ -1356,6 +1395,7 @@
 			files = (
 				56FEA59617A5766B00FC2938 /* InfoPlist.strings in Resources */,
 				ABDD0BB81852E326005EA59B /* CHANGELOG.md in Resources */,
+				AB2C18B2187145D10058BFAD /* release_notes.md in Resources */,
 				561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */,
 				ABF1261217C1D8BC00C0FDAC /* portrait2_s.png in Resources */,
 				AB13C1D11862D32400231159 /* EWPersonCell.xib in Resources */,
@@ -1372,6 +1412,7 @@
 				ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */,
 				ABCCE67C17EFF2CA0078F8AA /* color_round_btn.png in Resources */,
 				AB94332F17C9AC5100ADC702 /* icon_r.png in Resources */,
+				AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */,
 				AB0EFFC018022C0F00A8A5C2 /* Default-568h@2x~iphone.png in Resources */,
 				AB0EFFBD18022B8D00A8A5C2 /* Default~iphone.png in Resources */,
 				ABA728B61831F74900595CFD /* EWFirstTimeViewController.xib in Resources */,
@@ -1396,6 +1437,8 @@
 				ABEEA95917E013640035DF4A /* personInfoBG.png in Resources */,
 				AB340A611864165200B7C06A /* personInfoBG@2x.png in Resources */,
 				ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */,
+				AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */,
+				AB2C18B1187145D10058BFAD /* README.md in Resources */,
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
 				ABEEA96617E027E90035DF4A /* vm3.m4a in Resources */,
 				AB19E9F5186952D1000FBDD1 /* liked@2x.png in Resources */,
@@ -1510,6 +1553,7 @@
 				AB07401E18125BA400AAFC90 /* EWGroupCell.m in Sources */,
 				56330CE117FDDF49008A7922 /* NSObject+SBJSON.m in Sources */,
 				5671BE3C18085C4100F35DF9 /* ASIWebPageRequest.m in Sources */,
+				AB2C18CD18737F670058BFAD /* EWAlarmEditCell.m in Sources */,
 				AB198C951861818B008C1F15 /* EWMediaItem.m in Sources */,
 				5671BE4218085C4100F35DF9 /* ASICloudFilesObjectRequest.m in Sources */,
 				AB13C1CF1862D32400231159 /* EWDetailPersonViewController.m in Sources */,
@@ -1618,6 +1662,8 @@
 		568CC7B6178DD2C900AB1579 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1637,6 +1683,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/libWeiboSDK",
 					"$(SRCROOT)/StackMob-v2.2.0",
+					/Users/Lei/Dropbox/WOKE/EarlyWorm/TestFlightSDK2.1.3,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -1644,7 +1691,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0645BACA-4DCF-44BD-AD19-A56B9F802C4E";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1652,6 +1699,8 @@
 		568CC7B7178DD2C900AB1579 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1671,13 +1720,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/libWeiboSDK",
 					"$(SRCROOT)/StackMob-v2.2.0",
+					/Users/Lei/Dropbox/WOKE/EarlyWorm/TestFlightSDK2.1.3,
 				);
 				OTHER_LDFLAGS = (
 					"-\"lxml2\"",
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0645BACA-4DCF-44BD-AD19-A56B9F802C4E";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

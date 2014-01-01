@@ -27,6 +27,7 @@
 #import "EWEditAlarmViewController.h"
 #import "EWWakeUpViewController.h"
 #import "EWHistoryViewController.h"
+#import "EWAlarmScheduleViewController.h"
 
 //backend
 #import "StackMob.h"
@@ -184,11 +185,8 @@
 
 - (void)OnScheduleAlarm{
     //pop up alarmScheduleView
-    //get alarm schedule
-    //edit alarm queue
-    for (EWAlarmItem *a in [EWAlarmManager.sharedInstance allAlarms]) {
-        NSLog(@"Updating alarm at weekday %d", [a.time weekdayNumber]);
-    }
+    EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 //main loading function

@@ -28,6 +28,7 @@
 #import "EWIO.h"
 #import "MBProgressHUD.h"
 #import "FTWCache.h"
+#import <FacebookSDK/FacebookSDK.h>
 
 #import "EWLogInViewController.h"
 #import "EWAppDelegate.h"
@@ -89,7 +90,8 @@
 }
 
 - (void)cleanData{
-    [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].delegate.window animated:YES];
+    EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
+    [MBProgressHUD showHUDAddedTo:delegate.window animated:YES];
     NSLog(@"Cleaning all cache and server data");
     NSManagedObjectContext *context = [SMClient defaultClient].coreDataStore.contextForCurrentThread;
     [context deleteObject:[EWPersonStore sharedInstance].currentUser];
@@ -115,7 +117,10 @@
         //logout
         [[SMClient defaultClient] logoutOnSuccess:^(NSDictionary *result) {
             EWLogInViewController *controller = [[EWLogInViewController alloc] init];
-            EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
+            [MBProgressHUD hideAllHUDsForView:delegate.window animated:YES];
+            //facebook logout
+            [[FBSession activeSession] closeAndClearTokenInformation];
+            
             [delegate.window.rootViewController presentViewController:controller animated:YES completion:NULL];
         } onFailure:^(NSError *error) {
             [NSException raise:@"Error log out" format:@"Reason: %@", error.description];

@@ -28,6 +28,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *editBtn;
 @property (weak, nonatomic) IBOutlet UILabel *descriptionText;
 @property (weak, nonatomic) IBOutlet UIButton *messages;
+@property (weak, nonatomic) IBOutlet UISwitch *alarmState;
 
 - (IBAction)editAlarm:(id)sender;
 - (IBAction)OnAlarmSwitchChanged:(id)sender;

@@ -21,6 +21,7 @@
 #import "EWPersonStore.h"
 #import "EWLogInViewController.h"
 #import "StackMob.h"
+#import "EWTaskStore.h"
 
 @interface TestViewController ()
 
@@ -180,7 +181,7 @@
             NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"You got a message from %@", [EWPersonStore sharedInstance].currentUser.name],
                                           @"badge": @1,
                                           @"title": @"WOKE",
-                                          @"task": @"029062E9-5280-4CD2-ADA0-2C4D775FBD83"};
+                                          kLocalNotificationUserInfoKey: [EWTaskStore sharedInstance]};
             NSArray *users = @[[EWPersonStore sharedInstance].currentUser.username];
             EWAppDelegate *appDelegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
             [appDelegate.pushClient sendMessage:pushMessage toUsers:users onSuccess:^{

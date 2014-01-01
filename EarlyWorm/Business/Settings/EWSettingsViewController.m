@@ -350,7 +350,8 @@
                 ringtoneVC = [[EWRingtoneSelectionViewController alloc] init];
                 ringtoneVC.delegate = self;
                 NSArray *ringtones = ringtoneNameList;
-                ringtoneVC.selected = [ringtones indexOfObject:preference[@"tone"]];
+                ringtoneVC.selected = [ringtones indexOfObject:preference[@"DefaultTone"]];
+                
                 [self.navigationController pushViewController:ringtoneVC animated:YES];
             }
                 break;

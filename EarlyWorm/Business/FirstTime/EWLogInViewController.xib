@@ -41,9 +41,14 @@
                         <action selector="check:" destination="-1" eventType="touchUpInside" id="WZf-1g-Pvi"/>
                     </connections>
                 </button>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="profile.png" translatesAutoresizingMaskIntoConstraints="NO" id="fOQ-BO-3Ce">
-                    <rect key="frame" x="128" y="193" width="64" height="64"/>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="profile.png" translatesAutoresizingMaskIntoConstraints="NO" id="fOQ-BO-3Ce">
+                    <rect key="frame" x="130" y="193" width="60" height="60"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="30"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                 </imageView>
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Awz-R8-0ja">
                     <rect key="frame" x="199" y="507" width="101" height="41"/>
@@ -63,7 +68,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="dqh-2B-tlt">
-                    <rect key="frame" x="150" y="215" width="20" height="20"/>
+                    <rect key="frame" x="150" y="213" width="20" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="color" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </activityIndicatorView>
@@ -74,6 +79,6 @@
         </view>
     </objects>
     <resources>
-        <image name="profile.png" width="280" height="280"/>
+        <image name="profile.png" width="140" height="140"/>
     </resources>
 </document>

@@ -83,5 +83,8 @@
 //Audio & Video
 #define kMaxRecordTime                  20.0;
 #define kAudioPlayerDidFinishPlaying    @"audio_finished_playing"
+#define kPushTokenKey                   @"push_token" //the key for local defaults to get the array of tokenByUser dict
+#define kPushTokenUserKey               @"user" //the key for user in tokenByUser dict
+#define kPushTokenByUserKey             @"token" //the key for token in tokenByUser dict
 
 #endif

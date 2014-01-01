@@ -45,8 +45,18 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Error handling
-        //__block id blockSelf = self;
+        //user login
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
+        //push
+#if TARGET_IPHONE_SIMULATOR
+        //Code specific to simulator
+        
+#else
+        EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
+        delegate.pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
+        //[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
+        
+#endif
         __block SMUserSession *currentSession = self.client.session;
         [self.client setTokenRefreshFailureBlock:^(NSError *error, SMFailureBlock originalFailureBlock) {
             NSLog(@"Automatic refresh token has failed");
@@ -242,7 +252,10 @@
             //city
             if (!person.city) person.city = user.location[@"name"];
             //preference
-            if(!person.preference) person.preference = [[EWDatabaseDefault sharedInstance].defaults mutableCopy];
+        if(!person.preference){
+            //new user
+            person.preference = [[EWDatabaseDefault sharedInstance].defaults mutableCopy];
+        }
             //profile pic, async download, need to assign img to person before leave
             NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", user.id];
             //[self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
@@ -288,5 +301,41 @@
 }
 
 
+#pragma mark - PUSH
+- (void)userLoggedIn{
+    //register notification, need both token and user ready
+
+    NSString *username = [EWPersonStore sharedInstance].currentUser.username;
+    if (!username) {
+        NSLog(@"Tried to register push on StackMob but username is missing.");
+    }
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *tokenByUserArray = [defaults objectForKey:kPushTokenKey];
+    for (NSDictionary *dict in tokenByUserArray) {
+        NSString *registeredUsername = dict[kPushTokenByUserKey];
+        if ([username isEqualToString:registeredUsername]) {
+            //registered user with exsiting token
+            NSString *token = dict[kPushTokenUserKey];
+            EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
+            [delegate.pushClient registerDeviceToken:token withUser:username onSuccess:^{
+                NSLog(@"APP registered push token and assigned to StackMob server");
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
+            }];
+            return;
+        }
+        
+    }
+    
+    //user not registered on this device for push on StackMob
+#if TARGET_IPHONE_SIMULATOR
+    //Code specific to simulator
+    
+#else
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
+    //register result will return to app delegate method
+#endif
+    
+}
 
 @end

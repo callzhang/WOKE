@@ -14,7 +14,7 @@
 - (NSString *)date2String {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     
-    [formatter setDateFormat:@"HH:mm"];
+    [formatter setDateFormat:@"HH:mm a"];
 
     NSString *string = [formatter stringFromDate:self];
     return string;
@@ -99,6 +99,33 @@
     NSDateComponents *comp = [cal components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSWeekdayCalendarUnit) fromDate:self];
     NSInteger hhmm = comp.hour*100 + comp.minute;
     return hhmm;
+}
+
+- (NSDate *)timeByAddingMinutes:(NSInteger)minutes{
+    NSDateComponents* deltaComps = [[NSDateComponents alloc] init];
+    deltaComps.minute = minutes;
+    NSDate *time = [[NSCalendar currentCalendar] dateByAddingComponents:deltaComps toDate:self options:0];
+    return time;
+}
+
+- (NSDate *)timeByMinutesFrom5am:(NSInteger)minutes{
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents* deltaComps = [cal components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];
+    deltaComps.minute = minutes % 60;
+    deltaComps.hour = 5 + (NSInteger)minutes/60;
+    
+    NSDate *time = [cal dateFromComponents:deltaComps];
+    return time;
+}
+
+- (NSInteger)minutesFrom5am{
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents* deltaComps = [cal components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self];
+    NSInteger min = deltaComps.hour * 60 + deltaComps.minute;
+    if (min % 10 != 0) {
+        NSLog(@"Something wrong with the time input: %@", self.date2detailDateString);
+    }
+    return min;
 }
 
 @end

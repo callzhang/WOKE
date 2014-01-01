@@ -10,7 +10,7 @@
 
 @interface NSDate (Extend)
 /**
- Returns HH:MM
+ Returns HH:MM AM
  */
 - (NSString *)date2String;
 /**
@@ -55,5 +55,20 @@
  HHMM in interger format
  */
 - (NSInteger)HHMM;
+
+/**
+ add minutes to the receiver
+ */
+- (NSDate *)timeByAddingMinutes:(NSInteger)minutes;
+
+/**
+ get time from minutes from 5AM
+ */
+- (NSDate *)timeByMinutesFrom5am:(NSInteger)minutes;
+
+/**
+ Get minutes distance from 5AM to now
+ */
+- (NSInteger)minutesFrom5am;
 
 @end

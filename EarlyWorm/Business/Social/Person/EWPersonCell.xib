@@ -69,6 +69,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="profile.png" width="280" height="280"/>
+        <image name="profile.png" width="140" height="140"/>
     </resources>
 </document>

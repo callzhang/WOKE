@@ -28,13 +28,14 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedPersonStore_ = [[EWPersonStore alloc] init];
+        
     });
         
     
     return sharedPersonStore_;
 }
 
-//=======This method doesn't seem to be called========
+#pragma mark - CREATE USER
 -(EWPerson *)createPersonWIthUsername:(NSString *)username{
     NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
     EWPerson *newUser = [[EWPerson alloc] initNewUserInContext:context];
@@ -102,5 +103,7 @@
         NSLog(@"You are the author of media %@", media.title);
     }
 }
+
+
 
 @end

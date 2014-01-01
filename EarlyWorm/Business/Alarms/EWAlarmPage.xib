@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EWAlarmPageView">
             <connections>
+                <outlet property="alarmState" destination="Ghj-rG-lqH" id="8Bm-eG-CxU"/>
                 <outlet property="dateText" destination="zKa-UC-R7w" id="X8P-Kd-piR"/>
                 <outlet property="descriptionText" destination="Adz-Tj-eTa" id="efu-vc-cZZ"/>
                 <outlet property="editBtn" destination="G3D-1S-VUh" id="kMY-oa-ieE"/>
