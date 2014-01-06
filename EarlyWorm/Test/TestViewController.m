@@ -15,7 +15,6 @@
 #import "TestShakeViewController.h"
 #import "TestSocailSDKViewController.h"
 #import "EWLocalNotificationViewController.h"
-#import "EWDatabaseDefault.h"
 #import "EWFirstTimeViewController.h"
 #import "EWPerson.h"
 #import "EWPersonStore.h"
@@ -126,7 +125,7 @@
             EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
             //controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
-            controller.person = [EWPersonStore sharedInstance].currentUser;
+            controller.person = currentUser;
             [self presentViewController:navigationController animated:YES completion:^{}];
             
         }
@@ -160,7 +159,7 @@
         }
             break;
         case 4:{
-            [EWDatabaseDefault.sharedInstance cleanData];
+            [EWPersonStore.sharedInstance purgeUserData];
             [self dismissViewControllerAnimated:YES completion:NULL];
             //cannot log out yet since the background need premission to delete on server
             /*
@@ -178,13 +177,12 @@
             
         case 5:{
             //testing
-            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"You got a message from %@", [EWPersonStore sharedInstance].currentUser.name],
+            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"You got a message from %@", currentUser.name],
                                           @"badge": @1,
                                           @"title": @"WOKE",
                                           kLocalNotificationUserInfoKey: [EWTaskStore sharedInstance]};
-            NSArray *users = @[[EWPersonStore sharedInstance].currentUser.username];
-            EWAppDelegate *appDelegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-            [appDelegate.pushClient sendMessage:pushMessage toUsers:users onSuccess:^{
+            NSArray *users = @[currentUser.username];
+            [pushClient sendMessage:pushMessage toUsers:users onSuccess:^{
                 NSLog(@"Notification sent");
             } onFailure:^(NSError *error){
                 NSLog(@"Notification failed to send");

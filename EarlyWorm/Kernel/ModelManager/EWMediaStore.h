@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #include <stdlib.h>
-#import "EWStore.h"
 #import "EWPersonStore.h"
 
 @class EWMediaItem;
@@ -17,7 +16,7 @@
 
 //you don't need to see all medias
 @property (nonatomic) NSArray *allMedias;
-@property (nonatomic) NSManagedObjectContext *context;
+//@property (nonatomic) NSManagedObjectContext *context;
 
 + (EWMediaStore *)sharedInstance;
 

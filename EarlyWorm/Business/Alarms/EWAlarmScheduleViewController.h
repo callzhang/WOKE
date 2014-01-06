@@ -12,6 +12,5 @@
     UITableView *_tableView;
     NSArray *alarms;
     NSArray *tasks;
-    NSManagedObjectContext *context;
 }
 @end

@@ -16,7 +16,6 @@
 #import "EWIO.h"
 #import "NSDate+Extend.h"
 #import "StackMob.h"
-#import "EWDatabaseDefault.h"
 
 @implementation EWPerson
 @synthesize bgImage;
@@ -102,7 +101,8 @@
         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:prefData options:0 error:&err];
         return json;
     }else{
-        self.preference = [[[EWDatabaseDefault sharedInstance] defaults] mutableCopy];
+        NSDictionary *defaults = userDefaults;
+        self.preference = [defaults mutableCopy];
         NSLog(@"Set user defaults");
         return self.preference;
     }

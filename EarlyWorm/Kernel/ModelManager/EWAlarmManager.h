@@ -15,7 +15,6 @@
 @interface EWAlarmManager : NSObject//EWStore
 
 @property (nonatomic, retain) NSMutableArray *allAlarms;
-@property (nonatomic) NSManagedObjectContext *context;
 
 // Singleton
 + (EWAlarmManager *)sharedInstance ;
@@ -38,6 +37,9 @@
 
 
 //check
+/**
+ Check if alarm for current user is 0 or 7. Otherwise delete all alarm.
+ */
 - (BOOL)checkAlarms;
 //KVO
 

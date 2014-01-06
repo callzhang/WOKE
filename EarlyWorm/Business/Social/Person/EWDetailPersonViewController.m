@@ -50,7 +50,7 @@
 
 
 - (void)initData {
-    me = [EWPersonStore sharedInstance].currentUser;
+    me = currentUser;
 }
 
 - (void)initChartView {
@@ -172,9 +172,9 @@
             {
                 //OK
                 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-                me = [EWPersonStore sharedInstance].currentUser;
+                me = currentUser;
                 [me addFriendsObject:person];
-                [[SMClient defaultClient].coreDataStore.contextForCurrentThread saveOnSuccess:^{
+                [context saveOnSuccess:^{
                     hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
                     hud.mode = MBProgressHUDModeCustomView;
                     hud.labelText = @"Added";
@@ -191,9 +191,9 @@
     }else if ([alertView.title isEqualToString:@"Unfriend"]){
         if (buttonIndex == 0) {
             MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            me = [EWPersonStore sharedInstance].currentUser;
+            me = currentUser;
             [me removeFriendedObject:person];
-            [[SMClient defaultClient].coreDataStore.contextForCurrentThread saveOnSuccess:^{
+            [context saveOnSuccess:^{
                 hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
                 hud.mode = MBProgressHUDModeCustomView;
                 hud.labelText = @"Unfriended";
@@ -283,7 +283,7 @@
     /*
     //voice message
     EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];//with ramdom audio
-    media.author = [EWPersonStore sharedInstance].currentUser;
+    media.author = currentUser;
     [media addTasksObject:tasks[indexPath.row]];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     EWTaskItem *task = [tasks objectAtIndex:indexPath.row];

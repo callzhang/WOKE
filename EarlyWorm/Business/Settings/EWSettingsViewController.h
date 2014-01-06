@@ -21,7 +21,7 @@ typedef enum {
     settingGroupList settingGroup;
     NSString *cellIdentifier;
     EWPerson *_person;
-    NSManagedObjectContext *context;
+    //NSManagedObjectContext *context;
     //NSDictionary *options;
     //preference
     EWRingtoneSelectionViewController *ringtoneVC;

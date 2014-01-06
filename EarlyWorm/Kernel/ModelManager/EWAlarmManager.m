@@ -25,7 +25,7 @@
 
 @implementation EWAlarmManager
 @synthesize allAlarms = _allAlarms;
-@synthesize context;
+//@synthesize context;
 
 + (EWAlarmManager *)sharedInstance {
     static EWAlarmManager *g_alarmManager = nil;
@@ -40,7 +40,6 @@
 - (id)init{
     self = [super init];
     if (self) {
-        context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
         NSLog(@"Context for Alarm Store is %@", context);
         //[self checkAlarms];
     }
@@ -50,7 +49,7 @@
 #pragma mark - Setter & Getter
 
 - (NSMutableArray *)allAlarms{
-    _allAlarms = [[[EWPersonStore sharedInstance].currentUser.alarms allObjects] mutableCopy];
+    _allAlarms = [[currentUser.alarms allObjects] mutableCopy];
     //sort
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
     [_allAlarms sortUsingDescriptors:@[sort]];
@@ -61,13 +60,12 @@
 //add new alarm, save, add to current user, save user
 - (EWAlarmItem *)newAlarm{
     NSLog(@"Create new Alarm");
-    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     EWAlarmItem *a = [NSEntityDescription insertNewObjectForEntityForName:@"EWAlarmItem" inManagedObjectContext:context];
     //assign id
     [a assignObjectId];
     
     //add relation
-    a.owner = [EWPersonStore sharedInstance].currentUser; //also sets the reverse
+    a.owner = currentUser; //also sets the reverse
     
     //save
     [context saveOnSuccess:^{
@@ -84,9 +82,8 @@
 
 #pragma mark - SEARCH
 - (NSArray *)allAlarmsForUser:(EWPerson *)user{
-    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWAlarmItem"];
-    request.predicate = [NSPredicate predicateWithFormat:@"owner == %@", [EWPersonStore sharedInstance].currentUser];
+    request.predicate = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
     request.relationshipKeyPathsForPrefetching = @[@"tasks"];
     NSArray *alarms = [context executeFetchRequestAndWait:request error:NULL];
     //user.alarms = [NSSet setWithArray:alarms];
@@ -110,10 +107,17 @@
 #pragma mark - SCHEDULE
 //schedule according to alarms array. If array is empty, schedule according to default template.
 - (NSArray *)scheduleAlarm{
-    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+    NSArray *alarms = [self.allAlarms copy];
+    
     //schedule alarm from Sunday to Saturday of current week
     NSMutableArray *newAlarms = [[NSMutableArray alloc] initWithCapacity:7];
     for (NSInteger i=0; i<7; i++) {
+        //check if alarm exsit
+        for (EWAlarmItem *a in alarms) {
+            if ([a.time weekdayNumber] == i) {
+                continue;
+            }
+        }
         EWAlarmItem *a = [self newAlarm];
         //set time
         NSDate *d = [NSDate date];
@@ -122,6 +126,7 @@
         NSDateComponents *comp = [[NSDateComponents alloc] init];
         comp.day = i-wkd;
         NSDate *time = [cal dateByAddingComponents:comp toDate:d options:0];//set the weekday
+        
         //set time
         comp = [cal components: (NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit |NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:time];
         comp.hour = 8;
@@ -130,7 +135,7 @@
         //set alarm time
         a.time = time;
         a.state = @YES;
-        a.tone = [EWPersonStore sharedInstance].currentUser.preference[@"DefaultTone"];
+        a.tone = currentUser.preference[@"DefaultTone"];
         //add to temp array
         [newAlarms addObject:a];
     }
@@ -159,30 +164,30 @@
 }
 
 - (void)deleteAllAlarms{
-    //NSManagedObjectContext *context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
-    for (EWAlarmItem *a in self.allAlarms) {
-        [self removeAlarm:a];
+    for (EWAlarmItem *alarm in self.allAlarms) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:nil userInfo:@{@"tasks":alarm.tasks}];
+        [context deleteObject:alarm];
     }
-    [context saveOnSuccess:^{
-        NSLog(@"Delete all alarms successful");
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Error in deleting Alarm" format:@"Reason: %@", error.description];
-    }];
+    NSError *err;
+    [context saveAndWait:&err];
 }
 
 #pragma mark - CHECK
 - (BOOL)checkAlarms{
     //fetch again
-    NSArray *alarms = [self allAlarmsForUser:[EWPersonStore sharedInstance].currentUser];
+    NSArray *alarms = [self allAlarmsForUser:currentUser];
     
     if (alarms.count == 0) {
-        //need set up
-        return NO;
+        //need set up later
+        return YES;
     }else if (alarms.count == 7){
         return YES;
     }else{
         //something wrong
         NSLog(@"Something wrong with alarms, delete all");
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alarm incorrect" message:@"Please reschedule your alarm" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        //delete all alarms
         [self deleteAllAlarms];
         return NO;
     }

@@ -11,6 +11,7 @@
 #import "EWPerson.h"
 #import "EWTaskItem.h"
 
+#import "EWDataStore.h"
 #import "StackMob.h"
 #import "NSString+MD5.h"
 #import "FTWCache.h"
@@ -76,7 +77,6 @@
     NSData *imgData = UIImageJPEGRepresentation(img, 0.7);
     self.imageKey = [SMBinaryDataConversion stringForBinaryData:imgData name:@"alarmImage.jpg" contentType:@"image/jpg"];
     //save and merge
-    NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
     [context saveOnSuccess:^{
         [context refreshObject:self mergeChanges:YES];
     } onFailure:^(NSError *error) {
@@ -87,38 +87,7 @@
 #pragma mark - AUDIO
 - (NSData *)audio{
     if(!audio){
-        __block NSData *data;
-        if ([SMBinaryDataConversion stringContainsURL:self.audioKey]) {
-            //read from url
-            NSURL *audioURL = [NSURL URLWithString:self.audioKey];
-            NSString *key = [audioURL.absoluteString MD5Hash];
-            data = [FTWCache objectForKey:key];
-            if (data) {
-                self.audio = data;
-            }else{
-                //get from net
-                data = [NSData dataWithContentsOfURL:audioURL];
-                [FTWCache setObject:data forKey:key];
-                //NSLog(@"audio ready: %@",data);
-            }
-            
-            
-        }else if(self.audioKey.length > 200){
-            //string contains data
-            data = [SMBinaryDataConversion dataForString:self.audioKey];
-        }else if(![self.audioKey hasPrefix:@"http"]){
-            //local data
-            //string is a local file
-            NSArray *array = [self.audioKey componentsSeparatedByString:@"."];
-            if (array.count != 2) {
-                [NSException raise:@"Unexpected file format" format:@"Please provide a who file name with extension"];
-            }
-            NSString *filePath = [[NSBundle mainBundle] pathForResource:array[0] ofType:array[1]];
-            data = [NSData dataWithContentsOfFile:filePath];
-        }
-        
-        //save data
-        self.audio = data;
+        audio = [[EWDataStore sharedInstance] getRemoteDataWithKey:self.audioKey];
     }
     return audio;
 }

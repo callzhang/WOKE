@@ -17,7 +17,6 @@
 #import "StackMob.h"
 
 @implementation EWGroupStore
-@synthesize context;
 @synthesize autoGroup, myGroups;
 
 +(EWGroupStore *)sharedInstance{
@@ -32,7 +31,7 @@
 - (id)init{
     self = [super init];
     if (self) {
-        context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+        //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
         autoGroup = self.autoGroup;
         myGroups = self.myGroups;
     }
@@ -49,7 +48,7 @@
         }
     }
     
-    EWPerson *me = [EWPersonStore sharedInstance].currentUser;
+    EWPerson *me = currentUser;
     //Try to find group with topic "autoGroup" for the next day, if none then greate it
     for (EWGroup *group in me.groups) {
         if ([group.topic isEqualToString:autoGroupIndentifier]) {

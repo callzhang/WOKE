@@ -19,7 +19,7 @@
 #import "MBProgressHUD.h"
 
 @interface EWWakeUpViewController (){
-    NSManagedObjectContext *context;
+    //NSManagedObjectContext *context;
     NSInteger currentCellToPlay;
     NSMutableArray *cellArray;
 }
@@ -227,7 +227,7 @@
         //remove from data source
         [medias removeObject:mi];
         
-        //[[EWPersonStore sharedInstance].currentUser removeMediasObject:mi];
+        //[currentUser removeMediasObject:mi];
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         //save in bg

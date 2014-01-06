@@ -12,19 +12,16 @@
 #import "EWPersonStore.h"
 #import "EWPerson.h"
 #import <FacebookSDK/FacebookSDK.h>
-#import "SMLocationManager.h"
 #import "AFNetworking.h"
 #import "UIImageView+AFNetworking.h"
-#import "EWDatabaseDefault.h"
-#import "UIImageView+AFNetworking.h"
 #import "MBProgressHUD.h"
+#import "EWUserManagement.h"
 
 @interface EWLogInViewController ()
 
 @end
 
 @implementation EWLogInViewController
-@synthesize context, client;
 
 +(EWLogInViewController *)sharedInstance{
     static EWLogInViewController *loginVC = nil;
@@ -33,12 +30,7 @@
         loginVC = [[EWLogInViewController alloc] init];
     });
     
-    
     return loginVC;
-}
-
-- (EWAppDelegate *)appDelegate {
-    return (EWAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -47,31 +39,12 @@
     if (self) {
         //user login
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
-        //push
-#if TARGET_IPHONE_SIMULATOR
-        //Code specific to simulator
+
         
-#else
-        EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-        delegate.pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
-        //[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
-        
-#endif
-        __block SMUserSession *currentSession = self.client.session;
-        [self.client setTokenRefreshFailureBlock:^(NSError *error, SMFailureBlock originalFailureBlock) {
-            NSLog(@"Automatic refresh token has failed");
-            // Reset local session info
-            [currentSession clearSessionInfo];
-            
-            // Show custom login screen
-            //[blockSelf showLoginScreen];
-            
-            // Optionally call original failure block
-            originalFailureBlock(error);
-        }];
     }
     return self;
 }
+
 
 - (void)viewDidLoad
 {
@@ -80,8 +53,7 @@
     [self updateView];
     self.proceedBtn.alpha = 0;
     
-    self.client = [self.appDelegate client];
-    //see if fb has already leave token; log in if so.
+    //If fb has already a token, log in SM.
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         NSLog(@"Starting to log in fb with cached info");
         [self.indicator startAnimating];
@@ -91,8 +63,8 @@
             [self sessionStateChanged:session state:status error:error];
         }];
     }
-    self.context = [[self.appDelegate coreDataStore] contextForCurrentThread];
 }
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -102,39 +74,46 @@
 
 - (void)updateView {
     
-    if ([self.client isLoggedIn]) {
+    if ([client isLoggedIn]) {
         [self.btnLoginLogout setTitle:@"Log out" forState:UIControlStateNormal];
     } else {
         [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
     }
+    
+    if (currentUser) {
+        self.name.text = currentUser.name;
+        self.profileView.image = currentUser.profilePic;
+    }
+
 }
 
 - (IBAction)connect:(id)sender {
     [self.indicator startAnimating];
-    if ([self.client isLoggedIn]) {
-        [self logoutUser];
+    if ([client isLoggedIn]) {
+        [self logoutUser];//this should never happen
     } else {
         [self openSession];
     }
 }
 
 - (IBAction)check:(id)sender {
-    NSLog(@"%@",[self.client isLoggedIn] ? @"Logged In" : @"Logged Out");
-    NSLog(@"Current user: %@", [EWPersonStore sharedInstance].currentUser);
+    NSLog(@"%@",[client isLoggedIn] ? @"Logged In" : @"Logged Out");
+    NSLog(@"Current user: %@", currentUser);
 }
 
-- (IBAction)proceed:(id)sender {
+/*
+- (IBAction)proceed:(id)sender {//this function will not be called
     //save image to user
-    [EWPersonStore sharedInstance].currentUser.profilePic = self.profileView.image;
-    [[[SMClient defaultClient].coreDataStore contextForCurrentThread] saveOnSuccess:^{
+    currentUser.profilePic = self.profileView.image;
+    [context saveOnSuccess:^{
         //check default
-        [[EWDatabaseDefault sharedInstance] setDefault];
+        [[EWDataStore sharedInstance] setDefault];
         
         //leaving
         [self dismissViewControllerAnimated:YES completion:NULL];
         
         //broadcasting
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{@"User": [EWPersonStore sharedInstance].currentUser}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{@"User": currentUser}];
         
         //hide hud if possible
         EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
@@ -142,42 +121,9 @@
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error on saving new user info" format:@"Reason: %@", error.description];
     }];
-}
+}*/
 
-#pragma mark - Login & Logout
-- (void)loginUser {
-    
-    /*
-     Initiate a request for the current Facebook session user info, and apply the username to
-     the StackMob user that might be created if one doesn't already exist.  Then login to StackMob with Facebook credentials.
-     */
-    [[FBRequest requestForMe] startWithCompletionHandler:
-     ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
-         if (!error) {
-             [self.client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:user.username onSuccess:^(NSDictionary *result) {
-                 NSLog(@"Logged in facebook for:%@", user.name);
-                 [self updateView];
-                 [self updateUserData:user];
-             } onFailure:^(NSError *error) {
-                 NSLog(@"Error: %@", error);
-             }];
-         } else {
-             // Handle error accordingly
-             NSLog(@"Error getting current Facebook user data, %@", error);
-         }
-         
-     }];
-}
 
-- (void)logoutUser {
-    
-    [self.client logoutOnSuccess:^(NSDictionary *result) {
-        NSLog(@"Logged out of StackMob");
-        [FBSession.activeSession closeAndClearTokenInformation];
-    } onFailure:^(NSError *error) {
-        NSLog(@"Error: %@", error);
-    }];
-}
 
 //start register
 - (void)openSession
@@ -212,10 +158,6 @@
         default:
             break;
     }
-    /*
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:SCSessionStateChangedNotification
-     object:session];*/
     
     if (error) {
         UIAlertView *alertView = [[UIAlertView alloc]
@@ -228,114 +170,65 @@
     }
 }
 
-//after fb login, fetch user managed object
-- (void)updateUserData:(NSDictionary<FBGraphUser> *)user{
-    [[SMClient defaultClient] getLoggedInUserOnSuccess:^(NSDictionary *result){
-        self.name.text = user.name;
-        
-        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
-            [EWPersonStore sharedInstance].currentUser = person;
-            if (!person.email) person.email = user[@"email"];
-            //name
-            if(!person.name) person.name = user.name;
-            //birthday = "01/21/1984";
-            if (!person.birthday) {
-                NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-                formatter.dateFormat = @"mm/dd/yyyy";
-                person.birthday = [formatter dateFromString:user[@"birthday"]];
-            }
-            //facebook link
-            person.facebook = user.link;
-            //gender
-            person.gender = user[@"gender"];
-            //city
-            if (!person.city) person.city = user.location[@"name"];
-            //preference
-        if(!person.preference){
-            //new user
-            person.preference = [[EWDatabaseDefault sharedInstance].defaults mutableCopy];
-        }
-            //profile pic, async download, need to assign img to person before leave
-            NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", user.id];
-            //[self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
-        
-            [self.profileView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]] placeholderImage:[UIImage imageNamed:@"profile.png"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-                //stop indicator
-                [self.indicator stopAnimating];
-                //show proceed btn
-                self.proceedBtn.alpha = 1;
-                //save image
-                [EWPersonStore sharedInstance].currentUser.profilePic = image;
-                
-                //check default
-                [[EWDatabaseDefault sharedInstance] setDefault];
-                
-                //leaving
-                
-                [self dismissViewControllerAnimated:YES completion:^{
-                    [[[SMClient defaultClient].coreDataStore contextForCurrentThread] saveOnSuccess:^{
-                        NSLog(@"User info has been saved");
-                    } onFailure:^(NSError *error) {
-                        NSLog(@"Unable to save user info");
-                    }];
-                }];
-                
-                //broadcasting
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{@"User": [EWPersonStore sharedInstance].currentUser}];
-                
-                //hide hud if possible
-                EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-                [MBProgressHUD hideAllHUDsForView:delegate.window.rootViewController.view animated:YES];
-                
-            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-                //
-            }];
-            
-        //});
-        
-    } onFailure:^(NSError *err){
-        // Error
-        [NSException raise:@"Unable to find current user" format:@"Check your code"];
+#pragma mark - Login & Logout
+- (void)loginUser {
+    
+    
+    /*
+     Initiate a request for the current Facebook session user info, and apply the username to
+     the StackMob user that might be created if one doesn't already exist.  Then login to StackMob with Facebook credentials.
+     */
+    [[FBRequest requestForMe] startWithCompletionHandler:
+     ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
+         if (!error) {
+             EWPerson *oldUser = currentUser;
+             [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:user.username onSuccess:^(NSDictionary *result) {
+                 NSLog(@"Logged in facebook for:%@", user.name);
+                 
+                 if ([oldUser.username isEqualToString:user.username]) {
+                     //logged in with fb user already linked to currentUser
+                 }else{
+                     //new user, direct overwrite local info
+                     [[EWUserManagement sharedInstance] updateUserData:user];
+                 }
+                 [self updateView];
+                 
+                 //stop indicator
+                 [self.indicator stopAnimating];
+                 
+             }onFailure:^(NSError *error) {
+                 NSLog(@"Error: %@", error);
+             }];
+         } else {
+             // Handle error accordingly
+             NSLog(@"Error getting current Facebook user data, %@", error);
+         }
+         
+         //leaving
+         [self dismissViewControllerAnimated:YES completion:^{
+             [context saveOnSuccess:^{
+                 NSLog(@"User %@ logged in from facebook", user.username);
+             } onFailure:^(NSError *error) {
+                 NSLog(@"Unable to save user info");
+             }];
+         }];
+         
+     }];
+}
+
+- (void)logoutUser {
+    
+    [client logoutOnSuccess:^(NSDictionary *result) {
+        NSLog(@"Logged out of StackMob");
+        [FBSession.activeSession closeAndClearTokenInformation];
+    } onFailure:^(NSError *error) {
+        NSLog(@"Error: %@", error);
     }];
 }
 
 
-#pragma mark - PUSH
-- (void)userLoggedIn{
-    //register notification, need both token and user ready
 
-    NSString *username = [EWPersonStore sharedInstance].currentUser.username;
-    if (!username) {
-        NSLog(@"Tried to register push on StackMob but username is missing.");
-    }
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSArray *tokenByUserArray = [defaults objectForKey:kPushTokenKey];
-    for (NSDictionary *dict in tokenByUserArray) {
-        NSString *registeredUsername = dict[kPushTokenByUserKey];
-        if ([username isEqualToString:registeredUsername]) {
-            //registered user with exsiting token
-            NSString *token = dict[kPushTokenUserKey];
-            EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-            [delegate.pushClient registerDeviceToken:token withUser:username onSuccess:^{
-                NSLog(@"APP registered push token and assigned to StackMob server");
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
-            }];
-            return;
-        }
-        
-    }
-    
-    //user not registered on this device for push on StackMob
-#if TARGET_IPHONE_SIMULATOR
-    //Code specific to simulator
-    
-#else
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
-    //register result will return to app delegate method
-#endif
-    
-}
+
+
 
 @end

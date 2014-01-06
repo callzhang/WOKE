@@ -14,7 +14,6 @@
     NSMutableArray * _alarmPages; //alarm page container
 }
 
-@property (nonatomic) EWPerson *me;
 @property (nonatomic) NSArray *alarms;
 @property (nonatomic) NSArray *tasks;
 
@@ -24,12 +23,11 @@
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *locationLabel;
 @property (weak, nonatomic) IBOutlet UILabel *rankLabel;
+@property (weak, nonatomic) IBOutlet UIButton *addBtn;
 
 //other
-//@property (nonatomic) BOOL initCompleted;
-
-- (IBAction)OnHistoryButtonTapped:(id)sender;
 - (void)loadScrollViewWithPage:(NSInteger)page;
 - (void)scrollViewDidScroll:(UIScrollView *)sender;
 - (IBAction)changePage:(id)sender;
+- (IBAction)scheduleInitialAlarms:(id)sender;
 @end

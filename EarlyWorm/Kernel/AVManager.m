@@ -159,10 +159,12 @@
         return recordingFileUrl;
         NSLog(@"Recording finished: %@", recordingFileUrl);
     } else {
-        NSDictionary *recordSettings = @{AVEncoderAudioQualityKey: [NSNumber numberWithInt:kAudioFormatLinearPCM],
-                                         AVEncoderBitRateKey: @64,
+        NSDictionary *recordSettings = @{AVEncoderAudioQualityKey: @(AVAudioQualityLow),
+                                         //AVEncoderAudioQualityKey: [NSNumber numberWithInt:kAudioFormatLinearPCM],
+                                         //AVEncoderBitRateKey: @64,
                                          AVSampleRateKey: @24000.0,
-                                         AVFormatIDKey: [NSNumber numberWithInt: kAudioFormatMPEG4AAC]}; //,
+                                         AVNumberOfChannelsKey: @1,
+                                         AVFormatIDKey: @(kAudioFormatMPEG4AAC)}; //,
                                          //AVEncoderBitRateStrategyKey: AVAudioBitRateStrategy_Variable};
         NSError *err;
         AVAudioRecorder *newRecorder = [[AVAudioRecorder alloc] initWithURL: recordingFileUrl
@@ -179,7 +181,7 @@
         }
         //update
         [self updateViewForRecorderState:recorder];
-        NSLog(@"Recording");
+        NSLog(@"Recording...");
     }
     return nil;
 }

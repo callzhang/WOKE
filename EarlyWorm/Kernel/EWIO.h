@@ -10,7 +10,8 @@
 
 @interface EWIO : NSObject
 
-+(NSString *)UUID;
-+(void)clearMemory;
++ (NSString *)UUID;
++ (NSString *)ADID;
++ (void)clearMemory;
 
 @end

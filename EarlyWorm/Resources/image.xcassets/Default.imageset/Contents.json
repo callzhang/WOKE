@@ -3,24 +3,26 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "Default.png"
+      "filename" : "splash.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "splash x2-2.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "Default~iphone.png"
+      "filename" : "splash-1.png"
     },
     {
       "idiom" : "iphone",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "splash x2.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "Default-568h@2x~iphone.png",
+      "filename" : "Splash R4.png",
       "subtype" : "retina4",
       "scale" : "2x"
     }

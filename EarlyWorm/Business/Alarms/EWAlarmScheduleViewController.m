@@ -15,6 +15,9 @@
 
 //Util
 #import "NSDate+Extend.h"
+
+//backend
+#import "EWDataStore.h"
 #import "StackMob.h"
 
 static NSString *cellIdentifier = @"scheduleAlarmCell";
@@ -45,7 +48,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)initData{
     //data source
-    context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     alarms = EWAlarmManager.sharedInstance.allAlarms;
     tasks = [EWTaskStore sharedInstance].allTasks;
     cellArray = [[NSMutableArray alloc] initWithCapacity:7];

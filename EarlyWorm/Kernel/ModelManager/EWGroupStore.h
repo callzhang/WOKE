@@ -13,7 +13,7 @@
 @interface EWGroupStore : NSObject
 @property (nonatomic, retain) NSArray *myGroups; //all my groups
 @property (nonatomic) EWGroup *autoGroup;
-@property (nonatomic) NSManagedObjectContext *context;
+//@property (nonatomic) NSManagedObjectContext *context;
 @property (nonatomic) UIImage *image;
 
 +(EWGroupStore *) sharedInstance;

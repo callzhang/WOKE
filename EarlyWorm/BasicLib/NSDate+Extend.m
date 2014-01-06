@@ -35,6 +35,13 @@
 
 }
 
+- (NSString *)date2numberDateString{
+    NSDateFormatter *parseFormatter = [[NSDateFormatter alloc] init];
+    parseFormatter.timeZone = [NSTimeZone defaultTimeZone];
+    parseFormatter.dateFormat = @"MM/DD/YYYY";
+    return [parseFormatter stringFromDate:self];
+}
+
 - (BOOL)isEarlierThan:(NSDate *)date{
     NSTimeInterval t1 = [self timeIntervalSinceReferenceDate];
     NSTimeInterval t2 = [date timeIntervalSinceReferenceDate];

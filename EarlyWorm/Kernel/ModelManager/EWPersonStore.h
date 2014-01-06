@@ -7,19 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EWStore.h"
+#import "EWDataStore.h"
+#import "EWPerson.h"
+
+extern EWPerson *currentUser;
 
 @class EWMediaStore, EWPerson;
 
 @interface EWPersonStore : NSObject
 
-//@property (retain, nonatomic) NSArray * allPerson;
-@property (retain, nonatomic) EWPerson *currentUser;
+//@property (retain, nonatomic) EWPerson *currentUser;
 
 + (EWPersonStore *)sharedInstance;
 - (EWPerson *)createPersonWIthUsername:(NSString *)username;
 - (EWPerson *)getPersonByID:(NSString *)ID;
 - (NSArray *)everyone;
-
+- (void)purgeUserData;
 - (void)checkRelations;
 @end

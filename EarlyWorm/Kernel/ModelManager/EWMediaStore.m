@@ -17,7 +17,7 @@
 @implementation EWMediaStore
 //@synthesize context, model;
 @synthesize allMedias;
-@synthesize context;
+//@synthesize context;
 
 +(EWMediaStore *)sharedInstance{
     static EWMediaStore *sharedStore_ = nil;
@@ -31,13 +31,13 @@
 - (id)init{
     self = [super init];
     if (self) {
-        context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+        //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     }
     return self;
 }
 
 - (NSArray *)allMedias{
-    EWPerson *me = [EWPersonStore sharedInstance].currentUser;
+    EWPerson *me = currentUser;
     return [self mediasForPerson:me];
 }
 
@@ -47,7 +47,7 @@
 - (EWMediaItem *)createMedia{
     EWMediaItem *m = [NSEntityDescription insertNewObjectForEntityForName:@"EWMediaItem" inManagedObjectContext:context];
     [m assignObjectId];
-    m.author = [EWPersonStore sharedInstance].currentUser;
+    m.author = currentUser;
     /*
     //TODO: update method here
     NSInteger k = arc4random() % 6;
@@ -87,7 +87,7 @@
 
 #pragma mark - DELETE
 - (void)deleteAllMedias{
-    EWPerson *me = [EWPersonStore sharedInstance].currentUser;
+    EWPerson *me = currentUser;
     NSArray *medias = [self mediaCreatedByPerson:me];
     for (EWMediaItem *m in medias) {
         [context deleteObject:m];

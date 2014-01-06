@@ -11,7 +11,7 @@
 @class EWPerson, EWTaskItem, EWAlarmItem;
 
 @interface EWTaskStore : NSObject <NSKeyedArchiverDelegate>
-@property (nonatomic) NSManagedObjectContext *context;
+//@property (nonatomic) NSManagedObjectContext *context;
 
 /**
  Contains all tasks scheduled as alarm for current user

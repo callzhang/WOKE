@@ -40,7 +40,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initData) name:kPersonLoggedIn object:nil];
         
         //core data
-        context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+        //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     }
     return self;
 }
@@ -55,7 +55,7 @@
 
 - (void)initData {
     //profile
-    _person = [EWPersonStore sharedInstance].currentUser;
+    _person = currentUser;
     preference = [_person.preference mutableCopy];
     //options
     //options = @{@"Offine Ringtone", @"Social interaction", @"Download connection", @"Bed time notification", @9.0, @"Privacy information"};

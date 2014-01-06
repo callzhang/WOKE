@@ -8,18 +8,21 @@
 //  This class serves as the basic file input/output class that handles file namagement and memory management
 
 #import "EWIO.h"
+//#import "ASIdentifierManager.h"
+#import <AdSupport/ASIdentifierManager.h>
 
 @implementation EWIO
 
-+(NSString *)UUID{
-    CFUUIDRef ID = CFUUIDCreate(kCFAllocatorDefault); //core foundation = CF
-    CFStringRef IDString = CFUUIDCreateString(kCFAllocatorDefault, ID);
-    NSString *key = (__bridge NSString*)IDString;//bridge cast CF object to NS object
-    CFRelease(ID);
-    CFRelease(IDString);
++ (NSString *)UUID{
+    NSString *uuid = [[NSUUID UUID] UUIDString];
     
-    return key;
+    return uuid;
     
+}
+
++ (NSString *)ADID{
+    NSString *adId = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+    return adId;
 }
 
 +(void)clearMemory{

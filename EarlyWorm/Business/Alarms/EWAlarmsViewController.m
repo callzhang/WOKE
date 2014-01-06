@@ -11,12 +11,12 @@
 // Util
 #import "EWUIUtil.h"
 #import "NSDate+Extend.h"
+#import "MBProgressHUD.h"
 
 // Manager
 #import "EWAlarmManager.h"
 #import "EWPersonStore.h"
 #import "EWTaskStore.h"
-#import "EWDatabaseDefault.h"
 
 // Model
 #import "EWPerson.h"
@@ -43,7 +43,7 @@
 */
 
 @implementation EWAlarmsViewController
-@synthesize me, alarms, tasks;
+@synthesize alarms, tasks;
 @synthesize scrollView = _scrollView;
 @synthesize pageView = _pageView;
 @synthesize profileImageView = _profileImageView;
@@ -55,6 +55,7 @@
     self = [super init];
     if (self) {
         self.title = LOCALSTR(@"Alarms");
+        
         self.tabBarItem.image = [UIImage imageNamed:@"alarm_icon.png"];
         //launch with local notif
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentWakeUpView:) name:UIApplicationLaunchOptionsLocalNotificationKey object:nil];
@@ -73,14 +74,14 @@
 }
 
 - (void)userLoggedIn{
-    self.me = [EWPersonStore sharedInstance].currentUser;
-    //start working
-    [self viewDidLoad];
+    [self initData];
+    [self initView];
+    [self reloadView];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if (me) {
+    if (currentUser) {
         [self initData];
         [self initView];
         [self reloadView];
@@ -90,15 +91,15 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     //reload
-    if (me) {
+    if (currentUser) {
         [self reloadView];
     }
-    
-    
 }
 
 - (void)initData {
     //init alarm page container
+    alarms = [EWAlarmManager sharedInstance].allAlarms;
+    tasks = [EWTaskStore sharedInstance].allTasks;
     for (unsigned i = 0; i < self.alarms.count; i++) {
         [_alarmPages addObject:[NSNull null]];
     }
@@ -106,7 +107,7 @@
 
 - (void)initView {
     //schedule button
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(OnScheduleAlarm)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(OnScheduleAlarm)];
     
 #ifndef CLEAR_TEST
     //test view
@@ -114,22 +115,27 @@
 #endif
     
     //owner info
-    self.profileImageView.image = self.me.profilePic;
-    self.nameLabel.text = self.me.name;
-    self.locationLabel.text = [NSString stringWithFormat:@"%@", self.me.city];
-    self.rankLabel.text = @"Early Bird";
+    self.profileImageView.image = currentUser.profilePic;
+    self.nameLabel.text = currentUser.name;
+    self.locationLabel.text = currentUser.city ? currentUser.city : @"Somewhere";
+    self.rankLabel.text = [NSString stringWithFormat:@"Last activity: %@", [currentUser.createddate date2numberDateString]];
+    
+    //nav bar
+    //self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.169 green:0.373 blue:0.192 alpha:0.9];
+    //self.navigationController.navigationBar.translucent = YES;
     
     //paging
     _scrollView.delegate = self;
     _scrollView.pagingEnabled = YES;
     _pageView.currentPage = 0;
     
-    //[self reloadView]; //preload
+    //add button
+    self.addBtn.alpha = (alarms.count == 0) ? 1:0;
     
 }
 
 - (void)reloadView {
-    if (self.me) {
+    if (currentUser) {
         _pageView.numberOfPages = self.alarms.count;
         
         [self loadScrollViewWithPage:_pageView.currentPage - 1];
@@ -144,21 +150,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-}
-
-
-
-#pragma mark - Accessors
-- (EWPerson *)me{
-    return [EWPersonStore sharedInstance].currentUser;
-}
-
-- (NSArray *)alarms{
-    return [EWAlarmManager sharedInstance].allAlarms;
-}
-
-- (NSArray *)tasks{
-    return [EWTaskStore sharedInstance].allTasks;
 }
 
 #pragma mark - UI Events
@@ -191,14 +182,13 @@
 
 //main loading function
 - (void)loadScrollViewWithPage:(NSInteger)page {
-    if (page < 0 || page >= self.alarms.count) {
+    if (page < 0 || page >= alarms.count) {
         return;
     }
     
-	// Data
-    if (_alarmPages.count==0) {
-        return;
-    }
+    
+    
+	// View
     EWAlarmPageView *alarmPage = [_alarmPages objectAtIndex:page];
     // replace the placeholder if necessary
     if ((NSNull *)alarmPage == [NSNull null]) {
@@ -206,19 +196,24 @@
     }
     
     //data
-    //EWAlarmItem *alarm = _alarms[page];
-    //page also means future day count
-    EWTaskItem *task = EWTaskStore.sharedInstance.allTasks[page];
-    
-    //fill info
-    alarmPage.task = task;
-    
-    if (page == 0) {
-        alarmPage.typeText.text = @"Next";
+    if (alarms.count == 0) {
+        //special treatment
+        alarmPage.dateText.text = @"--:--";
+    }else{
+        //page also means future day count
+        EWTaskItem *task = EWTaskStore.sharedInstance.allTasks[page];
+        
+        //fill info
+        alarmPage.task = task;
+        
+        if (page == 0) {
+            alarmPage.typeText.text = @"Next";
+        }
+        else {
+            alarmPage.typeText.text = @"Upcoming";
+        }
     }
-    else {
-        alarmPage.typeText.text = @"Upcoming";
-    }
+    
     alarmPage.delegate = self;
     
     //replace
@@ -235,6 +230,27 @@
     }
     
     _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
+}
+
+- (IBAction)scheduleInitialAlarms:(id)sender {
+    if (alarms.count == 0 && tasks.count == 0) {
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [[EWAlarmManager sharedInstance] scheduleAlarm];
+        [[EWTaskStore sharedInstance] scheduleTasks];
+        //pop up alarmScheduleView
+        EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
+        [self.navigationController pushViewController:controller animated:YES];
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        //refresh
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            [self initData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self initView];
+                [self reloadView];
+            });
+            
+        });
+    }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -271,6 +287,8 @@
     frame.origin.y = 0;
     [_scrollView scrollRectToVisible:frame animated:YES];
 }
+
+
 
 #pragma mark - EWAlarmItemEditProtocal
 - (void)editTask:(EWTaskItem *)task forPage:(EWAlarmPageView *)page{

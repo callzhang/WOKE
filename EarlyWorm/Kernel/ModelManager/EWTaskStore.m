@@ -18,7 +18,7 @@
 @implementation EWTaskStore
 //@synthesize context, model;
 @synthesize allTasks = _allTasks;
-@synthesize context;
+//@synthesize context;
 
 +(EWTaskStore *)sharedInstance{
     static EWTaskStore *sharedTaskStore_ = nil;
@@ -34,7 +34,7 @@
         //watch media change
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTaskMedia:) name:kMediaNewNotification object:nil];
         //watch alarm deletion
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(alarmRemoved) name:kAlarmDeleteNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(alarmRemoved:) name:kAlarmDeleteNotification object:nil];
     });
     return sharedTaskStore_;
 }
@@ -42,7 +42,7 @@
 - (id)init{
     self = [super init];
     if (self) {
-        context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+        //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
         NSLog(@"Context for TaskStore is :%@", context);
         [NSTimer timerWithTimeInterval:3600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
     }
@@ -55,7 +55,7 @@
         [self scheduleTasks];
     }
     //get from relationship
-    _allTasks = [[[EWPersonStore sharedInstance].currentUser.tasks allObjects] mutableCopy];
+    _allTasks = [[currentUser.tasks allObjects] mutableCopy];
     //sort
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
     [_allTasks sortUsingDescriptors:@[sort]];
@@ -67,14 +67,13 @@
 #pragma mark - SEARCH
 - (NSArray *)getTasksByPerson:(EWPerson *)person{
     NSArray *tasks = [[NSArray alloc] init];
-    if (person.tasks) {
+    if (person.tasks.count) {
         tasks = [person.tasks allObjects];
     }else{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
-        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", [EWPersonStore sharedInstance].currentUser];
+        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
         NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time >= %@", [NSDate date]];
         request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
-        request.sortDescriptors = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
         tasks = [context executeFetchRequestAndWait:request error:NULL];
         //save to person
         person.tasks = [NSSet setWithArray:tasks];
@@ -91,7 +90,7 @@
         tasks = [person.pastTasks allObjects];
     }else{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
-        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", [EWPersonStore sharedInstance].currentUser];
+        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
         NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
         request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         //request.sortDescriptors = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
@@ -201,7 +200,7 @@
     //assign id
     [t assignObjectId];
     //relation
-    t.owner = [EWPersonStore sharedInstance].currentUser;
+    t.owner = currentUser;
     //others
     t.added = [NSDate date];
     //save
@@ -316,10 +315,16 @@
 }
 
 - (void)alarmRemoved:(NSNotification *)notif{
+    NSLog(@"Delete task due to alarm deleted");
     NSArray *tasks = notif.userInfo[@"tasks"];
     for (EWTaskItem *t in tasks) {
-        [self removeTask:t];
+        [context deleteObject:t];
     }
+    [context saveOnSuccess:^{
+        NSLog(@"Task removed due to alarm deleted");
+    } onFailure:^(NSError *error) {
+        [NSException raise:@"Error in deleting task after alarm deleted" format:@"Error: %@", error.description];
+    }];
 }
 
 #pragma mark - DELETE
@@ -400,14 +405,25 @@
 
 #pragma mark - check
 - (BOOL)checkTasks{
+    //time stemp for last check
+    self.lastChecked = [NSDate date];
     NSLog(@"Checking tasks");
-    NSArray *tasks = [self getTasksByPerson:[EWPersonStore sharedInstance].currentUser];
-    if (tasks.count != 7*nWeeksToScheduleTask) {
-        if(tasks.count > 7*nWeeksToScheduleTask){
-            NSLog(@"Something is wrong with scheduled task: excessive tasks(%d), please check.", tasks.count);
-            [self deleteAllTasks];
-        }
+    NSArray *tasks = [self getTasksByPerson:currentUser];
+    if (tasks.count > 7*nWeeksToScheduleTask) {
+        NSLog(@"Something is wrong with scheduled task: excessive tasks(%d), please check.", tasks.count);
         return NO;
+        [self deleteAllTasks];
+    }else if(tasks.count == 0){
+        //init state
+        return YES;
+    }
+    
+    //check orphan
+    for (EWTaskItem *t in tasks) {
+        if (!t.alarm) {
+            [self deleteAllTasks];
+            return NO;
+        }
     }
     //check if any task has past
     NSDate *time = [[NSDate date] timeByAddingMinutes:-120];
@@ -416,7 +432,7 @@
     NSArray *pastTasks = [tasks filteredArrayUsingPredicate:predicate];
     if (pastTasks.count > 0) {
         //change task relationship
-        EWPerson *me = [EWPersonStore sharedInstance].currentUser;
+        EWPerson *me = currentUser;
         for (EWTaskItem *t in pastTasks) {
             t.owner = nil;
             t.pastOwner = me;
@@ -427,8 +443,7 @@
         //[self scheduleTasks];
         return NO;
     }
-    //time stemp for last check
-    self.lastChecked = [NSDate date];
+    
     return YES;
 }
 

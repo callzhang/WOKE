@@ -12,26 +12,19 @@
 #import "EWAlarmsViewController.h"
 #import "EWSocialViewController.h"
 #import "EWSettingsViewController.h"
-#import "EWLogInViewController.h"
 #import "EWWakeUpViewController.h"
+#import "EWAlarmManager.h"
+#import "EWTaskStore.h"
+#import "EWPersonStore.h"
+#import "EWUserManagement.h"
 
 //tools
-#import "AVManager.h"
-#import "EWDefines.h"
-#import "EWUIUtil.h"
-#import "MBProgressHUD.h"
 #import "TestFlight.h"
-
-//#import "AVManager.h"
-#import "EWAlarmManager.h"
 #import "EWDownloadMgr.h"
-#import "EWTaskStore.h"
-#import "EWWeiboManager.h"
-#import "EWFacebookManager.h"
-#import "EWPersonStore.h"
+#import "AVManager.h"
 
-#import "EWDatabaseDefault.h"
-#import "EWDefines.h"
+//global view for HUD
+UIView *rootview;
 
 //Private
 @interface EWAppDelegate(){
@@ -56,55 +49,14 @@
 @synthesize oldBackgroundTaskIdentifier;
 @synthesize myTimer;
 @synthesize count;
-@synthesize client, managedObjectModel, coreDataStore;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
-    //stackMob
-    SM_CACHE_ENABLED = YES;//enable cache
-    self.client = [[SMClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment];
-    self.client.userSchema = @"EWPerson";
-    self.client.userPrimaryKeyField = @"username";
-    self.coreDataStore = [self.client coreDataStoreWithManagedObjectModel:[self managedObjectModel]];
-    
-    
-    //cache policy
-    self.coreDataStore.fetchPolicy = SMFetchPolicyCacheOnly;
-    __block SMCoreDataStore *blockCoreDataStore = self.coreDataStore;
-    //self.coreDataStore.fetchPolicy = SMFetchPolicyCacheOnly; //initial fetch should from cache
-    self.coreDataStore.defaultSMMergePolicy = SMMergePolicyLastModifiedWins;
-    [self.client.networkMonitor setNetworkStatusChangeBlock:^(SMNetworkStatus status) {
-        if (status == SMNetworkStatusReachable) {
-            NSLog(@"Connected to server, strat syncing");
-            [blockCoreDataStore syncWithServer];
-        }
-        else {
-            NSLog(@"Disconnected from server, enter cache only mode");
-            [blockCoreDataStore setFetchPolicy:SMFetchPolicyCacheOnly];
-        }
-    }];
-    
-    [self.coreDataStore setSyncCompletionCallback:^(NSArray *objects){
-        NSLog(@"Syncing is complete, item synced: %@. Change the policy to fetch from the network", objects);
-        [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
-        // Notify other views that they should reload their data from the network
-        [[NSNotificationCenter defaultCenter] postNotificationName:kFinishedSync object:nil];
-    }];
     
     //test flight
     [TestFlight takeOff:@"e1ffe70a-26bf-4db0-91c8-eb2d1d362cb3"];
     
-    //save policy
-    
     //background fetch
-    [application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval]; //fetch
-    
-
-    
-    // Weibo SDK
-    //EWWeiboManager *weiboMgr = [EWWeiboManager sharedInstance];
-    //[weiboMgr registerApp];
-    
+    [application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval];
     //background download
     count = 0;
     self.musicList = [NSMutableArray array];
@@ -127,96 +79,45 @@
     //self.tabBarController.delegate = self;
     self.tabBarController.viewControllers = @[alarmsNavigationController, tasksNavigationController, settingsNavigationController];
     self.window.rootViewController = self.tabBarController;
-    
+    rootview = self.window.rootViewController.view;
     
     //local notification entry
-    NSLog(@"LaunchOption: %@", launchOptions);
-    UILocalNotification *localNotif =
-    [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-    //This block only works when app starts at the first time
-    if (localNotif) {
-        NSString *taskID = [localNotif.userInfo objectForKey:kLocalNotificationUserInfoKey];
-        
-        /*
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Local notification"
-            message:taskID
-            delegate:nil
-            cancelButtonTitle:@"OK"
-            otherButtonTitles:nil];
-        [alert show];*/
-        
-        NSLog(@"Entered app with local notification when app is not alive");
-        NSLog(@"Get task id: %@", taskID);
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-        controller.task  = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-        
-        [self.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
+    if (launchOptions) {
+        NSLog(@"LaunchOption: %@", launchOptions);
+        UILocalNotification *localNotif =
+        [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+        //This block only works when app starts at the first time
+        if (localNotif) {
+            NSString *taskID = [localNotif.userInfo objectForKey:kLocalNotificationUserInfoKey];
+            
+            /*
+             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Local notification"
+             message:taskID
+             delegate:nil
+             cancelButtonTitle:@"OK"
+             otherButtonTitles:nil];
+             [alert show];*/
+            
+            NSLog(@"Entered app with local notification when app is not alive");
+            NSLog(@"Get task id: %@", taskID);
+            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+            controller.task  = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+            
+            [self.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
+        }
     }
     
+    //User login
+    [MBProgressHUD showHUDAddedTo:rootview animated:YES];
+    EWUserManagement *userMger = [EWUserManagement sharedInstance];
+    [userMger login];
+    [MBProgressHUD hideAllHUDsForView:rootview animated:YES];
     
     //last step
     [self.window makeKeyAndVisible];
-    
-    //user check
-    
-    if (![self.client isLoggedIn]) {
-        //user has not logged in, start logging in
 
-        //first time view controller
-        EWLogInViewController *controller = [[EWLogInViewController alloc] init];
-        [alarmController presentViewController:controller animated:YES completion:NULL];
-        
-    }else{
-        [MBProgressHUD showHUDAddedTo:self.window.rootViewController.view animated:YES];
-        [[SMClient defaultClient] getLoggedInUserOnSuccess:^(NSDictionary *result) {
-            //get the full user object
-            EWPerson *me = [[EWPersonStore sharedInstance] getPersonByID:result[@"username"]];
-            //merge changes
-            [[self.coreDataStore contextForCurrentThread] refreshObject:me mergeChanges:YES];
-            NSLog(@"Get current user: %@ from CoreData store",me.name);
-            [EWPersonStore sharedInstance].currentUser = me;
-            
-            //check default
-            [[EWDatabaseDefault sharedInstance] setDefault];
-            //broadcasting
-            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{@"User": [EWPersonStore sharedInstance].currentUser}];
-            
-            
-            //log in with facebook
-            //[[EWLogInViewController sharedInstance] viewDidLoad];
-            
-            //refresh view
-            [alarmController.view setNeedsDisplay];
-            
-            [MBProgressHUD hideAllHUDsForView:self.window.rootViewController.view animated:YES];
-        } onFailure:^(NSError *error) {
-            NSLog(@"Failed to get logged in user: %@", error.description);
-            // Reset local session info
-            [self.client.session clearSessionInfo];
-            //Login vc
-            EWLogInViewController *controller = [[EWLogInViewController alloc] init];
-            [alarmController presentViewController:controller animated:YES completion:NULL];
-        }];
-        
-        
-        
-        //continue check remote data at background
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-            //
-        });
-    }
-    
-    //log in view controller
-    //EWLogInViewController *controller = [[EWLogInViewController alloc] init];
-    //[alarmController presentViewController:controller animated:YES completion:NULL];
-    
-    
     return YES;
-}
-
-- (void)application:(UIApplication *)application willChangeStatusBarFrame:(CGRect)newStatusBarFrame{
-    [EWUIUtil OnSystemStatusBarFrameChange];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -270,27 +171,6 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     [FBSession.activeSession close];
-}
-
-
-
-- (void)OnCancel {
-    [self.window.rootViewController dismissViewControllerAnimated:YES completion:^(void){}];
-}
-
-#pragma mark - CORE DATA
-- (NSManagedObjectModel *)managedObjectModel
-{
-    if (managedObjectModel != nil) {
-        return managedObjectModel;
-    }
-    //Returns a model created by merging all the models found in given bundles. If you specify nil, then the main bundle is searched.
-    //managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
-    
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"EarlyWorm" withExtension:@"momd"];
-    managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-    
-    return managedObjectModel;
 }
 
 #pragma mark - Weibo
@@ -425,37 +305,33 @@
 //Presist the device token
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
     NSString *token = [[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
-    token = [[token componentsSeparatedByString:@" "] componentsJoinedByString:@""];
+    token = [[token componentsSeparatedByString:@" "] componentsJoinedByString:@""];//become a string
     
-    // Register the token with StackMob.
-    NSString *username = [EWPersonStore sharedInstance].currentUser.username;
-    if (username) {
-        // Persist token
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        NSDictionary *tokenByUser = @{kPushTokenUserKey: username, kPushTokenByUserKey: token};
-        NSMutableArray *tokenByUserArray = (NSMutableArray *)[defaults objectForKey:kPushTokenKey];
-        [tokenByUserArray addObject:tokenByUser];
-        [defaults setObject:tokenByUserArray forKey:kPushTokenKey];
-        [defaults synchronize];
-        //Register Push on StackMob
-        [self.pushClient registerDeviceToken:token withUser:username onSuccess:^{
-            NSLog(@"APP registered push token and assigned to StackMob server");
-            //send welcome message
-            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"Welcome new user %@ to join our family!", [EWPersonStore sharedInstance].currentUser.name],
-                                          @"badge": @1,
-                                          @"title": @"WOKE"};
-            [self.pushClient broadcastMessage:pushMessage onSuccess:^{
-                NSLog(@"Welcome message sent");
-            } onFailure:^(NSError *error) {
-                NSLog(@"Failed to send welcome message");
-            }];
-        } onFailure:^(NSError *error) {
-            [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
-        }];
-    }else{
-        NSLog(@"Tried to register push to StackMob, but user is not logged in.");
+    // Persist token
+    NSString *username = currentUser.username;
+    if(!username) username = kPushTokenUserAvatarKey;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSMutableArray *tokenByUserArray = (NSMutableArray *)[defaults objectForKey:kPushTokenKey];
+    if (!tokenByUserArray) tokenByUserArray = [[NSMutableArray alloc] init];
+    for (NSDictionary *tokenByUserDict in tokenByUserArray) {
+        if ([tokenByUserDict[kPushTokenUserKey] isEqualToString:username]) {
+            //exsiting user, check if token is the same
+            if ([tokenByUserDict[kPushTokenByUserKey] isEqualToString:token]) {
+                //same token, userLoggedIn event has already triggered the push registeration on StackMob
+                return;
+            }
+        }else{
+            NSLog(@"User has not registered token on this device");
+        }
     }
+    //write to plist
+    NSDictionary *tokenByUser = @{kPushTokenUserKey: username, kPushTokenByUserKey: token};
+    [tokenByUserArray addObject:tokenByUser];
+    [defaults setObject:tokenByUserArray forKey:kPushTokenKey];
+    [defaults synchronize];
     
+    //Register Push on StackMob
+    [[EWDataStore sharedInstance] registerPushNotification];
 }
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
@@ -487,7 +363,6 @@
         controller.task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
         [self.window.rootViewController presentViewController:navigationController animated:YES completion:^(void){}];
-        controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
     }
 }
 
@@ -514,26 +389,14 @@
                 [alertView show];
             });
         }else{
-            //main thread
+            //Other message
             dispatch_async(dispatch_get_main_queue(), ^{
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil];
                 [alertView show];
             });
         }
-        
-        
-        
-        
     });
-        
-    //}else{
-    //    NSLog(@"Push notification received while app in background");
-    //}
 }
-
-
-
-
 
 #pragma mark - Alert Delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -566,22 +429,6 @@
 }
 
 
-#pragma mark - Weibo SDK
-
-- (void)didReceiveWeiboRequest:(WBBaseRequest *)request {
-    EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
-    [weiboManager didReceiveWeiboRequest:request];
-}
-
-- (void)didReceiveWeiboResponse:(WBBaseResponse *)response {
-    EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
-    [weiboManager didReceiveWeiboResponse:response];
-}
-
--  (void)didReceiveWeiboSDKResponse:(id)JsonObject err:(NSError *)error {
-    EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
-    [weiboManager didReceiveWeiboSDKResponse:JsonObject err:error];
-}
 
 @end
 

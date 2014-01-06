@@ -24,6 +24,7 @@
 
 //backend
 #import "StackMob.h"
+#import "EWDataStore.h"
 
 @interface EWRecordingViewController ()
 
@@ -95,17 +96,17 @@
         }
         //save data to task
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", [EWPersonStore sharedInstance].currentUser.username, [NSString stringWithFormat:@"%d",(NSInteger)[NSDate timeIntervalSinceReferenceDate]]];
+        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [NSString stringWithFormat:@"%d",(NSInteger)[NSDate timeIntervalSinceReferenceDate]]];
         NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:fileName contentType:@"audio/aac"];
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
-        media.author = [EWPersonStore sharedInstance].currentUser;
+        media.author = currentUser;
         media.title = @"Voice Tone";
         media.message = self.message.text;
         [media addTasksObject:task];
         media.audioKey = recordDataString;
         
         //save
-        NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
+        //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
         [context saveOnSuccess:^{
             [context refreshObject:media mergeChanges:YES];
             hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
@@ -122,11 +123,11 @@
             
             //send push notification
             EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New voice tone sent from %@", [EWPersonStore sharedInstance].currentUser.username],
+            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New voice tone sent from %@", currentUser.username],
                                           @"badge": @1,
                                           kLocalNotificationUserInfoKey: task.ewtaskitem_id};
             
-            [delegate.pushClient sendMessage:pushMessage toUsers:@[task.owner.username] onSuccess:^{
+            [pushClient sendMessage:pushMessage toUsers:@[task.owner.username] onSuccess:^{
                 NSLog(@"Push notification successfully sent to %@", task.owner.username);
             } onFailure:^(NSError *error) {
                 [NSException raise:@"Failed to send push notification" format:@"Reason: %@", error.description];

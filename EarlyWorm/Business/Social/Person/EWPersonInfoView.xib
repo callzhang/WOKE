@@ -20,7 +20,7 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="personInfoBG.png" id="3">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="personInfoBG" id="3">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="120"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
@@ -71,7 +71,7 @@
         </view>
     </objects>
     <resources>
-        <image name="personInfoBG.png" width="320" height="200"/>
-        <image name="profile.png" width="280" height="280"/>
+        <image name="personInfoBG" width="320" height="200"/>
+        <image name="profile.png" width="140" height="140"/>
     </resources>
 </document>

@@ -19,7 +19,6 @@
     BOOL newState;
     UITextField *alarmDesText;
 }
-@property (nonatomic) NSManagedObjectContext *context;
 @property (nonatomic, retain) EWAlarmItem *alarm;
 @property (nonatomic) EWTaskItem *task;
 @property (nonatomic, retain) EWAlarmsViewController *parentController;

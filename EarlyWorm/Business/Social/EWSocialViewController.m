@@ -45,7 +45,7 @@
         
         self.hidesBottomBarWhenPushed = NO;
         //data
-        context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+        //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
         
         //listener
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadData) name:kPersonLoggedIn object:nil];
@@ -107,7 +107,7 @@
 - (void)loadData{
     [refreshHUD show:YES];
     //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        me = [EWPersonStore sharedInstance].currentUser;
+        me = currentUser;
         NSSet *friendsSet = me.friends;
         friends = [friendsSet allObjects];
         NSMutableSet *everyoneSet = [NSMutableSet setWithArray:[[EWPersonStore sharedInstance] everyone]];

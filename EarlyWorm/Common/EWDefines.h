@@ -10,7 +10,7 @@
 #define EarlyWorm_Defines_h
 
 #define kAppName            @"EarlyWorm"
-#define kAppVersion         @"0.0.3.0"
+#define kAppVersion         @"0.5.0"
 
 #define UserInfo           @"userInfo"
 
@@ -47,13 +47,13 @@
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."
 
-#pragma mark - DATA
-
-//#define ringtoneNameList @[@"Autumn Spring.mp3", @"Daybreak.mp3", @"Drive.mp3", @"Morning Dew.mp3", @"Nature at night.mp3", @"Ocean Breeze.mp3", @"Ocean tides.mp3", @"Overture.mp3", @"Parisian Dream.mp3", @"Robots in Love.mp3", @"Sunny Afternoon.mp3", @"Tropical Delight.mp3", @"Walk the Dog.mp3", @"Wind in the trees.mp3"];
+//DEFAULT DATA
 
 #define ringtoneNameList @[@"Autumn Spring.caf", @"Daybreak.caf", @"Drive.caf", @"Parisian Dream.caf", @"Sunny Afternoon.caf", @"Tropical Delight.caf"];
 
 #define weekdays @[@"Sunday", @"Monday", @"Tuesday", @"Wednesday", @"Thursday", @"Friday", @"Saturday"];
+
+#define userDefaults @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00"};
 
 
 //notification
@@ -76,6 +76,8 @@
 
 #define kMediaNewNotification           @"EWMediaNew" //key: task & media
 
+#define kPushAPNSRegisteredNotification @"APNSRegistered"
+
 //Notification key
 #define kLocalNotificationUserInfoKey   @"task_ID"  //store task id
 #define kFinishedSync                   @"FinishedSync" //server has finished syncing (usually at startup)
@@ -86,5 +88,7 @@
 #define kPushTokenKey                   @"push_token" //the key for local defaults to get the array of tokenByUser dict
 #define kPushTokenUserKey               @"user" //the key for user in tokenByUser dict
 #define kPushTokenByUserKey             @"token" //the key for token in tokenByUser dict
+#define kPushTokenUserAvatarKey         @"current_user_avatar" //for username avator when token received but user not logged in
+#define kUserLoggedInUserKey            @"user"
 
 #endif

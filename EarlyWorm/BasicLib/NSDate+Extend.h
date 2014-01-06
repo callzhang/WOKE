@@ -22,6 +22,10 @@
  */
 - (NSString *)date2dayString;
 /**
+ 
+ */
+- (NSString *)date2numberDateString;
+/**
  Compares two dates
  */
 - (BOOL)isEarlierThan:(NSDate *)date;

@@ -33,6 +33,7 @@
 
 //backend
 #import "StackMob.h"
+#import "EWDataStore.h"
 
 static NSString *g_textFieldCellIdentifier = @"textFieldCell";
 
@@ -57,15 +58,6 @@ static NSString *g_textFieldCellIdentifier = @"textFieldCell";
 @synthesize dataSource = _dataSource;
 @synthesize alarm = _alarm;
 @synthesize task = _task;
-@synthesize context;
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
-    }
-    return self;
-}
 
 - (void)initData {
     _dataSource = @[LOCALSTR(@"Alarm_Name"), @"Ambient sound"];

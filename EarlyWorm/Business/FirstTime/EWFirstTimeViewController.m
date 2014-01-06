@@ -8,7 +8,7 @@
 // This class handles user login and data initilization
 
 #import "EWFirstTimeViewController.h"
-#import "EWDatabaseDefault.h"
+#import "EWDataStore.h"
 #import "StackMob.h"
 
 @interface EWFirstTimeViewController ()
@@ -53,11 +53,11 @@
     //=======init view=========
     NSLog(@"User logged in, start init");
     //User defaults
-    //[EWDatabaseDefault.sharedInstance registerDefaultOptions];
+    //[EWDataStore.sharedInstance registerDefaultOptions];
     
-    [EWDatabaseDefault.sharedInstance initData];
+    //[EWDataStore.sharedInstance initData];
     
-    //[EWDatabaseDefault.sharedInstance check];
+    //[EWDataStore.sharedInstance check];
     
     [refreshHUD hide:YES];
     [self dismissViewControllerAnimated:YES completion:^{

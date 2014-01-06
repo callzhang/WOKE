@@ -23,7 +23,7 @@ typedef enum socialViewList{
     NSArray *everyone;
     NSInteger nAroundMe;
     NSInteger nGroup;
-    NSManagedObjectContext *context;
+    //NSManagedObjectContext *context;
     
     MBProgressHUD *refreshHUD;
 }
