@@ -11,6 +11,5 @@
 
 @interface EWStatsManager : NSObject
 +(EWStatsManager *)sharedInstance;
--(NSArray *)pastTasksForPerson:(EWPerson *)person;
 -(NSDictionary *)statsForPerson:(EWPerson *)person;
 @end

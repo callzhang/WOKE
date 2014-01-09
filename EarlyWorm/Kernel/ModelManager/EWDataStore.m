@@ -135,22 +135,41 @@ SMPushClient *pushClient;
     NSString *username = currentUser.username;
     if (!username) {
         NSLog(@"Tried to register push on StackMob but username is missing.");
+        return;
     }
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSArray *tokenByUserArray = [defaults objectForKey:kPushTokenKey];
     for (NSDictionary *dict in tokenByUserArray) {
-        NSString *registeredUsername = dict[kPushTokenByUserKey];
+        NSString *registeredUsername = dict[kPushTokenUserKey];
         if ([username isEqualToString:registeredUsername]) {
-                //registered user with exsiting token
-                NSString *token = dict[kPushTokenUserKey];
-                [pushClient registerDeviceToken:token withUser:username onSuccess:^{
+            //registered user with exsiting token
+            NSString *token = dict[kPushTokenByUserKey];
+            [pushClient registerDeviceToken:token withUser:username onSuccess:^{
+            NSLog(@"APP registered push token and assigned to StackMob server");
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
+            }];
+            return;
+        }
+        
+        //if not found, looking for avatar
+        if ([registeredUsername isEqualToString:kPushTokenUserAvatarKey]) {
+            //current token generated before user logged in, replace old by new tokenByUser
+            NSString *token = dict[kPushTokenByUserKey];
+            NSDictionary *newDict = @{username: token};
+            [defaults setObject:@[newDict] forKey:kPushTokenKey];
+            [defaults synchronize];
+            //
+            [pushClient registerDeviceToken:token withUser:username onSuccess:^{
                 NSLog(@"APP registered push token and assigned to StackMob server");
             } onFailure:^(NSError *error) {
                 [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
             }];
             return;
         }
-        NSLog(@"Did not find user push token. Register APNS first");
+        
+        
+        NSLog(@"@@@ Did not find user push token. Register APNS first @@@");
     }
     
 }

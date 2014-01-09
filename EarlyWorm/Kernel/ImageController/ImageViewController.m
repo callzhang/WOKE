@@ -53,10 +53,10 @@
     [super viewDidUnload];
 }
 
-- (UIImage *)resizeImage:(UIImage *)image{
+- (UIImage *)resizeImage:(UIImage *)img{
     // Resize image
     UIGraphicsBeginImageContext(CGSizeMake(640, 960));
-    [image drawInRect: CGRectMake(0, 0, 640, 960)];
+    [img drawInRect: CGRectMake(0, 0, 640, 960)];
     UIImage *smallImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return smallImage;

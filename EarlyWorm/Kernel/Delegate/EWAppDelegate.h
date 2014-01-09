@@ -12,7 +12,7 @@
 
 extern UIView *rootview;
 
-@interface EWAppDelegate : UIResponder <UIApplicationDelegate, WeiboSDKDelegate,WeiboSDKJSONDelegate, UIAlertViewDelegate>
+@interface EWAppDelegate : UIResponder <UIApplicationDelegate, UIAlertViewDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

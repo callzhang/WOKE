@@ -101,8 +101,9 @@
     NSLog(@"Current user: %@", currentUser);
 }
 
-/*
+
 - (IBAction)proceed:(id)sender {//this function will not be called
+    /*
     //save image to user
     currentUser.profilePic = self.profileView.image;
     [context saveOnSuccess:^{
@@ -120,8 +121,8 @@
         [MBProgressHUD hideAllHUDsForView:delegate.window.rootViewController.view animated:YES];
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error on saving new user info" format:@"Reason: %@", error.description];
-    }];
-}*/
+    }];*/
+}
 
 
 

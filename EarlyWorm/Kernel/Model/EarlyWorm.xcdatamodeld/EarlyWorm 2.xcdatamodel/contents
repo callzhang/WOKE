@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="EWAchievement" representedClassName="EWAchievement" syncable="YES">
+        <attribute name="ewachievement_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="explaination" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="image_key" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="achievements" inverseEntity="EWPerson" syncable="YES"/>
+    </entity>
     <entity name="EWAlarmItem" representedClassName="EWAlarmItem" syncable="YES">
         <attribute name="alarmDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
@@ -82,6 +91,7 @@
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="username" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="weibo" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="achievements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWAchievement" inverseName="owner" inverseEntity="EWAchievement" syncable="YES"/>
         <relationship name="alarms" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="EWAlarmItem" inverseName="owner" inverseEntity="EWAlarmItem" syncable="YES"/>
         <relationship name="friended" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="friends" inverseEntity="EWPerson" syncable="YES"/>
         <relationship name="friends" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="friended" inverseEntity="EWPerson" syncable="YES"/>
@@ -121,5 +131,6 @@
         <element name="EWMessage" positionX="0" positionY="0" width="0" height="0"/>
         <element name="EWPerson" positionX="0" positionY="0" width="0" height="0"/>
         <element name="EWTaskItem" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWAchievement" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>

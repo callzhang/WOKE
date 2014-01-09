@@ -31,7 +31,7 @@ EWPerson *currentUser;
     dispatch_once(&onceToken, ^{
         sharedPersonStore_ = [[EWPersonStore alloc] init];
         //listern to user log in events
-        [[NSNotificationCenter defaultCenter] addObserver:sharedPersonStore_ selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:sharedPersonStore_ selector:@selector(userLoggedIn:) name:kPersonLoggedIn object:nil];
         
     });
         

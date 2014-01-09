@@ -1,5 +1,5 @@
 //
-//  EWDetailPersonViewController.h
+//  EWPersonViewController.h
 //  EarlyWorm
 //
 //  Created by Lei on 9/5/13.
@@ -11,18 +11,23 @@
 @class EWPerson;
 @class EWTaskItem;
 @class ShinobiChart;
+@class EWStatisticsManager;
 
-@interface EWDetailPersonViewController : EWViewController<UIAlertViewDelegate> {
-    //ShinobiChart *_chart;
+@interface EWPersonViewController : EWViewController<UIAlertViewDelegate> {
     NSArray *tasks;
-    EWPerson *me;
+    EWStatisticsManager *stats;
 }
 //PersonInfoView
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 @property (weak, nonatomic) IBOutlet UILabel *name;
 @property (weak, nonatomic) IBOutlet UILabel *location;
-@property (weak, nonatomic) IBOutlet UILabel *level;
 @property (weak, nonatomic) IBOutlet UILabel *statement;
+@property (weak, nonatomic) IBOutlet UIButton *friends;
+@property (weak, nonatomic) IBOutlet UIButton *aveTime;
+@property (weak, nonatomic) IBOutlet UIButton *achievements;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+
 - (IBAction)extProfile:(id)sender;
 
 @property (nonatomic) EWPerson *person;

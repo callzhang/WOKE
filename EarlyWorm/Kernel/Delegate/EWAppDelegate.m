@@ -173,6 +173,7 @@ UIView *rootview;
     [FBSession.activeSession close];
 }
 
+/*
 #pragma mark - Weibo
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     return [WeiboSDK handleOpenURL:url delegate:self];
@@ -187,7 +188,7 @@ UIView *rootview;
     return [FBSession.activeSession handleOpenURL:url];
 }
 
-
+*/
 
 - (BOOL) isMultitaskingSupported {
     

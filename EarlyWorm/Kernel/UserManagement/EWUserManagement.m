@@ -43,12 +43,12 @@
 - (void)login{
     //init coredata and backend server
     [EWDataStore sharedInstance];
-    
+    [MBProgressHUD showHUDAddedTo:rootview animated:YES];
     //get logged in user
     if ([client isLoggedIn]) {
         //user already logged in
         //HUD
-        [MBProgressHUD showHUDAddedTo:rootview animated:YES];
+        
         //fetch user in coredata cache(offline) with related objects
         [client getLoggedInUserOnSuccess:^(NSDictionary *result) {
             NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
@@ -114,7 +114,7 @@
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:password forKey:@"password"];
         newMe.name = @"No Name";
-        newMe.profilePic = [UIImage imageNamed:@"profile.png"];
+        newMe.profilePic = [UIImage imageNamed:@"profile"];
         [context saveOnSuccess:^{
             NSLog(@"New user %@ created", newMe.username);
             currentUser = newMe;
@@ -123,6 +123,8 @@
                 [[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
                 //broadcast
                 [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+                //HUD
+                [MBProgressHUD hideAllHUDsForView:rootview animated:YES];
             } onFailure:^(NSError *error) {
                 [NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
             }];

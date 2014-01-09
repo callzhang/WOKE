@@ -26,7 +26,7 @@
 #import "EWTaskStore.h"
 
 // Business
-#import "EWDetailPersonViewController.h"
+#import "EWPersonViewController.h"
 
 //backend
 #import "StackMob.h"
@@ -41,7 +41,8 @@
     self = [super init];
     if (self) {
         self.title = LOCALSTR(@"Around Me");
-        self.tabBarItem.image = [UIImage imageNamed:@"social_icon.png"];
+        //self.tabBarItem.image = [UIImage imageNamed:@"social_icon.png"];
+        self.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemContacts tag:1];
         
         self.hidesBottomBarWhenPushed = NO;
         //data
@@ -357,13 +358,13 @@
 - (void)tableView:(UITableViewController *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (socialList == socialViewNews) {
         //send voice tone
-        EWDetailPersonViewController *controller = [[EWDetailPersonViewController alloc] init];
+        EWPersonViewController *controller = [[EWPersonViewController alloc] init];
         controller.person = friends[indexPath.row];
         [self.navigationController pushViewController:controller animated:YES];
     } else if (socialList == socialViewEveryone) {
         //view person
         
-        EWDetailPersonViewController *controller = [[EWDetailPersonViewController alloc] init];
+        EWPersonViewController *controller = [[EWPersonViewController alloc] init];
         if (indexPath.section == 0) {
             controller.person = friends[indexPath.row];
         }else if (indexPath.section == 1){

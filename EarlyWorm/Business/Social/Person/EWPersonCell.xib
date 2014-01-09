@@ -14,7 +14,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="119"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" image="profile.png" id="4">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" image="profile" id="4">
                         <rect key="frame" x="6" y="7" width="64" height="64"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
@@ -69,6 +69,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="profile.png" width="140" height="140"/>
+        <image name="profile" width="140" height="140"/>
     </resources>
 </document>

@@ -37,14 +37,6 @@
     return g_alarmManager;
 }
 
-- (id)init{
-    self = [super init];
-    if (self) {
-        NSLog(@"Context for Alarm Store is %@", context);
-        //[self checkAlarms];
-    }
-    return self;
-}
 
 #pragma mark - Setter & Getter
 

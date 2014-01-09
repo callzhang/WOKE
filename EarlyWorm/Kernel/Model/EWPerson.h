@@ -9,9 +9,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "StackMob.h"
-@class EWTaskItem, EWAlarmItem, EWGroup, EWGroupTask, EWMediaItem, EWMessage;
+@class EWTaskItem, EWAlarmItem, EWGroup, EWGroupTask, EWMediaItem, EWMessage, EWAchievement;
 
 @interface EWPerson : SMUserManagedObject {}
+@property (nonatomic, retain) NSSet *achievements;
 @property (nonatomic, retain) NSString * bgImageKey;
 @property (nonatomic, retain) NSDate * birthday;
 @property (nonatomic, retain) NSString * city;
@@ -54,6 +55,12 @@
 @end
 
 @interface EWPerson (CoreDataGeneratedAccessors)
+
+- (void)addAchievementsObject:(EWAchievement *)value;
+- (void)removeAchievementsObject:(EWAchievement *)value;
+- (void)addAchievements:(NSSet *)values;
+- (void)removeAchievements:(NSSet *)values;
+
 /*
 - (void)insertObject:(EWAlarmItem *)value inAlarmsAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromAlarmsAtIndex:(NSUInteger)idx;

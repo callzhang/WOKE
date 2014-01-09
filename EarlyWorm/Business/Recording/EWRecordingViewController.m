@@ -49,6 +49,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
+    self.profilePic.image = task.owner.profilePic;
+    self.title.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", task.owner.name, [task.time weekday]];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -122,7 +124,6 @@
             }
             
             //send push notification
-            EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
             NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New voice tone sent from %@", currentUser.username],
                                           @"badge": @1,
                                           kLocalNotificationUserInfoKey: task.ewtaskitem_id};

@@ -16,6 +16,7 @@
 #import "EWIO.h"
 #import "NSDate+Extend.h"
 #import "StackMob.h"
+#import "EWDataStore.h"
 
 @implementation EWPerson
 @synthesize bgImage;
@@ -66,34 +67,32 @@
 
 #pragma mark - IMAGE REPRESENTATION
 - (UIImage *)profilePic{
-    if (profilePic) {
-        return profilePic;
+    if (!profilePic) {
+        profilePic = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.profilePicKey]];
     }
-    if (self.profilePicKey) {
-        return [UIImage imageWithData:[SMBinaryDataConversion dataForString:self.profilePicKey]];
-    }else{
-        return [UIImage imageNamed:@"profile.png"];
-    }
+    return profilePic;
 }
 
 - (void)setProfilePic:(UIImage *)pic{
     NSData *picData = UIImageJPEGRepresentation(pic, 0.7);
-    self.profilePicKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"profilePic.jpg" contentType:@"image/jpg"];
+    self.profilePicKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"profilePic.png" contentType:@"image/png"];
 }
 
 - (UIImage *)bgImage{
-    if (bgImage) {
-        return bgImage;
+    if (!bgImage) {
+        bgImage = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.bgImageKey]];
     }
-    return [UIImage imageWithData:[SMBinaryDataConversion dataForString:self.bgImageKey]];
+    return bgImage;
 }
+
+
 - (void)setBgImage:(UIImage *)img{
     NSData *imgData = UIImageJPEGRepresentation(img, 0.7);
-    self.bgImageKey = [SMBinaryDataConversion stringForBinaryData:imgData name:@"bgImage.jpg" contentType:@"image/jpg"];
+    self.bgImageKey = [SMBinaryDataConversion stringForBinaryData:imgData name:@"bgImage.png" contentType:@"image/png"];
 }
 
 
-#pragma marl - Preference
+#pragma mark - Preference
 - (NSDictionary *)preference{
     if (self.preferenceString) {
         NSData *prefData = [self.preferenceString dataUsingEncoding:NSUTF8StringEncoding];

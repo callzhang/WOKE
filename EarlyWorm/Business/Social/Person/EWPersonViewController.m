@@ -1,12 +1,12 @@
 //
-//  EWDetailPersonViewController.m
+//  EWPersonViewController.m
 //  EarlyWorm
 //
 //  Created by Lei on 9/5/13.
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
 
-#import "EWDetailPersonViewController.h"
+#import "EWPersonViewController.h"
 #import "StackMob.h"
 // Util
 #import "EWUIUtil.h"
@@ -24,77 +24,52 @@
 #import "EWAlarmManager.h"
 #import "EWPersonStore.h"
 #import "EWMediaStore.h"
+#import "EWStatisticsManager.h"
 
 //view
 #import "EWRecordingViewController.h"
 
-@interface EWDetailPersonViewController ()
-
-@property (nonatomic, strong) UITableView *tableView;
+@interface EWPersonViewController (UITableView) <UITableViewDataSource, UITableViewDelegate>
 
 @end
 
-@interface EWDetailPersonViewController (UITableView)<UITableViewDataSource, UITableViewDelegate>
-@end
 
-@implementation EWDetailPersonViewController
-@synthesize tableView = _tableView;
-@synthesize person;
+@implementation EWPersonViewController
+@synthesize person, tableView;
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    if (person) {
+        [self initData];
+        [self initView];
+    }
     
-    [self initData];
-    [self initView];
 }
 
 
 - (void)initData {
-    me = currentUser;
+    tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
+    tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
+    stats = [[EWStatisticsManager alloc] init];
+    stats.person = person;
 }
 
-- (void)initChartView {
-/*
-    _chart = [[ShinobiChart alloc] initWithFrame:CGRectMake(0, 184, EWScreenWidth, 150)];
-    _chart.title = @"Wake up history";
-    _chart.licenseKey = kChartLicenseKey;
-    
-    //auto resize
-    //_chart.autoresizingMask = ~UIViewAutoresizingNone;
-    //add a pair ox axes
-    SChartNumberAxis *xAxis = [[SChartNumberAxis alloc] init];
-    xAxis.title = @"Date";
-    
-    SChartNumberAxis *yAxis = [[SChartNumberAxis alloc] init];
-    yAxis.rangePaddingHigh = @(0.1);
-    yAxis.rangePaddingLow = @(0.1);
-    yAxis.title = @"Time to wake up";
-    // enable gestures
-    yAxis.enableGesturePanning = YES;
-    yAxis.enableGestureZooming = YES;
-    xAxis.enableGesturePanning = YES;
-    xAxis.enableGestureZooming = YES;
-    _chart.xAxis = xAxis;
-    _chart.yAxis = yAxis;
-    
-    _chart.datasource = self;
-    //show legend
-    _chart.legend.hidden = (UI_USER_INTERFACE_IDIOM()==UIUserInterfaceIdiomPhone);
-    
-    [self.view addSubview:_chart];*/
-}
+
 
 - (void)setPerson:(EWPerson *)p{
     person = p;
-    //tasks: only tasks that turned on
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"state == %@", [NSNumber numberWithBool:YES]];
-    tasks = [[person.tasks allObjects] filteredArrayUsingPredicate:predicate];
-    tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
+    [self initData];
     
     //UI
     self.profilePic.image = person.profilePic;
     self.name.text = person.name;
     self.location.text = person.city;
+    
+    [self.friends setTitle:[NSString stringWithFormat:@"%d", person.friends.count] forState:UIControlStateNormal];
+    [self.aveTime setTitle:[NSString stringWithFormat:@"%d\"", [stats.aveWakeupTime integerValue]] forState:UIControlStateNormal];
+    [self.achievements setTitle:[NSString stringWithFormat:@"%d", person.achievements.count] forState:UIControlStateNormal];
+    
     EWTaskItem *t = tasks.firstObject;
     if (person.statement) {
         self.statement.text = person.statement;
@@ -104,44 +79,25 @@
         self.statement.text = @"No statement written by this owner";
     }
     
-    [self.view setNeedsDisplay];
+    //[self.view setNeedsDisplay];
 }
 
 - (void)initView {
-    NSArray *views = [[NSBundle mainBundle] loadNibNamed:@"EWPersonInfoView" owner:self options:nil];
-    if (views && views.count > 0) {
-        self.view = [views objectAtIndex:0];
-    }
     
     //========table for tasks========
     
-    NSInteger infoViewHeight = 120;
-    //NSInteger chartHeight = 0;//_chart.height;
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, infoViewHeight, EWScreenWidth, EWScreenHeight - infoViewHeight) style:UITableViewStyleGrouped];
-    _tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.tableView.bounds.size.width, 0.01f)];
-    _tableView.dataSource = self;
-    _tableView.delegate = self;
-    _tableView.backgroundColor = kCustomLightGray;
-    _tableView.backgroundView = nil;
-    [self.view addSubview:_tableView];
-    
-    //Right side bar button
-    if ([me.friends containsObject:person]) {
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(unfriend)];
-
-    }else{
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addPerson)];
-    }
-    
-    
-    //=========Person=========
-    self.person = person;
+    tableView.dataSource = self;
+    tableView.delegate = self;
+    tableView.backgroundColor = [UIColor clearColor];
+    tableView.backgroundView = nil;
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewDidAppear:animated];
+    if (person) {
+        [tableView reloadData];
+    }
     
-    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -154,8 +110,6 @@
 }
 
 - (void)addPerson{
-    
-    
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Add friend"
                                 message:[NSString stringWithFormat:@"Add %@ as your friend?", person.name]
                                 delegate:self
@@ -172,8 +126,7 @@
             {
                 //OK
                 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-                me = currentUser;
-                [me addFriendsObject:person];
+                [currentUser addFriendsObject:person];
                 [context saveOnSuccess:^{
                     hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
                     hud.mode = MBProgressHUDModeCustomView;
@@ -191,8 +144,7 @@
     }else if ([alertView.title isEqualToString:@"Unfriend"]){
         if (buttonIndex == 0) {
             MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            me = currentUser;
-            [me removeFriendedObject:person];
+            [currentUser removeFriendedObject:person];
             [context saveOnSuccess:^{
                 hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
                 hud.mode = MBProgressHUDModeCustomView;
@@ -220,25 +172,23 @@
 
 #pragma mark - TableView DataSource
 
-@implementation EWDetailPersonViewController(UITableView)
+@implementation EWPersonViewController(UITableView)
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    if (section == 0) {
-        return @"Scheduled alarms";
-    }
-    return nil;
+    EWTaskItem *t = tasks[section];
+    return [t.time date2MMDD];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     //alarm shown in sections
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return tasks.count;
 }
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 1;
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return _tableView.rowHeight;
+    return 30;//TODO
 }
 
 //make cell
@@ -262,25 +212,35 @@
 //display cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    UITableViewCell *cell = [self makePersonInfoCellForTableView:tableView];
-    
-    EWTaskItem *task = [tasks objectAtIndex:indexPath.row];
-    cell.textLabel.text = [task.time date2detailDateString];
-    if (task.statement) {
-        cell.detailTextLabel.text = task.statement;
-    }else{
-        cell.detailTextLabel.text = @"No description for this task";
+    static NSString *CellIdentifier = @"cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        cell.backgroundColor = [UIColor clearColor];
+        cell.textLabel.textColor = [UIColor whiteColor];
+        cell.detailTextLabel.textColor = [UIColor whiteColor];
     }
+
     
+    EWTaskItem *task = [tasks objectAtIndex:indexPath.section];
+    if ([task.success boolValue]) {
+        cell.textLabel.text = [task.completed date2String];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"Woke up by %d users", task.waker.count];
+    }else{
+        cell.textLabel.text = [task.time date2String];
+        cell.detailTextLabel.text = @"Did not wake up on time";
+    }
     
     return cell;
 }
 //tap cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    /*
     EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithNibName:nil bundle:nil];
     controller.task = tasks[indexPath.row];
     [self presentViewController:controller animated:YES completion:NULL];
-    /*
+    
     //voice message
     EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];//with ramdom audio
     media.author = currentUser;

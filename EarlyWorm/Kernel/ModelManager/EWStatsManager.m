@@ -9,6 +9,7 @@
 #import "EWStatsManager.h"
 #import "EWPerson.h"
 #import "EWTaskItem.h"
+#import "EWTaskStore.h"
 #import "EWAlarmItem.h"
 #import "NSDate+Extend.h"
 
@@ -23,21 +24,11 @@
     return sharedInstance_;
 }
 
--(NSArray *)pastTasksForPerson:(EWPerson *)person{
-    //local filter
-    NSMutableArray *pTasks = [[NSMutableArray alloc] init];
-    for (EWTaskItem *task in person.tasks) {
-        if ([task.time isEarlierThan:[NSDate date]]) {
-            [pTasks addObject:task];
-        }
-    }
-    return [NSArray arrayWithArray:pTasks];
-}
 
 
 -(NSDictionary *)statsForPerson:(EWPerson *)person{
     NSDictionary *stats = [[NSDictionary alloc] init];
-    NSArray *pTasks = [self pastTasksForPerson:person];
+    NSArray *pTasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
     NSInteger nTask = pTasks.count;
     NSInteger totalWakeUpTime = 0;
     NSInteger success = 0;

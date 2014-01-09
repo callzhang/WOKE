@@ -42,9 +42,7 @@
 - (id)init{
     self = [super init];
     if (self) {
-        //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
-        NSLog(@"Context for TaskStore is :%@", context);
-        [NSTimer timerWithTimeInterval:3600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
+        [NSTimer timerWithTimeInterval:600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -86,13 +84,14 @@
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
     NSArray *tasks = [[NSArray alloc] init];
-    if (![person.lastmoddate isEarlierThan:[NSDate date]] && person.tasks) {
+    if (![person.lastmoddate isOutDated] && person.tasks) {
         tasks = [person.pastTasks allObjects];
     }else{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
         NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
         NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
-        request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
+        NSPredicate *predicate3 = [NSPredicate predicateWithFormat:@"state == %@", @YES];
+        request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2, predicate3]];
         //request.sortDescriptors = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
         tasks = [context executeFetchRequestAndWait:request error:NULL];
         //save to person
@@ -190,6 +189,9 @@
     } onFailure:^(NSError *error) {
         [NSException raise:@"Unable to save new tasks" format:@"Error:%@", error.description];
     }];
+    
+    //last checked
+    self.lastChecked = [NSDate date];
     return tasks;
 }
 

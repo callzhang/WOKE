@@ -22,7 +22,7 @@
  */
 - (NSString *)date2dayString;
 /**
- 
+ return MM/DD/YYYY
  */
 - (NSString *)date2numberDateString;
 /**
@@ -74,5 +74,8 @@
  Get minutes distance from 5AM to now
  */
 - (NSInteger)minutesFrom5am;
-
+/**
+ Return MM/DD format
+ */
+- (NSString *)date2MMDD;
 @end

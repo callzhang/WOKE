@@ -24,10 +24,9 @@
 
 // Business
 #import "TestViewController.h"
-#import "EWEditAlarmViewController.h"
 #import "EWWakeUpViewController.h"
-#import "EWHistoryViewController.h"
 #import "EWAlarmScheduleViewController.h"
+#import "EWPersonViewController.h"
 
 //backend
 #import "StackMob.h"
@@ -56,7 +55,7 @@
     if (self) {
         self.title = LOCALSTR(@"Alarms");
         
-        self.tabBarItem.image = [UIImage imageNamed:@"alarm_icon.png"];
+        self.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemHistory tag:0];
         //launch with local notif
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentWakeUpView:) name:UIApplicationLaunchOptionsLocalNotificationKey object:nil];
         //listen to user log in
@@ -158,13 +157,6 @@
     [self dismissViewControllerAnimated:YES completion:^{}];
 }
 
-- (IBAction)OnHistoryButtonTapped:(id)sender {
-    
-    // Show History ViewController
-    EWHistoryViewController *controller = [[EWHistoryViewController alloc] init];
-    [self.navigationController pushViewController:controller animated:YES];
-}
-
 #ifndef CLEAR_TEST
 - (void)OnTest {
     TestViewController *controller = [[TestViewController alloc] init];
@@ -182,7 +174,7 @@
 
 //main loading function
 - (void)loadScrollViewWithPage:(NSInteger)page {
-    if (page < 0 || page >= alarms.count) {
+    if (page < 0 || page >= _alarmPages.count) {
         return;
     }
     
@@ -253,6 +245,13 @@
     }
 }
 
+- (IBAction)profile:(id)sender {
+    EWPersonViewController *controller = [[EWPersonViewController alloc] init];
+    controller.person = currentUser;
+    [self presentViewController:controller animated:YES completion:NULL];
+    
+}
+
 #pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     
@@ -292,12 +291,12 @@
 
 #pragma mark - EWAlarmItemEditProtocal
 - (void)editTask:(EWTaskItem *)task forPage:(EWAlarmPageView *)page{
-    EWEditAlarmViewController *controller = [[EWEditAlarmViewController alloc] init];
-    controller.task = task;
+    //EWEditAlarmViewController *controller = [[EWEditAlarmViewController alloc] init];
+    //controller.task = task;
     //controller.isNewAlarm = NO;
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    //UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     
-    [self presentViewController:navigationController animated:YES completion:^{}];
+    //[self presentViewController:navigationController animated:YES completion:^{}];
 }
 
 

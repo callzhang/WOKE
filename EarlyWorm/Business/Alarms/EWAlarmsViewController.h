@@ -30,4 +30,5 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender;
 - (IBAction)changePage:(id)sender;
 - (IBAction)scheduleInitialAlarms:(id)sender;
+- (IBAction)profile:(id)sender;
 @end
