@@ -73,6 +73,8 @@
 #define kTaskChangedNotification        @"EWTaskChanged" //key: task
 
 #define kPersonLoggedIn                 @"PersonLoggedIn"
+#define kPersonLoggedOut                @"PersonLoggedOut"
+#define kPersonProfilePicDownloaded     @"PersonPicDownloaded"
 
 #define kMediaNewNotification           @"EWMediaNew" //key: task & media
 

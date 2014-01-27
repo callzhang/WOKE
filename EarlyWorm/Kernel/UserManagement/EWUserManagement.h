@@ -15,7 +15,8 @@
 + (EWUserManagement *)sharedInstance;
 
 - (void)login;
+- (void)registerAPNS;
 - (void)registerWeibo;
 - (void)registerFacebook;
-- (void)updateUserData:(NSDictionary<FBGraphUser> *)user;
+- (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
 @end

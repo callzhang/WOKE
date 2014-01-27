@@ -88,18 +88,9 @@ SMPushClient *pushClient;
             // Optionally call original failure block
             originalFailureBlock(error);
         }];
-        
-        //push
-#if TARGET_IPHONE_SIMULATOR
-        //Code specific to simulator
-#else
-        pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
-        //register everytime in case for events like phone replacement
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
-#endif
-        //register login observer to register push
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registerPushNotification) name:kPersonLoggedIn object:nil];
 
+        //watch for login event
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginCheck) name:kPersonLoggedIn object:Nil];
     }
     return self;
 }
@@ -127,54 +118,12 @@ SMPushClient *pushClient;
 }
 
 
-
-
-#pragma mark - PUSH
-- (void)registerPushNotification{
-    //register notification, need both token and user ready
-    NSString *username = currentUser.username;
-    if (!username) {
-        NSLog(@"Tried to register push on StackMob but username is missing.");
-        return;
-    }
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSArray *tokenByUserArray = [defaults objectForKey:kPushTokenKey];
-    for (NSDictionary *dict in tokenByUserArray) {
-        NSString *registeredUsername = dict[kPushTokenUserKey];
-        if ([username isEqualToString:registeredUsername]) {
-            //registered user with exsiting token
-            NSString *token = dict[kPushTokenByUserKey];
-            [pushClient registerDeviceToken:token withUser:username onSuccess:^{
-            NSLog(@"APP registered push token and assigned to StackMob server");
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
-            }];
-            return;
-        }
-        
-        //if not found, looking for avatar
-        if ([registeredUsername isEqualToString:kPushTokenUserAvatarKey]) {
-            //current token generated before user logged in, replace old by new tokenByUser
-            NSString *token = dict[kPushTokenByUserKey];
-            NSDictionary *newDict = @{username: token};
-            [defaults setObject:@[newDict] forKey:kPushTokenKey];
-            [defaults synchronize];
-            //
-            [pushClient registerDeviceToken:token withUser:username onSuccess:^{
-                NSLog(@"APP registered push token and assigned to StackMob server");
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
-            }];
-            return;
-        }
-        
-        
-        NSLog(@"@@@ Did not find user push token. Register APNS first @@@");
-    }
-    
+#pragma mark - Login Check
+- (void)loginCheck{
+    [self checkAlarmData];
 }
 
-#pragma mark - set defaults
+
 - (void)checkAlarmData{
     //check alarm
     BOOL alarmGood = [EWAlarmManager.sharedInstance checkAlarms];
@@ -186,7 +135,7 @@ SMPushClient *pushClient;
     //check task
     BOOL taskGood = [EWTaskStore.sharedInstance checkTasks];
     if (!taskGood) {
-        NSLog(@"Task not set up yet");
+        NSLog(@"Task needs to be scheduled");
         [EWTaskStore.sharedInstance scheduleTasks];
     }
     
@@ -196,6 +145,9 @@ SMPushClient *pushClient;
 
 #pragma mark - DATA
 - (NSData *)getRemoteDataWithKey:(NSString *)key{
+    if (!key) {
+        return nil;
+    }
     NSData *data;
     if ([SMBinaryDataConversion stringContainsURL:key]) {
         //read from url

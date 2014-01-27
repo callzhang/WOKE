@@ -90,13 +90,13 @@ UIView *rootview;
         if (localNotif) {
             NSString *taskID = [localNotif.userInfo objectForKey:kLocalNotificationUserInfoKey];
             
-            /*
+            
              UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Local notification"
              message:taskID
              delegate:nil
              cancelButtonTitle:@"OK"
              otherButtonTitles:nil];
-             [alert show];*/
+             [alert show];
             
             NSLog(@"Entered app with local notification when app is not alive");
             NSLog(@"Get task id: %@", taskID);
@@ -109,10 +109,8 @@ UIView *rootview;
     }
     
     //User login
-    [MBProgressHUD showHUDAddedTo:rootview animated:YES];
     EWUserManagement *userMger = [EWUserManagement sharedInstance];
     [userMger login];
-    [MBProgressHUD hideAllHUDsForView:rootview animated:YES];
     
     //last step
     [self.window makeKeyAndVisible];
@@ -173,7 +171,7 @@ UIView *rootview;
     [FBSession.activeSession close];
 }
 
-/*
+
 #pragma mark - Weibo
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     return [WeiboSDK handleOpenURL:url delegate:self];
@@ -188,7 +186,7 @@ UIView *rootview;
     return [FBSession.activeSession handleOpenURL:url];
 }
 
-*/
+
 
 - (BOOL) isMultitaskingSupported {
     
@@ -310,7 +308,7 @@ UIView *rootview;
     
     // Persist token
     NSString *username = currentUser.username;
-    if(!username) username = kPushTokenUserAvatarKey;
+    if(!username) [NSException raise:@"User didn't log in" format:@"Check your login sequense"];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSMutableArray *tokenByUserArray = (NSMutableArray *)[defaults objectForKey:kPushTokenKey];
     if (!tokenByUserArray) tokenByUserArray = [[NSMutableArray alloc] init];

@@ -31,12 +31,12 @@
 
 
 + (EWUserManagement *)sharedInstance{
-    static EWUserManagement *g_UserManager = nil;
+    static EWUserManagement *userManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        g_UserManager = [[EWUserManagement alloc] init];
+        userManager = [[EWUserManagement alloc] init];
     });
-    return g_UserManager;
+    return userManager;
 }
 
 
@@ -47,8 +47,6 @@
     //get logged in user
     if ([client isLoggedIn]) {
         //user already logged in
-        //HUD
-        
         //fetch user in coredata cache(offline) with related objects
         [client getLoggedInUserOnSuccess:^(NSDictionary *result) {
             NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
@@ -65,24 +63,22 @@
                     [NSException raise:@"More than one user fetched" format:@"Check username:%@",result[@"username"]];
                 }
                 //contineue user log in tasks
-                NSLog(@"User %@ data has fetched from cache on app startup", result[@"username"]);
+                NSLog(@"UserManagement: User %@ data has fetched from cache", result[@"username"]);
                 //merge changes
-                EWPerson *me = results[0];
-                [context refreshObject:me mergeChanges:YES];
-                //assign to currentUser
-                currentUser = me;
+                currentUser = results[0];
+                [context refreshObject:currentUser mergeChanges:YES];
                 
                 //check alarms and tasks
-                [[EWDataStore sharedInstance] checkAlarmData];
+                //[[EWDataStore sharedInstance] checkAlarmData];
                 
                 //Broadcast user login event
                 [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
                 
-                //login to fb?
+                //login to fb
                 //TODO
                 
                 //HUD
-                [MBProgressHUD hideAllHUDsForView:rootview animated:YES];
+                //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
                 
             } onFailure:^(NSError *error) { //fail to fetch user
                 NSLog(@"Failed to fetch logged in user: %@", error.description);
@@ -95,64 +91,125 @@
             
             
         } onFailure:^(NSError *error) { //failed to get logged in user
-            //TODO
+            NSLog(@"UserManagement: Failed to get logged in user from SM Cache");
         }];
         
         
     }else{
-        //if not logged in, register one
-        EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:context];
+        //log out fb first
+        [FBSession.activeSession closeAndClearTokenInformation];
         //get ADID
         NSArray *adidArray = [[EWIO ADID] componentsSeparatedByString:@"-"];
         //username
         NSString *username = adidArray.firstObject;
-        [newMe setUsername:username];
+        
         //password
         NSString *password = adidArray.lastObject;
-        [newMe setPassword:password];
-        //persist password to user defaults locally
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setObject:password forKey:@"password"];
-        newMe.name = @"No Name";
-        newMe.profilePic = [UIImage imageNamed:@"profile"];
-        [context saveOnSuccess:^{
-            NSLog(@"New user %@ created", newMe.username);
-            currentUser = newMe;
-            //login
-            [client loginWithUsername:currentUser.username password:password onSuccess:^(NSDictionary *result) {
-                [[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
-                //broadcast
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-                //HUD
-                [MBProgressHUD hideAllHUDsForView:rootview animated:YES];
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
-            }];
+        
+        //try to log in
+        [client loginWithUsername:username password:password onSuccess:^(NSDictionary *result) {
+            currentUser = [[EWPersonStore sharedInstance] getPersonByID:username];
+            
+            [[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
+            
+            //broadcast
+            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+            
         } onFailure:^(NSError *error) {
-            NSLog(@"Unable to create new user. %@", error.description);
-            //try to login
-            //get ADID
-            NSArray *adidArray = [[EWIO ADID] componentsSeparatedByString:@"-"];
-            //username
-            NSString *username = adidArray.firstObject;
-            //password
-            NSString *password = adidArray.lastObject;
-            [client loginWithUsername:username password:password onSuccess:^(NSDictionary *result) {
-                currentUser = [[EWPersonStore sharedInstance] getPersonByID:username];
+            //if not logged in, register one
+            EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:context];
+            [newMe setUsername:username];
+            [newMe setPassword:password];
+            newMe.name = @"No Name";
+            newMe.profilePic = [UIImage imageNamed:@"profile"];
+            currentUser = newMe;
+            
+            //persist password to user defaults locally
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:password forKey:@"password"];
+            
+            //save new user
+            [context saveOnSuccess:^{
+                NSLog(@"New user %@ created", newMe.username);
                 
-                [[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
-                //broadcast
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+                //login
+                [client loginWithUsername:currentUser.username password:password onSuccess:^(NSDictionary *result){
+                    //[[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
+                    //broadcast
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+                    //HUD
+                    //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
+                } onFailure:^(NSError *error) {
+                    [NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
+                }];
             } onFailure:^(NSError *error) {
-                [NSException raise:@"Unable to login with temporary user" format:@"error: %@", error.description];
+                [NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
+                
             }];
-
         }];
     }
 }
 
+#pragma mark - PUSH
+
+- (void)registerAPNS{
+    //push
+#if TARGET_IPHONE_SIMULATOR
+    //Code specific to simulator
+#else
+    pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
+    //register everytime in case for events like phone replacement
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
+#endif
+}
+
+- (void)registerPushNotification{
+    //register notification, need both token and user ready
+    NSString *username = currentUser.username;
+    if (!username) {
+        NSLog(@"@@@@@ Tried to register push on StackMob but username is missing. Check you code! @@@@@");
+        return;
+    }
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *tokenByUserArray = [defaults objectForKey:kPushTokenKey];
+    for (NSDictionary *dict in tokenByUserArray) {
+        NSString *registeredUsername = dict[kPushTokenUserKey];
+        if ([username isEqualToString:registeredUsername]) {
+            //registered user with exsiting token
+            NSString *token = dict[kPushTokenByUserKey];
+            [pushClient registerDeviceToken:token withUser:username onSuccess:^{
+                NSLog(@"APP registered push token and assigned to StackMob server");
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
+            }];
+            return;
+        }
+        
+        /*
+        //if not found, looking for avatar
+        if ([registeredUsername isEqualToString:kPushTokenUserAvatarKey]) {
+            //current token generated before user logged in, replace old by new tokenByUser
+            NSString *token = dict[kPushTokenByUserKey];
+            NSDictionary *newDict = @{username: token};
+            [defaults setObject:@[newDict] forKey:kPushTokenKey];
+            [defaults synchronize];
+            //
+            [pushClient registerDeviceToken:token withUser:username onSuccess:^{
+                NSLog(@"APP registered push token and assigned to StackMob server");
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
+            }];
+            return;
+        }
+        */
+        
+        NSLog(@"@@@ Did not find user push token. Register APNS first @@@");
+    }
+    
+}
+
 //after fb login, fetch user managed object
-- (void)updateUserData:(NSDictionary<FBGraphUser> *)user{
+- (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     //get currentUser first
     if(!currentUser){
         NSLog(@"======= Something wrong, currentUser is nil ========");
@@ -160,50 +217,52 @@
     
     //[client getLoggedInUserOnSuccess:^(NSDictionary *result){
         
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
-        currentUser = person;
-        if (!person.email) person.email = user[@"email"];
-        //name
-        if(!person.name) person.name = user.name;
-        //birthday format: "01/21/1984";
-        if (!person.birthday) {
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            formatter.dateFormat = @"mm/dd/yyyy";
-            person.birthday = [formatter dateFromString:user[@"birthday"]];
-        }
-        //facebook link
-        person.facebook = user.link;
-        //gender
-        person.gender = user[@"gender"];
-        //city
-        if (!person.city) person.city = user.location[@"name"];
-        //preference
-        if(!person.preference){
-            //new user
-            NSDictionary *defaults = userDefaults;
-            person.preference = [defaults mutableCopy];
-        }
-        //profile pic, async download, need to assign img to person before leave
-        NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", user.id];
-        //[self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
-        
-        //[self.profileView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]] placeholderImage:[UIImage imageNamed:@"profile.png"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {//
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]];
-        [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image) {
-            currentUser.profilePic = image;
-        }];
-        
-        //broadcasting
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{@"User": currentUser}];
-        
-        //hide hud if possible
-        EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-        [MBProgressHUD hideAllHUDsForView:delegate.window.rootViewController.view animated:YES];
+    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+    currentUser = person;
+    if (!person.email) person.email = user[@"email"];
+    //name
+    if(!person.name) person.name = user.name;
+    //birthday format: "01/21/1984";
+    if (!person.birthday) {
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.dateFormat = @"mm/dd/yyyy";
+        person.birthday = [formatter dateFromString:user[@"birthday"]];
+    }
+    //facebook link
+    person.facebook = user.link;
+    //gender
+    person.gender = user[@"gender"];
+    //city
+    if (!person.city) person.city = user.location[@"name"];
+    //preference
+    if(!person.preference){
+        //new user
+        NSDictionary *defaults = userDefaults;
+        person.preference = [defaults mutableCopy];
+    }
+    //profile pic, async download, need to assign img to person before leave
+    NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", user.id];
+    //[self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
+    
+    //[self.profileView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]] placeholderImage:[UIImage imageNamed:@"profile.png"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {//
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]];
+    AFImageRequestOperation *operation;
+    operation = [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image) {
+        currentUser.profilePic = image;
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonProfilePicDownloaded object:self userInfo:nil];
+    }];
+    [operation start];
+    //broadcasting
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey: person}];
+    
+    //hide hud if possible
+    EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
+    [MBProgressHUD hideAllHUDsForView:delegate.window.rootViewController.view animated:YES];
             
         
         
-    });
+    //});
     /*
     } onFailure:^(NSError *err){
         // Error

@@ -33,9 +33,10 @@
             [self addSubview:view];
         }
         //Notifications
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kAlarmChangedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskTimeChangedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskStateChangedNotification object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kAlarmChangedNotification object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskTimeChangedNotification object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskStateChangedNotification object:nil];
+        
     }
     return self;
 }
@@ -50,12 +51,13 @@
     // 写入数据库
     //[EWAlarmManager.sharedInstance setAlarmState:sender.on atIndex:sender.tag];
     //[EWAlarmManager.sharedInstance saveAlarm];
-    EWTaskItem *t = EWTaskStore.sharedInstance.allTasks[sender.tag];
-    EWAlarmItem *a = t.alarm;
+    //EWTaskItem *t = EWTaskStore.sharedInstance.allTasks[sender.tag];
+    
+    EWAlarmItem *a = task.alarm;
     a.state = [NSNumber numberWithBool:sender.on];
     //t.state = a.state;
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": a}];
-    NSLog(@"Alarm #%d changed to %hhd", a.time.weekdayNumber, sender.on);
+    NSLog(@"Alarm on %@ changed to %hhd", a.time.weekday, sender.on);
 }
 
 - (IBAction)playMessage:(id)sender {
@@ -69,6 +71,14 @@
 }
 
 - (void)setTask:(EWTaskItem *)t{
+    //unsubscribe previous task if possible
+    @try {
+        [task removeObserver:self forKeyPath:@"state"];
+        [task removeObserver:self forKeyPath:@"medias"];
+        [task removeObserver:self forKeyPath:@"time"];
+    }
+    @catch (NSException * __unused exception) {NSLog(@"%@",exception);}
+    
     //actions after setting the task
     task = t;
     self.alarm = task.alarm;
@@ -92,6 +102,11 @@
     self.dateText.text = [t.time date2dayString];
     self.descriptionText.text = t.statement;
     [self.descriptionText sizeToFit];
+    
+    //kvo
+    [task addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:NULL];
+    [task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:NULL];
+    [task addObserver:self forKeyPath:@"time" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)setAlarm:(EWAlarmItem *)a{
@@ -116,6 +131,13 @@
     
 }
 
-
+#pragma mark - KVO
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if ([object isKindOfClass:[EWTaskItem class]]) {
+        NSLog(@"Observed change for task %@", [[(EWTaskItem *)object time] date2dayString]);
+        self.task = object;
+        [self setNeedsDisplay];
+    }
+}
 
 @end

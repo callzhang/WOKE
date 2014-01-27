@@ -18,6 +18,7 @@
 #import "EWAppDelegate.h"
 #import "EWLogInViewController.h"
 #import "EWDataStore.h"
+#import "EWUserManagement.h"
 
 EWPerson *currentUser;
 
@@ -32,7 +33,7 @@ EWPerson *currentUser;
         sharedPersonStore_ = [[EWPersonStore alloc] init];
         //listern to user log in events
         [[NSNotificationCenter defaultCenter] addObserver:sharedPersonStore_ selector:@selector(userLoggedIn:) name:kPersonLoggedIn object:nil];
-        
+        [[NSNotificationCenter defaultCenter] addObserver:sharedPersonStore_ selector:@selector(userLoggedOut:) name:kPersonLoggedOut object:nil];
     });
         
     
@@ -72,6 +73,7 @@ EWPerson *currentUser;
 
 - (NSArray *)everyone{
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
+    userFetch.fetchLimit = 20;
     //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
     return [context executeFetchRequestAndWait:userFetch error:NULL];
 }
@@ -91,20 +93,21 @@ EWPerson *currentUser;
 //Danger Zone
 - (void)purgeUserData{
     NSLog(@"Cleaning all cache and server data");
-    [context deleteObject:currentUser];
-    [context saveAndWait:NULL];
+    //[context deleteObject:currentUser];
+    //[context saveAndWait:NULL];
     //Alarm
     [EWAlarmManager.sharedInstance deleteAllAlarms];
     //task
     [EWTaskStore.sharedInstance deleteAllTasks];
     //media
-    [EWMediaStore.sharedInstance deleteAllMedias];
+    //[EWMediaStore.sharedInstance deleteAllMedias];
     //check
     [EWTaskStore.sharedInstance checkScheduledNotifications];
     
     [context saveOnSuccess:^{
         //person
-        currentUser = nil;
+        //currentUser = nil;
+        
         //cache clear
         //[[EWDataStore sharedInstance].coreDataStore resetCache];
         
@@ -115,6 +118,8 @@ EWPerson *currentUser;
         [[SMClient defaultClient] logoutOnSuccess:^(NSDictionary *result) {
             //facebook logout
             [[FBSession activeSession] closeAndClearTokenInformation];
+            EWUserManagement *userManager = [[EWUserManagement alloc] init];
+            [userManager login];
         } onFailure:^(NSError *error) {
             [NSException raise:@"Error log out" format:@"Reason: %@", error.description];
         }];
@@ -127,6 +132,10 @@ EWPerson *currentUser;
 - (void)userLoggedIn:(NSNotification *)notif{
     EWPerson *me = notif.userInfo[kUserLoggedInUserKey];
     currentUser = me;
+}
+
+- (void)userLoggedOut:(NSNotification *)notif{
+    currentUser = nil;
 }
 
 @end

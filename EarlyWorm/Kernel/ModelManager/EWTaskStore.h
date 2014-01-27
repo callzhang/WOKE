@@ -46,6 +46,9 @@
 //KVO
 - (void)updateTaskState:(NSNotification *)notif;
 - (void)updateTaskTime:(NSNotification *)notif;
+- (void)updateNotifTone:(NSNotification *)notif;
+- (void)updateTaskMedia:(NSNotification *)notif;
+- (void)alarmRemoved:(NSNotification *)notif;
 
 //delete (delete only happens at change alarm, never delete all tasks)
 - (void)removeTask:(EWTaskItem *)task;

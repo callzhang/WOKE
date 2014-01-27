@@ -39,8 +39,7 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initData) name:kPersonLoggedIn object:nil];
         
-        //core data
-        //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+        cellIdentifier = @"CellIdentifier";
     }
     return self;
 }
@@ -55,12 +54,8 @@
 
 - (void)initData {
     //profile
-    _person = currentUser;
-    preference = [_person.preference mutableCopy];
-    //options
-    //options = @{@"Offine Ringtone", @"Social interaction", @"Download connection", @"Bed time notification", @9.0, @"Privacy information"};
-    //table view
-    cellIdentifier = @"CellIdentifier";
+    preference = [currentUser.preference mutableCopy];
+    
 }
 
 - (void)initView {
@@ -102,7 +97,7 @@
 - (void)ViewController:(EWRingtoneSelectionViewController *)controller didFinishSelectRingtone:(NSString *)tone{
     //set ringtone
     preference[@"tone"] = tone;
-    _person.preference = preference;
+    currentUser.preference = preference;
     [context saveOnSuccess:^{
         //
     } onFailure:^(NSError *error) {
@@ -206,38 +201,38 @@
             switch (indexPath.row){
                 case 0: {
                     cell.textLabel.text = LOCALSTR(@"Name");
-                    cell.detailTextLabel.text = _person.name;
+                    cell.detailTextLabel.text = currentUser.name;
                 }
                     break;
                 case 1: {
                     cell.textLabel.text = LOCALSTR(@"Profile Picture");
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                    cell.imageView.image = _person.profilePic;
+                    cell.imageView.image = currentUser.profilePic;
                 }
                     break;
                 case 2: {
                     cell.textLabel.text = LOCALSTR(@"ID");
-                    cell.detailTextLabel.text = _person.username;
+                    cell.detailTextLabel.text = currentUser.username;
                 }
                     break;
                 case 3: {
                     cell.textLabel.text = LOCALSTR(@"Facebook ID");
-                    cell.detailTextLabel.text = _person.username;
+                    cell.detailTextLabel.text = currentUser.username;
                 }
                     break;
                 case 4:{
                     cell.textLabel.text = LOCALSTR(@"Weibo ID");
-                    cell.detailTextLabel.text = _person.weibo;
+                    cell.detailTextLabel.text = currentUser.weibo;
                 }
                     break;
                 case 5:{
                     cell.textLabel.text = LOCALSTR(@"City");
-                    cell.detailTextLabel.text = _person.city;
+                    cell.detailTextLabel.text = currentUser.city;
                 }
                     break;
                 case 6: {
                     cell.textLabel.text = LOCALSTR(@"Region");
-                    cell.detailTextLabel.text = _person.region;
+                    cell.detailTextLabel.text = currentUser.region;
                 }
                     break;
                 case 7:{
@@ -362,7 +357,7 @@
 }
 
 - (void)OnBedTimeNotificationSwitchChanged:(UISwitch *)sender{
-    [_person.preference setObject:@(sender.on) forKey:@"BedTimeNotification"];
+    [currentUser.preference setObject:@(sender.on) forKey:@"BedTimeNotification"];
     if (sender.on == YES) {
         //schedule night notification
     }else{

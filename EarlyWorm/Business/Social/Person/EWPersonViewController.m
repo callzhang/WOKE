@@ -28,6 +28,7 @@
 
 //view
 #import "EWRecordingViewController.h"
+#import "EWLogInViewController.h"
 
 @interface EWPersonViewController (UITableView) <UITableViewDataSource, UITableViewDelegate>
 
@@ -40,6 +41,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
     if (person) {
         [self initData];
         [self initView];
@@ -61,43 +63,51 @@
     person = p;
     [self initData];
     
-    //UI
-    self.profilePic.image = person.profilePic;
-    self.name.text = person.name;
-    self.location.text = person.city;
     
-    [self.friends setTitle:[NSString stringWithFormat:@"%d", person.friends.count] forState:UIControlStateNormal];
-    [self.aveTime setTitle:[NSString stringWithFormat:@"%d\"", [stats.aveWakeupTime integerValue]] forState:UIControlStateNormal];
-    [self.achievements setTitle:[NSString stringWithFormat:@"%d", person.achievements.count] forState:UIControlStateNormal];
-    
-    EWTaskItem *t = tasks.firstObject;
-    if (person.statement) {
-        self.statement.text = person.statement;
-    }else if (t.statement){
-        self.statement.text = t.statement;
-    }else{
-        self.statement.text = @"No statement written by this owner";
-    }
-    
-    //[self.view setNeedsDisplay];
 }
 
 - (void)initView {
-    
+    if (person == currentUser && !person.facebook) {
+        self.loginBtn.alpha = 1;
+    }else{
+        self.loginBtn.alpha = 0;
+    }
     //========table for tasks========
     
     tableView.dataSource = self;
     tableView.delegate = self;
     tableView.backgroundColor = [UIColor clearColor];
     tableView.backgroundView = nil;
+    
+    //======= UI =======
+    if (person) {
+        [tableView reloadData];
+        //UI
+        self.profilePic.image = person.profilePic;
+        self.name.text = person.name;
+        self.location.text = person.city;
+        
+        [self.friends setTitle:[NSString stringWithFormat:@"%d", person.friends.count] forState:UIControlStateNormal];
+        [self.aveTime setTitle:[NSString stringWithFormat:@"%d\"", [stats.aveWakeupTime integerValue]] forState:UIControlStateNormal];
+        [self.achievements setTitle:[NSString stringWithFormat:@"%d", person.achievements.count] forState:UIControlStateNormal];
+        
+        EWTaskItem *t = tasks.firstObject;
+        if (person.statement) {
+            self.statement.text = person.statement;
+        }else if (t.statement){
+            self.statement.text = t.statement;
+        }else{
+            self.statement.text = @"No statement written by this owner";
+        }
+        
+        [self.view setNeedsDisplay];
+    }
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    if (person) {
-        [tableView reloadData];
-    }
     
+    [self initView];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -106,7 +116,17 @@
 
 #pragma mark - UI Events
 - (IBAction)extProfile:(id)sender{
+    [self.view setNeedsDisplay];
     NSLog(@"Info clicked");
+}
+
+- (IBAction)close:(id)sender {
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (IBAction)login:(id)sender {
+    EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+    [loginVC loginInBackground];
 }
 
 - (void)addPerson{
@@ -191,29 +211,44 @@
     return 30;//TODO
 }
 
-//make cell
-- (UITableViewCell *)makePersonInfoCellForTableView:(UITableView *)tableView{
+/*
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    NSInteger r = 30;
+    CGRect rect = CGRectMake(0, 0, r, r);
+    UIView *circleHeader = [[UIView alloc] initWithFrame:CGRectMake(0, 0, r, r)];
+ 
+//    circleHeader.alpha = 0.5;
+//    circleHeader.layer.cornerRadius = r/2;
+//    circleHeader.backgroundColor = [UIColor whiteColor];
+ 
+    //Draw a circle
+    // Get the contextRef
+    CGContextRef contextRef = UIGraphicsGetCurrentContext();
     
-    static NSString *taskCellIdentifier = @"taskCellIdentifier";
-
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:taskCellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:taskCellIdentifier];
-    }
+    // Set the border width
+    CGContextSetLineWidth(contextRef, 1.0);
     
-    cell.backgroundColor = kCustomLightGray;
-    cell.textLabel.font = [UIFont fontWithName:@"Avenir Light" size:20];
-    cell.textLabel.textColor = kCustomGray;
-    cell.detailTextLabel.textColor = kColorMediumGray;
-    cell.detailTextLabel.text = @"Alarm description";
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    return cell;
+    // Set the circle fill color to GREEN
+    CGContextSetRGBFillColor(contextRef, 255.0, 255.0, 255.0, 0.6);
+    
+    // Set the cicle border color to BLUE
+    CGContextSetRGBStrokeColor(contextRef, 255.0, 255.0, 255.0, 0.3);
+    
+    // Fill the circle with the fill color
+    CGContextFillEllipseInRect(contextRef, rect);
+    
+    // Draw the circle border
+    CGContextStrokeEllipseInRect(contextRef, rect);
+    
+    return circleHeader;
 }
+*/
+
 //display cell
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableV cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     static NSString *CellIdentifier = @"cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    UITableViewCell *cell = [tableV dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
@@ -264,6 +299,14 @@
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     NSLog(@"Accessory button tapped");
+}
+
+
+#pragma mark - USER LOGIN
+- (void)userLoggedIn{
+    NSLog(@"PersonVC: user logged in, starting refresh");
+    [self initData];
+    [self initView];
 }
 
 @end

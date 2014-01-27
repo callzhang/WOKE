@@ -22,4 +22,6 @@
 - (IBAction)check:(id)sender;
 - (IBAction)proceed:(id)sender;
 
+- (void)loginInBackground;
+
 @end

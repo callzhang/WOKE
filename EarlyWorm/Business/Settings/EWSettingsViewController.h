@@ -20,7 +20,6 @@ typedef enum {
     UITableView *_tableView;
     settingGroupList settingGroup;
     NSString *cellIdentifier;
-    EWPerson *_person;
     //NSManagedObjectContext *context;
     //NSDictionary *options;
     //preference

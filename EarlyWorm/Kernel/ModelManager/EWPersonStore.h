@@ -21,6 +21,9 @@ extern EWPerson *currentUser;
 + (EWPersonStore *)sharedInstance;
 - (EWPerson *)createPersonWIthUsername:(NSString *)username;
 - (EWPerson *)getPersonByID:(NSString *)ID;
+/**
+ Possible people that are relevant
+ */
 - (NSArray *)everyone;
 - (void)purgeUserData;
 - (void)checkRelations;

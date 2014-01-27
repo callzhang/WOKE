@@ -1,6 +1,7 @@
 //
 //  EWEditAlarmViewController.h
 //  EarlyWorm
+//  This class has been depreciated
 //
 //  Created by shenslu on 13-8-8.
 //  Copyright (c) 2013年 Shens. All rights reserved.

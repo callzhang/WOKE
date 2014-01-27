@@ -32,6 +32,9 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         g_alarmManager = [[EWAlarmManager alloc] init];
+        //notification
+        //[[NSNotificationCenter defaultCenter] addObserver:g_alarmManager selector:@selector(loginCheck) name:kPersonLoggedIn object:Nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:g_alarmManager selector:@selector(logOut) name:kPersonLoggedOut object:Nil];
     }); 
     
     return g_alarmManager;
@@ -67,7 +70,7 @@
     }];
     
     //notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmNewNotification object:self userInfo:@{@"alarm": a}];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmNewNotification object:self userInfo:@{@"alarm": a}];
     
     return a;
 }
@@ -102,14 +105,19 @@
     NSArray *alarms = [self.allAlarms copy];
     
     //schedule alarm from Sunday to Saturday of current week
-    NSMutableArray *newAlarms = [[NSMutableArray alloc] initWithCapacity:7];
+    NSMutableArray *newAlarms = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
+    //check if alarm exsit
+    for (EWAlarmItem *a in alarms) {
+        NSInteger i = [a.time weekdayNumber];
+        newAlarms[i] = a;
+    }
+    //start add alarm if blank
+    BOOL newAlarm = NO;
     for (NSInteger i=0; i<7; i++) {
-        //check if alarm exsit
-        for (EWAlarmItem *a in alarms) {
-            if ([a.time weekdayNumber] == i) {
-                continue;
-            }
+        if ([(NSNumber *)newAlarms[i] boolValue]) {
+            continue;
         }
+        NSLog(@"Alarm for weekday %d missing, start add alarm", i);
         EWAlarmItem *a = [self newAlarm];
         //set time
         NSDate *d = [NSDate date];
@@ -130,6 +138,12 @@
         a.tone = currentUser.preference[@"DefaultTone"];
         //add to temp array
         [newAlarms addObject:a];
+        newAlarm = YES;
+    }
+    if (newAlarm) {
+        //notification
+        NSLog(@"Post all new alarms");
+        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmsAllNewNotification object:self userInfo:nil];
     }
     //save all alarms
     [context saveOnSuccess:^{
@@ -143,7 +157,7 @@
 
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:nil userInfo:@{@"tasks":alarm.tasks}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"tasks":alarm.tasks}];
     [context deleteObject:alarm];
     for (EWTaskItem *t in alarm.tasks) {
         [context deleteObject:t];
@@ -156,17 +170,21 @@
 }
 
 - (void)deleteAllAlarms{
+    NSMutableArray *tasksToDelete = [[NSMutableArray alloc] initWithCapacity:self.allAlarms.count * nWeeksToScheduleTask];
     for (EWAlarmItem *alarm in self.allAlarms) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:nil userInfo:@{@"tasks":alarm.tasks}];
+        [tasksToDelete addObject:alarm.tasks];
         [context deleteObject:alarm];
     }
+    //notification
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"tasks":tasksToDelete}];
+    //save
     NSError *err;
     [context saveAndWait:&err];
 }
 
 #pragma mark - CHECK
 - (BOOL)checkAlarms{
-    //fetch again
+    //YES means alarms are good
     NSArray *alarms = [self allAlarmsForUser:currentUser];
     
     if (alarms.count == 0) {
@@ -185,6 +203,25 @@
     }
 }
 
+/*
+- (void)loginCheck{
+    NSLog(@"Alarm Manager: User logged in, start checking alarm");
+    BOOL needSchedule = ![self checkAlarms];
+    if (needSchedule) {
+        //[self scheduleAlarm];
+        NSLog(@"Alarm Manager: Alarm not good, need to schedule");
+    }else{
+        NSLog(@"Alarm Manager: Alarm good, stored in allAlarms");
+        self.allAlarms = [currentUser.alarms mutableCopy];
+    }
+}
+
+- (void)logOut{
+    NSLog(@"Alarm Manager: Logged out, allAlarm = nil");
+    self.allAlarms = nil;
+}
+
+
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([object isKindOfClass:[EWAlarmItem class]]) {
@@ -195,10 +232,7 @@
         }
     }
 }
-
-
-
-
+*/
 
 
 /*

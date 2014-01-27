@@ -27,9 +27,14 @@
 #import "EWWakeUpViewController.h"
 #import "EWAlarmScheduleViewController.h"
 #import "EWPersonViewController.h"
+#import "EWLogInViewController.h"
 
 //backend
 #import "StackMob.h"
+
+//view
+extern UIView *rootview;
+
 @interface EWAlarmsViewController ()
 
 //@property (nonatomic, strong) UITableView *tableView;
@@ -58,11 +63,14 @@
         self.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemHistory tag:0];
         //launch with local notif
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentWakeUpView:) name:UIApplicationLaunchOptionsLocalNotificationKey object:nil];
-        //listen to user log in
+        //listen to user log in, and updates its view
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedOut object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initView) name:kPersonProfilePicDownloaded object:nil];
+        //
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadView) name:kTaskNewNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadView) name:kTaskChangedNotification object:nil];
-        
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kAlarmsAllNewNotification object:nil];//this event occurs before tasks created, it will cause the reloadView fail
         //UI
         self.hidesBottomBarWhenPushed = NO;
         
@@ -76,6 +84,7 @@
     [self initData];
     [self initView];
     [self reloadView];
+    [MBProgressHUD hideAllHUDsForView:rootview animated:YES];
 }
 
 - (void)viewDidLoad {
@@ -91,17 +100,26 @@
     [super viewDidAppear:animated];
     //reload
     if (currentUser) {
-        [self reloadView];
+        //[self reloadView];
     }
 }
 
 - (void)initData {
     //init alarm page container
-    alarms = [EWAlarmManager sharedInstance].allAlarms;
-    tasks = [EWTaskStore sharedInstance].allTasks;
-    for (unsigned i = 0; i < self.alarms.count; i++) {
-        [_alarmPages addObject:[NSNull null]];
+    if (currentUser) {
+        alarms = [EWAlarmManager sharedInstance].allAlarms;
+        tasks = [EWTaskStore sharedInstance].allTasks;
+        /*
+        for (unsigned i = 0; i < self.alarms.count; i++) {
+            _alarmPages[i] = [NSNull null];
+        }*/
+        _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
+    }else{
+        alarms = nil;
+        tasks = nil;
+        [_alarmPages removeAllObjects];
     }
+    
 }
 
 - (void)initView {
@@ -114,10 +132,18 @@
 #endif
     
     //owner info
-    self.profileImageView.image = currentUser.profilePic;
-    self.nameLabel.text = currentUser.name;
-    self.locationLabel.text = currentUser.city ? currentUser.city : @"Somewhere";
-    self.rankLabel.text = [NSString stringWithFormat:@"Last activity: %@", [currentUser.createddate date2numberDateString]];
+    if (currentUser) {
+        self.profileImageView.image = currentUser.profilePic;
+        self.nameLabel.text = currentUser.name;
+        self.locationLabel.text = currentUser.city ? currentUser.city : @"Somewhere";
+        self.rankLabel.text = [NSString stringWithFormat:@"Last activity: %@", [currentUser.createddate date2numberDateString]];
+    }else{
+        self.profileImageView.image = [UIImage imageNamed:@"profile"];
+        self.nameLabel.text = @"";
+        self.locationLabel.text = @"";
+        self.rankLabel.text = @"";
+    }
+    
     
     //nav bar
     //self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.169 green:0.373 blue:0.192 alpha:0.9];
@@ -134,15 +160,24 @@
 }
 
 - (void)reloadView {
-    if (currentUser) {
-        _pageView.numberOfPages = self.alarms.count;
-        
-        [self loadScrollViewWithPage:_pageView.currentPage - 1];
-        [self loadScrollViewWithPage:_pageView.currentPage];
-        [self loadScrollViewWithPage:_pageView.currentPage + 1];
-        [self.view setNeedsDisplay];
-        [self.scrollView setNeedsDisplay];
+    
+    _pageView.numberOfPages = self.alarms.count;
+    if (alarms.count == 0 || tasks.count == 0) {
+        for (EWAlarmPageView *view in _scrollView.subviews) {
+            if ([view isKindOfClass:[EWAlarmPageView class]]) {
+                [view removeFromSuperview];
+            }
+        }
+        _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
+        _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
+        return;
     }
+    
+    [self loadScrollViewWithPage:_pageView.currentPage - 1];
+    [self loadScrollViewWithPage:_pageView.currentPage];
+    [self loadScrollViewWithPage:_pageView.currentPage + 1];
+    [self.view setNeedsDisplay];
+    [self.scrollView setNeedsDisplay];
     
 }
 
@@ -168,6 +203,23 @@
 
 - (void)OnScheduleAlarm{
     //pop up alarmScheduleView
+    if (alarms.count == 0 && tasks.count == 0) {
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [[EWAlarmManager sharedInstance] scheduleAlarm];
+        [[EWTaskStore sharedInstance] scheduleTasks];
+        
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        //refresh
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            [self initData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self initView];
+                [self reloadView];
+            });
+            
+        });
+    }
+    //pop up alarmScheduleView
     EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
     [self.navigationController pushViewController:controller animated:YES];
 }
@@ -179,31 +231,29 @@
     }
     
     
-    
 	// View
-    EWAlarmPageView *alarmPage = [_alarmPages objectAtIndex:page];
+    EWAlarmPageView *alarmPage;
     // replace the placeholder if necessary
-    if ((NSNull *)alarmPage == [NSNull null]) {
+    if (![_alarmPages[page] isKindOfClass: [EWAlarmPageView class]]) {
         alarmPage = [[EWAlarmPageView alloc] init];
+        _alarmPages[page] = alarmPage;
+    }else{
+        return;
     }
     
     //data
-    if (alarms.count == 0) {
-        //special treatment
-        alarmPage.dateText.text = @"--:--";
-    }else{
-        //page also means future day count
-        EWTaskItem *task = EWTaskStore.sharedInstance.allTasks[page];
-        
-        //fill info
-        alarmPage.task = task;
-        
-        if (page == 0) {
-            alarmPage.typeText.text = @"Next";
-        }
-        else {
-            alarmPage.typeText.text = @"Upcoming";
-        }
+    //page also means future day count
+    //EWAlarmItem *alarm = alarms[page];
+    EWTaskItem *task = tasks[page];
+    
+    //fill info
+    alarmPage.task = task;
+    
+    if (page == 0) {
+        alarmPage.typeText.text = @"Next";
+    }
+    else {
+        alarmPage.typeText.text = @"Upcoming";
     }
     
     alarmPage.delegate = self;
@@ -225,24 +275,7 @@
 }
 
 - (IBAction)scheduleInitialAlarms:(id)sender {
-    if (alarms.count == 0 && tasks.count == 0) {
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        [[EWAlarmManager sharedInstance] scheduleAlarm];
-        [[EWTaskStore sharedInstance] scheduleTasks];
-        //pop up alarmScheduleView
-        EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
-        [self.navigationController pushViewController:controller animated:YES];
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        //refresh
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-            [self initData];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self initView];
-                [self reloadView];
-            });
-            
-        });
-    }
+    [self OnScheduleAlarm];
 }
 
 - (IBAction)profile:(id)sender {

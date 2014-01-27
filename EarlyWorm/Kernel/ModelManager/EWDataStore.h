@@ -2,8 +2,8 @@
 //  EWStore.h
 //  EarlyWorm
 //
-//  This class is a singleton object that manages Core Data related properties and functions, such as context and model.
-//  It also manages backend objects like StockMob related stuff
+//  This class manages Core Data related properties and functions, such as context and model.
+//  It also manages backend: StockMob related and Push notification registration
 //
 //  Created by Lei on 8/29/13.
 //  Copyright (c) 2013 Shens. All rights reserved.
@@ -30,5 +30,8 @@ extern SMPushClient *pushClient;
 - (void)checkAlarmData;
 
 //data
+/**
+ get Amazon S3 storage data with key from StackMob backend
+ */
 - (NSData *)getRemoteDataWithKey:(NSString *)key;
 @end

@@ -94,7 +94,7 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated]; //no need to call super
-    if (!me) {
+    if (!currentUser) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self loadData];
         });
@@ -107,12 +107,11 @@
 
 - (void)loadData{
     [refreshHUD show:YES];
-    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        me = currentUser;
-        NSSet *friendsSet = me.friends;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSSet *friendsSet = currentUser.friends;
         friends = [friendsSet allObjects];
         NSMutableSet *everyoneSet = [NSMutableSet setWithArray:[[EWPersonStore sharedInstance] everyone]];
-        [everyoneSet minusSet:me.friends];
+        [everyoneSet minusSet:currentUser.friends];
         everyone = [everyoneSet allObjects];//exclude friends
         nAroundMe = (everyone.count>20) ? 20:everyone.count; //arbitrage number
         nGroup = 1; //wakeup together group
@@ -122,7 +121,7 @@
             [self.tableView reloadData];
             [refreshHUD hide:YES];
         });
-    //});
+    });
 }
 
 - (void)viewDidAppear:(BOOL)animated {

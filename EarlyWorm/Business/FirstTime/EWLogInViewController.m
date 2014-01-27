@@ -38,7 +38,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         //user login
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateView) name:kPersonLoggedIn object:nil];
 
         
     }
@@ -54,6 +54,7 @@
     self.proceedBtn.alpha = 0;
     
     //If fb has already a token, log in SM.
+    
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         NSLog(@"Starting to log in fb with cached info");
         [self.indicator startAnimating];
@@ -74,7 +75,7 @@
 
 - (void)updateView {
     
-    if ([client isLoggedIn]) {
+    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         [self.btnLoginLogout setTitle:@"Log out" forState:UIControlStateNormal];
     } else {
         [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
@@ -89,7 +90,7 @@
 
 - (IBAction)connect:(id)sender {
     [self.indicator startAnimating];
-    if ([client isLoggedIn]) {
+    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         [self logoutUser];//this should never happen
     } else {
         [self openSession];
@@ -186,16 +187,27 @@
              [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:user.username onSuccess:^(NSDictionary *result) {
                  NSLog(@"Logged in facebook for:%@", user.name);
                  
-                 if ([oldUser.username isEqualToString:user.username]) {
-                     //logged in with fb user already linked to currentUser
+                 if ([oldUser.username isEqualToString:user.username] && oldUser.username) {
+                     NSLog(@"Facebook user %@ has already registered on StackMob", user.username);
+                     [[EWUserManagement sharedInstance] updateUserWithFBData:user];
                  }else{
                      //new user, direct overwrite local info
-                     [[EWUserManagement sharedInstance] updateUserData:user];
+                     NSLog(@"Facebook user %@ is new to StackMob server, start overwriting user info", user.username);
+                     [[EWUserManagement sharedInstance] updateUserWithFBData:user];
                  }
                  [self updateView];
                  
                  //stop indicator
                  [self.indicator stopAnimating];
+                 
+                 //leaving
+                 [self dismissViewControllerAnimated:YES completion:^{
+                     [context saveOnSuccess:^{
+                         NSLog(@"User %@ logged in from facebook", user.username);
+                     } onFailure:^(NSError *error) {
+                         NSLog(@"Unable to save user info");
+                     }];
+                 }];
                  
              }onFailure:^(NSError *error) {
                  NSLog(@"Error: %@", error);
@@ -205,30 +217,38 @@
              NSLog(@"Error getting current Facebook user data, %@", error);
          }
          
-         //leaving
-         [self dismissViewControllerAnimated:YES completion:^{
-             [context saveOnSuccess:^{
-                 NSLog(@"User %@ logged in from facebook", user.username);
-             } onFailure:^(NSError *error) {
-                 NSLog(@"Unable to save user info");
-             }];
-         }];
+         
          
      }];
 }
 
 - (void)logoutUser {
-    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedOut object:self userInfo:nil];
     [client logoutOnSuccess:^(NSDictionary *result) {
         NSLog(@"Logged out of StackMob");
         [FBSession.activeSession closeAndClearTokenInformation];
+        [self.indicator stopAnimating];
+        self.profileView.image = [UIImage imageNamed:@"profile"];
+        [self updateView];
     } onFailure:^(NSError *error) {
         NSLog(@"Error: %@", error);
     }];
 }
 
 
+- (void)loginInBackground{
+    NSLog(@"Log in fb in background");
+    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+        NSLog(@"Starting to log in fb with cached info");
+        
+        [FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
+            [self sessionStateChanged:session state:status error:error];
+        }];
+    }else{
+        [self connect:nil];
+    }
 
+}
 
 
 

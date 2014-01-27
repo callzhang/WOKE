@@ -38,5 +38,17 @@
     }
     return self;
 }
+/*
+- (void)awakeFromFetch{
+    [self registerKVO];
+}
 
+- (void)registerKVO{
+    if (self.alarm) {
+        [self.alarm addObserver:self forKeyPath:@"time" options:NSKeyValueObservingOptionNew context:NULL];
+        [self.alarm addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:NULL];
+        [self.alarm addObserver:self forKeyPath:@"time" options:NSKeyValueObservingOptionNew context:NULL];
+    }
+}
+*/
 @end

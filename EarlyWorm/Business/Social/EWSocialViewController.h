@@ -18,7 +18,6 @@ typedef enum socialViewList{
 
 @interface EWSocialViewController : UITableViewController<MBProgressHUDDelegate>{
     TaskGroupList socialList;
-    EWPerson *me;
     NSArray *friends;
     NSArray *everyone;
     NSInteger nAroundMe;

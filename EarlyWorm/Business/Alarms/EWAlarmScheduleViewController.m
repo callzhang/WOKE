@@ -12,13 +12,16 @@
 #import "EWAlarmManager.h"
 #import "EWAlarmItem.h"
 #import "EWAlarmEditCell.h"
+#import "EWPersonStore.h"
 
 //Util
 #import "NSDate+Extend.h"
+#import "MBProgressHUD.h"
 
 //backend
 #import "EWDataStore.h"
 #import "StackMob.h"
+
 
 static NSString *cellIdentifier = @"scheduleAlarmCell";
 
@@ -49,7 +52,18 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 - (void)initData{
     //data source
     alarms = EWAlarmManager.sharedInstance.allAlarms;
-    tasks = [EWTaskStore sharedInstance].allTasks;
+    tasks = EWTaskStore.sharedInstance.allTasks;
+    /*
+    if (alarms.count == 0 && tasks.count == 0) {
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [[EWAlarmManager sharedInstance] scheduleAlarm];
+        [[EWTaskStore sharedInstance] scheduleTasks];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey: currentUser}];
+        alarms = EWAlarmManager.sharedInstance.allAlarms;
+        tasks = EWTaskStore.sharedInstance.allTasks;
+        [_tableView reloadData];
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    }*/
     cellArray = [[NSMutableArray alloc] initWithCapacity:7];
     selected = 99;
 }
