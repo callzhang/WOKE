@@ -117,6 +117,8 @@
 		AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1B1408187E4F8D009D1DB2 /* EWStatisticsManager.m */; };
 		AB1B140F187E661E009D1DB2 /* EWAchievement.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1B140E187E661E009D1DB2 /* EWAchievement.m */; };
 		AB1D2D0D1877A87200D2576F /* EWUserManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1D2D0C1877A87200D2576F /* EWUserManagement.m */; };
+		AB1EBE3318A74AD1003154DB /* EWTaskHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB1EBE3218A74AD1003154DB /* EWTaskHistoryCell.xib */; };
+		AB1EBE3618A74B41003154DB /* EWTaskHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */; };
 		AB207E5E182F4D9E0076D93F /* ImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB207E5D182F4D9E0076D93F /* ImageViewController.m */; };
 		AB207E69182FFFB60076D93F /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AB207E68182FFFB60076D93F /* MBProgressHUD.m */; };
 		AB2C18B0187145D10058BFAD /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2C18AA187145D10058BFAD /* libTestFlight.a */; };
@@ -362,6 +364,9 @@
 		AB1B140E187E661E009D1DB2 /* EWAchievement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAchievement.m; sourceTree = "<group>"; };
 		AB1D2D0B1877A87200D2576F /* EWUserManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWUserManagement.h; path = UserManagement/EWUserManagement.h; sourceTree = "<group>"; };
 		AB1D2D0C1877A87200D2576F /* EWUserManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWUserManagement.m; path = UserManagement/EWUserManagement.m; sourceTree = "<group>"; };
+		AB1EBE3218A74AD1003154DB /* EWTaskHistoryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWTaskHistoryCell.xib; sourceTree = "<group>"; };
+		AB1EBE3418A74B41003154DB /* EWTaskHistoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTaskHistoryCell.h; sourceTree = "<group>"; };
+		AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTaskHistoryCell.m; sourceTree = "<group>"; };
 		AB207E5C182F4D9E0076D93F /* ImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageViewController.h; path = ImageController/ImageViewController.h; sourceTree = "<group>"; };
 		AB207E5D182F4D9E0076D93F /* ImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImageViewController.m; path = ImageController/ImageViewController.m; sourceTree = "<group>"; };
 		AB207E67182FFFB60076D93F /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = ../../../../WOKE/EarlyWorm/MBProgressHUD/MBProgressHUD.h; sourceTree = "<group>"; };
@@ -971,6 +976,9 @@
 				AB13C1CB1862D32400231159 /* EWPersonCell.h */,
 				AB13C1CC1862D32400231159 /* EWPersonCell.m */,
 				AB13C1CD1862D32400231159 /* EWPersonCell.xib */,
+				AB1EBE3418A74B41003154DB /* EWTaskHistoryCell.h */,
+				AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */,
+				AB1EBE3218A74AD1003154DB /* EWTaskHistoryCell.xib */,
 			);
 			path = Person;
 			sourceTree = "<group>";
@@ -1317,6 +1325,7 @@
 				561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */,
 				AB13C1D11862D32400231159 /* EWPersonCell.xib in Resources */,
 				AB13C1D21862D32400231159 /* EWPersonView.xib in Resources */,
+				AB1EBE3318A74AD1003154DB /* EWTaskHistoryCell.xib in Resources */,
 				AB07402218126EC200AAFC90 /* workGroup.png in Resources */,
 				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
 				AB19E9FC18698359000FBDD1 /* EWRecordingViewController.xib in Resources */,
@@ -1448,6 +1457,7 @@
 				AB198C951861818B008C1F15 /* EWMediaItem.m in Sources */,
 				5671BE4218085C4100F35DF9 /* ASICloudFilesObjectRequest.m in Sources */,
 				AB13C1CF1862D32400231159 /* EWPersonViewController.m in Sources */,
+				AB1EBE3618A74B41003154DB /* EWTaskHistoryCell.m in Sources */,
 				AB19E9FB18698359000FBDD1 /* EWRecordingViewController.m in Sources */,
 				AB198C971861818B008C1F15 /* EWPerson.m in Sources */,
 				AB7807A418393A66007C8BFD /* EWPersonStore.m in Sources */,

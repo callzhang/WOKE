@@ -340,7 +340,7 @@ UIView *rootview;
 
 //entrance of Local Notification
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-    NSLog(@"Received local notification: %@ when app is in background", notification);
+    NSLog(@"Received local notification: %@", notification);
     if ([application applicationState] == UIApplicationStateActive) {
         UIAlertView *alert = [[UIAlertView alloc]
                               initWithTitle:@"Woke Alarm"

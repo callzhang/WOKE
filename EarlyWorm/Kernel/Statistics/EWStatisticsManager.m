@@ -23,18 +23,21 @@
         NSInteger totalTime = 0;
         for (EWTaskItem *t in self.tasks) {
             NSTimeInterval t1 = [t.time timeIntervalSinceReferenceDate];
+            NSInteger int1 = t1;
             NSTimeInterval t2;
             if (t.completed) {
                 t2 = [t.completed timeIntervalSinceReferenceDate];
             }else{
-                t2 = t1 + 600;
+                t2 = int1 + 600;
             }
+            NSInteger int2 = t2;
             
-            totalTime = totalTime + (t2 - t1);
+            totalTime = totalTime + (int2 - int1);
         }
-        return [NSNumber numberWithDouble:totalTime];
+        NSInteger aveTime = totalTime / self.tasks.count;
+        return [NSNumber numberWithDouble:aveTime];
     }
-    return nil;
+    return 0;
 }
 
 - (NSNumber *)successRate{

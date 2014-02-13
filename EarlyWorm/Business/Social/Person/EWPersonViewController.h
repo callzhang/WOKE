@@ -25,9 +25,9 @@
 @property (weak, nonatomic) IBOutlet UIButton *friends;
 @property (weak, nonatomic) IBOutlet UIButton *aveTime;
 @property (weak, nonatomic) IBOutlet UIButton *achievements;
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UITableView *taskTableView;
 @property (weak, nonatomic) IBOutlet UIButton *loginBtn;
-
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 
 - (IBAction)extProfile:(id)sender;
 - (IBAction)close:(id)sender;

@@ -44,6 +44,7 @@
 - (id)init{
     self = [super init];
     if (self) {
+        NSLog(@"scheduled timely task checking");
         [NSTimer timerWithTimeInterval:600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
     }
     return self;
@@ -88,7 +89,7 @@
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
     NSArray *tasks = [[NSArray alloc] init];
-    if (![person.lastmoddate isOutDated] && person.tasks) {
+    if (![self.lastChecked isOutDated] && person.tasks) {
         tasks = [person.pastTasks allObjects];
     }else{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
@@ -443,7 +444,7 @@
         EWPerson *me = currentUser;
         for (EWTaskItem *t in pastTasks) {
             t.owner = nil;
-            t.pastOwner = me;
+            t.pastOwner = me;//????
             t.alarm = nil;
             [tasks removeObject:t];
             NSLog(@"Task %@ has been moved to past tasks", [t.time date2detailDateString]);
@@ -461,8 +462,8 @@
     if(tasks.count == 0){
         //initial state
         NSLog(@"Task has not been setup yet");
-        if (currentUser.alarms.count != 0) return NO;
-        return YES;
+        if (currentUser.alarms.count == 0) return YES;
+        return NO;
     }else if (tasks.count >  currentUser.alarms.count * nWeeksToScheduleTask) {
         NSLog(@"Something is wrong with scheduled task: excessive tasks(%d), please check.", tasks.count);
         

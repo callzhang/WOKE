@@ -30,6 +30,9 @@
     NSDictionary *stats = [[NSDictionary alloc] init];
     NSArray *pTasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
     NSInteger nTask = pTasks.count;
+    if (nTask == 0) {
+        return nil;
+    }
     NSInteger totalWakeUpTime = 0;
     NSInteger success = 0;
     NSInteger totalWakeUpLength = 0;

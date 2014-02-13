@@ -64,12 +64,12 @@ extern UIView *rootview;
         //launch with local notif
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentWakeUpView:) name:UIApplicationLaunchOptionsLocalNotificationKey object:nil];
         //listen to user log in, and updates its view
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedOut object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initView) name:kPersonProfilePicDownloaded object:nil];
         //
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadView) name:kTaskNewNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadView) name:kTaskChangedNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskChangedNotification object:nil];
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kAlarmsAllNewNotification object:nil];//this event occurs before tasks created, it will cause the reloadView fail
         //UI
         self.hidesBottomBarWhenPushed = NO;
@@ -80,7 +80,7 @@ extern UIView *rootview;
     return self;
 }
 
-- (void)userLoggedIn{
+- (void)refreshView{
     [self initData];
     [self initView];
     [self reloadView];
@@ -160,7 +160,6 @@ extern UIView *rootview;
 }
 
 - (void)reloadView {
-    
     _pageView.numberOfPages = self.alarms.count;
     if (alarms.count == 0 || tasks.count == 0) {
         for (EWAlarmPageView *view in _scrollView.subviews) {
@@ -234,12 +233,12 @@ extern UIView *rootview;
 	// View
     EWAlarmPageView *alarmPage;
     // replace the placeholder if necessary
-    if (![_alarmPages[page] isKindOfClass: [EWAlarmPageView class]]) {
-        alarmPage = [[EWAlarmPageView alloc] init];
-        _alarmPages[page] = alarmPage;
-    }else{
+    if ([_alarmPages[page] isKindOfClass: [EWAlarmPageView class]]) {
         return;
     }
+    
+    alarmPage = [[EWAlarmPageView alloc] init];
+    _alarmPages[page] = alarmPage;
     
     //data
     //page also means future day count
@@ -259,7 +258,7 @@ extern UIView *rootview;
     alarmPage.delegate = self;
     
     //replace
-    [_alarmPages replaceObjectAtIndex:page withObject:alarmPage];
+    //[_alarmPages replaceObjectAtIndex:page withObject:alarmPage];
     
     
     // add the controller's view to the scroll view
@@ -279,9 +278,16 @@ extern UIView *rootview;
 }
 
 - (IBAction)profile:(id)sender {
-    EWPersonViewController *controller = [[EWPersonViewController alloc] init];
-    controller.person = currentUser;
-    [self presentViewController:controller animated:YES completion:NULL];
+    if (!currentUser.facebook) {
+        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+        [loginVC loginInBackground];
+
+    }else{
+        EWPersonViewController *controller = [[EWPersonViewController alloc] init];
+        controller.person = currentUser;
+        [self presentViewController:controller animated:YES completion:NULL];
+    }
+    
     
 }
 

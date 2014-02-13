@@ -23,6 +23,7 @@ extern SMPushClient *pushClient;
 @property (nonatomic) NSManagedObjectContext *context;
 @property (nonatomic) NSManagedObjectModel *model;
 @property (nonatomic) SMCoreDataStore *coreDataStore;
+//@property (nonatomic) NSManagedObjectContext *context;
 
 + (EWDataStore *)sharedInstance;
 - (void)save;

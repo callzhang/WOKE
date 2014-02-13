@@ -124,6 +124,7 @@
         <relationship name="waker" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="tasksHelped" inverseEntity="EWPerson" syncable="YES"/>
     </entity>
     <elements>
+        <element name="EWAchievement" positionX="0" positionY="0" width="0" height="0"/>
         <element name="EWAlarmItem" positionX="0" positionY="0" width="0" height="0"/>
         <element name="EWGroup" positionX="0" positionY="0" width="0" height="0"/>
         <element name="EWGroupTask" positionX="0" positionY="0" width="0" height="0"/>
@@ -131,6 +132,5 @@
         <element name="EWMessage" positionX="0" positionY="0" width="0" height="0"/>
         <element name="EWPerson" positionX="0" positionY="0" width="0" height="0"/>
         <element name="EWTaskItem" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="EWAchievement" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>

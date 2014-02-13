@@ -50,7 +50,7 @@
         if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
         success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
                                                                      error:&error];
-        NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
+        if (!success) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
         [[AVAudioSession sharedInstance] setActive:YES error:nil];
 
     }

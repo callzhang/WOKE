@@ -29,14 +29,21 @@
 //view
 #import "EWRecordingViewController.h"
 #import "EWLogInViewController.h"
+#import "EWTaskHistoryCell.h"
+
+static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 @interface EWPersonViewController (UITableView) <UITableViewDataSource, UITableViewDelegate>
 
 @end
 
+@interface EWPersonViewController (UICollectionViewAdditions) <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+
+@end
+
 
 @implementation EWPersonViewController
-@synthesize person, tableView;
+@synthesize person, taskTableView;
 
 
 - (void)viewDidLoad {
@@ -74,18 +81,28 @@
     }
     //========table for tasks========
     
-    tableView.dataSource = self;
-    tableView.delegate = self;
-    tableView.backgroundColor = [UIColor clearColor];
-    tableView.backgroundView = nil;
+    taskTableView.dataSource = self;
+    taskTableView.delegate = self;
+    taskTableView.backgroundColor = [UIColor clearColor];
+    taskTableView.backgroundView = nil;
     
     //======= UI =======
     if (person) {
-        [tableView reloadData];
+        [taskTableView reloadData];
         //UI
         self.profilePic.image = person.profilePic;
         self.name.text = person.name;
         self.location.text = person.city;
+        
+        //border
+        UIColor *wcolor = [UIColor colorWithWhite:1.0f alpha:0.5f];
+        CGColorRef wCGColor = [wcolor CGColor];
+        self.friends.layer.borderWidth = 1.0f;
+        self.friends.layer.borderColor = wCGColor;
+        self.aveTime.layer.borderWidth = 1.0f;
+        self.aveTime.layer.borderColor = wCGColor;
+        self.achievements.layer.borderWidth = 1.0f;
+        self.achievements.layer.borderColor = wCGColor;
         
         [self.friends setTitle:[NSString stringWithFormat:@"%d", person.friends.count] forState:UIControlStateNormal];
         [self.aveTime setTitle:[NSString stringWithFormat:@"%d\"", [stats.aveWakeupTime integerValue]] forState:UIControlStateNormal];
@@ -102,6 +119,11 @@
         
         [self.view setNeedsDisplay];
     }
+    
+    //tableCell
+    UINib *taskNib = [UINib nibWithNibName:@"EWTaskHistoryCell" bundle:nil];
+    [taskTableView registerNib:taskNib forCellReuseIdentifier:taskCellIdentifier];
+
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -193,10 +215,11 @@
 #pragma mark - TableView DataSource
 
 @implementation EWPersonViewController(UITableView)
+/*
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     EWTaskItem *t = tasks[section];
     return [t.time date2MMDD];
-}
+}*/
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     //alarm shown in sections
@@ -208,14 +231,14 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 30;//TODO
+    return 78;//TODO
 }
 
 /*
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     NSInteger r = 30;
     CGRect rect = CGRectMake(0, 0, r, r);
-    UIView *circleHeader = [[UIView alloc] initWithFrame:CGRectMake(0, 0, r, r)];
+    UIView *circleHeader = [[UIView alloc] initWithFrame:rect];
  
 //    circleHeader.alpha = 0.5;
 //    circleHeader.layer.cornerRadius = r/2;
@@ -226,13 +249,13 @@
     CGContextRef contextRef = UIGraphicsGetCurrentContext();
     
     // Set the border width
-    CGContextSetLineWidth(contextRef, 1.0);
+    CGContextSetLineWidth(contextRef, 2.0);
     
     // Set the circle fill color to GREEN
-    CGContextSetRGBFillColor(contextRef, 255.0, 255.0, 255.0, 0.6);
+    CGContextSetRGBFillColor(contextRef, 1.0, 1.0, 1.0, 0.6);
     
     // Set the cicle border color to BLUE
-    CGContextSetRGBStrokeColor(contextRef, 255.0, 255.0, 255.0, 0.3);
+    CGContextSetRGBStrokeColor(contextRef, 1.0, 1.0, 1.0, 0.4);
     
     // Fill the circle with the fill color
     CGContextFillEllipseInRect(contextRef, rect);
@@ -241,34 +264,46 @@
     CGContextStrokeEllipseInRect(contextRef, rect);
     
     return circleHeader;
-}
-*/
+}*/
+
 
 //display cell
-- (UITableViewCell *)tableView:(UITableView *)tableV cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)table cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    static NSString *CellIdentifier = @"cell";
-    UITableViewCell *cell = [tableV dequeueReusableCellWithIdentifier:CellIdentifier];
+    //static NSString *CellIdentifier = @"cell";
+    EWTaskHistoryCell *cell = [table dequeueReusableCellWithIdentifier:taskCellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
+        cell = [[EWTaskHistoryCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:taskCellIdentifier];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         cell.backgroundColor = [UIColor clearColor];
-        cell.textLabel.textColor = [UIColor whiteColor];
-        cell.detailTextLabel.textColor = [UIColor whiteColor];
     }
 
     
     EWTaskItem *task = [tasks objectAtIndex:indexPath.section];
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:task.time];
+    cell.dayOfMonth.text = [NSString stringWithFormat:@"%d", components.day];
+    //month
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"MMM"];
+    NSString *MON = [formatter stringFromDate:task.time];
+    cell.month.text = MON;
+    
     if ([task.success boolValue]) {
-        cell.textLabel.text = [task.completed date2String];
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"Woke up by %d users", task.waker.count];
+        cell.wakeTime.text = [task.completed date2String];
+        cell.taskInfo.text = [NSString stringWithFormat:@"Woke up by %d users", task.waker.count];
+        
     }else{
-        cell.textLabel.text = [task.time date2String];
-        cell.detailTextLabel.text = @"Did not wake up on time";
+        cell.wakeTime.text = [task.time date2String];
+        cell.taskInfo.text = @"Failed";
     }
     
     return cell;
 }
+//change cell bg color
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    cell.backgroundColor = [UIColor clearColor];
+}
+
 //tap cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     /*
