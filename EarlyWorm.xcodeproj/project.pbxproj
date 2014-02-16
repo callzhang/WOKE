@@ -369,8 +369,8 @@
 		AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTaskHistoryCell.m; sourceTree = "<group>"; };
 		AB207E5C182F4D9E0076D93F /* ImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageViewController.h; path = ImageController/ImageViewController.h; sourceTree = "<group>"; };
 		AB207E5D182F4D9E0076D93F /* ImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImageViewController.m; path = ImageController/ImageViewController.m; sourceTree = "<group>"; };
-		AB207E67182FFFB60076D93F /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = ../../../../WOKE/EarlyWorm/MBProgressHUD/MBProgressHUD.h; sourceTree = "<group>"; };
-		AB207E68182FFFB60076D93F /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = ../../../../WOKE/EarlyWorm/MBProgressHUD/MBProgressHUD.m; sourceTree = "<group>"; };
+		AB207E67182FFFB60076D93F /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = ../../MBProgressHUD/MBProgressHUD.h; sourceTree = "<group>"; };
+		AB207E68182FFFB60076D93F /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = ../../MBProgressHUD/MBProgressHUD.m; sourceTree = "<group>"; };
 		AB2C18AA187145D10058BFAD /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		AB2C18AB187145D10058BFAD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		AB2C18AC187145D10058BFAD /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
@@ -1567,10 +1567,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/",
-					/Users/Lei/Dropbox/Woke/EarlyWorm,
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1583,7 +1580,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/libWeiboSDK",
 					"$(SRCROOT)/StackMob-v2.2.0",
-					/Users/Lei/Dropbox/WOKE/EarlyWorm/TestFlightSDK2.1.3,
+					"$(SRCROOT)/TestFlightSDK2.1.3",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -1604,10 +1601,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/",
-					/Users/Lei/Dropbox/Woke/EarlyWorm,
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1620,7 +1614,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/libWeiboSDK",
 					"$(SRCROOT)/StackMob-v2.2.0",
-					/Users/Lei/Dropbox/WOKE/EarlyWorm/TestFlightSDK2.1.3,
+					"$(SRCROOT)/TestFlightSDK2.1.3",
 				);
 				OTHER_LDFLAGS = (
 					"-\"lxml2\"",
