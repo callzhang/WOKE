@@ -167,14 +167,31 @@
         currentUser.lastLocation = [NSKeyedArchiver archivedDataWithRootObject:geoPoint];
         NSLog(@"Get user location with lat: %@, lon: %@", geoPoint.latitude, geoPoint.longitude);
         [context saveOnSuccess:^{
-            //
+            NSLog(@"Location has been updated to server");
         } onFailure:^(NSError *error) {
-            //
+            [NSException raise:@"unable to save user location" format:@"Location: %@, error:%@", geoPoint, error];
         }];
     } onFailure:^(NSError *error) {
-        // Error
-        [NSException raise:@"unable to locate user" format:@"check location server"];
+        NSLog(@"===== Unable to location curent user =====");
+        //TODO
     }];
+}
+
+#pragma mark - Keep alive
+- (void)updateLastSeen{
+    NSLog(@"scheduled update last seen recurring task");
+    [NSTimer timerWithTimeInterval:600 target:self selector:@selector(keepAlive) userInfo:nil repeats:YES];
+}
+
+- (void)keepAlive{
+    if (currentUser) {
+        currentUser.lastSeenDate = [NSDate date];
+        [context saveOnSuccess:^{
+            NSLog(@"Updated last seen date");
+        } onFailure:^(NSError *error) {
+            NSLog(@"Failed to update last seen date");
+        }];
+    }
 }
 
 #pragma mark - PUSH

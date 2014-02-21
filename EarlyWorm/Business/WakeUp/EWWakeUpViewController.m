@@ -18,6 +18,9 @@
 #import "NSDate+Extend.h"
 #import "MBProgressHUD.h"
 
+//test
+#import "EWPostWakeUpViewController.h"
+
 @interface EWWakeUpViewController (){
     //NSManagedObjectContext *context;
     NSInteger currentCellToPlay;
@@ -42,6 +45,7 @@
         self.navigationItem.title = @"WakeUpView";
         //[self.navigationItem setLeftBarButtonItem:self.editButtonItem];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
+        
         
         //notification
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
@@ -117,9 +121,33 @@
     UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
     //register the nib
     [self.tableView registerNib:nib forCellReuseIdentifier:@"EWMediaViewCell"];
-    //cancel btn
+    //nav btn
     self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
+    //self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Wake Up" style:UIBarButtonItemStylePlain target:self action:@selector(presentPostWakeUpVC)];
+    
+    UIButton * postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    postWakeUpVCBtn.frame = CGRectMake(50, 380, 220, 30);
+    [postWakeUpVCBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [postWakeUpVCBtn setTitle:@"PostWakeUpViewController" forState:UIControlStateNormal];
+    [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:postWakeUpVCBtn];
+    
+    
 }
+
+//testing postWakeUpViewController
+
+-(void)presentPostWakeUpVC
+{
+    NSLog(@"%s",__func__);
+    
+    EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:@"EWPostWakeUpViewController" bundle:nil];
+    
+    [self presentViewController:postWakeUpVC animated:YES completion:^{
+        //
+    }];
+}
+
 
 //refrash data after edited
 - (void)viewDidAppear:(BOOL)animated
@@ -190,7 +218,7 @@
     
     //date
     cell.date.text = [mi.createddate date2detailDateString];
-
+    
     //set image
     cell.profilePic.image = mi.author.profilePic;
     
