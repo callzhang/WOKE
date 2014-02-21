@@ -27,7 +27,7 @@ extern SMPushClient *pushClient;
 
 + (EWDataStore *)sharedInstance;
 - (void)save;
-- (void)registerPushNotification;
+//- (void)registerPushNotification;
 - (void)checkAlarmData;
 
 //data

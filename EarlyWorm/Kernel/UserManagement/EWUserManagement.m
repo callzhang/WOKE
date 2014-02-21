@@ -148,6 +148,33 @@
             }];
         }];
     }
+    
+    
+    //watch for login event
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
+}
+
+
+#pragma mark - userLoginEventHandler
+- (void)userLoginEventHandler{
+    [self registerAPNS];
+    [self registerLocation];
+}
+
+#pragma mark - location
+- (void)registerLocation{
+    [SMGeoPoint getGeoPointForCurrentLocationOnSuccess:^(SMGeoPoint *geoPoint) {
+        currentUser.lastLocation = [NSKeyedArchiver archivedDataWithRootObject:geoPoint];
+        NSLog(@"Get user location with lat: %@, lon: %@", geoPoint.latitude, geoPoint.longitude);
+        [context saveOnSuccess:^{
+            //
+        } onFailure:^(NSError *error) {
+            //
+        }];
+    } onFailure:^(NSError *error) {
+        // Error
+        [NSException raise:@"unable to locate user" format:@"check location server"];
+    }];
 }
 
 #pragma mark - PUSH

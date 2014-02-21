@@ -19,4 +19,5 @@
 - (void)registerWeibo;
 - (void)registerFacebook;
 - (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
+- (void)registerPushNotification;
 @end

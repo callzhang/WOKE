@@ -510,21 +510,34 @@
     //schedule necessary alarm notif
     for (EWTaskItem *t in _allTasks) {
         BOOL createNotif = YES;
+        //stop if task not on
         if ([t.state  isEqual: @NO]) {
             createNotif = NO;
-            break;
-        }
-        for (UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-            if ([[aNotif.userInfo objectForKey:kLocalNotificationUserInfoKey] isEqualToString:t.ewtaskitem_id] &&
-                [aNotif.fireDate isEqualToDate:t.time]) {
-                createNotif = NO;
-                break;
+            //break;
+        }else{
+            //stop if matching notif is found
+            for (UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
+                if ([[aNotif.userInfo objectForKey:kLocalNotificationUserInfoKey] isEqualToString:t.ewtaskitem_id]) {
+                    NSLog(@"Found matching notif:%@ for task:%@", aNotif.userInfo[kLocalNotificationUserInfoKey], t.ewtaskitem_id);
+                    //found matching notif
+                    if ([aNotif.fireDate isEqualToDate:t.time]) {
+                        //indeed matching
+                        createNotif = NO;
+                        break;
+                    }else{
+                        //something wrong, need reschedule notif
+                        [self cancelNotificationForTask:t];
+                        break;
+                    }
+                    
+                }
             }
-        }
-        
-        if (createNotif) {
-            NSLog(@"No notification found for task at weekday:%d", [t.time weekdayNumber]);
-            [self scheduleNotificationForTask:t];
+            
+            if (createNotif) {
+                NSLog(@"No notification found for task at weekday:%d", [t.time weekdayNumber]);
+                [self scheduleNotificationForTask:t];
+            }
+
         }
         
     }

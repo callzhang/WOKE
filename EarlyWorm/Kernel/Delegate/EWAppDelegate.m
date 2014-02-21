@@ -92,10 +92,10 @@ UIView *rootview;
             
             
              UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Local notification"
-             message:taskID
-             delegate:nil
-             cancelButtonTitle:@"OK"
-             otherButtonTitles:nil];
+                                                             message:taskID
+                                                            delegate:nil
+                                                   cancelButtonTitle:@"OK"
+                                                   otherButtonTitles:nil];
              [alert show];
             
             NSLog(@"Entered app with local notification when app is not alive");
@@ -317,7 +317,8 @@ UIView *rootview;
             //exsiting user, check if token is the same
             if ([tokenByUserDict[kPushTokenByUserKey] isEqualToString:token]) {
                 //same token, userLoggedIn event has already triggered the push registeration on StackMob
-                return;
+                NSLog(@"same token, userLoggedIn event has already triggered the push registeration on StackMob");
+                //return;
             }
         }else{
             NSLog(@"User has not registered token on this device");
@@ -330,7 +331,7 @@ UIView *rootview;
     [defaults synchronize];
     
     //Register Push on StackMob
-    [[EWDataStore sharedInstance] registerPushNotification];
+    [[EWUserManagement sharedInstance] registerPushNotification];
 }
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {

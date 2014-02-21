@@ -75,7 +75,7 @@ extern UIView *rootview;
         self.hidesBottomBarWhenPushed = NO;
         
         //alarmPages
-        _alarmPages = [[NSMutableArray alloc] initWithCapacity:7];
+        _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
     }
     return self;
 }
@@ -113,7 +113,7 @@ extern UIView *rootview;
         for (unsigned i = 0; i < self.alarms.count; i++) {
             _alarmPages[i] = [NSNull null];
         }*/
-        _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
+        
     }else{
         alarms = nil;
         tasks = nil;
@@ -162,6 +162,7 @@ extern UIView *rootview;
 - (void)reloadView {
     _pageView.numberOfPages = self.alarms.count;
     if (alarms.count == 0 || tasks.count == 0) {
+        NSLog(@"Alarm or Task count is zero, delete all subviews");
         for (EWAlarmPageView *view in _scrollView.subviews) {
             if ([view isKindOfClass:[EWAlarmPageView class]]) {
                 [view removeFromSuperview];
@@ -231,13 +232,12 @@ extern UIView *rootview;
     
     
 	// View
-    EWAlarmPageView *alarmPage;
     // replace the placeholder if necessary
     if ([_alarmPages[page] isKindOfClass: [EWAlarmPageView class]]) {
         return;
     }
     
-    alarmPage = [[EWAlarmPageView alloc] init];
+    EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] init];
     _alarmPages[page] = alarmPage;
     
     //data

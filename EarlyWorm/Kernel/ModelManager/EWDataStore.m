@@ -72,7 +72,7 @@ SMPushClient *pushClient;
             NSLog(@"Syncing is complete, item synced: %@. Change the policy to fetch from the network", objects);
             [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
             // Notify other views that they should reload their data from the network
-            [[NSNotificationCenter defaultCenter] postNotificationName:kFinishedSync object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kFinishedSync object:nil];//TODO
         }];
         
         //refesh failure behavior
@@ -143,7 +143,7 @@ SMPushClient *pushClient;
     [EWTaskStore.sharedInstance checkScheduledNotifications];
 }
 
-#pragma mark - DATA
+#pragma mark - DATA from Amazon S3
 - (NSData *)getRemoteDataWithKey:(NSString *)key{
     if (!key) {
         return nil;

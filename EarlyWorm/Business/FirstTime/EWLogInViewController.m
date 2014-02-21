@@ -192,7 +192,7 @@
                      [[EWUserManagement sharedInstance] updateUserWithFBData:user];
                  }else{
                      //new user, direct overwrite local info
-                     NSLog(@"Facebook user %@ is new to StackMob server, start overwriting user info", user.username);
+                     NSLog(@"Facebook user %@ is not recorded on local, start overwriting user info", user.username);
                      [[EWUserManagement sharedInstance] updateUserWithFBData:user];
                  }
                  [self updateView];
