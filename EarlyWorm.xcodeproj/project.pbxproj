@@ -84,6 +84,7 @@
 		56FEA58E17A5763200FC2938 /* EWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA57E17A5763200FC2938 /* EWAppDelegate.m */; };
 		56FEA59617A5766B00FC2938 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 56FEA59217A5766B00FC2938 /* InfoPlist.strings */; };
 		56FEA59717A5766B00FC2938 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA59417A5766B00FC2938 /* main.m */; };
+		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9BA08C5A18B6C39900E785ED /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA08C5918B6C39900E785ED /* MapKit.framework */; };
 		AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */; };
 		AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */; };
@@ -315,6 +316,8 @@
 		56FEA59017A5766B00FC2938 /* EarlyWorm-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EarlyWorm-Prefix.pch"; sourceTree = "<group>"; };
 		56FEA59317A5766B00FC2938 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		56FEA59417A5766B00FC2938 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9B2DEEF518B811EC0046EB80 /* EWServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWServer.h; path = Server/EWServer.h; sourceTree = "<group>"; };
+		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWServer.m; path = Server/EWServer.m; sourceTree = "<group>"; };
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		AB00B6171835C49D00DDD54B /* EWMediaViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMediaViewCell.h; sourceTree = "<group>"; };
 		AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaViewCell.m; sourceTree = "<group>"; };
@@ -948,6 +951,7 @@
 		56FEA57B17A5763200FC2938 /* Kernel */ = {
 			isa = PBXGroup;
 			children = (
+				9B2DEEF418B811C10046EB80 /* Server */,
 				AB1B1406187E4F48009D1DB2 /* Statistics */,
 				AB1D2D0A1877A85000D2576F /* UserManagement */,
 				AB7807A8183A01F7007C8BFD /* Download */,
@@ -969,6 +973,15 @@
 				56FEA57E17A5763200FC2938 /* EWAppDelegate.m */,
 			);
 			path = Delegate;
+			sourceTree = "<group>";
+		};
+		9B2DEEF418B811C10046EB80 /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				9B2DEEF518B811EC0046EB80 /* EWServer.h */,
+				9B2DEEF618B811EC0046EB80 /* EWServer.m */,
+			);
+			name = Server;
 			sourceTree = "<group>";
 		};
 		AB07401618125AE300AAFC90 /* Groups */ = {
@@ -1461,6 +1474,7 @@
 				5671BE4918085C4100F35DF9 /* ASIS3Request.m in Sources */,
 				AB207E5E182F4D9E0076D93F /* ImageViewController.m in Sources */,
 				56330CF517FDF2C2008A7922 /* EWFacebookFriendListViewController.m in Sources */,
+				9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */,
 				AB07BC0D17D6F7EA00E23F44 /* EWTextFieldCell.m in Sources */,
 				5671BE4318085C4100F35DF9 /* ASICloudFilesRequest.m in Sources */,
 				5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */,
