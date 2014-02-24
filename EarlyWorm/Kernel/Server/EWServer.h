@@ -10,5 +10,6 @@
 #import "EWPerson.h"
 
 @interface EWServer : NSObject
-+ (NSArray *)getPersonWakingUpForUser:(EWPerson *)user time:(NSInteger)timeSince1970 location:(NSString *)locationStr;
++ (void)getPersonWakingUpForTime:(NSDate *)timeSince1970 location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock;
++ (void)buzz:(EWPerson *)user;
 @end

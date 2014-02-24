@@ -132,6 +132,7 @@
 		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
 		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
 		AB2C18CD18737F670058BFAD /* EWAlarmEditCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */; };
+		AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB2DFBC718BA7CBE00534AF1 /* buzz.caf */; };
 		AB39BF0017D96143006C31C5 /* EWSocialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB39BEF517D96143006C31C5 /* EWSocialViewController.m */; };
 		AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3B9E4417A765CE00C2AD93 /* AVManager.m */; };
 		AB49BC8A185423E6004A38DB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB49BC89185423E6004A38DB /* Social.framework */; };
@@ -393,6 +394,7 @@
 		AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmEditCell.xib; sourceTree = "<group>"; };
 		AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmEditCell.h; sourceTree = "<group>"; };
 		AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmEditCell.m; sourceTree = "<group>"; };
+		AB2DFBC718BA7CBE00534AF1 /* buzz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buzz.caf; sourceTree = "<group>"; };
 		AB39BEF417D96143006C31C5 /* EWSocialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialViewController.h; sourceTree = "<group>"; };
 		AB39BEF517D96143006C31C5 /* EWSocialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialViewController.m; sourceTree = "<group>"; };
 		AB3B9E4317A765CE00C2AD93 /* AVManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AVManager.h; path = EarlyWorm/Kernel/AVManager.h; sourceTree = SOURCE_ROOT; };
@@ -1138,6 +1140,7 @@
 		AB94330417C3013F00ADC702 /* Ringtone */ = {
 			isa = PBXGroup;
 			children = (
+				AB2DFBC718BA7CBE00534AF1 /* buzz.caf */,
 				ABFCB2DB186E957100355781 /* Daybreak.caf */,
 				ABFCB2DC186E957100355781 /* Parisian Dream.caf */,
 				ABFCB2DD186E957100355781 /* Tropical Delight.caf */,
@@ -1369,6 +1372,7 @@
 				AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */,
 				AB2C18B1187145D10058BFAD /* README.md in Resources */,
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
+				AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */,
 				ABEEA96617E027E90035DF4A /* vm3.m4a in Resources */,
 				ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */,
 				ABEEA96817E027E90035DF4A /* vm5.m4a in Resources */,

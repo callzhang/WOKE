@@ -2,6 +2,8 @@
 //  EWServer.m
 //  EarlyWorm
 //
+//  Translate client requests to server custom code, providing a set of tailored APIs to client coding environment.
+//
 //  Created by Lee on 2/21/14.
 //  Copyright (c) 2014 Shens. All rights reserved.
 //
@@ -12,29 +14,50 @@
 
 @implementation EWServer
 
-+ (NSArray *)getPersonWakingUpForUser:(EWPerson *)user time:(NSInteger)timeSince1970 location:(NSString *)locationStr{
++ (void)getPersonWakingUpForTime:(NSDate *)time location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock{
     NSLog(@"%s", __func__);
+    
+    NSString *userId = currentUser.username;
+    NSInteger timeSince1970 = (NSInteger)[time timeIntervalSince1970];
+    NSString *timeStr = [NSString stringWithFormat:@"%d", timeSince1970];
+    NSString *lat = [geoPoint.latitude stringValue];
+    NSString *lon = [geoPoint.longitude stringValue];
+    NSString *geoStr = [NSString stringWithFormat:@"%@,%@", lat, lon];
+    
     
     SMCustomCodeRequest *request = [[SMCustomCodeRequest alloc]
                                     initGetRequestWithMethod:@"get_person_waking_up"];
-    __block NSArray *personList;
-    [request addQueryStringParameterWhere:@"personId" equals:user.username];
-    [request addQueryStringParameterWhere:@"time" equals:[NSString stringWithFormat:@"%ld", (long)timeSince1970]];
-    [request addQueryStringParameterWhere:@"location" equals:locationStr];
+    
+    [request addQueryStringParameterWhere:@"personId" equals:userId];
+    [request addQueryStringParameterWhere:@"time" equals:timeStr];
+    [request addQueryStringParameterWhere:@"location" equals:geoStr];
     
     [[[SMClient defaultClient] dataStore]
      performCustomCodeRequest:request
-     onSuccess:^(NSURLRequest *request,
-                 NSHTTPURLResponse *response,
-                 id responseBody) {
-         NSLog(@"Success: %@",responseBody);
-         personList = [(NSDictionary *)responseBody objectForKey:@"person"];
-     } onFailure:^(NSURLRequest *request,
-                   NSHTTPURLResponse *response,
-                   NSError *error,
-                   id responseBody){
-         NSLog(@"Failure: %@",error);
+     onSuccess:successBlock
+     onFailure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id responseBody){
+         [NSException raise:@"Server custom code error" format:@"Reason: %@", error.description];
+         //retry...
+         
      }];
+}
+
++ (void)buzz:(EWPerson *)user{
+    
+    
+    //send push notification
+    NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.username],
+                                  @"badge": @1,
+                                  @"from": currentUser.username,
+                                  @"type": @"buzz",
+                                  @"sound": @"buzz.caf"};
+    
+    [pushClient sendMessage:pushMessage toUsers:@[user.username] onSuccess:^{
+        NSLog(@"Push notification successfully sent to %@", user.username);
+    } onFailure:^(NSError *error) {
+        [NSException raise:@"Failed to send push notification" format:@"Reason: %@", error.description];
+    }];
+
 }
 
 @end

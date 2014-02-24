@@ -111,10 +111,7 @@
         //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
         [context saveOnSuccess:^{
             [context refreshObject:media mergeChanges:YES];
-            hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-            hud.mode = MBProgressHUDModeCustomView;
-            hud.labelText = @"Sent";
-            [hud hide:YES afterDelay:1.5];
+            
             //clean
             recordingFileUrl = nil;
             if ([media.audioKey length]<200) {
@@ -130,6 +127,10 @@
             
             [pushClient sendMessage:pushMessage toUsers:@[task.owner.username] onSuccess:^{
                 NSLog(@"Push notification successfully sent to %@", task.owner.username);
+                hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+                hud.mode = MBProgressHUDModeCustomView;
+                hud.labelText = @"Sent";
+                [hud hide:YES afterDelay:1.5];
             } onFailure:^(NSError *error) {
                 [NSException raise:@"Failed to send push notification" format:@"Reason: %@", error.description];
             }];

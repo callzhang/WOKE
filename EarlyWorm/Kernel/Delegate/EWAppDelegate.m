@@ -353,7 +353,6 @@ UIView *rootview;
     } else {
         NSLog(@"Entered by local notification");
         
-        
         if (self.musicList.count > 0) {
             [self playDownloadedMusic:[self.musicList objectAtIndex:self.musicList.count-1]];
         }
