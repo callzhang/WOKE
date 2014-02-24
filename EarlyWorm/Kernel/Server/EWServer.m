@@ -43,10 +43,12 @@
 }
 
 + (void)buzz:(EWPerson *)user{
+    //TODO: buzz sound selection
+    //TODO: buzz message selection
     
     
-    //send push notification
-    NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.username],
+    //send push notification, The payload can consist of the alert, badge, and sound keys.
+    NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
                                   @"badge": @1,
                                   @"from": currentUser.username,
                                   @"type": @"buzz",

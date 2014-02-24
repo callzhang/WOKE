@@ -7,10 +7,10 @@
 //
 
 #import "EWPostWakeUpViewController.h"
-#import "EWPostWakeUpViewController_Def.h"
 
 #import "EWPerson.h"
 #import "EWPersonStore.h"
+#import "EWServer.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -160,27 +160,27 @@
 -(NSString *)getTime
 {
     NSLog(@"%s",__func__);
-    
+    NSString * timeStr;
     if (time < 60 && time >= 0)
     {
-        NSString * timeStr = [NSString stringWithFormat:@"%d",time];
+        timeStr = [NSString stringWithFormat:@"%d",time];
         return timeStr;
     }
     else if (time >= 60 && time < 3600)
     {
         if (time%60 == 0)
         {
-            NSString * timeStr = [NSString stringWithFormat:@"%d",time/60];
+            timeStr = [NSString stringWithFormat:@"%d",time/60];
             return timeStr;
         }
         else
         {
             if (time/60.0 > 10.0)
             {
-                NSString * timeStr = [NSString stringWithFormat:@"%d",time/60];
+                timeStr = [NSString stringWithFormat:@"%d",time/60];
                 return timeStr;
             }
-            NSString * timeStr = [NSString stringWithFormat:@"%.1f",time/60.0];
+            timeStr = [NSString stringWithFormat:@"%.1f",time/60.0];
             return timeStr;
         }
     }
@@ -188,17 +188,17 @@
     {
         if (time%3600 == 0)
         {
-            NSString * timeStr = [NSString stringWithFormat:@"%d",time/3600];
+            timeStr = [NSString stringWithFormat:@"%d",time/3600];
             return timeStr;
         }
         else
         {
             if (time/3600.0 > 10.0)
             {
-                NSString * timeStr = [NSString stringWithFormat:@"%d",time/3600];
+                timeStr = [NSString stringWithFormat:@"%d",time/3600];
                 return timeStr;
             }
-            NSString * timeStr = [NSString stringWithFormat:@"%.1f",time/3600.0];
+            timeStr = [NSString stringWithFormat:@"%.1f",time/3600.0];
             return timeStr;
         }
     }
@@ -247,13 +247,18 @@
     
     if ([selectedPersonSet count] != 0)
     {
+        /*
         for (int i = 0; i < [selectedPersonSet count]; i ++)
         {
             NSArray * selectedPersonArray = [selectedPersonSet allObjects];
             EWPerson * person = [selectedPersonArray objectAtIndex:i];
             
-            /*在此处添加唤醒功能.例如：[object buzz:person];*/
-            //coding ...
+            //buzz
+            
+        }*/
+        
+        for (EWPerson *person in selectedPersonSet) {
+            [EWServer buzz:person];
         }
         
         [self dismissViewControllerAnimated:YES completion:^{
@@ -262,12 +267,14 @@
     }
     else
     {
-        NSLog(@"do not buzz anyone");
+        NSLog(@"no person selected");
         
         UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"提醒" message:@"请选择要被唤醒的朋友" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
         [alertView show];
     }
 }
+
+
 -(IBAction)doneAction:(id)sender
 {
     NSLog(@"%s",__func__);
@@ -293,24 +300,26 @@
     UICollectionViewCell * cell = [collectionView  dequeueReusableCellWithReuseIdentifier:COLLECTION_VIEW_IDENTIFIER forIndexPath:indexPath];
     
     UIImageView * headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,COLLECTION_CELL_WIDTH, COLLECTION_CELL_HEIGHT)];
+    UIImageView *maskView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,COLLECTION_CELL_WIDTH, COLLECTION_CELL_HEIGHT)];
     headImageView.layer.masksToBounds = YES;
     headImageView.layer.cornerRadius = 27;
-    headImageView.layer.borderColor = [UIColor whiteColor].CGColor;
-    headImageView.layer.borderWidth = 1.5f;
+    headImageView.layer.borderColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.5].CGColor;
+    headImageView.layer.borderWidth = 1.0f;
+    maskView.layer.masksToBounds = YES;
+    maskView.layer.cornerRadius = 27;
     [cell.contentView addSubview:headImageView];
+    [cell.contentView addSubview:maskView];
     
     cell.contentView.backgroundColor = [UIColor clearColor];
     
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
-    if ([selectedPersonSet containsObject:person] == YES)
-    {
-        //选中
-        headImageView.image = [UIImage imageNamed:@"checkMark.jpg"];
-    }
-    else
-    {
-        // 未被选中
-        headImageView.image = person.profilePic;
+    headImageView.image = person.profilePic;
+    
+    //选中
+    if ([selectedPersonSet containsObject:person] == YES){
+        maskView.image = [UIImage imageNamed:@"checkMark"];
+    }else{
+        maskView.image = nil;
     }
     
     return cell;

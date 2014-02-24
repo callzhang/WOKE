@@ -377,7 +377,6 @@
 		AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTaskHistoryCell.m; sourceTree = "<group>"; };
 		AB1F3CF618B7B5C500D3FB46 /* EWPostWakeUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPostWakeUpViewController.h; sourceTree = "<group>"; };
 		AB1F3CF718B7B5C500D3FB46 /* EWPostWakeUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPostWakeUpViewController.m; sourceTree = "<group>"; };
-		AB1F3CF818B7B5C500D3FB46 /* EWPostWakeUpViewController_Def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPostWakeUpViewController_Def.h; sourceTree = "<group>"; };
 		AB1F3CF918B7B5C500D3FB46 /* EWPostWakeUpViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPostWakeUpViewController.xib; sourceTree = "<group>"; };
 		AB207E5C182F4D9E0076D93F /* ImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageViewController.h; path = ImageController/ImageViewController.h; sourceTree = "<group>"; };
 		AB207E5D182F4D9E0076D93F /* ImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImageViewController.m; path = ImageController/ImageViewController.m; sourceTree = "<group>"; };
@@ -936,7 +935,6 @@
 				AB00B61B1835C49D00DDD54B /* EWWakeUpViewController.m */,
 				AB1F3CF618B7B5C500D3FB46 /* EWPostWakeUpViewController.h */,
 				AB1F3CF718B7B5C500D3FB46 /* EWPostWakeUpViewController.m */,
-				AB1F3CF818B7B5C500D3FB46 /* EWPostWakeUpViewController_Def.h */,
 				AB1F3CF918B7B5C500D3FB46 /* EWPostWakeUpViewController.xib */,
 			);
 			path = WakeUp;

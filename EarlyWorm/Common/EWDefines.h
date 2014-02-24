@@ -9,6 +9,9 @@
 #ifndef EarlyWorm_Defines_h
 #define EarlyWorm_Defines_h
 
+//Judge System
+#define iPhone5 ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO)
+
 #define kAppName            @"EarlyWorm"
 #define kAppVersion         @"0.5.0"
 
@@ -92,5 +95,20 @@
 #define kPushTokenByUserKey             @"token" //the key for token in tokenByUser dict
 #define kPushTokenUserAvatarKey         @"current_user_avatar" //for username avator when token received but user not logged in
 #define kUserLoggedInUserKey            @"user"
+
+
+
+
+
+//Collection View Identifier
+
+#define COLLECTION_VIEW_IDENTIFIER  @"CollectionViewIdentifier"
+
+
+//Collection Cell Size
+
+#define COLLECTION_CELL_WIDTH 54
+
+#define COLLECTION_CELL_HEIGHT 54
 
 #endif
