@@ -45,6 +45,7 @@
 + (void)buzz:(EWPerson *)user{
     //TODO: buzz sound selection
     //TODO: buzz message selection
+    //TODO: bedge number	
     
     
     //send push notification, The payload can consist of the alert, badge, and sound keys.

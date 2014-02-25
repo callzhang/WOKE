@@ -300,15 +300,13 @@
     UICollectionViewCell * cell = [collectionView  dequeueReusableCellWithReuseIdentifier:COLLECTION_VIEW_IDENTIFIER forIndexPath:indexPath];
     
     UIImageView * headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,COLLECTION_CELL_WIDTH, COLLECTION_CELL_HEIGHT)];
-    UIImageView *maskView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,COLLECTION_CELL_WIDTH, COLLECTION_CELL_HEIGHT)];
-    headImageView.layer.masksToBounds = YES;
+        headImageView.layer.masksToBounds = YES;
     headImageView.layer.cornerRadius = 27;
     headImageView.layer.borderColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.5].CGColor;
     headImageView.layer.borderWidth = 1.0f;
-    maskView.layer.masksToBounds = YES;
-    maskView.layer.cornerRadius = 27;
+    
     [cell.contentView addSubview:headImageView];
-    [cell.contentView addSubview:maskView];
+    
     
     cell.contentView.backgroundColor = [UIColor clearColor];
     
@@ -317,9 +315,12 @@
     
     //选中
     if ([selectedPersonSet containsObject:person] == YES){
-        maskView.image = [UIImage imageNamed:@"checkMark"];
-    }else{
-        maskView.image = nil;
+        UIImageView *maskView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,COLLECTION_CELL_WIDTH, COLLECTION_CELL_HEIGHT)];
+        maskView.layer.masksToBounds = YES;
+        maskView.layer.cornerRadius = 27;
+        maskView.image = [UIImage imageNamed:@"checkmark"];;
+        [cell.contentView addSubview:maskView];
+        
     }
     
     return cell;
