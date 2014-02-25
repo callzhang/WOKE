@@ -30,4 +30,14 @@
     
 }
 
++ (BOOL) isMultitaskingSupported {
+    
+    BOOL result = NO;
+    
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]){
+        result = [[UIDevice currentDevice] isMultitaskingSupported];
+    }
+    return result;
+}
+
 @end

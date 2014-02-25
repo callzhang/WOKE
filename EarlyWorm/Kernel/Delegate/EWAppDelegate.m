@@ -32,28 +32,28 @@
 UIView *rootview;
 
 //Private
+
 @interface EWAppDelegate(){
     EWTaskItem *taskInAction;
 }
 
-@property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
-@property (nonatomic) UIBackgroundTaskIdentifier oldBackgroundTaskIdentifier;
-
-@property (nonatomic, strong) NSTimer *myTimer;
-@property (nonatomic) long count;
-
-@property (nonatomic, strong) NSMutableArray *musicList;
+//@property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+//@property (nonatomic) UIBackgroundTaskIdentifier oldBackgroundTaskIdentifier;
+//@property (nonatomic, strong) NSTimer *myTimer;
+//@property (nonatomic) long count;
+//@property (nonatomic, strong) NSMutableArray *musicList;
 
 @end
+
 
 @interface EWAppDelegate (DownloadMgr)<EWDownloadMgrDelegate>
 @end
 
 @implementation EWAppDelegate
-@synthesize backgroundTaskIdentifier;
-@synthesize oldBackgroundTaskIdentifier;
-@synthesize myTimer;
-@synthesize count;
+//@synthesize backgroundTaskIdentifier;
+//@synthesize oldBackgroundTaskIdentifier;
+//@synthesize myTimer;
+//@synthesize count;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
@@ -63,8 +63,8 @@ UIView *rootview;
     //background fetch
     [application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval];
     //background download
-    count = 0;
-    self.musicList = [NSMutableArray array];
+    //count = 0;
+    //self.musicList = [NSMutableArray array];
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -132,6 +132,8 @@ UIView *rootview;
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     
+    
+    /* background download method by shens
     if (![self isMultitaskingSupported]){
         return;
     }
@@ -151,6 +153,7 @@ UIView *rootview;
     self.myTimer = [NSTimer scheduledTimerWithTimeInterval:serverUpdateInterval target:self selector:@selector(timerMethod:) userInfo:nil repeats:YES];
     NSLog(@"Scheduled background task");
 //    self.myTimer = nil;
+     */
 
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
@@ -160,12 +163,13 @@ UIView *rootview;
     
 //    [[UIApplication sharedApplication] clearKeepAliveTimeout];
     
+    /*
     if (backgroundTaskIdentifier != UIBackgroundTaskInvalid){
         [application endBackgroundTask:backgroundTaskIdentifier];
         if ([self.myTimer isValid]) {
             [self.myTimer invalidate];
         }
-    }
+    }*/
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -178,9 +182,10 @@ UIView *rootview;
 
 
 #pragma mark - Weibo
+/*
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     return [WeiboSDK handleOpenURL:url delegate:self];
-}
+}*/
 
 #pragma mark - Facebook
 - (BOOL)application:(UIApplication *)application
@@ -192,17 +197,7 @@ UIView *rootview;
 }
 
 
-
-- (BOOL) isMultitaskingSupported {
-    
-    BOOL result = NO;
-    
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]){
-            result = [[UIDevice currentDevice] isMultitaskingSupported];
-    }
-    return result;
-}
-
+/*
 #pragma mark - Background download
 - (void) timerMethod:(NSTimer *)paramSender{
     count++;
@@ -303,7 +298,7 @@ UIView *rootview;
     //    [player play];
     
     [player performSelectorOnMainThread:@selector(play) withObject:nil waitUntilDone:NO];
-}
+}*/
 
 #pragma mark - Push Notification registration
 //Presist the device token
@@ -357,10 +352,10 @@ UIView *rootview;
         [alert show];
     } else {
         NSLog(@"Entered by local notification");
-        
+        /*
         if (self.musicList.count > 0) {
             [self playDownloadedMusic:[self.musicList objectAtIndex:self.musicList.count-1]];
-        }
+        }*/
         NSString *taskID = [notification.userInfo objectForKey:kLocalNotificationUserInfoKey];
         NSLog(@"The task is %@", taskID);
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
@@ -466,6 +461,7 @@ UIView *rootview;
 
 @end
 
+/*
 @implementation EWAppDelegate (DownloadMgr)
 
 - (void)EWDownloadMgr:(EWDownloadMgr *)mgr didFailedDownload:(NSError *)error {
@@ -485,5 +481,5 @@ UIView *rootview;
 - (void)EWDownloadMgr:(EWDownloadMgr *)mgr didFinishedDownloadData:(NSData *)resultData{
     //
 }
-
 @end
+*/

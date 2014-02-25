@@ -34,7 +34,8 @@
 
 + (CGFloat)statusBarHeight;
 
-
 + (void)OnSystemStatusBarFrameChange;
+
++ (BOOL)isMultitaskingSupported;
 
 @end
