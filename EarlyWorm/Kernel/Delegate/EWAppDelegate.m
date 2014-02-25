@@ -46,9 +46,6 @@ UIView *rootview;
 @end
 
 
-@interface EWAppDelegate (DownloadMgr)<EWDownloadMgrDelegate>
-@end
-
 @implementation EWAppDelegate
 //@synthesize backgroundTaskIdentifier;
 //@synthesize oldBackgroundTaskIdentifier;
@@ -414,7 +411,7 @@ UIView *rootview;
                 NSString *urlStr = mi.audioKey;
                 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
                 NSURLSessionDownloadTask *downloadTask = [[EWDownloadManager sharedInstance].session downloadTaskWithRequest:request];
-                downloadTask.description = [NSString stringWithFormat:@"Downloading voice tone for task ID:%@", taskID];
+                //downloadTask.description = [NSString stringWithFormat:@"Downloading voice tone for task ID:%@", taskID];
                 [downloadTask resume];
                 //callback
                 completionHandler(UIBackgroundFetchResultNewData);

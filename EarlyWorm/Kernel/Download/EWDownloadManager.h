@@ -7,10 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+@class EWMediaItem;
 
-@interface EWDownloadManager : NSObject <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate>
+@interface EWDownloadManager : NSObject <NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate>
 
-@property NSURLSession *session;
+@property (nonatomic) NSURLSession *session;
+@property (nonatomic) NSMutableDictionary *downloadTasks;
 
 + (EWDownloadManager *)sharedInstance;
+- (void)downloadMedia:(EWMediaItem *)media;
 @end

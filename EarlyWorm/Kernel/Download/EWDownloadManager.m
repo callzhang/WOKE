@@ -7,9 +7,11 @@
 //
 
 #import "EWDownloadManager.h"
+#import "EWMediaItem.h"
 
 @implementation EWDownloadManager
 @synthesize session;
+@synthesize downloadTasks;
 
 + (EWDownloadManager *)sharedInstance{
     static EWDownloadManager *manager;
@@ -21,22 +23,40 @@
 }
 
 - (NSURLSession *)session{
-    if (!session) {
+    if (session == nil) {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            NSString *identifier = @"com.wokealarm.download";
-            NSURLSessionConfiguration* sessionConfig = [NSURLSessionConfiguration backgroundSessionConfiguration:identifier];
+            NSURLSessionConfiguration* sessionConfig = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.wokealarm.media"];
             session = [NSURLSession sessionWithConfiguration:sessionConfig
                                                     delegate:self
                                                delegateQueue:[NSOperationQueue mainQueue]];
         });
-        
     }
     return session;
 }
 
-- (NSURLSession *)backgroundURLSession
-{
-    
+- (void)downloadMedia:(EWMediaItem *)media{
+    //assume only audio to be downloaded
+    NSString *path = media.audioKey;
+    //check if task has already exsited
+    if ([downloadTasks objectForKey:path]) {
+        return;
+    }else{
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:path]];
+        NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithRequest:request];
+        [downloadTask resume];
+        //save
+        [downloadTasks setObject:downloadTask forKey:path];
+    }
 }
+
+
+
+
+@end
+
+@implementation EWDownloadManager() <NSURLSessionDelegate>
+
+<#methods#>
+
 @end
