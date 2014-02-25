@@ -45,7 +45,7 @@
 + (void)buzz:(EWPerson *)user{
     //TODO: buzz sound selection
     //TODO: buzz message selection
-    //TODO: bedge number	
+    //TODO: bedge number
     
     
     //send push notification, The payload can consist of the alert, badge, and sound keys.
@@ -54,7 +54,12 @@
                                   @"from": currentUser.username,
                                   @"type": @"buzz",
                                   @"sound": @"buzz.caf"};
-    
+    /*
+     //Delay execution of my block for 10 seconds.
+     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+     NSLog(@"parameter1: %d parameter2: %f", parameter1, parameter2);
+     });
+     */
     [pushClient sendMessage:pushMessage toUsers:@[user.username] onSuccess:^{
         NSLog(@"Push notification successfully sent to %@", user.username);
     } onFailure:^(NSError *error) {

@@ -20,8 +20,13 @@
 
 //tools
 #import "TestFlight.h"
-#import "EWDownloadMgr.h"
+//#import "EWDownloadMgr.h"
 #import "AVManager.h"
+
+//model
+#import "EWTaskItem.h"
+#import "EWMediaItem.h"
+#import "EWDownloadManager.h"
 
 //global view for HUD
 UIView *rootview;
@@ -365,36 +370,66 @@ UIView *rootview;
     }
 }
 
-//Receive remote notification
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
-    NSLog(@"Push Notification received: %@ when app in in background", userInfo);
-    //if ([application applicationState] == UIApplicationStateActive) {
+//Receive remote notification in background or in foreground
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
     NSString *message = [[userInfo valueForKey:@"aps"] valueForKey:@"alert"];
     NSString *title = @"New Voice Tone";
-    NSString *taskID = userInfo[kLocalNotificationUserInfoKey];
-    NSLog(@"The task is %@", taskID);
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-        if (taskInAction) {
-            //notification
-            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": taskInAction}];
-            //main thread
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                                    message:[message stringByAppendingString:@" (The show option will be removed in release)"]
-                                                                   delegate:self
-                                                          cancelButtonTitle:@"Close"
-                                                          otherButtonTitles:@"Show", nil];
-                [alertView show];
-            });
-        }else{
-            //Other message
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil];
-                [alertView show];
-            });
+    NSString *taskID;
+    NSString *type;
+    @try {
+        type = userInfo[@"type"];
+        taskID = userInfo[kLocalNotificationUserInfoKey];
+    }
+    @catch (NSError *err) {
+        NSLog(@"%@", err);
+    }
+    
+    if ([application applicationState] == UIApplicationStateActive) {
+        NSLog(@"Push Notification received: %@ when app is running", userInfo);
+        NSLog(@"The task is %@", taskID);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+            if (taskInAction) {
+                //notification
+                [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": taskInAction}];
+                //main thread
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                                        message:[message stringByAppendingString:@" (This will be removed in production)"]
+                                                                       delegate:self
+                                                              cancelButtonTitle:@"Close"
+                                                              otherButtonTitles:@"Show", nil];
+                    [alertView show];
+                });
+            }else{
+                //Other message
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil];
+                    [alertView show];
+                });
+            }
+        });
+    }else{
+        NSLog(@"Push Notification received: %@ when app is in %d", userInfo, application.applicationState);
+        if ([type isEqualToString:@"voice"]) {
+            //download new voice to cache with URLSession
+            taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+            for (EWMediaItem *mi in taskInAction.medias) {
+                //get the audio with audioKey
+                NSString *urlStr = mi.audioKey;
+                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
+                NSURLSessionDownloadTask *downloadTask = [[EWDownloadManager sharedInstance].session downloadTaskWithRequest:request];
+                downloadTask.description = [NSString stringWithFormat:@"Downloading voice tone for task ID:%@", taskID];
+                [downloadTask resume];
+                //callback
+                completionHandler(UIBackgroundFetchResultNewData);
+            }
+        }else if ([type isEqualToString:@"timer"]){
+            //check new data and schedule URLSession if necessary
         }
-    });
+        
+    }
+    
 }
 
 #pragma mark - Alert Delegate

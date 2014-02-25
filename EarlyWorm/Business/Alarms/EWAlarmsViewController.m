@@ -69,7 +69,7 @@ extern UIView *rootview;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initView) name:kPersonProfilePicDownloaded object:nil];
         //
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskChangedNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskChangedNotification object:nil];//TODO: update specific alarm
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kAlarmsAllNewNotification object:nil];//this event occurs before tasks created, it will cause the reloadView fail
         //UI
         self.hidesBottomBarWhenPushed = NO;
