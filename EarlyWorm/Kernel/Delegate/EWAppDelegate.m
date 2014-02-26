@@ -401,18 +401,18 @@ UIView *rootview;
                 });
             }
         });
+        
+        
     }else{
         NSLog(@"Push Notification received: %@ when app is in %d", userInfo, application.applicationState);
         if ([type isEqualToString:@"voice"]) {
             //download new voice to cache with URLSession
             taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
             for (EWMediaItem *mi in taskInAction.medias) {
-                //get the audio with audioKey
-                NSString *urlStr = mi.audioKey;
-                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
-                NSURLSessionDownloadTask *downloadTask = [[EWDownloadManager sharedInstance].session downloadTaskWithRequest:request];
-                //downloadTask.description = [NSString stringWithFormat:@"Downloading voice tone for task ID:%@", taskID];
-                [downloadTask resume];
+                
+                //download in background
+                [[EWDownloadManager sharedInstance] downloadMedia:mi];
+                
                 //callback
                 completionHandler(UIBackgroundFetchResultNewData);
             }
@@ -454,7 +454,14 @@ UIView *rootview;
     
 }
 
-
+//Store the completion handler. The completion handler is invoked by the view controller's checkForAllDownloadsHavingCompleted method (if all the download tasks have been completed).
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
+{
+    NSLog(@"%s", __func__);
+    //store the completionHandler
+    EWDownloadManager *manager = [EWDownloadManager sharedInstance];
+	manager.backgroundSessionCompletionHandler = completionHandler;
+}
 
 @end
 

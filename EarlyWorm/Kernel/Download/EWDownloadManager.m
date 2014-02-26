@@ -8,10 +8,13 @@
 
 #import "EWDownloadManager.h"
 #import "EWMediaItem.h"
+#import "FTWCache.h"
+//#import "EWAppDelegate.h"
 
 @implementation EWDownloadManager
 @synthesize session;
 @synthesize downloadTasks;
+@synthesize backgroundSessionCompletionHandler;
 
 + (EWDownloadManager *)sharedInstance{
     static EWDownloadManager *manager;
@@ -50,13 +53,70 @@
     }
 }
 
+//Periodically informs the delegate about the download’s progress. (required)
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
+{
 
+    /*
+     Report progress on the task.
+     If you created more than one task, you might keep references to them and report on them individually.
+     */
 
+    double progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
+    NSLog(@"DownloadTask: %@ progress: %lf", downloadTask, progress);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //self.progressView.progress = progress;
+    });
+}
 
-@end
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)downloadURL
+{
+    NSLog(@"%s", __func__);
+    /*
+     The download completed, you need to copy the file at targetPath before the end of this block.
+     As an example, copy the file to the Documents directory of your app.
+     */
+    NSData *data = [NSData dataWithContentsOfURL:downloadURL];
+    NSURLRequest *request = downloadTask.originalRequest;
+    NSString *str = request.URL.absoluteString;
+    [FTWCache setObject:data forKey:str];
+    NSLog(@"Set FTW sache for %@", str);
+}
 
-@implementation EWDownloadManager() <NSURLSessionDelegate>
+/**
+ Tells the delegate that the task finished transferring data.
+ Server errors are not reported through the error parameter. The only errors your delegate receives through the error parameter are client-side errors, such as being unable to resolve the hostname or connect to the host.
+ */
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+{
+    
+    if (error == nil)
+    {
+        NSLog(@"Task: %@ completed successfully", task);
+    }
+    else
+    {
+        NSLog(@"Task: %@ completed with error: %@", task, [error localizedDescription]);
+    }
+}
 
-<#methods#>
+/*
+ Tells the delegate that all messages enqueued for a session have been delivered.
+ 
+ If an application has received an -application:handleEventsForBackgroundURLSession:completionHandler: message, the session delegate will receive this message to indicate that all messages previously enqueued for this session have been delivered. At this time it is safe to invoke the previously stored completion handler, or to begin any internal updates that will result in invoking the completion handler.
+ */
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
+{
+    if (backgroundSessionCompletionHandler) {
+        backgroundSessionCompletionHandler();
+    }
+    
+    NSLog(@"All tasks are finished, completionHandler returned");
+}
 
+//Tells the delegate that the download task has resumed downloading. (required)
+-(void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes
+{
+    NSLog(@"Task %@ resumed to work", downloadTask);
+}
 @end

@@ -163,7 +163,7 @@ SMPushClient *pushClient;
     }else if(key.length > 200){
         //string contains data
         data = [SMBinaryDataConversion dataForString:key];
-        
+        NSLog(@"Return the audio key as the data itself, please check!");
     }else if(![key hasPrefix:@"http"]){
         //local data
         NSLog(@"string is a local file: %@", key);

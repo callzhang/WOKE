@@ -18,5 +18,4 @@ extern UIView *rootview;
 
 @property (strong, nonatomic) UITabBarController *tabBarController;
 
-
 @end
