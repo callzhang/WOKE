@@ -1213,9 +1213,9 @@
 		ABDD0B811852E326005EA59B /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				ABDD0B841852E326005EA59B /* AFNetworking */,
 				ABDD0B821852E326005EA59B /* AFHTTPClient+StackMob.h */,
 				ABDD0B831852E326005EA59B /* AFHTTPRequestOperation+RemoveContentType.h */,
-				ABDD0B841852E326005EA59B /* AFNetworking */,
 				ABDD0B8F1852E326005EA59B /* Base64EncodedStringFromData.h */,
 				ABDD0B901852E326005EA59B /* Common.h */,
 				ABDD0B911852E326005EA59B /* FileManagement.h */,
