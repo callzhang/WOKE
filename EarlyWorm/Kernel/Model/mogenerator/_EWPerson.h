@@ -25,6 +25,7 @@ extern const struct EWPersonAttributes {
 } EWPersonAttributes;
 
 extern const struct EWPersonRelationships {
+	__unsafe_unretained NSString *achievements;
 	__unsafe_unretained NSString *alarms;
 	__unsafe_unretained NSString *friended;
 	__unsafe_unretained NSString *friends;
@@ -42,6 +43,7 @@ extern const struct EWPersonRelationships {
 extern const struct EWPersonFetchedProperties {
 } EWPersonFetchedProperties;
 
+@class EWAchievement;
 @class EWAlarmItem;
 @class EWPerson;
 @class EWPerson;
@@ -62,7 +64,7 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-
+@class NSObject;
 
 
 
@@ -156,7 +158,7 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* lastLocation;
+@property (nonatomic, strong) id lastLocation;
 
 
 
@@ -256,6 +258,13 @@ extern const struct EWPersonFetchedProperties {
 
 
 
+@property (nonatomic, strong) NSSet *achievements;
+
+- (NSMutableSet*)achievementsSet;
+
+
+
+
 @property (nonatomic, strong) NSSet *alarms;
 
 - (NSMutableSet*)alarmsSet;
@@ -344,6 +353,11 @@ extern const struct EWPersonFetchedProperties {
 @end
 
 @interface _EWPerson (CoreDataGeneratedAccessors)
+
+- (void)addAchievements:(NSSet*)value_;
+- (void)removeAchievements:(NSSet*)value_;
+- (void)addAchievementsObject:(EWAchievement*)value_;
+- (void)removeAchievementsObject:(EWAchievement*)value_;
 
 - (void)addAlarms:(NSSet*)value_;
 - (void)removeAlarms:(NSSet*)value_;
@@ -452,8 +466,8 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSString*)primitiveLastLocation;
-- (void)setPrimitiveLastLocation:(NSString*)value;
+- (id)primitiveLastLocation;
+- (void)setPrimitiveLastLocation:(id)value;
 
 
 
@@ -510,6 +524,11 @@ extern const struct EWPersonFetchedProperties {
 - (void)setPrimitiveWeibo:(NSString*)value;
 
 
+
+
+
+- (NSMutableSet*)primitiveAchievements;
+- (void)setPrimitiveAchievements:(NSMutableSet*)value;
 
 
 

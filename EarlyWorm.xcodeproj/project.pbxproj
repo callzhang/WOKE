@@ -507,6 +507,15 @@
 		ABF0289A1859846E00A7D38E /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		ABF1261317C1DD5800C0FDAC /* EWIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWIO.h; path = EarlyWorm/Kernel/EWIO.h; sourceTree = SOURCE_ROOT; };
 		ABF1261417C1DD5800C0FDAC /* EWIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWIO.m; path = EarlyWorm/Kernel/EWIO.m; sourceTree = SOURCE_ROOT; };
+		ABF1929F18BD9CA4006A4AA2 /* _EWAchievement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWAchievement.h; path = mogenerator/_EWAchievement.h; sourceTree = "<group>"; };
+		ABF192A018BD9CA4006A4AA2 /* _EWAlarmItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWAlarmItem.h; path = mogenerator/_EWAlarmItem.h; sourceTree = "<group>"; };
+		ABF192A118BD9CA4006A4AA2 /* _EWGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWGroup.h; path = mogenerator/_EWGroup.h; sourceTree = "<group>"; };
+		ABF192A218BD9CA4006A4AA2 /* _EWGroupTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWGroupTask.h; path = mogenerator/_EWGroupTask.h; sourceTree = "<group>"; };
+		ABF192A318BD9CA4006A4AA2 /* _EWMediaItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWMediaItem.h; path = mogenerator/_EWMediaItem.h; sourceTree = "<group>"; };
+		ABF192A418BD9CA4006A4AA2 /* _EWMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWMessage.h; path = mogenerator/_EWMessage.h; sourceTree = "<group>"; };
+		ABF192A518BD9CA4006A4AA2 /* _EWPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWPerson.h; path = mogenerator/_EWPerson.h; sourceTree = "<group>"; };
+		ABF192A618BD9CA4006A4AA2 /* _EWTaskItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWTaskItem.h; path = mogenerator/_EWTaskItem.h; sourceTree = "<group>"; };
+		ABF192A718BD9CA4006A4AA2 /* EWAchievement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWAchievement.h; path = mogenerator/EWAchievement.h; sourceTree = "<group>"; };
 		ABFCB2D9186E956900355781 /* Autumn Spring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Autumn Spring.caf"; sourceTree = "<group>"; };
 		ABFCB2DB186E957100355781 /* Daybreak.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Daybreak.caf; sourceTree = "<group>"; };
 		ABFCB2DC186E957100355781 /* Parisian Dream.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Parisian Dream.caf"; sourceTree = "<group>"; };
@@ -725,6 +734,7 @@
 		5671FDC817C126AC00794E0A /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				ABF1929E18BD9C4E006A4AA2 /* mogenerator */,
 				AB1B140D187E661E009D1DB2 /* EWAchievement.h */,
 				AB1B140E187E661E009D1DB2 /* EWAchievement.m */,
 				AB198C821861818B008C1F15 /* EWAlarmItem.h */,
@@ -1275,6 +1285,22 @@
 				ABDD0B8E1852E326005EA59B /* UIImageView+AFNetworking.h */,
 			);
 			path = AFNetworking;
+			sourceTree = "<group>";
+		};
+		ABF1929E18BD9C4E006A4AA2 /* mogenerator */ = {
+			isa = PBXGroup;
+			children = (
+				ABF1929F18BD9CA4006A4AA2 /* _EWAchievement.h */,
+				ABF192A018BD9CA4006A4AA2 /* _EWAlarmItem.h */,
+				ABF192A118BD9CA4006A4AA2 /* _EWGroup.h */,
+				ABF192A218BD9CA4006A4AA2 /* _EWGroupTask.h */,
+				ABF192A318BD9CA4006A4AA2 /* _EWMediaItem.h */,
+				ABF192A418BD9CA4006A4AA2 /* _EWMessage.h */,
+				ABF192A518BD9CA4006A4AA2 /* _EWPerson.h */,
+				ABF192A618BD9CA4006A4AA2 /* _EWTaskItem.h */,
+				ABF192A718BD9CA4006A4AA2 /* EWAchievement.h */,
+			);
+			name = mogenerator;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

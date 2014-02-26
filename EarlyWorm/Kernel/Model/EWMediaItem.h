@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "_EWMediaItem.h"
+//#import "_EWMediaItem.h"
 @class EWGroupTask, EWPerson, EWTaskItem;
 @interface EWMediaItem : NSManagedObject
 @property (nonatomic, retain) UIImage *image;
