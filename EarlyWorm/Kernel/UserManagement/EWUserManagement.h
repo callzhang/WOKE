@@ -17,6 +17,7 @@
 - (void)login;
 - (void)logout;
 - (void)registerAPNS;
+- (void)registerLocation;
 - (void)registerWeibo;
 - (void)registerFacebook;
 - (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;

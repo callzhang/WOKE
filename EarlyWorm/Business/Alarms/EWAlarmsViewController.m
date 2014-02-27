@@ -10,8 +10,9 @@
 
 // Util
 #import "EWUIUtil.h"
+#import "EWAppDelegate.h"
+#import "NSString+Extend.h"
 #import "NSDate+Extend.h"
-#import "MBProgressHUD.h"
 
 // Manager
 #import "EWAlarmManager.h"
@@ -31,9 +32,6 @@
 
 //backend
 #import "StackMob.h"
-
-//view
-extern UIView *rootview;
 
 @interface EWAlarmsViewController ()
 
@@ -84,7 +82,7 @@ extern UIView *rootview;
     [self initData];
     [self initView];
     [self reloadView];
-    [MBProgressHUD hideAllHUDsForView:rootview animated:YES];
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
 - (void)viewDidLoad {

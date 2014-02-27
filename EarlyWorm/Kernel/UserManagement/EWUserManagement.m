@@ -10,7 +10,7 @@
 #import "EWDataStore.h"
 #import "SMPushClient.h"
 #import "EWAppDelegate.h"
-#import "MBProgressHUD.h"
+#import <CoreLocation/CoreLocation.h>
 
 //model
 #import "EWPerson.h"
@@ -43,7 +43,7 @@
 - (void)login{
     //init coredata and backend server
     [EWDataStore sharedInstance];
-    [MBProgressHUD showHUDAddedTo:rootview animated:YES];
+    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     //get logged in user
     if ([client isLoggedIn]) {
         //user already logged in
@@ -194,11 +194,39 @@
     [SMGeoPoint getGeoPointForCurrentLocationOnSuccess:^(SMGeoPoint *geoPoint) {
         currentUser.lastLocation = [NSKeyedArchiver archivedDataWithRootObject:geoPoint];
         NSLog(@"Get user location with lat: %@, lon: %@", geoPoint.latitude, geoPoint.longitude);
-        [context saveOnSuccess:^{
-            NSLog(@"Location has been updated to server");
-        } onFailure:^(NSError *error) {
-            [NSException raise:@"unable to save user location" format:@"Location: %@, error:%@", geoPoint, error];
+        
+        //reverse search address
+        CLGeocoder *geoloc = [[CLGeocoder alloc] init];
+        CLLocation *clloc = [[CLLocation alloc] initWithLatitude:[geoPoint.latitude doubleValue] longitude:[geoPoint.latitude doubleValue]];
+        [geoloc reverseGeocodeLocation:clloc completionHandler:^(NSArray *placemarks, NSError *error) {
+            NSLog(@"Found placemarks: %@, error", placemarks);
+            if (error == nil && [placemarks count] > 0) {
+                CLPlacemark *placemark = [placemarks lastObject];
+                NSString *address = [NSString stringWithFormat:@"%@ %@\n%@ %@\n%@\n%@",
+                                     placemark.subThoroughfare, placemark.thoroughfare,
+                                     placemark.postalCode, placemark.locality,
+                                     placemark.administrativeArea,
+                                     placemark.country];
+#ifdef DEV_TEST
+                EWAlert(address);
+#endif
+                //get info
+                currentUser.city = placemark.locality;
+                currentUser.region = placemark.country;
+            } else {
+                NSLog(@"%@", error.debugDescription);
+            }
+            
+            //save
+            [context saveOnSuccess:^{
+                NSLog(@"Location has been updated to server");
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"unable to save user location" format:@"Location: %@, error:%@", geoPoint, error];
+            }];
+
         }];
+        
+        
     } onFailure:^(NSError *error) {
         NSLog(@"===== Unable to location curent user =====");
         //TODO

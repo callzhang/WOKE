@@ -183,7 +183,7 @@
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 [EWServer pushMedia:@"" ForUsers:@[currentUser] ForTask:@""];
             });
-            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootview animated:YES];
+            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
             hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
             hud.mode = MBProgressHUDModeCustomView;
             hud.labelText = @"Sent";
