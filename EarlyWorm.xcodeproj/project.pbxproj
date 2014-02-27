@@ -176,6 +176,7 @@
 		ABF02899185983EE00A7D38E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABF02890185981A600A7D38E /* AudioToolbox.framework */; };
 		ABF0289B1859846E00A7D38E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABF0289A1859846E00A7D38E /* QuartzCore.framework */; };
 		ABF1261517C1DD5800C0FDAC /* EWIO.m in Sources */ = {isa = PBXBuildFile; fileRef = ABF1261417C1DD5800C0FDAC /* EWIO.m */; };
+		ABF192AA18BF135C006A4AA2 /* UIAlertView+.m in Sources */ = {isa = PBXBuildFile; fileRef = ABF192A918BF135C006A4AA2 /* UIAlertView+.m */; };
 		ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2D9186E956900355781 /* Autumn Spring.caf */; };
 		ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DB186E957100355781 /* Daybreak.caf */; };
 		ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DC186E957100355781 /* Parisian Dream.caf */; };
@@ -519,6 +520,8 @@
 		ABF192A518BD9CA4006A4AA2 /* _EWPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWPerson.h; path = mogenerator/_EWPerson.h; sourceTree = "<group>"; };
 		ABF192A618BD9CA4006A4AA2 /* _EWTaskItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWTaskItem.h; path = mogenerator/_EWTaskItem.h; sourceTree = "<group>"; };
 		ABF192A718BD9CA4006A4AA2 /* EWAchievement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWAchievement.h; path = mogenerator/EWAchievement.h; sourceTree = "<group>"; };
+		ABF192A818BF135C006A4AA2 /* UIAlertView+.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+.h"; sourceTree = "<group>"; };
+		ABF192A918BF135C006A4AA2 /* UIAlertView+.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+.m"; sourceTree = "<group>"; };
 		ABFCB2D9186E956900355781 /* Autumn Spring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Autumn Spring.caf"; sourceTree = "<group>"; };
 		ABFCB2DB186E957100355781 /* Daybreak.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Daybreak.caf; sourceTree = "<group>"; };
 		ABFCB2DC186E957100355781 /* Parisian Dream.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Parisian Dream.caf"; sourceTree = "<group>"; };
@@ -607,6 +610,8 @@
 				ABF1261417C1DD5800C0FDAC /* EWIO.m */,
 				56D997F017B425D2003EDA53 /* NSString+Extend.h */,
 				56D997F117B425D2003EDA53 /* NSString+Extend.m */,
+				ABF192A818BF135C006A4AA2 /* UIAlertView+.h */,
+				ABF192A918BF135C006A4AA2 /* UIAlertView+.m */,
 				5642AF4C17ACCF90000C73E8 /* UIView+Layout.h */,
 				5642AF4D17ACCF90000C73E8 /* UIView+Layout.m */,
 				5642AF4917ACCE48000C73E8 /* EWUIUtil.h */,
@@ -1458,6 +1463,7 @@
 				5642AF4E17ACCF90000C73E8 /* UIView+Layout.m in Sources */,
 				AB49BC921854248E004A38DB /* EWLogInViewController.m in Sources */,
 				5671BE3418085C4100F35DF9 /* ASIAuthenticationDialog.m in Sources */,
+				ABF192AA18BF135C006A4AA2 /* UIAlertView+.m in Sources */,
 				56F09E4617AAE0F800C5AD52 /* TestViewController.m in Sources */,
 				AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */,
 				9B73830D18BE494B00E7FFC3 /* EWDownloadMgr.m in Sources */,

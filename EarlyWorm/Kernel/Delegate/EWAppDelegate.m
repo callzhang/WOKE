@@ -17,6 +17,7 @@
 #import "EWTaskStore.h"
 #import "EWPersonStore.h"
 #import "EWUserManagement.h"
+#import "EWServer.h"
 
 //tools
 #import "TestFlight.h"
@@ -358,95 +359,21 @@ UIView *rootview;
 
 //Receive remote notification in background or in foreground
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
-    NSString *message = [[userInfo valueForKey:@"aps"] valueForKey:@"alert"];
-    NSString *title = @"New Voice Tone";
-    NSString *taskID;
-    NSString *type;
-    @try {
-        type = userInfo[@"type"];
-        taskID = userInfo[kLocalNotificationUserInfoKey];
-    }
-    @catch (NSError *err) {
-        NSLog(@"%@", err);
-    }
     
     if ([application applicationState] == UIApplicationStateActive) {
         NSLog(@"Push Notification received: %@ when app is running", userInfo);
-        NSLog(@"The task is %@", taskID);
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-            if (taskInAction) {
-                //notification
-                [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": taskInAction}];
-                //main thread
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                                        message:[message stringByAppendingString:@" (This will be removed in production)"]
-                                                                       delegate:self
-                                                              cancelButtonTitle:@"Close"
-                                                              otherButtonTitles:@"Show", nil];
-                    [alertView show];
-                });
-            }else{
-                //Other message
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil];
-                    [alertView show];
-                });
-            }
-        });
-        
-        
     }else{
         NSLog(@"Push Notification received: %@ when app is in %d", userInfo, application.applicationState);
-        if ([type isEqualToString:@"voice"]) {
-            //download new voice to cache with URLSession
-            taskInAction = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-            for (EWMediaItem *mi in taskInAction.medias) {
-                
-                //download in background
-                [[EWDownloadManager sharedInstance] downloadMedia:mi];
-                
-                //callback
-                completionHandler(UIBackgroundFetchResultNewData);
-            }
-        }else if ([type isEqualToString:@"timer"]){
-            //check new data and schedule URLSession if necessary
-        }
-        
     }
     
+    //handle push
+    [EWServer handlePushNotification:userInfo];
+    
+    //return handler
+    completionHandler(UIBackgroundFetchResultNewData);
 }
 
-#pragma mark - Alert Delegate
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if ([alertView.title isEqualToString:@"New Voice Tone"]) {
-        if (buttonIndex == 1) {
-            //show
-            if (taskInAction) {
-                //got taskInAction
-                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-                controller.task = taskInAction;
-                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-                [self.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
-            }
-            taskInAction = nil;
-        }
-    }else if ([alertView.title isEqualToString:@"Woke Alarm"]) {
-        if (buttonIndex == 1) {
-            //show
-            if (taskInAction) {
-                //got taskInAction
-                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-                controller.task = taskInAction;
-                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-                [self.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
-            }
-            taskInAction = nil;
-        }
-    }
-    
-}
+
 
 //Store the completion handler. The completion handler is invoked by the view controller's checkForAllDownloadsHavingCompleted method (if all the download tasks have been completed).
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler

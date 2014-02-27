@@ -11,6 +11,10 @@
 #import "EWServer.h"
 #import "EWDataStore.h"
 #import "EWPersonStore.h"
+#import "UIAlertView+.h"
+#import "EWTaskStore.h"
+#import "EWWakeUpViewController.h"
+#import "EWAppDelegate.h"
 
 @implementation EWServer
 
@@ -42,6 +46,8 @@
      }];
 }
 
+#pragma mark - Push Notification
+
 + (void)buzz:(EWPerson *)user{
     //TODO: buzz sound selection
     //TODO: buzz message selection
@@ -51,20 +57,92 @@
     //send push notification, The payload can consist of the alert, badge, and sound keys.
     NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
                                   @"badge": @1,
-                                  @"from": currentUser.username,
-                                  @"type": @"buzz",
+                                  kPushPersonKey: currentUser.username,
+                                  @"type": kPushTypeBuzzKey,
                                   @"sound": @"buzz.caf"};
-    /*
-     //Delay execution of my block for 10 seconds.
-     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-     NSLog(@"parameter1: %d parameter2: %f", parameter1, parameter2);
-     });
-     */
+    
     [pushClient sendMessage:pushMessage toUsers:@[user.username] onSuccess:^{
-        NSLog(@"Push notification successfully sent to %@", user.name);
+        NSLog(@"Buzz successfully sent to %@", user.name);
     } onFailure:^(NSError *error) {
-        [NSException raise:@"Failed to send push notification" format:@"Reason: %@", error.description];
+        NSString *str = [NSString stringWithFormat:@"Failed to send buzz. Reason:%@", error.localizedDescription];
+        EWAlert(str);
     }];
+
+}
+
++ (void)pushMedia:(NSString *)mediaId ForUsers:(NSArray *)users ForTask:(NSString *)taskId{
+    NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New media from %@", currentUser.name],
+                                  @"badge": @1,
+                                  @"sound": @"buzz.caf",
+                                  @"type": kPushMediaKey,
+                                  kPushPersonKey: currentUser.username,
+                                  kPushMediaKey: mediaId,
+                                  kPushTaskKey: taskId};
+    [pushClient sendMessage:pushMessage toUsers:users onSuccess:^{
+        NSLog(@"Push media sent successful");
+    } onFailure:^(NSError *error) {
+        NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, error.localizedDescription];
+        EWAlert(str);
+    }];
+}
+
+
+#pragma mark - Handle push notification
++ (void)handlePushNotification:(NSDictionary *)notification{
+    NSString *type = notification[@"type"];
+    NSString *message = [[notification valueForKey:@"aps"] valueForKey:@"alert"];
+    NSString *taskID;
+    NSString *mediaID;
+    
+    @try {
+        taskID = notification[kPushTaskKey];
+        mediaID = notification[kPushMediaKey];
+    }
+    @catch (NSError *err) {
+        NSLog(@"%@", err);
+    }
+
+    
+    if ([type isEqualToString:kPushTypeBuzzKey]) {
+        NSString *from = notification[kPushPersonKey];
+        //TODO: add from to task
+        
+        //active: play alert
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Buzz" message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        alert.userInfo = @{@"type": kPushTypeBuzzKey};
+        [alert show];
+        //suspend: do nothing
+    }else if ([type isEqualToString:kPushTypeMediaKey]){
+        //download
+        //test: play
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Media" message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        alert.userInfo = @{@"type": kPushTypeMediaKey, kPushTaskKey: taskID, kPushMediaKey: mediaID};
+        [alert show];
+    }else if([type isEqualToString:kPushTypeTimerKey]){
+        //active: alert
+        EWAlert(@"Time to wake up!");
+        //suspend: play media
+    }else{
+        NSString *str = [NSString stringWithFormat:@"Unknown push received: %@", notification];
+        EWAlert(str);
+    }
+}
+
+
+#pragma mark - Alert Delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    NSString *type = alertView.userInfo[@"type"];
+    if ([type isEqualToString:kPushTypeBuzzKey]) {
+            //
+    }else if ([type isEqualToString:kPushTypeMediaKey]) {
+        //got taskInAction
+        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:alertView.userInfo[kPushTaskKey]];
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+        controller.task = task;
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+        EWAppDelegate * appDelegate = [UIApplication sharedApplication].delegate;
+        [appDelegate.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
+    }
 
 }
 

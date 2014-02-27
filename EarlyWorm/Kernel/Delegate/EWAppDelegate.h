@@ -12,7 +12,7 @@
 
 extern UIView *rootview;
 
-@interface EWAppDelegate : UIResponder <UIApplicationDelegate, UIAlertViewDelegate>
+@interface EWAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

@@ -9,6 +9,7 @@
 #import "TestViewController.h"
 #import "EWUIUtil.h"
 #import "EWAppDelegate.h"
+#import "EWServer.h"
 
 // 业务界面
 #import "EWWakeUpViewController.h"
@@ -176,17 +177,12 @@
             break;
             
         case 5:{
-            //testing
-            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"You got a message from %@", currentUser.name],
-                                          @"badge": @1,
-                                          @"title": @"WOKE",
-                                          kLocalNotificationUserInfoKey: [EWTaskStore sharedInstance]};
-            NSArray *users = @[currentUser.username];
-            [pushClient sendMessage:pushMessage toUsers:users onSuccess:^{
-                NSLog(@"Notification sent");
-            } onFailure:^(NSError *error){
-                NSLog(@"Notification failed to send");
-            }];
+            //send to self a push
+            
+            //Delay execution of my block for 10 seconds.
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [EWServer pushMedia:@"" ForUsers:@[currentUser] ForTask:@""];
+            });
             
             //dismiss self to present popup view
             [self dismissViewControllerAnimated:YES completion:NULL];

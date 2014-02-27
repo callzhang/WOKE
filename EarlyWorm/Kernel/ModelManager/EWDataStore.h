@@ -35,4 +35,5 @@ extern SMPushClient *pushClient;
  get Amazon S3 storage data with key from StackMob backend
  */
 - (NSData *)getRemoteDataWithKey:(NSString *)key;
+
 @end

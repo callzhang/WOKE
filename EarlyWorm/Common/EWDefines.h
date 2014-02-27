@@ -86,6 +86,12 @@
 
 //Notification key
 #define kLocalNotificationUserInfoKey   @"task_ID"  //store task id
+#define kPushPersonKey                  @"person"
+#define kPushTaskKey                    @"task"
+#define kPushMediaKey                   @"media"
+#define kPushTypeBuzzKey                @"buzz"
+#define kPushTypeMediaKey               @"media"
+#define kPushTypeTimerKey               @"timer"
 #define kFinishedSync                   @"FinishedSync" //server has finished syncing (usually at startup)
 #define kADIDKey                        @"ADID" //key for ADID
 

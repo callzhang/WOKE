@@ -123,7 +123,9 @@
             //send push notification
             NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New voice tone sent from %@", currentUser.username],
                                           @"badge": @1,
-                                          kLocalNotificationUserInfoKey: task.ewtaskitem_id};
+                                          @"type": kPushTypeMediaKey,
+                                          kPushMediaKey: media.ewmediaitem_id,
+                                          kPushTaskKey: task.ewtaskitem_id};
             
             [pushClient sendMessage:pushMessage toUsers:@[task.owner.username] onSuccess:^{
                 NSLog(@"Push notification successfully sent to %@", task.owner.username);
