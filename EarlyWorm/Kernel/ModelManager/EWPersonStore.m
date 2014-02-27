@@ -58,7 +58,7 @@ EWPerson *currentUser;
 -(EWPerson *)getPersonByID:(NSString *)ID{
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", ID];
-    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];
+    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];//doesn't work for SM
     //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
     userFetch.returnsObjectsAsFaults = NO;
     NSError *err;
@@ -67,8 +67,16 @@ EWPerson *currentUser;
         // There should only be one result
         [NSException raise:@"More than one user fetched" format:@"Check username:%@",ID];
     };
-    NSLog(@"User %@ data has fetched", ID);
-    return (EWPerson *)result[0];
+    
+    EWPerson *user = (EWPerson *)result[0];
+    NSLog(@"User %@ data has fetched", user.name);
+    if ([user isFault]) {
+        //[NSException raise:@"user fatched is fault" format:@"check your code"];
+        NSLog(@"user is faulted, try to get faults filled");
+        [context refreshObject:currentUser mergeChanges:YES];
+        NSLog(@"There are %d alarms and %d tasks", user.alarms.count, user.tasks.count);
+    }
+    return user;
 }
 
 - (NSArray *)everyone{

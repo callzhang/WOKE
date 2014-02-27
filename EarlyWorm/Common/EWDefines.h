@@ -9,8 +9,9 @@
 #ifndef EarlyWorm_Defines_h
 #define EarlyWorm_Defines_h
 
-//Judge System
+//System
 #define iPhone5 ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO)
+#define iOS7 ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0)
 
 #define kAppName            @"EarlyWorm"
 #define kAppVersion         @"0.5.0"
@@ -36,12 +37,12 @@
  */
 
 //#define CLEAR_TEST
-//#define BACKGROUND_TEST
+#define BACKGROUND_TEST
 
 // 任务宏
 
 #define LOCALSTR(x)     NSLocalizedString(x,nil)
-
+#define EWAlert(str)    [[[UIAlertView alloc] initWithTitle:@"Alert" message:str delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
 //Global parameters
 #define nWeeksToScheduleTask 1
@@ -86,16 +87,13 @@
 //Notification key
 #define kLocalNotificationUserInfoKey   @"task_ID"  //store task id
 #define kFinishedSync                   @"FinishedSync" //server has finished syncing (usually at startup)
+#define kADIDKey                        @"ADID" //key for ADID
 
 //Audio & Video
 #define kMaxRecordTime                  20.0;
 #define kAudioPlayerDidFinishPlaying    @"audio_finished_playing"
-#define kPushTokenKey                   @"push_token" //the key for local defaults to get the array of tokenByUser dict
-#define kPushTokenUserKey               @"user" //the key for user in tokenByUser dict
-#define kPushTokenByUserKey             @"token" //the key for token in tokenByUser dict
-#define kPushTokenUserAvatarKey         @"current_user_avatar" //for username avator when token received but user not logged in
+#define kPushTokenDicKey                @"push_token_dic" //the key for local defaults to get the array of tokenByUser dict
 #define kUserLoggedInUserKey            @"user"
-
 
 
 

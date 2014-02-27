@@ -84,6 +84,7 @@
 		56FEA59717A5766B00FC2938 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA59417A5766B00FC2938 /* main.m */; };
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
+		9B73830D18BE494B00E7FFC3 /* EWDownloadMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */; };
 		9BA08C5A18B6C39900E785ED /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA08C5918B6C39900E785ED /* MapKit.framework */; };
 		AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */; };
 		AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */; };
@@ -316,6 +317,8 @@
 		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWServer.m; path = Server/EWServer.m; sourceTree = "<group>"; };
 		9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadManager.h; path = Download/EWDownloadManager.h; sourceTree = "<group>"; };
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
+		9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadMgr.h; path = Download/EWDownloadMgr.h; sourceTree = "<group>"; };
+		9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadMgr.m; path = Download/EWDownloadMgr.m; sourceTree = "<group>"; };
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		AB00B6171835C49D00DDD54B /* EWMediaViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMediaViewCell.h; sourceTree = "<group>"; };
 		AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaViewCell.m; sourceTree = "<group>"; };
@@ -1134,6 +1137,8 @@
 		AB7807A8183A01F7007C8BFD /* Download */ = {
 			isa = PBXGroup;
 			children = (
+				9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */,
+				9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */,
 				9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */,
 				9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */,
 			);
@@ -1455,6 +1460,7 @@
 				5671BE3418085C4100F35DF9 /* ASIAuthenticationDialog.m in Sources */,
 				56F09E4617AAE0F800C5AD52 /* TestViewController.m in Sources */,
 				AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */,
+				9B73830D18BE494B00E7FFC3 /* EWDownloadMgr.m in Sources */,
 				56330CE417FDDF49008A7922 /* SBJsonBase.m in Sources */,
 				56E0C36217B2CB7200835A6B /* EWEditAlarmViewController.m in Sources */,
 				56E0C36517B2CC6400835A6B /* EWViewController.m in Sources */,
@@ -1617,7 +1623,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Derek Zhang (SRS98HY45T)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1651,7 +1657,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Derek Zhang (SRS98HY45T)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

@@ -307,25 +307,17 @@ UIView *rootview;
     NSString *username = currentUser.username;
     if(!username) [NSException raise:@"User didn't log in" format:@"Check your login sequense"];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSMutableArray *tokenByUserArray = (NSMutableArray *)[defaults objectForKey:kPushTokenKey];
-    if (!tokenByUserArray) tokenByUserArray = [[NSMutableArray alloc] init];
-    for (NSDictionary *tokenByUserDict in tokenByUserArray) {
-        if ([tokenByUserDict[kPushTokenUserKey] isEqualToString:username]) {
-            //exsiting user, check if token is the same
-            if ([tokenByUserDict[kPushTokenByUserKey] isEqualToString:token]) {
-                //same token, userLoggedIn event has already triggered the push registeration on StackMob
-                NSLog(@"same token, userLoggedIn event has already triggered the push registeration on StackMob");
-                //return;
-            }
-        }else{
-            NSLog(@"User has not registered token on this device");
-        }
+    NSMutableDictionary *tokenByUserDic = (NSMutableDictionary *)[defaults objectForKey:kPushTokenDicKey];
+    if (!tokenByUserDic) tokenByUserDic = [[NSMutableDictionary alloc] init];
+    //determin if user exsits
+    NSString *token_old = [tokenByUserDic objectForKey:username];
+    if (!token_old || ![token_old isEqualToString:token]) {
+        //new token
+        [tokenByUserDic setObject:token forKey:username];
+        //save
+        [defaults setObject:tokenByUserDic forKey:kPushTokenDicKey];
+        [defaults synchronize];
     }
-    //write to plist
-    NSDictionary *tokenByUser = @{kPushTokenUserKey: username, kPushTokenByUserKey: token};
-    [tokenByUserArray addObject:tokenByUser];
-    [defaults setObject:tokenByUserArray forKey:kPushTokenKey];
-    [defaults synchronize];
     
     //Register Push on StackMob
     [[EWUserManagement sharedInstance] registerPushNotification];
@@ -334,6 +326,8 @@ UIView *rootview;
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
     //[NSException raise:@"Failed to regiester push token with apple" format:@"Reason: %@", err.description];
     NSLog(@"Failed to regiester push token with apple. Error: %@", err.description);
+    NSString *str = [NSString stringWithFormat:@"Unable to regiester Push Notifications. Reason: %@", err.localizedDescription];
+    EWAlert(str);
 }
 
 //entrance of Local Notification

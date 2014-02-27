@@ -51,7 +51,7 @@
         [client getLoggedInUserOnSuccess:^(NSDictionary *result) {
             NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
             userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", result[@"username"]];
-            userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];
+            userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];//no use for SM
             userFetch.returnsObjectsAsFaults = NO;
             //cache only
             SMRequestOptions *options = [SMRequestOptions options];
@@ -96,62 +96,90 @@
         
         
     }else{
-        //log out fb first
-        [FBSession.activeSession closeAndClearTokenInformation];
-        //get ADID
-        NSArray *adidArray = [[EWIO ADID] componentsSeparatedByString:@"-"];
-        //username
-        NSString *username = adidArray.firstObject;
-        
-        //password
-        NSString *password = adidArray.lastObject;
-        
-        //try to log in
-        [client loginWithUsername:username password:password onSuccess:^(NSDictionary *result) {
-            currentUser = [[EWPersonStore sharedInstance] getPersonByID:username];
-            
-            [[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
-            
-            //broadcast
-            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-            
-        } onFailure:^(NSError *error) {
-            //if not logged in, register one
-            EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:context];
-            [newMe setUsername:username];
-            [newMe setPassword:password];
-            newMe.name = @"No Name";
-            newMe.profilePic = [UIImage imageNamed:@"profile"];
-            currentUser = newMe;
-            
-            //persist password to user defaults locally
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            [defaults setObject:password forKey:@"password"];
-            
-            //save new user
-            [context saveOnSuccess:^{
-                NSLog(@"New user %@ created", newMe.username);
-                
-                //login
-                [client loginWithUsername:currentUser.username password:password onSuccess:^(NSDictionary *result){
-                    //[[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
-                    //broadcast
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-                    //HUD
-                    //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
-                } onFailure:^(NSError *error) {
-                    [NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
-                }];
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
-                
-            }];
-        }];
+        [self loginWithDeviceID];
     }
     
     
     //watch for login event
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
+}
+
+- (void)loginWithDeviceID{
+    //log in using local machine info
+    //log out fb first
+    [FBSession.activeSession closeAndClearTokenInformation];
+    //get user default
+    NSString *ADID = [[NSUserDefaults standardUserDefaults] objectForKey:kADIDKey];
+    if (!ADID) {
+        ADID = [EWIO ADID];
+        [[NSUserDefaults standardUserDefaults] setObject:ADID forKey:kADIDKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        NSLog(@"Stored new ADID: %@", ADID);
+    }
+    //get ADID
+    NSArray *adidArray = [ADID componentsSeparatedByString:@"-"];
+    //username
+    NSString *username = adidArray.firstObject;
+    //password
+    NSString *password = adidArray.lastObject;
+    
+    //try to log in
+    [client loginWithUsername:username password:password onSuccess:^(NSDictionary *result) {
+        currentUser = [[EWPersonStore sharedInstance] getPersonByID:username];
+        
+        [[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
+        
+        //broadcast
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+        
+    } onFailure:^(NSError *error) {
+        //if not logged in, register one
+        EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:context];
+        [newMe setUsername:username];
+        [newMe setPassword:password];
+        newMe.name = @"No Name";
+        newMe.profilePic = [UIImage imageNamed:@"profile"];
+        currentUser = newMe;
+        
+        //persist password to user defaults locally
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:password forKey:@"password"];
+        
+        //save new user
+        [context saveOnSuccess:^{
+            NSLog(@"New user %@ created", newMe.username);
+            
+            //login
+            [client loginWithUsername:currentUser.username password:password onSuccess:^(NSDictionary *result){
+                //[[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
+                //broadcast
+                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+                //HUD
+                //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
+            }];
+        } onFailure:^(NSError *error) {
+            [NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
+            
+        }];
+    }];
+
+}
+
+- (void)logout{
+    //log out SM
+    [client logoutOnSuccess:^(NSDictionary *result) {
+        NSLog(@"Successfully logged out");
+        //log out fb
+        [FBSession.activeSession closeAndClearTokenInformation];
+        //log in with device id
+        [self loginWithDeviceID];
+        
+    } onFailure:^(NSError *error) {
+        EWAlert(@"Unable to logout, please check!");
+        
+    }];
 }
 
 
@@ -215,40 +243,17 @@
         return;
     }
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSArray *tokenByUserArray = [defaults objectForKey:kPushTokenKey];
-    for (NSDictionary *dict in tokenByUserArray) {
-        NSString *registeredUsername = dict[kPushTokenUserKey];
-        if ([username isEqualToString:registeredUsername]) {
-            //registered user with exsiting token
-            NSString *token = dict[kPushTokenByUserKey];
-            [pushClient registerDeviceToken:token withUser:username onSuccess:^{
-                NSLog(@"APP registered push token and assigned to StackMob server");
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
-            }];
-            return;
-        }
-        
-        /*
-        //if not found, looking for avatar
-        if ([registeredUsername isEqualToString:kPushTokenUserAvatarKey]) {
-            //current token generated before user logged in, replace old by new tokenByUser
-            NSString *token = dict[kPushTokenByUserKey];
-            NSDictionary *newDict = @{username: token};
-            [defaults setObject:@[newDict] forKey:kPushTokenKey];
-            [defaults synchronize];
-            //
-            [pushClient registerDeviceToken:token withUser:username onSuccess:^{
-                NSLog(@"APP registered push token and assigned to StackMob server");
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
-            }];
-            return;
-        }
-        */
-        
-        NSLog(@"@@@ Did not find user push token. Register APNS first @@@");
+    NSDictionary *tokenByUserArray = [defaults objectForKey:kPushTokenDicKey];
+    NSString *token = [tokenByUserArray objectForKey:username];
+    if(!tokenByUserArray || !token){
+        [NSException raise:@"Unable to find local token" format:@"Please check code"];
     }
+    [pushClient registerDeviceToken:token withUser:username onSuccess:^{
+        NSLog(@"APP registered push token and assigned to StackMob server");
+    } onFailure:^(NSError *error) {
+        [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
+    }];
+    return;
     
 }
 

@@ -61,7 +61,7 @@
      });
      */
     [pushClient sendMessage:pushMessage toUsers:@[user.username] onSuccess:^{
-        NSLog(@"Push notification successfully sent to %@", user.username);
+        NSLog(@"Push notification successfully sent to %@", user.name);
     } onFailure:^(NSError *error) {
         [NSException raise:@"Failed to send push notification" format:@"Reason: %@", error.description];
     }];

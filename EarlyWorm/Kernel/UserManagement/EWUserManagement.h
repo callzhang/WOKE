@@ -15,6 +15,7 @@
 + (EWUserManagement *)sharedInstance;
 
 - (void)login;
+- (void)logout;
 - (void)registerAPNS;
 - (void)registerWeibo;
 - (void)registerFacebook;

@@ -12,6 +12,7 @@
 #import "EWMediaViewCell.h"
 #import "EWFirstTimeViewController.h"
 #import "EWLogInViewController.h"
+#import "EWUserManagement.h"
 
 //backend
 #import "StackMob.h"
@@ -323,16 +324,9 @@
                 NSLog(@"Full screen image:???");
                 break;
             case 7:{
-                //log out
-                [[SMClient defaultClient] logoutOnSuccess:^(NSDictionary *result) {
-                    NSLog(@"Successfully logged out");
-                    //present first time vc
-                    EWLogInViewController *controller = [[EWLogInViewController alloc] init];
-                    [self presentViewController:controller animated:YES completion:NULL];
-                } onFailure:^(NSError *error) {
-                    [NSException raise:@"Error in logging out" format:@"Reason: %@", error.description];
-                }];
-            }
+                //alert
+                [[[UIAlertView alloc] initWithTitle:@"Log out" message:@"Log out?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", nil] show];
+                            }
                 break;
                 
             default:
@@ -362,6 +356,15 @@
         //schedule night notification
     }else{
         //cancel night notification
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if ([alertView.title isEqualToString:@"Log out"]) {
+        if (buttonIndex == 1) {
+            //log out
+            [[EWUserManagement sharedInstance ] logout];
+        }
     }
 }
 
