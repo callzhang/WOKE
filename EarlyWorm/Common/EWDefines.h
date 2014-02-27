@@ -33,10 +33,10 @@
 
 // 开关宏
 /*
- *  在测试代码外包上 "ifndef CLEAR_TEST" 开关
+ *  在测试代码外包上 "ifndef DEV_TEST" 开关
  */
 
-//#define CLEAR_TEST
+#define DEV_TEST
 #define BACKGROUND_TEST
 
 // 任务宏

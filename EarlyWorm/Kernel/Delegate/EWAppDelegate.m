@@ -30,7 +30,7 @@
 #import "EWDownloadManager.h"
 
 //global view for HUD
-UIView *rootview;
+UIViewController *rootViewController;
 
 //Private
 
@@ -82,32 +82,18 @@ UIView *rootview;
     //self.tabBarController.delegate = self;
     self.tabBarController.viewControllers = @[alarmsNavigationController, tasksNavigationController, settingsNavigationController];
     self.window.rootViewController = self.tabBarController;
-    rootview = self.window.rootViewController.view;
+    rootViewController = self.window.rootViewController;
     
     //local notification entry
     if (launchOptions) {
         NSLog(@"LaunchOption: %@", launchOptions);
-        UILocalNotification *localNotif =
-        [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-        //This block only works when app starts at the first time
+        UILocalNotification *localNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+        NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        //Let server class to handle notif info
         if (localNotif) {
-            NSString *taskID = [localNotif.userInfo objectForKey:kLocalNotificationUserInfoKey];
-            
-            
-             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Local notification"
-                                                             message:taskID
-                                                            delegate:nil
-                                                   cancelButtonTitle:@"OK"
-                                                   otherButtonTitles:nil];
-             [alert show];
-            
-            NSLog(@"Entered app with local notification when app is not alive");
-            NSLog(@"Get task id: %@", taskID);
-            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-            controller.task  = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-            
-            [self.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
+            [EWServer handleAppLaunchNotification:localNotif];
+        }else if (remoteNotif){
+            [EWServer handleAppLaunchNotification:remoteNotif];
         }
     }
     
@@ -120,6 +106,7 @@ UIView *rootview;
 
     return YES;
 }
+
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -354,6 +341,15 @@ UIView *rootview;
         controller.task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
         [self.window.rootViewController presentViewController:navigationController animated:YES completion:^(void){}];
+    }
+}
+
+//normal handler for remote notification
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
+    if ([application applicationState] == UIApplicationStateActive) {
+        NSLog(@"%s: Push received when app is running: %@", __func__, userInfo);
+    }else{
+        NSLog(@"%s: Push received when app is in %d : %@", __func__, application.applicationState, userInfo);
     }
 }
 

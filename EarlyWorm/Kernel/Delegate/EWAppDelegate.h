@@ -10,7 +10,7 @@
 #import "WeiboSDK.h"
 #import <FacebookSDK/FacebookSDK.h>
 
-extern UIView *rootview;
+extern UIViewController *rootViewController;
 
 @interface EWAppDelegate : UIResponder <UIApplicationDelegate>
 

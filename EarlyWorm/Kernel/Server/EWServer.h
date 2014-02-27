@@ -23,7 +23,29 @@
 + (void)pushMedia:(NSString *)mediaId ForUsers:(NSArray *)users ForTask:(NSString *)taskId;
 
 /**
+ Handles push notifications in varies mode
+ @Discuss
+ 1. Buzz
+    active: alert -> wakeupView
+    suspend: not handle
  
+ 2. Media
+    active:
+        alarm time passed but not woke(struggle): play media
+        before alarm: download
+        woke: alert with no name
+    suspend: background download
+ 
+ 3. Timer
+    active: alert -> WakeupView
+    suspend: background audio
  */
 + (void)handlePushNotification:(NSDictionary *)notification;
+
+/**
+ Handle the information passed in when app is launched
+ 1. Local notification: UILocalNotification
+ 2. Remote Notification: NSDictionary
+ */
++ (void)handleAppLaunchNotification:(id)notification;
 @end

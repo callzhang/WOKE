@@ -16,6 +16,9 @@
 #import "EWWakeUpViewController.h"
 #import "EWAppDelegate.h"
 
+//model
+#import "EWTaskItem.h"
+
 @implementation EWServer
 
 + (void)getPersonWakingUpForTime:(NSDate *)time location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock{
@@ -86,9 +89,10 @@
                                   @"type": kPushMediaKey,
                                   kPushPersonKey: currentUser.username,
                                   kPushMediaKey: mediaId,
-                                  kPushTaskKey: taskId};
+                                  kPushTaskKey: taskId,
+                                  @"content-available": @1};
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
-        NSLog(@"Push media sent successful");
+        NSLog(@"Push media successfully sent to %@", userIDs);
     } onFailure:^(NSError *error) {
         NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, error.localizedDescription];
         EWAlert(str);
@@ -124,9 +128,10 @@
     }else if ([type isEqualToString:kPushTypeMediaKey]){
         //download
         //test: play
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Media" message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        alert.userInfo = @{@"type": kPushTypeMediaKey, kPushTaskKey: taskID, kPushMediaKey: mediaID};
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Media" message:message delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Listen", nil];
         [alert show];
+        //associate
+        alert.userInfo = @{@"type": kPushTypeMediaKey, kPushTaskKey: taskID, kPushMediaKey: mediaID};
     }else if([type isEqualToString:kPushTypeTimerKey]){
         //active: alert
         EWAlert(@"Time to wake up!");
@@ -137,6 +142,82 @@
     }
 }
 
+
+#pragma mark - Handle notification info on app launch
++ (void)handleAppLaunchNotification:(id)notification{
+    if([notification isKindOfClass:[UILocalNotification class]]){
+        //local notif
+        UILocalNotification *localNotif = (UILocalNotification *)notification;
+        NSString *taskID = [localNotif.userInfo objectForKey:kLocalNotificationUserInfoKey];
+        
+#ifdef DEV_TEST
+        EWAlert(taskID);
+#endif
+        
+        NSLog(@"Entered app with local notification with taskID %@", taskID);
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+        controller.task  = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+        
+        [rootViewController presentViewController:navigationController animated:YES completion:NULL];
+    }else if ([notification isKindOfClass:[NSDictionary class]]){
+        //remote notif
+        NSDictionary *remoteNotif = (NSDictionary *)notification;
+        NSString *type = remoteNotif[@"type"];
+        
+        if ([type isEqualToString:kPushTypeTimerKey]) {
+            //timer type
+            NSString *taskID = remoteNotif[kPushTaskKey];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+                [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+                
+                //stop if task has finished
+                //if (task.completed) return;
+                
+                //present wakeup vc
+                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+                controller.task = task;
+                [rootViewController presentViewController:controller animated:YES completion:^{
+                    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+                }];
+            });
+
+        }else if ([type isEqualToString:kPushTypeMediaKey]){
+            //media type
+            EWAlert(@"You've got a voice tone. To find out who sent to you, get up on time on your next alarm!");
+        }else if([type isEqualToString:kPushTypeBuzzKey]){
+            //buzz type
+            NSString *personID = remoteNotif[kPushPersonKey];
+            NSString *taskID = remoteNotif[kPushTaskKey];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByID:personID];
+                EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+                [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+                //add person if not
+                if (![task.waker containsObject:sender]) {
+                    [task addWakerObject:sender];
+                }
+                
+                //stop if task has finished
+                //if (task.completed) return;
+                
+                //present wakeup vc
+                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+                controller.task = task;
+                [rootViewController presentViewController:controller animated:YES completion:^{
+                    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+                }];
+            });
+            
+            
+        }
+    }else{
+        NSLog(@"Unexpected userInfo from app launch: %@", notification);
+    }
+}
 
 #pragma mark - Alert Delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
