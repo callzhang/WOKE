@@ -361,9 +361,9 @@ UIView *rootview;
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
     
     if ([application applicationState] == UIApplicationStateActive) {
-        NSLog(@"Push Notification received: %@ when app is running", userInfo);
+        NSLog(@"Push Notification received when app is running: %@", userInfo);
     }else{
-        NSLog(@"Push Notification received: %@ when app is in %d", userInfo, application.applicationState);
+        NSLog(@"Push Notification received when app is in %d : %@", application.applicationState, userInfo);
     }
     
     //handle push

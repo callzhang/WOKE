@@ -15,7 +15,7 @@
 /**
  Send buzz
  */
-+ (void)buzz:(EWPerson *)user;
++ (void)buzz:(NSArray *)users;
 
 /**
  Send push notification for media

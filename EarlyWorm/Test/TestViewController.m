@@ -181,7 +181,7 @@
             
             //Delay execution of my block for 10 seconds.
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [EWServer pushMedia:@"" ForUsers:@[currentUser] ForTask:@""];
+                [EWServer pushMedia:@"" ForUsers:@[currentUser.username] ForTask:@""];
             });
             
             //dismiss self to present popup view

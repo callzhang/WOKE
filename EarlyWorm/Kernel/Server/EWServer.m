@@ -48,11 +48,14 @@
 
 #pragma mark - Push Notification
 
-+ (void)buzz:(EWPerson *)user{
++ (void)buzz:(NSArray *)users{
     //TODO: buzz sound selection
     //TODO: buzz message selection
     //TODO: bedge number
-    
+    NSMutableArray *userIDs = [[NSMutableArray alloc] initWithCapacity:users.count];
+    for (EWPerson *person in users) {
+        [userIDs addObject:person.username];
+    }
     
     //send push notification, The payload can consist of the alert, badge, and sound keys.
     NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
@@ -61,8 +64,8 @@
                                   @"type": kPushTypeBuzzKey,
                                   @"sound": @"buzz.caf"};
     
-    [pushClient sendMessage:pushMessage toUsers:@[user.username] onSuccess:^{
-        NSLog(@"Buzz successfully sent to %@", user.name);
+    [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
+        NSLog(@"Buzz successfully sent to %@", userIDs);
     } onFailure:^(NSError *error) {
         NSString *str = [NSString stringWithFormat:@"Failed to send buzz. Reason:%@", error.localizedDescription];
         EWAlert(str);
@@ -71,6 +74,12 @@
 }
 
 + (void)pushMedia:(NSString *)mediaId ForUsers:(NSArray *)users ForTask:(NSString *)taskId{
+    //users
+    NSMutableArray *userIDs = [[NSMutableArray alloc] initWithCapacity:users.count];
+    for (EWPerson *person in users) {
+        [userIDs addObject:person.username];
+    }
+    //message
     NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New media from %@", currentUser.name],
                                   @"badge": @1,
                                   @"sound": @"buzz.caf",
@@ -78,7 +87,7 @@
                                   kPushPersonKey: currentUser.username,
                                   kPushMediaKey: mediaId,
                                   kPushTaskKey: taskId};
-    [pushClient sendMessage:pushMessage toUsers:users onSuccess:^{
+    [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Push media sent successful");
     } onFailure:^(NSError *error) {
         NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, error.localizedDescription];
