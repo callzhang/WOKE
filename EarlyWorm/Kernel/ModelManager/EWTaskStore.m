@@ -120,10 +120,8 @@
     request.predicate = [NSPredicate predicateWithFormat:@"ewtaskitem_id == %@", taskID];
     NSError *err;
     NSArray *tasks = [context executeFetchRequestAndWait:request error:&err];
-    if (tasks.count == 1) {
-        return tasks[0];
-    }
-    return nil;
+    if (tasks.count > 1) NSLog(@"Getting more than one task item from ID: %@", taskID);
+    return tasks[0];
 }
 
 

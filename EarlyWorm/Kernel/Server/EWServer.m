@@ -9,17 +9,32 @@
 //
 
 #import "EWServer.h"
-#import "EWDataStore.h"
-#import "EWPersonStore.h"
 #import "UIAlertView+.h"
-#import "EWTaskStore.h"
-#import "EWWakeUpViewController.h"
-#import "EWAppDelegate.h"
 
 //model
+#import "EWDataStore.h"
+#import "EWPersonStore.h"
 #import "EWTaskItem.h"
+#import "EWTaskStore.h"
+#import "EWMediaItem.h"
+#import "EWMediaStore.h"
+#import "EWDownloadManager.h"
+
+//view
+#import "EWWakeUpViewController.h"
+#import "EWAppDelegate.h"
+#import "AVManager.h"
 
 @implementation EWServer
+
++ (EWServer *)sharedInstance{
+    static EWServer *manager;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        manager = [[EWServer alloc] init];
+    });
+    return manager;
+}
 
 + (void)getPersonWakingUpForTime:(NSDate *)time location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock{
     NSLog(@"%s", __func__);
@@ -85,7 +100,7 @@
     //message
     NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New media from %@", currentUser.name],
                                   @"badge": @1,
-                                  @"sound": @"buzz.caf",
+                                  @"sound": @"media.caf",
                                   @"type": kPushMediaKey,
                                   kPushPersonKey: currentUser.username,
                                   kPushMediaKey: mediaId,
@@ -103,36 +118,123 @@
 #pragma mark - Handle push notification
 + (void)handlePushNotification:(NSDictionary *)notification{
     NSString *type = notification[@"type"];
-    NSString *message = [[notification valueForKey:@"aps"] valueForKey:@"alert"];
-    NSString *taskID;
-    NSString *mediaID;
-    
-    @try {
-        taskID = notification[kPushTaskKey];
-        mediaID = notification[kPushMediaKey];
-    }
-    @catch (NSError *err) {
-        NSLog(@"%@", err);
-    }
-
+    NSString *message = notification[@"aps"][@"alert"];
+    NSString *taskID = notification[kPushTaskKey];
+    NSString *mediaID = notification[kPushMediaKey];
+    NSString *personID = notification[kPushPersonKey];
     
     if ([type isEqualToString:kPushTypeBuzzKey]) {
-        NSString *from = notification[kPushPersonKey];
-        //TODO: add from to task
+        // ============== Buzz ================
+        //play sound
+        [[AVManager sharedManager] playMedia:[[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"]];
+        
+        //app state active
+        if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+            //determin if WakeUpViewController is presenting
+            if ([EWServer isRootPresentingWakeUpView]) {
+                //wakeup vc is presenting
+                //update the UI
+            }
+            else{
+                //get task
+                //add sender to task
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+                    EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByID:personID];
+                    [task addWakerObject:sender];
+                    [context saveOnSuccess:^{
+                        //
+                    } onFailure:^(NSError *error) {
+                        //
+                    }];
+                    
+                    //back to main thread
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        //present vc
+                        [rootViewController dismissViewControllerAnimated:YES completion:^{
+                            EWWakeUpViewController *wakeVC = [[EWWakeUpViewController alloc] initWithTask:task];
+                            [rootViewController presentViewController:wakeVC animated:YES completion:NULL];
+                        }];
+                    });
+                });
+                
+            }
+        }
+        
+        
+        
+        //broadcast event
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: taskID}];
+        
+       
         
         //active: play alert
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Buzz" message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Buzz" message:message delegate:[EWServer sharedInstance] cancelButtonTitle:@"Cancel" otherButtonTitles:@"View", nil];
         alert.userInfo = @{@"type": kPushTypeBuzzKey};
         [alert show];
-        //suspend: do nothing
+        
+
     }else if ([type isEqualToString:kPushTypeMediaKey]){
-        //download
-        //test: play
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Media" message:message delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Listen", nil];
+        // ============== Task ================
+        //get task
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            //download
+            EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+            EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+            
+            //back to main thread
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if ([[NSDate date] isEarlierThan:task.time]) {
+                    
+                    //pre alarm -> download
+                    [[EWDownloadManager sharedInstance] downloadMedia:media];
+                    
+                    
+                }else if (!task.completed){
+                    
+                    //struggle -> play media
+                    [[AVManager sharedManager] playMedia:[[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"]];
+                    
+                    //present WakeUpView
+                    if (![EWServer isRootPresentingWakeUpView]) {
+                        [rootViewController dismissViewControllerAnimated:YES completion:^{
+                            [rootViewController presentViewController:[[EWWakeUpViewController alloc] initWithTask:task] animated:YES completion:^{
+                                //post notification
+                                [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID}];
+                            }];
+                        }];
+                    }
+                    
+                    
+                }else{
+                    
+                    //Woke state - assign media to next task
+                    EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:currentUser];
+                    [task removeMediasObject:media];
+                    [nextTask addMediasObject:media];
+                    [context saveOnSuccess:^{
+                        //
+                    } onFailure:^(NSError *error) {
+                        NSLog(@"Unable to save: %@", error.description);
+                    }];
+                }
+            });
+            
+        });
+        
+        
+#ifdef DEV_TEST
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Media" message:message delegate:[EWServer sharedInstance] cancelButtonTitle:@"Cancel" otherButtonTitles:@"Listen", nil];
         [alert show];
         //associate
         alert.userInfo = @{@"type": kPushTypeMediaKey, kPushTaskKey: taskID, kPushMediaKey: mediaID};
+#endif
+        
+        
+        
     }else if([type isEqualToString:kPushTypeTimerKey]){
+        // ============== Timer ================
         //active: alert
         EWAlert(@"Time to wake up!");
         //suspend: play media
@@ -146,7 +248,7 @@
 #pragma mark - Handle notification info on app launch
 + (void)handleAppLaunchNotification:(id)notification{
     if([notification isKindOfClass:[UILocalNotification class]]){
-        //local notif
+        //========= local notif ===========
         UILocalNotification *localNotif = (UILocalNotification *)notification;
         NSString *taskID = [localNotif.userInfo objectForKey:kLocalNotificationUserInfoKey];
         
@@ -161,16 +263,17 @@
         
         [rootViewController presentViewController:navigationController animated:YES completion:NULL];
     }else if ([notification isKindOfClass:[NSDictionary class]]){
-        //remote notif
+        //========== remote notif ============
         NSDictionary *remoteNotif = (NSDictionary *)notification;
         NSString *type = remoteNotif[@"type"];
         
         if ([type isEqualToString:kPushTypeTimerKey]) {
-            //timer type
+            //task type
             NSString *taskID = remoteNotif[kPushTaskKey];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+                //current task
+                EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser]; //[[EWTaskStore sharedInstance] getTaskByID:taskID];
                 [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
                 
                 //stop if task has finished
@@ -185,6 +288,7 @@
             });
 
         }else if ([type isEqualToString:kPushTypeMediaKey]){
+            // ============== Media ================
             //media type
             EWAlert(@"You've got a voice tone. To find out who sent to you, get up on time on your next alarm!");
         }else if([type isEqualToString:kPushTypeBuzzKey]){
@@ -219,11 +323,31 @@
     }
 }
 
+#pragma mark - Utility
++ (BOOL)isRootPresentingWakeUpView{
+    //determin if WakeUpViewController is presenting
+    UIViewController *vc = rootViewController.presentedViewController;
+    if ([vc isKindOfClass:[EWWakeUpViewController class]]) {
+        return YES;
+    }
+    
+    return NO;
+}
+
 #pragma mark - Alert Delegate
+/**
+ action when user received push alert in active state
+ 1. buzz: play the buzz (shouldn't be here)
+ 2. media:
+    a. before woke: play voice
+    b. after woke or before timer: do nothing
+ */
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     NSString *type = alertView.userInfo[@"type"];
+    
     if ([type isEqualToString:kPushTypeBuzzKey]) {
-            //
+        NSLog(@"Clicked OK on buzz");
+        
     }else if ([type isEqualToString:kPushTypeMediaKey]) {
         //got taskInAction
         EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:alertView.userInfo[kPushTaskKey]];

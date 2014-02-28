@@ -26,7 +26,7 @@
  Handles push notifications in varies mode
  @Discuss
  1. Buzz
-    active: alert -> wakeupView
+    active: sound + wakeupView
     suspend: not handle
  
  2. Media
@@ -46,6 +46,10 @@
  Handle the information passed in when app is launched
  1. Local notification: UILocalNotification
  2. Remote Notification: NSDictionary
+    a. buzz: TBD
+ 
+    b. media: TBD
  */
 + (void)handleAppLaunchNotification:(id)notification;
++ (BOOL)isRootPresentingWakeUpView;
 @end

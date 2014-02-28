@@ -247,18 +247,12 @@
     
     if ([selectedPersonSet count] != 0)
     {
-        /*
-        for (int i = 0; i < [selectedPersonSet count]; i ++)
-        {
-            NSArray * selectedPersonArray = [selectedPersonSet allObjects];
-            EWPerson * person = [selectedPersonArray objectAtIndex:i];
-            
-            //buzz
-            
-        }*/
         
         for (EWPerson *person in selectedPersonSet) {
-            [EWServer buzz:person];
+            
+            //======== buzz ========
+            [EWServer buzz:@[person]];
+            //======= end of buzz ======
         }
         
         [self dismissViewControllerAnimated:YES completion:^{

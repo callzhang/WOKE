@@ -197,19 +197,11 @@
         
         //reverse search address
         CLGeocoder *geoloc = [[CLGeocoder alloc] init];
-        CLLocation *clloc = [[CLLocation alloc] initWithLatitude:[geoPoint.latitude doubleValue] longitude:[geoPoint.latitude doubleValue]];
+        CLLocation *clloc = [[CLLocation alloc] initWithLatitude:[geoPoint.latitude doubleValue] longitude:[geoPoint.longitude doubleValue]];
         [geoloc reverseGeocodeLocation:clloc completionHandler:^(NSArray *placemarks, NSError *error) {
             NSLog(@"Found placemarks: %@, error", placemarks);
             if (error == nil && [placemarks count] > 0) {
                 CLPlacemark *placemark = [placemarks lastObject];
-                NSString *address = [NSString stringWithFormat:@"%@ %@\n%@ %@\n%@\n%@",
-                                     placemark.subThoroughfare, placemark.thoroughfare,
-                                     placemark.postalCode, placemark.locality,
-                                     placemark.administrativeArea,
-                                     placemark.country];
-#ifdef DEV_TEST
-                EWAlert(address);
-#endif
                 //get info
                 currentUser.city = placemark.locality;
                 currentUser.region = placemark.country;

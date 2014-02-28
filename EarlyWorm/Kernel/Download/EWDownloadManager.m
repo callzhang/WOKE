@@ -9,12 +9,22 @@
 #import "EWDownloadManager.h"
 #import "EWMediaItem.h"
 #import "FTWCache.h"
+#import "EWTaskItem.h"
+#import "NSString+MD5.h"
+#import "AVManager.h"
+
 //#import "EWAppDelegate.h"
+
+@interface EWDownloadManager(){}
+
+@property (nonatomic) EWTaskItem *task;
+@end
 
 @implementation EWDownloadManager
 @synthesize session;
-@synthesize downloadTasks;
+@synthesize downloadQueue;
 @synthesize backgroundSessionCompletionHandler;
+@synthesize task;
 
 + (EWDownloadManager *)sharedInstance{
     static EWDownloadManager *manager;
@@ -38,20 +48,42 @@
     return session;
 }
 
+#pragma mark - Main download methods
+
 - (void)downloadMedia:(EWMediaItem *)media{
     //assume only audio to be downloaded
     NSString *path = media.audioKey;
+    NSURL *pathURL = [NSURL URLWithString:path];
+    NSString *pathHash = [pathURL.absoluteString MD5Hash];
+    
     //check if task has already exsited
-    if ([downloadTasks objectForKey:path]) {
+    if ([downloadQueue objectForKey:path]) {
         return;
+        
+    }else if([FTWCache objectForKey:pathHash]){
+        //already cached
+        NSLog(@"Media already cached: %@", path);
+        return;
+        
     }else{
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:path]];
         NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithRequest:request];
         [downloadTask resume];
-        //save
-        [downloadTasks setObject:downloadTask forKey:path];
+        //keep task info
+        [downloadQueue setObject:downloadTask forKey:path];
+        
+        NSLog(@"Media download task dispatched: %@", media.author);
     }
 }
+
+- (void)downloadTask:(EWTaskItem *)t{
+    task = t;
+    for (EWMediaItem *mi in t.medias) {
+        [self downloadMedia:mi];
+    }
+}
+
+#pragma mark - URL delegate method
 
 //Periodically informs the delegate about the download’s progress. (required)
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
@@ -79,8 +111,13 @@
     NSData *data = [NSData dataWithContentsOfURL:downloadURL];
     NSURLRequest *request = downloadTask.originalRequest;
     NSString *str = request.URL.absoluteString;
+    
+    //save
     [FTWCache setObject:data forKey:str];
-    NSLog(@"Set FTW sache for %@", str);
+    NSLog(@"Set FTW cache for %@", str);
+    
+    //remove task from queue
+    [downloadQueue removeObjectForKey:str];
 }
 
 /**
@@ -89,7 +126,8 @@
  */
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    
+    NSString *str = [NSString stringWithFormat:@"Task finished with error:%@", error.localizedDescription];
+    EWAlert(str);
     if (error == nil)
     {
         NSLog(@"Task: %@ completed successfully", task);
@@ -107,6 +145,10 @@
  */
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
 {
+    //background audio
+    [[AVManager sharedManager] playTask:task];
+    
+    
     if (backgroundSessionCompletionHandler) {
         backgroundSessionCompletionHandler();
     }

@@ -16,6 +16,7 @@
 @property (nonatomic) EWPerson *person;
 @property (nonatomic) EWTaskItem *task;
 
+- (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
 - (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;
 
 @end

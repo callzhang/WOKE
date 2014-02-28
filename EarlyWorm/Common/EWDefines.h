@@ -60,7 +60,7 @@
 #define userDefaults @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00"};
 
 
-//notification
+//event
 #define kAlarmsAllNewNotification       @"EWAlarmsNew" //key: alarms
 #define kAlarmNewNotification           @"EWAlarmNew" //key: alarm
 #define kAlarmStateChangedNotification  @"EWAlarmStateChanged"//key: alarm
@@ -83,6 +83,10 @@
 #define kMediaNewNotification           @"EWMediaNew" //key: task & media
 
 #define kPushAPNSRegisteredNotification @"APNSRegistered"
+
+#define kNewBuzzNotification            @"buzz_event"
+#define kNewMediaNotification           @"media_event"
+#define kNewTimerNotification           @"alarm_timer"
 
 //Notification key
 #define kLocalNotificationUserInfoKey   @"task_ID"  //store task id

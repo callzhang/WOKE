@@ -53,6 +53,12 @@
     return self;
 }
 
+- (EWWakeUpViewController *)initWithTask:(EWTaskItem *)t{
+    self = [self init];
+    self.task = t;
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -77,29 +83,34 @@
     
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //depend on whether passed in with task or person, the media will populaeed accordingly
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if (task) {
+    if (task) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
             NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
             request.predicate = [NSPredicate predicateWithFormat:@"ANY tasks == %@", task];
             request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"createddate" ascending:NO]];
             NSError *err;
             medias = [[context executeFetchRequestAndWait:request error:&err] mutableCopy];
-        }else{
-            medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [task addMedias:[NSSet setWithArray:medias]];
-            [context saveOnSuccess:^{
-                //
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Unable to update task" format:@"Reason: %@", error.description];
-            }];
-            [self.tableView reloadData];
-            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
             
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [task addMedias:[NSSet setWithArray:medias]];
+                [context saveOnSuccess:^{
+                    //
+                } onFailure:^(NSError *error) {
+                    [NSException raise:@"Unable to update task" format:@"Reason: %@", error.description];
+                }];
+                [self.tableView reloadData];
+                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                
+            });
         });
-    });
-    
+    }else{
+        medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
+        NSLog(@"Task didn't pass into view controller");
+        [self.tableView reloadData];
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    }
     //_shakeManager = [[EWShakeManager alloc] init];
     //_shakeManager.delegate = self;
     //[_shakeManager register];
