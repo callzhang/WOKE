@@ -145,7 +145,7 @@
                     [context saveOnSuccess:^{
                         //
                     } onFailure:^(NSError *error) {
-                        //
+                        NSLog(@"Unable to save: %@", error.description);
                     }];
                     
                     //back to main thread
@@ -188,12 +188,14 @@
                 if ([[NSDate date] isEarlierThan:task.time]) {
                     
                     //pre alarm -> download
+                    
                     [[EWDownloadManager sharedInstance] downloadMedia:media];
                     
                     
                 }else if (!task.completed){
                     
                     //struggle -> play media
+                    
                     [[AVManager sharedManager] playMedia:[[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"]];
                     
                     //present WakeUpView
@@ -209,7 +211,8 @@
                     
                 }else{
                     
-                    //Woke state - assign media to next task
+                    //Woke state -> assign media to next task, download
+                    
                     EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:currentUser];
                     [task removeMediasObject:media];
                     [nextTask addMediasObject:media];
@@ -218,6 +221,9 @@
                     } onFailure:^(NSError *error) {
                         NSLog(@"Unable to save: %@", error.description);
                     }];
+                    
+                    //download to cache
+                    [[EWDownloadManager sharedInstance] downloadMedia:media];
                 }
             });
             
@@ -236,7 +242,22 @@
     }else if([type isEqualToString:kPushTypeTimerKey]){
         // ============== Timer ================
         //active: alert
-        EWAlert(@"Time to wake up!");
+        if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+            EWAlert(@"Time to wake up!");
+        }
+        //check download
+        EWDownloadManager *dlManager = [EWDownloadManager sharedInstance];
+        dlManager.completionTask = ^{
+            //play sound
+            
+            //present wakeup view
+            
+        };
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [dlManager downloadTask:task];
+        });
+        
+        
         //suspend: play media
     }else{
         NSString *str = [NSString stringWithFormat:@"Unknown push received: %@", notification];

@@ -14,6 +14,7 @@
 @property (nonatomic) NSURLSession *session;
 @property (nonatomic) NSMutableDictionary *downloadQueue;
 @property (copy) void (^backgroundSessionCompletionHandler)();
+@property (copy) void (^completionTask)();
 
 + (EWDownloadManager *)sharedInstance;
 /**

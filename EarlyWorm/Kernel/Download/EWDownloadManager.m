@@ -25,6 +25,7 @@
 @synthesize downloadQueue;
 @synthesize backgroundSessionCompletionHandler;
 @synthesize task;
+@synthesize completionTask;
 
 + (EWDownloadManager *)sharedInstance{
     static EWDownloadManager *manager;
