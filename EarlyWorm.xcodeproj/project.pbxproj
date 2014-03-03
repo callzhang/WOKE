@@ -523,7 +523,6 @@
 		ABF192A418BD9CA4006A4AA2 /* _EWMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWMessage.h; path = mogenerator/_EWMessage.h; sourceTree = "<group>"; };
 		ABF192A518BD9CA4006A4AA2 /* _EWPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWPerson.h; path = mogenerator/_EWPerson.h; sourceTree = "<group>"; };
 		ABF192A618BD9CA4006A4AA2 /* _EWTaskItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _EWTaskItem.h; path = mogenerator/_EWTaskItem.h; sourceTree = "<group>"; };
-		ABF192A718BD9CA4006A4AA2 /* EWAchievement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWAchievement.h; path = mogenerator/EWAchievement.h; sourceTree = "<group>"; };
 		ABF192A818BF135C006A4AA2 /* UIAlertView+.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+.h"; sourceTree = "<group>"; };
 		ABF192A918BF135C006A4AA2 /* UIAlertView+.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+.m"; sourceTree = "<group>"; };
 		ABF192AB18C03D71006A4AA2 /* media.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = media.caf; sourceTree = "<group>"; };
@@ -1316,7 +1315,6 @@
 				ABF192A418BD9CA4006A4AA2 /* _EWMessage.h */,
 				ABF192A518BD9CA4006A4AA2 /* _EWPerson.h */,
 				ABF192A618BD9CA4006A4AA2 /* _EWTaskItem.h */,
-				ABF192A718BD9CA4006A4AA2 /* EWAchievement.h */,
 			);
 			name = mogenerator;
 			sourceTree = "<group>";

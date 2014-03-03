@@ -439,10 +439,12 @@
     NSArray *pastTasks = [tasks filteredArrayUsingPredicate:predicate];
     if (pastTasks.count > 0) {
         //change task relationship
-        EWPerson *me = currentUser;
+        if ([currentUser isFault]) {
+            [context refreshObject:currentUser mergeChanges:YES];
+        }
         for (EWTaskItem *t in pastTasks) {
             t.owner = nil;
-            t.pastOwner = me;//????
+            t.pastOwner = currentUser;//????
             t.alarm = nil;
             [tasks removeObject:t];
             NSLog(@"Task %@ has been moved to past tasks", [t.time date2detailDateString]);

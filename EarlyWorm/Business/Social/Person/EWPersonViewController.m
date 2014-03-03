@@ -372,8 +372,11 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         //achievements
         EWAchievement *a = [[person.achievements allObjects] objectAtIndex:indexPath.row];
         cell.label.text = a.name;
-        //cell.profilePic.image = a.image;
-        cell.profilePic.image = [UIImage imageNamed:@"music_note"];
+        if (a.image) {
+            cell.profilePic.image = a.image;
+        }else{
+            cell.profilePic.image = [UIImage imageNamed:@"music_note"];
+        }
     }
     return cell;
 }

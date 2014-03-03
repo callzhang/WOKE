@@ -126,18 +126,29 @@
     
     if ([type isEqualToString:kPushTypeBuzzKey]) {
         // ============== Buzz ================
-        //play sound
-        [[AVManager sharedManager] playSoundFromFile:@"buzz.caf"];
         
-        //save buzzers and waker
         //get task
+        EWTaskItem *task;
+        NSInteger delayTimer = 0;
         if (!taskID) {
             //get taskID
-            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
+            task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
             taskID = task.ewtaskitem_id;
+        }
+        if (task.success) {
+            //the buzz window has passed
+            return;
+        }else if ([[NSDate date] isEarlierThan:task.time]){
+            //delay the message
+            delayTimer = [task.time timeIntervalSinceDate:[NSDate date]];
+            NSLog(@"Delay for %d seconds", delayTimer);
+#ifdef DEV_TEST65
+            delayTimer = 5;
+#endif
         }
         //add sender to task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            //save buzzers and waker
             EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
             EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByID:personID];
             //add waker
@@ -151,8 +162,9 @@
             }];
             
             //back to main thread
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delayTimer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                //play sound
+                [[AVManager sharedManager] playSoundFromFile:@"buzz.caf"];
                 //app state active
                 if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
                     //determin if WakeUpViewController is presenting
@@ -183,9 +195,10 @@
        
         
         //active: play alert
+        /*
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Buzz" message:message delegate:[EWServer sharedInstance] cancelButtonTitle:@"Cancel" otherButtonTitles:@"View", nil];
         alert.userInfo = @{@"type": kPushTypeBuzzKey};
-        [alert show];
+        [alert show];*/
         
 
     }else if ([type isEqualToString:kPushTypeMediaKey]){

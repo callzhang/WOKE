@@ -89,7 +89,7 @@ UIViewController *rootViewController;
         NSLog(@"LaunchOption: %@", launchOptions);
         UILocalNotification *localNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
         NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-        //Let server class to handle notif info
+        //Let server class to handle notif infoØ
         if (localNotif) {
             [EWServer handleAppLaunchNotification:localNotif];
         }else if (remoteNotif){

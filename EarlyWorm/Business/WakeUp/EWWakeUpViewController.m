@@ -154,10 +154,10 @@
     frame.origin.y = frame.size.height - 100;
     frame.size.height = 100;
     postWakeUpVCBtn.frame = frame;
-    [postWakeUpVCBtn setImage:[UIImage imageNamed:@"post_wakeup_view_bar"] forState:UIControlStateNormal];
+    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"post_wakeup_view_bar"] forState:UIControlStateNormal];
     [postWakeUpVCBtn setTitle:@"Wake" forState:UIControlStateNormal];
     //[postWakeUpVCBtn setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.5]];
-    [postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:postWakeUpVCBtn];
     
@@ -168,7 +168,10 @@
 - (void)startPlayCells{
     currentCell = 0;
     EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentCell inSection:0]];
-    [[AVManager sharedManager] playForCell:cell];
+    if (cell) {
+        [[AVManager sharedManager] playForCell:cell];
+    }
+    
 }
 
 -(void)presentPostWakeUpVC
