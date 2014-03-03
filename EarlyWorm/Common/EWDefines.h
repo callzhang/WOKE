@@ -46,8 +46,9 @@
 
 //Global parameters
 #define nWeeksToScheduleTask 1
-#define serverUpdateInterval 60 //30 min
-#define alarmInterval 600 //10min
+#define serverUpdateInterval            1800 //30 min
+#define alarmInterval                   600 //10min
+#define kMaxWakeTime                    600 // 10min
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."
 
@@ -110,13 +111,13 @@
 
 //Collection View Identifier
 
-#define COLLECTION_VIEW_IDENTIFIER  @"CollectionViewIdentifier"
+#define kCollectionViewCellPersonIdenfifier  @"CollectionViewIdentifier"
 
 
 //Collection Cell Size
 
-#define COLLECTION_CELL_WIDTH 54
-
-#define COLLECTION_CELL_HEIGHT 54
+#define kCollectionViewCellWidth      50
+#define kCollectionViewCellHeight     58
+#define kCollectionViewCellPersonRadius   25
 
 #endif

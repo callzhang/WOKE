@@ -6,11 +6,11 @@
 
 extern const struct EWTaskItemAttributes {
 	__unsafe_unretained NSString *added;
+	__unsafe_unretained NSString *buzzers_string;
 	__unsafe_unretained NSString *completed;
 	__unsafe_unretained NSString *createddate;
 	__unsafe_unretained NSString *ewtaskitem_id;
 	__unsafe_unretained NSString *lastmoddate;
-	__unsafe_unretained NSString *length;
 	__unsafe_unretained NSString *state;
 	__unsafe_unretained NSString *statement;
 	__unsafe_unretained NSString *success;
@@ -70,6 +70,16 @@ extern const struct EWTaskItemFetchedProperties {
 
 
 
+@property (nonatomic, strong) NSString* buzzers_string;
+
+
+
+//- (BOOL)validateBuzzers_string:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
 @property (nonatomic, strong) NSDate* completed;
 
 
@@ -105,20 +115,6 @@ extern const struct EWTaskItemFetchedProperties {
 
 
 //- (BOOL)validateLastmoddate:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSNumber* length;
-
-
-
-@property int16_t lengthValue;
-- (int16_t)lengthValue;
-- (void)setLengthValue:(int16_t)value_;
-
-//- (BOOL)validateLength:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -240,6 +236,12 @@ extern const struct EWTaskItemFetchedProperties {
 
 
 
+- (NSString*)primitiveBuzzers_string;
+- (void)setPrimitiveBuzzers_string:(NSString*)value;
+
+
+
+
 - (NSDate*)primitiveCompleted;
 - (void)setPrimitiveCompleted:(NSDate*)value;
 
@@ -260,15 +262,6 @@ extern const struct EWTaskItemFetchedProperties {
 
 - (NSDate*)primitiveLastmoddate;
 - (void)setPrimitiveLastmoddate:(NSDate*)value;
-
-
-
-
-- (NSNumber*)primitiveLength;
-- (void)setPrimitiveLength:(NSNumber*)value;
-
-- (int16_t)primitiveLengthValue;
-- (void)setPrimitiveLengthValue:(int16_t)value_;
 
 
 

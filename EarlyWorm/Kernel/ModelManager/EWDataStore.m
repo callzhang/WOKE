@@ -156,7 +156,11 @@ SMPushClient *pushClient;
         data = [FTWCache objectForKey:keyHash];
         if (!data) {
             //get from remote
-            data = [NSData dataWithContentsOfURL:audioURL];
+            NSError *err;
+            data = [NSData dataWithContentsOfURL:audioURL options:NSDataReadingUncached error:&err];//use uncached may increase speed?
+            if (err) {
+                NSLog(@"@@@@@@ Error occured in reading remote content: %@", err);
+            }
             [FTWCache setObject:data forKey:keyHash];
         }
         

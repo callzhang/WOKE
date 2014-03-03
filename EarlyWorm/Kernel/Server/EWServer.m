@@ -24,6 +24,7 @@
 #import "EWWakeUpViewController.h"
 #import "EWAppDelegate.h"
 #import "AVManager.h"
+#import "UIAlertView+.h"
 
 @implementation EWServer
 
@@ -126,44 +127,57 @@
     if ([type isEqualToString:kPushTypeBuzzKey]) {
         // ============== Buzz ================
         //play sound
-        [[AVManager sharedManager] playMedia:[[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"]];
+        [[AVManager sharedManager] playSoundFromFile:@"buzz.caf"];
         
-        //app state active
-        if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-            //determin if WakeUpViewController is presenting
-            if ([EWServer isRootPresentingWakeUpView]) {
-                //wakeup vc is presenting
-                //update the UI
-            }
-            else{
-                //get task
-                //add sender to task
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-                    EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByID:personID];
-                    [task addWakerObject:sender];
-                    [context saveOnSuccess:^{
-                        //
-                    } onFailure:^(NSError *error) {
-                        NSLog(@"Unable to save: %@", error.description);
-                    }];
-                    
-                    //back to main thread
-                    dispatch_async(dispatch_get_main_queue(), ^{
+        //save buzzers and waker
+        //get task
+        if (!taskID) {
+            //get taskID
+            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
+            taskID = task.ewtaskitem_id;
+        }
+        //add sender to task
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+            EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByID:personID];
+            //add waker
+            [task addWakerObject:sender];
+            //add buzzer
+            [task addBuzzer:sender atTime:[NSDate date]];
+            [context saveOnSuccess:^{
+                //
+            } onFailure:^(NSError *error) {
+                NSLog(@"Unable to save: %@", error.description);
+            }];
+            
+            //back to main thread
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                //app state active
+                if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+                    //determin if WakeUpViewController is presenting
+                    if ([EWServer isRootPresentingWakeUpView]) {
+                        //wakeup vc is presenting
+                        EWWakeUpViewController *vc = (EWWakeUpViewController *)rootViewController.presentingViewController;
+                        [vc.tableView reloadData];
+                    }
+                    else{
                         //present vc
                         [rootViewController dismissViewControllerAnimated:YES completion:^{
                             EWWakeUpViewController *wakeVC = [[EWWakeUpViewController alloc] initWithTask:task];
                             [rootViewController presentViewController:wakeVC animated:YES completion:NULL];
+                        
                         }];
-                    });
-                });
-                
-            }
-        }
+                    }
+
+                }
+            });
+        });
+
         
         
         
-        //broadcast event
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: taskID}];
         
        
@@ -179,8 +193,16 @@
         //get task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             //download
-            EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-            EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+            EWTaskItem *task;
+            EWMediaItem *media;
+            @try {
+                task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+                media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"%@", exception);
+            }
+            
             
             //back to main thread
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -196,7 +218,7 @@
                     
                     //struggle -> play media
                     
-                    [[AVManager sharedManager] playMedia:[[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"]];
+                    [[AVManager sharedManager] playSoundFromFile:[[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"]];
                     
                     //present WakeUpView
                     if (![EWServer isRootPresentingWakeUpView]) {
@@ -229,38 +251,59 @@
             
         });
         
-        
+/*
 #ifdef DEV_TEST
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Media" message:message delegate:[EWServer sharedInstance] cancelButtonTitle:@"Cancel" otherButtonTitles:@"Listen", nil];
         [alert show];
         //associate
         alert.userInfo = @{@"type": kPushTypeMediaKey, kPushTaskKey: taskID, kPushMediaKey: mediaID};
 #endif
-        
+*/        
         
         
     }else if([type isEqualToString:kPushTypeTimerKey]){
         // ============== Timer ================
-        //active: alert
-        if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-            EWAlert(@"Time to wake up!");
-        }
+        
         //check download
         EWDownloadManager *dlManager = [EWDownloadManager sharedInstance];
+        
+        //task
+        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        
+        //add download completion task
         dlManager.completionTask = ^{
-            //play sound
             
-            //present wakeup view
+            //use EWWakeUpVC to start play
+            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
+            
+            //active: alert
+            if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+                EWAlert(@"Time to wake up!");
+                
+                
+                UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
+                
+                //present wakeup view
+                [rootViewController presentViewController:nav animated:YES completion:NULL];
+                
+                
+            }else{
+                //play
+                [controller startPlayCells];
+            }
+            
             
         };
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [dlManager downloadTask:task];
-        });
         
         
-        //suspend: play media
+        
+        //>>>>> start download task <<<<<
+        [dlManager downloadTask:task];
+        
+        
     }else{
-        NSString *str = [NSString stringWithFormat:@"Unknown push received: %@", notification];
+        // Other push type not supported
+        NSString *str = [NSString stringWithFormat:@"Unknown push type received: %@", notification];
         EWAlert(str);
     }
 }
@@ -348,8 +391,11 @@
 + (BOOL)isRootPresentingWakeUpView{
     //determin if WakeUpViewController is presenting
     UIViewController *vc = rootViewController.presentedViewController;
-    if ([vc isKindOfClass:[EWWakeUpViewController class]]) {
-        return YES;
+    if ([vc isKindOfClass:[UINavigationController class]]) {
+        if ([[(UINavigationController *)vc viewControllers][0] isKindOfClass:[EWWakeUpViewController class]]) {
+            return YES;
+        }
+        
     }
     
     return NO;

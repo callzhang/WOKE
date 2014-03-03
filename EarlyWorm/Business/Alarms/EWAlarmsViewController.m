@@ -277,6 +277,7 @@
 
 - (IBAction)profile:(id)sender {
     if (!currentUser.facebook) {
+        EWAlert(@"Logging into facebook");
         EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
         [loginVC loginInBackground];
 

@@ -295,8 +295,7 @@ UIViewController *rootViewController;
     NSString *username = currentUser.username;
     if(!username) [NSException raise:@"User didn't log in" format:@"Check your login sequense"];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSMutableDictionary *tokenByUserDic = (NSMutableDictionary *)[defaults objectForKey:kPushTokenDicKey];
-    if (!tokenByUserDic) tokenByUserDic = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *tokenByUserDic = [NSMutableDictionary dictionaryWithDictionary:[defaults objectForKey:kPushTokenDicKey]];
     //determin if user exsits
     NSString *token_old = [tokenByUserDic objectForKey:username];
     if (!token_old || ![token_old isEqualToString:token]) {

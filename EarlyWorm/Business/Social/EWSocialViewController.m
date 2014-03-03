@@ -222,6 +222,7 @@
 - (EWPersonCell *)makePersonCell:(UITableView *)tableView{
     EWPersonCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PersonCell"];
     if (!cell) {
+        NSLog(@"creating person cell");
         cell = [[EWPersonCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"PersonCell"];
         // set backgroundColor
         cell.contentView.backgroundColor = [UIColor whiteColor];

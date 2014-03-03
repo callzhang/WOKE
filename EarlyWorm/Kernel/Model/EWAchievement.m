@@ -8,7 +8,7 @@
 
 #import "EWAchievement.h"
 #import "EWPerson.h"
-
+#import "EWDataStore.h"
 
 @implementation EWAchievement
 
@@ -19,5 +19,20 @@
 @dynamic time;
 @dynamic type;
 @dynamic owner;
+
+@synthesize image;
+
+
+- (UIImage *)image{
+    if (!image) {
+        image = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.image_key]];
+    }
+    return image;
+}
+
+- (void)setImage:(UIImage *)pic{
+    NSData *picData = UIImagePNGRepresentation(pic);
+    self.image_key = [SMBinaryDataConversion stringForBinaryData:picData name:@"achievement_icon.png" contentType:@"image/png"];
+}
 
 @end

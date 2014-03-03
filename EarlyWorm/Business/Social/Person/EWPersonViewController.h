@@ -22,16 +22,16 @@
 @property (weak, nonatomic) IBOutlet UILabel *name;
 @property (weak, nonatomic) IBOutlet UILabel *location;
 @property (weak, nonatomic) IBOutlet UILabel *statement;
-@property (weak, nonatomic) IBOutlet UIButton *friends;
-@property (weak, nonatomic) IBOutlet UIButton *aveTime;
-@property (weak, nonatomic) IBOutlet UIButton *achievements;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *tabView;
 @property (weak, nonatomic) IBOutlet UITableView *taskTableView;
 @property (weak, nonatomic) IBOutlet UIButton *loginBtn;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+@property (weak, nonatomic) EWPerson *person;
 
 - (IBAction)extProfile:(id)sender;
 - (IBAction)close:(id)sender;
 - (IBAction)login:(id)sender;
+- (IBAction)tabTapped:(UISegmentedControl *)sender;
 
-@property (nonatomic) EWPerson *person;
+
 @end

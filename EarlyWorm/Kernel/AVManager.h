@@ -11,27 +11,33 @@
 #import <AVFoundation/AVFoundation.h>
 #import "EWDefines.h"
 
-@class EWMediaViewCell;
+@class EWMediaViewCell, EWTaskItem;
 
 @interface AVManager : NSObject <AVAudioPlayerDelegate, AVAudioRecorderDelegate, AVAudioSessionDelegate>
 {
     //CALevelMeter *lvlMeter_in;
     NSTimer *updateTimer;
     NSURL *recordingFileUrl;
+    
 }
 
 +(AVManager *)sharedManager;
 
 //-(void)playSound:(NSString *)fileName;
 /**
- Use AVPlayer to play assets via HTTP live stream(advanced)
+ Use AVPlayer to play assets
  */
-- (void)playMedia:(NSString *)fileName;
+- (void)playLivePath:(NSString *)fileName;
+/**
+ Play sound from main bundle
+ @param fileName: the file name without path
+ */
 - (void)playSoundFromFile:(NSString *)fileName;
 - (void)playSoundFromURL:(NSURL *)url;
 - (void)playForCell:(EWMediaViewCell *)cell;
 - (void)pausePlaybackForPlayer:(AVAudioPlayer *)player;
 - (void)updateViewForPlayerState:(AVAudioPlayer *)player;
+- (void)playTask:(EWTaskItem *)task;
 - (NSURL *)record;
 
 
@@ -40,10 +46,10 @@
 
 @property (retain, nonatomic) AVAudioPlayer *player;
 @property (retain, nonatomic) AVAudioRecorder *recorder;
-@property (weak, nonatomic) UISlider *progressBar;
-@property (weak, nonatomic) UIButton *playStopBtn;
-@property (weak, nonatomic) UIButton *recordStopBtn;
-@property (weak, nonatomic) UILabel *currentTime;
-
-//@property (strong) id playerObserver;
+@property (weak, nonatomic) UITableView *wakeUpTableView; //holds all the cells
+@property (weak, nonatomic) EWMediaViewCell *currentCell; //current cell
+@property (retain, nonatomic) UISlider *progressBar;
+@property (retain, nonatomic) UIButton *playStopBtn;
+@property (retain, nonatomic) UIButton *recordStopBtn;
+@property (retain, nonatomic) UILabel *currentTime;
 @end

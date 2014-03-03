@@ -12,6 +12,8 @@
 
 @interface EWTaskItem : NSManagedObject {}
 @property (nonatomic, retain) NSDate * added;
+@property (nonatomic, retain) NSDictionary * buzzers;
+@property (nonatomic, retain) NSString * buzzers_string;
 @property (nonatomic, retain) NSDate * completed;
 @property (nonatomic, retain) NSDate * createddate;
 @property (nonatomic, retain) NSString * ewtaskitem_id;
@@ -27,6 +29,10 @@
 @property (nonatomic, retain) EWPerson *owner;
 @property (nonatomic, retain) NSSet *waker;
 @property (nonatomic, retain) EWPerson *pastOwner;
+
+//custom methods
+- (void)addBuzzer:(EWPerson *)person atTime:(NSDate *)time;
+
 @end
 
 @interface EWTaskItem (CoreDataGeneratedAccessors)

@@ -74,7 +74,7 @@
 }
 
 - (void)setProfilePic:(UIImage *)pic{
-    NSData *picData = UIImageJPEGRepresentation(pic, 0.7);
+    NSData *picData = UIImagePNGRepresentation(pic);
     self.profilePicKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"profilePic.png" contentType:@"image/png"];
 }
 
@@ -87,7 +87,7 @@
 
 
 - (void)setBgImage:(UIImage *)img{
-    NSData *imgData = UIImageJPEGRepresentation(img, 0.7);
+    NSData *imgData = UIImagePNGRepresentation(img);
     self.bgImageKey = [SMBinaryDataConversion stringForBinaryData:imgData name:@"bgImage.png" contentType:@"image/png"];
 }
 

@@ -11,6 +11,7 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 #import "EWServer.h"
+#import "EWCollectionPersonCell.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -67,6 +68,8 @@
         personArray = [[NSArray alloc] init];
         selectedPersonSet = [[NSMutableSet alloc]initWithCapacity:0];
         time = 0;
+        
+        
     }
     return self;
 }
@@ -109,12 +112,13 @@
         barImageView.frame = CGRectMake(0, 413, 320, 67);
     }
     
+    //Collection view
+    [friendsCollectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     friendsCollectionView.dataSource = self;
     friendsCollectionView.delegate = self;
     friendsCollectionView.backgroundColor = [UIColor clearColor];
     friendsCollectionView.showsVerticalScrollIndicator = NO;
     friendsCollectionView.showsHorizontalScrollIndicator = NO;
-    [friendsCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:COLLECTION_VIEW_IDENTIFIER];
     
     wakeThemBtn.layer.cornerRadius = 5;
     wakeThemBtn.layer.borderWidth = 1.0f;
@@ -291,51 +295,34 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    UICollectionViewCell * cell = [collectionView  dequeueReusableCellWithReuseIdentifier:COLLECTION_VIEW_IDENTIFIER forIndexPath:indexPath];
-    
-    UIImageView * headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,COLLECTION_CELL_WIDTH, COLLECTION_CELL_HEIGHT)];
-        headImageView.layer.masksToBounds = YES;
-    headImageView.layer.cornerRadius = 27;
-    headImageView.layer.borderColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.5].CGColor;
-    headImageView.layer.borderWidth = 1.0f;
-    
-    [cell.contentView addSubview:headImageView];
-    
-    
-    cell.contentView.backgroundColor = [UIColor clearColor];
-    
-    EWPerson * person = [personArray objectAtIndex:indexPath.row];
-    headImageView.image = person.profilePic;
-    
-    //选中
-    if ([selectedPersonSet containsObject:person] == YES){
-        UIImageView *maskView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,COLLECTION_CELL_WIDTH, COLLECTION_CELL_HEIGHT)];
-        maskView.layer.masksToBounds = YES;
-        maskView.layer.cornerRadius = 27;
-        maskView.image = [UIImage imageNamed:@"checkmark"];;
-        [cell.contentView addSubview:maskView];
+    EWCollectionPersonCell * cell = [collectionView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
+    if (!cell) {
+        NSLog(@"Collection view cell needs init");
         
     }
+    //person
+    EWPerson * person = [personArray objectAtIndex:indexPath.row];
+    cell.profilePic.image = person.profilePic;
+    cell.label.text = person.name;
     
     return cell;
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
-    if ([selectedPersonSet containsObject:person] == YES)
+    if ([selectedPersonSet containsObject:person])
     {
         //取消被选中状态
-        if ([selectedPersonSet count] != 0)
-        {
-            [selectedPersonSet removeObject:person];
-        }
+        [selectedPersonSet removeObject:person];
+        cell.maskView.hidden = YES;
     }
     else
     {
         //选中
         [selectedPersonSet addObject:person];
+        cell.maskView.hidden = NO;
     }
     
     [self reloadData];
@@ -346,7 +333,7 @@
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return CGSizeMake(COLLECTION_CELL_WIDTH,COLLECTION_CELL_HEIGHT);
+    return CGSizeMake(kCollectionViewCellWidth, kCollectionViewCellHeight);
 }
 
 //reload data

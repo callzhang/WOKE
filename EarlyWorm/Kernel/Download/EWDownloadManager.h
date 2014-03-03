@@ -26,4 +26,5 @@
  Download all medias (and anything needed) in task item in background mode.
  */
 - (void)downloadTask:(EWTaskItem *)task;
+
 @end

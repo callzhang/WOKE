@@ -107,11 +107,11 @@
     </entity>
     <entity name="EWTaskItem" representedClassName="EWTaskItem" syncable="YES">
         <attribute name="added" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="buzzers_string" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="completed" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="ewtaskitem_id" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="length" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="state" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="success" optional="YES" attributeType="Boolean" syncable="YES"/>

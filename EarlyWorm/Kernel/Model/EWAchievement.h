@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "_EWAchievement.h"
+//#import "_EWAchievement.h"
 
 @class EWPerson;
 
@@ -21,5 +21,6 @@
 @property (nonatomic, retain) NSDate * time;
 @property (nonatomic, retain) NSString * type;
 @property (nonatomic, retain) EWPerson *owner;
+@property (nonatomic, retain) UIImage *image;
 
 @end

@@ -8,10 +8,13 @@
 
 #import "AVManager.h"
 #import "EWMediaViewCell.h"
+#import "EWTaskItem.h"
+#import "EWTaskStore.h"
 #import <AVFoundation/AVAudioPlayer.h>
 
 @implementation AVManager
-@synthesize player, recorder, progressBar, playStopBtn, currentTime;
+@synthesize player, recorder, wakeUpTableView, currentCell;
+@synthesize progressBar, playStopBtn, recordStopBtn, currentTime;
 
 
 +(AVManager *)sharedManager{
@@ -46,13 +49,16 @@
         //audio session
         [[AVAudioSession sharedInstance] setDelegate: self];
         NSError *error = nil;
+        //set category
         BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord error: &error];
         if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
+        //force speaker
         success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
                                                                      error:&error];
         if (!success) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
-        [[AVAudioSession sharedInstance] setActive:YES error:nil];
-
+        //set active
+        success = [[AVAudioSession sharedInstance] setActive:YES error:nil];
+        if (!success) NSLog(@"Unable to activate audio session");
     }
     return self;
 }
@@ -81,6 +87,9 @@
     [player prepareToPlay];
     if (![player play]) NSLog(@"Could not play media.");
     [self updateViewForPlayerState:player];
+    
+    //keep current cell
+    currentCell = cell;
 }
 
 
@@ -100,7 +109,8 @@
         file = fileName;
         type = @"";
     }
-    NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:file ofType:type]];
+    NSString *str = [[NSBundle mainBundle] pathForResource:file ofType:type];
+    NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:str];
     //call the core play function
     [self playSoundFromURL:soundURL];
 }
@@ -109,6 +119,7 @@
 - (void)playSoundFromURL:(NSURL *)url{
     NSLog(@"About to play %@", [url path]);
     if ([url isFileURL]) {
+        //local file
         
         if (!progressBar) {
             NSLog(@"Progress bar not set! Remember to add it before playing.");
@@ -136,7 +147,29 @@
     }
 }
 
-//UI event from UISlider
+- (void)playMedia:(EWMediaItem *)mi{
+    NSData *data = mi.audio;
+    player = [[AVAudioPlayer alloc] initWithData:data error:nil];
+    player.delegate = self;
+    
+}
+
+//play media for task using AVQueuePlayer
+- (void)playTask:(EWTaskItem *)task{
+    NSMutableArray *queue = [[NSMutableArray alloc] initWithCapacity:task.medias.count];
+    for (EWMediaItem *mi in task.medias) {
+        NSData *data = mi.audio; //use cached data
+        NSString *str = [NSTemporaryDirectory() stringByAppendingString:mi.audioKey];
+        BOOL success = [data writeToFile:str atomically:NO];
+        if(!success) NSLog(@"Store temp path for autio data failed");
+        AVPlayerItem *track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:str]];
+        [queue addObject:track];
+    }
+    AVQueuePlayer *qPlayer = [[AVQueuePlayer alloc] initWithItems:queue];
+    [qPlayer play];
+}
+
+#pragma mark - UI event
 - (IBAction)sliderChanged:(UISlider *)sender {
     // Fast skip the music when user scroll the UISlider
     [player stop];
@@ -179,7 +212,7 @@
             int errorCode = CFSwapInt32HostToBig ([err code]);
             NSLog(@"Error: %@ [%4.4s])" , [err localizedDescription], (char*)&errorCode);
         }
-        //update
+        //setup the UI
         [self updateViewForRecorderState:recorder];
         NSLog(@"Recording...");
     }
@@ -189,21 +222,20 @@
 #pragma mark - update UI
 - (void)updateViewForPlayerState:(AVAudioPlayer *)p
 {
+    //init the progress bar
     if (progressBar) {
         [self updateCurrentTime];
         progressBar.maximumValue = player.duration;
     }
-    
+    //timer stio first
 	if (updateTimer)
 		[updateTimer invalidate];
-    
-	if (p.playing)
-	{
+    //set up timer
+	if (p.playing){
 		//[lvlMeter_in setPlayer:p];
 		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTime) userInfo:p repeats:YES];
 	}
-	else
-	{
+	else{
 		//[lvlMeter_in setPlayer:nil];
 		updateTimer = nil;
 	}
@@ -230,16 +262,14 @@
 	}
 }
 
--(void)updateCurrentTime
-{
+-(void)updateCurrentTime{
     if (!progressBar.isTouchInside) {
         progressBar.value = player.currentTime;
         currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)player.currentTime / 60, (NSInteger)player.currentTime % 60, nil];
     }
 }
 
--(void)updateCurrentTimeForRecorder
-{
+-(void)updateCurrentTimeForRecorder{
     if (!progressBar.isTouchInside) {
         progressBar.value = recorder.currentTime;
         currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)recorder.currentTime / 60, (NSInteger)recorder.currentTime % 60, nil];
@@ -251,20 +281,20 @@
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)player successfully:(BOOL)flag {
     [updateTimer invalidate];
     self.player.currentTime = 0.0;
-    [self.playStopBtn setTitle:@"Play" forState:UIControlStateNormal];
+    progressBar.value = 0.0;
+    [playStopBtn setTitle:@"Play" forState:UIControlStateNormal];
     NSLog(@"Playback fnished");
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
     [updateTimer invalidate];
-    [self.playStopBtn setTitle:@"Record" forState:UIControlStateNormal];
+    [playStopBtn setTitle:@"Record" forState:UIControlStateNormal];
     //NSLog(@"Recording reached max length");
-    
 }
 
 
-#pragma mark - UI Events
+#pragma mark - Delegate events
 - (void)stopAllPlaying{
     [player stop];
 }
@@ -279,7 +309,7 @@
 
 #pragma mark - AVPlayer (Advanced, for stream audio, future)
 //use AVPlayer to play assets via HTTP live stream(advanced)
--(void)playMedia:(NSString *)fileName{
+-(void)playLivePath:(NSString *)fileName{
     NSURL *url = [NSURL URLWithString:@"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"];
     AVPlayerItem *playerItem = [AVPlayerItem alloc];
     AVURLAsset *asset = [AVURLAsset URLAssetWithURL:url options:nil];
@@ -294,7 +324,8 @@
     [playerItem addObserver:self forKeyPath:@"status" options:0 context:nil];
     //define player
     self.player = [AVPlayer playerWithPlayerItem:playerItem];
-    
+    [player prepareToPlay];
+    [player play];
 }
 
 
@@ -359,7 +390,7 @@ void RouteChangeListener(	void *inClientData,
 }*/
 
 - (void)pausePlaybackForPlayer:(AVAudioPlayer *)player {
-    NSLog(@"未知情况");
+    NSLog(@"playback paused");
 }
 
 @end

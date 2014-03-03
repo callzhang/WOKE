@@ -68,7 +68,9 @@
         
     }else{
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:path]];
+        //create task
         NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithRequest:request];
+        //start task
         [downloadTask resume];
         //keep task info
         [downloadQueue setObject:downloadTask forKey:path];
@@ -125,17 +127,17 @@
  Tells the delegate that the task finished transferring data.
  Server errors are not reported through the error parameter. The only errors your delegate receives through the error parameter are client-side errors, such as being unable to resolve the hostname or connect to the host.
  */
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)t didCompleteWithError:(NSError *)error
 {
     NSString *str = [NSString stringWithFormat:@"Task finished with error:%@", error.localizedDescription];
     EWAlert(str);
     if (error == nil)
     {
-        NSLog(@"Task: %@ completed successfully", task);
+        NSLog(@"Task: %@ completed successfully", t);
     }
     else
     {
-        NSLog(@"Task: %@ completed with error: %@", task, [error localizedDescription]);
+        NSLog(@"Task: %@ completed with error: %@", t, [error localizedDescription]);
     }
 }
 

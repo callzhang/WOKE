@@ -23,8 +23,8 @@
 
 @interface EWWakeUpViewController (){
     //NSManagedObjectContext *context;
-    NSInteger currentCellToPlay;
-    NSMutableArray *cellArray;
+    NSInteger currentCell;
+    //NSMutableArray *cellArray;
 }
 @property (nonatomic, strong) EWShakeManager *shakeManager;
 @end
@@ -37,7 +37,7 @@
 @synthesize tableView = tableView_;
 @synthesize shakeManager = _shakeManager;
 @synthesize imagePopover;
-@synthesize medias, person, task;
+@synthesize medias,buzzers, person, task;
 
 - (id)init {
     self = [super init];
@@ -64,6 +64,7 @@
     
     //media
     medias = [[NSMutableArray alloc] init];
+    buzzers = [[NSMutableDictionary alloc] init];
     //context
     context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     
@@ -73,43 +74,55 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self initData];
+    //[self initData];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [self.tableView reloadData];
+    //play
+    [self startPlayCells];
 }
 
 - (void)initData {
-    //song index
-    currentCellToPlay = 0;
-    cellArray = [[NSMutableArray alloc] init];
-    
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //depend on whether passed in with task or person, the media will populaeed accordingly
     if (task) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            
+            /*
             NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
             request.predicate = [NSPredicate predicateWithFormat:@"ANY tasks == %@", task];
             request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"createddate" ascending:NO]];
             NSError *err;
             medias = [[context executeFetchRequestAndWait:request error:&err] mutableCopy];
-            
+            */
+            medias = [[task.medias allObjects] mutableCopy];
+            buzzers = [task.buzzers mutableCopy];
             
             dispatch_async(dispatch_get_main_queue(), ^{
+                /*
                 [task addMedias:[NSSet setWithArray:medias]];
                 [context saveOnSuccess:^{
                     //
                 } onFailure:^(NSError *error) {
                     [NSException raise:@"Unable to update task" format:@"Reason: %@", error.description];
-                }];
+                }];*/
                 [self.tableView reloadData];
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
                 
             });
         });
     }else{
-        medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
         NSLog(@"Task didn't pass into view controller");
-        [self.tableView reloadData];
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView reloadData];
+                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+            });
+        });
+        
+        
     }
     //_shakeManager = [[EWShakeManager alloc] init];
     //_shakeManager.delegate = self;
@@ -137,16 +150,26 @@
     //self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Wake Up" style:UIBarButtonItemStylePlain target:self action:@selector(presentPostWakeUpVC)];
     
     UIButton * postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    postWakeUpVCBtn.frame = CGRectMake(50, 380, 220, 30);
-    [postWakeUpVCBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [postWakeUpVCBtn setTitle:@"PostWakeUpViewController" forState:UIControlStateNormal];
+    CGRect frame =[UIScreen mainScreen].bounds;
+    frame.origin.y = frame.size.height - 100;
+    frame.size.height = 100;
+    postWakeUpVCBtn.frame = frame;
+    [postWakeUpVCBtn setImage:[UIImage imageNamed:@"post_wakeup_view_bar"] forState:UIControlStateNormal];
+    [postWakeUpVCBtn setTitle:@"Wake" forState:UIControlStateNormal];
+    //[postWakeUpVCBtn setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.5]];
+    [postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:postWakeUpVCBtn];
     
     
 }
 
-//testing postWakeUpViewController
+#pragma mark - Custom methods
+- (void)startPlayCells{
+    currentCell = 0;
+    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentCell inSection:0]];
+    [[AVManager sharedManager] playForCell:cell];
+}
 
 -(void)presentPostWakeUpVC
 {
@@ -157,14 +180,6 @@
     [self presentViewController:postWakeUpVC animated:YES completion:^{
         //
     }];
-}
-
-
-//refrash data after edited
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self.tableView reloadData];
 }
 
 - (void)setTask:(EWTaskItem *)t{
@@ -213,6 +228,7 @@
     
     if (!cell) {
         cell = [[EWMediaViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        NSLog(@"created cell for wakeup view");
     }
     
     //get media item
@@ -239,20 +255,6 @@
     
     //mediafile
     cell.media = mi;
-    
-    //save
-    cellArray[indexPath.row] = cell;
-    
-    
-    //play
-    
-    if (indexPath.row == 0) {
-        if (currentCellToPlay == 0 ) {
-            [cell mediaPlay:nil];
-            currentCellToPlay ++;
-        }
-        
-    }
     
     
     return cell;
@@ -328,10 +330,9 @@
 
 - (void)playNextCell{
     NSLog(@"Play next song");
-    if (currentCellToPlay < medias.count) {
-        EWMediaViewCell *cell = cellArray[currentCellToPlay];
+    if (currentCell < medias.count) {
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCell inSection:0]];
         [cell mediaPlay:nil];
-        currentCellToPlay++;
     }
 }
 

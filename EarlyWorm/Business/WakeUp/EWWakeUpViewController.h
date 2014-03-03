@@ -13,10 +13,11 @@
 @property (retain, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIPopoverController *imagePopover;
 @property (nonatomic) NSMutableArray *medias;
+@property (nonatomic) NSMutableDictionary *buzzers;
 @property (nonatomic) EWPerson *person;
 @property (nonatomic) EWTaskItem *task;
 
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
 - (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;
-
+- (void)startPlayCells;
 @end

@@ -19,22 +19,19 @@
 }
 
 - (NSNumber *)aveWakeupTime{
-    if (self.tasks) {
+    if (tasks.count) {
         NSInteger totalTime = 0;
         for (EWTaskItem *t in self.tasks) {
-            NSTimeInterval t1 = [t.time timeIntervalSinceReferenceDate];
-            NSInteger int1 = t1;
-            NSTimeInterval t2;
+            NSInteger length;
             if (t.completed) {
-                t2 = [t.completed timeIntervalSinceReferenceDate];
+                length = [t.completed timeIntervalSinceDate:t.time];
             }else{
-                t2 = int1 + 600;
+                length = kMaxWakeTime;
             }
-            NSInteger int2 = t2;
             
-            totalTime = totalTime + (int2 - int1);
+            totalTime = totalTime + length;
         }
-        NSInteger aveTime = totalTime / self.tasks.count;
+        NSInteger aveTime = totalTime / tasks.count;
         return [NSNumber numberWithDouble:aveTime];
     }
     return 0;

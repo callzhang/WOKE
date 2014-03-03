@@ -36,14 +36,16 @@
 
 - (IBAction)mediaPlay:(id)sender {
     if (AVManager.sharedManager.player.isPlaying) {
-        [self.playBtn setTitle:@"Play" forState:UIControlStateNormal];
         [AVManager.sharedManager stopAllPlaying];
-        
-    }else{
-        [self.playBtn setTitle:@"Stop" forState:UIControlStateNormal];
-        [AVManager.sharedManager playForCell:self];
-        //NSLog(@"Prepare to play %@", media.audioKey);
+        if ([AVManager.sharedManager.currentCell isEqual:self]) {
+            [self.playBtn setTitle:@"Play" forState:UIControlStateNormal];
+            return;
+        }
     }
+    
+    [self.playBtn setTitle:@"Stop" forState:UIControlStateNormal];
+    [AVManager.sharedManager playForCell:self];
+    
     
 }
 

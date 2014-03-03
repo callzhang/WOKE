@@ -157,6 +157,7 @@
 		ABCCE68E17F298290078F8AA /* EWAlarmPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABCCE68D17F298290078F8AA /* EWAlarmPageView.m */; };
 		ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAC185C054C008CD2B8 /* FTWCache.m */; };
 		ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */; };
+		ABDAF99018C31C010075505B /* EWCollectionPersonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */; };
 		ABDD0BB81852E326005EA59B /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = ABDD0B801852E326005EA59B /* CHANGELOG.md */; };
 		ABDD0BB91852E326005EA59B /* libstackmob-v2.2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABDD0BB71852E326005EA59B /* libstackmob-v2.2.0.a */; };
 		ABDD0BBB1852E354005EA59B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABDD0BBA1852E354005EA59B /* Security.framework */; };
@@ -438,6 +439,8 @@
 		ABD34DAC185C054C008CD2B8 /* FTWCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTWCache.m; sourceTree = "<group>"; };
 		ABD34DAD185C054C008CD2B8 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
 		ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
+		ABDAF98E18C31C010075505B /* EWCollectionPersonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWCollectionPersonCell.h; sourceTree = "<group>"; };
+		ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWCollectionPersonCell.m; sourceTree = "<group>"; };
 		ABDD0B801852E326005EA59B /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
 		ABDD0B821852E326005EA59B /* AFHTTPClient+StackMob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPClient+StackMob.h"; sourceTree = "<group>"; };
 		ABDD0B831852E326005EA59B /* AFHTTPRequestOperation+RemoveContentType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPRequestOperation+RemoveContentType.h"; sourceTree = "<group>"; };
@@ -900,8 +903,8 @@
 				ABA728B11831F71500595CFD /* FirstTime */,
 				56FEA55617A5763200FC2938 /* Alarms */,
 				AB39BEEC17D96143006C31C5 /* Social */,
-				56FEA55917A5763200FC2938 /* Settings */,
 				56FEA56217A5763200FC2938 /* WakeUp */,
+				56FEA55917A5763200FC2938 /* Settings */,
 			);
 			path = Business;
 			sourceTree = "<group>";
@@ -1023,6 +1026,8 @@
 				AB1EBE3418A74B41003154DB /* EWTaskHistoryCell.h */,
 				AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */,
 				AB1EBE3218A74AD1003154DB /* EWTaskHistoryCell.xib */,
+				ABDAF98E18C31C010075505B /* EWCollectionPersonCell.h */,
+				ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */,
 			);
 			path = Person;
 			sourceTree = "<group>";
@@ -1445,6 +1450,7 @@
 			files = (
 				ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */,
 				5671BE3918085C4100F35DF9 /* ASIHTTPRequest.m in Sources */,
+				ABDAF99018C31C010075505B /* EWCollectionPersonCell.m in Sources */,
 				56FEA57F17A5763200FC2938 /* EWAlarmsViewController.m in Sources */,
 				56FEA58017A5763200FC2938 /* EWSettingsViewController.m in Sources */,
 				AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */,

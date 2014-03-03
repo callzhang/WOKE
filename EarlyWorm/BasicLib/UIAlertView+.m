@@ -10,6 +10,7 @@
 
 @implementation UIAlertView(Extend)
 @dynamic userInfo;
+
 -(void)setUserInfo:(NSDictionary *)dic {
     objc_setAssociatedObject(self, @selector(userInfo), dic, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
