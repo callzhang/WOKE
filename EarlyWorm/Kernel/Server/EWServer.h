@@ -19,6 +19,9 @@
 
 /**
  Send push notification for media
+ @params mediaId: mediaId
+ @params users: array of EWPerson
+ @params taskId: taskId
  */
 + (void)pushMedia:(NSString *)mediaId ForUsers:(NSArray *)users ForTask:(NSString *)taskId;
 

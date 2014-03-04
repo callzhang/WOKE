@@ -81,7 +81,8 @@
                                   @"badge": @1,
                                   kPushPersonKey: currentUser.username,
                                   @"type": kPushTypeBuzzKey,
-                                  @"sound": @"buzz.caf"};
+                                  @"sound": @"buzz.caf",
+                                  @"content-available": @1};
     
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Buzz successfully sent to %@", userIDs);
@@ -109,6 +110,13 @@
                                   @"content-available": @1};
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Push media successfully sent to %@", userIDs);
+        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+        hud.mode = MBProgressHUDModeCustomView;
+        hud.labelText = @"Sent";
+        [hud hide:YES afterDelay:1.5];
+
     } onFailure:^(NSError *error) {
         NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, error.localizedDescription];
         EWAlert(str);
@@ -141,10 +149,10 @@
         }else if ([[NSDate date] isEarlierThan:task.time]){
             //delay the message
             delayTimer = [task.time timeIntervalSinceDate:[NSDate date]];
-            NSLog(@"Delay for %d seconds", delayTimer);
-#ifdef DEV_TEST65
-            delayTimer = 5;
+#ifdef DEV_TEST
+            delayTimer = 3;
 #endif
+            NSLog(@"Delay for %d seconds", delayTimer);
         }
         //add sender to task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -163,10 +171,11 @@
             
             //back to main thread
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delayTimer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                //play sound
-                [[AVManager sharedManager] playSoundFromFile:@"buzz.caf"];
+                
                 //app state active
                 if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+                    //play sound
+                    [[AVManager sharedManager] playSoundFromFile:@"buzz.caf"];
                     //determin if WakeUpViewController is presenting
                     if ([EWServer isRootPresentingWakeUpView]) {
                         //wakeup vc is presenting
@@ -231,7 +240,7 @@
                     
                     //struggle -> play media
                     
-                    [[AVManager sharedManager] playSoundFromFile:[[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"]];
+                    [[AVManager sharedManager] playMedia:media];
                     
                     //present WakeUpView
                     if (![EWServer isRootPresentingWakeUpView]) {
@@ -368,7 +377,10 @@
             // ============== Media ================
             //media type
             EWAlert(@"You've got a voice tone. To find out who sent to you, get up on time on your next alarm!");
+            
+            
         }else if([type isEqualToString:kPushTypeBuzzKey]){
+            // ============== Buzz ================
             //buzz type
             NSString *personID = remoteNotif[kPushPersonKey];
             NSString *taskID = remoteNotif[kPushTaskKey];
@@ -404,11 +416,8 @@
 + (BOOL)isRootPresentingWakeUpView{
     //determin if WakeUpViewController is presenting
     UIViewController *vc = rootViewController.presentedViewController;
-    if ([vc isKindOfClass:[UINavigationController class]]) {
-        if ([[(UINavigationController *)vc viewControllers][0] isKindOfClass:[EWWakeUpViewController class]]) {
-            return YES;
-        }
-        
+    if ([vc isKindOfClass:[EWWakeUpViewController class]]) {
+        return YES;
     }
     
     return NO;

@@ -132,6 +132,12 @@
 }
 
 - (void)initView {
+    //background
+    UIImage *img = [UIImage imageNamed:@"Defaul"];
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:img];
+    [self.view addSubview:imgView];
+    [self.view sendSubviewToBack:imgView];
+    
     //table view
     tableView_ = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
     tableView_.dataSource = self;
@@ -154,7 +160,7 @@
     frame.origin.y = frame.size.height - 100;
     frame.size.height = 100;
     postWakeUpVCBtn.frame = frame;
-    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"post_wakeup_view_bar"] forState:UIControlStateNormal];
+    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"wake_view_bar"] forState:UIControlStateNormal];
     [postWakeUpVCBtn setTitle:@"Wake" forState:UIControlStateNormal];
     //[postWakeUpVCBtn setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.5]];
     //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
@@ -177,12 +183,22 @@
 -(void)presentPostWakeUpVC
 {
     NSLog(@"%s",__func__);
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:@"EWPostWakeUpViewController" bundle:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self presentViewController:postWakeUpVC animated:YES completion:^{
+                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                
+            }];
+        });
+    });
     
-    EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:@"EWPostWakeUpViewController" bundle:nil];
     
-    [self presentViewController:postWakeUpVC animated:YES completion:^{
-        //
-    }];
+    
 }
 
 - (void)setTask:(EWTaskItem *)t{
@@ -293,7 +309,7 @@
 //when click one item in table, push view to detail page
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //
+    NSLog(@"Media clicked");
 }
 
 

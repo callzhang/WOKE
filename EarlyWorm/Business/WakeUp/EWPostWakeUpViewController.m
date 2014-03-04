@@ -30,8 +30,6 @@
     
     IBOutlet UIImageView * barImageView;
     
-    UICollectionView * friendsCollectionView;
-    
     NSInteger time;
 }
 
@@ -92,16 +90,9 @@
     UICollectionViewFlowLayout *flowLayout=[[UICollectionViewFlowLayout alloc] init];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     
-    if (iPhone5)
+    if (!iPhone5)
     {
-   
-        friendsCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(34, 330, 253, 171) collectionViewLayout:flowLayout];
-        [self.view addSubview:friendsCollectionView];
-    }
-    else
-    {
-        friendsCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(34, 242, 253, 171) collectionViewLayout:flowLayout];
-        [self.view addSubview:friendsCollectionView];
+        collectionView.frame = CGRectMake(34, 242, 253, 171);
         
         wakeThemBtn.frame = CGRectMake(20, 427, 127, 39);
         doneBtn.frame = CGRectMake(173, 427, 127, 39);
@@ -113,21 +104,23 @@
     }
     
     //Collection view
-    [friendsCollectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
-    friendsCollectionView.dataSource = self;
-    friendsCollectionView.delegate = self;
-    friendsCollectionView.backgroundColor = [UIColor clearColor];
-    friendsCollectionView.showsVerticalScrollIndicator = NO;
-    friendsCollectionView.showsHorizontalScrollIndicator = NO;
+    [collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    collectionView.dataSource = self;
+    collectionView.delegate = self;
+    collectionView.backgroundColor = [UIColor clearColor];
+    //collectionView.showsVerticalScrollIndicator = NO;
+    collectionView.showsHorizontalScrollIndicator = NO;
+    [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 20, 20)];
     
+    //bar area at the button
     wakeThemBtn.layer.cornerRadius = 5;
     wakeThemBtn.layer.borderWidth = 1.0f;
-    wakeThemBtn.layer.borderColor = [UIColor whiteColor].CGColor;
-    
+    wakeThemBtn.layer.borderColor = [UIColor colorWithWhite:1.0f alpha:0.8f].CGColor;
+    wakeThemBtn.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
     doneBtn.layer.cornerRadius = 5;
     doneBtn.layer.borderWidth = 1.0f;
-    doneBtn.layer.borderColor = [UIColor whiteColor].CGColor;
-    
+    doneBtn.layer.borderColor = [UIColor colorWithWhite:1.0f alpha:0.8f].CGColor;
+    doneBtn.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
     barImageView.layer.shadowColor = [UIColor blackColor].CGColor;
     barImageView.layer.shadowOffset = CGSizeMake(0, -3);
     barImageView.layer.shadowOpacity = 1.0f;
@@ -135,10 +128,11 @@
     
     UIView * timerView = [[UIView alloc] initWithFrame:CGRectMake(100, 95, 110, 110)];
     timerView.layer.cornerRadius = 55;
-    timerView.layer.borderColor = [UIColor whiteColor].CGColor;
-    timerView.layer.borderWidth = 1.5f;
-    timerView.alpha = 0.4f;
     timerView.backgroundColor = [UIColor whiteColor];
+    timerView.layer.borderWidth = 1.0f;
+    timerView.layer.borderColor = [UIColor colorWithWhite:1 alpha:0.8f].CGColor;
+    timerView.backgroundColor = [UIColor whiteColor];
+    timerView.alpha = 0.4;
     [self.view addSubview:timerView];
 }
 
@@ -260,7 +254,7 @@
         }
         
         [self dismissViewControllerAnimated:YES completion:^{
-            
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
         }];
     }
     else
@@ -278,7 +272,7 @@
     NSLog(@"%s",__func__);
     
     [self dismissViewControllerAnimated:YES completion:^{
-       
+       [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
     }];
 }
 
@@ -292,10 +286,10 @@
 }
 
 // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewCell *)collectionView:(UICollectionView *)cView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    EWCollectionPersonCell * cell = [collectionView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
+    EWCollectionPersonCell * cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     if (!cell) {
         NSLog(@"Collection view cell needs init");
         
@@ -308,9 +302,9 @@
     return cell;
 }
 
--(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+-(void)collectionView:(UICollectionView *)cView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[cView cellForItemAtIndexPath:indexPath];
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
     if ([selectedPersonSet containsObject:person])
     {
@@ -325,9 +319,10 @@
         cell.maskView.hidden = NO;
     }
     
-    [self reloadData];
+    //[collectionView reloadData];
+    [collectionView setNeedsDisplay];
     
-    NSLog(@"%d",[selectedPersonSet count]);
+    NSLog(@"%@",person.name);
     
 }
 
@@ -342,7 +337,7 @@
 {
     NSLog(@"%s",__func__);
     
-    [friendsCollectionView reloadData];
+    [collectionView reloadData];
 }
 
 #pragma mark -

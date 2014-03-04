@@ -277,10 +277,10 @@
 
 - (IBAction)profile:(id)sender {
     if (!currentUser.facebook) {
-        EWAlert(@"Logging into facebook");
+        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
         EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
         [loginVC loginInBackground];
-
+        
     }else{
         EWPersonViewController *controller = [[EWPersonViewController alloc] init];
         controller.person = currentUser;

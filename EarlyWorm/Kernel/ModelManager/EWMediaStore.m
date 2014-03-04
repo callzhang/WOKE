@@ -85,7 +85,7 @@
 
 - (NSArray *)mediasForPerson:(EWPerson *)person{
     NSMutableArray *medias = [[NSMutableArray alloc] init];
-    for (EWTaskItem *task in person.tasks) {
+    for (EWTaskItem *task in [person.tasks setByAddingObjectsFromSet:person.pastTasks]) {
         for (EWMediaItem *media in task.medias) {
             [medias addObject:media];
         }

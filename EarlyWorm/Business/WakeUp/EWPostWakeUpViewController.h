@@ -15,6 +15,7 @@
     
     NSArray * personArray;
     EWTaskItem * taskItem;
+    __weak IBOutlet UICollectionView *collectionView;
 }
 
 /**

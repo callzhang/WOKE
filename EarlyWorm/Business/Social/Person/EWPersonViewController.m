@@ -138,8 +138,9 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 #pragma mark - UI Events
 - (IBAction)extProfile:(id)sender{
-    [self.view setNeedsDisplay];
-    NSLog(@"Info clicked");
+    
+    UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
+    [as showInView:self.view];
 }
 
 - (IBAction)close:(id)sender {
@@ -305,26 +306,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithNibName:nil bundle:nil];
     controller.task = tasks[indexPath.row];
     [self presentViewController:controller animated:YES completion:NULL];
-    
-    //voice message
-    EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];//with ramdom audio
-    media.author = currentUser;
-    [media addTasksObject:tasks[indexPath.row]];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    EWTaskItem *task = [tasks objectAtIndex:indexPath.row];
-    hud.labelText = @"Sending";
-    NSLog(@"Audio %@ sent to %@ on %@ successfully", media.audioKey, person.name, [task.time date2dayString]);
-    //save
-    NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
-    [context saveOnSuccess:^{
-        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-        hud.mode = MBProgressHUDModeCustomView;
-        hud.labelText = @"Sent";
-        [hud hide:YES afterDelay:1.5];
-        [context refreshObject:media mergeChanges:YES];
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Unable to send media" format:@"Reason: %@", error.description];
-    }];
+
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
@@ -379,6 +361,29 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         }
     }
     return cell;
+}
+
+
+#pragma mark - UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 0) {
+        //add friend
+        if (person != currentUser) {
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            [person addFriendsObject:currentUser];
+            [context saveOnSuccess:^{
+                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                [EWUIUtil showHUDWithCheckMark];
+            } onFailure:^(NSError *error) {
+                EWAlert(@"Failed to add friend, please try again later");
+            }];
+        }
+    }if (buttonIndex == 1) {
+        //send voice greeting
+        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithNibName:nil bundle:nil];
+        controller.task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:person];
+        [self presentViewController:controller animated:YES completion:NULL];
+    }
 }
 
 @end

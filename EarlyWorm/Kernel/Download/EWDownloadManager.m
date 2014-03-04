@@ -119,6 +119,8 @@
     [FTWCache setObject:data forKey:str];
     NSLog(@"Set FTW cache for %@", str);
     
+    //TODO: playback
+    
     //remove task from queue
     [downloadQueue removeObjectForKey:str];
 }
@@ -129,11 +131,10 @@
  */
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)t didCompleteWithError:(NSError *)error
 {
-    NSString *str = [NSString stringWithFormat:@"Task finished with error:%@", error.localizedDescription];
-    EWAlert(str);
+
     if (error == nil)
     {
-        NSLog(@"Task: %@ completed successfully", t);
+        NSLog(@"Task completed successfully");
     }
     else
     {

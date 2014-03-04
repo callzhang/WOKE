@@ -13,7 +13,7 @@
 @class ShinobiChart;
 @class EWStatisticsManager;
 
-@interface EWPersonViewController : EWViewController<UIAlertViewDelegate> {
+@interface EWPersonViewController : EWViewController<UIAlertViewDelegate, UIActionSheetDelegate> {
     NSArray *tasks;
     EWStatisticsManager *stats;
 }

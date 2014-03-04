@@ -92,6 +92,7 @@
             
         } onFailure:^(NSError *error) { //failed to get logged in user
             NSLog(@"UserManagement: Failed to get logged in user from SM Cache: %@", error);
+            EWAlert(@"Failed to log into backend, please restart Woke.");
         }];
         
         

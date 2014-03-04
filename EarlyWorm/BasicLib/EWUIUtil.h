@@ -38,4 +38,6 @@
 
 + (BOOL)isMultitaskingSupported;
 
++ (void)showHUDWithCheckMark;
+
 @end

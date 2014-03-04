@@ -116,8 +116,8 @@
 
 //Collection Cell Size
 
-#define kCollectionViewCellWidth      50
-#define kCollectionViewCellHeight     58
-#define kCollectionViewCellPersonRadius   25
+#define kCollectionViewCellWidth      60
+#define kCollectionViewCellHeight     68
+#define kCollectionViewCellPersonRadius   30
 
 #endif

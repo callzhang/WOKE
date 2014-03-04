@@ -33,7 +33,7 @@
         
         
         //mask
-        maskView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,kCollectionViewCellPersonRadius, kCollectionViewCellPersonRadius)];
+        maskView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,kCollectionViewCellPersonRadius *2, kCollectionViewCellPersonRadius *2)];
         maskView.layer.masksToBounds = YES;
         maskView.layer.cornerRadius = kCollectionViewCellPersonRadius;
         maskView.image = [UIImage imageNamed:@"checkmark"];

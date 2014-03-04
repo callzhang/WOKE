@@ -11,6 +11,7 @@
 
 //Util
 #import "NSDate+Extend.h"
+#import "MBProgressHUD.h"
 
 //object
 #import "EWTaskItem.h"
@@ -19,19 +20,19 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 
-//Util
-#import "MBProgressHUD.h"
-
 //backend
 #import "StackMob.h"
 #import "EWDataStore.h"
+#import "EWServer.h"
 
-@interface EWRecordingViewController ()
+@interface EWRecordingViewController (){
+    EWPerson *person;
+}
 
 @end
 
 @implementation EWRecordingViewController
-@synthesize progressBar, playBtn, recordBtn;
+@synthesize progressBar, playBtn, recordBtn, closeBtn;
 @synthesize task;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -47,15 +48,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    //person
+    person = task.owner?task.owner:task.pastOwner;
     self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
-    self.profilePic.image = task.owner.profilePic;
-    self.title.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", task.owner.name, [task.time weekday]];
-}
+    self.profilePic.image = person.profilePic;
+    self.profilePic.layer.cornerRadius = 50;
+    self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", person.name, [task.time weekday]];
+    //close btn
+    closeBtn.layer.cornerRadius = 5;
+    closeBtn.layer.borderWidth = 1.0f;
+    closeBtn.layer.borderColor = [UIColor whiteColor].CGColor;
 
-- (void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
-    self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
 }
 
 - (void)didReceiveMemoryWarning
@@ -97,7 +100,7 @@
             return;
         }
         //save data to task
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
         NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [NSString stringWithFormat:@"%d",(NSInteger)[NSDate timeIntervalSinceReferenceDate]]];
         NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:fileName contentType:@"audio/aac"];
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
@@ -121,21 +124,7 @@
             }
             
             //send push notification
-            NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New voice tone sent from %@", currentUser.username],
-                                          @"badge": @1,
-                                          @"type": kPushTypeMediaKey,
-                                          kPushMediaKey: media.ewmediaitem_id,
-                                          kPushTaskKey: task.ewtaskitem_id};
-            
-            [pushClient sendMessage:pushMessage toUsers:@[task.owner.username] onSuccess:^{
-                NSLog(@"Push notification successfully sent to %@", task.owner.username);
-                hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-                hud.mode = MBProgressHUDModeCustomView;
-                hud.labelText = @"Sent";
-                [hud hide:YES afterDelay:1.5];
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Failed to send push notification" format:@"Reason: %@", error.description];
-            }];
+            [EWServer pushMedia:media.ewmediaitem_id ForUsers:@[person] ForTask:task.ewtaskitem_id];
             
             //dismiss
             [self dismissViewControllerAnimated:YES completion:NULL];

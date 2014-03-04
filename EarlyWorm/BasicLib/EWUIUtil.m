@@ -7,6 +7,7 @@
 //
 
 #import "EWUIUtil.h"
+#import "EWAppDelegate.h"
 
 @implementation EWUIUtil
 
@@ -38,6 +39,14 @@
         result = [[UIDevice currentDevice] isMultitaskingSupported];
     }
     return result;
+}
+
++ (void)showHUDWithCheckMark{
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+    hud.mode = MBProgressHUDModeCustomView;
+    hud.labelText = @"Sent";
+    [hud hide:YES afterDelay:1.5];
 }
 
 @end

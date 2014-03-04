@@ -11,7 +11,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "EWDefines.h"
 
-@class EWMediaViewCell, EWTaskItem;
+@class EWMediaViewCell, EWTaskItem, EWMediaItem;
 
 @interface AVManager : NSObject <AVAudioPlayerDelegate, AVAudioRecorderDelegate, AVAudioSessionDelegate>
 {
@@ -35,6 +35,7 @@
 - (void)playSoundFromFile:(NSString *)fileName;
 - (void)playSoundFromURL:(NSURL *)url;
 - (void)playForCell:(EWMediaViewCell *)cell;
+- (void)playMedia:(EWMediaItem *)media;
 - (void)pausePlaybackForPlayer:(AVAudioPlayer *)player;
 - (void)updateViewForPlayerState:(AVAudioPlayer *)player;
 - (void)playTask:(EWTaskItem *)task;

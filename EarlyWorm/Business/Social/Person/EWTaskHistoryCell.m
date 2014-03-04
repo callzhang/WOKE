@@ -22,9 +22,14 @@
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
+    if (!self.selectedBackgroundView) {
+        UIView *view = [[UIView alloc] initWithFrame:self.frame];
+        view.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
+        self.selectedBackgroundView = view;
+    }
+    
+    //animation
     [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
 }
 
 
