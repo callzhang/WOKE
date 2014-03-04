@@ -61,7 +61,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    //background
+    UIImageView *img = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default"]];
+    [self.view addSubview:img];
+    [self.view sendSubviewToBack:img];
     //media
     medias = [[NSMutableArray alloc] init];
     buzzers = [[NSMutableDictionary alloc] init];
@@ -244,11 +247,6 @@
     
     //Use reusable cell or create a new cell
     EWMediaViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-    
-    if (!cell) {
-        cell = [[EWMediaViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-        NSLog(@"created cell for wakeup view");
-    }
     
     //get media item
     EWMediaItem *mi = [medias objectAtIndex:indexPath.row];

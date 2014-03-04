@@ -209,13 +209,8 @@
             } else {
                 NSLog(@"%@", error.debugDescription);
             }
+            [context refreshObject:currentUser mergeChanges:YES];
             
-            //save
-            [context saveOnSuccess:^{
-                NSLog(@"Location has been updated to server");
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"unable to save user location" format:@"Location: %@, error:%@", geoPoint, error];
-            }];
 
         }];
         

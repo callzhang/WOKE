@@ -14,6 +14,7 @@
 #import "EWCollectionPersonCell.h"
 
 #import <QuartzCore/QuartzCore.h>
+#import "EWAppDelegate.h"
 
 @interface EWPostWakeUpViewController ()
 {
@@ -253,8 +254,8 @@
             //======= end of buzz ======
         }
         
-        [self dismissViewControllerAnimated:YES completion:^{
-            [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+        [rootViewController dismissViewControllerAnimated:YES completion:^{
+            //
         }];
     }
     else
@@ -271,8 +272,8 @@
 {
     NSLog(@"%s",__func__);
     
-    [self dismissViewControllerAnimated:YES completion:^{
-       [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+    [rootViewController dismissViewControllerAnimated:YES completion:^{
+        //
     }];
 }
 

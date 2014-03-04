@@ -19,6 +19,7 @@
 #import "EWDataStore.h"
 
 @implementation EWPerson
+@synthesize achievements;
 @synthesize bgImage;
 @synthesize preference;
 @synthesize profilePic;

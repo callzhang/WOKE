@@ -184,11 +184,10 @@
                     }
                     else{
                         //present vc
-                        [rootViewController dismissViewControllerAnimated:YES completion:^{
-                            EWWakeUpViewController *wakeVC = [[EWWakeUpViewController alloc] initWithTask:task];
-                            [rootViewController presentViewController:wakeVC animated:YES completion:NULL];
+                        [rootViewController dismissViewControllerAnimated:YES completion:NULL];
+                        EWWakeUpViewController *wakeVC = [[EWWakeUpViewController alloc] initWithTask:task];
+                        [rootViewController presentViewController:wakeVC animated:YES completion:NULL];
                         
-                        }];
                     }
 
                 }
@@ -275,7 +274,7 @@
         
 /*
 #ifdef DEV_TEST
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Media" message:message delegate:[EWServer sharedInstance] cancelButtonTitle:@"Cancel" otherButtonTitles:@"Listen", nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitl	e:@"Media" message:message delegate:[EWServer sharedInstance] cancelButtonTitle:@"Cancel" otherButtonTitles:@"Listen", nil];
         [alert show];
         //associate
         alert.userInfo = @{@"type": kPushTypeMediaKey, kPushTaskKey: taskID, kPushMediaKey: mediaID};
@@ -443,7 +442,7 @@
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
         controller.task = task;
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-        EWAppDelegate * appDelegate = [UIApplication sharedApplication].delegate;
+        EWAppDelegate * appDelegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
         [appDelegate.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
     }
 

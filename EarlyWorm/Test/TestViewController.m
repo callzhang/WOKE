@@ -122,12 +122,11 @@
     
     switch (indexPath.row) {
         case 0: {
-            
-            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-            //controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
-            controller.person = currentUser;
-            [self presentViewController:navigationController animated:YES completion:^{}];
+            [self dismissViewControllerAnimated:YES completion:^{
+                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+                controller.person = currentUser;
+                [rootViewController presentViewController:controller animated:YES completion:NULL];
+            }];
             
         }
             break;

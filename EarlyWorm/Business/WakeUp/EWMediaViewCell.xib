@@ -14,7 +14,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="129"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="profile.png" id="4">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="profile" id="4">
                         <rect key="frame" x="5" y="5" width="50" height="50"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
@@ -81,7 +81,7 @@
                         <rect key="frame" x="293" y="5" width="20" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                        <state key="normal" image="like.png"/>
+                        <state key="normal" image="like"/>
                         <connections>
                             <action selector="like:" destination="3" eventType="touchUpInside" id="ovg-AR-vWa"/>
                         </connections>
@@ -95,7 +95,7 @@
                     </label>
                 </subviews>
             </tableViewCellContentView>
-            <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <connections>
                 <outlet property="date" destination="117" id="119"/>
                 <outlet property="description" destination="17" id="112"/>
@@ -109,7 +109,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="like.png" width="52" height="49"/>
-        <image name="profile.png" width="280" height="280"/>
+        <image name="like" width="52" height="49"/>
+        <image name="profile" width="140" height="140"/>
     </resources>
 </document>
