@@ -11,6 +11,8 @@
 #import "EWTaskItem.h"
 #import "EWTaskStore.h"
 #import <AVFoundation/AVAudioPlayer.h>
+#import "FTWCache.h"
+#import "EWDataStore.h"
 
 @implementation AVManager
 @synthesize player, recorder, wakeUpTableView, currentCell;
@@ -127,7 +129,8 @@
         
         //data
         NSError *err;
-        NSData *audioData = [NSData dataWithContentsOfFile:[url path]];
+        NSData *audioData = [[EWDataStore alloc] getRemoteDataWithKey:url.absoluteString];
+        //play
         if (audioData) {
             self.player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
         }else{

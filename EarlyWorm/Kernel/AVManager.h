@@ -33,6 +33,9 @@
  @param fileName: the file name without path
  */
 - (void)playSoundFromFile:(NSString *)fileName;
+/**
+ Main play function. Support FTW cache method.
+ */
 - (void)playSoundFromURL:(NSURL *)url;
 - (void)playForCell:(EWMediaViewCell *)cell;
 - (void)playMedia:(EWMediaItem *)media;

@@ -32,6 +32,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[EWDownloadManager alloc] init];
+        manager.downloadQueue = [[NSMutableDictionary alloc] init];
     });
     return manager;
 }
@@ -75,7 +76,7 @@
         //keep task info
         [downloadQueue setObject:downloadTask forKey:path];
         
-        NSLog(@"Media download task dispatched: %@", media.author);
+        NSLog(@"Media download task dispatched: %@", media.audioKey);
     }
 }
 
@@ -114,12 +115,14 @@
     NSData *data = [NSData dataWithContentsOfURL:downloadURL];
     NSURLRequest *request = downloadTask.originalRequest;
     NSString *str = request.URL.absoluteString;
-    
+    NSString *keyHash = [str MD5Hash];
     //save
-    [FTWCache setObject:data forKey:str];
+    [FTWCache setObject:data forKey:keyHash];
     NSLog(@"Set FTW cache for %@", str);
     
-    //TODO: playback
+#ifdef DEV_TEST
+    [[AVManager sharedManager] playSoundFromURL:request.URL];
+#endif
     
     //remove task from queue
     [downloadQueue removeObjectForKey:str];

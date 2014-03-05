@@ -127,7 +127,7 @@
 #pragma mark - Handle push notification
 + (void)handlePushNotification:(NSDictionary *)notification{
     NSString *type = notification[@"type"];
-    NSString *message = notification[@"aps"][@"alert"];
+    //NSString *message = notification[@"aps"][@"alert"];
     NSString *taskID = notification[kPushTaskKey];
     NSString *mediaID = notification[kPushMediaKey];
     NSString *personID = notification[kPushPersonKey];
@@ -170,8 +170,7 @@
             }];
             
             //back to main thread
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delayTimer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                
+            dispatch_async(dispatch_get_main_queue(), ^{
                 //app state active
                 if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
                     //play sound
@@ -189,7 +188,7 @@
                         [rootViewController presentViewController:wakeVC animated:YES completion:NULL];
                         
                     }
-
+                    
                 }
             });
         });

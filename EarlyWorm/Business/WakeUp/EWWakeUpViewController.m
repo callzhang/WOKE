@@ -285,19 +285,19 @@
         //remove from data source
         [medias removeObject:mi];
         
-        //[currentUser removeMediasObject:mi];
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-        //save in bg
-        //[context deleteObject:mi];//do not delete the media
         //remove from task relation
-        [task removeMediasObject:mi];
+        if (task) {
+            [task removeMediasObject:mi];
         [context saveOnSuccess:^{
             [self initData];//refresh
         } onFailure:^(NSError *error) {
             [NSException raise:@"Unable to delete the row" format:@"Reason: %@", error.description];
         }];
-        
+        }else{
+            EWAlert(@"Task not set, unable to delete");
+        }
     }
     if (editingStyle==UITableViewCellEditingStyleInsert) {
         //do something
