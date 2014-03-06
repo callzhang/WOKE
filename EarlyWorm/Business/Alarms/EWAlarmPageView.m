@@ -15,6 +15,7 @@
 #import "EWTaskItem.h"
 #import "EWTaskStore.h"
 #import "EWWakeUpViewController.h"
+#import "EWAppDelegate.h"
 
 @interface EWAlarmPageView ()
 
@@ -63,10 +64,8 @@
 - (IBAction)playMessage:(id)sender {
     if (task.medias.count) {
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-        
         controller.task = self.task;
-        [(UIViewController *)self.delegate presentViewController:navigationController animated:YES completion:^{}];
+        [rootViewController presentViewController:controller animated:YES completion:^{}];
     }
 }
 
