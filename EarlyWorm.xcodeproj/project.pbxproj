@@ -149,6 +149,8 @@
 		AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079C18393A66007C8BFD /* EWDataStore.m */; };
 		AB7807A718393A66007C8BFD /* EWTaskStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079E18393A66007C8BFD /* EWTaskStore.m */; };
 		AB94332317C302C500ADC702 /* EWRingtoneSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB94332217C302C400ADC702 /* EWRingtoneSelectionViewController.m */; };
+		ABA7265D18C985DF00BC5A5D /* AWSRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABA7265C18C985DF00BC5A5D /* AWSRuntime.framework */; };
+		ABA7265F18C985EE00BC5A5D /* AWSSNS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABA7265E18C985EE00BC5A5D /* AWSSNS.framework */; };
 		ABA728B51831F74900595CFD /* EWFirstTimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABA728B31831F74900595CFD /* EWFirstTimeViewController.m */; };
 		ABA728B61831F74900595CFD /* EWFirstTimeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */; };
 		ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */; };
@@ -427,6 +429,8 @@
 		AB94332217C302C400ADC702 /* EWRingtoneSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWRingtoneSelectionViewController.m; path = EarlyWorm/Business/Settings/EWRingtoneSelectionViewController.m; sourceTree = SOURCE_ROOT; };
 		ABA7265618C6DCE500BC5A5D /* EWAppDelegate2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EWAppDelegate2.h; sourceTree = "<group>"; };
 		ABA7265718C6DCE500BC5A5D /* EWAppDelegate2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EWAppDelegate2.m; sourceTree = "<group>"; };
+		ABA7265C18C985DF00BC5A5D /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSRuntime.framework; sourceTree = "<group>"; };
+		ABA7265E18C985EE00BC5A5D /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSSNS.framework; sourceTree = "<group>"; };
 		ABA728B21831F74900595CFD /* EWFirstTimeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWFirstTimeViewController.h; path = FirstTime/EWFirstTimeViewController.h; sourceTree = "<group>"; };
 		ABA728B31831F74900595CFD /* EWFirstTimeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWFirstTimeViewController.m; path = FirstTime/EWFirstTimeViewController.m; sourceTree = "<group>"; };
 		ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWFirstTimeViewController.xib; path = FirstTime/EWFirstTimeViewController.xib; sourceTree = "<group>"; };
@@ -541,6 +545,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABA7265D18C985DF00BC5A5D /* AWSRuntime.framework in Frameworks */,
+				ABA7265F18C985EE00BC5A5D /* AWSSNS.framework in Frameworks */,
 				9BA08C5A18B6C39900E785ED /* MapKit.framework in Frameworks */,
 				AB2C18B41871464E0058BFAD /* libz.dylib in Frameworks */,
 				AB1951AD185AB2E5003C7EE0 /* MobileCoreServices.framework in Frameworks */,
@@ -792,6 +798,8 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				ABA7265E18C985EE00BC5A5D /* AWSSNS.framework */,
+				ABA7265C18C985DF00BC5A5D /* AWSRuntime.framework */,
 				9BA08C5918B6C39900E785ED /* MapKit.framework */,
 				AB2C18B31871464D0058BFAD /* libz.dylib */,
 				AB2C18A9187145D10058BFAD /* TestFlightSDK2.1.3 */,
@@ -1643,7 +1651,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/",
+					/Users/Lei/Dropbox/WOKE/EarlyWorm,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1677,7 +1688,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/",
+					/Users/Lei/Dropbox/WOKE/EarlyWorm,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
