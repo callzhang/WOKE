@@ -29,6 +29,11 @@
 #import "EWMediaItem.h"
 #import "EWDownloadManager.h"
 
+//AWS
+#import <AWSRuntime/AWSRuntime.h>
+#import <AWSSNS/AWSSNS.h>
+#import <AWSSQS/AWSSQS.h>
+
 //global view for HUD
 UIViewController *rootViewController;
 
@@ -38,6 +43,7 @@ UIViewController *rootViewController;
     EWTaskItem *taskInAction;
     NSTimer *myTimer;
     long count;
+    AmazonSNSClient *snsClient;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
@@ -54,13 +60,14 @@ UIViewController *rootViewController;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     //test flight
-    [TestFlight takeOff:@"e1ffe70a-26bf-4db0-91c8-eb2d1d362cb3"];
+    [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     
     //background fetch
-    [application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval];
-    //background download
-    //count = 0;
-    //self.musicList = [NSMutableArray array];
+    //[application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval];
+    
+    //AWS
+    snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
+    //AmazonSQSClient *sqsClient = [[AmazonSQSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -84,20 +91,20 @@ UIViewController *rootViewController;
     
     //local notification entry
     if (launchOptions) {
-        NSLog(@"LaunchOption: %@", launchOptions);
         UILocalNotification *localNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
         NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
         //Let server class to handle notif infoØ
         if (localNotif) {
+            NSLog(@"Launched with local notification: %@", localNotif);
             [EWServer handleAppLaunchNotification:localNotif];
         }else if (remoteNotif){
+            NSLog(@"Launched with push notification: %@", remoteNotif);
             [EWServer handleAppLaunchNotification:remoteNotif];
         }
     }
     
     //User login
-    EWUserManagement *userMger = [EWUserManagement sharedInstance];
-    [userMger login];
+    [[EWUserManagement sharedInstance] login];
     
     //last step
     [self.window makeKeyAndVisible];
@@ -303,6 +310,23 @@ UIViewController *rootViewController;
     token = [[token componentsSeparatedByString:@" "] componentsJoinedByString:@""];//become a string
     
     // Persist token
+    /*
+     userDefaults{
+        kPushTokenDicKey: {
+            username: token,
+            ...
+        }
+        kAWSEndPointDicKey: {
+            username: ARN,
+            ...
+        }
+        kAWSTopicDicKey: {
+            username: ARN,
+            ...
+        }
+        ...
+     }
+     */
     NSString *username = currentUser.username;
     if(!username) [NSException raise:@"User didn't log in" format:@"Check your login sequense"];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -320,6 +344,35 @@ UIViewController *rootViewController;
     //Register Push on StackMob
     [[EWUserManagement sharedInstance] registerPushNotification];
     NSLog(@"Registered device token: %@", token);
+    
+    
+    //AWS
+    NSMutableDictionary *arnByUserDic = [[defaults objectForKey:kAWSEndPointDicKey] mutableCopy];
+    NSMutableDictionary *topicByUserDic = [[defaults objectForKey:kAWSTopicDicKey] mutableCopy];
+    NSString *endPoint = arnByUserDic[username];
+    NSString *topicArn = topicByUserDic[username];
+    if (!endPoint || !topicArn) {
+        
+        //create endPint (user)
+        SNSCreatePlatformEndpointRequest *request = [[SNSCreatePlatformEndpointRequest alloc] init];
+        request.token = token;
+        request.customUserData = currentUser.username;
+        request.platformApplicationArn = AWS_SNS_APP_ARN;
+        SNSCreatePlatformEndpointResponse *response = [snsClient createPlatformEndpoint:request];
+        NSLog(@"Created endpoint on AWS with response: %@", response);
+        NSString *endPintArn = response.endpointArn;
+        //create topic
+        
+        SNSCreateTopicRequest *topicRequest = [[SNSCreateTopicRequest alloc] initWithName:username];
+        SNSCreateTopicResponse *topicResponse = [snsClient createTopic:topicRequest];
+        SNSSubscribeRequest *subscribeRequest = [[SNSSubscribeRequest alloc] initWithTopicArn:topicResponse.topicArn andProtocol:@"application" andEndpoint:endPintArn];
+        SNSSubscribeResponse *subscribeReponse = [snsClient subscribe:subscribeRequest];
+        topicArn = subscribeRequest.topicArn;
+        
+        //save
+        [arnByUserDic setObject:endPintArn forKey:username];
+        [topicByUserDic setObject:topicArn forKey:username];
+    }
 }
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {

@@ -12,7 +12,7 @@
 
 extern UIViewController *rootViewController;
 
-@interface EWAppDelegate : UIResponder <UIApplicationDelegate, WeiboSDKDelegate, WeiboSDKJSONDelegate>
+@interface EWAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

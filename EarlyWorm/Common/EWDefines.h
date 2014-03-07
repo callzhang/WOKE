@@ -26,7 +26,11 @@
 // Keys
 #define kStackMobKeyDevelopment         @"4757c535-5583-46f9-8a55-3b8276d96f06"
 #define kStackMobKeyDevelopmentPrivate  @"63be438d-9a8a-428c-9d64-e1df9844da7d"
-#define kStackMobKeyProduction  @""
+#define kStackMobKeyProduction          @""
+#define AWS_ACCESS_KEY_ID               @"e1ffe70a-26bf-4db0-91c8-eb2d1d362cb3"
+#define AWS_SECRET_KEY                  @"vPuvJKTzxMc5vjPAyepSRUZUAgQidUcsUOCns9dE"
+#define AWS_SNS_APP_ARN                 @"arn:aws:sns:us-east-1:260520558889:app/APNS_SANDBOX/Woke"
+#define TESTFLIGHT_ACCESS_KEY           @"e1ffe70a-26bf-4db0-91c8-eb2d1d362cb3"
 
 //background fetch
 #define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
@@ -103,9 +107,12 @@
 //Audio & Video
 #define kMaxRecordTime                  20.0;
 #define kAudioPlayerDidFinishPlaying    @"audio_finished_playing"
+
+//User Defaults
 #define kPushTokenDicKey                @"push_token_dic" //the key for local defaults to get the array of tokenByUser dict
 #define kUserLoggedInUserKey            @"user"
-
+#define kAWSEndPointDicKey              @"AWS_EndPoint_dic"
+#define kAWSTopicDicKey                 @"AWS_Topic_dic"
 
 
 
