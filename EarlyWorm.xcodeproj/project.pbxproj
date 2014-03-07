@@ -86,6 +86,8 @@
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
 		9B73830D18BE494B00E7FFC3 /* EWDownloadMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */; };
 		9BA08C5A18B6C39900E785ED /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA08C5918B6C39900E785ED /* MapKit.framework */; };
+		9BF7A7BA18CA27D7002EA7AC /* AWSRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */; };
+		9BF7A7BC18CA27E5002EA7AC /* AWSSNS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */; };
 		AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */; };
 		AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */; };
 		AB00B61E1835C49D00DDD54B /* EWWakeUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B61B1835C49D00DDD54B /* EWWakeUpViewController.m */; };
@@ -323,6 +325,8 @@
 		9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadMgr.h; path = Download/EWDownloadMgr.h; sourceTree = "<group>"; };
 		9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadMgr.m; path = Download/EWDownloadMgr.m; sourceTree = "<group>"; };
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSRuntime.framework; sourceTree = "<group>"; };
+		9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSSNS.framework; sourceTree = "<group>"; };
 		AB00B6171835C49D00DDD54B /* EWMediaViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMediaViewCell.h; sourceTree = "<group>"; };
 		AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaViewCell.m; sourceTree = "<group>"; };
 		AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMediaViewCell.xib; sourceTree = "<group>"; };
@@ -541,6 +545,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BF7A7BA18CA27D7002EA7AC /* AWSRuntime.framework in Frameworks */,
+				9BF7A7BC18CA27E5002EA7AC /* AWSSNS.framework in Frameworks */,
 				9BA08C5A18B6C39900E785ED /* MapKit.framework in Frameworks */,
 				AB2C18B41871464E0058BFAD /* libz.dylib in Frameworks */,
 				AB1951AD185AB2E5003C7EE0 /* MobileCoreServices.framework in Frameworks */,
@@ -792,6 +798,7 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9BF7A7BD18CA27EF002EA7AC /* AWS */,
 				9BA08C5918B6C39900E785ED /* MapKit.framework */,
 				AB2C18B31871464D0058BFAD /* libz.dylib */,
 				AB2C18A9187145D10058BFAD /* TestFlightSDK2.1.3 */,
@@ -1005,6 +1012,15 @@
 				9B2DEEF618B811EC0046EB80 /* EWServer.m */,
 			);
 			name = Server;
+			sourceTree = "<group>";
+		};
+		9BF7A7BD18CA27EF002EA7AC /* AWS */ = {
+			isa = PBXGroup;
+			children = (
+				9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */,
+				9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */,
+			);
+			name = AWS;
 			sourceTree = "<group>";
 		};
 		AB07401618125AE300AAFC90 /* Groups */ = {
@@ -1643,7 +1659,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/",
+					/Users/Lee/Documents/WOKE,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1677,7 +1696,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/",
+					/Users/Lee/Documents/WOKE,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
