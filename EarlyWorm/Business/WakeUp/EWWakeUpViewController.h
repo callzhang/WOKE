@@ -12,6 +12,8 @@
 @interface EWWakeUpViewController : EWViewController <UIPopoverControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 @property (retain, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIPopoverController *imagePopover;
+@property (nonatomic) NSMutableArray *medias;
+@property (nonatomic) NSMutableDictionary *buzzers;
 @property (nonatomic) EWPerson *person;
 @property (nonatomic) EWTaskItem *task;
 

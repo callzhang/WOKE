@@ -36,8 +36,8 @@
  *  在测试代码外包上 "ifndef DEV_TEST" 开关
  */
 
-#define DEV_TEST                        1
-#define BACKGROUND_TEST                 1
+#define DEV_TEST
+#define BACKGROUND_TEST
 
 // 任务宏
 

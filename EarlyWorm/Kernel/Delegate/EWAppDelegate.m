@@ -41,6 +41,7 @@ UIViewController *rootViewController;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+@property (nonatomic) UIBackgroundTaskIdentifier oldBackgroundTaskIdentifier;
 @property (nonatomic, strong) NSMutableArray *musicList;
 
 @end
@@ -48,6 +49,7 @@ UIViewController *rootViewController;
 
 @implementation EWAppDelegate
 @synthesize backgroundTaskIdentifier;
+@synthesize oldBackgroundTaskIdentifier;
 //@synthesize myTimer;
 //@synthesize count;
 
@@ -129,13 +131,14 @@ UIViewController *rootViewController;
     
     //开启一个后台任务
     backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        NSLog(@"BG task will end");
+        
     }];
+    oldBackgroundTaskIdentifier = backgroundTaskIdentifier;
     if ([myTimer isValid]) {
         [myTimer invalidate];
     }
     // keep active
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+    myTimer = [NSTimer scheduledTimerWithTimeInterval:serverUpdateInterval target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
     NSLog(@"Scheduled background task when app enters background");
 #endif
     
@@ -156,8 +159,6 @@ UIViewController *rootViewController;
         //stop timer
         if ([myTimer isValid]) [myTimer invalidate];
     }
-    
-    NSLog(@"Entered foreground and cleaned bgID and timer");
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -165,11 +166,7 @@ UIViewController *rootViewController;
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    //[FBSession.activeSession close];
-    NSLog(@"App is about to terminate");
-//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-//        NSLog(@"%ld", count++);
-//    }];
+    [FBSession.activeSession close];
 }
 
 
@@ -197,14 +194,16 @@ UIViewController *rootViewController;
     
     //开启一个新的后台
     backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+        
         //
     }];
     
     //结束旧的后台任务
     [application endBackgroundTask:backgroundTaskIdentifier];
+    oldBackgroundTaskIdentifier = backgroundTaskIdentifier;
     
     
-    NSLog(@"Background task is still working  %ld",count++);
+    NSLog(@"Background downloading is still working  %ld",count++);
 }
 /*
 - (void)backgroundDownload {
@@ -319,7 +318,6 @@ UIViewController *rootViewController;
     
     //Register Push on StackMob
     [[EWUserManagement sharedInstance] registerPushNotification];
-    NSLog(@"Registered device token: %@", token);
 }
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {

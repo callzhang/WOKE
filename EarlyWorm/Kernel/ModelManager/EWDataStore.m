@@ -148,16 +148,7 @@ SMPushClient *pushClient;
     if (!key) {
         return nil;
     }
-    
-    NSData *data = nil;
-    
-    //local file
-    if ([[NSURL URLWithString:key] isFileURL]) {
-        NSLog(@"Is local file path, return data directly");
-        data = [NSData dataWithContentsOfFile:key];
-        return data;
-    }
-    //s3 file
+    NSData *data;
     if ([SMBinaryDataConversion stringContainsURL:key]) {
         //read from url
         NSURL *audioURL = [NSURL URLWithString:key];
@@ -173,11 +164,10 @@ SMPushClient *pushClient;
             [FTWCache setObject:data forKey:keyHash];
         }
         
-    }else if(key.length > 500){
+    }else if(key.length > 200){
         //string contains data
         data = [SMBinaryDataConversion dataForString:key];
         NSLog(@"Return the audio key as the data itself, please check!");
-        
     }else if(![key hasPrefix:@"http"]){
         //local data
         NSLog(@"string is a local file: %@", key);

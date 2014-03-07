@@ -120,7 +120,7 @@
     [FTWCache setObject:data forKey:keyHash];
     NSLog(@"Set FTW cache for %@", str);
     
-#ifdef BACKGROUND_TEST
+#ifdef DEV_TEST
     [[AVManager sharedManager] playSoundFromURL:request.URL];
 #endif
     

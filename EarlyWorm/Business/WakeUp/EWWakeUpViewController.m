@@ -24,9 +24,7 @@
 @interface EWWakeUpViewController (){
     //NSManagedObjectContext *context;
     NSInteger currentCell;
-    NSMutableArray *medias;
-    NSMutableDictionary *buzzers;
-    NSMutableArray *listOfBuzzAndMedia; //list with time
+    //NSMutableArray *cellArray;
 }
 @property (nonatomic, strong) EWShakeManager *shakeManager;
 @end
@@ -39,7 +37,7 @@
 @synthesize tableView = tableView_;
 @synthesize shakeManager = _shakeManager;
 @synthesize imagePopover;
-@synthesize person, task;
+@synthesize medias,buzzers, person, task;
 
 - (id)init {
     self = [super init];
@@ -51,8 +49,6 @@
         
         //notification
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     }
     return self;
 }
@@ -65,10 +61,15 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    
+    //background
+    UIImageView *img = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default"]];
+    [self.view addSubview:img];
+    [self.view sendSubviewToBack:img];
+    //media
+    medias = [[NSMutableArray alloc] init];
+    buzzers = [[NSMutableDictionary alloc] init];
     //context
-    //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+    context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     
     [self initData];
     [self initView];
@@ -91,14 +92,24 @@
     //depend on whether passed in with task or person, the media will populaeed accordingly
     if (task) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            /*
+            NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
+            request.predicate = [NSPredicate predicateWithFormat:@"ANY tasks == %@", task];
+            request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"createddate" ascending:NO]];
+            NSError *err;
+            medias = [[context executeFetchRequestAndWait:request error:&err] mutableCopy];
+            */
             medias = [[task.medias allObjects] mutableCopy];
             buzzers = [task.buzzers mutableCopy];
-            listOfBuzzAndMedia = [NSMutableArray arrayWithArray:medias];
-            [listOfBuzzAndMedia addObjectsFromArray:[buzzers allKeys]];
-            
-            
             
             dispatch_async(dispatch_get_main_queue(), ^{
+                /*
+                [task addMedias:[NSSet setWithArray:medias]];
+                [context saveOnSuccess:^{
+                    //
+                } onFailure:^(NSError *error) {
+                    [NSException raise:@"Unable to update task" format:@"Reason: %@", error.description];
+                }];*/
                 [self.tableView reloadData];
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
                 
@@ -125,9 +136,10 @@
 
 - (void)initView {
     //background
-    UIImageView *img = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default"]];
-    [self.view addSubview:img];
-    [self.view sendSubviewToBack:img];
+    UIImage *img = [UIImage imageNamed:@"Defaul"];
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:img];
+    [self.view addSubview:imgView];
+    [self.view sendSubviewToBack:imgView];
     
     //table view
     tableView_ = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
@@ -148,23 +160,17 @@
     
     UIButton * postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGRect frame =[UIScreen mainScreen].bounds;
-    frame.origin.y = frame.size.height - 80;
-    frame.size.height = 80;
+    frame.origin.y = frame.size.height - 100;
+    frame.size.height = 100;
     postWakeUpVCBtn.frame = frame;
     [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"wake_view_bar"] forState:UIControlStateNormal];
-    [postWakeUpVCBtn setTitle:@"Wake Up!" forState:UIControlStateNormal];
+    [postWakeUpVCBtn setTitle:@"Wake" forState:UIControlStateNormal];
     //[postWakeUpVCBtn setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.5]];
     //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:postWakeUpVCBtn];
     
     
-}
-
-#pragma mark - Event Handler
-- (void)refresh{
-    [self initData];
-    [self.tableView reloadData];
 }
 
 #pragma mark - Custom methods
