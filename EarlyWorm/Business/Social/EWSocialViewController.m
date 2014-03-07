@@ -112,6 +112,7 @@
         friends = [friendsSet allObjects];
         NSMutableSet *everyoneSet = [NSMutableSet setWithArray:[[EWPersonStore sharedInstance] everyone]];
         [everyoneSet minusSet:currentUser.friends];
+
         everyone = [everyoneSet allObjects];//exclude friends
         nAroundMe = (everyone.count>20) ? 20:everyone.count; //arbitrage number
         nGroup = 1; //wakeup together group

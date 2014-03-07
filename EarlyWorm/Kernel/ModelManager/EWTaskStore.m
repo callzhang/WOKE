@@ -79,7 +79,10 @@
         request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         tasks = [context executeFetchRequestAndWait:request error:NULL];
         //save to person
-        person.tasks = [NSSet setWithArray:tasks];
+        if (tasks.count > 0) {
+            person.tasks = [NSSet setWithArray:tasks];
+        }
+        
     }
     //sort
     tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
@@ -111,7 +114,10 @@
 //for auto group
 - (EWTaskItem *)nextTaskAtDayCount:(NSInteger)n ForPerson:(EWPerson *)person{
     NSArray *tasks = [self getTasksByPerson:person];
-    return tasks[n];
+    if (tasks.count >= n+1) {
+        return tasks[n];
+    }
+    return nil;
     
 }
 

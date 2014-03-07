@@ -100,7 +100,7 @@
         [userIDs addObject:person.username];
     }
     //message
-    NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New media from %@", currentUser.name],
+    NSDictionary *pushMessage = @{//@"alert": [NSString stringWithFormat:@"New media from %@", currentUser.name],
                                   @"badge": @1,
                                   @"sound": @"media.caf",
                                   @"type": kPushMediaKey,
@@ -134,10 +134,10 @@
     
     if ([type isEqualToString:kPushTypeBuzzKey]) {
         // ============== Buzz ================
-        
+        NSLog(@"Received buzz from %@", personID);
         //get task
         EWTaskItem *task;
-        NSInteger delayTimer = 0;
+        NSInteger delayInSeconds = 0;
         if (!taskID) {
             //get taskID
             task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
@@ -148,11 +148,11 @@
             return;
         }else if ([[NSDate date] isEarlierThan:task.time]){
             //delay the message
-            delayTimer = [task.time timeIntervalSinceDate:[NSDate date]];
+            delayInSeconds = [task.time timeIntervalSinceDate:[NSDate date]];
 #ifdef DEV_TEST
-            delayTimer = 3;
+            delayInSeconds = 3;
 #endif
-            NSLog(@"Delay for %d seconds", delayTimer);
+            NSLog(@"Delay for %d seconds", delayInSeconds);
         }
         //add sender to task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -169,8 +169,8 @@
                 NSLog(@"Unable to save: %@", error.description);
             }];
             
-            //back to main thread
-            dispatch_async(dispatch_get_main_queue(), ^{
+            //back to main thread with a delay to the time of alarm
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void){
                 //app state active
                 if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
                     //play sound
@@ -209,7 +209,8 @@
         
 
     }else if ([type isEqualToString:kPushTypeMediaKey]){
-        // ============== Task ================
+        // ============== Media ================
+        NSLog(@"Received Task push: %@", taskID);
         //get task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             //download
@@ -231,8 +232,7 @@
                     
                     //pre alarm -> download
                     
-                    [[EWDownloadManager sharedInstance] downloadMedia:media];
-                    
+                    [[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded
                     
                 }else if (!task.completed){
                     

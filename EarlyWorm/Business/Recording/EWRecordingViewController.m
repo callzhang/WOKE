@@ -69,6 +69,7 @@
 
 - (IBAction)play:(id)sender {
     manager.progressBar = progressBar;
+    manager.playStopBtn = playBtn;
     
     if (!manager.player.isPlaying) {
         [playBtn setTitle:@"Stop" forState:UIControlStateNormal];
@@ -82,8 +83,9 @@
 - (IBAction)record:(id)sender {
     manager.progressBar = progressBar;
     progressBar.maximumValue = kMaxRecordTime;
-    manager.playStopBtn = recordBtn;
+    manager.recordStopBtn = recordBtn;
     recordingFileUrl = [manager record];
+    
     if (manager.recorder.isRecording) {
         [recordBtn setTitle:@"Stop" forState:UIControlStateNormal];
     }else{
@@ -109,6 +111,7 @@
         media.message = self.message.text;
         [media addTasksObject:task];
         media.audioKey = recordDataString;
+        media.createddate = [NSDate date];
         
         //save
         //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];

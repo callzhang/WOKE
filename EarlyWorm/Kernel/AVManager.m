@@ -120,34 +120,29 @@
 //main play function
 - (void)playSoundFromURL:(NSURL *)url{
     NSLog(@"About to play %@", [url path]);
-    if ([url isFileURL]) {
-        //local file
-        
-        if (!progressBar) {
-            NSLog(@"Progress bar not set! Remember to add it before playing.");
-        }
-        
-        //data
-        NSError *err;
-        NSData *audioData = [[EWDataStore alloc] getRemoteDataWithKey:url.absoluteString];
-        //play
-        if (audioData) {
-            self.player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
-        }else{
-            self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
-        }
-        
-        if (err) {
-            NSLog(@"Cannot init player. Reason: %@", err.description);
-        }
-        self.player.delegate = self;
-        [player prepareToPlay];
-        if (![player play]) NSLog(@"Could not play %@\n", url);
-        [self updateViewForPlayerState:player];
-    }else{
-        //network url
-        NSLog(@"Network URL streaming is not supported yet");
+    
+    if (!progressBar) {
+        NSLog(@"Progress bar not set! Remember to add it before playing.");
     }
+    
+    //data
+    NSError *err;
+    NSData *audioData = [[EWDataStore alloc] getRemoteDataWithKey:url.absoluteString];
+    //play
+    if (audioData) {
+        self.player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
+    }else{
+        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
+    }
+    
+    if (err) {
+        NSLog(@"Cannot init player. Reason: %@", err.description);
+    }
+    self.player.delegate = self;
+    [player prepareToPlay];
+    if (![player play]) NSLog(@"Could not play %@\n", url);
+    [self updateViewForPlayerState:player];
+
 }
 
 - (void)playMedia:(EWMediaItem *)mi{
@@ -292,7 +287,7 @@
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
     [updateTimer invalidate];
-    [playStopBtn setTitle:@"Record" forState:UIControlStateNormal];
+    [recordStopBtn setTitle:@"Record" forState:UIControlStateNormal];
     //NSLog(@"Recording reached max length");
 }
 
