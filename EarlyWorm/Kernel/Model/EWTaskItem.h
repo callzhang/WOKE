@@ -12,6 +12,7 @@
 
 @interface EWTaskItem : NSManagedObject {}
 @property (nonatomic, retain) NSDate * added;
+@property (nonatomic, retain) NSString * aws_sns_topic_id;
 @property (nonatomic, retain) NSDictionary * buzzers;
 @property (nonatomic, retain) NSString * buzzers_string;
 @property (nonatomic, retain) NSDate * completed;

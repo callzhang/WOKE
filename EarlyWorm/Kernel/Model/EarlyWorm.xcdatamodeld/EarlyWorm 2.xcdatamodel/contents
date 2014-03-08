@@ -74,6 +74,7 @@
         <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWTaskItem" inverseName="messages" inverseEntity="EWTaskItem" syncable="YES"/>
     </entity>
     <entity name="EWPerson" representedClassName="EWPerson" syncable="YES">
+        <attribute name="aws_sns_topic_id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="bgImageKey" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="birthday" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
