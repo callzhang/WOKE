@@ -24,6 +24,7 @@
 NSManagedObjectContext *context;
 SMClient *client;
 SMPushClient *pushClient;
+AmazonSNSClient *snsClient;
 
 @implementation EWDataStore
 @synthesize model;
@@ -40,6 +41,12 @@ SMPushClient *pushClient;
 -(id)init{
     self = [super init];
     if (self) {
+        
+        //AWS
+        snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
+        snsClient.endpoint = [AmazonEndpoints sqsEndpoint:US_EAST_1];
+        
+        
         //stackMob
         SM_CACHE_ENABLED = YES;//enable cache
         //SM_CORE_DATA_DEBUG = YES; //enable core data debug

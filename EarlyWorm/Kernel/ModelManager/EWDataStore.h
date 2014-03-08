@@ -13,10 +13,13 @@
 #import <CoreData/CoreData.h>
 #import "StackMob.h"
 #import "SMPushClient.h"
+#import <AWSRuntime/AWSRuntime.h>
+#import <AWSSNS/AWSSNS.h>
 
 extern NSManagedObjectContext *context;
 extern SMClient *client;
 extern SMPushClient *pushClient;
+extern AmazonSNSClient *snsClient;
 
 @interface EWDataStore : NSObject
 
@@ -24,6 +27,7 @@ extern SMPushClient *pushClient;
 @property (nonatomic) NSManagedObjectModel *model;
 @property (nonatomic) SMCoreDataStore *coreDataStore;
 //@property (nonatomic) NSManagedObjectContext *context;
+
 
 + (EWDataStore *)sharedInstance;
 - (void)save;

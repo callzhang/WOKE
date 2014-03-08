@@ -29,11 +29,6 @@
 #import "EWMediaItem.h"
 #import "EWDownloadManager.h"
 
-//AWS
-#import <AWSRuntime/AWSRuntime.h>
-#import <AWSSNS/AWSSNS.h>
-#import <AWSSQS/AWSSQS.h>
-
 //global view for HUD
 UIViewController *rootViewController;
 
@@ -43,7 +38,6 @@ UIViewController *rootViewController;
     EWTaskItem *taskInAction;
     NSTimer *myTimer;
     long count;
-    AmazonSNSClient *snsClient;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
@@ -64,10 +58,6 @@ UIViewController *rootViewController;
     
     //background fetch
     //[application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval];
-    
-    //AWS
-    snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
-    //AmazonSQSClient *sqsClient = [[AmazonSQSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -351,14 +341,24 @@ UIViewController *rootViewController;
     NSMutableDictionary *topicByUserDic = [[defaults objectForKey:kAWSTopicDicKey] mutableCopy];
     NSString *endPoint = arnByUserDic[username];
     NSString *topicArn = topicByUserDic[username];
-    if (!endPoint || !topicArn) {
-        
+    if (!endPoint || !topicArn) { 
         //create endPint (user)
         SNSCreatePlatformEndpointRequest *request = [[SNSCreatePlatformEndpointRequest alloc] init];
         request.token = token;
         request.customUserData = currentUser.username;
         request.platformApplicationArn = AWS_SNS_APP_ARN;
-        SNSCreatePlatformEndpointResponse *response = [snsClient createPlatformEndpoint:request];
+        SNSCreatePlatformEndpointResponse *response;
+        @try {
+             response = [snsClient createPlatformEndpoint:request];
+        }
+        @catch (NSException *exception) {
+            if ([exception isKindOfClass:[SNSInternalErrorException class]]) {
+                NSLog(@"SNSInternalErrorException, %@", exception);
+            }else{
+                NSLog(@"%@", exception);
+            }
+        }
+        
         NSLog(@"Created endpoint on AWS with response: %@", response);
         NSString *endPintArn = response.endpointArn;
         //create topic
@@ -374,6 +374,12 @@ UIViewController *rootViewController;
         [topicByUserDic setObject:topicArn forKey:username];
         
         //sync
+        currentUser.aws_sns_topic_id = subscribeReponse.subscriptionArn;
+        [context saveOnSuccess:^{
+            //
+        } onFailure:^(NSError *error) {
+            //
+        }];
     }
 }
 

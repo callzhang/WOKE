@@ -74,23 +74,32 @@
     NSMutableArray *userIDs = [[NSMutableArray alloc] initWithCapacity:users.count];
     for (EWPerson *person in users) {
         [userIDs addObject:person.username];
+    
+        
+        //send push notification, The payload can consist of the alert, badge, and sound keys.
+        NSDictionary *pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
+                                                @"badge": @1,
+                                                @"sound": @"buzz.caf",
+                                                @"content-available": @1,
+                                                },
+                                      kPushPersonKey: currentUser.username,
+                                      @"type": kPushTypeBuzzKey};
+        NSDictionary *awsPushDic = @{@"SANDBOX_APNS": pushMessage};
+        NSData *pushData = [NSJSONSerialization dataWithJSONObject:awsPushDic options:NSJSONWritingPrettyPrinted error:NULL];
+        NSString *pushStr = [[NSString alloc] initWithData:pushData encoding:NSUTF8StringEncoding];
+        SNSPublishRequest *request = [[SNSPublishRequest alloc] initWithTopicArn:person.aws_sns_topic_id andMessage:pushStr];
+        request.messageStructure = @"json";
+        [snsClient publish:request];
     }
-    
-    //send push notification, The payload can consist of the alert, badge, and sound keys.
-    NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
-                                  @"badge": @1,
-                                  kPushPersonKey: currentUser.username,
-                                  @"type": kPushTypeBuzzKey,
-                                  @"sound": @"buzz.caf",
-                                  @"content-available": @1};
-    
+    /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Buzz successfully sent to %@", userIDs);
     } onFailure:^(NSError *error) {
         NSString *str = [NSString stringWithFormat:@"Failed to send buzz. Reason:%@", error.localizedDescription];
         EWAlert(str);
     }];
-
+     */
+    
 }
 
 + (void)pushMedia:(NSString *)mediaId ForUsers:(NSArray *)users ForTask:(NSString *)taskId{
