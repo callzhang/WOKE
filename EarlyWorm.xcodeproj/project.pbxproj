@@ -136,6 +136,7 @@
 		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
 		AB2C18CD18737F670058BFAD /* EWAlarmEditCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */; };
 		AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB2DFBC718BA7CBE00534AF1 /* buzz.caf */; };
+		AB2E09A618CBD98400063F14 /* Zenpush.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2E09A518CBD98400063F14 /* Zenpush.framework */; };
 		AB39BF0017D96143006C31C5 /* EWSocialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB39BEF517D96143006C31C5 /* EWSocialViewController.m */; };
 		AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3B9E4417A765CE00C2AD93 /* AVManager.m */; };
 		AB49BC8A185423E6004A38DB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB49BC89185423E6004A38DB /* Social.framework */; };
@@ -403,6 +404,7 @@
 		AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmEditCell.h; sourceTree = "<group>"; };
 		AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmEditCell.m; sourceTree = "<group>"; };
 		AB2DFBC718BA7CBE00534AF1 /* buzz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buzz.caf; sourceTree = "<group>"; };
+		AB2E09A518CBD98400063F14 /* Zenpush.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Zenpush.framework; sourceTree = "<group>"; };
 		AB39BEF417D96143006C31C5 /* EWSocialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialViewController.h; sourceTree = "<group>"; };
 		AB39BEF517D96143006C31C5 /* EWSocialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialViewController.m; sourceTree = "<group>"; };
 		AB3B9E4317A765CE00C2AD93 /* AVManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AVManager.h; path = EarlyWorm/Kernel/AVManager.h; sourceTree = SOURCE_ROOT; };
@@ -571,6 +573,7 @@
 				ABEEA95D17E01FFE0035DF4A /* libstdc++.dylib in Frameworks */,
 				ABEEA95C17E01FF50035DF4A /* CoreText.framework in Frameworks */,
 				ABEEA95B17E01FED0035DF4A /* OpenGLES.framework in Frameworks */,
+				AB2E09A618CBD98400063F14 /* Zenpush.framework in Frameworks */,
 				5642AF4717ACCC9D000C73E8 /* CoreData.framework in Frameworks */,
 				AB198C6A186034EC008C1F15 /* FacebookSDK.framework in Frameworks */,
 				5642AF4517ACCBB7000C73E8 /* CoreMedia.framework in Frameworks */,
@@ -797,6 +800,7 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AB2E09A518CBD98400063F14 /* Zenpush.framework */,
 				9BF7A7BD18CA27EF002EA7AC /* AWS */,
 				9BA08C5918B6C39900E785ED /* MapKit.framework */,
 				AB2C18B31871464D0058BFAD /* libz.dylib */,
@@ -1662,6 +1666,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/",
 					/Users/Lee/Documents/WOKE,
+					/Users/Lei/Dropbox/WOKE/EarlyWorm,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
@@ -1701,6 +1706,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/",
 					/Users/Lee/Documents/WOKE,
+					/Users/Lei/Dropbox/WOKE/EarlyWorm,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
