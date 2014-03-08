@@ -367,11 +367,13 @@ UIViewController *rootViewController;
         SNSCreateTopicResponse *topicResponse = [snsClient createTopic:topicRequest];
         SNSSubscribeRequest *subscribeRequest = [[SNSSubscribeRequest alloc] initWithTopicArn:topicResponse.topicArn andProtocol:@"application" andEndpoint:endPintArn];
         SNSSubscribeResponse *subscribeReponse = [snsClient subscribe:subscribeRequest];
-        topicArn = subscribeRequest.topicArn;
+        topicArn = subscribeReponse.subscriptionArn;
         
         //save
         [arnByUserDic setObject:endPintArn forKey:username];
         [topicByUserDic setObject:topicArn forKey:username];
+        
+        //sync
     }
 }
 
