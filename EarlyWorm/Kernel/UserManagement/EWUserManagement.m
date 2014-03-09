@@ -247,7 +247,20 @@
 #else
     pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
     //register everytime in case for events like phone replacement
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
+    
+    //register to native
+    //[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
+    
+    //@@@@@@ LOOK @@@@@@@ ZenPush registration replaced native process
+    [[Zenpush shared] zenIn];
+    [[Zenpush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeNewsstandContentAvailability)];
+
+    
+    //AWS
+    //snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
+    //snsClient.endpoint = [AmazonEndpoints sqsEndpoint:US_EAST_1];
+    
+    
 #endif
 }
 
@@ -269,6 +282,7 @@
     } onFailure:^(NSError *error) {
         [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
     }];
+    
     return;
     
 }

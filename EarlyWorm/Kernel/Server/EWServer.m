@@ -72,25 +72,31 @@
     //TODO: buzz message selection
     //TODO: bedge number
     NSMutableArray *userIDs = [[NSMutableArray alloc] initWithCapacity:users.count];
+    
+    //send push notification, The payload can consist of the alert, badge, and sound keys.
+    NSDictionary *pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
+                                            @"badge": @1,
+                                            @"sound": @"buzz.caf",
+                                            @"content-available": @1,
+                                            },
+                                  kPushPersonKey: currentUser.username,
+                                  @"type": kPushTypeBuzzKey};
+    
     for (EWPerson *person in users) {
         [userIDs addObject:person.username];
-    
         
-        //send push notification, The payload can consist of the alert, badge, and sound keys.
-        NSDictionary *pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
-                                                @"badge": @1,
-                                                @"sound": @"buzz.caf",
-                                                @"content-available": @1,
-                                                },
-                                      kPushPersonKey: currentUser.username,
-                                      @"type": kPushTypeBuzzKey};
+        //AWS
+        /*
         NSDictionary *awsPushDic = @{@"SANDBOX_APNS": pushMessage};
         NSData *pushData = [NSJSONSerialization dataWithJSONObject:awsPushDic options:NSJSONWritingPrettyPrinted error:NULL];
         NSString *pushStr = [[NSString alloc] initWithData:pushData encoding:NSUTF8StringEncoding];
         SNSPublishRequest *request = [[SNSPublishRequest alloc] initWithTopicArn:person.aws_sns_topic_id andMessage:pushStr];
         request.messageStructure = @"json";
         [snsClient publish:request];
+         */
     }
+    
+    //StackMob
     /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Buzz successfully sent to %@", userIDs);
@@ -99,6 +105,26 @@
         EWAlert(str);
     }];
      */
+    
+    //ZenPush
+    NSDictionary *zenPushMsg = @{@"api_secret_key": @"",
+                                 @"message": pushMessage,
+                                 @"device_types": @"ios",
+                                 @"aliases": userIDs};
+                                 
+    NSURL *URL = [NSURL URLWithString:@"api.zenpush.com/app/OMRBQWGXLGEU/message"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    NSData *data = [NSJSONSerialization dataWithJSONObject:zenPushMsg options:NSJSONWritingPrettyPrinted error:NULL];
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request
+                                                               fromData:data
+                                                      completionHandler:
+                                          ^(NSData *data, NSURLResponse *response, NSError *error) {
+                                              NSLog(@"%@", response);
+                                          }];
+    
+    [uploadTask resume];
     
 }
 

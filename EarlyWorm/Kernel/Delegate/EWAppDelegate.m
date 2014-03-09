@@ -335,9 +335,13 @@ UIViewController *rootViewController;
     [[EWUserManagement sharedInstance] registerPushNotification];
     NSLog(@"Registered device token: %@", token);
     
+    //ZenPush
+    [[Zenpush shared] registerDeviceToken:deviceToken alias:currentUser.username profileNamesForDevice:nil];
+
+    
     
     //AWS
-    NSMutableDictionary *arnByUserDic = [[defaults objectForKey:kAWSEndPointDicKey] mutableCopy];
+/*    NSMutableDictionary *arnByUserDic = [[defaults objectForKey:kAWSEndPointDicKey] mutableCopy];
     NSMutableDictionary *topicByUserDic = [[defaults objectForKey:kAWSTopicDicKey] mutableCopy];
     NSString *endPoint = arnByUserDic[username];
     NSString *topicArn = topicByUserDic[username];
@@ -381,6 +385,7 @@ UIViewController *rootViewController;
             //
         }];
     }
+ */
 }
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {

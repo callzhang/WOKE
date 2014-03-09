@@ -21,5 +21,9 @@
 - (void)registerWeibo;
 - (void)registerFacebook;
 - (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
+
+/**
+ Register token from APNS to the push server(s)
+ */
 - (void)registerPushNotification;
 @end

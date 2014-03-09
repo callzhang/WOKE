@@ -24,7 +24,7 @@
 NSManagedObjectContext *context;
 SMClient *client;
 SMPushClient *pushClient;
-AmazonSNSClient *snsClient;
+//AmazonSNSClient *snsClient;
 
 @implementation EWDataStore
 @synthesize model;
@@ -42,9 +42,7 @@ AmazonSNSClient *snsClient;
     self = [super init];
     if (self) {
         
-        //AWS
-        snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
-        snsClient.endpoint = [AmazonEndpoints sqsEndpoint:US_EAST_1];
+        
         
         
         //stackMob
