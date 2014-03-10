@@ -56,6 +56,7 @@ EWPerson *currentUser;
 }
 
 -(EWPerson *)getPersonByID:(NSString *)ID{
+    if(!ID) return nil;
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", ID];
     userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];//doesn't work for SM

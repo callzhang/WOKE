@@ -122,6 +122,7 @@
 }
 
 - (EWTaskItem *)getTaskByID:(NSString *)taskID{
+    if (!taskID) return nil;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"EWTaskItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"ewtaskitem_id == %@", taskID];
     NSError *err;

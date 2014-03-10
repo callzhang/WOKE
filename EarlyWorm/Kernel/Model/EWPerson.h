@@ -15,7 +15,7 @@
 
 @interface EWPerson : SMUserManagedObject {}
 @property (nonatomic, retain) NSSet * achievements;
-@property (nonatomic, retain) NSString * aws_sns_topic_id;
+@property (nonatomic, retain) NSString * aws_id;
 @property (nonatomic, retain) NSString * bgImageKey;
 @property (nonatomic, retain) NSDate * birthday;
 @property (nonatomic, retain) NSString * city;

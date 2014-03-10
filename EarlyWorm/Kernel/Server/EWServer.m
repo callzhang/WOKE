@@ -26,6 +26,9 @@
 #import "AVManager.h"
 #import "UIAlertView+.h"
 
+//Tool
+#import "EWUIUtil.h"
+
 @implementation EWServer
 
 + (EWServer *)sharedInstance{
@@ -84,12 +87,24 @@
                                                 },
                                       kPushPersonKey: currentUser.username,
                                       @"type": kPushTypeBuzzKey};
-        NSDictionary *awsPushDic = @{@"SANDBOX_APNS": pushMessage};
-        NSData *pushData = [NSJSONSerialization dataWithJSONObject:awsPushDic options:NSJSONWritingPrettyPrinted error:NULL];
-        NSString *pushStr = [[NSString alloc] initWithData:pushData encoding:NSUTF8StringEncoding];
-        SNSPublishRequest *request = [[SNSPublishRequest alloc] initWithTopicArn:person.aws_sns_topic_id andMessage:pushStr];
+        NSString *pushStr = [EWUIUtil toString:pushMessage];
+        pushStr = [pushStr stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+        pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"%@\"}", pushStr, pushStr];
+        SNSPublishRequest *request = [[SNSPublishRequest alloc] init];
+        request.targetArn = person.aws_id;
+        request.message = pushStr;
         request.messageStructure = @"json";
-        [snsClient publish:request];
+        NSLog(@"Push content: %@", pushStr);
+        @try {
+            [snsClient publish:request];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"%@", exception);
+        }
+        
+        
+        //use HTTP POST method
+        
     }
     /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
@@ -202,10 +217,8 @@
             });
         });
 
-        
-        
-        
-        
+        //broadcast event
+        if (!taskID) taskID = @"";
         [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: taskID}];
         
        
@@ -452,6 +465,38 @@
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
         EWAppDelegate * appDelegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
         [appDelegate.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
+    }
+
+}
+
+
++ (void)AWSPushTest{
+    //NSString *pushStr = @"{\"aps\":{\"alert\":\"<message>\"}}";
+    
+    NSDictionary *pushDic = @{@"aps": @{@"alert": @"hihi",
+                                        @"sound": @"buzz.caf",
+                                        @"content-available": @1},
+                              @"type": @"buzz"
+                              };
+    NSString *pushStr = [EWUIUtil toString:pushDic];
+    pushStr = [pushStr stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"default\"}", pushStr];
+    SNSPublishRequest *request = [[SNSPublishRequest alloc] init];
+    request.targetArn = currentUser.aws_id;
+    NSLog(@"%@", currentUser.aws_id);
+    request.message = pushStr;
+    request.messageStructure = @"json";
+    NSLog(@"Push content: %@", pushStr);
+    @try {
+        double delayInSeconds = 2.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            
+            [snsClient publish:request];
+        });
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@", exception);
     }
 
 }

@@ -55,4 +55,6 @@
  */
 + (void)handleAppLaunchNotification:(id)notification;
 + (BOOL)isRootPresentingWakeUpView;
+
++ (void)AWSPushTest;
 @end

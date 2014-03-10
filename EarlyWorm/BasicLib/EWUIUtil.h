@@ -40,4 +40,6 @@
 
 + (void)showHUDWithCheckMark;
 
++ (NSString *)toString:(NSDictionary *)dic;
+
 @end

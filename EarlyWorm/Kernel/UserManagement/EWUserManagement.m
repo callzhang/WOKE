@@ -15,9 +15,11 @@
 //model
 #import "EWPerson.h"
 #import "EWPersonStore.h"
+#import "EWServer.h"
 
-//stackholder
+//View
 #import "EWLogInViewController.h"
+
 
 //Util
 #import "EWIO.h"
@@ -97,6 +99,7 @@
         
         
     }else{
+        //log in using local machine info
         [self loginWithDeviceID];
     }
     
@@ -105,8 +108,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
 }
 
+//log in using local machine info
 - (void)loginWithDeviceID{
-    //log in using local machine info
     //log out fb first
     [FBSession.activeSession closeAndClearTokenInformation];
     //get user default
@@ -188,6 +191,11 @@
 - (void)userLoginEventHandler{
     [self registerAPNS];
     [self registerLocation];
+    
+#ifdef DEV_TEST
+    //[EWServer AWSPushTest];
+    [EWServer buzz:@[currentUser]];
+#endif
 }
 
 #pragma mark - location

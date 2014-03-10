@@ -44,7 +44,7 @@ AmazonSNSClient *snsClient;
         
         //AWS
         snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
-        snsClient.endpoint = [AmazonEndpoints sqsEndpoint:US_EAST_1];
+        snsClient.endpoint = [AmazonEndpoints snsEndpoint:US_WEST_2];
         
         
         //stackMob

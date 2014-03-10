@@ -125,15 +125,15 @@ UIViewController *rootViewController;
 #ifdef BACKGROUND_TEST
     
     //开启一个后台任务
-    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        NSLog(@"BG task will end");
-    }];
-    if ([myTimer isValid]) {
-        [myTimer invalidate];
-    }
-    // keep active
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
-    NSLog(@"Scheduled background task when app enters background");
+//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+//        NSLog(@"BG task will end");
+//    }];
+//    if ([myTimer isValid]) {
+//        [myTimer invalidate];
+//    }
+//    // keep active
+//    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+//    NSLog(@"Scheduled background task when app enters background");
 #endif
     
     //    self.myTimer = nil;
@@ -310,10 +310,6 @@ UIViewController *rootViewController;
             username: ARN,
             ...
         }
-        kAWSTopicDicKey: {
-            username: ARN,
-            ...
-        }
         ...
      }
      */
@@ -338,43 +334,57 @@ UIViewController *rootViewController;
     
     //AWS
     NSMutableDictionary *arnByUserDic = [[defaults objectForKey:kAWSEndPointDicKey] mutableCopy];
-    NSMutableDictionary *topicByUserDic = [[defaults objectForKey:kAWSTopicDicKey] mutableCopy];
+    //NSMutableDictionary *topicByUserDic = [[defaults objectForKey:kAWSTopicDicKey] mutableCopy];
     NSString *endPoint = arnByUserDic[username];
-    NSString *topicArn = topicByUserDic[username];
-    if (!endPoint || !topicArn) { 
+    //NSString *topicArn = topicByUserDic[username];
+    if (!endPoint/* || !topicArn*/) {
         //create endPint (user)
         SNSCreatePlatformEndpointRequest *request = [[SNSCreatePlatformEndpointRequest alloc] init];
         request.token = token;
         request.customUserData = currentUser.username;
         request.platformApplicationArn = AWS_SNS_APP_ARN;
         SNSCreatePlatformEndpointResponse *response;
+        NSString *endPointARN;
         @try {
-             response = [snsClient createPlatformEndpoint:request];
+            response = [snsClient createPlatformEndpoint:request];
         }
         @catch (NSException *exception) {
-            if ([exception isKindOfClass:[SNSInternalErrorException class]]) {
-                NSLog(@"SNSInternalErrorException, %@", exception);
+            
+            if ([exception isKindOfClass:[SNSInvalidParameterException class]]) {
+                //SNSInvalidParameterException *aws_e = (SNSInvalidParameterException *)exception;
+                NSString *des = exception.description;
+                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"arn:aws.*?\\s"
+                                                                                       options:NSRegularExpressionCaseInsensitive
+                                                                                         error:NULL];
+                NSRange result = [regex rangeOfFirstMatchInString:des options:0 range:NSMakeRange(0, [des length])];
+                NSString *endPointARN = [des substringWithRange:result];
+                //register the endpoint arn to user
+                if (result.length > 0) {
+                    endPointARN = [endPointARN stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSLog(@"Intercepted endpointArn: %@", endPointARN);
+                    currentUser.aws_id = endPointARN;
+                }else{
+                    @throw exception;
+                }
             }else{
                 NSLog(@"%@", exception);
+                return;
             }
         }
-        
-        NSLog(@"Created endpoint on AWS with response: %@", response);
-        NSString *endPintArn = response.endpointArn;
-        //create topic
-        
-        SNSCreateTopicRequest *topicRequest = [[SNSCreateTopicRequest alloc] initWithName:username];
-        SNSCreateTopicResponse *topicResponse = [snsClient createTopic:topicRequest];
-        SNSSubscribeRequest *subscribeRequest = [[SNSSubscribeRequest alloc] initWithTopicArn:topicResponse.topicArn andProtocol:@"application" andEndpoint:endPintArn];
-        SNSSubscribeResponse *subscribeReponse = [snsClient subscribe:subscribeRequest];
-        topicArn = subscribeReponse.subscriptionArn;
+
+        //try http post method
+        //
+        //
+        if (response) {
+            endPointARN = response.endpointArn;
+            currentUser.aws_id = endPointARN;
+            NSLog(@"Created endpoint on AWS: %@", endPointARN);
+        }
         
         //save
-        [arnByUserDic setObject:endPintArn forKey:username];
-        [topicByUserDic setObject:topicArn forKey:username];
+        [arnByUserDic setObject:endPointARN forKey:username];
         
         //sync
-        currentUser.aws_sns_topic_id = subscribeReponse.subscriptionArn;
         [context saveOnSuccess:^{
             //
         } onFailure:^(NSError *error) {
@@ -415,7 +425,7 @@ UIViewController *rootViewController;
         [self.window.rootViewController presentViewController:navigationController animated:YES completion:^(void){}];
     }
 }
-
+/*
 //normal handler for remote notification
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
     if ([application applicationState] == UIApplicationStateActive) {
@@ -423,7 +433,7 @@ UIViewController *rootViewController;
     }else{
         NSLog(@"%s: Push received when app is in %d : %@", __func__, application.applicationState, userInfo);
     }
-}
+}*/
 
 //Receive remote notification in background or in foreground
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
