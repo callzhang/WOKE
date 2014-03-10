@@ -126,7 +126,7 @@
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"EWTaskItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"ewtaskitem_id == %@", taskID];
     NSError *err;
-    NSArray *tasks = [context executeFetchRequestAndWait:request error:&err];
+    NSArray *tasks = [[EWDataStore sharedInstance].currentContext executeFetchRequestAndWait:request error:&err];
     if (tasks.count != 1) NSLog(@"Error getting task from ID: %@. Error: %@", taskID, err.description);
     return tasks[0];
 }

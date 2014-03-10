@@ -61,7 +61,7 @@
 /**
  Async method to call AWS publish with block handler
  */
-+ (void)AWSPush:(NSDictionary *)pushDic onSuccess:(void (^)(SNSPublishResponse *response))successBlock onFailure:(void (^)(NSException *exception))failureBlock;
++ (void)AWSPush:(NSDictionary *)pushDic toUsers:(NSArray *)users onSuccess:(void (^)(SNSPublishResponse *response))successBlock onFailure:(void (^)(NSException *exception))failureBlock;
 
 
 

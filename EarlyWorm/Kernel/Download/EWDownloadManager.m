@@ -65,6 +65,9 @@
     }else if([FTWCache objectForKey:pathHash]){
         //already cached
         NSLog(@"Media already cached: %@", path);
+#ifdef BACKGROUND_TEST
+        [[AVManager sharedManager] playSoundFromURL:pathURL];
+#endif
         return;
         
     }else{
@@ -99,7 +102,7 @@
      */
 
     double progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
-    NSLog(@"DownloadTask: %@ progress: %lf", downloadTask, progress);
+    NSLog(@"DownloadTask: %@ progress: (%.1lf)", downloadTask, progress);
     dispatch_async(dispatch_get_main_queue(), ^{
         //self.progressView.progress = progress;
     });

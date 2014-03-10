@@ -26,7 +26,10 @@ extern AmazonSNSClient *snsClient;
 @property (nonatomic) NSManagedObjectContext *context;
 @property (nonatomic) NSManagedObjectModel *model;
 @property (nonatomic) SMCoreDataStore *coreDataStore;
-//@property (nonatomic) NSManagedObjectContext *context;
+/**
+ This is considered thread safe way to call context for current thread
+ */
+@property (nonatomic) NSManagedObjectContext *currentContext;
 
 
 + (EWDataStore *)sharedInstance;

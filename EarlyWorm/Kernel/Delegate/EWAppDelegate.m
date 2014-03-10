@@ -57,7 +57,7 @@ UIViewController *rootViewController;
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     
     //background fetch
-    //[application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval];
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -146,7 +146,7 @@ UIViewController *rootViewController;
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     
-    [[UIApplication sharedApplication] clearKeepAliveTimeout];
+    //[[UIApplication sharedApplication] clearKeepAliveTimeout];
     
     
     if (backgroundTaskIdentifier != UIBackgroundTaskInvalid){
@@ -189,7 +189,13 @@ UIViewController *rootViewController;
 
 
 
-#pragma mark - Background download
+#pragma mark - Background fetch method (this is called periodocially
+-(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    NSLog(@"======== Launched in background due to background fetch event (%ld) ==========", count++);
+    completionHandler(UIBackgroundFetchResultNewData);
+}
+
 - (void) keepAlive:(NSTimer *)paramSender{
     
     UIApplication *application = [UIApplication sharedApplication];
@@ -205,85 +211,6 @@ UIViewController *rootViewController;
     
     NSLog(@"Background task is still working  %ld",count++);
 }
-/*
-- (void)backgroundDownload {
-    
-    EWDownloadMgr *mgr = [[EWDownloadMgr alloc] init];
-    mgr.urlString = @"http://med.a5mp3.com/ttpod/11612.mp3";
-    mgr.delegate = self;
-    
-    NSString *fileName = nil;
-    if (mgr.description && mgr.description.length > 0) {
-        fileName = [NSString stringWithFormat:@"%@.mp3",mgr.description];
-    }
-    else {
-        //get file name
-        NSArray *array = [mgr.urlString componentsSeparatedByString:@"/"];
-        if (array && array.count > 0) {
-            fileName = [array objectAtIndex:array.count-1];
-        }
-    }
-
-    if (fileName) {
-        NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"Documents/%@", fileName]];
-        
-        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
-        if (fileExists) {
-            
-            // test
-            [self.musicList addObject:filePath];
-            
-            // 播放 test
-            [self playDownloadedMusic:filePath];
-            return;
-        }
-    }
-    
-//    [mgr startDownload];
-    
-    NSData *data = [mgr syncDownloadByGet];
-    
-    [self handleDownlownedData:data fromManager:mgr];
-}
-
-- (void)handleDownlownedData:(NSData *)data fromManager:(EWDownloadMgr *)mgr {
-    if (!data) {
-        return;
-    }
-    
-    NSString *fileName = nil;
-    if (mgr.description && mgr.description.length > 0) {
-        fileName = [NSString stringWithFormat:@"%@.mp3",mgr.description];
-    }
-    else {
-        NSArray *array = [mgr.urlString componentsSeparatedByString:@"/"];
-        if (array && array.count > 0) {
-            fileName = [array objectAtIndex:array.count-1];
-        }
-        else {
-            NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
-            fileName = [NSString stringWithFormat:@"%f.mp3",timeInterval];
-        }
-    }
-    
-    NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"Documents/%@", fileName]];
-    [data writeToFile:filePath atomically:YES];
-    
-    NSLog(@"write to local file: %@", filePath);
-    [self.musicList addObject:filePath];
-    
-    // 播放 test
-    [self playDownloadedMusic:filePath];
-}
-
-- (void)playDownloadedMusic:(NSString *)path {
-    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL: [NSURL fileURLWithPath:path] error: nil];
-    [player prepareToPlay];
-    
-    //    [player play];
-    
-    [player performSelectorOnMainThread:@selector(play) withObject:nil waitUntilDone:NO];
-}*/
 
 - (BOOL) isMultitaskingSupported {
     

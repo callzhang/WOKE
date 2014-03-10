@@ -12,11 +12,11 @@
 #import "EWMediaStore.h"
 #import "EWMediaItem.h"
 #import "EWTaskItem.h"
-//#import "EWImageStore.h"
+#import "EWAppDelegate.h"
 #import "ImageViewController.h"
 #import "AVManager.h"
 #import "NSDate+Extend.h"
-#import "MBProgressHUD.h"
+#import "EWUIUtil.h"
 
 //test
 #import "EWPostWakeUpViewController.h"
@@ -276,6 +276,7 @@
 
 //remove item
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
         //remove from data source
@@ -289,10 +290,12 @@
             [task removeMediasObject:mi];
         [context saveOnSuccess:^{
             [self initData];//refresh
+            [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
         } onFailure:^(NSError *error) {
             [NSException raise:@"Unable to delete the row" format:@"Reason: %@", error.description];
         }];
         }else{
+            /*
             NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%@ IN medias && (owner == %@ || pastOwner == %@)", mi, currentUser, currentUser];
             request.predicate = predicate;
@@ -313,7 +316,19 @@
                 [tableView_ reloadData];
             } onFailure:^(NSError *error) {
                 NSLog(@"%@", error);
-            }];
+            }];*/
+            for (EWTaskItem *t in mi.tasks) {
+                if (t.owner == currentUser || t.pastOwner == currentUser) {
+                    NSLog(@"Found task to delete: %@", task.ewtaskitem_id);
+                    [t removeMediasObject:mi];
+                    [context saveOnSuccess:^{
+                        [self initData];//refresh
+                        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+                    } onFailure:^(NSError *error) {
+                        [EWUIUtil showHUDWithCheckMark:@"Failed"];
+                    }];
+                }
+            }
         }
     }
     if (editingStyle==UITableViewCellEditingStyleInsert) {

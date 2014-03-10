@@ -77,22 +77,22 @@
     NSMutableArray *userIDs = [[NSMutableArray alloc] initWithCapacity:users.count];
     for (EWPerson *person in users) {
         [userIDs addObject:person.username];
-    
-        
-        //send push notification, The payload can consist of the alert, badge, and sound keys.
-        NSDictionary *pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
-                                                @"badge": @1,
-                                                @"sound": @"buzz.caf",
-                                                @"content-available": @1,
-                                                },
-                                      kPushPersonKey: currentUser.username,
-                                      @"type": kPushTypeBuzzKey};
-        [EWServer AWSPush:pushMessage onSuccess:^(SNSPublishResponse *response) {
-            NSLog(@"Buzz sent via AWS: %@", response.messageId);
-        } onFailure:^(NSException *exception) {
-            NSLog(@"Failed to send Buzz: %@", exception.description);
-        }];
     }
+        
+    //send push notification, The payload can consist of the alert, badge, and sound keys.
+    NSDictionary *pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
+                                            @"badge": @1,
+                                            @"sound": @"buzz.caf",
+                                            @"content-available": @1,
+                                            },
+                                  kPushPersonKey: currentUser.username,
+                                  @"type": kPushTypeBuzzKey};
+    [EWServer AWSPush:pushMessage toUsers:(NSArray *)users onSuccess:^(SNSPublishResponse *response) {
+        NSLog(@"Buzz sent via AWS: %@", response.messageId);
+    } onFailure:^(NSException *exception) {
+        NSLog(@"Failed to send Buzz: %@", exception.description);
+    }];
+    
     /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Buzz successfully sent to %@", userIDs);
@@ -119,7 +119,7 @@
                                   kPushPersonKey: currentUser.username,
                                   kPushMediaKey: mediaId,
                                   kPushTaskKey: taskId};
-    [EWServer AWSPush:pushMessage onSuccess:^(SNSPublishResponse *response) {
+    [EWServer AWSPush:pushMessage toUsers:users onSuccess:^(SNSPublishResponse *response) {
         NSLog(@"Push media successfully sent to %@, message ID: %@", userIDs, response.messageId);
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
@@ -172,7 +172,7 @@
             //the buzz window has passed
             return;
         }else if ([[NSDate date] isEarlierThan:task.time]){
-            //delay the message
+            //delay the message if earlier than alarm, otherwise no delay
             delayInSeconds = [task.time timeIntervalSinceDate:[NSDate date]];
 #ifdef DEV_TEST
             delayInSeconds = 3;
@@ -208,6 +208,7 @@
                     }
                     else{
                         //present vc
+                        
                         [rootViewController dismissViewControllerAnimated:YES completion:NULL];
                         EWWakeUpViewController *wakeVC = [[EWWakeUpViewController alloc] initWithTask:task];
                         [rootViewController presentViewController:wakeVC animated:YES completion:NULL];
@@ -233,7 +234,7 @@
 
     }else if ([type isEqualToString:kPushTypeMediaKey]){
         // ============== Media ================
-        NSLog(@"Received Task push: %@", taskID);
+        NSLog(@"Received Task type push: %@", taskID);
         //get task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             //download
@@ -342,6 +343,19 @@
         
         //>>>>> start download task <<<<<
         [dlManager downloadTask:task];
+        
+        
+    }else if([type isEqualToString:@"test"]){
+        
+        // ============== Test ================
+        
+        
+        NSLog(@"Received === test === type push");
+        //EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+        [[AVManager sharedManager] playMedia:media];
+        
+        
         
         
     }else{
@@ -473,21 +487,18 @@
 
 #pragma mark - AWS method
 
-+ (void)AWSPush:(NSDictionary *)pushDic onSuccess:(void (^)(SNSPublishResponse *))successBlock onFailure:(void (^)(NSException *))failureBlock{
++ (void)AWSPush:(NSDictionary *)pushDic toUsers:(NSArray *)users onSuccess:(void (^)(SNSPublishResponse *))successBlock onFailure:(void (^)(NSException *))failureBlock{
     NSString *pushStr = [EWUIUtil toString:pushDic];
     pushStr = [pushStr stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
     pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"You got a new push from AWS\"}", pushStr];
     SNSPublishRequest *request = [[SNSPublishRequest alloc] init];
-    request.targetArn = currentUser.aws_id;
     request.message = pushStr;
     request.messageStructure = @"json";
-    NSLog(@"Push content: %@ \n to:%@", pushStr, currentUser.aws_id);
-    if (!currentUser.aws_id) {
-        NSLog(@"Unable to send message: no AWS ID found on current user");
-    }
-    double delayInSeconds = 3.0;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+    
+    for (EWPerson *target in users) {
+        request.targetArn = target.aws_id;
+        if (!currentUser.aws_id) NSLog(@"Unable to send message: no AWS ID found on target:%@", target.username);
+        NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             @try {
                 SNSPublishResponse *response = [snsClient publish:request];
@@ -497,7 +508,9 @@
                 failureBlock(exception);
             }
         });
-    });
+    }
+    
+    
     
 
 }

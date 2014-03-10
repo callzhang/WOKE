@@ -28,6 +28,7 @@ AmazonSNSClient *snsClient;
 
 @implementation EWDataStore
 @synthesize model;
+@synthesize currentContext;
 
 + (EWDataStore *)sharedInstance{
     static EWDataStore *sharedStore_ = nil;
@@ -195,6 +196,11 @@ AmazonSNSClient *snsClient;
     }
     
     return data;
+}
+
+#pragma mark - other
+- (NSManagedObjectContext *)currentContext{
+    return [self.coreDataStore contextForCurrentThread];
 }
 
 @end
