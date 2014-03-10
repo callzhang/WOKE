@@ -191,11 +191,7 @@
 - (void)userLoginEventHandler{
     [self registerAPNS];
     [self registerLocation];
-    
-#ifdef DEV_TEST
-    //[EWServer AWSPushTest];
-    [EWServer buzz:@[currentUser]];
-#endif
+
 }
 
 #pragma mark - location

@@ -179,6 +179,8 @@
 
 -(void)presentPostWakeUpVC
 {
+    //stop music
+    [[AVManager sharedManager] stopAllPlaying];
     NSLog(@"%s",__func__);
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -281,6 +283,7 @@
         
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        
         //remove from task relation
         if (task) {
             [task removeMediasObject:mi];
@@ -290,7 +293,27 @@
             [NSException raise:@"Unable to delete the row" format:@"Reason: %@", error.description];
         }];
         }else{
-            EWAlert(@"Task not set, unable to delete");
+            NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%@ IN medias && (owner == %@ || pastOwner == %@)", mi, currentUser, currentUser];
+            request.predicate = predicate;
+            [context executeFetchRequest:request onSuccess:^(NSArray *results) {
+                if (results.count==1) {
+                    NSLog(@"get task: %d", results.count);
+                    EWTaskItem *t = results[0];
+                    [t removeMediasObject:mi];
+                    [context saveOnSuccess:^{
+                        //
+                    } onFailure:^(NSError *error) {
+                        //
+                    }];
+
+                }else{
+                    EWAlert(@"Can't locate the task, operation abord");
+                }
+                [tableView_ reloadData];
+            } onFailure:^(NSError *error) {
+                NSLog(@"%@", error);
+            }];
         }
     }
     if (editingStyle==UITableViewCellEditingStyleInsert) {

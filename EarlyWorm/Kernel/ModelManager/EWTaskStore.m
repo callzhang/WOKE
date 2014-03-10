@@ -448,6 +448,7 @@
         //change task relationship
         if ([currentUser isFault]) {
             [context refreshObject:currentUser mergeChanges:YES];
+            NSLog(@"fetched user info from server");
         }
         for (EWTaskItem *t in pastTasks) {
             t.owner = nil;

@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "EWPerson.h"
+#import <AWSRuntime/AWSRuntime.h>
+#import <AWSSNS/AWSSNS.h>
 
 @interface EWServer : NSObject <UIAlertViewDelegate>
 + (void)getPersonWakingUpForTime:(NSDate *)timeSince1970 location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock;
@@ -56,5 +58,11 @@
 + (void)handleAppLaunchNotification:(id)notification;
 + (BOOL)isRootPresentingWakeUpView;
 
-+ (void)AWSPushTest;
+/**
+ Async method to call AWS publish with block handler
+ */
++ (void)AWSPush:(NSDictionary *)pushDic onSuccess:(void (^)(SNSPublishResponse *response))successBlock onFailure:(void (^)(NSException *exception))failureBlock;
+
+
+
 @end

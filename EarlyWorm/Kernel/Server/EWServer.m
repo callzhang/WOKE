@@ -87,24 +87,11 @@
                                                 },
                                       kPushPersonKey: currentUser.username,
                                       @"type": kPushTypeBuzzKey};
-        NSString *pushStr = [EWUIUtil toString:pushMessage];
-        pushStr = [pushStr stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-        pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"%@\"}", pushStr, pushStr];
-        SNSPublishRequest *request = [[SNSPublishRequest alloc] init];
-        request.targetArn = person.aws_id;
-        request.message = pushStr;
-        request.messageStructure = @"json";
-        NSLog(@"Push content: %@", pushStr);
-        @try {
-            [snsClient publish:request];
-        }
-        @catch (NSException *exception) {
-            NSLog(@"%@", exception);
-        }
-        
-        
-        //use HTTP POST method
-        
+        [EWServer AWSPush:pushMessage onSuccess:^(SNSPublishResponse *response) {
+            NSLog(@"Buzz sent via AWS: %@", response.messageId);
+        } onFailure:^(NSException *exception) {
+            NSLog(@"Failed to send Buzz: %@", exception.description);
+        }];
     }
     /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
@@ -124,14 +111,28 @@
         [userIDs addObject:person.username];
     }
     //message
-    NSDictionary *pushMessage = @{//@"alert": [NSString stringWithFormat:@"New media from %@", currentUser.name],
-                                  @"badge": @1,
-                                  @"sound": @"media.caf",
+    NSDictionary *pushMessage = @{@"aps": @{@"badge": @1,
+                                              @"sound": @"media.caf",
+                                              @"content-available": @1
+                                              },
                                   @"type": kPushMediaKey,
                                   kPushPersonKey: currentUser.username,
                                   kPushMediaKey: mediaId,
-                                  kPushTaskKey: taskId,
-                                  @"content-available": @1};
+                                  kPushTaskKey: taskId};
+    [EWServer AWSPush:pushMessage onSuccess:^(SNSPublishResponse *response) {
+        NSLog(@"Push media successfully sent to %@, message ID: %@", userIDs, response.messageId);
+        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+        hud.mode = MBProgressHUDModeCustomView;
+        hud.labelText = @"Sent";
+        [hud hide:YES afterDelay:1.5];
+
+    } onFailure:^(NSException *exception) {
+        NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, exception.description];
+        EWAlert(str);
+    }];
+    /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Push media successfully sent to %@", userIDs);
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
@@ -144,7 +145,7 @@
     } onFailure:^(NSError *error) {
         NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, error.localizedDescription];
         EWAlert(str);
-    }];
+    }];*/
 }
 
 
@@ -470,34 +471,34 @@
 }
 
 
-+ (void)AWSPushTest{
-    //NSString *pushStr = @"{\"aps\":{\"alert\":\"<message>\"}}";
-    
-    NSDictionary *pushDic = @{@"aps": @{@"alert": @"hihi",
-                                        @"sound": @"buzz.caf",
-                                        @"content-available": @1},
-                              @"type": @"buzz"
-                              };
+#pragma mark - AWS method
+
++ (void)AWSPush:(NSDictionary *)pushDic onSuccess:(void (^)(SNSPublishResponse *))successBlock onFailure:(void (^)(NSException *))failureBlock{
     NSString *pushStr = [EWUIUtil toString:pushDic];
     pushStr = [pushStr stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-    pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"default\"}", pushStr];
+    pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"You got a new push from AWS\"}", pushStr];
     SNSPublishRequest *request = [[SNSPublishRequest alloc] init];
     request.targetArn = currentUser.aws_id;
-    NSLog(@"%@", currentUser.aws_id);
     request.message = pushStr;
     request.messageStructure = @"json";
-    NSLog(@"Push content: %@", pushStr);
-    @try {
-        double delayInSeconds = 2.0;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            
-            [snsClient publish:request];
+    NSLog(@"Push content: %@ \n to:%@", pushStr, currentUser.aws_id);
+    if (!currentUser.aws_id) {
+        NSLog(@"Unable to send message: no AWS ID found on current user");
+    }
+    double delayInSeconds = 3.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            @try {
+                SNSPublishResponse *response = [snsClient publish:request];
+                successBlock(response);
+            }
+            @catch (NSException *exception) {
+                failureBlock(exception);
+            }
         });
-    }
-    @catch (NSException *exception) {
-        NSLog(@"%@", exception);
-    }
+    });
+    
 
 }
 
