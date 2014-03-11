@@ -41,12 +41,18 @@
     return result;
 }
 
-+ (void)showHUDWithCheckMark{
++ (void)showHUDWithCheckMark:(NSString *)str{
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
     hud.mode = MBProgressHUDModeCustomView;
-    hud.labelText = @"Sent";
+    hud.labelText = str;
     [hud hide:YES afterDelay:1.5];
+}
+
++ (NSString *)toString:(NSDictionary *)dic{
+    NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:0 error:NULL];
+    NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return str;
 }
 
 @end

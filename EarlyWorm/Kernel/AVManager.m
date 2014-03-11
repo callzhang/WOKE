@@ -60,7 +60,11 @@
         if (!success) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
         //set active
         success = [[AVAudioSession sharedInstance] setActive:YES error:nil];
-        if (!success) NSLog(@"Unable to activate audio session");
+        if (!success){
+            NSLog(@"Unable to activate audio session:%@", error);
+        }else{
+            NSLog(@"Audio session activated!");
+        }
     }
     return self;
 }
@@ -136,20 +140,17 @@
     }
     
     if (err) {
-        NSLog(@"Cannot init player. Reason: %@", err.description);
+        NSLog(@"Cannot init player. Reason: %@", err);
     }
     self.player.delegate = self;
-    [player prepareToPlay];
+    if(![player prepareToPlay]) NSLog(@"Could not prepare to play %@", url);
     if (![player play]) NSLog(@"Could not play %@\n", url);
     [self updateViewForPlayerState:player];
 
 }
 
 - (void)playMedia:(EWMediaItem *)mi{
-    NSData *data = mi.audio;
-    player = [[AVAudioPlayer alloc] initWithData:data error:nil];
-    player.delegate = self;
-    
+    [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];
 }
 
 //play media for task using AVQueuePlayer

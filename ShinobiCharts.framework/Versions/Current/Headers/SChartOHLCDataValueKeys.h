@@ -1,4 +1,0 @@
-FOUNDATION_EXPORT NSString *const SChartOHLCKeyOpen;
-FOUNDATION_EXPORT NSString *const SChartOHLCKeyHigh;
-FOUNDATION_EXPORT NSString *const SChartOHLCKeyLow;
-FOUNDATION_EXPORT NSString *const SChartOHLCKeyClose;

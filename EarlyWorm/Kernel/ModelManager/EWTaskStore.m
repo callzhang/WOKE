@@ -122,10 +122,11 @@
 }
 
 - (EWTaskItem *)getTaskByID:(NSString *)taskID{
+    if (!taskID) return nil;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"EWTaskItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"ewtaskitem_id == %@", taskID];
     NSError *err;
-    NSArray *tasks = [context executeFetchRequestAndWait:request error:&err];
+    NSArray *tasks = [[EWDataStore sharedInstance].currentContext executeFetchRequestAndWait:request error:&err];
     if (tasks.count != 1) NSLog(@"Error getting task from ID: %@. Error: %@", taskID, err.description);
     return tasks[0];
 }
@@ -447,6 +448,7 @@
         //change task relationship
         if ([currentUser isFault]) {
             [context refreshObject:currentUser mergeChanges:YES];
+            NSLog(@"fetched user info from server");
         }
         for (EWTaskItem *t in pastTasks) {
             t.owner = nil;

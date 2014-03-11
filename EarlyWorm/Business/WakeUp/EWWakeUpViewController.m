@@ -12,11 +12,11 @@
 #import "EWMediaStore.h"
 #import "EWMediaItem.h"
 #import "EWTaskItem.h"
-//#import "EWImageStore.h"
+#import "EWAppDelegate.h"
 #import "ImageViewController.h"
 #import "AVManager.h"
 #import "NSDate+Extend.h"
-#import "MBProgressHUD.h"
+#import "EWUIUtil.h"
 
 //test
 #import "EWPostWakeUpViewController.h"
@@ -179,6 +179,8 @@
 
 -(void)presentPostWakeUpVC
 {
+    //stop music
+    [[AVManager sharedManager] stopAllPlaying];
     NSLog(@"%s",__func__);
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -274,6 +276,7 @@
 
 //remove item
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
         //remove from data source
@@ -281,16 +284,51 @@
         
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        
         //remove from task relation
         if (task) {
             [task removeMediasObject:mi];
         [context saveOnSuccess:^{
             [self initData];//refresh
+            [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
         } onFailure:^(NSError *error) {
             [NSException raise:@"Unable to delete the row" format:@"Reason: %@", error.description];
         }];
         }else{
-            EWAlert(@"Task not set, unable to delete");
+            /*
+            NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%@ IN medias && (owner == %@ || pastOwner == %@)", mi, currentUser, currentUser];
+            request.predicate = predicate;
+            [context executeFetchRequest:request onSuccess:^(NSArray *results) {
+                if (results.count==1) {
+                    NSLog(@"get task: %d", results.count);
+                    EWTaskItem *t = results[0];
+                    [t removeMediasObject:mi];
+                    [context saveOnSuccess:^{
+                        //
+                    } onFailure:^(NSError *error) {
+                        //
+                    }];
+
+                }else{
+                    EWAlert(@"Can't locate the task, operation abord");
+                }
+                [tableView_ reloadData];
+            } onFailure:^(NSError *error) {
+                NSLog(@"%@", error);
+            }];*/
+            for (EWTaskItem *t in mi.tasks) {
+                if (t.owner == currentUser || t.pastOwner == currentUser) {
+                    NSLog(@"Found task to delete: %@", task.ewtaskitem_id);
+                    [t removeMediasObject:mi];
+                    [context saveOnSuccess:^{
+                        [self initData];//refresh
+                        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+                    } onFailure:^(NSError *error) {
+                        [EWUIUtil showHUDWithCheckMark:@"Failed"];
+                    }];
+                }
+            }
         }
     }
     if (editingStyle==UITableViewCellEditingStyleInsert) {

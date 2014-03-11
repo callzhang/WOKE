@@ -15,7 +15,7 @@
 @implementation EWTaskItem
 
 @dynamic added;
-@dynamic aws_sns_topic_id;
+@dynamic aws_id;
 @synthesize buzzers;
 @dynamic buzzers_string;
 @dynamic completed;

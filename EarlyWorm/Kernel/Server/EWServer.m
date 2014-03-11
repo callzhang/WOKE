@@ -26,6 +26,9 @@
 #import "AVManager.h"
 #import "UIAlertView+.h"
 
+//Tool
+#import "EWUIUtil.h"
+
 @implementation EWServer
 
 + (EWServer *)sharedInstance{
@@ -75,22 +78,30 @@
     for (EWPerson *person in users) {
         [userIDs addObject:person.username];
     }
-    
+        
     //send push notification, The payload can consist of the alert, badge, and sound keys.
-    NSDictionary *pushMessage = @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
-                                  @"badge": @1,
+    NSDictionary *pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
+                                            @"badge": @1,
+                                            @"sound": @"buzz.caf",
+                                            @"content-available": @1,
+                                            },
                                   kPushPersonKey: currentUser.username,
-                                  @"type": kPushTypeBuzzKey,
-                                  @"sound": @"buzz.caf",
-                                  @"content-available": @1};
+                                  @"type": kPushTypeBuzzKey};
+    [EWServer AWSPush:pushMessage toUsers:(NSArray *)users onSuccess:^(SNSPublishResponse *response) {
+        NSLog(@"Buzz sent via AWS: %@", response.messageId);
+    } onFailure:^(NSException *exception) {
+        NSLog(@"Failed to send Buzz: %@", exception.description);
+    }];
     
+    /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Buzz successfully sent to %@", userIDs);
     } onFailure:^(NSError *error) {
         NSString *str = [NSString stringWithFormat:@"Failed to send buzz. Reason:%@", error.localizedDescription];
         EWAlert(str);
     }];
-
+     */
+    
 }
 
 + (void)pushMedia:(NSString *)mediaId ForUsers:(NSArray *)users ForTask:(NSString *)taskId{
@@ -100,14 +111,28 @@
         [userIDs addObject:person.username];
     }
     //message
-    NSDictionary *pushMessage = @{//@"alert": [NSString stringWithFormat:@"New media from %@", currentUser.name],
-                                  @"badge": @1,
-                                  @"sound": @"media.caf",
+    NSDictionary *pushMessage = @{@"aps": @{@"badge": @1,
+                                              @"sound": @"media.caf",
+                                              @"content-available": @1
+                                              },
                                   @"type": kPushMediaKey,
                                   kPushPersonKey: currentUser.username,
                                   kPushMediaKey: mediaId,
-                                  kPushTaskKey: taskId,
-                                  @"content-available": @1};
+                                  kPushTaskKey: taskId};
+    [EWServer AWSPush:pushMessage toUsers:users onSuccess:^(SNSPublishResponse *response) {
+        NSLog(@"Push media successfully sent to %@, message ID: %@", userIDs, response.messageId);
+        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+        hud.mode = MBProgressHUDModeCustomView;
+        hud.labelText = @"Sent";
+        [hud hide:YES afterDelay:1.5];
+
+    } onFailure:^(NSException *exception) {
+        NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, exception.description];
+        EWAlert(str);
+    }];
+    /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Push media successfully sent to %@", userIDs);
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
@@ -120,7 +145,7 @@
     } onFailure:^(NSError *error) {
         NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, error.localizedDescription];
         EWAlert(str);
-    }];
+    }];*/
 }
 
 
@@ -147,7 +172,7 @@
             //the buzz window has passed
             return;
         }else if ([[NSDate date] isEarlierThan:task.time]){
-            //delay the message
+            //delay the message if earlier than alarm, otherwise no delay
             delayInSeconds = [task.time timeIntervalSinceDate:[NSDate date]];
 #ifdef DEV_TEST
             delayInSeconds = 3;
@@ -183,6 +208,7 @@
                     }
                     else{
                         //present vc
+                        
                         [rootViewController dismissViewControllerAnimated:YES completion:NULL];
                         EWWakeUpViewController *wakeVC = [[EWWakeUpViewController alloc] initWithTask:task];
                         [rootViewController presentViewController:wakeVC animated:YES completion:NULL];
@@ -193,10 +219,8 @@
             });
         });
 
-        
-        
-        
-        
+        //broadcast event
+        if (!taskID) taskID = @"";
         [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: taskID}];
         
        
@@ -210,7 +234,7 @@
 
     }else if ([type isEqualToString:kPushTypeMediaKey]){
         // ============== Media ================
-        NSLog(@"Received Task push: %@", taskID);
+        NSLog(@"Received Task type push: %@", taskID);
         //get task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             //download
@@ -319,6 +343,18 @@
         
         //>>>>> start download task <<<<<
         [dlManager downloadTask:task];
+        
+        
+    }else if([type isEqualToString:@"test"]){
+        
+        // ============== Test ================
+        
+        NSLog(@"Received === test === type push");
+        //EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+        [[AVManager sharedManager] playMedia:media];
+        
+        
         
         
     }else{
@@ -444,6 +480,37 @@
         EWAppDelegate * appDelegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
         [appDelegate.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
     }
+
+}
+
+
+#pragma mark - AWS method
+
++ (void)AWSPush:(NSDictionary *)pushDic toUsers:(NSArray *)users onSuccess:(void (^)(SNSPublishResponse *))successBlock onFailure:(void (^)(NSException *))failureBlock{
+    NSString *pushStr = [EWUIUtil toString:pushDic];
+    pushStr = [pushStr stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"You got a new push from AWS\"}", pushStr];
+    SNSPublishRequest *request = [[SNSPublishRequest alloc] init];
+    request.message = pushStr;
+    request.messageStructure = @"json";
+    
+    for (EWPerson *target in users) {
+        request.targetArn = target.aws_id;
+        if (!currentUser.aws_id) NSLog(@"Unable to send message: no AWS ID found on target:%@", target.username);
+        NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            @try {
+                SNSPublishResponse *response = [snsClient publish:request];
+                successBlock(response);
+            }
+            @catch (NSException *exception) {
+                failureBlock(exception);
+            }
+        });
+    }
+    
+    
+    
 
 }
 

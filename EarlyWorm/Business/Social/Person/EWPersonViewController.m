@@ -373,7 +373,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
             [person addFriendsObject:currentUser];
             [context saveOnSuccess:^{
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                [EWUIUtil showHUDWithCheckMark];
+                [EWUIUtil showHUDWithCheckMark:@"Sent"];
             } onFailure:^(NSError *error) {
                 EWAlert(@"Failed to add friend, please try again later");
             }];

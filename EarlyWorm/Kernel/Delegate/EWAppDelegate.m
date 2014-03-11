@@ -29,11 +29,6 @@
 #import "EWMediaItem.h"
 #import "EWDownloadManager.h"
 
-//AWS
-#import <AWSRuntime/AWSRuntime.h>
-#import <AWSSNS/AWSSNS.h>
-#import <AWSSQS/AWSSQS.h>
-
 //global view for HUD
 UIViewController *rootViewController;
 
@@ -43,7 +38,6 @@ UIViewController *rootViewController;
     EWTaskItem *taskInAction;
     NSTimer *myTimer;
     long count;
-    AmazonSNSClient *snsClient;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
@@ -63,11 +57,10 @@ UIViewController *rootViewController;
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     
     //background fetch
-    //[application setMinimumBackgroundFetchInterval:kBackgroundFetchInterval];
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
-    //AWS
-    snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
-    //AmazonSQSClient *sqsClient = [[AmazonSQSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
+    //start audio session
+    [AVManager sharedManager];
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -93,7 +86,7 @@ UIViewController *rootViewController;
     if (launchOptions) {
         UILocalNotification *localNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
         NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-        //Let server class to handle notif infoØ
+        //Let server class to handle notif info
         if (localNotif) {
             NSLog(@"Launched with local notification: %@", localNotif);
             [EWServer handleAppLaunchNotification:localNotif];
@@ -116,12 +109,16 @@ UIViewController *rootViewController;
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+
+    
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+    NSLog(@"Canceled HUD");
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    NSLog(@"Entered background");
+    NSLog(@"Entered background with active time left: %f", application.backgroundTimeRemaining);
     
     //detect multithreading
     BOOL result = NO;
@@ -136,14 +133,15 @@ UIViewController *rootViewController;
     
     //开启一个后台任务
     backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        NSLog(@"BG task will end");
+        
+        NSLog(@"The first BG task will end (%ld)", count);
     }];
     if ([myTimer isValid]) {
         [myTimer invalidate];
     }
     // keep active
     myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
-    NSLog(@"Scheduled background task when app enters background");
+    NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
 #endif
     
     //    self.myTimer = nil;
@@ -154,7 +152,7 @@ UIViewController *rootViewController;
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     
-    [[UIApplication sharedApplication] clearKeepAliveTimeout];
+    //[[UIApplication sharedApplication] clearKeepAliveTimeout];
     
     
     if (backgroundTaskIdentifier != UIBackgroundTaskInvalid){
@@ -197,101 +195,37 @@ UIViewController *rootViewController;
 
 
 
-#pragma mark - Background download
+#pragma mark - Background fetch method (this is called periodocially
+-(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    NSLog(@"======== Launched in background due to background fetch event (%ld) ==========", count++);
+    completionHandler(UIBackgroundFetchResultNewData);
+}
+
+//Keep alive
 - (void) keepAlive:(NSTimer *)paramSender{
     
     UIApplication *application = [UIApplication sharedApplication];
     
-    //开启一个新的后台
-    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        //
-    }];
-    
     //结束旧的后台任务
     [application endBackgroundTask:backgroundTaskIdentifier];
     
+    //开启一个新的后台
+    NSInteger ct = count;
+    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+        NSLog(@"BG task will end (%d)", ct);
+    }];
+    
     
     NSLog(@"Background task is still working  %ld",count++);
+    
+    
+    NSString *str = [[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"];
+    NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:str];
+    AVPlayer *p = [AVPlayer playerWithURL:soundURL];
+    [p play];
+    NSLog(@"Started to play");
 }
-/*
-- (void)backgroundDownload {
-    
-    EWDownloadMgr *mgr = [[EWDownloadMgr alloc] init];
-    mgr.urlString = @"http://med.a5mp3.com/ttpod/11612.mp3";
-    mgr.delegate = self;
-    
-    NSString *fileName = nil;
-    if (mgr.description && mgr.description.length > 0) {
-        fileName = [NSString stringWithFormat:@"%@.mp3",mgr.description];
-    }
-    else {
-        //get file name
-        NSArray *array = [mgr.urlString componentsSeparatedByString:@"/"];
-        if (array && array.count > 0) {
-            fileName = [array objectAtIndex:array.count-1];
-        }
-    }
-
-    if (fileName) {
-        NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"Documents/%@", fileName]];
-        
-        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
-        if (fileExists) {
-            
-            // test
-            [self.musicList addObject:filePath];
-            
-            // 播放 test
-            [self playDownloadedMusic:filePath];
-            return;
-        }
-    }
-    
-//    [mgr startDownload];
-    
-    NSData *data = [mgr syncDownloadByGet];
-    
-    [self handleDownlownedData:data fromManager:mgr];
-}
-
-- (void)handleDownlownedData:(NSData *)data fromManager:(EWDownloadMgr *)mgr {
-    if (!data) {
-        return;
-    }
-    
-    NSString *fileName = nil;
-    if (mgr.description && mgr.description.length > 0) {
-        fileName = [NSString stringWithFormat:@"%@.mp3",mgr.description];
-    }
-    else {
-        NSArray *array = [mgr.urlString componentsSeparatedByString:@"/"];
-        if (array && array.count > 0) {
-            fileName = [array objectAtIndex:array.count-1];
-        }
-        else {
-            NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
-            fileName = [NSString stringWithFormat:@"%f.mp3",timeInterval];
-        }
-    }
-    
-    NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"Documents/%@", fileName]];
-    [data writeToFile:filePath atomically:YES];
-    
-    NSLog(@"write to local file: %@", filePath);
-    [self.musicList addObject:filePath];
-    
-    // 播放 test
-    [self playDownloadedMusic:filePath];
-}
-
-- (void)playDownloadedMusic:(NSString *)path {
-    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL: [NSURL fileURLWithPath:path] error: nil];
-    [player prepareToPlay];
-    
-    //    [player play];
-    
-    [player performSelectorOnMainThread:@selector(play) withObject:nil waitUntilDone:NO];
-}*/
 
 - (BOOL) isMultitaskingSupported {
     
@@ -320,10 +254,6 @@ UIViewController *rootViewController;
             username: ARN,
             ...
         }
-        kAWSTopicDicKey: {
-            username: ARN,
-            ...
-        }
         ...
      }
      */
@@ -348,32 +278,59 @@ UIViewController *rootViewController;
     
     //AWS
     NSMutableDictionary *arnByUserDic = [[defaults objectForKey:kAWSEndPointDicKey] mutableCopy];
-    NSMutableDictionary *topicByUserDic = [[defaults objectForKey:kAWSTopicDicKey] mutableCopy];
+    //NSMutableDictionary *topicByUserDic = [[defaults objectForKey:kAWSTopicDicKey] mutableCopy];
     NSString *endPoint = arnByUserDic[username];
-    NSString *topicArn = topicByUserDic[username];
-    if (!endPoint || !topicArn) {
-        
+    //NSString *topicArn = topicByUserDic[username];
+    if (!endPoint/* || !topicArn*/) {
         //create endPint (user)
         SNSCreatePlatformEndpointRequest *request = [[SNSCreatePlatformEndpointRequest alloc] init];
         request.token = token;
         request.customUserData = currentUser.username;
         request.platformApplicationArn = AWS_SNS_APP_ARN;
-        SNSCreatePlatformEndpointResponse *response = [snsClient createPlatformEndpoint:request];
-        NSLog(@"Created endpoint on AWS with response: %@", response);
-        NSString *endPintArn = response.endpointArn;
-        //create topic
-        
-        SNSCreateTopicRequest *topicRequest = [[SNSCreateTopicRequest alloc] initWithName:username];
-        SNSCreateTopicResponse *topicResponse = [snsClient createTopic:topicRequest];
-        SNSSubscribeRequest *subscribeRequest = [[SNSSubscribeRequest alloc] initWithTopicArn:topicResponse.topicArn andProtocol:@"application" andEndpoint:endPintArn];
-        SNSSubscribeResponse *subscribeReponse = [snsClient subscribe:subscribeRequest];
-        topicArn = subscribeReponse.subscriptionArn;
+        SNSCreatePlatformEndpointResponse *response;
+        NSString *endPointARN;
+        @try {
+            response = [snsClient createPlatformEndpoint:request];
+        }
+        @catch (NSException *exception) {
+            
+            if ([exception isKindOfClass:[SNSInvalidParameterException class]]) {
+                //SNSInvalidParameterException *aws_e = (SNSInvalidParameterException *)exception;
+                NSString *des = exception.description;
+                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"arn:aws.*?\\s"
+                                                                                       options:NSRegularExpressionCaseInsensitive
+                                                                                         error:NULL];
+                NSRange result = [regex rangeOfFirstMatchInString:des options:0 range:NSMakeRange(0, [des length])];
+                NSString *endPointARN = [des substringWithRange:result];
+                //register the endpoint arn to user
+                if (result.length > 0) {
+                    endPointARN = [endPointARN stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSLog(@"Intercepted endpointArn: %@", endPointARN);
+                    currentUser.aws_id = endPointARN;
+                }else{
+                    @throw exception;
+                }
+            }else{
+                NSLog(@"%@", exception);
+                return;
+            }
+        }
+
+        if (response) {
+            endPointARN = response.endpointArn;
+            currentUser.aws_id = endPointARN;
+            NSLog(@"Created endpoint on AWS: %@", endPointARN);
+        }
         
         //save
-        [arnByUserDic setObject:endPintArn forKey:username];
-        [topicByUserDic setObject:topicArn forKey:username];
+        [arnByUserDic setObject:endPointARN forKey:username];
         
         //sync
+        [context saveOnSuccess:^{
+            //
+        } onFailure:^(NSError *error) {
+            //
+        }];
     }
 }
 
@@ -409,7 +366,7 @@ UIViewController *rootViewController;
         [self.window.rootViewController presentViewController:navigationController animated:YES completion:^(void){}];
     }
 }
-
+/*
 //normal handler for remote notification
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
     if ([application applicationState] == UIApplicationStateActive) {
@@ -417,7 +374,7 @@ UIViewController *rootViewController;
     }else{
         NSLog(@"%s: Push received when app is in %d : %@", __func__, application.applicationState, userInfo);
     }
-}
+}*/
 
 //Receive remote notification in background or in foreground
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
@@ -432,7 +389,12 @@ UIViewController *rootViewController;
     [EWServer handlePushNotification:userInfo];
     
     //return handler
-    completionHandler(UIBackgroundFetchResultNewData);
+    double delayInSeconds = 10.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        NSLog(@"@@@@@@@ Push conpletion handle returned. @@@@@@@@@");
+        completionHandler(UIBackgroundFetchResultNewData);
+    });
 }
 
 

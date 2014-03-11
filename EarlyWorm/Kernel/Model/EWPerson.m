@@ -20,6 +20,7 @@
 
 @implementation EWPerson
 @synthesize achievements;
+@dynamic aws_id;
 @synthesize bgImage;
 @synthesize preference;
 @synthesize profilePic;

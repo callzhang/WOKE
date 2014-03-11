@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "EWPerson.h"
+#import <AWSRuntime/AWSRuntime.h>
+#import <AWSSNS/AWSSNS.h>
 
 @interface EWServer : NSObject <UIAlertViewDelegate>
 + (void)getPersonWakingUpForTime:(NSDate *)timeSince1970 location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock;
@@ -26,22 +28,22 @@
 + (void)pushMedia:(NSString *)mediaId ForUsers:(NSArray *)users ForTask:(NSString *)taskId;
 
 /**
- Handles push notifications in varies mode
+ *Handles push notifications in varies mode
  @Discuss
- 1. Buzz
-    active: sound + wakeupView
-    suspend: not handle
- 
- 2. Media
-    active:
-        alarm time passed but not woke(struggle): play media
-        before alarm: download
-        woke: alert with no name
-    suspend: background download
- 
- 3. Timer
-    active: alert -> WakeupView
-    suspend: background audio
+ *1. Buzz
+ *   active: sound + wakeupView
+ *   suspend: not handle
+ *
+ *2. Media
+ *   active:
+ *       alarm time passed but not woke(struggle): play media
+ *       before alarm: download
+ *       woke: alert with no name
+ *   suspend: background download
+ *
+ *3. Timer
+ *   active: alert -> WakeupView
+ *   suspend: background audio
  */
 + (void)handlePushNotification:(NSDictionary *)notification;
 
@@ -55,4 +57,12 @@
  */
 + (void)handleAppLaunchNotification:(id)notification;
 + (BOOL)isRootPresentingWakeUpView;
+
+/**
+ Async method to call AWS publish with block handler
+ */
++ (void)AWSPush:(NSDictionary *)pushDic toUsers:(NSArray *)users onSuccess:(void (^)(SNSPublishResponse *response))successBlock onFailure:(void (^)(NSException *exception))failureBlock;
+
+
+
 @end
