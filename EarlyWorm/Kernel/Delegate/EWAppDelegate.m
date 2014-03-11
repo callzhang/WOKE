@@ -59,6 +59,9 @@ UIViewController *rootViewController;
     //background fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
+    //start audio session
+    [AVManager sharedManager];
+    
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
@@ -83,7 +86,7 @@ UIViewController *rootViewController;
     if (launchOptions) {
         UILocalNotification *localNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
         NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-        //Let server class to handle notif infoØ
+        //Let server class to handle notif info
         if (localNotif) {
             NSLog(@"Launched with local notification: %@", localNotif);
             [EWServer handleAppLaunchNotification:localNotif];
@@ -106,6 +109,8 @@ UIViewController *rootViewController;
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+
+    
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     NSLog(@"Canceled HUD");
 }
@@ -113,7 +118,7 @@ UIViewController *rootViewController;
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    NSLog(@"Entered background");
+    NSLog(@"Entered background with active time left: %f", application.backgroundTimeRemaining);
     
     //detect multithreading
     BOOL result = NO;
@@ -127,15 +132,16 @@ UIViewController *rootViewController;
 #ifdef BACKGROUND_TEST
     
     //开启一个后台任务
-//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-//        NSLog(@"BG task will end");
-//    }];
-//    if ([myTimer isValid]) {
-//        [myTimer invalidate];
-//    }
-//    // keep active
-//    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
-//    NSLog(@"Scheduled background task when app enters background");
+    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+        
+        NSLog(@"The first BG task will end (%ld)", count);
+    }];
+    if ([myTimer isValid]) {
+        [myTimer invalidate];
+    }
+    // keep active
+    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+    NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
 #endif
     
     //    self.myTimer = nil;
@@ -196,20 +202,29 @@ UIViewController *rootViewController;
     completionHandler(UIBackgroundFetchResultNewData);
 }
 
+//Keep alive
 - (void) keepAlive:(NSTimer *)paramSender{
     
     UIApplication *application = [UIApplication sharedApplication];
     
-    //开启一个新的后台
-    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        //
-    }];
-    
     //结束旧的后台任务
     [application endBackgroundTask:backgroundTaskIdentifier];
     
+    //开启一个新的后台
+    NSInteger ct = count;
+    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+        NSLog(@"BG task will end (%d)", ct);
+    }];
+    
     
     NSLog(@"Background task is still working  %ld",count++);
+    
+    
+    NSString *str = [[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"];
+    NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:str];
+    AVPlayer *p = [AVPlayer playerWithURL:soundURL];
+    [p play];
+    NSLog(@"Started to play");
 }
 
 - (BOOL) isMultitaskingSupported {
@@ -374,7 +389,12 @@ UIViewController *rootViewController;
     [EWServer handlePushNotification:userInfo];
     
     //return handler
-    completionHandler(UIBackgroundFetchResultNewData);
+    double delayInSeconds = 10.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        NSLog(@"@@@@@@@ Push conpletion handle returned. @@@@@@@@@");
+        completionHandler(UIBackgroundFetchResultNewData);
+    });
 }
 
 

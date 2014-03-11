@@ -426,6 +426,7 @@
 		ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWFirstTimeViewController.xib; path = FirstTime/EWFirstTimeViewController.xib; sourceTree = "<group>"; };
 		ABAB2FC2183DEB310095A3A5 /* EWLocalNotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWLocalNotificationViewController.h; sourceTree = "<group>"; };
 		ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWLocalNotificationViewController.m; sourceTree = "<group>"; };
+		ABAC1EEB18CEC8AC00D28D2B /* WOKE.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = WOKE.entitlements; sourceTree = "<group>"; };
 		ABBA978A17EFC6AD0037439B /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
 		ABBC47AB18530F35009A2E7D /* EarlyWorm.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EarlyWorm.xcdatamodel; sourceTree = "<group>"; };
 		ABCCE68B17F15D0D0078F8AA /* EWAlarmPage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EWAlarmPage.xib; sourceTree = "<group>"; };
@@ -757,6 +758,7 @@
 		568CC77B178DD2C900AB1579 = {
 			isa = PBXGroup;
 			children = (
+				ABAC1EEB18CEC8AC00D28D2B /* WOKE.entitlements */,
 				568CC78D178DD2C900AB1579 /* EarlyWorm */,
 				568CC786178DD2C900AB1579 /* Frameworks */,
 				568CC785178DD2C900AB1579 /* Products */,
@@ -1346,6 +1348,9 @@
 						DevelopmentTeam = SDR7T9YB58;
 						SystemCapabilities = {
 							com.apple.InAppPurchase = {
+								enabled = 0;
+							};
+							com.apple.InterAppAudio = {
 								enabled = 0;
 							};
 						};
