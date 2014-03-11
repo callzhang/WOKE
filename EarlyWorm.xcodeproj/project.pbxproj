@@ -62,7 +62,6 @@
 		5671BE4818085C4100F35DF9 /* ASIS3ObjectRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5671BE2F18085C4100F35DF9 /* ASIS3ObjectRequest.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		5671BE4918085C4100F35DF9 /* ASIS3Request.m in Sources */ = {isa = PBXBuildFile; fileRef = 5671BE3118085C4100F35DF9 /* ASIS3Request.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		5671BE4A18085C4100F35DF9 /* ASIS3ServiceRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5671BE3318085C4100F35DF9 /* ASIS3ServiceRequest.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		5671BE4E18085C4800F35DF9 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 5671BE4D18085C4800F35DF9 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		56D997F217B425D2003EDA53 /* NSString+Extend.m in Sources */ = {isa = PBXBuildFile; fileRef = 56D997F117B425D2003EDA53 /* NSString+Extend.m */; };
 		56D997F517B426C3003EDA53 /* NSDate+Extend.m in Sources */ = {isa = PBXBuildFile; fileRef = 56D997F417B426C3003EDA53 /* NSDate+Extend.m */; };
 		56E0C36217B2CB7200835A6B /* EWEditAlarmViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56E0C36117B2CB7100835A6B /* EWEditAlarmViewController.m */; };
@@ -145,6 +144,7 @@
 		AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3B9E4417A765CE00C2AD93 /* AVManager.m */; };
 		AB49BC921854248E004A38DB /* EWLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB49BC901854248E004A38DB /* EWLogInViewController.m */; };
 		AB49BC931854248E004A38DB /* EWLogInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB49BC911854248E004A38DB /* EWLogInViewController.xib */; };
+		AB4B837718CF65860087E654 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = AB4B837618CF65860087E654 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78078E18393A66007C8BFD /* EWAlarmManager.m */; };
 		AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079218393A66007C8BFD /* EWGroupStore.m */; };
 		AB7807A218393A66007C8BFD /* EWImageStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079418393A66007C8BFD /* EWImageStore.m */; };
@@ -164,6 +164,21 @@
 		ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */; };
 		ABDAF99018C31C010075505B /* EWCollectionPersonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */; };
 		ABDD0BB81852E326005EA59B /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = ABDD0B801852E326005EA59B /* CHANGELOG.md */; };
+		ABDE25E118CF572700DDBDB5 /* audio_queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25C618CF572700DDBDB5 /* audio_queue.cpp */; };
+		ABDE25E218CF572700DDBDB5 /* audio_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25C818CF572700DDBDB5 /* audio_stream.cpp */; };
+		ABDE25E318CF572700DDBDB5 /* file_output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25CA18CF572700DDBDB5 /* file_output.cpp */; };
+		ABDE25E418CF572700DDBDB5 /* http_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25CC18CF572700DDBDB5 /* http_stream.cpp */; };
+		ABDE25E518CF572700DDBDB5 /* id3_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25CE18CF572700DDBDB5 /* id3_parser.cpp */; };
+		ABDE25E618CF572700DDBDB5 /* FSAudioController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25D218CF572700DDBDB5 /* FSAudioController.m */; };
+		ABDE25E718CF572700DDBDB5 /* FSAudioStream.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25D418CF572700DDBDB5 /* FSAudioStream.mm */; };
+		ABDE25E818CF572700DDBDB5 /* FSCheckContentTypeRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25D618CF572700DDBDB5 /* FSCheckContentTypeRequest.m */; };
+		ABDE25E918CF572700DDBDB5 /* FSParsePlaylistRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25D818CF572700DDBDB5 /* FSParsePlaylistRequest.m */; };
+		ABDE25EA18CF572700DDBDB5 /* FSParseRssPodcastFeedRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25DA18CF572700DDBDB5 /* FSParseRssPodcastFeedRequest.m */; };
+		ABDE25EB18CF572700DDBDB5 /* FSPlaylistItem.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25DC18CF572700DDBDB5 /* FSPlaylistItem.m */; };
+		ABDE25EC18CF572700DDBDB5 /* FSXMLHttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDE25DE18CF572700DDBDB5 /* FSXMLHttpRequest.m */; };
+		ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABDE25EE18CF575D00DDBDB5 /* AudioToolbox.framework */; };
+		ABDE25F018CF576900DDBDB5 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5647786318085D95007F124A /* libxml2.dylib */; };
+		ABDE25F218CF577300DDBDB5 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABDE25F118CF577300DDBDB5 /* MediaPlayer.framework */; };
 		ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA95E17E027E70035DF4A /* vm1.m4a */; };
 		ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA95F17E027E70035DF4A /* vm2.m4a */; };
 		ABEEA96617E027E90035DF4A /* vm3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA96017E027E80035DF4A /* vm3.m4a */; };
@@ -276,8 +291,6 @@
 		5671BE3118085C4100F35DF9 /* ASIS3Request.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIS3Request.m; sourceTree = "<group>"; };
 		5671BE3218085C4100F35DF9 /* ASIS3ServiceRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIS3ServiceRequest.h; sourceTree = "<group>"; };
 		5671BE3318085C4100F35DF9 /* ASIS3ServiceRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIS3ServiceRequest.m; sourceTree = "<group>"; };
-		5671BE4C18085C4800F35DF9 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
-		5671BE4D18085C4800F35DF9 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		568CC784178DD2C900AB1579 /* WOKE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WOKE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		568CC787178DD2C900AB1579 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		568CC789178DD2C900AB1579 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -403,6 +416,8 @@
 		AB49BC8F1854248E004A38DB /* EWLogInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWLogInViewController.h; path = FirstTime/EWLogInViewController.h; sourceTree = "<group>"; };
 		AB49BC901854248E004A38DB /* EWLogInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWLogInViewController.m; path = FirstTime/EWLogInViewController.m; sourceTree = "<group>"; };
 		AB49BC911854248E004A38DB /* EWLogInViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWLogInViewController.xib; path = FirstTime/EWLogInViewController.xib; sourceTree = "<group>"; };
+		AB4B837518CF65860087E654 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		AB4B837618CF65860087E654 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		AB78078D18393A66007C8BFD /* EWAlarmManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWAlarmManager.h; path = EarlyWorm/Kernel/ModelManager/EWAlarmManager.h; sourceTree = SOURCE_ROOT; };
 		AB78078E18393A66007C8BFD /* EWAlarmManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWAlarmManager.m; path = EarlyWorm/Kernel/ModelManager/EWAlarmManager.m; sourceTree = SOURCE_ROOT; };
 		AB78079118393A66007C8BFD /* EWGroupStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWGroupStore.h; path = EarlyWorm/Kernel/ModelManager/EWGroupStore.h; sourceTree = SOURCE_ROOT; };
@@ -496,6 +511,32 @@
 		ABDD0BBC1852E360005EA59B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		ABDD0BBE1852E36C005EA59B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		ABDD0BC01852E374005EA59B /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		ABDE25C618CF572700DDBDB5 /* audio_queue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audio_queue.cpp; sourceTree = "<group>"; };
+		ABDE25C718CF572700DDBDB5 /* audio_queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio_queue.h; sourceTree = "<group>"; };
+		ABDE25C818CF572700DDBDB5 /* audio_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audio_stream.cpp; sourceTree = "<group>"; };
+		ABDE25C918CF572700DDBDB5 /* audio_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio_stream.h; sourceTree = "<group>"; };
+		ABDE25CA18CF572700DDBDB5 /* file_output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = file_output.cpp; sourceTree = "<group>"; };
+		ABDE25CB18CF572700DDBDB5 /* file_output.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file_output.h; sourceTree = "<group>"; };
+		ABDE25CC18CF572700DDBDB5 /* http_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = http_stream.cpp; sourceTree = "<group>"; };
+		ABDE25CD18CF572700DDBDB5 /* http_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_stream.h; sourceTree = "<group>"; };
+		ABDE25CE18CF572700DDBDB5 /* id3_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = id3_parser.cpp; sourceTree = "<group>"; };
+		ABDE25CF18CF572700DDBDB5 /* id3_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = id3_parser.h; sourceTree = "<group>"; };
+		ABDE25D118CF572700DDBDB5 /* FSAudioController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSAudioController.h; sourceTree = "<group>"; };
+		ABDE25D218CF572700DDBDB5 /* FSAudioController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSAudioController.m; sourceTree = "<group>"; };
+		ABDE25D318CF572700DDBDB5 /* FSAudioStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSAudioStream.h; sourceTree = "<group>"; };
+		ABDE25D418CF572700DDBDB5 /* FSAudioStream.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FSAudioStream.mm; sourceTree = "<group>"; };
+		ABDE25D518CF572700DDBDB5 /* FSCheckContentTypeRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSCheckContentTypeRequest.h; sourceTree = "<group>"; };
+		ABDE25D618CF572700DDBDB5 /* FSCheckContentTypeRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSCheckContentTypeRequest.m; sourceTree = "<group>"; };
+		ABDE25D718CF572700DDBDB5 /* FSParsePlaylistRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSParsePlaylistRequest.h; sourceTree = "<group>"; };
+		ABDE25D818CF572700DDBDB5 /* FSParsePlaylistRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSParsePlaylistRequest.m; sourceTree = "<group>"; };
+		ABDE25D918CF572700DDBDB5 /* FSParseRssPodcastFeedRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSParseRssPodcastFeedRequest.h; sourceTree = "<group>"; };
+		ABDE25DA18CF572700DDBDB5 /* FSParseRssPodcastFeedRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSParseRssPodcastFeedRequest.m; sourceTree = "<group>"; };
+		ABDE25DB18CF572700DDBDB5 /* FSPlaylistItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSPlaylistItem.h; sourceTree = "<group>"; };
+		ABDE25DC18CF572700DDBDB5 /* FSPlaylistItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPlaylistItem.m; sourceTree = "<group>"; };
+		ABDE25DD18CF572700DDBDB5 /* FSXMLHttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSXMLHttpRequest.h; sourceTree = "<group>"; };
+		ABDE25DE18CF572700DDBDB5 /* FSXMLHttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSXMLHttpRequest.m; sourceTree = "<group>"; };
+		ABDE25EE18CF575D00DDBDB5 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		ABDE25F118CF577300DDBDB5 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		ABEEA94917DFCD8B0035DF4A /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		ABEEA95E17E027E70035DF4A /* vm1.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = vm1.m4a; sourceTree = "<group>"; };
 		ABEEA95F17E027E70035DF4A /* vm2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = vm2.m4a; sourceTree = "<group>"; };
@@ -532,6 +573,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABDE25F218CF577300DDBDB5 /* MediaPlayer.framework in Frameworks */,
+				ABDE25F018CF576900DDBDB5 /* libxml2.dylib in Frameworks */,
+				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FB618CCF86500551721 /* AWSSNS.framework in Frameworks */,
 				AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */,
 				AB245FB218CCD99500551721 /* CoreData.framework in Frameworks */,
@@ -594,7 +638,7 @@
 		5642AF4817ACCE27000C73E8 /* BasicLib */ = {
 			isa = PBXGroup;
 			children = (
-				5671BE4B18085C4800F35DF9 /* Reachability */,
+				AB4B837418CF65860087E654 /* Reachability */,
 				5671BDFD18085C4100F35DF9 /* ASIHTTPRequest */,
 				56330CD317FDDF49008A7922 /* JSON */,
 				ABF1261317C1DD5800C0FDAC /* EWIO.h */,
@@ -721,15 +765,6 @@
 			path = S3;
 			sourceTree = "<group>";
 		};
-		5671BE4B18085C4800F35DF9 /* Reachability */ = {
-			isa = PBXGroup;
-			children = (
-				5671BE4C18085C4800F35DF9 /* Reachability.h */,
-				5671BE4D18085C4800F35DF9 /* Reachability.m */,
-			);
-			path = Reachability;
-			sourceTree = "<group>";
-		};
 		5671FDC817C126AC00794E0A /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -776,6 +811,9 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				ABDE25F118CF577300DDBDB5 /* MediaPlayer.framework */,
+				ABDE25EE18CF575D00DDBDB5 /* AudioToolbox.framework */,
+				ABDE25C418CF571300DDBDB5 /* FreeStreamer */,
 				AB245FA118CCD2E400551721 /* Reveal.framework */,
 				9BF7A7BD18CA27EF002EA7AC /* AWS */,
 				9BA08C5918B6C39900E785ED /* MapKit.framework */,
@@ -1139,6 +1177,15 @@
 			name = "Profile picture";
 			sourceTree = "<group>";
 		};
+		AB4B837418CF65860087E654 /* Reachability */ = {
+			isa = PBXGroup;
+			children = (
+				AB4B837518CF65860087E654 /* Reachability.h */,
+				AB4B837618CF65860087E654 /* Reachability.m */,
+			);
+			path = Reachability;
+			sourceTree = "<group>";
+		};
 		AB7807A8183A01F7007C8BFD /* Download */ = {
 			isa = PBXGroup;
 			children = (
@@ -1299,6 +1346,53 @@
 			path = AFNetworking;
 			sourceTree = "<group>";
 		};
+		ABDE25C418CF571300DDBDB5 /* FreeStreamer */ = {
+			isa = PBXGroup;
+			children = (
+				ABDE25C518CF572700DDBDB5 /* astreamer */,
+				ABDE25D018CF572700DDBDB5 /* Common */,
+			);
+			name = FreeStreamer;
+			sourceTree = "<group>";
+		};
+		ABDE25C518CF572700DDBDB5 /* astreamer */ = {
+			isa = PBXGroup;
+			children = (
+				ABDE25C618CF572700DDBDB5 /* audio_queue.cpp */,
+				ABDE25C718CF572700DDBDB5 /* audio_queue.h */,
+				ABDE25C818CF572700DDBDB5 /* audio_stream.cpp */,
+				ABDE25C918CF572700DDBDB5 /* audio_stream.h */,
+				ABDE25CA18CF572700DDBDB5 /* file_output.cpp */,
+				ABDE25CB18CF572700DDBDB5 /* file_output.h */,
+				ABDE25CC18CF572700DDBDB5 /* http_stream.cpp */,
+				ABDE25CD18CF572700DDBDB5 /* http_stream.h */,
+				ABDE25CE18CF572700DDBDB5 /* id3_parser.cpp */,
+				ABDE25CF18CF572700DDBDB5 /* id3_parser.h */,
+			);
+			path = astreamer;
+			sourceTree = "<group>";
+		};
+		ABDE25D018CF572700DDBDB5 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				ABDE25D118CF572700DDBDB5 /* FSAudioController.h */,
+				ABDE25D218CF572700DDBDB5 /* FSAudioController.m */,
+				ABDE25D318CF572700DDBDB5 /* FSAudioStream.h */,
+				ABDE25D418CF572700DDBDB5 /* FSAudioStream.mm */,
+				ABDE25D518CF572700DDBDB5 /* FSCheckContentTypeRequest.h */,
+				ABDE25D618CF572700DDBDB5 /* FSCheckContentTypeRequest.m */,
+				ABDE25D718CF572700DDBDB5 /* FSParsePlaylistRequest.h */,
+				ABDE25D818CF572700DDBDB5 /* FSParsePlaylistRequest.m */,
+				ABDE25D918CF572700DDBDB5 /* FSParseRssPodcastFeedRequest.h */,
+				ABDE25DA18CF572700DDBDB5 /* FSParseRssPodcastFeedRequest.m */,
+				ABDE25DB18CF572700DDBDB5 /* FSPlaylistItem.h */,
+				ABDE25DC18CF572700DDBDB5 /* FSPlaylistItem.m */,
+				ABDE25DD18CF572700DDBDB5 /* FSXMLHttpRequest.h */,
+				ABDE25DE18CF572700DDBDB5 /* FSXMLHttpRequest.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		ABF1929E18BD9C4E006A4AA2 /* mogenerator */ = {
 			isa = PBXGroup;
 			children = (
@@ -1347,6 +1441,9 @@
 					568CC783178DD2C900AB1579 = {
 						DevelopmentTeam = SDR7T9YB58;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.InAppPurchase = {
 								enabled = 0;
 							};
@@ -1445,17 +1542,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */,
+				ABDE25EB18CF572700DDBDB5 /* FSPlaylistItem.m in Sources */,
 				5671BE3918085C4100F35DF9 /* ASIHTTPRequest.m in Sources */,
 				ABDAF99018C31C010075505B /* EWCollectionPersonCell.m in Sources */,
 				56FEA57F17A5763200FC2938 /* EWAlarmsViewController.m in Sources */,
+				ABDE25E218CF572700DDBDB5 /* audio_stream.cpp in Sources */,
 				56FEA58017A5763200FC2938 /* EWSettingsViewController.m in Sources */,
 				AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */,
 				56330CD217FDCBC5008A7922 /* EWWeiboFriendListViewController.m in Sources */,
 				5671BE3E18085C4100F35DF9 /* ASICloudFilesContainer.m in Sources */,
 				5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */,
 				5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */,
+				ABDE25E618CF572700DDBDB5 /* FSAudioController.m in Sources */,
 				5671BE4718085C4100F35DF9 /* ASIS3BucketRequest.m in Sources */,
-				5671BE4E18085C4800F35DF9 /* Reachability.m in Sources */,
 				AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */,
 				5671BE4818085C4100F35DF9 /* ASIS3ObjectRequest.m in Sources */,
 				AB207E69182FFFB60076D93F /* MBProgressHUD.m in Sources */,
@@ -1464,15 +1563,19 @@
 				56FEA58E17A5763200FC2938 /* EWAppDelegate.m in Sources */,
 				AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */,
 				56FEA59717A5766B00FC2938 /* main.m in Sources */,
+				ABDE25E118CF572700DDBDB5 /* audio_queue.cpp in Sources */,
 				5671BE4618085C4100F35DF9 /* ASIS3BucketObject.m in Sources */,
 				AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */,
 				5642AF4E17ACCF90000C73E8 /* UIView+Layout.m in Sources */,
+				ABDE25E318CF572700DDBDB5 /* file_output.cpp in Sources */,
 				AB49BC921854248E004A38DB /* EWLogInViewController.m in Sources */,
 				5671BE3418085C4100F35DF9 /* ASIAuthenticationDialog.m in Sources */,
 				ABF192AA18BF135C006A4AA2 /* UIAlertView+.m in Sources */,
 				56F09E4617AAE0F800C5AD52 /* TestViewController.m in Sources */,
+				ABDE25EC18CF572700DDBDB5 /* FSXMLHttpRequest.m in Sources */,
 				AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */,
 				9B73830D18BE494B00E7FFC3 /* EWDownloadMgr.m in Sources */,
+				ABDE25E918CF572700DDBDB5 /* FSParsePlaylistRequest.m in Sources */,
 				56330CE417FDDF49008A7922 /* SBJsonBase.m in Sources */,
 				56E0C36217B2CB7200835A6B /* EWEditAlarmViewController.m in Sources */,
 				56E0C36517B2CC6400835A6B /* EWViewController.m in Sources */,
@@ -1497,17 +1600,21 @@
 				561ECB5717BBFB0000C8AC91 /* UINavigationController+Extend.m in Sources */,
 				5671BE3518085C4100F35DF9 /* ASIDataCompressor.m in Sources */,
 				5671BE3818085C4100F35DF9 /* ASIFormDataRequest.m in Sources */,
+				AB4B837718CF65860087E654 /* Reachability.m in Sources */,
 				5671BE4518085C4100F35DF9 /* ASIS3Bucket.m in Sources */,
 				AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */,
 				56330CE217FDDF49008A7922 /* NSString+SBJSON.m in Sources */,
 				ABF1261517C1DD5800C0FDAC /* EWIO.m in Sources */,
 				AB94332317C302C500ADC702 /* EWRingtoneSelectionViewController.m in Sources */,
 				5671BE3A18085C4100F35DF9 /* ASIInputStream.m in Sources */,
+				ABDE25E818CF572700DDBDB5 /* FSCheckContentTypeRequest.m in Sources */,
 				AB00B61E1835C49D00DDD54B /* EWWakeUpViewController.m in Sources */,
 				56330CF017FDEA57008A7922 /* EWWeiboManager.m in Sources */,
+				ABDE25E718CF572700DDBDB5 /* FSAudioStream.mm in Sources */,
 				5671BE3D18085C4100F35DF9 /* ASICloudFilesCDNRequest.m in Sources */,
 				56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */,
 				5671BE3718085C4100F35DF9 /* ASIDownloadCache.m in Sources */,
+				ABDE25E418CF572700DDBDB5 /* http_stream.cpp in Sources */,
 				AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */,
 				ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */,
 				5671BE4918085C4100F35DF9 /* ASIS3Request.m in Sources */,
@@ -1519,6 +1626,8 @@
 				5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */,
 				AB07BC1417D82A4600E23F44 /* EWWeekDayPickerTableViewController.m in Sources */,
 				AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */,
+				ABDE25E518CF572700DDBDB5 /* id3_parser.cpp in Sources */,
+				ABDE25EA18CF572700DDBDB5 /* FSParseRssPodcastFeedRequest.m in Sources */,
 				AB07401E18125BA400AAFC90 /* EWGroupCell.m in Sources */,
 				56330CE117FDDF49008A7922 /* NSObject+SBJSON.m in Sources */,
 				5671BE3C18085C4100F35DF9 /* ASIWebPageRequest.m in Sources */,
@@ -1647,7 +1756,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"\"/usr/include/libxml2\"",
+					"$(SDKROOT)/usr/include/libxml2",
 				);
 				INFOPLIST_FILE = "EarlyWorm/EarlyWorm-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -1690,7 +1799,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"\"/usr/include/libxml2\"",
+					"$(SDKROOT)/usr/include/libxml2",
 				);
 				INFOPLIST_FILE = "EarlyWorm/EarlyWorm-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;

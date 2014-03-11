@@ -128,6 +128,7 @@ AmazonSNSClient *snsClient;
 
 #pragma mark - Login Check
 - (void)loginCheck{
+    [context refreshObject:currentUser mergeChanges:YES];
     [self checkAlarmData];
 }
 

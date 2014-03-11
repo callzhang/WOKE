@@ -21,7 +21,7 @@
 
 //tools
 #import "TestFlight.h"
-//#import "EWDownloadMgr.h"
+#import "FSAudioStream.h"
 #import "AVManager.h"
 
 //model
@@ -38,6 +38,7 @@ UIViewController *rootViewController;
     EWTaskItem *taskInAction;
     NSTimer *myTimer;
     long count;
+    FSAudioStream *_audioStream;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
@@ -58,9 +59,7 @@ UIViewController *rootViewController;
     
     //background fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-    
-    //start audio session
-    [AVManager sharedManager];
+
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -136,17 +135,14 @@ UIViewController *rootViewController;
         
         NSLog(@"The first BG task will end (%ld)", count);
     }];
-    if ([myTimer isValid]) {
-        [myTimer invalidate];
-    }
+    
     // keep active
+    if ([myTimer isValid]) [myTimer invalidate];
     myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
     NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
 #endif
     
-    //    self.myTimer = nil;
-    
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    application.applicationIconBadgeNumber = 0;
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -199,6 +195,9 @@ UIViewController *rootViewController;
 -(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     NSLog(@"======== Launched in background due to background fetch event (%ld) ==========", count++);
+    
+    
+    
     completionHandler(UIBackgroundFetchResultNewData);
 }
 
@@ -213,18 +212,19 @@ UIViewController *rootViewController;
     //开启一个新的后台
     NSInteger ct = count;
     backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        NSLog(@"BG task will end (%d)", ct);
+        NSLog(@"BG task will end (%ld)", (long)ct);
     }];
     
     
     NSLog(@"Background task is still working  %ld",count++);
     
     
-    NSString *str = [[NSBundle mainBundle] pathForResource:@"buzz" ofType:@"caf"];
-    NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:str];
-    AVPlayer *p = [AVPlayer playerWithURL:soundURL];
-    [p play];
-    NSLog(@"Started to play");
+    //play with free streamer
+    _audioStream = [[FSAudioStream alloc] init];
+    NSURL *soundURL = [[NSURL alloc] initWithString:@"http://freedownloads.last.fm/download/523916307/Stay%2BUseless.mp3"];
+    [_audioStream playFromURL:soundURL];
+    NSLog(@"Free streamer started to play");
+    
 }
 
 - (BOOL) isMultitaskingSupported {
