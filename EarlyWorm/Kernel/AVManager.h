@@ -13,7 +13,7 @@
 
 @class EWMediaViewCell, EWTaskItem, EWMediaItem;
 
-@interface AVManager : NSObject <AVAudioPlayerDelegate, AVAudioRecorderDelegate, AVAudioSessionDelegate>
+@interface AVManager : UIResponder <AVAudioPlayerDelegate, AVAudioRecorderDelegate, AVAudioSessionDelegate>
 {
     //CALevelMeter *lvlMeter_in;
     NSTimer *updateTimer;
@@ -39,7 +39,6 @@
 - (void)playSoundFromURL:(NSURL *)url;
 - (void)playForCell:(EWMediaViewCell *)cell;
 - (void)playMedia:(EWMediaItem *)media;
-- (void)pausePlaybackForPlayer:(AVAudioPlayer *)player;
 - (void)updateViewForPlayerState:(AVAudioPlayer *)player;
 - (void)playTask:(EWTaskItem *)task;
 - (NSURL *)record;
@@ -47,6 +46,20 @@
 
 // - (void)stopPlaying:(NSString *)fileName;
 - (void)stopAllPlaying;
+
+/**
+ *Register self as the first responder for remote control event
+ */
+- (void)prepareRemoteControlEventsListener;
+/**
+ *Resign self as the first responder for remote control event
+ */
+- (void)resignRemoteControlEventsListener;
+
+/**
+ *register for AudioSession
+ */
+- (void)registerAudioSession;
 
 @property (retain, nonatomic) AVAudioPlayer *player;
 @property (retain, nonatomic) AVAudioRecorder *recorder;

@@ -108,7 +108,6 @@ UIViewController *rootViewController;
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-
     
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     NSLog(@"Canceled HUD");
@@ -123,24 +122,23 @@ UIViewController *rootViewController;
     BOOL result = NO;
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]){
         result = [[UIDevice currentDevice] isMultitaskingSupported];
-    }
-    if (!result) {
+    }if (!result) {
         return;
     }
     
-#ifdef BACKGROUND_TEST
-    
-    //开启一个后台任务
-    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        
-        NSLog(@"The first BG task will end (%ld)", count);
-    }];
-    
-    // keep active
-    if ([myTimer isValid]) [myTimer invalidate];
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
-    NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
-#endif
+//#ifdef BACKGROUND_TEST
+//    
+//    //开启一个后台任务
+//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+//        
+//        NSLog(@"The first BG task will end (%ld)", count);
+//    }];
+//    
+//    // keep active
+//    if ([myTimer isValid]) [myTimer invalidate];
+//    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+//    NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
+//#endif
     
     application.applicationIconBadgeNumber = 0;
 }
@@ -163,6 +161,9 @@ UIViewController *rootViewController;
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     [FBSession.activeSession handleDidBecomeActive];
+    
+    //audio session
+    [[AVManager sharedManager] registerAudioSession];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

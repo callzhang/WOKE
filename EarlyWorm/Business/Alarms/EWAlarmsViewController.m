@@ -94,14 +94,6 @@
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    //reload
-    if (currentUser) {
-        //[self reloadView];
-    }
-}
-
 - (void)initData {
     //init alarm page container
     if (currentUser) {
@@ -117,7 +109,6 @@
         tasks = nil;
         [_alarmPages removeAllObjects];
     }
-    
 }
 
 - (void)initView {

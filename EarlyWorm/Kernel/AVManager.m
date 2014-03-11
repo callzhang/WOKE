@@ -33,40 +33,40 @@
     self = [super init];
     if (self) {
         //regist the player
-        /*
-        NSError *err = nil;
-        player = [[AVAudioPlayer alloc] initWithContentsOfURL:NULL error:&err];
-        if (player)
-        {
-            [self updateViewForPlayerState:player];
-            player.numberOfLoops = 0; //no repeat
-            player.delegate = self;
-        }*/
+        
+        //observe the background event
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
         
         //recorder
         NSString *tempDir = NSTemporaryDirectory ();
         NSString *soundFilePath =  [tempDir stringByAppendingString: @"recording.m4a"];
         recordingFileUrl = [[NSURL alloc] initFileURLWithPath: soundFilePath];
         
-        //audio session
-        [[AVAudioSession sharedInstance] setDelegate: self];
-        NSError *error = nil;
-        //set category
-        BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord error: &error];
-        if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
-        //force speaker
-        success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
-                                                                     error:&error];
-        if (!success) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
-        //set active
-        success = [[AVAudioSession sharedInstance] setActive:YES error:nil];
-        if (!success){
-            NSLog(@"Unable to activate audio session:%@", error);
-        }else{
-            NSLog(@"Audio session activated!");
-        }
+        //Audio session
+        [self registerAudioSession];
     }
     return self;
+}
+
+- (void)registerAudioSession{
+    
+    //audio session
+    [[AVAudioSession sharedInstance] setDelegate: self];
+    NSError *error = nil;
+    //set category
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord error: &error];
+    if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
+    //force speaker
+    success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
+                                                                 error:&error];
+    if (!success) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
+    //set active
+    success = [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    if (!success){
+        NSLog(@"Unable to activate audio session:%@", error);
+    }else{
+        NSLog(@"Audio session activated!");
+    }
 }
 
 - (void)setProgressBar:(UISlider *)slider{
@@ -388,8 +388,59 @@ void RouteChangeListener(	void *inClientData,
 	}
 }*/
 
-- (void)pausePlaybackForPlayer:(AVAudioPlayer *)player {
-    NSLog(@"playback paused");
+
+#pragma mark - Background events handler
+- (void)didEnterBackground:(NSNotification *)notification{
+    NSLog(@"%s: Received background event notification", __func__);
+    NSLog(@"Start playing audio");
+    [self playSoundFromFile:@"buzz.caf"];
+}
+
+
+#pragma mark - Remote Control Event
+- (void)prepareRemoteControlEventsListener{
+    
+    //register for remote control
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    
+    // Set itself as the first responder
+    BOOL success = [self becomeFirstResponder];
+    if (!success) {
+        NSLog(@"Failed to listen remote control events");
+    }
+}
+
+- (void)resignRemoteControlEventsListener{
+    
+    // Turn off remote control event delivery
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    
+    // Resign as first responder
+    [self resignFirstResponder];
+}
+
+- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
+    
+    if (receivedEvent.type == UIEventTypeRemoteControl) {
+        
+        switch (receivedEvent.subtype) {
+                
+            case UIEventSubtypeRemoteControlTogglePlayPause:
+                [player play];
+                break;
+                
+            case UIEventSubtypeRemoteControlPreviousTrack:
+                NSLog(@"Received remote control: Previous");
+                break;
+                
+            case UIEventSubtypeRemoteControlNextTrack:
+                NSLog(@"Received remote control: Next");
+                break;
+                
+            default:
+                break;
+        }
+    }
 }
 
 @end

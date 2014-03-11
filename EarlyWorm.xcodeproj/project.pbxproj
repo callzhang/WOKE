@@ -850,7 +850,7 @@
 				56FEA57417A5763200FC2938 /* Common */,
 				56FEA57B17A5763200FC2938 /* Kernel */,
 				5642AF4817ACCE27000C73E8 /* BasicLib */,
-				56FEA55517A5763200FC2938 /* Business */,
+				56FEA55517A5763200FC2938 /* Interface */,
 				565DF60D17A40420000D9DA9 /* Resources */,
 				568CC78E178DD2C900AB1579 /* Supporting Files */,
 			);
@@ -913,7 +913,7 @@
 			path = Test;
 			sourceTree = "<group>";
 		};
-		56FEA55517A5763200FC2938 /* Business */ = {
+		56FEA55517A5763200FC2938 /* Interface */ = {
 			isa = PBXGroup;
 			children = (
 				AB3120AF187130380099738C /* Notification */,
@@ -924,6 +924,7 @@
 				56FEA56217A5763200FC2938 /* WakeUp */,
 				56FEA55917A5763200FC2938 /* Settings */,
 			);
+			name = Interface;
 			path = Business;
 			sourceTree = "<group>";
 		};
