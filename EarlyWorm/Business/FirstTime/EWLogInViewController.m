@@ -187,6 +187,11 @@
              [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:user.username onSuccess:^(NSDictionary *result) {
                  NSLog(@"Logged in facebook for:%@", user.name);
                  
+                 //exchange AWS token
+                 NSLog(@"New user aws: %@, old user aws: %@", currentUser.aws_id, oldUser.aws_id);
+                 currentUser.aws_id = oldUser.aws_id;
+                 oldUser.aws_id = @"";
+                 
                  if ([oldUser.username isEqualToString:user.username] && oldUser.username) {
                      NSLog(@"Facebook user %@ has already registered on StackMob", user.username);
                      [[EWUserManagement sharedInstance] updateUserWithFBData:user];

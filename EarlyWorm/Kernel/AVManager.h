@@ -18,7 +18,8 @@
     //CALevelMeter *lvlMeter_in;
     NSTimer *updateTimer;
     NSURL *recordingFileUrl;
-    
+    AVQueuePlayer *qPlayer;
+    AVPlayer *avplayer;
 }
 
 +(AVManager *)sharedManager;

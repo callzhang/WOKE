@@ -23,7 +23,7 @@ extern AmazonSNSClient *snsClient;
 
 @interface EWDataStore : NSObject
 
-@property (nonatomic) NSManagedObjectContext *context;
+@property (nonatomic, retain) NSManagedObjectContext *context;
 @property (nonatomic) NSManagedObjectModel *model;
 @property (nonatomic) SMCoreDataStore *coreDataStore;
 /**
