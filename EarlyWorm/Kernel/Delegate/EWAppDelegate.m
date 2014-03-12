@@ -377,7 +377,7 @@ UIViewController *rootViewController;
     if ([application applicationState] == UIApplicationStateActive) {
         NSLog(@"Push Notification received when app is running: %@", userInfo);
     }else{
-        NSLog(@"Push Notification received when app is in %d : %@", application.applicationState, userInfo);
+        NSLog(@"Push Notification received when app is in background(%d): %@", application.applicationState, userInfo);
     }
     
     //handle push

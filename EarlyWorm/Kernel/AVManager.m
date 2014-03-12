@@ -175,7 +175,8 @@
         AVPlayerItem *track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:str]];
         [queue addObject:track];
     }
-    AVQueuePlayer *qPlayer = [[AVQueuePlayer alloc] initWithItems:queue];
+    NSLog(@"About to play for task: %@", task.ewtaskitem_id);
+    qPlayer = [[AVQueuePlayer alloc] initWithItems:queue];
     [qPlayer play];
 }
 

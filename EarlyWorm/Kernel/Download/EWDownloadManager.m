@@ -77,7 +77,7 @@
         //start task
         [downloadTask resume];
         //keep task info
-        [downloadQueue setObject:downloadTask forKey:path];
+        [downloadQueue setObject:media forKey:path];
         
         NSLog(@"Media download task dispatched: %@", media.audioKey);
     }
@@ -102,7 +102,7 @@
      */
 
     double progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
-    NSLog(@"DownloadTask: %@ progress: (%.1lf)", downloadTask, progress);
+    NSLog(@"DownloadTask: %@ progress: (%.1lf)", downloadTask, progress * 100.0);
     dispatch_async(dispatch_get_main_queue(), ^{
         //self.progressView.progress = progress;
     });
@@ -121,7 +121,7 @@
     NSString *keyHash = [str MD5Hash];
     //save
     [FTWCache setObject:data forKey:keyHash];
-    NSLog(@"Set FTW cache for %@", str);
+    NSLog(@"Set FTW cache for %@", keyHash);
     
 #ifdef BACKGROUND_TEST
     [[AVManager sharedManager] playSoundFromURL:request.URL];
@@ -140,7 +140,7 @@
 
     if (error == nil)
     {
-        NSLog(@"Task completed successfully");
+        NSLog(@"Task completed successfully: %@", t);
     }
     else
     {
@@ -155,10 +155,16 @@
  */
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
 {
+    NSLog(@"%s: download finished", __func__);
+    
+#ifdef BACKGROUND_TEST
     //background audio
+    NSLog(@"about to play task: %@", task.ewtaskitem_id);
     [[AVManager sharedManager] playTask:task];
+#endif
     
-    
+    //clera task
+    task = nil;
     if (backgroundSessionCompletionHandler) {
         backgroundSessionCompletionHandler();
     }

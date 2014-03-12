@@ -162,7 +162,11 @@
                 //HUD
                 //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
             } onFailure:^(NSError *error) {
-                [NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
+                //[NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
+                if (error.code == -105) {
+                    //network error
+                    EWAlert(@"No network connection. Unable to register new user to server");
+                }
             }];
         } onFailure:^(NSError *error) {
             //[NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];

@@ -60,7 +60,8 @@
     [context saveOnSuccess:^{
         NSLog(@"Media created");
     } onFailure:^(NSError *error) {
-        [NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
+        //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
+        EWAlert(@"Failed to send voice. You can send it again.");
     }];
     return m;
 }

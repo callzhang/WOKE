@@ -12,6 +12,9 @@
 @interface EWDownloadManager : NSObject <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate>
 
 @property (nonatomic) NSURLSession *session;
+/**
+ The queue to store the media being downloaded
+ */
 @property (nonatomic) NSMutableDictionary *downloadQueue;
 @property (copy) void (^backgroundSessionCompletionHandler)();
 @property (copy) void (^completionTask)();

@@ -43,4 +43,5 @@ extern AmazonSNSClient *snsClient;
  */
 - (NSData *)getRemoteDataWithKey:(NSString *)key;
 
+
 @end

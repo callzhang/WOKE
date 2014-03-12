@@ -256,16 +256,17 @@
                     
                     //pre alarm -> download
                     
+                    NSLog(@"Download media: %@", media.ewmediaitem_id);
                     [[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded
                     
                 }else if (!task.completed){
-                    
-                    //struggle -> play media
-                    
+                    NSLog(@"Task is not completed, playing audio");
+                    //struggle (or passed 10 min) -> play media
                     [[AVManager sharedManager] playMedia:media];
                     
                     //present WakeUpView
                     if (![EWServer isRootPresentingWakeUpView]) {
+                        NSLog(@"Presenting wakeUpView");
                         [rootViewController dismissViewControllerAnimated:YES completion:^{
                             [rootViewController presentViewController:[[EWWakeUpViewController alloc] initWithTask:task] animated:YES completion:^{
                                 //post notification
@@ -294,15 +295,7 @@
             });
             
         });
-        
-/*
-#ifdef DEV_TEST
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitl	e:@"Media" message:message delegate:[EWServer sharedInstance] cancelButtonTitle:@"Cancel" otherButtonTitles:@"Listen", nil];
-        [alert show];
-        //associate
-        alert.userInfo = @{@"type": kPushTypeMediaKey, kPushTaskKey: taskID, kPushMediaKey: mediaID};
-#endif
-*/        
+    
         
         
     }else if([type isEqualToString:kPushTypeTimerKey]){
@@ -359,6 +352,7 @@
     }else{
         // Other push type not supported
         NSString *str = [NSString stringWithFormat:@"Unknown push type received: %@", notification];
+        NSLog(@"Received unknown type of push msg");
         EWAlert(str);
     }
 }

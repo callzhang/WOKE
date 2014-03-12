@@ -443,7 +443,6 @@
 		ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWFirstTimeViewController.xib; path = FirstTime/EWFirstTimeViewController.xib; sourceTree = "<group>"; };
 		ABAB2FC2183DEB310095A3A5 /* EWLocalNotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWLocalNotificationViewController.h; sourceTree = "<group>"; };
 		ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWLocalNotificationViewController.m; sourceTree = "<group>"; };
-		ABAC1EEB18CEC8AC00D28D2B /* WOKE.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = WOKE.entitlements; sourceTree = "<group>"; };
 		ABBA978A17EFC6AD0037439B /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
 		ABBC47AB18530F35009A2E7D /* EarlyWorm.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EarlyWorm.xcdatamodel; sourceTree = "<group>"; };
 		ABCCE68B17F15D0D0078F8AA /* EWAlarmPage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EWAlarmPage.xib; sourceTree = "<group>"; };
@@ -576,7 +575,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABDE25F218CF577300DDBDB5 /* MediaPlayer.framework in Frameworks */,
-				ABDE25F018CF576900DDBDB5 /* libxml2.dylib in Frameworks */,
 				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FB618CCF86500551721 /* AWSSNS.framework in Frameworks */,
 				AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */,
@@ -600,6 +598,7 @@
 				AB245FB518CCF85000551721 /* libstackmob-v2.2.0.a in Frameworks */,
 				AB245FB418CCF81F00551721 /* libz.dylib in Frameworks */,
 				AB245FB918CCF91200551721 /* libWeiboSDK.a in Frameworks */,
+				ABDE25F018CF576900DDBDB5 /* libxml2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -795,7 +794,6 @@
 		568CC77B178DD2C900AB1579 = {
 			isa = PBXGroup;
 			children = (
-				ABAC1EEB18CEC8AC00D28D2B /* WOKE.entitlements */,
 				568CC78D178DD2C900AB1579 /* EarlyWorm */,
 				568CC786178DD2C900AB1579 /* Frameworks */,
 				568CC785178DD2C900AB1579 /* Products */,
@@ -1752,16 +1750,11 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/",
-					/Users/Lee/Documents/WOKE,
-					/Users/Lei/Dropbox/WOKE/EarlyWorm,
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SDKROOT)/usr/include/libxml2",
 				);
 				INFOPLIST_FILE = "EarlyWorm/EarlyWorm-Info.plist";
@@ -1771,9 +1764,6 @@
 					"$(inherited)",
 					"$(SRCROOT)/TestFlightSDK2.1.3",
 					"$(SRCROOT)/StackMob-v2.2.0",
-					/Users/Lei/Dropbox/WOKE/EarlyWorm/TestFlightSDK2.1.3,
-					"/Users/Lei/Dropbox/WOKE/EarlyWorm/StackMob-v2.2.0",
-					/Users/Lei/Dropbox/WOKE/EarlyWorm/libWeiboSDK,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -1781,8 +1771,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ $(inherited)";
+				PROVISIONING_PROFILE = "EE4391FF-2D62-43B4-A191-A9791202BE4F";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/TestFlightSDK2.1.3 $(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1796,16 +1786,11 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/",
-					/Users/Lee/Documents/WOKE,
-					/Users/Lei/Dropbox/WOKE/EarlyWorm,
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EarlyWorm/EarlyWorm-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SDKROOT)/usr/include/libxml2",
 				);
 				INFOPLIST_FILE = "EarlyWorm/EarlyWorm-Info.plist";
@@ -1815,17 +1800,14 @@
 					"$(inherited)",
 					"$(SRCROOT)/TestFlightSDK2.1.3",
 					"$(SRCROOT)/StackMob-v2.2.0",
-					/Users/Lei/Dropbox/WOKE/EarlyWorm/TestFlightSDK2.1.3,
-					"/Users/Lei/Dropbox/WOKE/EarlyWorm/StackMob-v2.2.0",
-					/Users/Lei/Dropbox/WOKE/EarlyWorm/libWeiboSDK,
 				);
 				OTHER_LDFLAGS = (
 					"-\"lxml2\"",
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ $(inherited)";
+				PROVISIONING_PROFILE = "EE4391FF-2D62-43B4-A191-A9791202BE4F";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/TestFlightSDK2.1.3 $(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
