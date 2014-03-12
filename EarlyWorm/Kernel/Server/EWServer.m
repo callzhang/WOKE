@@ -356,7 +356,6 @@
         
         
         
-        
     }else{
         // Other push type not supported
         NSString *str = [NSString stringWithFormat:@"Unknown push type received: %@", notification];

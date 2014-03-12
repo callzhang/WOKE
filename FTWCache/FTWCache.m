@@ -58,5 +58,14 @@ static NSTimeInterval cacheTime =  (double)604800;
 	}
 }
 
++ (NSString *)localPathForKey:(NSString *)key{
+    if ([FTWCache objectForKey:key]) {
+        //has cache
+        NSString *path = [NSString stringWithFormat:@"%@%@", [FTWCache cacheDirectory], key];
+        return path;
+    }
+    return nil;
+}
+
 
 @end

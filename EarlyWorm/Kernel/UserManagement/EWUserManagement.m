@@ -137,6 +137,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
         
     } onFailure:^(NSError *error) {
+        NSLog(@"Unable to login with username: %@. Error: %@", username, error.description);
         //if not logged in, register one
         EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:context];
         [newMe setUsername:username];
@@ -164,8 +165,8 @@
                 [NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
             }];
         } onFailure:^(NSError *error) {
-            [NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
-            
+            //[NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
+            EWAlert(@"Server error, please restart app");
         }];
     }];
 
@@ -271,7 +272,8 @@
     [pushClient registerDeviceToken:token withUser:username onSuccess:^{
         NSLog(@"APP registered push token and assigned to StackMob server");
     } onFailure:^(NSError *error) {
-        [NSException raise:@"Failed to regiester push token with StackMob" format:@"Reason: %@", error.description];
+        //[NSException raise:@"Failed to regiester push token with StackMob" format:@"%@", error.description];
+        NSLog(@"Failed to register push on StackMob: %@", error.description);
     }];
     return;
     

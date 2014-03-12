@@ -71,7 +71,7 @@
     request.predicate = [NSPredicate predicateWithFormat:@"ewmediaitem_id == %@", mediaID];
     NSError *err;
     NSArray *medias = [[EWDataStore sharedInstance].currentContext executeFetchRequestAndWait:request error:&err];
-    if (medias.count != 1) NSLog(@"Getting more than one media item from ID: %@", mediaID);
+    if (medias.count == 0) NSLog(@"Could not fetch media for ID: %@, error: %@", mediaID, err.description);
     return medias[0];
 }
 

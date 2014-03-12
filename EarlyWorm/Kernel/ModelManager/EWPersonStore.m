@@ -66,7 +66,7 @@ EWPerson *currentUser;
     NSArray *result = [context executeFetchRequestAndWait:userFetch error:&err];
     if ([result count] != 1) {
         // There should only be one result
-        [NSException raise:@"More than one user fetched" format:@"Check username:%@",ID];
+        [NSException raise:@"Failed to fetch user" format:@"%d user fetched. Check username:%@", result.count, ID];
     };
     
     EWPerson *user = (EWPerson *)result[0];

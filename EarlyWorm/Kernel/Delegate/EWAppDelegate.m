@@ -59,7 +59,6 @@ UIViewController *rootViewController;
     
     //background fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -140,6 +139,8 @@ UIViewController *rootViewController;
 //    NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
 //#endif
     
+    [[AVManager sharedManager] registerAudioSession];
+    
     application.applicationIconBadgeNumber = 0;
 }
 
@@ -217,15 +218,8 @@ UIViewController *rootViewController;
     }];
     
     
-    NSLog(@"Background task is still working  %ld",count++);
-    
-    
-    //play with free streamer
-    _audioStream = [[FSAudioStream alloc] init];
-    NSURL *soundURL = [[NSURL alloc] initWithString:@"http://freedownloads.last.fm/download/523916307/Stay%2BUseless.mp3"];
-    [_audioStream playFromURL:soundURL];
-    NSLog(@"Free streamer started to play");
-    
+    NSLog(@"Background task is still working with time left %f (%ld)",[UIApplication sharedApplication].backgroundTimeRemaining , count++);
+
 }
 
 - (BOOL) isMultitaskingSupported {
@@ -390,7 +384,7 @@ UIViewController *rootViewController;
     [EWServer handlePushNotification:userInfo];
     
     //return handler
-    double delayInSeconds = 10.0;
+    double delayInSeconds = 1.0;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         NSLog(@"@@@@@@@ Push conpletion handle returned. @@@@@@@@@");

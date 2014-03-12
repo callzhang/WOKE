@@ -14,5 +14,6 @@
 
 + (void) setObject:(NSData*)data forKey:(NSString*)key;
 + (id) objectForKey:(NSString*)key;
++ (NSString *)localPathForKey:(NSString *)key;
 
 @end

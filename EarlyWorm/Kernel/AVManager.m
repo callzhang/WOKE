@@ -37,13 +37,16 @@
         //observe the background event
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
         
-        //recorder
+        //recorder path
         NSString *tempDir = NSTemporaryDirectory ();
         NSString *soundFilePath =  [tempDir stringByAppendingString: @"recording.m4a"];
         recordingFileUrl = [[NSURL alloc] initFileURLWithPath: soundFilePath];
         
         //Audio session
         [self registerAudioSession];
+        
+        //Register for remote control event
+        [self prepareRemoteControlEventsListener];
     }
     return self;
 }
@@ -54,7 +57,7 @@
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     //set category
-    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord error: &error];
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers error: &error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     //force speaker
     success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
@@ -67,6 +70,14 @@
     }else{
         NSLog(@"Audio session activated!");
     }
+    
+#ifdef BACKGROUND_TEST
+    AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"Silence04s" ofType:@"caf"]]];
+    avplayer = [AVPlayer playerWithPlayerItem:item];
+    [avplayer setActionAtItemEnd:AVPlayerActionAtItemEndNone];
+    [avplayer play];
+    NSLog(@".....Silent audio playing......");
+#endif
 }
 
 - (void)setProgressBar:(UISlider *)slider{
@@ -392,8 +403,6 @@ void RouteChangeListener(	void *inClientData,
 #pragma mark - Background events handler
 - (void)didEnterBackground:(NSNotification *)notification{
     NSLog(@"%s: Received background event notification", __func__);
-    NSLog(@"Start playing audio");
-    [self playSoundFromFile:@"buzz.caf"];
 }
 
 
@@ -405,8 +414,10 @@ void RouteChangeListener(	void *inClientData,
     
     // Set itself as the first responder
     BOOL success = [self becomeFirstResponder];
-    if (!success) {
-        NSLog(@"Failed to listen remote control events");
+    if (success) {
+        NSLog(@"Registered AVManager for remote control events");
+    }else{
+        NSLog(@"AVManager failed to listen remote control events");
     }
 }
 

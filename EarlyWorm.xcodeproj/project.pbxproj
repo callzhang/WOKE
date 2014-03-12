@@ -145,6 +145,7 @@
 		AB49BC921854248E004A38DB /* EWLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB49BC901854248E004A38DB /* EWLogInViewController.m */; };
 		AB49BC931854248E004A38DB /* EWLogInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB49BC911854248E004A38DB /* EWLogInViewController.xib */; };
 		AB4B837718CF65860087E654 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = AB4B837618CF65860087E654 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		AB4B837918CFE68F0087E654 /* Silence04s.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837818CFE68F0087E654 /* Silence04s.caf */; };
 		AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78078E18393A66007C8BFD /* EWAlarmManager.m */; };
 		AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079218393A66007C8BFD /* EWGroupStore.m */; };
 		AB7807A218393A66007C8BFD /* EWImageStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079418393A66007C8BFD /* EWImageStore.m */; };
@@ -418,6 +419,7 @@
 		AB49BC911854248E004A38DB /* EWLogInViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWLogInViewController.xib; path = FirstTime/EWLogInViewController.xib; sourceTree = "<group>"; };
 		AB4B837518CF65860087E654 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		AB4B837618CF65860087E654 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		AB4B837818CFE68F0087E654 /* Silence04s.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Silence04s.caf; sourceTree = "<group>"; };
 		AB78078D18393A66007C8BFD /* EWAlarmManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWAlarmManager.h; path = EarlyWorm/Kernel/ModelManager/EWAlarmManager.h; sourceTree = SOURCE_ROOT; };
 		AB78078E18393A66007C8BFD /* EWAlarmManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWAlarmManager.m; path = EarlyWorm/Kernel/ModelManager/EWAlarmManager.m; sourceTree = SOURCE_ROOT; };
 		AB78079118393A66007C8BFD /* EWGroupStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWGroupStore.h; path = EarlyWorm/Kernel/ModelManager/EWGroupStore.h; sourceTree = SOURCE_ROOT; };
@@ -1201,6 +1203,7 @@
 		AB94330417C3013F00ADC702 /* Ringtone */ = {
 			isa = PBXGroup;
 			children = (
+				AB4B837818CFE68F0087E654 /* Silence04s.caf */,
 				ABF192AB18C03D71006A4AA2 /* media.caf */,
 				AB2DFBC718BA7CBE00534AF1 /* buzz.caf */,
 				ABFCB2DB186E957100355781 /* Daybreak.caf */,
@@ -1493,6 +1496,7 @@
 				ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */,
 				AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */,
 				ABA728B61831F74900595CFD /* EWFirstTimeViewController.xib in Resources */,
+				AB4B837918CFE68F0087E654 /* Silence04s.caf in Resources */,
 				AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */,
 				ABF192AC18C03D71006A4AA2 /* media.caf in Resources */,
 				ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */,
