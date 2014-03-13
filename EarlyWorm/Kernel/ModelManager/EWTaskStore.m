@@ -76,14 +76,15 @@
 #pragma mark - SEARCH
 - (NSArray *)getTasksByPerson:(EWPerson *)person{
     NSArray *tasks = [[NSArray alloc] init];
-    if (person.tasks.count) {
+    if (person.tasks.count == 7 * nWeeksToScheduleTask) {
         tasks = [person.tasks allObjects];
     }else{
         //this usually not happen
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
         NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
-        NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time >= %@", [NSDate date]];
-        request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
+        //NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time >= %@", [NSDate date]];
+        //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
+        request.predicate = predicate1;
         tasks = [context executeFetchRequestAndWait:request error:NULL];
         //save to person
         if (tasks.count > 0) {
@@ -459,7 +460,7 @@
         }
         for (EWTaskItem *t in pastTasks) {
             t.owner = nil;
-            t.pastOwner = currentUser;//????
+            t.pastOwner = currentUser;
             t.alarm = nil;
             [tasks removeObject:t];
             NSLog(@"Task %@ has been moved to past tasks", [t.time date2detailDateString]);
@@ -489,6 +490,7 @@
     //check orphan
     for (EWTaskItem *t in tasks) {
         if (!t.alarm) {
+            NSLog(@"Something wrong with tasks");
             [self deleteAllTasks];
             return NO;
         }

@@ -99,10 +99,11 @@
     if (currentUser) {
         alarms = [EWAlarmManager sharedInstance].allAlarms;
         tasks = [EWTaskStore sharedInstance].allTasks;
-        /*
-        for (unsigned i = 0; i < self.alarms.count; i++) {
-            _alarmPages[i] = [NSNull null];
-        }*/
+        if (alarms.count != 7 * nWeeksToScheduleTask || tasks.count != 7 * nWeeksToScheduleTask) {
+            NSLog(@"===== Something wrong with the Alarm or Task data, please check! =====");
+            alarms = nil;
+            tasks = nil;
+        }
         
     }else{
         alarms = nil;
