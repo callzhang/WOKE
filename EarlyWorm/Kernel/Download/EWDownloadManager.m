@@ -110,7 +110,7 @@
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)downloadURL
 {
-    NSLog(@"%s", __func__);
+    
     /*
      The download completed, you need to copy the file at targetPath before the end of this block.
      As an example, copy the file to the Documents directory of your app.
@@ -119,6 +119,9 @@
     NSURLRequest *request = downloadTask.originalRequest;
     NSString *str = request.URL.absoluteString;
     NSString *keyHash = [str MD5Hash];
+    //media
+    EWMediaItem *mi = downloadQueue[request.URL.absoluteString];
+    NSLog(@"%s: media (%@) downloaded", __func__, mi.audioKey);
     //save
     [FTWCache setObject:data forKey:keyHash];
     NSLog(@"Set FTW cache for %@", keyHash);
@@ -155,7 +158,7 @@
  */
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
 {
-    NSLog(@"%s: download finished", __func__);
+    NSLog(@"%s: ======== Background Transfer download finished =========", __func__);
     
 #ifdef BACKGROUND_TEST
     //background audio

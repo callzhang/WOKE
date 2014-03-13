@@ -120,7 +120,7 @@
             
             //clean
             recordingFileUrl = nil;
-            if ([media.audioKey length]<200) {
+            if ([media.audioKey length]<300) {
                 //NSLog(@"media's audioKey after merge is %@", media.audioKey);
             }else{
                 NSLog(@"audioKey failed to upload to S3 server and remained as string data");

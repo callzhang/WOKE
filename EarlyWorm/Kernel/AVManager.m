@@ -13,6 +13,7 @@
 #import <AVFoundation/AVAudioPlayer.h>
 #import "FTWCache.h"
 #import "EWDataStore.h"
+#import "TestFlight.h"
 
 @implementation AVManager
 @synthesize player, recorder, wakeUpTableView, currentCell;
@@ -154,8 +155,8 @@
         NSLog(@"Cannot init player. Reason: %@", err);
     }
     self.player.delegate = self;
-    if(![player prepareToPlay]) NSLog(@"Could not prepare to play %@", url);
-    if (![player play]) NSLog(@"Could not play %@\n", url);
+    if(![player prepareToPlay]) TFLog(@"Could not prepare to play %@", url);
+    if (![player play]) TFLog(@"Could not play %@\n", url);
     [self updateViewForPlayerState:player];
 
 }

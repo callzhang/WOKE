@@ -125,8 +125,8 @@ UIViewController *rootViewController;
         return;
     }
     
-//#ifdef BACKGROUND_TEST
-//    
+#ifdef BACKGROUND_TEST
+    
 //    //开启一个后台任务
 //    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
 //        
@@ -137,9 +137,7 @@ UIViewController *rootViewController;
 //    if ([myTimer isValid]) [myTimer invalidate];
 //    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
 //    NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
-//#endif
-    
-    [[AVManager sharedManager] registerAudioSession];
+#endif
     
     application.applicationIconBadgeNumber = 0;
 }

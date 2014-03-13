@@ -32,6 +32,7 @@
 #import "EWLogInViewController.h"
 #import "EWTaskHistoryCell.h"
 #import "EWCollectionPersonCell.h"
+#import "EWAppDelegate.h"
 
 static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
@@ -178,6 +179,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     }
 }
 
+//The action view (alert)
 - (void)addPerson{
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Add friend"
                                 message:[NSString stringWithFormat:@"Add %@ as your friend?", person.name]
@@ -187,6 +189,16 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     [alert show];
     
 }
+
+- (void)unfriend{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Unfriend"
+                                                    message:[NSString stringWithFormat:@"Really unfriend %@?", person.name]
+                                                   delegate:self
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:@"Cancel", nil];
+    [alert show];
+}
+
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if ([alertView.title isEqualToString:@"Add friend"]) {
@@ -226,14 +238,6 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     }
 }
 
-- (void)unfriend{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Unfriend"
-                                                    message:[NSString stringWithFormat:@"Really unfriend %@?", person.name]
-                                                   delegate:self
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:@"Cancel", nil];
-    [alert show];
-}
 
 @end
 
@@ -373,12 +377,16 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
             [person addFriendsObject:currentUser];
             [context saveOnSuccess:^{
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                [EWUIUtil showHUDWithCheckMark:@"Sent"];
+                MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+                hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+                hud.mode = MBProgressHUDModeCustomView;
+                hud.labelText = @"Added";
+                [hud hide:YES afterDelay:1.5];
             } onFailure:^(NSError *error) {
                 EWAlert(@"Failed to add friend, please try again later");
             }];
         }
-    }if (buttonIndex == 1) {
+    }else if (buttonIndex == 1) {
         //send voice greeting
         EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithNibName:nil bundle:nil];
         controller.task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:person];

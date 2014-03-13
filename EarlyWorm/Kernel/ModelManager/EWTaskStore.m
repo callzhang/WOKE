@@ -57,7 +57,14 @@
         [self scheduleTasks];
     }*/
     //get from relationship
-    _allTasks = [[currentUser.tasks allObjects] mutableCopy];
+    if (currentUser.tasks.count != 0 &&currentUser.tasks.count !=  7 * nWeeksToScheduleTask) {
+        NSLog(@"Something wrong with local data of tasks on current user, start fetch from server");
+        _allTasks = [[self getTasksByPerson:currentUser] mutableCopy];
+        NSLog(@"After fetch, server returned %d tasks, current user has %d tasks.", _allTasks.count, currentUser.tasks.count);
+    }else{
+        _allTasks = [[currentUser.tasks allObjects] mutableCopy];
+    }
+    
     //sort
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
     [_allTasks sortUsingDescriptors:@[sort]];

@@ -121,12 +121,15 @@
                                   kPushTaskKey: taskId};
     [EWServer AWSPush:pushMessage toUsers:users onSuccess:^(SNSPublishResponse *response) {
         NSLog(@"Push media successfully sent to %@, message ID: %@", userIDs, response.messageId);
-        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-        hud.mode = MBProgressHUDModeCustomView;
-        hud.labelText = @"Sent";
-        [hud hide:YES afterDelay:1.5];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+            hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+            hud.mode = MBProgressHUDModeCustomView;
+            hud.labelText = @"Sent";
+            [hud hide:YES afterDelay:1.5];
+        });
+        
 
     } onFailure:^(NSException *exception) {
         NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, exception.description];

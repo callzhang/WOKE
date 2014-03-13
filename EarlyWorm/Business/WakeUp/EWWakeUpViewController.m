@@ -324,8 +324,17 @@
                     [context saveOnSuccess:^{
                         [self initData];//refresh
                         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+                        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+                        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+                        hud.mode = MBProgressHUDModeCustomView;
+                        hud.labelText = @"Sent";
+                        [hud hide:YES afterDelay:1.5];
                     } onFailure:^(NSError *error) {
-                        [EWUIUtil showHUDWithCheckMark:@"Failed"];
+                        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+                        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
+                        hud.mode = MBProgressHUDModeCustomView;
+                        hud.labelText = @"Failed";
+                        [hud hide:YES afterDelay:1.5];
                     }];
                 }
             }
