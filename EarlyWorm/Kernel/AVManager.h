@@ -22,6 +22,15 @@
     AVPlayer *avplayer;
 }
 
+@property (retain, nonatomic) AVAudioPlayer *player;
+@property (retain, nonatomic) AVAudioRecorder *recorder;
+@property (weak, nonatomic) UITableView *wakeUpTableView; //holds all the cells
+@property (weak, nonatomic) EWMediaViewCell *currentCell; //current cell
+@property (retain, nonatomic) UISlider *progressBar;
+@property (retain, nonatomic) UIButton *playStopBtn;
+@property (retain, nonatomic) UIButton *recordStopBtn;
+@property (retain, nonatomic) UILabel *currentTime;
+
 +(AVManager *)sharedManager;
 
 //-(void)playSound:(NSString *)fileName;
@@ -62,12 +71,8 @@
  */
 - (void)registerAudioSession;
 
-@property (retain, nonatomic) AVAudioPlayer *player;
-@property (retain, nonatomic) AVAudioRecorder *recorder;
-@property (weak, nonatomic) UITableView *wakeUpTableView; //holds all the cells
-@property (weak, nonatomic) EWMediaViewCell *currentCell; //current cell
-@property (retain, nonatomic) UISlider *progressBar;
-@property (retain, nonatomic) UIButton *playStopBtn;
-@property (retain, nonatomic) UIButton *recordStopBtn;
-@property (retain, nonatomic) UILabel *currentTime;
+/**
+ Play audio using AVPlayer
+ */
+- (void)playAvplayerWithURL:(NSURL *)url;
 @end

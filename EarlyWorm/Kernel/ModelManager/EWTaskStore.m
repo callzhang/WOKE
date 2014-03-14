@@ -517,7 +517,7 @@
             }
         }
         if (del) {
-            NSLog(@"========System scheduled Local Notification on %@(%@) will be deleted due to no paired stored info========", aNotif.fireDate, aNotif.userInfo[kLocalNotificationUserInfoKey]);
+            NSLog(@"========Local Notification on %@ will be deleted due to no paired stored info========", aNotif.fireDate.weekday);
             [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
         }
     }

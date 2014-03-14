@@ -101,6 +101,7 @@
         tasks = [EWTaskStore sharedInstance].allTasks;
         if (alarms.count != 7 * nWeeksToScheduleTask || tasks.count != 7 * nWeeksToScheduleTask) {
             NSLog(@"===== Something wrong with the Alarm or Task data, please check! =====");
+            tasks = [[EWTaskStore sharedInstance] getTasksByPerson:currentUser];
             alarms = nil;
             tasks = nil;
         }

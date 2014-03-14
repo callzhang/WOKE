@@ -78,6 +78,7 @@
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
 		9B73830D18BE494B00E7FFC3 /* EWDownloadMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */; };
+		9BA03D8D18D34DAC007588F7 /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BA03D8F18D34DAC007588F7 /* EWAlarmsView.xib */; };
 		AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */; };
 		AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */; };
 		AB00B61E1835C49D00DDD54B /* EWWakeUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B61B1835C49D00DDD54B /* EWWakeUpViewController.m */; };
@@ -160,7 +161,6 @@
 		ABA728B51831F74900595CFD /* EWFirstTimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABA728B31831F74900595CFD /* EWFirstTimeViewController.m */; };
 		ABA728B61831F74900595CFD /* EWFirstTimeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */; };
 		ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */; };
-		ABBA978B17EFC6AD0037439B /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABBA978A17EFC6AD0037439B /* EWAlarmsView.xib */; };
 		ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ABBC47AA18530F35009A2E7D /* EarlyWorm.xcdatamodeld */; };
 		ABCCE68E17F298290078F8AA /* EWAlarmPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABCCE68D17F298290078F8AA /* EWAlarmPageView.m */; };
 		ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAC185C054C008CD2B8 /* FTWCache.m */; };
@@ -331,6 +331,8 @@
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
 		9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadMgr.h; path = Download/EWDownloadMgr.h; sourceTree = "<group>"; };
 		9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadMgr.m; path = Download/EWDownloadMgr.m; sourceTree = "<group>"; };
+		9BA03D8E18D34DAC007588F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/EWAlarmsView.xib; sourceTree = "<group>"; };
+		9BA03D9018D34DBD007588F7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hans"; path = "zh-Hans.lproj/EWAlarmsView.xib"; sourceTree = "<group>"; };
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSRuntime.framework; sourceTree = "<group>"; };
 		9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSSNS.framework; sourceTree = "<group>"; };
@@ -447,7 +449,6 @@
 		ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWFirstTimeViewController.xib; path = FirstTime/EWFirstTimeViewController.xib; sourceTree = "<group>"; };
 		ABAB2FC2183DEB310095A3A5 /* EWLocalNotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWLocalNotificationViewController.h; sourceTree = "<group>"; };
 		ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWLocalNotificationViewController.m; sourceTree = "<group>"; };
-		ABBA978A17EFC6AD0037439B /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
 		ABBC47AB18530F35009A2E7D /* EarlyWorm.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EarlyWorm.xcdatamodel; sourceTree = "<group>"; };
 		ABCCE68B17F15D0D0078F8AA /* EWAlarmPage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EWAlarmPage.xib; sourceTree = "<group>"; };
 		ABCCE68C17F298290078F8AA /* EWAlarmPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmPageView.h; sourceTree = "<group>"; };
@@ -578,6 +579,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
 				ABDE25F218CF577300DDBDB5 /* MediaPlayer.framework in Frameworks */,
 				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FB618CCF86500551721 /* AWSSNS.framework in Frameworks */,
@@ -597,7 +599,6 @@
 				AB245FB118CCD79D00551721 /* Security.framework in Frameworks */,
 				AB245FB318CCD99E00551721 /* Foundation.framework in Frameworks */,
 				AB245FA618CCD58F00551721 /* UIKit.framework in Frameworks */,
-				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
 				AB245FB818CCF88F00551721 /* Reveal.framework in Frameworks */,
 				AB245FB518CCF85000551721 /* libstackmob-v2.2.0.a in Frameworks */,
 				AB245FB418CCF81F00551721 /* libz.dylib in Frameworks */,
@@ -938,7 +939,7 @@
 			children = (
 				56FEA55717A5763200FC2938 /* EWAlarmsViewController.h */,
 				56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */,
-				ABBA978A17EFC6AD0037439B /* EWAlarmsView.xib */,
+				9BA03D8F18D34DAC007588F7 /* EWAlarmsView.xib */,
 				ABCCE68C17F298290078F8AA /* EWAlarmPageView.h */,
 				ABCCE68D17F298290078F8AA /* EWAlarmPageView.m */,
 				ABCCE68B17F15D0D0078F8AA /* EWAlarmPage.xib */,
@@ -1531,7 +1532,7 @@
 				AB4B837C18D2C5470087E654 /* new.caf in Resources */,
 				AB07402018125DBE00AAFC90 /* tennisGroup.png in Resources */,
 				ABFCB2E4186E957100355781 /* Drive.caf in Resources */,
-				ABBA978B17EFC6AD0037439B /* EWAlarmsView.xib in Resources */,
+				9BA03D8D18D34DAC007588F7 /* EWAlarmsView.xib in Resources */,
 				AB49BC931854248E004A38DB /* EWLogInViewController.xib in Resources */,
 				AB05BCA317F90313006579AC /* EWAlarmPage.xib in Resources */,
 			);
@@ -1697,6 +1698,15 @@
 			);
 			name = InfoPlist.strings;
 			path = en.lproj;
+			sourceTree = "<group>";
+		};
+		9BA03D8F18D34DAC007588F7 /* EWAlarmsView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9BA03D8E18D34DAC007588F7 /* en */,
+				9BA03D9018D34DBD007588F7 /* zh-Hans */,
+			);
+			name = EWAlarmsView.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

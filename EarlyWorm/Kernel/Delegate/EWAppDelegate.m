@@ -125,6 +125,9 @@ UIViewController *rootViewController;
     }if (!result) {
         return;
     }
+    
+    //responder to remote control
+    [[AVManager sharedManager] prepareRemoteControlEventsListener];
 
 #ifdef BACKGROUND_TEST
     
@@ -196,6 +199,9 @@ UIViewController *rootViewController;
 -(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     NSLog(@"======== Launched in background due to background fetch event ==========");
+    //enable audio session and keep audio port
+    [[AVManager sharedManager] registerAudioSession];
+    
     for (EWTaskItem *task in currentUser.tasks) {
         
         //refresh

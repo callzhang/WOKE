@@ -63,20 +63,18 @@
     //force speaker
     success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
                                                                  error:&error];
-    if (!success) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
+    if (!success || error) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
     //set active
-    success = [[AVAudioSession sharedInstance] setActive:YES error:nil];
-    if (!success){
+    success = [[AVAudioSession sharedInstance] setActive:YES error:&error];
+    if (!success || error){
         NSLog(@"Unable to activate audio session:%@", error);
     }else{
         NSLog(@"Audio session activated!");
     }
     
 #ifdef BACKGROUND_TEST
-    AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"Silence04s" ofType:@"caf"]]];
-    avplayer = [AVPlayer playerWithPlayerItem:item];
-    [avplayer setActionAtItemEnd:AVPlayerActionAtItemEndNone];
-    [avplayer play];
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"tock" ofType:@"caf"]];
+    [self playAvplayerWithURL:url];
     NSLog(@".....Silent audio playing......");
 #endif
 }
@@ -156,6 +154,7 @@
     }else{
         self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
     }
+    player.volume = 1.0;
     
     if (err) {
         NSLog(@"Cannot init player. Reason: %@", err);
@@ -326,61 +325,43 @@
 }
 
 #pragma mark - AVPlayer (Advanced, for stream audio, future)
-//use AVPlayer to play assets via HTTP live stream(advanced)
--(void)playLivePath:(NSString *)fileName{
-    NSURL *url = [NSURL URLWithString:@"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"];
-    AVPlayerItem *playerItem = [AVPlayerItem alloc];
-    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:url options:nil];
-    if (asset.tracks) {
-        //try to load locally first
-        playerItem = [playerItem initWithAsset:asset];
-    }else{
-        //network
-        playerItem = [playerItem initWithURL:url];
-    }
-    //observe status
-    [playerItem addObserver:self forKeyPath:@"status" options:0 context:nil];
-    //define player
-    self.player = [AVPlayer playerWithPlayerItem:playerItem];
-    [player prepareToPlay];
-    [player play];
+- (void)playAvplayerWithURL:(NSURL *)url{
+    NSLog(@"AVPlayer is about to play %@", url);
+    AVPlayerItem *item = [AVPlayerItem playerItemWithURL:url];
+    avplayer = [AVPlayer playerWithPlayerItem:item];
+    [avplayer setActionAtItemEnd:AVPlayerActionAtItemEndNone];
+    avplayer.volume = 1.0;
+    [avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
+    [avplayer play];
 }
 
 
-/*
+
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context{
-    if ([keyPath isEqual:@"status"]) {
-        //NSNumber *length = [[[[[self.player tracks] objectAtIndex:0] assetTrack] asset] duration];
-        
-        if (self.player.status == AVPlayerStatusReadyToPlay) {
-            [self playerPlay];
+    if ([object isKindOfClass:[avplayer class]] && [keyPath isEqual:@"status"]) {
+        //observed status change for avplayer
+        if (avplayer.status == AVPlayerStatusReadyToPlay) {
+            [avplayer play];
             //tracking time
-            Float64 durationSeconds = CMTimeGetSeconds([self.player.currentItem duration]);
+            Float64 durationSeconds = CMTimeGetSeconds([avplayer.currentItem duration]);
             CMTime durationInterval = CMTimeMakeWithSeconds(durationSeconds/100, 1);
             
-            [self.player addPeriodicTimeObserverForInterval:durationInterval queue:NULL usingBlock:^(CMTime time){
+            [avplayer addPeriodicTimeObserverForInterval:durationInterval queue:NULL usingBlock:^(CMTime time){
                 
                 NSString *timeDescription = (NSString *)
 //                CFBridgingRelease(CMTimeCopyDescription(NULL, self.player.currentTime));
                 CFBridgingRelease(CMTimeCopyDescription(NULL, time));
                 NSLog(@"Passed a boundary at %@", timeDescription);
             }];
-        }else if(self.player.status == AVPlayerStatusFailed){
+        }else if(avplayer.status == AVPlayerStatusFailed){
             // deal with failure
             NSLog(@"Failed to load audio");
         }
     }
 }
-
-
-//start to play media when ready
--(void)playerPlay{
-    [self.player play];
-}
-*/
 
 
 
@@ -425,8 +406,12 @@ void RouteChangeListener(	void *inClientData,
     if (success) {
         NSLog(@"Registered AVManager for remote control events");
     }else{
-        NSLog(@"AVManager failed to listen remote control events");
+        NSLog(@"@@@ AVManager failed to listen remote control events @@@");
     }
+}
+
+- (BOOL)canBecomeFirstResponder{
+    return YES;
 }
 
 - (void)resignRemoteControlEventsListener{
@@ -445,6 +430,7 @@ void RouteChangeListener(	void *inClientData,
         switch (receivedEvent.subtype) {
                 
             case UIEventSubtypeRemoteControlTogglePlayPause:
+                NSLog(@"Received remote control: play");
                 [player play];
                 break;
                 
