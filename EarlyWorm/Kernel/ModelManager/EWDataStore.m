@@ -25,6 +25,7 @@ NSManagedObjectContext *context;
 SMClient *client;
 SMPushClient *pushClient;
 AmazonSNSClient *snsClient;
+NSDate *lastChecked;
 
 @implementation EWDataStore
 @synthesize model;
@@ -42,6 +43,8 @@ AmazonSNSClient *snsClient;
 -(id)init{
     self = [super init];
     if (self) {
+        //lastChecked
+        lastChecked = [NSDate date];
         
         //AWS
         snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];

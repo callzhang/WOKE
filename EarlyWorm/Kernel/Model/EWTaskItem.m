@@ -50,7 +50,6 @@
         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:buzzersData options:0 error:&err];
         return json;
     }
-    NSLog(@"No buzzer yet");
     return @{};
 }
 

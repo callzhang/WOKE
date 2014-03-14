@@ -119,15 +119,21 @@
     
     NSString *file = nil;
     NSString *type = nil;
-    if (array.count >= 2) {
-        file = [array firstObject];
-        type = [array lastObject];
-    }
-    else {
+    if (array.count == 1) {
         file = fileName;
         type = @"";
+    }else if (array.count >= 2) {
+        file = [array firstObject];
+        type = [array lastObject];
+    }else {
+        NSLog(@"Wrong file name passed in");
+        return;
     }
     NSString *str = [[NSBundle mainBundle] pathForResource:file ofType:type];
+    if (!str) {
+        NSLog(@"File doesn't exsits in main bundle");
+        return;
+    }
     NSURL *soundURL = [[NSURL alloc] initFileURLWithPath:str];
     //call the core play function
     [self playSoundFromURL:soundURL];

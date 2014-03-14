@@ -133,6 +133,7 @@
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([object isKindOfClass:[EWTaskItem class]]) {
+        //TODO: dispatch different tasks for each updates
         NSLog(@"Observed change for task %@", [[(EWTaskItem *)object time] date2dayString]);
         self.task = object;
         [self setNeedsDisplay];

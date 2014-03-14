@@ -65,9 +65,6 @@
     }else if([FTWCache objectForKey:pathHash]){
         //already cached
         NSLog(@"Media already cached: %@", path);
-#ifdef BACKGROUND_TEST
-        [[AVManager sharedManager] playSoundFromURL:pathURL];
-#endif
         return;
         
     }else{
@@ -86,6 +83,7 @@
 - (void)downloadTask:(EWTaskItem *)t{
     task = t;
     for (EWMediaItem *mi in t.medias) {
+        
         [self downloadMedia:mi];
     }
 }
@@ -126,10 +124,6 @@
     [FTWCache setObject:data forKey:keyHash];
     NSLog(@"Set FTW cache for %@", keyHash);
     
-#ifdef BACKGROUND_TEST
-    [[AVManager sharedManager] playSoundFromURL:request.URL];
-#endif
-    
     //remove task from queue
     [downloadQueue removeObjectForKey:str];
 }
@@ -143,7 +137,12 @@
 
     if (error == nil)
     {
-        NSLog(@"Task completed successfully: %@", t);
+        NSLog(@"%s: Task completed successfully: %@", __func__, t);
+        
+#ifdef BACKGROUND_TEST
+        [[AVManager sharedManager] playSoundFromURL:t.originalRequest.URL];
+#endif
+        
     }
     else
     {
@@ -160,19 +159,15 @@
 {
     NSLog(@"%s: ======== Background Transfer download finished =========", __func__);
     
-#ifdef BACKGROUND_TEST
-    //background audio
-    NSLog(@"about to play task: %@", task.ewtaskitem_id);
-    [[AVManager sharedManager] playTask:task];
-#endif
     
-    //clera task
+    //clear task
     task = nil;
     if (backgroundSessionCompletionHandler) {
+        NSLog(@"All tasks are finished, completionHandler returned");
         backgroundSessionCompletionHandler();
     }
     
-    NSLog(@"All tasks are finished, completionHandler returned");
+    
 }
 
 //Tells the delegate that the download task has resumed downloading. (required)

@@ -18,12 +18,6 @@
  */
 @property (retain, nonatomic) NSMutableArray *allTasks;
 
-/**
- Time stamp of last checked.
- @discussion: Used to determin if another check is needed.
- */
-@property (nonatomic) NSDate *lastChecked;
-
 + (EWTaskStore *)sharedInstance;
 //find
 /**

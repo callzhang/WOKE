@@ -16,8 +16,6 @@
 #import "EWAlarmManager.h"
 #import "EWTaskStore.h"
 #import "EWPersonStore.h"
-#import "EWUserManagement.h"
-#import "EWServer.h"
 
 //tools
 #import "TestFlight.h"
@@ -28,6 +26,9 @@
 #import "EWTaskItem.h"
 #import "EWMediaItem.h"
 #import "EWDownloadManager.h"
+#import "EWServer.h"
+#import "EWUserManagement.h"
+#import "EWDataStore.h"
 
 //global view for HUD
 UIViewController *rootViewController;
@@ -124,7 +125,7 @@ UIViewController *rootViewController;
     }if (!result) {
         return;
     }
-    
+
 #ifdef BACKGROUND_TEST
     
 //    //开启一个后台任务
@@ -194,9 +195,24 @@ UIViewController *rootViewController;
 #pragma mark - Background fetch method (this is called periodocially
 -(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    NSLog(@"======== Launched in background due to background fetch event (%ld) ==========", count++);
+    NSLog(@"======== Launched in background due to background fetch event ==========");
+    for (EWTaskItem *task in currentUser.tasks) {
+        
+        //refresh
+        [context refreshObject:task mergeChanges:YES];
+        
+        //check
+        if ([lastChecked isEarlierThan:task.lastmoddate]) {
+            NSLog(@"Find task on %@ has possible updates", task.time.weekday);
+            [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
+            
+            //download
+            [[EWDownloadManager sharedInstance] downloadTask:task];
+        }
+    }
     
-    
+    //update checked time
+    lastChecked = [NSDate date];
     
     completionHandler(UIBackgroundFetchResultNewData);
 }

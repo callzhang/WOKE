@@ -20,6 +20,8 @@
         // Initialization code
         self.title.text = @"早上好";
         self.description.text = @"早上的虫子更好";
+        self.progressBar.maximumValueImage = [UIImage imageNamed:@"MediaCell"];
+        
     }
     return self;
 }

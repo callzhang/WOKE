@@ -14,6 +14,7 @@
 #import "EWAlarmManager.h"
 #import "NSDate+Extend.h"
 #import "StackMob.h"
+#import "EWDataStore.h"
 
 @implementation EWTaskStore
 //@synthesize context, model;
@@ -52,10 +53,7 @@
 
 #pragma mark - SETTER & GETTER
 - (NSArray *)allTasks{
-    /*
-    if ([self.lastChecked isOutDated]) {
-        [self scheduleTasks];
-    }*/
+
     //get from relationship
     if (currentUser.tasks.count != 0 &&currentUser.tasks.count !=  7 * nWeeksToScheduleTask) {
         NSLog(@"Something wrong with local data of tasks on current user, start fetch from server");
@@ -100,7 +98,7 @@
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
     NSArray *tasks = [[NSArray alloc] init];
-    if (![self.lastChecked isOutDated] && person.tasks) {
+    if (![lastChecked isOutDated] && person.tasks) {
         tasks = [person.pastTasks allObjects];
     }else{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
@@ -211,7 +209,7 @@
     }];
     
     //last checked
-    self.lastChecked = [NSDate date];
+    lastChecked = [NSDate date];
     return tasks;
 }
 
@@ -319,17 +317,16 @@
 
 - (void)updateNotifTone:(NSNotification *)notif{
     EWAlarmItem *a = notif.userInfo[@"alarm"];
+    
     if (!a.tasks.count){
-        //[NSException raise:@"No task in alarm" format:@"Check notification"];
         NSLog(@"alarm's task not fetched, refresh it from server");
         [context refreshObject:a mergeChanges:YES];
     }
+    
     for (EWTaskItem *t in a.tasks) {
-        for (UILocalNotification *localNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-            [self cancelNotificationForTask:t];
-            [self scheduleNotificationForTask:t];
-            NSLog(@"Notification on %@ tone updated to: %@", t.time.date2String, a.tone);
-        }
+        [self cancelNotificationForTask:t];
+        [self scheduleNotificationForTask:t];
+        NSLog(@"Notification on %@ tone updated to: %@", t.time.date2String, a.tone);
     }
 }
 
@@ -443,7 +440,7 @@
 #pragma mark - check
 - (BOOL)checkTasks{
     //time stemp for last check
-    self.lastChecked = [NSDate date];
+    lastChecked = [NSDate date];
     NSLog(@"Checking tasks");
     NSMutableArray *tasks = [[self getTasksByPerson:currentUser] mutableCopy];
 

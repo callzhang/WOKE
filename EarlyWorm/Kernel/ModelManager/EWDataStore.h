@@ -20,6 +20,7 @@ extern NSManagedObjectContext *context;
 extern SMClient *client;
 extern SMPushClient *pushClient;
 extern AmazonSNSClient *snsClient;
+extern NSDate *lastChecked;
 
 @interface EWDataStore : NSObject
 

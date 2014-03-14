@@ -273,7 +273,7 @@
                         [rootViewController dismissViewControllerAnimated:YES completion:^{
                             [rootViewController presentViewController:[[EWWakeUpViewController alloc] initWithTask:task] animated:YES completion:^{
                                 //post notification
-                                [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID}];
+                                [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: taskID}];
                             }];
                         }];
                     }
