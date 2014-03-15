@@ -331,8 +331,8 @@
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
 		9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadMgr.h; path = Download/EWDownloadMgr.h; sourceTree = "<group>"; };
 		9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadMgr.m; path = Download/EWDownloadMgr.m; sourceTree = "<group>"; };
-		9BA03D8E18D34DAC007588F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/EWAlarmsView.xib; sourceTree = "<group>"; };
-		9BA03D9018D34DBD007588F7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hans"; path = "zh-Hans.lproj/EWAlarmsView.xib"; sourceTree = "<group>"; };
+		9BA03D8E18D34DAC007588F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/EWAlarmsView.xib; sourceTree = "<group>"; };
+		9BA03D9018D34DBD007588F7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hans"; path = "zh-Hans.lproj/EWAlarmsView.xib"; sourceTree = "<group>"; };
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSRuntime.framework; sourceTree = "<group>"; };
 		9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSSNS.framework; sourceTree = "<group>"; };
@@ -579,9 +579,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
 				ABDE25F218CF577300DDBDB5 /* MediaPlayer.framework in Frameworks */,
-				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FB618CCF86500551721 /* AWSSNS.framework in Frameworks */,
 				AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */,
 				AB245FB218CCD99500551721 /* CoreData.framework in Frameworks */,

@@ -143,7 +143,7 @@
     if (newAlarm) {
         //notification
         NSLog(@"Post all new alarms");
-        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmsAllNewNotification object:self userInfo:nil];
+        //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmsAllNewNotification object:self userInfo:nil];
     }
     //save all alarms
     [context saveOnSuccess:^{
@@ -189,12 +189,15 @@
     
     if (alarms.count == 0) {
         //need set up later
-        return YES;
+        if (currentUser.tasks.count == 0) {
+            return YES;
+        }
+        return NO;
     }else if (alarms.count == 7){
         return YES;
     }else{
         //something wrong
-        NSLog(@"Something wrong with alarms, delete all");
+        NSLog(@"Something wrong with alarms (%d), delete all", alarms.count);
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alarm incorrect" message:@"Please reschedule your alarm" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         //delete all alarms

@@ -95,11 +95,17 @@ UIViewController *rootViewController;
         }
     }
     
+    
+    //window
+    [self.window makeKeyAndVisible];
+    
+    //init coredata and backend server
+    [EWDataStore sharedInstance];
+    
     //User login
     [[EWUserManagement sharedInstance] login];
     
-    //last step
-    [self.window makeKeyAndVisible];
+    
 
     return YES;
 }
@@ -201,6 +207,7 @@ UIViewController *rootViewController;
     NSLog(@"======== Launched in background due to background fetch event ==========");
     //enable audio session and keep audio port
     [[AVManager sharedManager] registerAudioSession];
+    [[AVManager sharedManager] playSystemSound];
     
     for (EWTaskItem *task in currentUser.tasks) {
         

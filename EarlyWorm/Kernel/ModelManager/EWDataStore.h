@@ -27,6 +27,7 @@ extern NSDate *lastChecked;
 @property (nonatomic, retain) NSManagedObjectContext *context;
 @property (nonatomic) NSManagedObjectModel *model;
 @property (nonatomic) SMCoreDataStore *coreDataStore;
+@property (nonatomic) dispatch_queue_t dispatch_queue;
 /**
  This is considered thread safe way to call context for current thread
  */

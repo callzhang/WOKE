@@ -37,6 +37,7 @@
 //background fetch
 #define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
 
+
 // 开关宏
 /*
  *  在测试代码外包上 "ifndef DEV_TEST" 开关
@@ -51,7 +52,8 @@
 #define EWAlert(str)    [[[UIAlertView alloc] initWithTitle:@"Alert" message:str delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
 //Global parameters
-#define nWeeksToScheduleTask 1
+#define nWeeksToScheduleTask            1
+#define nLocalNotifPerTask              10
 #define serverUpdateInterval            1800 //30 min
 #define alarmInterval                   600 //10min
 #define kMaxWakeTime                    600 // 10min

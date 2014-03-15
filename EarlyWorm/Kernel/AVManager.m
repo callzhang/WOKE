@@ -14,6 +14,7 @@
 #import "FTWCache.h"
 #import "EWDataStore.h"
 #import "TestFlight.h"
+@import AudioToolbox;
 
 @implementation AVManager
 @synthesize player, recorder, wakeUpTableView, currentCell;
@@ -48,6 +49,7 @@
         
         //Register for remote control event
         [self prepareRemoteControlEventsListener];
+        
     }
     return self;
 }
@@ -73,9 +75,9 @@
     }
     
 #ifdef BACKGROUND_TEST
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"tock" ofType:@"caf"]];
-    [self playAvplayerWithURL:url];
-    NSLog(@".....Silent audio playing......");
+//    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"tock" ofType:@"caf"]];
+//    [self playAvplayerWithURL:url];
+//    NSLog(@".....Silent audio playing......");
 #endif
 }
 
@@ -140,10 +142,6 @@
 //main play function
 - (void)playSoundFromURL:(NSURL *)url{
     NSLog(@"About to play %@", [url path]);
-    
-    if (!progressBar) {
-        NSLog(@"Progress bar not set! Remember to add it before playing.");
-    }
     
     //data
     NSError *err;
@@ -331,37 +329,37 @@
     avplayer = [AVPlayer playerWithPlayerItem:item];
     [avplayer setActionAtItemEnd:AVPlayerActionAtItemEndNone];
     avplayer.volume = 1.0;
-    [avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
+    //[avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
     [avplayer play];
 }
 
 
 
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context{
-    if ([object isKindOfClass:[avplayer class]] && [keyPath isEqual:@"status"]) {
-        //observed status change for avplayer
-        if (avplayer.status == AVPlayerStatusReadyToPlay) {
-            [avplayer play];
-            //tracking time
-            Float64 durationSeconds = CMTimeGetSeconds([avplayer.currentItem duration]);
-            CMTime durationInterval = CMTimeMakeWithSeconds(durationSeconds/100, 1);
-            
-            [avplayer addPeriodicTimeObserverForInterval:durationInterval queue:NULL usingBlock:^(CMTime time){
-                
-                NSString *timeDescription = (NSString *)
-//                CFBridgingRelease(CMTimeCopyDescription(NULL, self.player.currentTime));
-                CFBridgingRelease(CMTimeCopyDescription(NULL, time));
-                NSLog(@"Passed a boundary at %@", timeDescription);
-            }];
-        }else if(avplayer.status == AVPlayerStatusFailed){
-            // deal with failure
-            NSLog(@"Failed to load audio");
-        }
-    }
-}
+//- (void)observeValueForKeyPath:(NSString *)keyPath
+//                      ofObject:(id)object
+//                        change:(NSDictionary *)change
+//                       context:(void *)context{
+//    if ([object isKindOfClass:[avplayer class]] && [keyPath isEqual:@"status"]) {
+//        //observed status change for avplayer
+//        if (avplayer.status == AVPlayerStatusReadyToPlay) {
+//            [avplayer play];
+//            //tracking time
+//            Float64 durationSeconds = CMTimeGetSeconds([avplayer.currentItem duration]);
+//            CMTime durationInterval = CMTimeMakeWithSeconds(durationSeconds/100, 1);
+//            
+//            [avplayer addPeriodicTimeObserverForInterval:durationInterval queue:NULL usingBlock:^(CMTime time){
+//                
+//                NSString *timeDescription = (NSString *)
+//                //CFBridgingRelease(CMTimeCopyDescription(NULL, avplayer.currentTime));
+//                CFBridgingRelease(CMTimeCopyDescription(NULL, time));
+//                NSLog(@"Passed a boundary at %@", timeDescription);
+//            }];
+//        }else if(avplayer.status == AVPlayerStatusFailed){
+//            // deal with failure
+//            NSLog(@"Failed to load audio");
+//        }
+//    }
+//}
 
 
 
@@ -446,6 +444,15 @@ void RouteChangeListener(	void *inClientData,
                 break;
         }
     }
+}
+
+
+#pragma  mark - SystemSoundService
+- (void)playSystemSound{
+    //SystemSound
+    NSURL *soundUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"new" ofType:@"caf"]];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)soundUrl, &soundID);
+    AudioServicesPlayAlertSound(soundID);
 }
 
 @end

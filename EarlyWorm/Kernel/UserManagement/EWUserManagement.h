@@ -22,4 +22,9 @@
 - (void)registerFacebook;
 - (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
 - (void)registerPushNotification;
+
+/**
+ Login with username for cached coredata info
+ */
+- (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock;
 @end

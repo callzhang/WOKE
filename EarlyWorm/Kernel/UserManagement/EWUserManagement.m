@@ -43,64 +43,25 @@
 
 
 - (void)login{
-    //init coredata and backend server
-    [EWDataStore sharedInstance];
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     //get logged in user
     if ([client isLoggedIn]) {
         //user already logged in
         //fetch user in coredata cache(offline) with related objects
         [client getLoggedInUserOnSuccess:^(NSDictionary *result) {
-            NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-            userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", result[@"username"]];
-            userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];//no use for SM
-            userFetch.returnsObjectsAsFaults = NO;
-            //cache only
-            SMRequestOptions *options = [SMRequestOptions options];
-            options.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
-            //fetch
-            [context executeFetchRequest:userFetch returnManagedObjectIDs:NO successCallbackQueue:nil failureCallbackQueue:nil options:options onSuccess:^(NSArray *results) {
-                if (results.count != 1) {
-                    // There should only be one result
-                    [NSException raise:@"More than one user fetched" format:@"Check username:%@",result[@"username"]];
-                }
-                //contineue user log in tasks
-                NSLog(@"UserManagement: User %@ data has fetched from cache", result[@"username"]);
-                //merge changes
-                currentUser = results[0];
-                [context refreshObject:currentUser mergeChanges:YES];
-                
-                //check alarms and tasks
-                //[[EWDataStore sharedInstance] checkAlarmData];
-                
-                //Broadcast user login event
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-                
-                //login to fb
-                //TODO
-                
-                //HUD
-                //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
-                
-            } onFailure:^(NSError *error) { //fail to fetch user
-                NSLog(@"Failed to fetch logged in user: %@", error.description);
-                // Reset local session info
-                [client.session clearSessionInfo];
-                // present login view
-                EWLogInViewController *controller = [[EWLogInViewController alloc] init];
-                [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:controller animated:YES completion:NULL];
-            }];
+            
+            [self loginWithCachedDataStore:result[@"username"] withCompletionBlock:^{}];
             
             
         } onFailure:^(NSError *error) { //failed to get logged in user
-            NSLog(@"UserManagement: Failed to get logged in user from SM Cache: %@", error);
-            EWAlert(@"Failed to log into backend, please restart Woke.");
+            NSLog(@"%s: ======= Failed to get logged in user from SM Cache ======= %@", __func__, error);
+            [self loginWithLocalInfo];
         }];
         
         
     }else{
         //log in using local machine info
-        [self loginWithDeviceID];
+        [self loginWithLocalInfo];
     }
     
     
@@ -108,8 +69,104 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
 }
 
+- (void)loginWithLocalInfo{
+    NSLog(@"Login with facebook info");
+    EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+    [rootViewController presentViewController:loginVC animated:YES completion:NULL];
+}
+
+
+
+
+//login with local user default info
+- (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock{
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    hud.labelText = @"Loading cached user info";
+    //fetch
+    NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
+    userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", username];
+    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];//no use for SM
+    userFetch.returnsObjectsAsFaults = NO;
+    
+    //cache only
+    SMRequestOptions *options = [SMRequestOptions options];
+    options.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
+    
+    //fetch
+    [context executeFetchRequest:userFetch returnManagedObjectIDs:NO successCallbackQueue:nil failureCallbackQueue:nil options:options onSuccess:^(NSArray *results) {
+        
+        if (results.count == 0) {
+            
+            NSLog(@"No local user for %@, fetch from server", username);
+            NSArray *newResult = [context executeFetchRequestAndWait:userFetch error:NULL];
+            currentUser = newResult[0];
+            
+            //completion block
+            completionBlock();
+        }else{
+            //contineue user log in tasks
+            NSLog(@"UserManagement: User %@ data has fetched from cache", username);
+            
+            //merge changes
+            currentUser = results[0];
+            
+            //background refresh
+            if (completionBlock) {
+                dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+                    [context refreshObject:currentUser mergeChanges:YES];
+                    //completion block
+                    NSLog(@"Run completion block after fb_user -> coredata_user");
+                    completionBlock();
+                });
+            }
+            
+            
+        }
+        
+        
+        
+        //check alarms and tasks
+        //[[EWDataStore sharedInstance] checkAlarmData];
+        
+        //Broadcast user login event
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+        
+        //login to fb
+        //TODO
+        
+        //HUD
+        //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
+        
+    } onFailure:^(NSError *error) { //fail to fetch user
+        NSLog(@"Failed to fetch logged in user in cache: %@", error.description);
+        // Reset local session info
+        [client.session clearSessionInfo];
+        // fetch remote
+        [context executeFetchRequest:userFetch onSuccess:^(NSArray *results) {
+            
+            //assign current user
+            if (results.count == 1) {
+                currentUser = results[0];
+                //completion block
+                completionBlock();
+                //Broadcast user login event
+                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+            }else{
+                [self loginWithDeviceIDWithCompletionBlock:completionBlock];
+            }
+            
+        } onFailure:^(NSError *error) {
+            
+            //login with device id
+            [self loginWithDeviceIDWithCompletionBlock:completionBlock];
+        }];
+        
+    }];
+}
+
 //log in using local machine info
-- (void)loginWithDeviceID{
+- (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block{
     //log out fb first
     [FBSession.activeSession closeAndClearTokenInformation];
     //get user default
@@ -131,7 +188,8 @@
     [client loginWithUsername:username password:password onSuccess:^(NSDictionary *result) {
         currentUser = [[EWPersonStore sharedInstance] getPersonByID:username];
         
-        [[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
+        //callback
+        block();
         
         //broadcast
         [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
@@ -142,7 +200,7 @@
         EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:context];
         [newMe setUsername:username];
         [newMe setPassword:password];
-        newMe.name = @"No Name";
+        newMe.name = [NSString stringWithFormat:@"User_%@", username];
         newMe.profilePic = [UIImage imageNamed:@"profile"];
         currentUser = newMe;
         
@@ -156,7 +214,9 @@
             
             //login
             [client loginWithUsername:currentUser.username password:password onSuccess:^(NSDictionary *result){
-                //[[EWDataStore sharedInstance] checkAlarmData]; //delete residual info (local notif)
+                //callback
+                block();
+                
                 //broadcast
                 [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
                 //HUD
@@ -166,6 +226,8 @@
                 if (error.code == -105) {
                     //network error
                     EWAlert(@"No network connection. Unable to register new user to server");
+                }else{
+                    NSLog(@"Server error, please try again later. %@", error.description);
                 }
             }];
         } onFailure:^(NSError *error) {
@@ -183,7 +245,11 @@
         //log out fb
         [FBSession.activeSession closeAndClearTokenInformation];
         //log in with device id
-        [self loginWithDeviceID];
+        //[self loginWithDeviceIDWithCompletionBlock:NULL];
+        
+        //login view
+        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+        [rootViewController presentViewController:loginVC animated:YES completion:NULL];
         
     } onFailure:^(NSError *error) {
         EWAlert(@"Unable to logout, please check!");
@@ -194,6 +260,7 @@
 
 #pragma mark - userLoginEventHandler
 - (void)userLoginEventHandler{
+    
     [self registerAPNS];
     [self registerLocation];
 
@@ -289,12 +356,14 @@
     if(!currentUser){
         NSLog(@"======= Something wrong, currentUser is nil ========");
     }
-    
-    //[client getLoggedInUserOnSuccess:^(NSDictionary *result){
         
     //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    
+    //get current user
     EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
     currentUser = person;
+    
+    //email
     if (!person.email) person.email = user[@"email"];
     //name
     if(!person.name) person.name = user.name;
@@ -317,7 +386,7 @@
         person.preference = [defaults mutableCopy];
     }
     //profile pic, async download, need to assign img to person before leave
-    NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", user.id];
+    NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
     //[self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
     
     //[self.profileView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]] placeholderImage:[UIImage imageNamed:@"profile.png"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {//
@@ -332,17 +401,12 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey: person}];
     
     //hide hud if possible
-    EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-    [MBProgressHUD hideAllHUDsForView:delegate.window.rootViewController.view animated:YES];
+    //[MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES]; //handled in AlarmsVC
             
         
         
     //});
-    /*
-    } onFailure:^(NSError *err){
-        // Error
-        [NSException raise:@"Unable to find current user" format:@"Check your code: %@", err.description];
-    }];*/
+
 }
 
 #pragma mark - FACEBOOK

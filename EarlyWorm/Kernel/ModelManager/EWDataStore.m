@@ -30,6 +30,7 @@ NSDate *lastChecked;
 @implementation EWDataStore
 @synthesize model;
 @synthesize currentContext;
+@synthesize dispatch_queue;
 
 + (EWDataStore *)sharedInstance{
     static EWDataStore *sharedStore_ = nil;
@@ -43,6 +44,9 @@ NSDate *lastChecked;
 -(id)init{
     self = [super init];
     if (self) {
+        //dispatch queue
+        dispatch_queue = dispatch_queue_create("com.wokealarm.datastore.dispatchQueue", DISPATCH_QUEUE_SERIAL);
+        
         //lastChecked
         lastChecked = [NSDate date];
         
@@ -70,8 +74,11 @@ NSDate *lastChecked;
         self.coreDataStore.defaultSMMergePolicy = SMMergePolicyLastModifiedWins;
         [client.networkMonitor setNetworkStatusChangeBlock:^(SMNetworkStatus status) {
             if (status == SMNetworkStatusReachable) {
-                NSLog(@"Connected to server, strat syncing");
-                [blockCoreDataStore syncWithServer];
+                if (currentUser) {
+                    NSLog(@"Connected to server, and user fetched, strat syncing");
+                    [blockCoreDataStore syncWithServer];
+                }
+                
             }
             else {
                 NSLog(@"Disconnected from server, enter cache only mode");
@@ -83,7 +90,10 @@ NSDate *lastChecked;
             NSLog(@"Syncing is complete, item synced: %@. Change the policy to fetch from the network", objects);
             [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
             // Notify other views that they should reload their data from the network
-            [[NSNotificationCenter defaultCenter] postNotificationName:kFinishedSync object:nil];//TODO
+            if (objects.count) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:kFinishedSync object:nil];//TODO
+            }
+            
         }];
         
         //refesh failure behavior
@@ -101,7 +111,7 @@ NSDate *lastChecked;
         }];
 
         //watch for login event
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginCheck) name:kPersonLoggedIn object:Nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginDataCheck) name:kPersonLoggedIn object:Nil];
     }
     return self;
 }
@@ -130,29 +140,54 @@ NSDate *lastChecked;
 
 
 #pragma mark - Login Check
-- (void)loginCheck{
-    [context refreshObject:currentUser mergeChanges:YES];
+- (void)loginDataCheck{
+    //change fetch policy
+    [self.coreDataStore syncWithServer];
+    
+    //refresh current user
+    dispatch_async(dispatch_queue, ^{
+        NSLog(@"1. refresh current user");
+        [context refreshObject:currentUser mergeChanges:YES];
+    });
+    
     [self checkAlarmData];
 }
 
 
 - (void)checkAlarmData{
+    NSInteger nAlarm = [[EWAlarmManager sharedInstance] allAlarms].count;
+    NSInteger nTask = [[EWTaskStore sharedInstance] allTasks].count;
+    if (nTask == 0 && nAlarm == 0) {
+        return;
+    }
+    
+    
     //check alarm
     BOOL alarmGood = [EWAlarmManager.sharedInstance checkAlarms];
     if (!alarmGood) {
-        NSLog(@"Alarm not set up yet");
-        //[[EWAlarmManager sharedInstance] scheduleAlarm];
+        NSLog(@"2. Alarm not set up yet");
+        dispatch_async(dispatch_queue, ^{
+            [[EWAlarmManager sharedInstance] scheduleAlarm];
+        });
+        
     }
     
     //check task
     BOOL taskGood = [EWTaskStore.sharedInstance checkTasks];
     if (!taskGood) {
-        NSLog(@"Task needs to be scheduled");
-        [EWTaskStore.sharedInstance scheduleTasks];
+        NSLog(@"3. Task needs to be scheduled");
+        dispatch_async(dispatch_queue, ^{
+            [EWTaskStore.sharedInstance scheduleTasks];
+        });
+        
     }
     
     //check local notif
-    [EWTaskStore.sharedInstance checkScheduledNotifications];
+    dispatch_async(dispatch_queue, ^{
+        NSLog(@"4. Start check local notification");
+        [EWTaskStore.sharedInstance checkScheduledNotifications];
+    });
+    
 }
 
 #pragma mark - DATA from Amazon S3

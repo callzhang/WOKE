@@ -20,6 +20,7 @@
     NSURL *recordingFileUrl;
     AVQueuePlayer *qPlayer;
     AVPlayer *avplayer;
+    SystemSoundID soundID;
 }
 
 @property (retain, nonatomic) AVAudioPlayer *player;
@@ -33,11 +34,6 @@
 
 +(AVManager *)sharedManager;
 
-//-(void)playSound:(NSString *)fileName;
-/**
- Use AVPlayer to play assets
- */
-- (void)playLivePath:(NSString *)fileName;
 /**
  Play sound from main bundle
  @param fileName: the file name without path
@@ -75,4 +71,7 @@
  Play audio using AVPlayer
  */
 - (void)playAvplayerWithURL:(NSURL *)url;
+
+- (void)playSystemSound;
+
 @end

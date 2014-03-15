@@ -181,38 +181,41 @@
      the StackMob user that might be created if one doesn't already exist.  Then login to StackMob with Facebook credentials.
      */
     [[FBRequest requestForMe] startWithCompletionHandler:
-     ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
+     ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
          if (!error) {
              EWPerson *oldUser = currentUser;
-             [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:user.username onSuccess:^(NSDictionary *result) {
-                 NSLog(@"Logged in facebook for:%@", user.name);
+             [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:fb_user.username onSuccess:^(NSDictionary *result) {
+                 NSLog(@"Logged in facebook for:%@", fb_user.name);
                  
-                 //exchange AWS token
-                 NSLog(@"New user aws: %@, old user aws: %@", currentUser.aws_id, oldUser.aws_id);
-                 currentUser.aws_id = oldUser.aws_id;
+                 //fetch coredata person for fb_user
+                 [[EWUserManagement sharedInstance] loginWithCachedDataStore:fb_user.username withCompletionBlock:^{
+                     //update fb info
+                     [[EWUserManagement sharedInstance] updateUserWithFBData:fb_user];
+                     
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         //update UI
+                         [self updateView];
+                         
+                         //stop indicator
+                         [self.indicator stopAnimating];
+                         
+                         //leaving
+                         [self dismissViewControllerAnimated:YES completion:^{
+                             [context saveOnSuccess:^{
+                                 NSLog(@"User %@ logged in from facebook", fb_user.username);
+                             } onFailure:^(NSError *error) {
+                                 NSLog(@"Unable to save user info");
+                             }];
+                         }];
+
+                     });
+                     
+                     
+                 }];
+                 
+                 //void old user AWS token
                  oldUser.aws_id = @"";
                  
-                 if ([oldUser.username isEqualToString:user.username] && oldUser.username) {
-                     NSLog(@"Facebook user %@ has already registered on StackMob", user.username);
-                     [[EWUserManagement sharedInstance] updateUserWithFBData:user];
-                 }else{
-                     //new user, direct overwrite local info
-                     NSLog(@"Facebook user %@ is not recorded on local, start overwriting user info", user.username);
-                     [[EWUserManagement sharedInstance] updateUserWithFBData:user];
-                 }
-                 [self updateView];
-                 
-                 //stop indicator
-                 [self.indicator stopAnimating];
-                 
-                 //leaving
-                 [self dismissViewControllerAnimated:YES completion:^{
-                     [context saveOnSuccess:^{
-                         NSLog(@"User %@ logged in from facebook", user.username);
-                     } onFailure:^(NSError *error) {
-                         NSLog(@"Unable to save user info");
-                     }];
-                 }];
                  
              }onFailure:^(NSError *error) {
                  NSLog(@"Error: %@", error);

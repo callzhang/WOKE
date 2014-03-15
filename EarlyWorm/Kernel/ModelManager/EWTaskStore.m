@@ -143,7 +143,7 @@
 - (NSArray *)scheduleTasks{
     NSLog(@"Start scheduling tasks");
     //forfeit if no alarm scheduled
-    if (EWAlarmManager.sharedInstance.allAlarms.count == 0) {
+    if (EWAlarmManager.sharedInstance.allAlarms.count == 0 && _allTasks.count == 0) {
         return nil;
     }
     NSMutableArray *tasks = _allTasks;
@@ -186,7 +186,10 @@
     }
     if (newTaskNotify) {
         //notification of new task (to interface)
-        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
+        });
+        
     }
     
     
@@ -477,7 +480,7 @@
         NSLog(@"Task has not been setup yet");
         if (currentUser.alarms.count == 0) return YES;
         return NO;
-    }else if (tasks.count >  currentUser.alarms.count * nWeeksToScheduleTask) {
+    }else if (tasks.count >  7 * nWeeksToScheduleTask) {
         NSLog(@"Something is wrong with scheduled task: excessive tasks(%d), please check.", tasks.count);
         
         [self deleteAllTasks];

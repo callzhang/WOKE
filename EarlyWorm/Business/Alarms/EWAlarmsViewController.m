@@ -63,12 +63,11 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentWakeUpView:) name:UIApplicationLaunchOptionsLocalNotificationKey object:nil];
         //listen to user log in, and updates its view
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedOut object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initView) name:kPersonProfilePicDownloaded object:nil];
         //
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskChangedNotification object:nil];//TODO: update specific alarm
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kAlarmsAllNewNotification object:nil];//this event occurs before tasks created, it will cause the reloadView fail
+        //user KVO
+        [currentUser addObserver:self forKeyPath:@"profilePic" options:NSKeyValueObservingOptionNew context:NULL];
         //UI
         self.hidesBottomBarWhenPushed = NO;
         
@@ -100,8 +99,8 @@
         alarms = [EWAlarmManager sharedInstance].allAlarms;
         tasks = [EWTaskStore sharedInstance].allTasks;
         if (alarms.count != 7 * nWeeksToScheduleTask || tasks.count != 7 * nWeeksToScheduleTask) {
-            NSLog(@"===== Something wrong with the Alarm or Task data, please check! =====");
-            tasks = [[EWTaskStore sharedInstance] getTasksByPerson:currentUser];
+            NSLog(@"===== Something wrong with the Alarm(%d) or Task(%d) data, please check! =====", alarms.count, tasks.count);
+            //[[EWDataStore sharedInstance] checkAlarmData];
             alarms = nil;
             tasks = nil;
         }
@@ -281,6 +280,21 @@
     }
     
     
+}
+
+#pragma mark - KVO
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if ([object isKindOfClass:[EWPerson class]]) {
+        if ([keyPath isEqualToString:@"profilePic"]) {
+            //profile updated
+            self.profileImageView.image = currentUser.profilePic;
+            [self.view setNeedsDisplay];
+        }else if ([keyPath isEqualToString:@"tasks"]){
+            NSLog(@"KVO observed tasks changed");
+        }else if ([keyPath isEqualToString:@"alarms"]){
+            NSLog(@"KVO observed alarms changed");
+        }
+    }
 }
 
 #pragma mark - UIScrollViewDelegate
