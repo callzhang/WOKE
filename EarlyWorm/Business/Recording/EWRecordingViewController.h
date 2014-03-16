@@ -14,6 +14,7 @@
 @interface EWRecordingViewController : EWViewController{
     NSURL *recordingFileUrl;
     AVManager *manager;
+    EWMediaItem *media;
 }
 
 @property (nonatomic) EWTaskItem *task;

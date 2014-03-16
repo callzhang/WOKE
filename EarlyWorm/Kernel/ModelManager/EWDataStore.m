@@ -14,11 +14,13 @@
 #import "EWAlarmManager.h"
 #import "EWTaskStore.h"
 #import "EWMediaStore.h"
+#import "EWMediaItem.h"
 #import "NSString+MD5.h"
 
 //Util
 #import "FTWCache.h"
 #import "SMBinaryDataConversion.h"
+#import "AVManager.h"
 
 //Global variable
 NSManagedObjectContext *context;
@@ -89,7 +91,7 @@ NSDate *lastChecked;
         }];
         
         [self.coreDataStore setSyncCompletionCallback:^(NSArray *objects){
-            NSLog(@"Syncing is complete, item synced: %@. Change the policy to fetch from the network", objects);
+            NSLog(@"Syncing is complete, item synced: %@. Change the datastore policy to fetch from the network", objects);
             [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
             // Notify other views that they should reload their data from the network
             if (objects.count) {
@@ -140,11 +142,15 @@ NSDate *lastChecked;
     }];
 }
 
+- (NSManagedObjectContext *)currentContext{
+    return [self.coreDataStore contextForCurrentThread];
+}
+
 
 #pragma mark - Login Check
 - (void)loginDataCheck{
     //change fetch policy
-    NSLog(@"%s: user logged in, start sync with server");
+    NSLog(@"%s: user logged in, start sync with server", __func__);
     [self.coreDataStore syncWithServer];
     
     //refresh current user
@@ -155,6 +161,7 @@ NSDate *lastChecked;
     
     //check alarm, task, and local notif
     [self checkAlarmData];
+    
 }
 
 
@@ -242,8 +249,5 @@ NSDate *lastChecked;
 }
 
 #pragma mark - other
-- (NSManagedObjectContext *)currentContext{
-    return [self.coreDataStore contextForCurrentThread];
-}
 
 @end

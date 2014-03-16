@@ -40,12 +40,14 @@
     return manager;
 }
 
+
+#pragma mark - Main Server method
 + (void)getPersonWakingUpForTime:(NSDate *)time location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock{
     NSLog(@"%s", __func__);
     
     NSString *userId = currentUser.username;
     NSInteger timeSince1970 = (NSInteger)[time timeIntervalSince1970];
-    NSString *timeStr = [NSString stringWithFormat:@"%d", timeSince1970];
+    NSString *timeStr = [NSString stringWithFormat:@"%ld", (long)timeSince1970];
     NSString *lat = [geoPoint.latitude stringValue];
     NSString *lon = [geoPoint.longitude stringValue];
     NSString *geoStr = [NSString stringWithFormat:@"%@,%@", lat, lon];

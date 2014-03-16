@@ -105,13 +105,16 @@
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [NSString stringWithFormat:@"%d",(NSInteger)[NSDate timeIntervalSinceReferenceDate]]];
         NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:fileName contentType:@"audio/aac"];
-        EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
-        media.author = currentUser;
-        media.title = @"Voice Tone";
-        media.message = self.message.text;
-        [media addTasksObject:task];
-        media.audioKey = recordDataString;
-        media.createddate = [NSDate date];
+        if (!media) {
+            media = [[EWMediaStore sharedInstance] createMedia];
+            media.author = currentUser;
+            media.title = @"Voice Tone";
+            media.message = self.message.text;
+            [media addTasksObject:task];
+            media.audioKey = recordDataString;
+            media.createddate = [NSDate date];
+        }
+        
         
         //save
         //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
@@ -127,13 +130,16 @@
                 
                 NSLog(@"Audio uploaded to server: %@", media.audioKey);
             }else{
-                NSLog(@"audioKey failed to upload to S3 server and remained as string data");
-                [context deleteObject:media];
-                NSError *err;
-                EWAlert(@"Server busy, please try again.");
-                [context saveAndWait:&err];
+                media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+                if (media.audioKey.length > 500) {
+                    NSLog(@"audioKey failed to upload to S3 server and remained as string data");
+                    EWAlert(@"Server busy, please try again.");
+                    
+                    return;
+                }else{
+                    recordingFileUrl = nil;
+                }
                 
-                return;
             }
             
             //send push notification
