@@ -82,7 +82,7 @@
 - (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock{
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-    hud.labelText = @"Loading cached user info";
+    hud.labelText = @"Loading";
     //fetch
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", username];

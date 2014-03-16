@@ -7,8 +7,9 @@
 //
 
 #import "FTWCache.h"
+#import "NSString+MD5.h"
 
-static NSTimeInterval cacheTime =  (double)604800;
+static NSTimeInterval cacheTime =  (double)3600*24*30*12;  //1year
 
 @implementation FTWCache
 
@@ -59,11 +60,14 @@ static NSTimeInterval cacheTime =  (double)604800;
 }
 
 + (NSString *)localPathForKey:(NSString *)key{
-    if ([FTWCache objectForKey:key]) {
+    NSString *hashKey = [key MD5Hash];
+    if ([FTWCache objectForKey:hashKey]) {
         //has cache
-        NSString *path = [NSString stringWithFormat:@"%@%@", [FTWCache cacheDirectory], key];
+        NSString *path = [[FTWCache cacheDirectory] stringByAppendingString:hashKey];
+        NSLog(@"Find cache path: %@ for Key: %@", path, key);
         return path;
     }
+    NSLog(@"Could not find local cache for remote content: %@", key);
     return nil;
 }
 

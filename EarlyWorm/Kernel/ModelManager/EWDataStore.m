@@ -77,6 +77,8 @@ NSDate *lastChecked;
                 if (currentUser) {
                     NSLog(@"Connected to server, and user fetched, strat syncing");
                     [blockCoreDataStore syncWithServer];
+                }else{
+                    NSLog(@"User login process haven't finished, delay snycing");
                 }
                 
             }
@@ -142,6 +144,7 @@ NSDate *lastChecked;
 #pragma mark - Login Check
 - (void)loginDataCheck{
     //change fetch policy
+    NSLog(@"%s: user logged in, start sync with server");
     [self.coreDataStore syncWithServer];
     
     //refresh current user
@@ -150,6 +153,7 @@ NSDate *lastChecked;
         [context refreshObject:currentUser mergeChanges:YES];
     });
     
+    //check alarm, task, and local notif
     [self checkAlarmData];
 }
 

@@ -46,8 +46,20 @@
 - (NSMutableArray *)allAlarms{
     _allAlarms = [[currentUser.alarms allObjects] mutableCopy];
     //sort
-    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
-    [_allAlarms sortUsingDescriptors:@[sort]];
+    //NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
+    //[_allAlarms sortUsingDescriptors:@[sort]];
+    
+    _allAlarms = [[_allAlarms sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSInteger wkd1 = [(EWAlarmItem *)obj1 time].weekdayNumber;
+        NSInteger wkd2 = [(EWAlarmItem *)obj2 time].weekdayNumber;
+        if (wkd1 > wkd2) {
+            return NSOrderedDescending;
+        }else if (wkd1 < wkd2){
+            return NSOrderedAscending;
+        }else{
+            return NSOrderedSame;
+        }
+    }] mutableCopy];
     return _allAlarms;
 }
 

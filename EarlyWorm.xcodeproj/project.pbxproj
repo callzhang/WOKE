@@ -135,7 +135,6 @@
 		AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */; };
 		AB245FB818CCF88F00551721 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB245FA118CCD2E400551721 /* Reveal.framework */; };
 		AB245FB918CCF91200551721 /* libWeiboSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1745BD17F7D974009B4DB0 /* libWeiboSDK.a */; };
-		AB2C18B1187145D10058BFAD /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18AB187145D10058BFAD /* README.md */; };
 		AB2C18B2187145D10058BFAD /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18AC187145D10058BFAD /* release_notes.md */; };
 		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
 		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
@@ -1520,7 +1519,6 @@
 				ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */,
 				ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */,
 				AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */,
-				AB2C18B1187145D10058BFAD /* README.md in Resources */,
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
 				AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */,
 				ABEEA96617E027E90035DF4A /* vm3.m4a in Resources */,

@@ -206,8 +206,8 @@ UIViewController *rootViewController;
 {
     NSLog(@"======== Launched in background due to background fetch event ==========");
     //enable audio session and keep audio port
-    [[AVManager sharedManager] registerAudioSession];
-    [[AVManager sharedManager] playSystemSound];
+    //[[AVManager sharedManager] registerAudioSession];
+    [[AVManager sharedManager] playSystemSound:nil];
     
     for (EWTaskItem *task in currentUser.tasks) {
         
@@ -227,7 +227,11 @@ UIViewController *rootViewController;
     //update checked time
     lastChecked = [NSDate date];
     
-    completionHandler(UIBackgroundFetchResultNewData);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"Returned background fetch handler");
+        completionHandler(UIBackgroundFetchResultNewData);
+    });
+    
 }
 
 //Keep alive
@@ -323,12 +327,24 @@ UIViewController *rootViewController;
                                                                                        options:NSRegularExpressionCaseInsensitive
                                                                                          error:NULL];
                 NSRange result = [regex rangeOfFirstMatchInString:des options:0 range:NSMakeRange(0, [des length])];
-                NSString *endPointARN = [des substringWithRange:result];
+                NSString *endPointNew = [des substringWithRange:result];
                 //register the endpoint arn to user
                 if (result.length > 0) {
-                    endPointARN = [endPointARN stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSLog(@"Intercepted endpointArn: %@", endPointARN);
-                    currentUser.aws_id = endPointARN;
+                    endPointNew = [endPointNew stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSLog(@"Intercepted endpointArn: %@", endPointNew);
+                    currentUser.aws_id = endPointNew;
+                    
+                    //update endPoint user info
+                    SNSSetEndpointAttributesRequest *request = [[SNSSetEndpointAttributesRequest alloc] init];
+                    request.endpointArn = endPointNew;
+                    [request setAttributesValue:username forKey:@"CustomUserData"];
+                    [snsClient setEndpointAttributes:request];
+                    NSLog(@"EndPoint updated");
+                    
+                    //save to local
+                    arnByUserDic[username] = endPointARN;
+                    [defaults setObject:arnByUserDic forKey:kAWSEndPointDicKey];
+                    
                 }else{
                     @throw exception;
                 }
@@ -344,15 +360,16 @@ UIViewController *rootViewController;
             NSLog(@"Created endpoint on AWS: %@", endPointARN);
         }
         
-        //save
+        //save defaults
         [arnByUserDic setObject:endPointARN forKey:username];
+        [defaults setObject:arnByUserDic forKey:kAWSEndPointDicKey];
+        [defaults synchronize];
         
         //sync
-        [context saveOnSuccess:^{
-            //
-        } onFailure:^(NSError *error) {
-            //
-        }];
+        [context refreshObject:currentUser mergeChanges:YES];
+    }else{
+        //found endPoint saved at local
+        NSLog(@"found endPoint: %@ for user: %@", endPoint, username);
     }
 }
 

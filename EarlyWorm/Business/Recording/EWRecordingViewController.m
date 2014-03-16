@@ -102,7 +102,7 @@
             return;
         }
         //save data to task
-        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [NSString stringWithFormat:@"%d",(NSInteger)[NSDate timeIntervalSinceReferenceDate]]];
         NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:fileName contentType:@"audio/aac"];
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
@@ -118,12 +118,22 @@
         [context saveOnSuccess:^{
             [context refreshObject:media mergeChanges:YES];
             
-            //clean
-            recordingFileUrl = nil;
+            //dismiss hud
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+            
             if ([media.audioKey length]<300) {
-                //NSLog(@"media's audioKey after merge is %@", media.audioKey);
+                //clean
+                recordingFileUrl = nil;
+                
+                NSLog(@"Audio uploaded to server: %@", media.audioKey);
             }else{
                 NSLog(@"audioKey failed to upload to S3 server and remained as string data");
+                [context deleteObject:media];
+                NSError *err;
+                EWAlert(@"Server busy, please try again.");
+                [context saveAndWait:&err];
+                
+                return;
             }
             
             //send push notification
@@ -133,7 +143,7 @@
             [self dismissViewControllerAnimated:YES completion:NULL];
             
         } onFailure:^(NSError *error) {
-            [NSException raise:@"Error in saving new Meida object" format:@"Reason: %@", err.description];
+            EWAlert(@"Server failed to save. Please try again");
         }];
     }
 }

@@ -140,7 +140,7 @@
         NSLog(@"%s: Task completed successfully: %@", __func__, t);
         
 #ifdef BACKGROUND_TEST
-        [[AVManager sharedManager] playSoundFromURL:t.originalRequest.URL];
+        [[AVManager sharedManager] playSystemSound:t.originalRequest.URL];
 #endif
         
     }

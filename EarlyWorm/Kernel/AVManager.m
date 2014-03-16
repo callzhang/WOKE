@@ -223,6 +223,9 @@
         recorder.delegate = self;
         NSTimeInterval maxTime = kMaxRecordTime;
         [recorder recordForDuration:maxTime];
+        if (![recorder prepareToRecord]) {
+            NSLog(@"Unable to start record");
+        };
         if (![recorder record]){
             int errorCode = CFSwapInt32HostToBig ([err code]);
             NSLog(@"Error: %@ [%4.4s])" , [err localizedDescription], (char*)&errorCode);
@@ -448,9 +451,29 @@ void RouteChangeListener(	void *inClientData,
 
 
 #pragma  mark - SystemSoundService
-- (void)playSystemSound{
+- (void)playSystemSound:(NSURL *)path{
     //SystemSound
-    NSURL *soundUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"new" ofType:@"caf"]];
+    NSURL *soundUrl;
+    if (!path) {
+        soundUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"new" ofType:@"caf"]];
+    }else{
+        if ([path isFileURL]) {
+            //local file
+            soundUrl = path;
+        }else{
+            NSLog(@"Passed non-file url path");
+            NSString *cachePath = [FTWCache localPathForKey:path.absoluteString];
+            if (cachePath) {
+                soundUrl = [NSURL fileURLWithPath:cachePath];
+            }else{
+                NSLog(@"No sound played");
+                return;
+            }
+            
+        }
+        
+    }
+    
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)soundUrl, &soundID);
     AudioServicesPlayAlertSound(soundID);
 }

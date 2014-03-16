@@ -72,6 +72,6 @@
  */
 - (void)playAvplayerWithURL:(NSURL *)url;
 
-- (void)playSystemSound;
+- (void)playSystemSound:(NSURL *)path;
 
 @end
