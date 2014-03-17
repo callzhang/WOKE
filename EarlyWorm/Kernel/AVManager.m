@@ -90,22 +90,15 @@
 #pragma mark - PLAY FUNCTIONS
 //play for cell with progress
 -(void)playForCell:(EWMediaViewCell *)cell{
-    NSData *audioData = cell.media.audio;//TODO network background task
     
     //link progress bar with cell's progress bar
     progressBar = cell.progressBar;
     currentTime = cell.time;
     playStopBtn = cell.playBtn;
-    NSError *err;
-    player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
-    if (err) {
-        NSLog(@"Cannot init player. Reason: %@", err.description);
-    }
-    self.player.delegate = self;
-    [player prepareToPlay];
-    if (![player play]) NSLog(@"Could not play media.");
-    [self updateViewForPlayerState:player];
     
+    //play
+    [self playSoundFromFile:cell.media.audioKey];
+        
     //keep current cell
     currentCell = cell;
 }
@@ -148,19 +141,26 @@
     NSData *audioData = [[EWDataStore alloc] getRemoteDataWithKey:url.absoluteString];
     //play
     if (audioData) {
-        self.player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
+        player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
     }else{
-        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
+        player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
     }
     player.volume = 1.0;
     
     if (err) {
         NSLog(@"Cannot init player. Reason: %@", err);
+        [self playSystemSound:url];
+        return;
     }
     self.player.delegate = self;
-    if(![player prepareToPlay]) TFLog(@"Could not prepare to play %@", url);
-    if (![player play]) TFLog(@"Could not play %@\n", url);
-    [self updateViewForPlayerState:player];
+    if ([player play]){
+        [self updateViewForPlayerState:player];
+    }else{
+        NSLog(@"Could not play with AVPlayer, using system sound");
+        [self playSystemSound:url];
+    }
+    
+    
 
 }
 
@@ -189,7 +189,7 @@
     // Fast skip the music when user scroll the UISlider
     [player stop];
     [player setCurrentTime:progressBar.value];
-    currentTime.text = [NSString stringWithFormat:@"%ld:%02d", (NSInteger)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
+    currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
     [player prepareToPlay];
     [player play];
     
@@ -488,11 +488,18 @@ void RouteChangeListener(	void *inClientData,
     }];
     
     //completion callback
-    AudioServicesAddSystemSoundCompletion(soundID, nil, nil, playSoundFinished, (void *)bgTaskId);
+    AudioServicesAddSystemSoundCompletion(soundID, nil, nil, playSoundFinished, (__bridge void *)self);
 }
 
-void playSoundFinished (SystemSoundID sound, void *bgTaskId){
+void playSoundFinished (SystemSoundID sound, void *self){
+    [self.updateTimer invalidate];
+    self.player.currentTime = 0.0;
+    progressBar.value = 0.0;
+    [playStopBtn setTitle:@"Play" forState:UIControlStateNormal];
+    NSLog(@"Playback fnished");
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
     [[UIApplication sharedApplication] endBackgroundTask:(NSInteger)bgTaskId];
+    
     NSLog(@"System sound finished and bg task returned");
 }
 
