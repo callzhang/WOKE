@@ -28,6 +28,7 @@
 
 //Tool
 #import "EWUIUtil.h"
+#import "FTWCache.h"
 
 @implementation EWServer
 
@@ -350,9 +351,10 @@
         NSLog(@"Received === test === type push");
         //EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
-        [[AVManager sharedManager] playMedia:media];
+        //NSURL *cacheUrl = [NSURL fileURLWithPath:[FTWCache localPathForKey:media.audioKey]];
+        //[[AVManager sharedManager] playSoundFromURL:cacheUrl];
         
-        
+        [[AVManager sharedManager] playSystemSound:[NSURL URLWithString:media.audioKey]];
         
     }else{
         // Other push type not supported

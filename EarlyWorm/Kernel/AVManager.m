@@ -325,7 +325,7 @@
     [p play];
 }
 
-#pragma mark - AVPlayer (Advanced, for stream audio, future)
+#pragma mark - AVPlayer (used to play sound and keep the audio capability open)
 - (void)playAvplayerWithURL:(NSURL *)url{
     NSLog(@"AVPlayer is about to play %@", url);
     AVPlayerItem *item = [AVPlayerItem playerItemWithURL:url];
@@ -450,8 +450,12 @@ void RouteChangeListener(	void *inClientData,
 }
 
 
-#pragma  mark - SystemSoundService
+#pragma  mark - System Sound Service
 - (void)playSystemSound:(NSURL *)path{
+    //release old id first
+    AudioServicesRemoveSystemSoundCompletion(soundID);
+    AudioServicesDisposeSystemSoundID(soundID);
+    
     //SystemSound
     NSURL *soundUrl;
     if (!path) {
@@ -461,7 +465,6 @@ void RouteChangeListener(	void *inClientData,
             //local file
             soundUrl = path;
         }else{
-            NSLog(@"Passed non-file url path");
             NSString *cachePath = [FTWCache localPathForKey:path.absoluteString];
             if (cachePath) {
                 soundUrl = [NSURL fileURLWithPath:cachePath];
@@ -473,9 +476,24 @@ void RouteChangeListener(	void *inClientData,
         }
         
     }
-    
+    //play
+    NSLog(@"Start playing system sound");
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)soundUrl, &soundID);
     AudioServicesPlayAlertSound(soundID);
+    //AudioServicesPlaySystemSound(soundID);
+    
+    //long background server
+    UIBackgroundTaskIdentifier bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        NSLog(@"Playing timer for system audio service is ending");
+    }];
+    
+    //completion callback
+    AudioServicesAddSystemSoundCompletion(soundID, nil, nil, playSoundFinished, (void *)bgTaskId);
+}
+
+void playSoundFinished (SystemSoundID sound, void *bgTaskId){
+    [[UIApplication sharedApplication] endBackgroundTask:(NSInteger)bgTaskId];
+    NSLog(@"System sound finished and bg task returned");
 }
 
 @end
