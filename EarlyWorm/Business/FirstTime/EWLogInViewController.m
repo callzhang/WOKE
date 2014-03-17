@@ -51,18 +51,11 @@
     [super viewDidLoad];
     [self.indicator stopAnimating];
     [self updateView];
-    self.proceedBtn.alpha = 0;
     
     //If fb has already a token, log in SM.
     
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
-        NSLog(@"Starting to log in fb with cached info");
-        [self.indicator startAnimating];
-        [self.btnLoginLogout setTitle:@"Loading..." forState:UIControlStateNormal];
-        
-        [FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
-            [self sessionStateChanged:session state:status error:error];
-        }];
+        [[[UIAlertView alloc] initWithTitle:@"Login" message:@"Do you want to log in with current Facebook information?" delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil] show];
     }
 }
 
@@ -74,12 +67,13 @@
 }
 
 - (void)updateView {
-    
+    /*
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         [self.btnLoginLogout setTitle:@"Log out" forState:UIControlStateNormal];
     } else {
         [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
-    }
+    }*/
+    [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
     
     if (currentUser) {
         self.name.text = currentUser.name;
@@ -90,8 +84,8 @@
 
 - (IBAction)connect:(id)sender {
     [self.indicator startAnimating];
-    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
-        [self logoutUser];//this should never happen
+    if (FBSession.activeSession.state == FBSessionStateOpen) {
+        [self logoutUser];
     } else {
         [self openSession];
     }
@@ -103,26 +97,10 @@
 }
 
 
-- (IBAction)proceed:(id)sender {//this function will not be called
-    /*
-    //save image to user
-    currentUser.profilePic = self.profileView.image;
-    [context saveOnSuccess:^{
-        //check default
-        [[EWDataStore sharedInstance] setDefault];
-        
-        //leaving
-        [self dismissViewControllerAnimated:YES completion:NULL];
-        
-        //broadcasting
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{@"User": currentUser}];
-        
-        //hide hud if possible
-        EWAppDelegate *delegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-        [MBProgressHUD hideAllHUDsForView:delegate.window.rootViewController.view animated:YES];
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Error on saving new user info" format:@"Reason: %@", error.description];
-    }];*/
+- (IBAction)skip:(id)sender {//this function will not be called
+    [[EWUserManagement sharedInstance] loginWithDeviceIDWithCompletionBlock:^{
+        //
+    }];
 }
 
 
@@ -239,11 +217,13 @@
         self.profileView.image = [UIImage imageNamed:@"profile"];
         [self updateView];
     } onFailure:^(NSError *error) {
+        [FBSession.activeSession closeAndClearTokenInformation];
         NSLog(@"Error: %@", error);
     }];
 }
 
 
+#pragma mark - Background login
 - (void)loginInBackground{
     NSLog(@"Log in fb in background");
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
@@ -258,6 +238,19 @@
 
 }
 
+
+#pragma mark - Alert Delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 1) {
+        NSLog(@"Starting to log in fb with cached info");
+        [self.indicator startAnimating];
+        [self.btnLoginLogout setTitle:@"Loading..." forState:UIControlStateNormal];
+        
+        [FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
+            [self sessionStateChanged:session state:status error:error];
+        }];
+    }
+}
 
 
 @end

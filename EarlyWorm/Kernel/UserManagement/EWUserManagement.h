@@ -27,4 +27,10 @@
  Login with username for cached coredata info
  */
 - (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock;
+
+/**
+ Login with local plist or ADID
+ */
+- (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
+
 @end

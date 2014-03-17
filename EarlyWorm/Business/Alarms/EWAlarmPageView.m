@@ -102,10 +102,10 @@
     self.descriptionText.text = t.statement;
     [self.descriptionText sizeToFit];
     
-    //kvo
-    [task addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:NULL];
-    [task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:NULL];
-    [task addObserver:self forKeyPath:@"time" options:NSKeyValueObservingOptionNew context:NULL];
+    //kvo <= KVO not working because it constantly updates the value
+//    [task addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:NULL];
+//    [task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:NULL];
+//    [task addObserver:self forKeyPath:@"time" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)setAlarm:(EWAlarmItem *)a{
@@ -131,13 +131,13 @@
 }
 
 #pragma mark - KVO
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if ([object isKindOfClass:[EWTaskItem class]]) {
-        //TODO: dispatch different tasks for each updates
-        NSLog(@"Observed change for task %@", [[(EWTaskItem *)object time] date2dayString]);
-        self.task = object;
-        [self setNeedsDisplay];
-    }
-}
+//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+//    if ([object isKindOfClass:[EWTaskItem class]]) {
+//        //TODO: dispatch different tasks for each updates
+//        NSLog(@"Observed change for task %@", [[(EWTaskItem *)object time] date2dayString]);
+//        self.task = object;
+//        [self setNeedsDisplay];
+//    }
+//}
 
 @end

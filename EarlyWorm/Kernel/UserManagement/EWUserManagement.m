@@ -55,13 +55,13 @@
             
         } onFailure:^(NSError *error) { //failed to get logged in user
             NSLog(@"%s: ======= Failed to get logged in user from SM Cache ======= %@", __func__, error);
-            [self loginWithLocalInfo];
+            [self loginWithFacebook];
         }];
         
         
     }else{
         //log in using local machine info
-        [self loginWithLocalInfo];
+        [self loginWithFacebook];
     }
     
     
@@ -69,7 +69,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
 }
 
-- (void)loginWithLocalInfo{
+- (void)loginWithFacebook{
     NSLog(@"Login with facebook info");
     EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
     [rootViewController presentViewController:loginVC animated:YES completion:NULL];
@@ -123,8 +123,6 @@
             
             
         }
-        
-        
         
         //check alarms and tasks
         //[[EWDataStore sharedInstance] checkAlarmData];
@@ -219,6 +217,7 @@
                 
                 //broadcast
                 [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+                
                 //HUD
                 //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
             } onFailure:^(NSError *error) {

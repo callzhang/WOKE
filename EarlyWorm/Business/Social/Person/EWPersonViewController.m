@@ -374,7 +374,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         //add friend
         if (person != currentUser) {
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            [person addFriendsObject:currentUser];
+            [currentUser addFriendsObject:person];
             [context saveOnSuccess:^{
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
                 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];

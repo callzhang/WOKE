@@ -98,7 +98,7 @@
     if (currentUser) {
         alarms = [EWAlarmManager sharedInstance].allAlarms;
         tasks = [EWTaskStore sharedInstance].allTasks;
-        if (alarms.count != 7 * nWeeksToScheduleTask || tasks.count != 7 * nWeeksToScheduleTask) {
+        if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
             NSLog(@"===== Something wrong with the Alarm(%d) or Task(%d) data, please check! =====", alarms.count, tasks.count);
             //[[EWDataStore sharedInstance] checkAlarmData];
             alarms = nil;

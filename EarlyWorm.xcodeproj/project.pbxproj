@@ -922,7 +922,7 @@
 				AB4B837A18D29DE30087E654 /* UI Components */,
 				AB3120AF187130380099738C /* Notification */,
 				AB19E9F718698316000FBDD1 /* Recording */,
-				ABA728B11831F71500595CFD /* FirstTime */,
+				ABA728B11831F71500595CFD /* Login */,
 				56FEA55617A5763200FC2938 /* Alarms */,
 				AB39BEEC17D96143006C31C5 /* Social */,
 				56FEA56217A5763200FC2938 /* WakeUp */,
@@ -1235,7 +1235,7 @@
 			name = AudioVedio;
 			sourceTree = "<group>";
 		};
-		ABA728B11831F71500595CFD /* FirstTime */ = {
+		ABA728B11831F71500595CFD /* Login */ = {
 			isa = PBXGroup;
 			children = (
 				AB49BC8F1854248E004A38DB /* EWLogInViewController.h */,
@@ -1245,7 +1245,7 @@
 				ABA728B31831F74900595CFD /* EWFirstTimeViewController.m */,
 				ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */,
 			);
-			name = FirstTime;
+			name = Login;
 			sourceTree = "<group>";
 		};
 		ABB98B5B17D01ADE005D8903 /* ModelManager */ = {

@@ -92,24 +92,11 @@
 
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated]; //no need to call super
-    if (!currentUser) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self loadData];
-        });
-    }
-    
-    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    //    [self loadData];
-    //});
-}
-
 - (void)loadData{
+    if (!currentUser) return;
     [refreshHUD show:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSSet *friendsSet = currentUser.friends;
-        friends = [friendsSet allObjects];
+        friends = [currentUser.friends allObjects];
         NSMutableSet *everyoneSet = [NSMutableSet setWithArray:[[EWPersonStore sharedInstance] everyone]];
         [everyoneSet minusSet:currentUser.friends];
 
@@ -144,7 +131,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if (socialList == socialViewNews) {
             //nav item
-            self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(onNewActions)];
+            self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(onNewsRefreshAction)];
         }else if (socialList == socialViewEveryone) {
             //nav item
             self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(onSearchPerson)];
@@ -164,24 +151,19 @@
 
 
 //page switch
-- (void)onNewsActions{
+- (void)onNewsRefreshAction{
     NSLog(@"News page refresh");
+    [context refreshObject:currentUser mergeChanges:YES];
+    friends = [currentUser.friends allObjects];
+    [self.tableView reloadData];
 }
-
 
 
 - (void)onSearchPerson{
     NSLog(@"Searching person");
 }
-/*
-- (void)onAddTask {
-    EWAddTaskViewController *controller = [[EWAddTaskViewController alloc] init];
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-    
-    [self presentViewController:navigationController animated:YES completion:^{}];
-}
-*/
+
+
 - (void)onSearchGroup{
     NSLog(@"Group page");
 }
@@ -323,27 +305,47 @@
             //everyone list
             person = [everyone objectAtIndex:indexPath.row];
         }
-        
-        EWTaskItem *task = [EWTaskStore.sharedInstance nextTaskAtDayCount:0 ForPerson:person];
-        // Configure the cell...
         //name
-        if (person.name) {
-            cell.name.text = person.name;
-        } else {
-            cell.name.text = person.username;
-        }
+        cell.name.text = person.name;
+        
         //image
         if (person.profilePic) {
             cell.image.image = person.profilePic;
         }else{
             cell.image.image = [UIImage imageNamed:@"profile.png"];
         }
+        
+        //location
         cell.location.text = person.city;
-        //Next activity
-        if (task) {
-            cell.time.text = [task.time date2String];
-            cell.description.text = task.statement;
-        }
+        
+        
+        
+        //EWTaskItem *task = [EWTaskStore.sharedInstance nextTaskAtDayCount:0 ForPerson:person];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            EWTaskItem *task;
+            if (person.tasks.count) {
+                task = [person.tasks allObjects][0];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    cell.time.text = [task.time date2String];
+                    cell.description.text = task.statement;
+                });
+            }
+//            else{
+//                task = [EWTaskStore.sharedInstance nextTaskAtDayCount:0 ForPerson:person];
+//                if (task) {
+//                    dispatch_async(dispatch_get_main_queue(), ^{
+//                        cell.time.text = [task.time date2String];
+//                        cell.description.text = task.statement;
+//                    });
+//                }
+//            }
+            
+
+            
+
+        });
+        
         return cell;
     }
     else if (socialList == socialViewGroups) {

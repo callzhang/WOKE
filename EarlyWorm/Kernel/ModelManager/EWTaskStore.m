@@ -64,8 +64,23 @@
     }
     
     //sort
-    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
-    [_allTasks sortUsingDescriptors:@[sort]];
+    @try {
+        NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
+        [_allTasks sortUsingDescriptors:@[sort]];
+    }
+    @catch (NSException *exception) {
+        _allTasks = [[_allTasks sortedArrayUsingComparator:^NSComparisonResult(EWTaskItem *obj1, EWTaskItem *obj2) {
+            NSInteger d1 = [obj1.time timeIntervalSince1970];
+            NSInteger d2 = [obj2.time timeIntervalSince1970];
+            if (d1 > d2) {
+                return NSOrderedDescending;
+            }else{
+                return NSOrderedAscending;
+            }
+        }] mutableCopy];
+    }
+    
+    
     
     return _allTasks;
 }
