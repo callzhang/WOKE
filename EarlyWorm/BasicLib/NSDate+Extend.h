@@ -31,7 +31,7 @@
 - (BOOL)isEarlierThan:(NSDate *)date;
 - (NSInteger)weekdayNumber;
 /**
- Returns future time in n weeks
+ Returns a future time in n weeks from now that has the same weekday and time of the input date.
  */
 - (NSDate *)nextOccurTime:(NSInteger)n;
 

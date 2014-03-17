@@ -70,9 +70,6 @@
         [currentUser addObserver:self forKeyPath:@"profilePic" options:NSKeyValueObservingOptionNew context:NULL];
         //UI
         self.hidesBottomBarWhenPushed = NO;
-        
-        //alarmPages
-        _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
     }
     return self;
 }
@@ -80,17 +77,14 @@
 - (void)refreshView{
     [self initData];
     [self initView];
-    [self reloadView];
+    [self reloadAlarmPage];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if (currentUser) {
-        [self initData];
-        [self initView];
-        [self reloadView];
-    }
+    [self initData];
+    [self initView];
 }
 
 - (void)initData {
@@ -103,6 +97,9 @@
             //[[EWDataStore sharedInstance] checkAlarmData];
             alarms = nil;
             tasks = nil;
+        }else{
+           //alarmPages
+            _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
         }
         
     }else{
@@ -149,7 +146,7 @@
     
 }
 
-- (void)reloadView {
+- (void)reloadAlarmPage {
     _pageView.numberOfPages = self.alarms.count;
     if (alarms.count == 0 || tasks.count == 0) {
         NSLog(@"Alarm or Task count is zero, delete all subviews");
@@ -204,7 +201,7 @@
             [self initData];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self initView];
-                [self reloadView];
+                [self reloadAlarmPage];
             });
             
         });
@@ -312,7 +309,7 @@
     CGFloat pageWidth = _scrollView.frame.size.width;
     NSInteger page = floor((_scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
     _pageView.currentPage = page;
-    [self reloadView];
+    [self reloadAlarmPage];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{

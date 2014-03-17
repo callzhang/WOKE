@@ -175,10 +175,26 @@
     //for each alarm, find matching task, or create new task
     BOOL newTaskNotify = NO;
     NSArray *alarms = [[NSArray alloc] initWithArray:EWAlarmManager.sharedInstance.allAlarms];
+    
     for (EWAlarmItem *a in alarms){
+        
         for (unsigned i=0; i<nWeeksToScheduleTask; i++) {//loop for week
-            NSDate *time = [a.time nextOccurTime:i];//next time for alarm
-            if ([lastTime isEarlierThan:time]) {//if last task is out dated
+            //next time for alarm, this is what the time should be there
+            NSDate *time = [a.time nextOccurTime:i];
+            BOOL taskWithTimeFound = NO;
+            //loop through the tasks to verify the target time has been scheduled
+            for (EWTaskItem *t in tasks) {
+                if ([t.time isEqualToDate:time]) {
+                    //find the task
+                    taskWithTimeFound = YES;
+                    break;
+                }
+            }
+            
+            //if ([lastTime isEarlierThan:time]) {//if last task is out dated
+            
+            if (!taskWithTimeFound) {
+                NSLog(@"Task with time: %@ has not been found, creating!", time);
                 //new task
                 EWTaskItem *t = [self newTask];
                 t.time = time;
