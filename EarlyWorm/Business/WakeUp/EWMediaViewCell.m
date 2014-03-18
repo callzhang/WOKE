@@ -9,9 +9,10 @@
 #import "EWMediaViewCell.h"
 #import "EWWakeUpViewController.h"
 #import "AVManager.h"
+#import "EWRoundButton.h"
 
 @implementation EWMediaViewCell
-@synthesize controller, tableView, media;
+@synthesize controller, media;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -20,7 +21,7 @@
         // Initialization code
         self.title.text = @"早上好";
         self.description.text = @"早上的虫子更好";
-        self.progressBar.maximumValueImage = [UIImage imageNamed:@"MediaCell"];
+        //self.progressBar.maximumValueImage = [UIImage imageNamed:@"MediaCell"];
         
     }
     return self;
@@ -36,18 +37,17 @@
 }
 
 
-- (IBAction)mediaPlay:(id)sender {
+- (IBAction)play:(id)sender {
     if (AVManager.sharedManager.player.isPlaying) {
         [AVManager.sharedManager stopAllPlaying];
         if ([AVManager.sharedManager.currentCell isEqual:self]) {
-            [self.playBtn setTitle:@"Play" forState:UIControlStateNormal];
+            [[AVManager sharedManager].currentCell.mediaBar stop];
             return;
         }
     }
-    
-    [self.playBtn setTitle:@"Stop" forState:UIControlStateNormal];
+    //play this cell
     [AVManager.sharedManager playForCell:self];
-    
+    [self.mediaBar play];
     
 }
 

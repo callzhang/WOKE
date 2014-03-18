@@ -16,9 +16,11 @@
 #import "TestFlight.h"
 @import AudioToolbox;
 
-@implementation AVManager
-@synthesize player, recorder, wakeUpTableView, currentCell;
-@synthesize progressBar, playStopBtn, recordStopBtn, currentTime;
+@implementation AVManager{
+    UISlider *progressBar;
+}
+@synthesize player, recorder;
+@synthesize recordStopBtn, currentCell, wakeUpTableView;
 
 
 +(AVManager *)sharedManager{
@@ -74,11 +76,6 @@
         NSLog(@"Audio session activated!");
     }
     
-#ifdef BACKGROUND_TEST
-//    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"tock" ofType:@"caf"]];
-//    [self playAvplayerWithURL:url];
-//    NSLog(@".....Silent audio playing......");
-#endif
 }
 
 - (void)setProgressBar:(UISlider *)slider{
@@ -92,9 +89,7 @@
 -(void)playForCell:(EWMediaViewCell *)cell{
     
     //link progress bar with cell's progress bar
-    progressBar = cell.progressBar;
-    currentTime = cell.time;
-    playStopBtn = cell.playBtn;
+    progressBar = cell.mediaBar;
     
     //play
     [self playSoundFromFile:cell.media.audioKey];
@@ -283,14 +278,14 @@
 -(void)updateCurrentTime{
     if (!progressBar.isTouchInside) {
         progressBar.value = player.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (NSInteger)player.currentTime / 60, (NSInteger)player.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)player.currentTime / 60, (NSInteger)player.currentTime % 60, nil];
     }
 }
 
 -(void)updateCurrentTimeForRecorder{
     if (!progressBar.isTouchInside) {
         progressBar.value = recorder.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (NSInteger)recorder.currentTime / 60, (NSInteger)recorder.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)recorder.currentTime / 60, (NSInteger)recorder.currentTime % 60, nil];
     }
 }
 
@@ -488,15 +483,11 @@ void RouteChangeListener(	void *inClientData,
     }];
     
     //completion callback
-    AudioServicesAddSystemSoundCompletion(soundID, nil, nil, playSoundFinished, (__bridge void *)self);
+    AudioServicesAddSystemSoundCompletion(soundID, nil, nil, playSoundFinished, (void *)bgTaskId);
 }
 
-void playSoundFinished (SystemSoundID sound, void *self){
-    [self.updateTimer invalidate];
-    self.player.currentTime = 0.0;
-    progressBar.value = 0.0;
-    [playStopBtn setTitle:@"Play" forState:UIControlStateNormal];
-    NSLog(@"Playback fnished");
+void playSoundFinished (SystemSoundID sound, void *bgTaskId){
+    NSLog(@"System audio playback fnished");
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
     [[UIApplication sharedApplication] endBackgroundTask:(NSInteger)bgTaskId];
     

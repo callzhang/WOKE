@@ -10,23 +10,22 @@
 #import "EWMediaItem.h"
 #import "EWPerson.h"
 
+@class EWRoundButton;
+
 @interface EWMediaViewCell : UITableViewCell
 //controller
 @property (retain, nonatomic) id controller;
-@property (retain, nonatomic) UITableView *tableView;
 
 //interface
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 @property (weak, nonatomic) IBOutlet UILabel *title;
 @property (weak, nonatomic) IBOutlet UILabel *date;
 @property (weak, nonatomic) IBOutlet UILabel *description;
-@property (weak, nonatomic) IBOutlet UISlider *progressBar;
 @property (weak, nonatomic) IBOutlet UIButton *like;
-@property (weak, nonatomic) IBOutlet UIButton *playBtn;
-@property (weak, nonatomic) IBOutlet UILabel *time;
+@property (weak, nonatomic) IBOutlet EWRoundButton *mediaBar;
 
 //action
-- (IBAction)mediaPlay:(id)sender;
+- (IBAction)play:(id)sender;
 - (IBAction)profile:(id)sender;
 - (IBAction)like:(id)sender;
 

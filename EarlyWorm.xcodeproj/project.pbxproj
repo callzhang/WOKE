@@ -148,6 +148,8 @@
 		AB4B837918CFE68F0087E654 /* Silence04s.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837818CFE68F0087E654 /* Silence04s.caf */; };
 		AB4B837C18D2C5470087E654 /* new.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837B18D2B9840087E654 /* new.caf */; };
 		AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837D18D2C8BA0087E654 /* tock.caf */; };
+		AB6BE34F18D7C03A00444ABC /* EWRoundButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */; };
+		AB6BE35218D804C700444ABC /* EWMediaSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE35118D804C700444ABC /* EWMediaSlider.m */; };
 		AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78078E18393A66007C8BFD /* EWAlarmManager.m */; };
 		AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079218393A66007C8BFD /* EWGroupStore.m */; };
 		AB7807A218393A66007C8BFD /* EWImageStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079418393A66007C8BFD /* EWImageStore.m */; };
@@ -335,9 +337,9 @@
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSRuntime.framework; sourceTree = "<group>"; };
 		9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSSNS.framework; sourceTree = "<group>"; };
-		AB00B6171835C49D00DDD54B /* EWMediaViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMediaViewCell.h; sourceTree = "<group>"; };
-		AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaViewCell.m; sourceTree = "<group>"; };
-		AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMediaViewCell.xib; sourceTree = "<group>"; };
+		AB00B6171835C49D00DDD54B /* EWMediaViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWMediaViewCell.h; path = WakeUp/EWMediaViewCell.h; sourceTree = "<group>"; };
+		AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWMediaViewCell.m; path = WakeUp/EWMediaViewCell.m; sourceTree = "<group>"; };
+		AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWMediaViewCell.xib; path = WakeUp/EWMediaViewCell.xib; sourceTree = "<group>"; };
 		AB00B61A1835C49D00DDD54B /* EWWakeUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWakeUpViewController.h; sourceTree = "<group>"; };
 		AB00B61B1835C49D00DDD54B /* EWWakeUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWakeUpViewController.m; sourceTree = "<group>"; };
 		AB0740111810FA3C00AAFC90 /* EWAlarmScheduleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmScheduleViewController.h; sourceTree = "<group>"; };
@@ -424,6 +426,10 @@
 		AB4B837818CFE68F0087E654 /* Silence04s.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Silence04s.caf; sourceTree = "<group>"; };
 		AB4B837B18D2B9840087E654 /* new.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = new.caf; sourceTree = "<group>"; };
 		AB4B837D18D2C8BA0087E654 /* tock.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = tock.caf; sourceTree = "<group>"; };
+		AB6BE34D18D7C03A00444ABC /* EWRoundButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWRoundButton.h; path = "UI Components/EWRoundButton.h"; sourceTree = "<group>"; };
+		AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWRoundButton.m; path = "UI Components/EWRoundButton.m"; sourceTree = "<group>"; };
+		AB6BE35018D804C700444ABC /* EWMediaSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWMediaSlider.h; path = "UI Components/EWMediaSlider.h"; sourceTree = "<group>"; };
+		AB6BE35118D804C700444ABC /* EWMediaSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWMediaSlider.m; path = "UI Components/EWMediaSlider.m"; sourceTree = "<group>"; };
 		AB78078D18393A66007C8BFD /* EWAlarmManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWAlarmManager.h; path = EarlyWorm/Kernel/ModelManager/EWAlarmManager.h; sourceTree = SOURCE_ROOT; };
 		AB78078E18393A66007C8BFD /* EWAlarmManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWAlarmManager.m; path = EarlyWorm/Kernel/ModelManager/EWAlarmManager.m; sourceTree = SOURCE_ROOT; };
 		AB78079118393A66007C8BFD /* EWGroupStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWGroupStore.h; path = EarlyWorm/Kernel/ModelManager/EWGroupStore.h; sourceTree = SOURCE_ROOT; };
@@ -455,8 +461,8 @@
 		ABD34DAC185C054C008CD2B8 /* FTWCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTWCache.m; sourceTree = "<group>"; };
 		ABD34DAD185C054C008CD2B8 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
 		ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
-		ABDAF98E18C31C010075505B /* EWCollectionPersonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWCollectionPersonCell.h; sourceTree = "<group>"; };
-		ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWCollectionPersonCell.m; sourceTree = "<group>"; };
+		ABDAF98E18C31C010075505B /* EWCollectionPersonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWCollectionPersonCell.h; path = Social/Person/EWCollectionPersonCell.h; sourceTree = "<group>"; };
+		ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWCollectionPersonCell.m; path = Social/Person/EWCollectionPersonCell.m; sourceTree = "<group>"; };
 		ABDD0B801852E326005EA59B /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
 		ABDD0B821852E326005EA59B /* AFHTTPClient+StackMob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPClient+StackMob.h"; sourceTree = "<group>"; };
 		ABDD0B831852E326005EA59B /* AFHTTPRequestOperation+RemoveContentType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPRequestOperation+RemoveContentType.h"; sourceTree = "<group>"; };
@@ -971,9 +977,6 @@
 		56FEA56217A5763200FC2938 /* WakeUp */ = {
 			isa = PBXGroup;
 			children = (
-				AB00B6171835C49D00DDD54B /* EWMediaViewCell.h */,
-				AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */,
-				AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */,
 				AB00B61A1835C49D00DDD54B /* EWWakeUpViewController.h */,
 				AB00B61B1835C49D00DDD54B /* EWWakeUpViewController.m */,
 				AB1F3CF618B7B5C500D3FB46 /* EWPostWakeUpViewController.h */,
@@ -1060,8 +1063,6 @@
 				AB1EBE3418A74B41003154DB /* EWTaskHistoryCell.h */,
 				AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */,
 				AB1EBE3218A74AD1003154DB /* EWTaskHistoryCell.xib */,
-				ABDAF98E18C31C010075505B /* EWCollectionPersonCell.h */,
-				ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */,
 			);
 			path = Person;
 			sourceTree = "<group>";
@@ -1193,6 +1194,15 @@
 		AB4B837A18D29DE30087E654 /* UI Components */ = {
 			isa = PBXGroup;
 			children = (
+				AB6BE34D18D7C03A00444ABC /* EWRoundButton.h */,
+				AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */,
+				AB6BE35018D804C700444ABC /* EWMediaSlider.h */,
+				AB6BE35118D804C700444ABC /* EWMediaSlider.m */,
+				AB00B6171835C49D00DDD54B /* EWMediaViewCell.h */,
+				AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */,
+				AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */,
+				ABDAF98E18C31C010075505B /* EWCollectionPersonCell.h */,
+				ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */,
 			);
 			name = "UI Components";
 			sourceTree = "<group>";
@@ -1584,6 +1594,7 @@
 				AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */,
 				5642AF4E17ACCF90000C73E8 /* UIView+Layout.m in Sources */,
 				ABDE25E318CF572700DDBDB5 /* file_output.cpp in Sources */,
+				AB6BE34F18D7C03A00444ABC /* EWRoundButton.m in Sources */,
 				AB49BC921854248E004A38DB /* EWLogInViewController.m in Sources */,
 				5671BE3418085C4100F35DF9 /* ASIAuthenticationDialog.m in Sources */,
 				ABF192AA18BF135C006A4AA2 /* UIAlertView+.m in Sources */,
@@ -1629,6 +1640,7 @@
 				ABDE25E718CF572700DDBDB5 /* FSAudioStream.mm in Sources */,
 				5671BE3D18085C4100F35DF9 /* ASICloudFilesCDNRequest.m in Sources */,
 				56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */,
+				AB6BE35218D804C700444ABC /* EWMediaSlider.m in Sources */,
 				5671BE3718085C4100F35DF9 /* ASIDownloadCache.m in Sources */,
 				ABDE25E418CF572700DDBDB5 /* http_stream.cpp in Sources */,
 				AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */,
