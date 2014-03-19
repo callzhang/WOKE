@@ -15,27 +15,16 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // background image
-        [self setMaximumTrackImage:[UIImage imageNamed:@"MediaCellRightCap"] forState:UIControlStateNormal];
-        [self setMaximumTrackImage:[UIImage imageNamed:@"MediaCellLeftCap"] forState:UIControlStateNormal];
-        [self setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
+        
+        [self initMediaSlider:frame];
 
-        
-        //text
-        timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.size.width - 25, (frame.size.height - indicator.frame.size.height)/2, indicator.frame.size.width, indicator.frame.size.height)];
-        self.tintColor = [UIColor whiteColor];
-        
-        //state
-        //state = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, 50, 20)];
-        //state.text = @"Play";
-        
-        //activity indicator
-        indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [indicator stopAnimating];
-        indicator.frame = CGRectMake(frame.size.width - indicator.frame.size.width - 5, (frame.size.height - indicator.frame.size.height)/2, indicator.frame.size.width, indicator.frame.size.height);
-        [self addSubview:indicator];
-        indicator.alpha = 0;
+    }
+    return self;
+}
 
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super initWithCoder:aDecoder]) {
+        [self initMediaSlider:CGRectMake(0, 0, 320, 80)];
     }
     return self;
 }
@@ -48,5 +37,29 @@
     // Drawing code
 }
 */
+
+
+- (void)initMediaSlider:(CGRect)frame{
+    // background image
+    UIImage *leftImg = [[UIImage imageNamed:@"MediaCellLeftCap"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 39, 0, 0)];
+    UIImage *rightImg = [[UIImage imageNamed:@"MediaCellRightCap"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 39)];
+    [self setMaximumTrackImage:rightImg forState:UIControlStateNormal];
+    [self setMinimumTrackImage:leftImg forState:UIControlStateNormal];
+    //[self setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
+    
+    
+    //text
+    timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.size.width - 25, (frame.size.height - 20)/2, 50, 20)];
+    [self addSubview:timeLabel];
+    self.tintColor = [UIColor whiteColor];
+}
+
+- (void)play{
+    NSLog(@"Slider is called for play");
+}
+
+- (void)stop{
+    NSLog(@"Slider is called to stop");
+}
 
 @end

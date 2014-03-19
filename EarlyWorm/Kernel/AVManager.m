@@ -14,13 +14,13 @@
 #import "FTWCache.h"
 #import "EWDataStore.h"
 #import "TestFlight.h"
+#import "EWMediaSlider.h"
+
 @import AudioToolbox;
 
-@implementation AVManager{
-    UISlider *progressBar;
-}
+@implementation AVManager
 @synthesize player, recorder;
-@synthesize recordStopBtn, currentCell, wakeUpTableView;
+@synthesize playStopBtn, recordStopBtn, currentCell, progressBar, currentTime;
 
 
 +(AVManager *)sharedManager{
@@ -78,11 +78,6 @@
     
 }
 
-- (void)setProgressBar:(UISlider *)slider{
-    progressBar = slider;
-    [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
-}
-
 
 #pragma mark - PLAY FUNCTIONS
 //play for cell with progress
@@ -90,6 +85,8 @@
     
     //link progress bar with cell's progress bar
     progressBar = cell.mediaBar;
+    [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
+    currentTime = progressBar.timeLabel;
     
     //play
     [self playSoundFromFile:cell.media.audioKey];
@@ -184,7 +181,8 @@
     // Fast skip the music when user scroll the UISlider
     [player stop];
     [player setCurrentTime:progressBar.value];
-    currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
+    NSString *timeStr = [NSString stringWithFormat:@"%d:%02d", (NSInteger)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
+    currentTime.text = timeStr;
     [player prepareToPlay];
     [player play];
     
@@ -295,7 +293,6 @@
     [updateTimer invalidate];
     self.player.currentTime = 0.0;
     progressBar.value = 0.0;
-    [playStopBtn setTitle:@"Play" forState:UIControlStateNormal];
     NSLog(@"Playback fnished");
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
 }

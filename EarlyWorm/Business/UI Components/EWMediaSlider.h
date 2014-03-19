@@ -10,4 +10,7 @@
 
 @interface EWMediaSlider : UISlider
 @property UILabel *timeLabel;
+
+- (void)play;
+- (void)stop;
 @end

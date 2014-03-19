@@ -9,7 +9,7 @@
 #import "EWMediaViewCell.h"
 #import "EWWakeUpViewController.h"
 #import "AVManager.h"
-#import "EWRoundButton.h"
+#import "EWMediaSlider.h"
 
 @implementation EWMediaViewCell
 @synthesize controller, media;
@@ -22,7 +22,7 @@
         self.title.text = @"早上好";
         self.description.text = @"早上的虫子更好";
         //self.progressBar.maximumValueImage = [UIImage imageNamed:@"MediaCell"];
-        
+        self.backgroundColor = [UIColor clearColor];
     }
     return self;
 }

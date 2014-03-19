@@ -17,9 +17,13 @@
 #import "AVManager.h"
 #import "NSDate+Extend.h"
 #import "EWUIUtil.h"
+#import "EWMediaSlider.h"
 
 //test
 #import "EWPostWakeUpViewController.h"
+
+static NSString *cellIdentifier = @"EWMediaViewCell";
+
 
 @interface EWWakeUpViewController (){
     //NSManagedObjectContext *context;
@@ -136,12 +140,13 @@
     tableView_.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     tableView_.backgroundColor = [UIColor clearColor];
     tableView_.backgroundView = nil;
+    tableView_.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:tableView_];
     
     //load MediaViewCell
     UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
     //register the nib
-    [self.tableView registerNib:nib forCellReuseIdentifier:@"EWMediaViewCell"];
+    [self.tableView registerNib:nib forCellReuseIdentifier:cellIdentifier];
     //nav btn
     self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
     //self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Wake Up" style:UIBarButtonItemStylePlain target:self action:@selector(presentPostWakeUpVC)];
@@ -239,11 +244,10 @@
 //Asks the data source for a cell to insert in a particular location of the table view. (required)
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    static NSString *identifier = @"EWMediaViewCell";
     
     //Use reusable cell or create a new cell
-    EWMediaViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-    
+    EWMediaViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    //EWMediaViewCell *cell = [[EWMediaViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
     //get media item
     EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
     
@@ -257,14 +261,13 @@
     
     
     //date
-    cell.date.text = [mi.createddate date2detailDateString];
+    cell.date.text = [mi.createddate date2String];
     
     //set image
     cell.profilePic.image = mi.author.profilePic;
     
     //control
     cell.controller = self;
-    cell.tableView = self.tableView;
     
     //mediafile
     cell.media = mi;
@@ -353,7 +356,7 @@
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 120;
+    return 80;
 }
 
 
@@ -390,7 +393,7 @@
     NSLog(@"Play next song");
     if (currentCell < medias.count) {
         EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCell inSection:0]];
-        [cell mediaPlay:nil];
+        [[AVManager sharedManager] playForCell:cell];
     }
 }
 

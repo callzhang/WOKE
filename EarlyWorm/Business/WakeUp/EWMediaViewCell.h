@@ -10,7 +10,7 @@
 #import "EWMediaItem.h"
 #import "EWPerson.h"
 
-@class EWRoundButton;
+@class EWMediaSlider;
 
 @interface EWMediaViewCell : UITableViewCell
 //controller
@@ -22,7 +22,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *date;
 @property (weak, nonatomic) IBOutlet UILabel *description;
 @property (weak, nonatomic) IBOutlet UIButton *like;
-@property (weak, nonatomic) IBOutlet EWRoundButton *mediaBar;
+@property (weak, nonatomic) IBOutlet EWMediaSlider *mediaBar;
 
 //action
 - (IBAction)play:(id)sender;

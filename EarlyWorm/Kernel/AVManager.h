@@ -11,7 +11,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "EWDefines.h"
 
-@class EWMediaViewCell, EWTaskItem, EWMediaItem;
+@class EWMediaViewCell, EWTaskItem, EWMediaItem, EWMediaSlider;
 
 @interface AVManager : UIResponder <AVAudioPlayerDelegate, AVAudioRecorderDelegate, AVAudioSessionDelegate>
 {
@@ -25,9 +25,12 @@
 
 @property (retain, nonatomic) AVAudioPlayer *player;
 @property (retain, nonatomic) AVAudioRecorder *recorder;
-@property (weak, nonatomic) UITableView *wakeUpTableView; //holds all the cells
+//@property (weak, nonatomic) UITableView *wakeUpTableView; //holds all the cells
 @property (weak, nonatomic) EWMediaViewCell *currentCell; //current cell
 @property (retain, nonatomic) UIButton *recordStopBtn;
+@property (retain, nonatomic) UIButton *playStopBtn;
+@property (retain, nonatomic) EWMediaSlider *progressBar;
+@property (retain, nonatomic) UILabel *currentTime;
 
 +(AVManager *)sharedManager;
 
