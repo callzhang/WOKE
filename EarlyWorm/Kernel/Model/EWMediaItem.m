@@ -34,6 +34,7 @@
 @dynamic createddate;
 @dynamic lastmoddate;
 @dynamic ewmediaitem_id;
+@dynamic type;
 
 - (id)init
 {

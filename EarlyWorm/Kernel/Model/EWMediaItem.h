@@ -27,6 +27,7 @@
 @property (nonatomic, retain) EWPerson *author;
 @property (nonatomic, retain) NSSet *groupTask;
 @property (nonatomic, retain) NSSet *tasks;
+@property (nonatomic, retain) NSString *type;
 
 -(UIImage *)setThumbnailDataFromImage:(UIImage *)image;
 //Data

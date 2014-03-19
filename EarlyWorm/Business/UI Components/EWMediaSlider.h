@@ -8,8 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EWMediaSlider : UISlider
-@property UILabel *timeLabel;
+@interface EWMediaSlider : UISlider{
+    UILabel *typeLabel;
+}
+@property (nonatomic) UILabel *timeLabel;
+@property (nonatomic) UIImageView *buzzIcon;
+@property (nonatomic) UIImageView *playIndicator;
+@property (nonatomic) NSString *type;
+
 
 - (void)play;
 - (void)stop;

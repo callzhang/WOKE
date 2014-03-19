@@ -51,6 +51,8 @@
 #define LOCALSTR(x)     NSLocalizedString(x,nil)
 #define EWAlert(str)    [[[UIAlertView alloc] initWithTitle:@"Alert" message:str delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
+#define UIColorFromHex(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 //Global parameters
 #define nWeeksToScheduleTask            1
 #define nLocalNotifPerTask              10
@@ -68,6 +70,10 @@
 
 #define userDefaults @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00"};
 
+
+//type
+#define kMediaType                      @"media"
+#define kBuzzType                       @"buzz"
 
 //event
 #define kAlarmsAllNewNotification       @"EWAlarmsNew" //key: alarms

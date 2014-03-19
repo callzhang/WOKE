@@ -200,9 +200,6 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
             }];
         });
     });
-    
-    
-    
 }
 
 - (void)setTask:(EWTaskItem *)t{
@@ -251,7 +248,7 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
     //get media item
     EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
     
-    //text
+    //title
     cell.title.text = mi.author.name;
     if (mi.message) {
         cell.description.text = mi.message;
@@ -259,6 +256,16 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
         cell.description.text = @"No description for this autio";
     }
     
+    //type
+    if ([mi.type isEqualToString:kMediaType]) {
+        //media
+        cell.mediaBar.type = kMediaType;
+    }else if ([mi.type isEqualToString:kBuzzType]){
+        //buzz
+        cell.mediaBar.type = kBuzzType;
+    }else{
+        cell.mediaBar.type = kMediaType;
+    }
     
     //date
     cell.date.text = [mi.createddate date2String];

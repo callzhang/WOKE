@@ -89,7 +89,7 @@
     currentTime = progressBar.timeLabel;
     
     //play
-    [self playSoundFromFile:cell.media.audioKey];
+    [self playSoundFromURL:[NSURL URLWithString:cell.media.audioKey]];
         
     //keep current cell
     currentCell = cell;
@@ -107,7 +107,7 @@
     if (array.count == 1) {
         file = fileName;
         type = @"";
-    }else if (array.count >= 2) {
+    }else if (array.count == 2) {
         file = [array firstObject];
         type = [array lastObject];
     }else {
