@@ -41,8 +41,8 @@
 
 - (void)initMediaSlider:(CGRect)frame{
     // background image
-    UIImage *leftImg = [[UIImage imageNamed:@"MediaCellLeftCap"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 39, 0, 0)];
-    UIImage *rightImg = [[UIImage imageNamed:@"MediaCellRightCap"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 39)];
+    UIImage *leftImg = [[UIImage imageNamed:@"MediaCellLeftCap"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 20, 0, 20)];
+    UIImage *rightImg = [[UIImage imageNamed:@"MediaCellRightCap"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 20, 0, 20)];
     [self setMaximumTrackImage:rightImg forState:UIControlStateNormal];
     [self setMinimumTrackImage:leftImg forState:UIControlStateNormal];
     //[self setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
