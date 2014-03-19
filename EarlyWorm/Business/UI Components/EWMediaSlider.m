@@ -45,12 +45,15 @@
     UIImage *rightImg = [[UIImage imageNamed:@"MediaCellRightCap"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 39)];
     [self setMaximumTrackImage:rightImg forState:UIControlStateNormal];
     [self setMinimumTrackImage:leftImg forState:UIControlStateNormal];
-    //[self setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
+    [self setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
     
     
     //text
     timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.size.width - 25, (frame.size.height - 20)/2, 50, 20)];
+    timeLabel.text = @"0:00";
     [self addSubview:timeLabel];
+    
+    //color
     self.tintColor = [UIColor whiteColor];
 }
 
