@@ -34,6 +34,7 @@
     NSMutableArray *listOfBuzzAndMedia; //list with time
     BOOL loopAllCells;
     CGRect headerFrame;
+    UIButton * postWakeUpVCBtn;
 }
 @property (nonatomic, strong) EWShakeManager *shakeManager;
 @end
@@ -168,9 +169,9 @@
     self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
     //self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Wake Up" style:UIBarButtonItemStylePlain target:self action:@selector(presentPostWakeUpVC)];
     
-    UIButton * postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGRect frame =[UIScreen mainScreen].bounds;
-    frame.origin.y = frame.size.height - 80;
+    frame.origin.y = frame.size.height ;
     frame.size.height = 80;
     postWakeUpVCBtn.frame = frame;
     [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"wake_view_bar"] forState:UIControlStateNormal];
@@ -179,7 +180,6 @@
     //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:postWakeUpVCBtn];
-    //tableView_.tableFooterView = postWakeUpVCBtn;
     
 }
 
@@ -385,12 +385,24 @@
 
 #pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    if (scrollView.contentOffset.y > -120) {
+    
+    //header
+    NSInteger tableOffsetY = scrollView.contentOffset.y;
+    if (tableOffsetY > -200 && tableOffsetY < -40) {
         CGRect newFrame = headerFrame;
         newFrame.origin.y = headerFrame.origin.y - (120 + scrollView.contentOffset.y);
-        header.frame = headerFrame;
-        [self.view setNeedsDisplay];
+        header.frame = newFrame;
     }
+    
+    //footer
+    NSInteger footerOffset = scrollView.contentSize.height + scrollView.contentInset.top - (scrollView.contentOffset.y + scrollView.frame.size.height);
+    if (footerOffset < 200) {
+        //scroll end to the end
+        CGRect footerFrame = postWakeUpVCBtn.frame;
+        footerFrame.origin.y = scrollView.frame.size.height + footerOffset;
+        postWakeUpVCBtn.frame = footerFrame;
+    }
+    
 }
 
 @end
