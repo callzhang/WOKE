@@ -10,12 +10,15 @@
 @class EWPerson, EWMediaItem, EWTaskItem;
 
 @interface EWWakeUpViewController : EWViewController <UIPopoverControllerDelegate, UITableViewDelegate, UITableViewDataSource>
-@property (retain, nonatomic) UITableView *tableView;
-@property (strong, nonatomic) UIPopoverController *imagePopover;
+@property (weak, nonatomic) IBOutlet UILabel *title;
+@property (weak, nonatomic) IBOutlet UILabel *timer;
+@property (weak, nonatomic) IBOutlet UIView *header;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
 @property (nonatomic) EWPerson *person;
 @property (nonatomic) EWTaskItem *task;
 
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
-- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;
+//- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;
 - (void)startPlayCells;
 @end

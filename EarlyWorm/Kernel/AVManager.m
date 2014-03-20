@@ -81,18 +81,22 @@
 
 #pragma mark - PLAY FUNCTIONS
 //play for cell with progress
--(void)playForCell:(EWMediaViewCell *)cell{
+-(void)playForCell:(UITableViewCell *)cell{
+    
+    //determine cell type
+    if (![cell isKindOfClass:[EWMediaViewCell class]]) return;
+    EWMediaViewCell *mediaCell = (EWMediaViewCell *)cell;
     
     //link progress bar with cell's progress bar
-    progressBar = cell.mediaBar;
+    progressBar = mediaCell.mediaBar;
     [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
     currentTime = progressBar.timeLabel;
     
     //play
-    [self playSoundFromURL:[NSURL URLWithString:cell.media.audioKey]];
+    [self playSoundFromURL:[NSURL URLWithString:mediaCell.media.audioKey]];
         
     //keep current cell
-    currentCell = cell;
+    currentCell = mediaCell;
 }
 
 

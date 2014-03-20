@@ -108,7 +108,6 @@
         if (!media) {
             media = [[EWMediaStore sharedInstance] createMedia];
             media.author = currentUser;
-            media.title = @"Voice Tone";
             media.message = self.message.text;
             [media addTasksObject:task];
             media.audioKey = recordDataString;

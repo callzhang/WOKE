@@ -209,8 +209,11 @@
                     //determin if WakeUpViewController is presenting
                     if ([EWServer isRootPresentingWakeUpView]) {
                         //wakeup vc is presenting
-                        EWWakeUpViewController *vc = (EWWakeUpViewController *)rootViewController.presentingViewController;
-                        [vc.tableView reloadData];
+                        if ([rootViewController.presentingViewController isKindOfClass:[EWWakeUpViewController class]]) {
+                            EWWakeUpViewController *vc = (EWWakeUpViewController *)rootViewController.presentingViewController;
+                            [vc.tableView reloadData];
+                        }
+                        
                     }
                     else{
                         //present vc

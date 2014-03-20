@@ -98,8 +98,10 @@
 
 
 - (IBAction)skip:(id)sender {//this function will not be called
+    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    [rootViewController dismissViewControllerAnimated:YES completion:NULL];
     [[EWUserManagement sharedInstance] loginWithDeviceIDWithCompletionBlock:^{
-        //
+        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     }];
 }
 

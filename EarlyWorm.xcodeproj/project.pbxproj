@@ -135,6 +135,7 @@
 		AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */; };
 		AB245FB818CCF88F00551721 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB245FA118CCD2E400551721 /* Reveal.framework */; };
 		AB245FB918CCF91200551721 /* libWeiboSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1745BD17F7D974009B4DB0 /* libWeiboSDK.a */; };
+		AB286A9618DA8BA8003131C8 /* EWWakeUpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */; };
 		AB2C18B2187145D10058BFAD /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18AC187145D10058BFAD /* release_notes.md */; };
 		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
 		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
@@ -400,6 +401,7 @@
 		AB207E67182FFFB60076D93F /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = ../../MBProgressHUD/MBProgressHUD.h; sourceTree = "<group>"; };
 		AB207E68182FFFB60076D93F /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = ../../MBProgressHUD/MBProgressHUD.m; sourceTree = "<group>"; };
 		AB245FA118CCD2E400551721 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Reveal.framework; sourceTree = "<group>"; };
+		AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWWakeUpView.xib; sourceTree = "<group>"; };
 		AB2C18AA187145D10058BFAD /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		AB2C18AB187145D10058BFAD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		AB2C18AC187145D10058BFAD /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
@@ -982,6 +984,7 @@
 				AB1F3CF618B7B5C500D3FB46 /* EWPostWakeUpViewController.h */,
 				AB1F3CF718B7B5C500D3FB46 /* EWPostWakeUpViewController.m */,
 				AB1F3CF918B7B5C500D3FB46 /* EWPostWakeUpViewController.xib */,
+				AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */,
 			);
 			path = WakeUp;
 			sourceTree = "<group>";
@@ -1529,6 +1532,7 @@
 				AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */,
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
 				AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */,
+				AB286A9618DA8BA8003131C8 /* EWWakeUpView.xib in Resources */,
 				ABEEA96617E027E90035DF4A /* vm3.m4a in Resources */,
 				ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */,
 				ABEEA96817E027E90035DF4A /* vm5.m4a in Resources */,

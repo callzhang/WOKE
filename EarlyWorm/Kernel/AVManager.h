@@ -43,7 +43,7 @@
  Main play function. Support FTW cache method.
  */
 - (void)playSoundFromURL:(NSURL *)url;
-- (void)playForCell:(EWMediaViewCell *)cell;
+- (void)playForCell:(UITableViewCell *)cell;
 - (void)playMedia:(EWMediaItem *)media;
 - (void)updateViewForPlayerState:(AVAudioPlayer *)player;
 - (void)playTask:(EWTaskItem *)task;

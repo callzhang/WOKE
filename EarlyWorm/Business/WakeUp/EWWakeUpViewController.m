@@ -22,7 +22,8 @@
 //test
 #import "EWPostWakeUpViewController.h"
 
-static NSString *cellIdentifier = @"EWMediaViewCell";
+#define cellIdentifier                  @"EWMediaViewCell"
+#define WAKEUP_VIEW_HEADER_HEIGHT       180
 
 
 @interface EWWakeUpViewController (){
@@ -31,6 +32,8 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
     NSMutableArray *medias;
     NSMutableDictionary *buzzers;
     NSMutableArray *listOfBuzzAndMedia; //list with time
+    BOOL loopAllCells;
+    CGRect headerFrame;
 }
 @property (nonatomic, strong) EWShakeManager *shakeManager;
 @end
@@ -41,17 +44,24 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
 
 @implementation EWWakeUpViewController
 @synthesize tableView = tableView_;
+@synthesize title, timer, header;
 @synthesize shakeManager = _shakeManager;
-@synthesize imagePopover;
 @synthesize person, task;
 
-- (id)init {
-    self = [super init];
+
+- (EWWakeUpViewController *)initWithTask:(EWTaskItem *)t{
+    self = [self initWithNibName:nil bundle:nil];
+    self.task = t;
+    return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.navigationItem.title = @"WakeUpView";
+        //self.navigationItem.title = @"WakeUpView";
+        
         //[self.navigationItem setLeftBarButtonItem:self.editButtonItem];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
-        
         
         //notification
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
@@ -61,15 +71,17 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
     return self;
 }
 
-- (EWWakeUpViewController *)initWithTask:(EWTaskItem *)t{
-    self = [self init];
-    self.task = t;
-    return self;
-}
+#pragma mark - Life Cycle
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    
+    //first time loop
+    loopAllCells = YES;
+    
+    //origin header frame
+    headerFrame = header.frame;
     
     //context
     //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
@@ -85,7 +97,7 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    [self.tableView reloadData];
+    [tableView_ reloadData];
     //play
     [self startPlayCells];
 }
@@ -103,7 +115,7 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
             
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.tableView reloadData];
+                [tableView_ reloadData];
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
                 
             });
@@ -113,13 +125,15 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.tableView reloadData];
+                [tableView_ reloadData];
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
             });
         });
         
         
     }
+    
+    
     //_shakeManager = [[EWShakeManager alloc] init];
     //_shakeManager.delegate = self;
     //[_shakeManager register];
@@ -133,20 +147,23 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
     [self.view addSubview:img];
     [self.view sendSubviewToBack:img];
     
+    //header
+    
+    
     //table view
-    tableView_ = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
     tableView_.dataSource = self;
     tableView_.delegate = self;
     tableView_.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     tableView_.backgroundColor = [UIColor clearColor];
     tableView_.backgroundView = nil;
     tableView_.separatorStyle = UITableViewCellSeparatorStyleNone;
+    tableView_.contentInset = UIEdgeInsetsMake(120, 0, 80, 0);//the distance of the content to the frame of tableview
     [self.view addSubview:tableView_];
     
     //load MediaViewCell
     UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
     //register the nib
-    [self.tableView registerNib:nib forCellReuseIdentifier:cellIdentifier];
+    [tableView_ registerNib:nib forCellReuseIdentifier:cellIdentifier];
     //nav btn
     self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
     //self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Wake Up" style:UIBarButtonItemStylePlain target:self action:@selector(presentPostWakeUpVC)];
@@ -162,25 +179,26 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
     //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:postWakeUpVCBtn];
-    
+    //tableView_.tableFooterView = postWakeUpVCBtn;
     
 }
 
-#pragma mark - Event Handler
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (void)dealloc {
+    [_shakeManager unregister];
+}
+
+
 - (void)refresh{
     [self initData];
-    [self.tableView reloadData];
+    [tableView_ reloadData];
 }
 
-#pragma mark - Custom methods
-- (void)startPlayCells{
-    currentCell = 0;
-    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentCell inSection:0]];
-    if (cell) {
-        [[AVManager sharedManager] playForCell:cell];
-    }
-    
-}
 
 -(void)presentPostWakeUpVC
 {
@@ -207,18 +225,14 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
     [self initData];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)dealloc {
-    [_shakeManager unregister];
-}
-
 #pragma mark - Functions
 
-- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath {
+- (void)startPlayCells{
+    currentCell = 0;
+    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentCell inSection:0]];
+    if (cell) {
+        [[AVManager sharedManager] playForCell:cell];
+    }
     
 }
 
@@ -359,6 +373,8 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSLog(@"Media clicked");
+    [[AVManager sharedManager] playForCell:[tableView cellForRowAtIndexPath:indexPath]];
+    loopAllCells = NO;
 }
 
 
@@ -367,13 +383,15 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
 }
 
 
-//dismiss popover when tap outside
-- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
-{
-    [imagePopover dismissPopoverAnimated:YES];
-    imagePopover = nil;
+#pragma mark - UIScrollViewDelegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    if (scrollView.contentOffset.y > -120) {
+        CGRect newFrame = headerFrame;
+        newFrame.origin.y = headerFrame.origin.y - (120 + scrollView.contentOffset.y);
+        header.frame = headerFrame;
+        [self.view setNeedsDisplay];
+    }
 }
-
 
 @end
 
@@ -400,7 +418,12 @@ static NSString *cellIdentifier = @"EWMediaViewCell";
     NSLog(@"Play next song");
     if (currentCell < medias.count) {
         EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCell inSection:0]];
-        [[AVManager sharedManager] playForCell:cell];
+        if (!cell) {
+            loopAllCells = NO;
+        }else{
+            
+            [[AVManager sharedManager] playForCell:cell];
+        }
     }
 }
 
