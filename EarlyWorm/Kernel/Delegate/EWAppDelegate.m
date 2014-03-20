@@ -436,12 +436,12 @@ UIViewController *rootViewController;
     });
 }
 
-
+#pragma mark - Background transfer event
 
 //Store the completion handler. The completion handler is invoked by the view controller's checkForAllDownloadsHavingCompleted method (if all the download tasks have been completed).
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
 {
-    NSLog(@"%s", __func__);
+    NSLog(@"%s: APP received message and need to handle the background transfer events", __func__);
     //store the completionHandler
     EWDownloadManager *manager = [EWDownloadManager sharedInstance];
 	manager.backgroundSessionCompletionHandler = completionHandler;

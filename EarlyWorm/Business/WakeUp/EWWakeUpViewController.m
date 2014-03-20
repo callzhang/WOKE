@@ -200,25 +200,7 @@
 }
 
 
--(void)presentPostWakeUpVC
-{
-    //stop music
-    [[AVManager sharedManager] stopAllPlaying];
-    NSLog(@"%s",__func__);
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:@"EWPostWakeUpViewController" bundle:nil];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            [self presentViewController:postWakeUpVC animated:YES completion:^{
-                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                
-            }];
-        });
-    });
-}
+
 
 - (void)setTask:(EWTaskItem *)t{
     task = t;
@@ -240,6 +222,27 @@
     [self.navigationController dismissViewControllerAnimated:YES completion:^{
         [[AVManager sharedManager] stopAllPlaying];
     }];
+}
+
+-(void)presentPostWakeUpVC
+{
+    //stop music
+    [[AVManager sharedManager] stopAllPlaying];
+    
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:nil bundle:nil];
+        postWakeUpVC.taskItem = task;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self presentViewController:postWakeUpVC animated:YES completion:^{
+                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                
+            }];
+        });
+    });
 }
 
 #pragma mark - tableViewController delegate methods

@@ -35,7 +35,7 @@
         //watch for new alarm
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(scheduleTasks) name:kAlarmsAllNewNotification object:nil];
         //watch media change
-        [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskMedia:) name:kMediaNewNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskMedia:) name:kNewMediaNotification object:nil];
         //watch alarm deletion
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(alarmRemoved:) name:kAlarmDeleteNotification object:nil];
     });
@@ -365,10 +365,14 @@
 }
 
 - (void)updateTaskMedia:(NSNotification *)notif{
-    EWTaskItem *task = [notif object];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // NSString *mediaID = [notif userInfo][kPushMediaKey];
+    NSString *taskID = [notif userInfo][kPushTaskKey];
+    EWTaskItem *task = [self getTaskByID:taskID];
+    //EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+    //NSAssert([task.medias containsObject:media], @"Media and Task should have relation");
+    dispatch_async(dispatch_get_main_queue(), ^{
         [context refreshObject:task mergeChanges:YES];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{@"task": task}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{kPushTaskKey: task}];
     });
 }
 

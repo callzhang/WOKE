@@ -76,6 +76,7 @@
 #define kBuzzType                       @"buzz"
 
 //event
+//alarm store
 #define kAlarmsAllNewNotification       @"EWAlarmsNew" //key: alarms
 #define kAlarmNewNotification           @"EWAlarmNew" //key: alarm
 #define kAlarmStateChangedNotification  @"EWAlarmStateChanged"//key: alarm
@@ -83,24 +84,24 @@
 #define kAlarmDeleteNotification        @"EWAlarmDelete" //key: tasks
 #define kAlarmChangedNotification       @"EWAlarmChanged" //key: alarm
 #define kAlarmToneChangedNotification   @"EWAlarmToneChanged" //key: alarm
-
+//task store
 #define kTasksAllNewNotification        @"EWTasksNew"  //key: tasks
 #define kTaskNewNotification            @"EWTaskNew"  //key: task
 #define kTaskStateChangedNotification   @"EWTasksStateChanged"  //key: task
 #define kTaskDeleteNotification         @"EWTaskDelete"  //key: task
 #define kTaskTimeChangedNotification    @"EWTaskTimeChanged"  //key: task
 #define kTaskChangedNotification        @"EWTaskChanged" //key: task
-
+//person store
 #define kPersonLoggedIn                 @"PersonLoggedIn"
 #define kPersonLoggedOut                @"PersonLoggedOut"
 #define kPersonProfilePicDownloaded     @"PersonPicDownloaded"
-
-#define kMediaNewNotification           @"EWMediaNew" //key: task & media
+//media store
+//#define kMediaNewNotification           @"EWMediaNew"
 
 #define kPushAPNSRegisteredNotification @"APNSRegistered"
-
+//EWServer
 #define kNewBuzzNotification            @"buzz_event"
-#define kNewMediaNotification           @"media_event"
+#define kNewMediaNotification           @"media_event" //key: task & media
 #define kNewTimerNotification           @"alarm_timer"
 
 //Notification key

@@ -12,7 +12,7 @@
 #import "EWPersonStore.h"
 #import "EWServer.h"
 #import "EWCollectionPersonCell.h"
-
+#import "EWTaskItem.h"
 #import <QuartzCore/QuartzCore.h>
 #import "EWAppDelegate.h"
 
@@ -155,6 +155,13 @@
 
 #pragma mark -
 #pragma mark - get buzzing time & unit -
+
+- (void)setTaskItem:(EWTaskItem *)t{
+    taskItem = t;
+    time = [[NSDate date] timeIntervalSinceDate:t.time];
+    NSLog(@"Time interval is %d", time);
+}
+
 
 -(NSString *)getTime
 {

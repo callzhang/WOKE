@@ -80,8 +80,9 @@
     }
 }
 
-- (void)downloadTask:(EWTaskItem *)t{
+- (void)downloadTask:(EWTaskItem *)t withCompletionHandler:(void (^)(void))block{
     task = t;
+    completionTask = block;
     for (EWMediaItem *mi in t.medias) {
         
         [self downloadMedia:mi];
@@ -148,6 +149,8 @@
     {
         NSLog(@"Task: %@ completed with error: %@", t, [error localizedDescription]);
     }
+    
+    completionTask();
 }
 
 /*

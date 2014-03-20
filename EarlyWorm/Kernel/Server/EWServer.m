@@ -231,7 +231,7 @@
         //broadcast event
         if (!taskID) taskID = @"";
         [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: taskID}];
-        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: taskID}];
        
         
         //active: play alert
@@ -243,7 +243,7 @@
 
     }else if ([type isEqualToString:kPushTypeMediaKey]){
         // ============== Media ================
-        NSLog(@"Received Task type push: %@", taskID);
+        NSLog(@"Received media type push: %@", taskID);
         //get task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             //download
@@ -306,7 +306,6 @@
         });
     
         
-        
     }else if([type isEqualToString:kPushTypeTimerKey]){
         // ============== Timer ================
         
@@ -315,36 +314,35 @@
         
         //task
         EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+
         
-        //add download completion task
-        dlManager.completionTask = ^{
+        //>>>>> start download task <<<<<
+        [dlManager downloadTask:task withCompletionHandler:^{
+            //action to be performed at download finish
             
             //use EWWakeUpVC to start play
             EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
             
             //active: alert
-            if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-                EWAlert(@"Time to wake up!");
-                
-                
-                UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
-                
+//          if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+            EWAlert(@"Time to wake up!");
+            
+            if (![EWServer isRootPresentingWakeUpView]) {
                 //present wakeup view
-                [rootViewController presentViewController:nav animated:YES completion:NULL];
+                [rootViewController dismissViewControllerAnimated:YES completion:^{
+                    [rootViewController presentViewController:controller animated:YES completion:^{
+                        //post notification
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: taskID}];
+                    }];
+                }];
                 
-                
-            }else{
-                //play
-                [controller startPlayCells];
             }
             
-            
-        };
-        
-        
-        
-        //>>>>> start download task <<<<<
-        [dlManager downloadTask:task];
+//            }else{
+//                //play
+//                [controller startPlayCells];
+//            }
+        }];
         
         
     }else if([type isEqualToString:@"test"]){
