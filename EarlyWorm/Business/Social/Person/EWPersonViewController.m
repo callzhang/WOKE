@@ -106,9 +106,9 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         //UIColor *wcolor = [UIColor colorWithWhite:1.0f alpha:0.5f];
         //CGColorRef wCGColor = [wcolor CGColor];
         //tabView.layer.backgroundColor = wCGColor;
-        [tabView setTitle:[NSString stringWithFormat:@"%d", person.friends.count] forSegmentAtIndex:0];
-        [tabView setTitle:[NSString stringWithFormat:@"%d\"", [stats.aveWakeupTime integerValue]] forSegmentAtIndex:1];
-        [tabView setTitle:[NSString stringWithFormat:@"%d", person.achievements.count] forSegmentAtIndex:2];
+        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.friends.count] forSegmentAtIndex:0];
+        [tabView setTitle:[NSString stringWithFormat:@"%ld\"", (long)[stats.aveWakeupTime integerValue]] forSegmentAtIndex:1];
+        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.achievements.count] forSegmentAtIndex:2];
         
         //statement
         EWTaskItem *t = tasks.firstObject;
@@ -281,7 +281,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     
     EWTaskItem *task = [tasks objectAtIndex:indexPath.section];
     NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:task.time];
-    cell.dayOfMonth.text = [NSString stringWithFormat:@"%d", components.day];
+    cell.dayOfMonth.text = [NSString stringWithFormat:@"%ld", (long)components.day];
     //month
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"MMM"];
@@ -290,7 +290,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     
     if ([task.success boolValue]) {
         cell.wakeTime.text = [task.completed date2String];
-        cell.taskInfo.text = [NSString stringWithFormat:@"Woke up by %d users", task.waker.count];
+        cell.taskInfo.text = [NSString stringWithFormat:@"Woke up by %lu users", (unsigned long)task.waker.count];
         
     }else{
         cell.wakeTime.text = [task.time date2String];

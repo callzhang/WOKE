@@ -159,7 +159,7 @@
 - (void)setTaskItem:(EWTaskItem *)t{
     taskItem = t;
     time = [[NSDate date] timeIntervalSinceDate:t.time];
-    NSLog(@"Time interval is %d", time);
+    NSLog(@"Time interval is %ld", (long)time);
 }
 
 
@@ -169,21 +169,21 @@
     NSString * timeStr;
     if (time < 60 && time >= 0)
     {
-        timeStr = [NSString stringWithFormat:@"%d",time];
+        timeStr = [NSString stringWithFormat:@"%ld",(long)time];
         return timeStr;
     }
     else if (time >= 60 && time < 3600)
     {
         if (time%60 == 0)
         {
-            timeStr = [NSString stringWithFormat:@"%d",time/60];
+            timeStr = [NSString stringWithFormat:@"%f",time/60.0];
             return timeStr;
         }
         else
         {
             if (time/60.0 > 10.0)
             {
-                timeStr = [NSString stringWithFormat:@"%d",time/60];
+                timeStr = [NSString stringWithFormat:@"%f",time/60.0];
                 return timeStr;
             }
             timeStr = [NSString stringWithFormat:@"%.1f",time/60.0];
@@ -194,14 +194,14 @@
     {
         if (time%3600 == 0)
         {
-            timeStr = [NSString stringWithFormat:@"%d",time/3600];
+            timeStr = [NSString stringWithFormat:@"%f",time/3600.0];
             return timeStr;
         }
         else
         {
             if (time/3600.0 > 10.0)
             {
-                timeStr = [NSString stringWithFormat:@"%d",time/3600];
+                timeStr = [NSString stringWithFormat:@"%f",time/3600.0];
                 return timeStr;
             }
             timeStr = [NSString stringWithFormat:@"%.1f",time/3600.0];

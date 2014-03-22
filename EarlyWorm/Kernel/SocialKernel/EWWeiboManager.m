@@ -101,13 +101,13 @@ static NSMutableArray *g_friendList = nil;
 }
 
 - (void)logoutWeibo {
-    EWAppDelegate *myDelegate  = (EWAppDelegate*)[[UIApplication  sharedApplication] delegate];
-    [WeiboSDK logOutWithToken:self.accessToken delegate:myDelegate];
+    //EWAppDelegate *myDelegate  = (EWAppDelegate*)[[UIApplication  sharedApplication] delegate];
+    //[WeiboSDK logOutWithToken:self.accessToken delegate:myDelegate];
 }
 
 - (void)inviteFriend {
-    EWAppDelegate *myDelegate =(EWAppDelegate*)[[UIApplication sharedApplication] delegate];
-    [WeiboSDK inviteFriend:@"testinvite" withUid:@"好友uid" withToken:self.accessToken delegate:myDelegate];
+    //EWAppDelegate *myDelegate =(EWAppDelegate*)[[UIApplication sharedApplication] delegate];
+    //[WeiboSDK inviteFriend:@"testinvite" withUid:@"好友uid" withToken:self.accessToken delegate:myDelegate];
 }
 /*
  参数说明：
@@ -124,7 +124,7 @@ sort            false        int        排序类型，0：按关注时间最近
 - (void)getFriendListAtPage:(NSInteger)page {
     EWDownloadMgr *downloadMgr = [[EWDownloadMgr alloc] init];
     downloadMgr.delegate = self;
-    downloadMgr.urlString = [NSString stringWithFormat:@"https://api.weibo.com/2/friendships/friends/bilateral.json?source=%@&access_token=%@&uid=%@&count=%d&page=%d", kWeiboSDKAppKey, self.accessToken, self.userID, 50, page];
+    downloadMgr.urlString = [NSString stringWithFormat:@"https://api.weibo.com/2/friendships/friends/bilateral.json?source=%@&access_token=%@&uid=%@&count=%d&page=%ld", kWeiboSDKAppKey, self.accessToken, self.userID, 50, (long)page];
     
     NSLog(@"Get Friend List URL : %@", downloadMgr.urlString);
     [downloadMgr startDownload];

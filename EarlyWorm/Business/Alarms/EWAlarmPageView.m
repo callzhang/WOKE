@@ -85,7 +85,7 @@
     self.timeText.text = [t.time date2String];
     NSInteger h = ([t.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
     if (h > 0) {
-        self.timeLeftText.text = [NSString stringWithFormat:@"%d hours left", h];
+        self.timeLeftText.text = [NSString stringWithFormat:@"%ld hours left", (long)h];
     }
     else {
         self.timeLeftText.text = @"Just alarmed";
@@ -93,7 +93,7 @@
     //media
     NSInteger mCount = task.medias.count;
     if (mCount > 0) {
-        [self.messages setTitle:[NSString stringWithFormat:@"%d voice tones", task.medias.count] forState:UIControlStateNormal];
+        [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];
     }else{
         [self.messages setTitle:@"" forState:UIControlStateNormal];
     }

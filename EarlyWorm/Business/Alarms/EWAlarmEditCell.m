@@ -80,7 +80,7 @@
     myTime = [myTime timeByAddingMinutes:time2add];
     self.time.text = [myTime date2String];
     sender.value = 0;//reset to 0
-    NSLog(@"New value is: %d, and new time is: %@", time2add, myTime.date2String);
+    NSLog(@"New value is: %ld, and new time is: %@", (long)time2add, myTime.date2String);
     [self setNeedsDisplay];
 }
 

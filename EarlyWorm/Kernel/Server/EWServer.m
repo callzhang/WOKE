@@ -183,7 +183,7 @@
 #ifdef DEV_TEST
             delayInSeconds = 3;
 #endif
-            NSLog(@"Delay for %d seconds", delayInSeconds);
+            NSLog(@"Delay for %zd seconds", delayInSeconds);
         }
         //add sender to task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -392,21 +392,27 @@
             //task type
             NSString *taskID = remoteNotif[kPushTaskKey];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //current task
-                EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser]; //[[EWTaskStore sharedInstance] getTaskByID:taskID];
-                [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-                
-                //stop if task has finished
-                //if (task.completed) return;
-                
-                //present wakeup vc
-                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-                controller.task = task;
-                [rootViewController presentViewController:controller animated:YES completion:^{
-                    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-                }];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+                if (!task) {
+                    task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+                    
+                    //stop if task has finished
+                    //if (task.completed) return;
+                    
+                    //present wakeup vc
+                    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+                    controller.task = task;
+                    [rootViewController presentViewController:controller animated:YES completion:^{
+                        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+                    }];
+                });
             });
+            
+            
 
         }else if ([type isEqualToString:kPushTypeMediaKey]){
             // ============== Media ================

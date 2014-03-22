@@ -41,9 +41,9 @@
         totalWakeUpTime += [task.time timeIntervalSinceReferenceDate];
         success += (NSInteger)task.success;
     }
-    [stats setValue:[NSNumber numberWithInt:totalWakeUpLength/nTask] forKey:@"AverageWakeUpLength"];
+    [stats setValue:[NSNumber numberWithInteger:totalWakeUpLength/nTask] forKey:@"AverageWakeUpLength"];
     [stats setValue:[NSDate dateWithTimeIntervalSinceReferenceDate:totalWakeUpTime/nTask] forKey:@"AverageWakeUpTime"];
-    [stats setValue:[NSNumber numberWithInt:success/nTask] forKey:@"SuccessRate"];
+    [stats setValue:[NSNumber numberWithInteger:success/nTask] forKey:@"SuccessRate"];
     
     return stats;
 }

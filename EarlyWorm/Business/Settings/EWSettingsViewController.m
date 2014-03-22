@@ -113,7 +113,7 @@
 
 #pragma mark - setting group change
 -(void)changeSettingGroup:(id)sender{
-    settingGroup = [sender selectedSegmentIndex];
+    settingGroup = (settingGroupList)[sender selectedSegmentIndex];
     NSLog(@"Setting group switched to %d", settingGroup);
     //refresh table
     [_tableView reloadData];

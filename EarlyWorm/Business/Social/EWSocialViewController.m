@@ -127,7 +127,7 @@
 
 #pragma mark - UI events
 -(void)changeTaskGroup:(id)sender{
-    socialList = [sender selectedSegmentIndex];
+    socialList = (TaskGroupList)[sender selectedSegmentIndex];
     dispatch_async(dispatch_get_main_queue(), ^{
         if (socialList == socialViewNews) {
             //nav item

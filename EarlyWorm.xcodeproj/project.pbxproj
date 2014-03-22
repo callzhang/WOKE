@@ -26,7 +26,6 @@
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
 		56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CCB17FB056F008A7922 /* TestSocailSDKViewController.m */; };
-		56330CD217FDCBC5008A7922 /* EWWeiboFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CD117FDCBC5008A7922 /* EWWeiboFriendListViewController.m */; };
 		56330CE117FDDF49008A7922 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CD617FDDF49008A7922 /* NSObject+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		56330CE217FDDF49008A7922 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CD817FDDF49008A7922 /* NSString+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		56330CE317FDDF49008A7922 /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CDA17FDDF49008A7922 /* SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -34,7 +33,6 @@
 		56330CE517FDDF49008A7922 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CDE17FDDF49008A7922 /* SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		56330CE617FDDF49008A7922 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CE017FDDF49008A7922 /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		56330CEF17FDEA57008A7922 /* EWFacebookManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CEC17FDEA57008A7922 /* EWFacebookManager.m */; };
-		56330CF017FDEA57008A7922 /* EWWeiboManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CEE17FDEA57008A7922 /* EWWeiboManager.m */; };
 		56330CF517FDF2C2008A7922 /* EWFacebookFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CF417FDF2C2008A7922 /* EWFacebookFriendListViewController.m */; };
 		5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */; };
 		5642AF4E17ACCF90000C73E8 /* UIView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 5642AF4D17ACCF90000C73E8 /* UIView+Layout.m */; };
@@ -134,8 +132,10 @@
 		AB245FB618CCF86500551721 /* AWSSNS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */; };
 		AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */; };
 		AB245FB818CCF88F00551721 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB245FA118CCD2E400551721 /* Reveal.framework */; };
-		AB245FB918CCF91200551721 /* libWeiboSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1745BD17F7D974009B4DB0 /* libWeiboSDK.a */; };
+		AB245FB918CCF91200551721 /* libWeiboSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1745BD17F7D974009B4DB0 /* libWeiboSDK.a */; settings = {ATTRIBUTES = (Weak, ); }; };
 		AB286A9618DA8BA8003131C8 /* EWWakeUpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */; };
+		AB286A9718DBF07F003131C8 /* EWWeiboManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CEE17FDEA57008A7922 /* EWWeiboManager.m */; };
+		AB286A9818DBF07F003131C8 /* EWWeiboFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CD117FDCBC5008A7922 /* EWWeiboFriendListViewController.m */; };
 		AB2C18B2187145D10058BFAD /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18AC187145D10058BFAD /* release_notes.md */; };
 		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
 		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
@@ -1571,6 +1571,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB286A9718DBF07F003131C8 /* EWWeiboManager.m in Sources */,
+				AB286A9818DBF07F003131C8 /* EWWeiboFriendListViewController.m in Sources */,
 				ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */,
 				ABDE25EB18CF572700DDBDB5 /* FSPlaylistItem.m in Sources */,
 				5671BE3918085C4100F35DF9 /* ASIHTTPRequest.m in Sources */,
@@ -1579,7 +1581,6 @@
 				ABDE25E218CF572700DDBDB5 /* audio_stream.cpp in Sources */,
 				56FEA58017A5763200FC2938 /* EWSettingsViewController.m in Sources */,
 				AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */,
-				56330CD217FDCBC5008A7922 /* EWWeiboFriendListViewController.m in Sources */,
 				5671BE3E18085C4100F35DF9 /* ASICloudFilesContainer.m in Sources */,
 				5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */,
 				5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */,
@@ -1640,7 +1641,6 @@
 				5671BE3A18085C4100F35DF9 /* ASIInputStream.m in Sources */,
 				ABDE25E818CF572700DDBDB5 /* FSCheckContentTypeRequest.m in Sources */,
 				AB00B61E1835C49D00DDD54B /* EWWakeUpViewController.m in Sources */,
-				56330CF017FDEA57008A7922 /* EWWeiboManager.m in Sources */,
 				ABDE25E718CF572700DDBDB5 /* FSAudioStream.mm in Sources */,
 				5671BE3D18085C4100F35DF9 /* ASICloudFilesCDNRequest.m in Sources */,
 				56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */,

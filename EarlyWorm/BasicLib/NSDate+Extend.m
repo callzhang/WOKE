@@ -93,7 +93,7 @@
 - (NSString *)timeInString{
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *comp = [cal components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSWeekdayCalendarUnit) fromDate:self];
-    NSString *HHMM = [NSString stringWithFormat:@"%d:%d", comp.hour, comp.minute];
+    NSString *HHMM = [NSString stringWithFormat:@"%ld:%ld", (long)comp.hour, (long)comp.minute];
     return HHMM;
 }
 

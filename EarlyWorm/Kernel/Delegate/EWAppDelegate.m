@@ -220,7 +220,7 @@ UIViewController *rootViewController;
             [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
             
             //download
-            [[EWDownloadManager sharedInstance] downloadTask:task];
+            [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:NULL];
         }
     }
     
@@ -421,7 +421,7 @@ UIViewController *rootViewController;
     if ([application applicationState] == UIApplicationStateActive) {
         NSLog(@"Push Notification received when app is running: %@", userInfo);
     }else{
-        NSLog(@"Push Notification received when app is in background(%d): %@", application.applicationState, userInfo);
+        NSLog(@"Push Notification received when app is in background(%ld): %@", (long)application.applicationState, userInfo);
     }
     
     //handle push

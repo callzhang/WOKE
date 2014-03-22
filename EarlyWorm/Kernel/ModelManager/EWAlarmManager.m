@@ -129,7 +129,7 @@
         if ([(NSNumber *)newAlarms[i] boolValue]) {
             continue;
         }
-        NSLog(@"Alarm for weekday %d missing, start add alarm", i);
+        NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
         EWAlarmItem *a = [self newAlarm];
         //set time
         NSDate *d = [NSDate date];
@@ -209,7 +209,7 @@
         return YES;
     }else{
         //something wrong
-        NSLog(@"Something wrong with alarms (%d), delete all", alarms.count);
+        NSLog(@"Something wrong with alarms (%lu), delete all", (unsigned long)alarms.count);
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alarm incorrect" message:@"Please reschedule your alarm" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         //delete all alarms

@@ -185,7 +185,7 @@
     // Fast skip the music when user scroll the UISlider
     [player stop];
     [player setCurrentTime:progressBar.value];
-    NSString *timeStr = [NSString stringWithFormat:@"%d:%02d", (NSInteger)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
+    NSString *timeStr = [NSString stringWithFormat:@"%ld:%02d", (long)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
     currentTime.text = timeStr;
     [player prepareToPlay];
     [player play];
@@ -280,14 +280,14 @@
 -(void)updateCurrentTime{
     if (!progressBar.isTouchInside) {
         progressBar.value = player.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)player.currentTime / 60, (NSInteger)player.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%ld:%02d", (long)player.currentTime / 60, (NSInteger)player.currentTime % 60, nil];
     }
 }
 
 -(void)updateCurrentTimeForRecorder{
     if (!progressBar.isTouchInside) {
         progressBar.value = recorder.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%d:%02d", (NSInteger)recorder.currentTime / 60, (NSInteger)recorder.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%ld:%02d", (long)recorder.currentTime / 60, (NSInteger)recorder.currentTime % 60, nil];
     }
 }
 

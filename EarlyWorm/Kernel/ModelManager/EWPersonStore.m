@@ -66,7 +66,7 @@ EWPerson *currentUser;
     NSArray *result = [context executeFetchRequestAndWait:userFetch error:&err];
     if ([result count] != 1) {
         // There should only be one result
-        [NSException raise:@"Failed to fetch user" format:@"%d user fetched. Check username:%@", result.count, ID];
+        [NSException raise:@"Failed to fetch user" format:@"%lu user fetched. Check username:%@", (unsigned long)result.count, ID];
     };
     
     EWPerson *user = (EWPerson *)result[0];
@@ -75,7 +75,7 @@ EWPerson *currentUser;
         //[NSException raise:@"user fatched is fault" format:@"check your code"];
         NSLog(@"user is faulted, try to get faults filled");
         [context refreshObject:currentUser mergeChanges:YES];
-        NSLog(@"There are %d alarms and %d tasks", user.alarms.count, user.tasks.count);
+        NSLog(@"There are %lu alarms and %lu tasks", (unsigned long)user.alarms.count, (unsigned long)user.tasks.count);
     }
     return user;
 }

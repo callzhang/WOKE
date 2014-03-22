@@ -58,7 +58,7 @@
     if (currentUser.tasks.count != 0 &&currentUser.tasks.count !=  7 * nWeeksToScheduleTask) {
         NSLog(@"Something wrong with local data of tasks on current user, start fetch from server");
         _allTasks = [[self getTasksByPerson:currentUser] mutableCopy];
-        NSLog(@"After fetch, server returned %d tasks, current user has %d tasks.", _allTasks.count, currentUser.tasks.count);
+        NSLog(@"After fetch, server returned %lu tasks, current user has %lu tasks.", (unsigned long)_allTasks.count, (unsigned long)currentUser.tasks.count);
     }else{
         _allTasks = [[currentUser.tasks allObjects] mutableCopy];
     }
@@ -210,7 +210,7 @@
                 //check receiprocal relationship
                 if (![a.tasks containsObject:t]) {
                     [context refreshObject:a mergeChanges:YES];
-                    NSLog(@"====Alarm->Task relation was not fetched. After refresh, alarm has %d tasks=====", a.tasks.count);
+                    NSLog(@"====Alarm->Task relation was not fetched. After refresh, alarm has %lu tasks=====", (unsigned long)a.tasks.count);
                 }
             }
         }
@@ -324,7 +324,7 @@
 - (void)updateTaskTimeForAlarm:(EWAlarmItem *)a{
     if (!a.tasks.count) {
         [context refreshObject:a mergeChanges:YES];
-        NSLog(@"Alarm's tasks not fetched, refresh from server. New tasks relation has %d tasks", a.tasks.count);
+        NSLog(@"Alarm's tasks not fetched, refresh from server. New tasks relation has %lu tasks", (unsigned long)a.tasks.count);
     }
     NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
     NSArray *sortedTasks = [a.tasks sortedArrayUsingDescriptors:@[des]];
@@ -467,7 +467,7 @@
 - (void)cancelNotificationForTask:(EWTaskItem *)task{
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
         if([aNotif.userInfo[kLocalNotificationUserInfoKey] isEqualToString:task.ewtaskitem_id]) {
-            NSLog(@"Local Notification cancelled for weekday: %d", [aNotif.fireDate weekdayNumber]);
+            NSLog(@"Local Notification cancelled for weekday: %ld", (long)[aNotif.fireDate weekdayNumber]);
             [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
             return;
         }
@@ -516,7 +516,7 @@
         if (currentUser.alarms.count == 0) return YES;
         return NO;
     }else if (tasks.count >  7 * nWeeksToScheduleTask) {
-        NSLog(@"Something is wrong with scheduled task: excessive tasks(%d), please check.", tasks.count);
+        NSLog(@"Something is wrong with scheduled task: excessive tasks(%luu), please check.",(unsigned long) (unsigned long)tasks.count);
         
         [self deleteAllTasks];
         return NO;
@@ -544,7 +544,7 @@
 - (void)checkScheduledNotifications{
     NSInteger nNotification = [[[UIApplication sharedApplication] scheduledLocalNotifications] count];
     NSInteger nTask = self.allTasks.count;
-    NSLog(@"There are %d scheduled local notification and %d stored task info", nNotification, nTask);
+    NSLog(@"There are %ld scheduled local notification and %ld stored task info", (long)nNotification, (long)nTask);
     //delete redundant alarm notif
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
         BOOL del = YES;
@@ -586,7 +586,7 @@
             }
             
             if (createNotif) {
-                NSLog(@"No notification found for task at weekday:%d", [t.time weekdayNumber]);
+                NSLog(@"No notification found for task at weekday:%ld", (long)[t.time weekdayNumber]);
                 [self scheduleNotificationForTask:t];
             }
 

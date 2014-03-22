@@ -68,7 +68,7 @@
 }
 
 - (IBAction)play:(id)sender {
-    manager.progressBar = progressBar;
+    manager.progressBar = (EWMediaSlider *)progressBar;
     manager.playStopBtn = playBtn;
     
     if (!manager.player.isPlaying) {
@@ -81,7 +81,7 @@
 }
 
 - (IBAction)record:(id)sender {
-    manager.progressBar = progressBar;
+    manager.progressBar = (EWMediaSlider *)progressBar;
     progressBar.maximumValue = kMaxRecordTime;
     manager.recordStopBtn = recordBtn;
     recordingFileUrl = [manager record];
@@ -103,7 +103,7 @@
         }
         //save data to task
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [NSString stringWithFormat:@"%d",(NSInteger)[NSDate timeIntervalSinceReferenceDate]]];
+        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [NSString stringWithFormat:@"%ld",(long)[NSDate timeIntervalSinceReferenceDate]]];
         NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:fileName contentType:@"audio/aac"];
         if (!media) {
             media = [[EWMediaStore sharedInstance] createMedia];

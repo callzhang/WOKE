@@ -87,7 +87,7 @@
 //Removing an object from a dictionary relinquishes ownership of the object, so flushing the cache causes all of the images to lose an owner. Images that aren’t being used by other objects are destroyed, and when they are needed again, they will be reloaded from the filesystem. If an image is currently displayed in the DetailViewController’s imageView, then it will not be destroyed since it is owned by the imageView. When the DetailViewController’s imageView loses ownership of that image (either because the DetailViewController was popped off the stack or a new image was taken), then it is destroyed. It will be reloaded later if needed.
 - (void)clearCache:(NSNotification *)note
 {
-    NSLog(@"flushing %d image out of the cache", [allImages count]);
+    NSLog(@"flushing %lu image out of the cache", (unsigned long)[allImages count]);
     [allImages removeAllObjects];
 }
 
