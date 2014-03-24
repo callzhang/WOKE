@@ -56,7 +56,7 @@
 
     //get from relationship
     if (currentUser.tasks.count != 0 &&currentUser.tasks.count !=  7 * nWeeksToScheduleTask) {
-        NSLog(@"Something wrong with local data of tasks on current user, start fetch from server");
+        NSLog(@"%s Something wrong with local data of tasks on current user, only %d tasks at local, start fetch from server", __func__, currentUser.tasks.count);
         _allTasks = [[self getTasksByPerson:currentUser] mutableCopy];
         NSLog(@"After fetch, server returned %lu tasks, current user has %lu tasks.", (unsigned long)_allTasks.count, (unsigned long)currentUser.tasks.count);
     }else{
@@ -64,25 +64,16 @@
     }
     
     //sort
-    @try {
-        NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
-        [_allTasks sortUsingDescriptors:@[sort]];
-    }
-    @catch (NSException *exception) {
-        _allTasks = [[_allTasks sortedArrayUsingComparator:^NSComparisonResult(EWTaskItem *obj1, EWTaskItem *obj2) {
-            NSInteger d1 = [obj1.time timeIntervalSince1970];
-            NSInteger d2 = [obj2.time timeIntervalSince1970];
-            if (d1 > d2) {
-                return NSOrderedDescending;
-            }else{
-                return NSOrderedAscending;
-            }
-        }] mutableCopy];
-    }
-    
+    [_allTasks valueForKey:@"time"];
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
+    [_allTasks sortUsingDescriptors:@[sort]];
     
     
     return _allTasks;
+}
+
+- (void)setAllTasks:(NSMutableArray *)allTasks{
+    NSLog(@"**** Please do not explicitly save all tasks to local ****");
 }
 
 
@@ -133,6 +124,10 @@
 }
 
 //for auto group
+- (EWTaskItem *)nextTaskForPerson:(EWPerson *)person{
+    return [self nextTaskAtDayCount:0 ForPerson:person];
+}
+
 - (EWTaskItem *)nextTaskAtDayCount:(NSInteger)n ForPerson:(EWPerson *)person{
     NSArray *tasks = [self getTasksByPerson:person];
     if (tasks.count >= n+1) {
@@ -163,15 +158,15 @@
     }
     NSMutableArray *tasks = _allTasks;
     //need to schedule tasks
-    NSDate *lastTime;
-    if (tasks.count == 0) {
-        lastTime = [NSDate date];
-        tasks = [[NSMutableArray alloc] init];
-    } else {
-        tasks = [[tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]] mutableCopy];
-        EWTaskItem *lastTask = [tasks lastObject];
-        lastTime = lastTask.time;
-    }
+//    NSDate *lastTime;
+//    if (tasks.count == 0) {
+//        lastTime = [NSDate date];
+//        tasks = [[NSMutableArray alloc] init];
+//    } else {
+//        tasks = [[tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]] mutableCopy];
+//        EWTaskItem *lastTask = [tasks lastObject];
+//        lastTime = lastTask.time;
+//    }
     //for each alarm, find matching task, or create new task
     BOOL newTaskNotify = NO;
     NSArray *alarms = [[NSArray alloc] initWithArray:EWAlarmManager.sharedInstance.allAlarms];
@@ -498,14 +493,14 @@
             t.pastOwner = currentUser;
             t.alarm = nil;
             [tasks removeObject:t];
-            NSLog(@"Task %@ has been moved to past tasks", [t.time date2detailDateString]);
+            NSLog(@"Task has been moved to past tasks: %@", [t.time date2detailDateString]);
         }
         //[self scheduleTasks];
         //return NO;
         [context saveOnSuccess:^{
             //
         } onFailure:^(NSError *error) {
-            //
+            NSLog(@"Failed to save psat task");
         }];
     }
     

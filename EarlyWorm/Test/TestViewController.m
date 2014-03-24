@@ -45,20 +45,6 @@
     return self;
 }
 
-- (void)initData {
-    _dataSource = @[@"Voicetone View", @"Shake test", @"Social Network API", @"Local Notifications", @"Clear Alarms & Tasks", @"Test push notification"];
-}
-
-- (void)initView {
-    self.title = @"Test";
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(OnBack)];
-
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, EWScreenWidth, EWScreenHeight)];
-    _tableView.dataSource = self;
-    _tableView.delegate = self;
-    [self.view addSubview:_tableView];
-    
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -66,6 +52,39 @@
     [self initData];
     [self initView];
 }
+
+
+- (void)initData {
+    _dataSource = @[@"Voicetone View", @"Shake test", @"Social Network API", @"Local Notifications", @"Clear Alarms & Tasks", @"Test push notification"];
+}
+
+- (void)initView {
+    self.title = @"Test";
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(OnBack)];
+    CGRect tableFrame = self.view.frame;
+    
+    //title view
+    if (self.navigationController == nil) {
+        //header view
+        UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(20, 30, 18, 30)];
+        [backBtn setImage:[UIImage imageNamed:@"back_btn"] forState:UIControlStateNormal];
+        [backBtn addTarget:self action:@selector(OnBack) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:backBtn];
+        
+        tableFrame.origin.y += MADEL_HEADER_HEIGHT;
+        tableFrame.size.height -= MADEL_HEADER_HEIGHT;
+    }
+    
+    _tableView = [[UITableView alloc] initWithFrame:tableFrame];
+    _tableView.dataSource = self;
+    _tableView.delegate = self;
+    _tableView.backgroundColor = [UIColor clearColor];
+    _tableView.separatorColor = [UIColor colorWithWhite:1.0 alpha:0.05];
+    [self.view addSubview:_tableView];
+    
+}
+
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -110,6 +129,10 @@
     cell.textLabel.text = [_dataSource objectAtIndex:indexPath.row];
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    cell.backgroundColor = [UIColor clearColor];
 }
 
 #pragma mark - TableView Delegate

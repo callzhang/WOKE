@@ -115,6 +115,11 @@
 //schedule according to alarms array. If array is empty, schedule according to default template.
 - (NSArray *)scheduleAlarm{
     NSArray *alarms = [self.allAlarms copy];
+    //check excess
+    if (alarms.count > 7) {
+        [self deleteAllAlarms];
+        [context saveAndWait:NULL];
+    }
     
     //schedule alarm from Sunday to Saturday of current week
     NSMutableArray *newAlarms = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
@@ -126,7 +131,7 @@
     //start add alarm if blank
     BOOL newAlarm = NO;
     for (NSInteger i=0; i<7; i++) {
-        if ([(NSNumber *)newAlarms[i] boolValue]) {
+        if ([newAlarms[i] isKindOfClass:[EWAlarmItem class]]) {
             continue;
         }
         NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);

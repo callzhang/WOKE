@@ -22,6 +22,12 @@
 
 EWPerson *currentUser;
 
+@interface EWPersonStore(){
+    NSDate *timeEveryoneChecked;
+}
+
+@end
+
 @implementation EWPersonStore
 //@synthesize model, context;
 //@synthesize currentUser;
@@ -60,14 +66,24 @@ EWPerson *currentUser;
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", ID];
     userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];//doesn't work for SM
-    //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
+    NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
     userFetch.returnsObjectsAsFaults = NO;
     NSError *err;
     NSArray *result = [context executeFetchRequestAndWait:userFetch error:&err];
-    if ([result count] != 1) {
+    if ([result count] > 1) {
         // There should only be one result
         [NSException raise:@"Failed to fetch user" format:@"%lu user fetched. Check username:%@", (unsigned long)result.count, ID];
-    };
+    }else if (result.count == 0){
+        SMRequestOptions *options = [SMRequestOptions options];
+        options.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
+        result = [context executeFetchRequestAndWait:userFetch returnManagedObjectIDs:NO options:options error:NULL];
+        if (result.count != 1) {
+            //[NSException raise:@"Failed to fetch user" format:@"Check username:%@", ID];
+            EWAlert(@"Failed to fetch user. Please try again.");
+        }else{
+            NSLog(@"Fetched remote user: %@", ID);
+        }
+    }
     
     EWPerson *user = (EWPerson *)result[0];
     NSLog(@"User %@ data has fetched", user.name);
@@ -83,8 +99,28 @@ EWPerson *currentUser;
 - (NSArray *)everyone{
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     userFetch.fetchLimit = 20;
-    //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
-    return [context executeFetchRequestAndWait:userFetch error:NULL];
+    //option
+    SMRequestOptions *options = [SMRequestOptions options];
+    if (![timeEveryoneChecked isOutDated] && timeEveryoneChecked != nil) {
+        options.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
+    }else{
+        options.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
+        timeEveryoneChecked = [NSDate date];
+    }
+    //fetch
+    NSManagedObjectContext *myContext = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
+    NSArray *allPerson = [myContext executeFetchRequestAndWait:userFetch returnManagedObjectIDs:NO options:options error:NULL];
+    NSLog(@"Get a list of people: %@", [allPerson valueForKey:@"name"]);
+    //check
+    for (EWPerson *person in allPerson) {
+        if ([person isFault]) {
+            NSLog(@"Person %@ is faulted, fetching from server", person.name);
+            [myContext refreshObject:person mergeChanges:YES];
+        }
+    }
+    //return
+    return allPerson;
+    
 }
 
 - (void)checkRelations{

@@ -16,6 +16,4 @@ extern UIViewController *rootViewController;
 
 @property (strong, nonatomic) UIWindow *window;
 
-@property (strong, nonatomic) UITabBarController *tabBarController;
-
 @end

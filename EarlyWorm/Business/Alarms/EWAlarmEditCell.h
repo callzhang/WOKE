@@ -28,7 +28,7 @@
 @property (weak, nonatomic) IBOutlet UIStepper *timeStepper;
 @property (weak, nonatomic) IBOutlet UIButton *music;
 //action
-- (IBAction)toggleAlarm:(id)sender;
+- (IBAction)toggleAlarm:(UIButton *)sender;
 - (IBAction)changeMusic:(id)sender;
 - (IBAction)hideKeyboard:(UITextField *)sender;
 - (IBAction)changeTime:(UIStepper *)sender;

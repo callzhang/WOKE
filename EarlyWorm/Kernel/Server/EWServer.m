@@ -336,12 +336,10 @@
                     }];
                 }];
                 
+            }else{
+                //play
+                [controller startPlayCells];
             }
-            
-//            }else{
-//                //play
-//                [controller startPlayCells];
-//            }
         }];
         
         
@@ -350,6 +348,8 @@
         // ============== Test ================
         
         NSLog(@"Received === test === type push");
+        [UIApplication sharedApplication].applicationIconBadgeNumber = 9;
+        
         //EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
         //NSURL *cacheUrl = [NSURL fileURLWithPath:[FTWCache localPathForKey:media.audioKey]];

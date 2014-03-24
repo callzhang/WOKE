@@ -310,7 +310,7 @@
     //person
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
     cell.profilePic.image = person.profilePic;
-    cell.label.text = person.name;
+    cell.name.text = person.name;
     
     return cell;
 }

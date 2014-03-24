@@ -320,12 +320,12 @@
         //remove from task relation
         if (task) {
             [task removeMediasObject:mi];
-        [context saveOnSuccess:^{
-            [self initData];//refresh
-            [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-        } onFailure:^(NSError *error) {
-            [NSException raise:@"Unable to delete the row" format:@"Reason: %@", error.description];
-        }];
+            [context saveOnSuccess:^{
+                [self initData];//refresh
+                [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+            } onFailure:^(NSError *error) {
+                [NSException raise:@"Unable to delete the row" format:@"Reason: %@", error.description];
+            }];
         }else{
             /*
             NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];

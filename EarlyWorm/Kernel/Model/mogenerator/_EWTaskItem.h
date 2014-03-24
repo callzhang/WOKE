@@ -33,8 +33,6 @@ extern const struct EWTaskItemFetchedProperties {
 @class EWMediaItem;
 @class EWMessage;
 @class EWPerson;
-@class EWPerson;
-@class EWPerson;
 
 
 

@@ -23,6 +23,8 @@
 #define kColorMediumGray    EWSTR2COLOR(@"7e7e7e")
 #define kCustomLightGray    EWSTR2COLOR(@"#DDDDDD")
 
+#define MADEL_HEADER_HEIGHT             70;
+
 // Keys
 #define kStackMobKeyDevelopment         @"4757c535-5583-46f9-8a55-3b8276d96f06"
 #define kStackMobKeyDevelopmentPrivate  @"63be438d-9a8a-428c-9d64-e1df9844da7d"
@@ -134,8 +136,8 @@
 
 //Collection Cell Size
 
-#define kCollectionViewCellWidth      60
-#define kCollectionViewCellHeight     68
-#define kCollectionViewCellPersonRadius   30
+#define kCollectionViewCellWidth      80
+#define kCollectionViewCellHeight     88
+#define kCollectionViewCellPersonRadius   40
 
 #endif

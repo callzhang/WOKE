@@ -10,7 +10,7 @@
 
 @interface EWCollectionPersonCell : UICollectionViewCell
 @property (nonatomic, retain) UIImageView *profilePic;
-@property (nonatomic, retain) UILabel *label;
+@property (nonatomic, retain) UILabel *name;
 @property (nonatomic, retain) UIImageView *maskView;
 
 @end

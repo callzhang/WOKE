@@ -20,6 +20,24 @@
     return string;
 }
 
+- (NSString *)date2timeShort{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    
+    [formatter setDateFormat:@"HH:mm"];
+    
+    NSString *string = [formatter stringFromDate:self];
+    return string;
+}
+
+- (NSString *)date2am{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    
+    [formatter setDateFormat:@"a"];
+    
+    NSString *string = [formatter stringFromDate:self];
+    return string;
+}
+
 - (NSString *)date2detailDateString{
     NSDateFormatter *parseFormatter = [[NSDateFormatter alloc] init];
     parseFormatter.timeZone = [NSTimeZone defaultTimeZone];
@@ -98,7 +116,9 @@
 }
 
 - (BOOL)isOutDated{
-    BOOL outdated = ([[NSDate date] timeIntervalSinceReferenceDate]-[self timeIntervalSinceReferenceDate]) > serverUpdateInterval;
+    if (self == nil) return YES;
+    NSInteger timeElapsed = [[NSDate date] timeIntervalSinceReferenceDate]-[self timeIntervalSinceReferenceDate];
+    BOOL outdated = timeElapsed > serverUpdateInterval;
     return outdated;
 }
 

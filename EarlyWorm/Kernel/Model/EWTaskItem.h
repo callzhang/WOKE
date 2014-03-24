@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "_EWTaskItem.h"
+@class EWAlarmItem;
+@class EWMediaItem;
+@class EWMessage;
+@class EWPerson;
 
 @interface EWTaskItem : NSManagedObject {}
 @property (nonatomic, retain) NSDate * added;
@@ -47,5 +50,10 @@
 - (void)removeWakerObject:(EWPerson *)value;
 - (void)addWaker:(NSSet *)values;
 - (void)removeWaker:(NSSet *)values;
+
+- (void)addMessagesObject:(EWMessage *)value;
+- (void)removeMessagesObject:(EWMessage *)value;
+- (void)addMessages:(NSSet *)values;
+- (void)removeMessages:(NSSet *)values;
 
 @end

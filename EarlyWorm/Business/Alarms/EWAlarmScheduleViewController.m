@@ -13,6 +13,7 @@
 #import "EWAlarmItem.h"
 #import "EWAlarmEditCell.h"
 #import "EWPersonStore.h"
+#import "UIViewController+Blur.h"
 
 //Util
 #import "NSDate+Extend.h"
@@ -32,16 +33,28 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)viewDidLoad{
     //tableview
-    _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    CGRect tableFrame = self.view.frame;
+    tableFrame.origin.y += MADEL_HEADER_HEIGHT;
+    tableFrame.size.height -= MADEL_HEADER_HEIGHT;
+    _tableView = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStylePlain];
     _tableView.dataSource = self;
     _tableView.delegate = self;
+    _tableView.backgroundColor = [UIColor clearColor];
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 280, 0);
     [self.view addSubview:_tableView];
     
-    //view
-    self.title = LOCALSTR(@"Schedule Alarm");
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
-    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(OnDone)];
-    //register cell
+    //header view
+    UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(20, 30, 18, 30)];
+    [backBtn setImage:[UIImage imageNamed:@"back_btn"] forState:UIControlStateNormal];
+    [backBtn addTarget:self action:@selector(OnDone) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:backBtn];
+    
+//    UIButton *cancelBtn = [[UIButton alloc] initWithFrame:CGRectMake(230, 30, 80, 30)];
+//    [cancelBtn setTitle:@"Cancel" forState:UIControlStateNormal];
+//    [cancelBtn addTarget:self action:@selector(OnCancel) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:cancelBtn];
+    
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
     [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
     
@@ -82,9 +95,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-    if (self.presentedViewController) {
-        return;//skip on modal view
-    }
+
     for (EWAlarmEditCell *cell in cellArray) {
         //state
         if (cell.alarmOn != [cell.alarm.state boolValue]) {
@@ -93,7 +104,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
         }
         //music
-        if (![cell.myMusic isEqualToString:cell.alarm.tone]) {
+        if (![cell.myMusic isEqualToString:cell.alarm.tone] && cell.myMusic != nil) {
             NSLog(@"Music changed to %@", cell.myMusic);
             cell.alarm.tone = cell.myMusic;
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
@@ -107,12 +118,14 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         //statement
         if (cell.statement.text.length && ![cell.statement.text isEqualToString:cell.task.statement]) {
             cell.task.statement = cell.statement.text;
-            [context saveOnSuccess:^{
-                //
-            } onFailure:^(NSError *error) {
-                //
-            }];
+            
         }
+        //save
+        [context saveOnSuccess:^{
+            //
+        } onFailure:^(NSError *error) {
+            NSLog(@"Alarms failed to save");
+        }];
     }
 
     [super viewWillDisappear:animated];
@@ -121,12 +134,14 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 #pragma mark - UI events
 - (void)OnDone{
     //[self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
-    [self.navigationController popViewControllerAnimated:YES];
+    //[self.navigationController popViewControllerAnimated:YES];
+    [self.presentingViewController dismissViewControllerWithBlurBackground:self];
 }
 
 - (void)OnCancel{
     //[self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
-    [self.navigationController popViewControllerAnimated:YES];
+    //[self.navigationController popViewControllerAnimated:YES];
+    [self.presentingViewController dismissViewControllerWithBlurBackground:self];
 }
 
 - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item{
@@ -149,9 +164,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //reusable cell
     EWAlarmEditCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (!cell) {
-        cell = [[EWAlarmEditCell alloc] init];
-    }
+    
     //data
     if (!cell.task) {
         cell.task = tasks[indexPath.row];
@@ -165,14 +178,24 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    CGFloat alpha = indexPath.row%2?0.05:0.06;
+    cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:alpha];
+    
+    EWAlarmEditCell *myCell = (EWAlarmEditCell *)cell;
+    if (myCell.alarmOn) {
+        //myCell.alarmToggle.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:1];
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	// If our cell is selected, return double height
 	if(selected == indexPath.row    ) {
-		return 120.0;
+		return 160.0;
 	}
 	
 	// Cell isn't selected so return single height
-	return 44.0;
+	return 80.0;
 }
 
 //when click one item in table, push view to detail page
@@ -188,8 +211,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [tableView beginUpdates];
     [tableView endUpdates];
 }
-
-
 
 
 

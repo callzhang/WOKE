@@ -16,6 +16,8 @@
 #import "EWTaskStore.h"
 #import "EWWakeUpViewController.h"
 #import "EWAppDelegate.h"
+#import "EWDataStore.h"
+#import "EWMediaItem.h"
 
 @interface EWAlarmPageView ()
 
@@ -34,10 +36,10 @@
             [self addSubview:view];
         }
         //Notifications
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kAlarmChangedNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kAlarmChangedNotification object:nil];
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskTimeChangedNotification object:nil];
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskStateChangedNotification object:nil];
-        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskChangedNotification object:nil];
     }
     return self;
 }
@@ -45,20 +47,26 @@
 #pragma mark - UI actions
 - (IBAction)editAlarm:(id)sender {
     NSLog(@"Edit task: %@", task.time);
-    //[self.delegate editTask:task forPage:self];
+    [self.delegate scheduleAlarm];
 }
 
 - (IBAction)OnAlarmSwitchChanged:(UISwitch *)sender {
-    // 写入数据库
-    //[EWAlarmManager.sharedInstance setAlarmState:sender.on atIndex:sender.tag];
-    //[EWAlarmManager.sharedInstance saveAlarm];
-    //EWTaskItem *t = EWTaskStore.sharedInstance.allTasks[sender.tag];
+    //change task not alarm
+//    EWAlarmItem *a = task.alarm;
+//    a.state = [NSNumber numberWithBool:sender.on];
     
-    EWAlarmItem *a = task.alarm;
-    a.state = [NSNumber numberWithBool:sender.on];
-    //t.state = a.state;
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": a}];
-    NSLog(@"Alarm on %@ changed to %hhd", a.time.weekday, sender.on);
+    task.state = [NSNumber numberWithBool:sender.on];
+    [context saveOnSuccess:^{
+        //
+    } onFailure:^(NSError *error) {
+        NSLog(@"Task state failed to save");
+        sender.on = !(sender.on);
+        [self setNeedsDisplay];
+    }];
+    
+    //broadcast
+    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:self userInfo:@{@"task": task}];
+    NSLog(@"Task on %@ changed to %@", task.time.weekday, (sender.on?@"ON":@"OFF"));
 }
 
 - (IBAction)playMessage:(id)sender {
@@ -76,22 +84,47 @@
         [task removeObserver:self forKeyPath:@"medias"];
         [task removeObserver:self forKeyPath:@"time"];
     }
-    @catch (NSException * __unused exception) {NSLog(@"%@",exception);}
+    @catch (NSException *exception) {
+        NSLog(@"%@",exception);
+    }
     
-    //actions after setting the task
+    //setting the hours left
     task = t;
-    self.alarm = task.alarm;
+    alarm = task.alarm;
     self.alarmState.on = t.state.boolValue;
-    self.timeText.text = [t.time date2String];
-    NSInteger h = ([t.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
+    self.timeText.text = [t.time date2timeShort];
+    
+    float h = ([t.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
+
     if (h > 0) {
-        self.timeLeftText.text = [NSString stringWithFormat:@"%ld hours left", (long)h];
+        self.timeLeftText.text = [NSString stringWithFormat:@"%.1f hours left", h];
     }
     else {
         self.timeLeftText.text = @"Just alarmed";
     }
+    
     //media
-    NSInteger mCount = task.medias.count;
+//    NSInteger mCount;
+//    @try {
+//        NSSet *myMedias= task.medias;
+//        mCount = myMedias.count;
+//    }
+//    @catch (NSException *exception) {
+//        NSLog(@"%@", exception);
+//        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
+//        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"task == %@", task];
+//        request.predicate = predicate;
+//        task.medias = [NSSet setWithArray:[context executeFetchRequestAndWait:request error:NULL]];
+//        mCount = task.medias.count;
+//    }
+    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"task == %@", task];
+    request.predicate = predicate;
+    SMRequestOptions *options = [SMRequestOptions options];
+    options.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
+    NSArray *medias = [[[EWDataStore sharedInstance] currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:options error:NULL];
+    NSInteger mCount = medias.count;
+    
     if (mCount > 0) {
         [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];
     }else{
@@ -102,7 +135,7 @@
     self.descriptionText.text = t.statement;
     [self.descriptionText sizeToFit];
     
-    //kvo <= KVO not working because it constantly updates the value
+//    //kvo <= KVO not working because it constantly updates the value
 //    [task addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:NULL];
 //    [task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:NULL];
 //    [task addObserver:self forKeyPath:@"time" options:NSKeyValueObservingOptionNew context:NULL];
@@ -122,7 +155,7 @@
         }
     } else if([sender isMemberOfClass:[EWTaskItem class]]) {
         if ([[(EWTaskItem *)sender ewtaskitem_id] isEqual:task.ewtaskitem_id]) {
-            //NSLog(@"Is equal object: %d", [sender isEqual:task]);
+            NSLog(@"Alarm page (%@) received task change notification", task.time.weekday);
             self.task = sender;
             [self setNeedsDisplay];
         }

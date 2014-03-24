@@ -10,7 +10,7 @@
 
 @implementation EWCollectionPersonCell
 @synthesize profilePic;
-@synthesize label;
+@synthesize name;
 @synthesize maskView;
 
 - (id)initWithFrame:(CGRect)frame
@@ -29,8 +29,8 @@
         self.contentView.backgroundColor = [UIColor clearColor];
         
         //label
-        label = [[UILabel alloc] initWithFrame:CGRectMake(0, 50, kCollectionViewCellWidth, kCollectionViewCellHeight - 2*kCollectionViewCellPersonRadius)];
-        
+        name = [[UILabel alloc] initWithFrame:CGRectMake(0, 50, kCollectionViewCellWidth, kCollectionViewCellHeight - 2*kCollectionViewCellPersonRadius)];
+        name.text = @"...";
         
         //mask
         maskView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,kCollectionViewCellPersonRadius *2, kCollectionViewCellPersonRadius *2)];

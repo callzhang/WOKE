@@ -22,7 +22,6 @@
 
 /* Begin PBXBuildFile section */
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
-		561ECB5717BBFB0000C8AC91 /* UINavigationController+Extend.m in Sources */ = {isa = PBXBuildFile; fileRef = 561ECB5617BBFB0000C8AC91 /* UINavigationController+Extend.m */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
 		56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CCB17FB056F008A7922 /* TestSocailSDKViewController.m */; };
@@ -76,7 +75,6 @@
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
 		9B73830D18BE494B00E7FFC3 /* EWDownloadMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */; };
-		9BA03D8D18D34DAC007588F7 /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BA03D8F18D34DAC007588F7 /* EWAlarmsView.xib */; };
 		AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */; };
 		AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */; };
 		AB00B61E1835C49D00DDD54B /* EWWakeUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B61B1835C49D00DDD54B /* EWWakeUpViewController.m */; };
@@ -136,6 +134,9 @@
 		AB286A9618DA8BA8003131C8 /* EWWakeUpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */; };
 		AB286A9718DBF07F003131C8 /* EWWeiboManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CEE17FDEA57008A7922 /* EWWeiboManager.m */; };
 		AB286A9818DBF07F003131C8 /* EWWeiboFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CD117FDCBC5008A7922 /* EWWeiboFriendListViewController.m */; };
+		AB29C48118DE75BA00C0A141 /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */; };
+		AB29C4CB18DEBCE700C0A141 /* UIViewController+Blur.m in Sources */ = {isa = PBXBuildFile; fileRef = AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */; };
+		AB29C4CE18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AB29C4CD18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m */; };
 		AB2C18B2187145D10058BFAD /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18AC187145D10058BFAD /* release_notes.md */; };
 		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
 		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
@@ -207,8 +208,6 @@
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		561ECB5317BBEBF700C8AC91 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5417BBEBF700C8AC91 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		561ECB5517BBFB0000C8AC91 /* UINavigationController+Extend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+Extend.h"; sourceTree = "<group>"; };
-		561ECB5617BBFB0000C8AC91 /* UINavigationController+Extend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+Extend.m"; sourceTree = "<group>"; };
 		5621D47618085E90005DE178 /* libz.1.2.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.5.dylib; path = usr/lib/libz.1.2.5.dylib; sourceTree = SDKROOT; };
 		5632E38D17D1BF1A0079D81C /* EWFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFoundation.h; sourceTree = "<group>"; };
 		5632E38E17D1BF1A0079D81C /* EWFoundation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFoundation.m; sourceTree = "<group>"; };
@@ -333,8 +332,6 @@
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
 		9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadMgr.h; path = Download/EWDownloadMgr.h; sourceTree = "<group>"; };
 		9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadMgr.m; path = Download/EWDownloadMgr.m; sourceTree = "<group>"; };
-		9BA03D8E18D34DAC007588F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/EWAlarmsView.xib; sourceTree = "<group>"; };
-		9BA03D9018D34DBD007588F7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hans"; path = "zh-Hans.lproj/EWAlarmsView.xib"; sourceTree = "<group>"; };
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSRuntime.framework; sourceTree = "<group>"; };
 		9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSSNS.framework; sourceTree = "<group>"; };
@@ -402,6 +399,11 @@
 		AB207E68182FFFB60076D93F /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = ../../MBProgressHUD/MBProgressHUD.m; sourceTree = "<group>"; };
 		AB245FA118CCD2E400551721 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Reveal.framework; sourceTree = "<group>"; };
 		AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWWakeUpView.xib; sourceTree = "<group>"; };
+		AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
+		AB29C4C918DEBCE700C0A141 /* UIViewController+Blur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Blur.h"; sourceTree = "<group>"; };
+		AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Blur.m"; sourceTree = "<group>"; };
+		AB29C4CC18DF7C8A00C0A141 /* PBJHexagonFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBJHexagonFlowLayout.h; sourceTree = "<group>"; };
+		AB29C4CD18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBJHexagonFlowLayout.m; sourceTree = "<group>"; };
 		AB2C18AA187145D10058BFAD /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		AB2C18AB187145D10058BFAD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		AB2C18AC187145D10058BFAD /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
@@ -659,6 +661,8 @@
 				56D997F117B425D2003EDA53 /* NSString+Extend.m */,
 				ABF192A818BF135C006A4AA2 /* UIAlertView+.h */,
 				ABF192A918BF135C006A4AA2 /* UIAlertView+.m */,
+				AB29C4C918DEBCE700C0A141 /* UIViewController+Blur.h */,
+				AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */,
 				5642AF4C17ACCF90000C73E8 /* UIView+Layout.h */,
 				5642AF4D17ACCF90000C73E8 /* UIView+Layout.m */,
 				5642AF4917ACCE48000C73E8 /* EWUIUtil.h */,
@@ -667,8 +671,6 @@
 				56E0C36417B2CC6400835A6B /* EWViewController.m */,
 				56D997F317B426C3003EDA53 /* NSDate+Extend.h */,
 				56D997F417B426C3003EDA53 /* NSDate+Extend.m */,
-				561ECB5517BBFB0000C8AC91 /* UINavigationController+Extend.h */,
-				561ECB5617BBFB0000C8AC91 /* UINavigationController+Extend.m */,
 				5632E38D17D1BF1A0079D81C /* EWFoundation.h */,
 				5632E38E17D1BF1A0079D81C /* EWFoundation.m */,
 				5632E39117D1C5950079D81C /* EWDeviceInfo.h */,
@@ -945,7 +947,9 @@
 			children = (
 				56FEA55717A5763200FC2938 /* EWAlarmsViewController.h */,
 				56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */,
-				9BA03D8F18D34DAC007588F7 /* EWAlarmsView.xib */,
+				AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */,
+				AB29C4CC18DF7C8A00C0A141 /* PBJHexagonFlowLayout.h */,
+				AB29C4CD18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m */,
 				ABCCE68C17F298290078F8AA /* EWAlarmPageView.h */,
 				ABCCE68D17F298290078F8AA /* EWAlarmPageView.m */,
 				ABCCE68B17F15D0D0078F8AA /* EWAlarmPage.xib */,
@@ -1521,6 +1525,7 @@
 				AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */,
 				ABA728B61831F74900595CFD /* EWFirstTimeViewController.xib in Resources */,
 				AB4B837918CFE68F0087E654 /* Silence04s.caf in Resources */,
+				AB29C48118DE75BA00C0A141 /* EWAlarmsView.xib in Resources */,
 				AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */,
 				ABF192AC18C03D71006A4AA2 /* media.caf in Resources */,
 				ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */,
@@ -1542,7 +1547,6 @@
 				AB4B837C18D2C5470087E654 /* new.caf in Resources */,
 				AB07402018125DBE00AAFC90 /* tennisGroup.png in Resources */,
 				ABFCB2E4186E957100355781 /* Drive.caf in Resources */,
-				9BA03D8D18D34DAC007588F7 /* EWAlarmsView.xib in Resources */,
 				AB49BC931854248E004A38DB /* EWLogInViewController.xib in Resources */,
 				AB05BCA317F90313006579AC /* EWAlarmPage.xib in Resources */,
 			);
@@ -1578,6 +1582,7 @@
 				5671BE3918085C4100F35DF9 /* ASIHTTPRequest.m in Sources */,
 				ABDAF99018C31C010075505B /* EWCollectionPersonCell.m in Sources */,
 				56FEA57F17A5763200FC2938 /* EWAlarmsViewController.m in Sources */,
+				AB29C4CE18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m in Sources */,
 				ABDE25E218CF572700DDBDB5 /* audio_stream.cpp in Sources */,
 				56FEA58017A5763200FC2938 /* EWSettingsViewController.m in Sources */,
 				AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */,
@@ -1628,8 +1633,8 @@
 				ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */,
 				5671BE4118085C4100F35DF9 /* ASICloudFilesObject.m in Sources */,
 				56D997F517B426C3003EDA53 /* NSDate+Extend.m in Sources */,
+				AB29C4CB18DEBCE700C0A141 /* UIViewController+Blur.m in Sources */,
 				AB1F3CFA18B7B5C500D3FB46 /* EWPostWakeUpViewController.m in Sources */,
-				561ECB5717BBFB0000C8AC91 /* UINavigationController+Extend.m in Sources */,
 				5671BE3518085C4100F35DF9 /* ASIDataCompressor.m in Sources */,
 				5671BE3818085C4100F35DF9 /* ASIFormDataRequest.m in Sources */,
 				AB4B837718CF65860087E654 /* Reachability.m in Sources */,
@@ -1710,15 +1715,6 @@
 			);
 			name = InfoPlist.strings;
 			path = en.lproj;
-			sourceTree = "<group>";
-		};
-		9BA03D8F18D34DAC007588F7 /* EWAlarmsView.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				9BA03D8E18D34DAC007588F7 /* en */,
-				9BA03D9018D34DBD007588F7 /* zh-Hans */,
-			);
-			name = EWAlarmsView.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

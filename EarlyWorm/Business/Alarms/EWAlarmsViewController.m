@@ -13,6 +13,7 @@
 #import "EWAppDelegate.h"
 #import "NSString+Extend.h"
 #import "NSDate+Extend.h"
+#import "UIViewController+Blur.h"
 
 // Manager
 #import "EWAlarmManager.h"
@@ -23,26 +24,22 @@
 #import "EWPerson.h"
 #import "EWAlarmItem.h"
 
-// Business
+// UI
 #import "TestViewController.h"
 #import "EWWakeUpViewController.h"
 #import "EWAlarmScheduleViewController.h"
 #import "EWPersonViewController.h"
 #import "EWLogInViewController.h"
+#import "EWCollectionPersonCell.h"
+#import "EWSettingsViewController.h"
 
 //backend
 #import "StackMob.h"
 
-@interface EWAlarmsViewController ()
-
-//@property (nonatomic, strong) UITableView *tableView;
-//@property (nonatomic, strong) NSIndexPath *selectedIndexPath;
-
+@interface EWAlarmsViewController (){
+    NSMutableArray *allPeople;
+}
 @end
-/*
-@interface EWAlarmsViewController (UITableView) <UITableViewDataSource, UITableViewDelegate>
-@end
-*/
 
 @implementation EWAlarmsViewController
 @synthesize alarms, tasks;
@@ -52,20 +49,20 @@
 @synthesize nameLabel = _nameLabel;
 @synthesize locationLabel = _locationLabel;
 @synthesize rankLabel = _rankLabel;
+@synthesize collectionView = _collectionView;
 
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = LOCALSTR(@"Alarms");
         
-        self.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemHistory tag:0];
+        //self.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemHistory tag:0];
         //launch with local notif
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentWakeUpView:) name:UIApplicationLaunchOptionsLocalNotificationKey object:nil];
         //listen to user log in, and updates its view
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
         //
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskChangedNotification object:nil];//TODO: update specific alarm
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskChangedNotification object:nil];//TODO: update specific alarm
         //user KVO
         [currentUser addObserver:self forKeyPath:@"profilePic" options:NSKeyValueObservingOptionNew context:NULL];
         //UI
@@ -102,21 +99,18 @@
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
         }
         
+        //person
+        allPeople = [[[EWPersonStore sharedInstance] everyone] mutableCopy];
+        
     }else{
         alarms = nil;
         tasks = nil;
+        allPeople = nil;
         [_alarmPages removeAllObjects];
     }
 }
 
 - (void)initView {
-    //schedule button
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(OnScheduleAlarm)];
-    
-#ifndef CLEAR_TEST
-    //test view
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Test" style:UIBarButtonItemStylePlain target:self action:@selector(OnTest)];
-#endif
     
     //owner info
     if (currentUser) {
@@ -131,10 +125,13 @@
         self.rankLabel.text = @"";
     }
     
-    
-    //nav bar
-    //self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.169 green:0.373 blue:0.192 alpha:0.9];
-    //self.navigationController.navigationBar.translucent = YES;
+    //collection view
+    _collectionView.delegate = self;
+    _collectionView.dataSource = self;
+    _collectionView.contentInset = UIEdgeInsetsMake(40, 40, 40, 40);
+    [_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    _collectionView.backgroundColor = [UIColor clearColor];
+    [_collectionView reloadData];
     
     //paging
     _scrollView.delegate = self;
@@ -168,50 +165,44 @@
     
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - UI Events
 
-- (void)OnCancel {
-    [self dismissViewControllerAnimated:YES completion:^{}];
+- (IBAction)mainActions:(id)sender {
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh Person", nil];
+    [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
+    
 }
 
-#ifndef CLEAR_TEST
+
+- (IBAction)scheduleInitialAlarms:(id)sender {
+    [self scheduleAlarm];
+}
+
+- (IBAction)profile:(id)sender {
+    if (!currentUser.facebook) {
+        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+        [loginVC loginInBackground];
+        
+    }else{
+        EWPersonViewController *controller = [[EWPersonViewController alloc] init];
+        controller.person = currentUser;
+        [self presentViewController:controller animated:YES completion:NULL];
+    }
+    
+    
+}
+
 - (void)OnTest {
+#ifndef CLEAR_TEST
     TestViewController *controller = [[TestViewController alloc] init];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     [self presentViewController:navigationController animated:YES completion:^{}];
-}
 #endif
-
-
-- (void)OnScheduleAlarm{
-    //pop up alarmScheduleView
-    if (alarms.count == 0 && tasks.count == 0) {
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        [[EWAlarmManager sharedInstance] scheduleAlarm];
-        [[EWTaskStore sharedInstance] scheduleTasks];
-        
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        //refresh
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-            [self initData];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self initView];
-                [self reloadAlarmPage];
-            });
-            
-        });
-    }
-    //pop up alarmScheduleView
-    EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
-    [self.navigationController pushViewController:controller animated:YES];
 }
 
-//main loading function
+
+#pragma mark - ScrollView
 - (void)loadScrollViewWithPage:(NSInteger)page {
     if (page < 0 || page >= _alarmPages.count) {
         return;
@@ -260,28 +251,11 @@
     _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
 }
 
-- (IBAction)scheduleInitialAlarms:(id)sender {
-    [self OnScheduleAlarm];
-}
-
-- (IBAction)profile:(id)sender {
-    if (!currentUser.facebook) {
-        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-        [loginVC loginInBackground];
-        
-    }else{
-        EWPersonViewController *controller = [[EWPersonViewController alloc] init];
-        controller.person = currentUser;
-        [self presentViewController:controller animated:YES completion:NULL];
-    }
-    
-    
-}
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([object isKindOfClass:[EWPerson class]]) {
+        NSLog(@"Observed change for user: %@", change);
         if ([keyPath isEqualToString:@"profilePic"]) {
             //profile updated
             self.profileImageView.image = currentUser.profilePic;
@@ -297,8 +271,6 @@
 #pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     
-
-	
     // A possible optimization would be to unload the views+controllers which are no longer visible
 }
 
@@ -329,18 +301,59 @@
     [_scrollView scrollRectToVisible:frame animated:YES];
 }
 
+#pragma mark - UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    switch (buttonIndex) {
+        case 0:{//Preference
+            EWSettingsViewController *controller = [[EWSettingsViewController alloc] initWithNibName:nil bundle:nil];
+            [self presentViewControllerWithBlurBackground:controller];
+            break;
+        }
+            
+        case 1:{
+            TestViewController *controller = [[TestViewController alloc] init];
+            [self presentViewControllerWithBlurBackground:controller];
+            
+            break;
+        }
+            
+        case 2:{
+            [self refreshView];
+            [_collectionView reloadData];
+        }
+            
+        default:
+            break;
+    }
+}
+
 
 
 #pragma mark - EWAlarmItemEditProtocal
-- (void)editTask:(EWTaskItem *)task forPage:(EWAlarmPageView *)page{
-    //EWEditAlarmViewController *controller = [[EWEditAlarmViewController alloc] init];
-    //controller.task = task;
-    //controller.isNewAlarm = NO;
-    //UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-    
-    //[self presentViewController:navigationController animated:YES completion:^{}];
-}
 
+- (void)scheduleAlarm{
+    //pop up alarmScheduleView
+    if (alarms.count == 0 && tasks.count == 0) {
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [[EWAlarmManager sharedInstance] scheduleAlarm];
+        [[EWTaskStore sharedInstance] scheduleTasks];
+        
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        //refresh
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            [self initData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self initView];
+                [self reloadAlarmPage];
+            });
+            
+        });
+    }
+    //pop up alarmScheduleView
+    EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
+    //[self presentViewController:controller animated:YES completion:NULL];
+    [self presentViewControllerWithBlurBackground:controller];
+}
 
 #pragma mark - launch option
 - (void)presentWakeUpView:(NSNotification *)notification{
@@ -348,12 +361,41 @@
     EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
     EWTaskItem *task = notification.userInfo[kLocalNotificationUserInfoKey];
     controller.task  = task;
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     
-    [self presentViewController:navigationController animated:YES completion:NULL];
+    //[self presentViewController:navigationController animated:YES completion:NULL];
+    [self presentViewControllerWithBlurBackground:controller];
 }
 
+#pragma mark - CollectionViewDelegate
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    if (section == 0) {
+        return allPeople.count;
+    }else{
+        return 0;
+    }
+    
+}
 
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+    return 1;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
+    EWPerson *person = allPeople[indexPath.row];
+    cell.profilePic.image = person.profilePic;
+    cell.name.text = person.name;
+    
+    
+    
+    return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+    controller.person = allPeople[indexPath.row];
+    [self presentViewControllerWithBlurBackground:controller];
+}
 
 @end
 

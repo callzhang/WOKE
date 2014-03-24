@@ -13,6 +13,17 @@
  Returns HH:MM AM
  */
 - (NSString *)date2String;
+
+/**
+ Returns HH:MM
+ */
+- (NSString *)date2timeShort;
+
+/**
+ Return AM or PM
+ */
+- (NSString *)date2am;
+
 /**
  Returns Weekday, date and time
  */

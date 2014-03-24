@@ -34,7 +34,6 @@
 UIViewController *rootViewController;
 
 //Private
-
 @interface EWAppDelegate(){
     EWTaskItem *taskInAction;
     NSTimer *myTimer;
@@ -59,26 +58,12 @@ UIViewController *rootViewController;
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     
     //background fetch
-    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    [application setMinimumBackgroundFetchInterval:7200]; //fetch interval: 2hr
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
-    //controller
-    EWAlarmsViewController *alarmController = [[EWAlarmsViewController alloc] init];
-    UINavigationController *alarmsNavigationController = [[UINavigationController alloc] initWithRootViewController:alarmController];
-    
-    EWSocialViewController *taskController = [[EWSocialViewController alloc] init];
-    UINavigationController *tasksNavigationController = [[UINavigationController alloc] initWithRootViewController:taskController];
-
-    
-    EWSettingsViewController *settingsController = [[EWSettingsViewController alloc] init];
-    UINavigationController *settingsNavigationController = [[UINavigationController alloc] initWithRootViewController:settingsController];
-    
-    self.tabBarController = [[UITabBarController alloc] init];
-    //self.tabBarController.delegate = self;
-    self.tabBarController.viewControllers = @[alarmsNavigationController, tasksNavigationController, settingsNavigationController];
-    self.window.rootViewController = self.tabBarController;
+    EWAlarmsViewController *controler = [[EWAlarmsViewController alloc] init];
+    self.window.rootViewController = controler;
     rootViewController = self.window.rootViewController;
     
     //local notification entry
@@ -137,16 +122,16 @@ UIViewController *rootViewController;
 
 #ifdef BACKGROUND_TEST
     
-//    //开启一个后台任务
-//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-//        
-//        NSLog(@"The first BG task will end (%ld)", count);
-//    }];
-//    
-//    // keep active
-//    if ([myTimer isValid]) [myTimer invalidate];
-//    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
-//    NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
+    //开启一个后台任务
+    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+        
+        NSLog(@"The first BG task will end (%ld)", count);
+    }];
+    
+    // keep active
+    if ([myTimer isValid]) [myTimer invalidate];
+    myTimer = [NSTimer scheduledTimerWithTimeInterval:100 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+    NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
 #endif
     
     application.applicationIconBadgeNumber = 0;
@@ -247,6 +232,38 @@ UIViewController *rootViewController;
     backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
         NSLog(@"BG task will end (%ld)", (long)ct);
     }];
+    
+    //check time
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser];
+    if ([task.time isEarlierThan:[NSDate date]]) {
+        //time's up
+        //check download
+        EWDownloadManager *dlManager = [EWDownloadManager sharedInstance];
+        
+        
+        //>>>>> start download task <<<<<
+        [dlManager downloadTask:task withCompletionHandler:^{
+            //action to be performed at download finish
+            
+            //use EWWakeUpVC to start play
+            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
+            
+            if (![EWServer isRootPresentingWakeUpView]) {
+                //present wakeup view
+                [rootViewController dismissViewControllerAnimated:YES completion:^{
+                    [rootViewController presentViewController:controller animated:YES completion:^{
+                        //post notification
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.ewtaskitem_id}];
+                    }];
+                }];
+                
+            }else{
+                //play
+                [controller startPlayCells];
+            }
+        }];
+
+    }
     
     
     NSLog(@"Background task is still working with time left %f (%ld)",[UIApplication sharedApplication].backgroundTimeRemaining , count++);

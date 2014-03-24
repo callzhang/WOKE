@@ -12,11 +12,16 @@
 @class EWAlarmItem;
 
 @protocol EWAlarmItemEditProtocal <NSObject>
+@optional
 - (void)editTask:(EWTaskItem *)task forPage:(EWAlarmPageView *)page;
+@required
+- (void)scheduleAlarm;
 @end
 
 
-@interface EWAlarmPageView : UIView
+@interface EWAlarmPageView : UIView <UITextFieldDelegate>
+
+@property (nonatomic, weak) id <EWAlarmItemEditProtocal> delegate;
 
 @property (nonatomic, retain) EWTaskItem *task;
 @property (nonatomic, retain) EWAlarmItem *alarm;
@@ -24,7 +29,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *dateText;
 @property (strong, nonatomic) IBOutlet UILabel *timeText;
 @property (strong, nonatomic) IBOutlet UILabel *timeLeftText;
-@property (nonatomic, weak) id <EWAlarmItemEditProtocal> delegate;
+@property (weak, nonatomic) IBOutlet UILabel *AM;
 @property (weak, nonatomic) IBOutlet UIButton *editBtn;
 @property (weak, nonatomic) IBOutlet UILabel *descriptionText;
 @property (weak, nonatomic) IBOutlet UIButton *messages;
