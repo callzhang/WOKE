@@ -7,6 +7,9 @@
 
 #import "PBJHexagonFlowLayout.h"
 
+
+const NSInteger CELL_SPACE_RATIO = 1.6;
+
 @interface PBJHexagonFlowLayout ()
 {
     NSInteger _itemsPerRow;
@@ -28,10 +31,11 @@
 {
     [super prepareLayout];
     
-    if (_itemsPerRow == 0)
-        _itemsPerRow = 4;
-    _hexagonSize = CGSizeMake(kCollectionViewCellWidth*1.5, kCollectionViewCellHeight*1.5);
     _itemTotalCount = [self.collectionView numberOfItemsInSection:0];
+    if (_itemsPerRow == 0)
+        _itemsPerRow = (NSInteger)floorf(sqrt(_itemTotalCount));
+    _hexagonSize = CGSizeMake(kCollectionViewCellWidth * CELL_SPACE_RATIO, kCollectionViewCellHeight * CELL_SPACE_RATIO);
+    
 }
 
 
@@ -76,7 +80,7 @@
     NSInteger column = _itemTotalCount % _itemsPerRow;
 
     CGFloat contentWidth = (column + 1) * _hexagonSize.width;
-    CGFloat contentHeight = ( ((_itemTotalCount / _itemsPerRow) * 0.75f) * _hexagonSize.height) + (0.5f + _hexagonSize.height);
+    CGFloat contentHeight = ( (row * 0.75f) * _hexagonSize.height) + (0.5f + _hexagonSize.height);
     CGSize contentSize = CGSizeMake(contentWidth, contentHeight);
     return contentSize;
 }
