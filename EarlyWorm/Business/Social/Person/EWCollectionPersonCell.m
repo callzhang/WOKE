@@ -21,15 +21,28 @@
         profilePic = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,kCollectionViewCellPersonRadius * 2, kCollectionViewCellPersonRadius * 2)];
         profilePic.layer.masksToBounds = YES;
         //profilePic.layer.cornerRadius = kCollectionViewCellPersonRadius;
-        profilePic.layer.borderColor = [UIColor colorWithWhite:1 alpha:0.5].CGColor;
-        profilePic.layer.borderWidth = 1.0f;
+        //profilePic.layer.borderColor = [UIColor colorWithWhite:1 alpha:0.5].CGColor;
+        //profilePic.layer.borderWidth = 1.0f;
         
         //mask
         CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:profilePic.layer];
-        hexagonMask.path = [self getHexagonMask].CGPath;
+        UIBezierPath *hexagonPath = [self getHexagonMask];
+        hexagonMask.path = hexagonPath.CGPath;
         profilePic.layer.mask  = hexagonMask;
         
+        //boarder
+        UIImageView *boarderView = [[UIImageView alloc] initWithFrame:profilePic.frame];
+        UIGraphicsBeginImageContext(boarderView.frame.size);
+        [boarderView.image drawInRect:boarderView.frame];
+        [[UIColor colorWithWhite:1.0 alpha:0.75] setStroke];
+        hexagonPath.lineWidth = 1.5;
+        [hexagonPath stroke];
+        boarderView.image = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        //add
         [self.contentView addSubview:profilePic];
+        [self.contentView addSubview:boarderView];
         
         //background
         self.contentView.backgroundColor = [UIColor clearColor];

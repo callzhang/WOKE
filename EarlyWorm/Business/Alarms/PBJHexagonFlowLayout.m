@@ -8,7 +8,7 @@
 #import "PBJHexagonFlowLayout.h"
 
 
-const NSInteger CELL_SPACE_RATIO = 1.6;
+
 
 @interface PBJHexagonFlowLayout ()
 {
@@ -20,7 +20,6 @@ const NSInteger CELL_SPACE_RATIO = 1.6;
 @end
 
 @implementation PBJHexagonFlowLayout
-
 @synthesize itemsPerRow = _itemsPerRow;
 @synthesize itemTotalCount = _itemTotalCount;
 @synthesize hexagonSize = _hexagonSize;
