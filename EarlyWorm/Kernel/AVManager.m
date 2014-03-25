@@ -167,17 +167,24 @@
 //play media for task using AVQueuePlayer
 - (void)playTask:(EWTaskItem *)task{
     NSMutableArray *queue = [[NSMutableArray alloc] initWithCapacity:task.medias.count];
+    AVPlayerItem *track;
     for (EWMediaItem *mi in task.medias) {
-        NSData *data = mi.audio; //use cached data
-        NSString *str = [NSTemporaryDirectory() stringByAppendingString:mi.audioKey];
-        BOOL success = [data writeToFile:str atomically:NO];
-        if(!success) NSLog(@"Store temp path for autio data failed");
-        AVPlayerItem *track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:str]];
+        NSString *path = [FTWCache localPathForKey:mi.audioKey];
+        if (path) {
+            track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:path]];
+        }else{
+            //need to download
+            track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:mi.audioKey]];
+        }
         [queue addObject:track];
     }
     NSLog(@"About to play for task: %@", task.ewtaskitem_id);
     qPlayer = [[AVQueuePlayer alloc] initWithItems:queue];
     [qPlayer play];
+    if (qPlayer.error) {
+        //something wrong
+        
+    }
 }
 
 #pragma mark - UI event
@@ -185,7 +192,7 @@
     // Fast skip the music when user scroll the UISlider
     [player stop];
     [player setCurrentTime:progressBar.value];
-    NSString *timeStr = [NSString stringWithFormat:@"%ld:%02d", (long)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
+    NSString *timeStr = [NSString stringWithFormat:@"%ld:%02ld", (long)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
     currentTime.text = timeStr;
     [player prepareToPlay];
     [player play];
@@ -280,14 +287,14 @@
 -(void)updateCurrentTime{
     if (!progressBar.isTouchInside) {
         progressBar.value = player.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%ld:%02d", (long)player.currentTime / 60, (NSInteger)player.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (NSInteger)player.currentTime / 60, (NSInteger)player.currentTime % 60, nil];
     }
 }
 
 -(void)updateCurrentTimeForRecorder{
     if (!progressBar.isTouchInside) {
         progressBar.value = recorder.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%ld:%02d", (long)recorder.currentTime / 60, (NSInteger)recorder.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (NSInteger)recorder.currentTime / 60, (NSInteger)recorder.currentTime % 60, nil];
     }
 }
 
@@ -311,6 +318,8 @@
 #pragma mark - Delegate events
 - (void)stopAllPlaying{
     [player stop];
+    [qPlayer pause];
+    [avplayer pause];
 }
 
 - (void)audioPlayerBeginInterruption:(AVAudioPlayer *)p{
@@ -465,8 +474,8 @@ void RouteChangeListener(	void *inClientData,
             if (cachePath) {
                 soundUrl = [NSURL fileURLWithPath:cachePath];
             }else{
-                NSLog(@"No sound played");
-                return;
+                NSLog(@"Passed remote url to system audio service");
+                soundUrl = path;
             }
             
         }
@@ -485,6 +494,10 @@ void RouteChangeListener(	void *inClientData,
     
     //completion callback
     AudioServicesAddSystemSoundCompletion(soundID, nil, nil, playSoundFinished, (void *)bgTaskId);
+}
+
+- (void)playSystemSoundForTask:(EWTaskItem *)task{
+    
 }
 
 void playSoundFinished (SystemSoundID sound, void *bgTaskId){

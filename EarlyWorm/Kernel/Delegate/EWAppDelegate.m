@@ -268,14 +268,14 @@ UIViewController *rootViewController;
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
     if (timeLeft < 100) {
-        //about to imit alart timer, schedule a timer
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeLeft * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"About to imit alart timer in %fs, schedule a timer",timeLeft);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             //cancel local alarm
-            for (UILocalNotification *alarmLocalNotif in [UIApplication sharedApplication].scheduledLocalNotifications) {
-                if (alarmLocalNotif.userInfo[@"taskID"]) {
-                    <#statements#>
-                }
-            }
+            [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
+            //fire a silent alarm
+            [[EWTaskStore sharedInstance] fireAlarmForTask:task];
+            //play sounds
+            [AVManager sharedManager] play
         });
     }
     

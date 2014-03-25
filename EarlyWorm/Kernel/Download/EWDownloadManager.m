@@ -51,6 +51,23 @@
 }
 
 #pragma mark - Main download methods
+- (void)downloadUrl:(NSURL *)Url{
+    if ([Url isFileURL]) {
+        NSLog(@"Url is local file");
+        return;
+    }else if ([FTWCache objectForKey:Url.absoluteString.MD5Hash]){
+        NSLog(@"Url already cached");
+        return;
+    }
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:Url];
+    //create task
+    NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithRequest:request];
+    //start task
+    [downloadTask resume];
+    
+    NSLog(@"Url download task dispatched %@", Url);
+}
 
 - (void)downloadMedia:(EWMediaItem *)media{
     //assume only audio to be downloaded
@@ -120,13 +137,17 @@
     NSString *keyHash = [str MD5Hash];
     //media
     EWMediaItem *mi = downloadQueue[request.URL.absoluteString];
-    NSLog(@"%s: media (%@) downloaded", __func__, mi.audioKey);
+    if (mi) {
+        NSLog(@"%s: media (%@) downloaded", __func__, mi.audioKey);
+        //remove task from queue
+        [downloadQueue removeObjectForKey:str];
+    }
+    
     //save
     [FTWCache setObject:data forKey:keyHash];
     NSLog(@"Set FTW cache for %@", keyHash);
     
-    //remove task from queue
-    [downloadQueue removeObjectForKey:str];
+    
 }
 
 /**

@@ -20,6 +20,9 @@
 @property (copy) void (^completionTask)();
 
 + (EWDownloadManager *)sharedInstance;
+
+- (void)downloadUrl:(NSURL *)Url;
+
 /**
  The main method for download media in background when another user sends a voice tone when app is suspended
  */

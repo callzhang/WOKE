@@ -9,6 +9,7 @@
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
 #import "EWPersonStore.h"
+#import "EWDownloadManager.h"
 
 //Model Manager
 #import "EWAlarmManager.h"
@@ -224,7 +225,7 @@ NSDate *lastChecked;
         if (!data) {
             //get from remote
             NSError *err;
-            data = [NSData dataWithContentsOfURL:audioURL options:NSDataReadingUncached error:&err];//use uncached may increase speed?
+            data = [NSData dataWithContentsOfURL:audioURL options:NSDataReadingUncached error:&err];
             if (err) {
                 NSLog(@"@@@@@@ Error occured in reading remote content: %@", err);
             }
@@ -246,6 +247,16 @@ NSDate *lastChecked;
     }
     
     return data;
+}
+
+- (NSString *)localPathForUrl:(NSString *)url{
+    NSString *path = [FTWCache localPathForKey:url];
+    if (!path) {
+        //not in local, need to download
+        [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:url]];
+        return nil;
+    }
+    return path;
 }
 
 #pragma mark - other

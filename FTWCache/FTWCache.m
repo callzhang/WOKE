@@ -64,7 +64,7 @@ static NSTimeInterval cacheTime =  (double)3600*24*30*12;  //1year
     if ([FTWCache objectForKey:hashKey]) {
         //has cache
         NSString *path = [[FTWCache cacheDirectory] stringByAppendingPathComponent:hashKey];
-        NSLog(@"Find cache path: %@ for Key: %@", path, key);
+        //NSLog(@"Find cache path: %@ for Key: %@", path, key);
         return path;
     }
     NSLog(@"Could not find local cache for remote content: %@", key);

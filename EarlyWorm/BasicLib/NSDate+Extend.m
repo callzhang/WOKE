@@ -142,6 +142,13 @@
     return time;
 }
 
+- (NSDate *)timeByAddingSeconds:(NSInteger)seconds{
+    NSDateComponents* deltaComps = [[NSDateComponents alloc] init];
+    deltaComps.second = seconds;
+    NSDate *time = [[NSCalendar currentCalendar] dateByAddingComponents:deltaComps toDate:self options:0];
+    return time;
+}
+
 - (NSDate *)timeByMinutesFrom5am:(NSInteger)minutes{
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents* deltaComps = [cal components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];

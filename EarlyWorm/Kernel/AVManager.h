@@ -21,6 +21,7 @@
     AVQueuePlayer *qPlayer;
     AVPlayer *avplayer;
     SystemSoundID soundID;
+    NSMutableArray *playlist;//array of nsstring
 }
 
 @property (retain, nonatomic) AVAudioPlayer *player;

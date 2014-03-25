@@ -107,7 +107,6 @@
 #define kNewTimerNotification           @"alarm_timer"
 
 //Notification key
-#define kLocalNotificationUserInfoKey   @"task_ID"  //store task id
 #define kPushPersonKey                  @"person"
 #define kPushTaskKey                    @"task"
 #define kPushMediaKey                   @"media"

@@ -75,6 +75,7 @@
  add minutes to the receiver
  */
 - (NSDate *)timeByAddingMinutes:(NSInteger)minutes;
+- (NSDate *)timeByAddingSeconds:(NSInteger)seconds;
 
 /**
  get time from minutes from 5AM
