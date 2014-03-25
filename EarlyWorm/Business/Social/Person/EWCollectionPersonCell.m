@@ -34,8 +34,8 @@
         UIImageView *boarderView = [[UIImageView alloc] initWithFrame:profilePic.frame];
         UIGraphicsBeginImageContext(boarderView.frame.size);
         [boarderView.image drawInRect:boarderView.frame];
-        [[UIColor colorWithWhite:1.0 alpha:0.75] setStroke];
-        hexagonPath.lineWidth = 1.5;
+        [[UIColor colorWithWhite:1.0 alpha:0.5] setStroke];
+        hexagonPath.lineWidth = 2.0;
         [hexagonPath stroke];
         boarderView.image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();

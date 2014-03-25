@@ -265,6 +265,20 @@ UIViewController *rootViewController;
 
     }
     
+    //alarm time up
+    NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
+    if (timeLeft < 100) {
+        //about to imit alart timer, schedule a timer
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeLeft * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            //cancel local alarm
+            for (UILocalNotification *alarmLocalNotif in [UIApplication sharedApplication].scheduledLocalNotifications) {
+                if (alarmLocalNotif.userInfo[@"taskID"]) {
+                    <#statements#>
+                }
+            }
+        });
+    }
+    
     
     NSLog(@"Background task is still working with time left %f (%ld)",[UIApplication sharedApplication].backgroundTimeRemaining , count++);
 
