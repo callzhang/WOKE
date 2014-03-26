@@ -18,7 +18,7 @@
     //CALevelMeter *lvlMeter_in;
     NSTimer *updateTimer;
     NSURL *recordingFileUrl;
-    AVQueuePlayer *qPlayer;
+    //AVQueuePlayer *qPlayer;
     AVPlayer *avplayer;
     SystemSoundID soundID;
     NSMutableArray *playlist;//array of nsstring
@@ -26,12 +26,12 @@
 
 @property (retain, nonatomic) AVAudioPlayer *player;
 @property (retain, nonatomic) AVAudioRecorder *recorder;
-//@property (weak, nonatomic) UITableView *wakeUpTableView; //holds all the cells
-@property (weak, nonatomic) EWMediaViewCell *currentCell; //current cell
+@property (weak, nonatomic) EWMediaViewCell *currentCell; //current cell, assigned by others
 @property (retain, nonatomic) UIButton *recordStopBtn;
 @property (retain, nonatomic) UIButton *playStopBtn;
 @property (retain, nonatomic) EWMediaSlider *progressBar;
 @property (retain, nonatomic) UILabel *currentTime;
+@property (nonatomic) BOOL loop;
 
 +(AVManager *)sharedManager;
 

@@ -63,6 +63,10 @@
                     <collectionViewLayout key="collectionViewLayout" id="DxV-k5-PYC" customClass="PBJHexagonFlowLayout"/>
                     <cells/>
                 </collectionView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="AlarmViewBar" translatesAutoresizingMaskIntoConstraints="NO" id="ojt-NM-8tw">
+                    <rect key="frame" x="0.0" y="468" width="320" height="100"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </imageView>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nNj-2P-l6y">
                     <rect key="frame" x="0.0" y="448" width="320" height="120"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -110,6 +114,7 @@
         </view>
     </objects>
     <resources>
+        <image name="AlarmViewBar" width="320" height="100"/>
         <image name="Default" width="320" height="480"/>
         <image name="addBtn" width="50" height="50"/>
         <image name="profile" width="140" height="140"/>

@@ -103,20 +103,7 @@
         self.timeLeftText.text = @"Just alarmed";
     }
     
-    //media
-//    NSInteger mCount;
-//    @try {
-//        NSSet *myMedias= task.medias;
-//        mCount = myMedias.count;
-//    }
-//    @catch (NSException *exception) {
-//        NSLog(@"%@", exception);
-//        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
-//        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"task == %@", task];
-//        request.predicate = predicate;
-//        task.medias = [NSSet setWithArray:[context executeFetchRequestAndWait:request error:NULL]];
-//        mCount = task.medias.count;
-//    }
+
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"task == %@", task];
     request.predicate = predicate;
@@ -134,6 +121,9 @@
     self.dateText.text = [t.time date2dayString];
     self.descriptionText.text = t.statement;
     [self.descriptionText sizeToFit];
+    
+    self.dateText.hidden = YES;
+    self.typeText.hidden = YES;
     
 //    //kvo <= KVO not working because it constantly updates the value
 //    [task addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:NULL];

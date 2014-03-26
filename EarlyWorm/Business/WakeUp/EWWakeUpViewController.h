@@ -20,5 +20,5 @@
 
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
 //- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;
-- (void)startPlayCells;
+//- (void)startPlayCells;
 @end

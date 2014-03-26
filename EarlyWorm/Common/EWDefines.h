@@ -57,7 +57,7 @@
 
 //Global parameters
 #define nWeeksToScheduleTask            1
-#define nLocalNotifPerTask              10
+#define nLocalNotifPerTask              5
 #define serverUpdateInterval            1800 //30 min
 #define alarmInterval                   600 //10min
 #define kMaxWakeTime                    600 // 10min
@@ -119,6 +119,8 @@
 //Audio & Video
 #define kMaxRecordTime                  20.0;
 #define kAudioPlayerDidFinishPlaying    @"audio_finished_playing"
+#define kAudioPlayerWillStart           @"audio_will_start"
+#define kAudioPlayerNextPath            @"audio_next_path"
 
 //User Defaults
 #define kPushTokenDicKey                @"push_token_dic" //the key for local defaults to get the array of tokenByUser dict
@@ -138,5 +140,5 @@
 #define kCollectionViewCellWidth        80
 #define kCollectionViewCellHeight       80
 #define kCollectionViewCellPersonRadius 40
-#define CELL_SPACE_RATIO                1.6
+#define CELL_SPACE_RATIO                1.8
 #endif

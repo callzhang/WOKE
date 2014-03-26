@@ -15,6 +15,7 @@
 #import "EWDataStore.h"
 #import "TestFlight.h"
 #import "EWMediaSlider.h"
+#import "EWDownloadManager.h"
 
 @import AudioToolbox;
 
@@ -52,6 +53,12 @@
         //Register for remote control event
         [self prepareRemoteControlEventsListener];
         
+        //playlist
+        playlist = [[NSMutableArray alloc] init];
+        
+        //Loop
+        self.loop = YES;
+        
     }
     return self;
 }
@@ -88,17 +95,18 @@
     EWMediaViewCell *mediaCell = (EWMediaViewCell *)cell;
     
     //link progress bar with cell's progress bar
-    progressBar = mediaCell.mediaBar;
+    currentCell = mediaCell;
     [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
-    currentTime = progressBar.timeLabel;
+
     
     //play
     [self playSoundFromURL:[NSURL URLWithString:mediaCell.media.audioKey]];
-        
-    //keep current cell
-    currentCell = mediaCell;
 }
 
+- (void)setCurrentCell:(EWMediaViewCell *)cell{
+    progressBar = cell.mediaBar;
+    currentTime = progressBar.timeLabel;
+}
 
 
 //play for file in main bundle
@@ -166,25 +174,32 @@
 
 //play media for task using AVQueuePlayer
 - (void)playTask:(EWTaskItem *)task{
-    NSMutableArray *queue = [[NSMutableArray alloc] initWithCapacity:task.medias.count];
-    AVPlayerItem *track;
-    for (EWMediaItem *mi in task.medias) {
-        NSString *path = [FTWCache localPathForKey:mi.audioKey];
-        if (path) {
-            track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:path]];
-        }else{
-            //need to download
-            track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:mi.audioKey]];
-        }
-        [queue addObject:track];
-    }
-    NSLog(@"About to play for task: %@", task.ewtaskitem_id);
-    qPlayer = [[AVQueuePlayer alloc] initWithItems:queue];
-    [qPlayer play];
-    if (qPlayer.error) {
-        //something wrong
+//    NSMutableArray *queue = [[NSMutableArray alloc] initWithCapacity:task.medias.count];
+//    AVPlayerItem *track;
+//    for (EWMediaItem *mi in task.medias) {
+//        NSString *path = [FTWCache localPathForKey:mi.audioKey];
+//        if (path) {
+//            track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:path]];
+//        }else{
+//            //need to download
+//            track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:mi.audioKey]];
+//        }
+//        [queue addObject:track];
+//    }
+//    NSLog(@"About to play for task: %@", task.ewtaskitem_id);
+//    qPlayer = [[AVQueuePlayer alloc] initWithItems:queue];
+//    [qPlayer play];
+//    if (qPlayer.error) {
+//        //something wrong
+//        
+//    }
+    
+    for (EWMediaItem *media in task.medias) {
+        NSString *path = [[EWDataStore sharedInstance] localPathForUrl:media.audioKey];
+        [playlist addObject:path];
         
     }
+    [self playSoundFromFile:playlist.firstObject];
 }
 
 #pragma mark - UI event
@@ -192,7 +207,7 @@
     // Fast skip the music when user scroll the UISlider
     [player stop];
     [player setCurrentTime:progressBar.value];
-    NSString *timeStr = [NSString stringWithFormat:@"%ld:%02ld", (long)progressBar.value / 60, (NSInteger)progressBar.value % 60, nil];
+    NSString *timeStr = [NSString stringWithFormat:@"%ld:%02ld", (long)progressBar.value / 60, (long)progressBar.value % 60, nil];
     currentTime.text = timeStr;
     [player prepareToPlay];
     [player play];
@@ -249,7 +264,7 @@
         [self updateCurrentTime];
         progressBar.maximumValue = player.duration;
     }
-    //timer stio first
+    //timer stop first
 	if (updateTimer)
 		[updateTimer invalidate];
     //set up timer
@@ -287,25 +302,42 @@
 -(void)updateCurrentTime{
     if (!progressBar.isTouchInside) {
         progressBar.value = player.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (NSInteger)player.currentTime / 60, (NSInteger)player.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (long)player.currentTime / 60, (long)player.currentTime % 60, nil];
     }
 }
 
 -(void)updateCurrentTimeForRecorder{
     if (!progressBar.isTouchInside) {
         progressBar.value = recorder.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (NSInteger)recorder.currentTime / 60, (NSInteger)recorder.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (long)recorder.currentTime / 60, (long)recorder.currentTime % 60, nil];
     }
 }
 
 
 #pragma mark - AVAudioPlayer delegate method
-- (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)player successfully:(BOOL)flag {
+- (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)p successfully:(BOOL)flag {
     [updateTimer invalidate];
     self.player.currentTime = 0.0;
     progressBar.value = 0.0;
     NSLog(@"Playback fnished");
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
+    
+    //play next
+    NSString *currentPath = p.url.absoluteString;
+    NSUInteger currentCount = [playlist indexOfObject:currentPath];
+    if (currentCount == NSNotFound) return;
+    NSString *nextPath;
+    if (currentCount < playlist.count - 1) {
+        nextPath = playlist[currentCount+1];
+    }else{
+        if (self.loop) {
+            nextPath = playlist.firstObject;
+        }else{
+            return;
+        }
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerWillStart object:nil userInfo:@{kAudioPlayerNextPath: nextPath}];
+    [self playSoundFromFile:nextPath];
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
@@ -318,7 +350,7 @@
 #pragma mark - Delegate events
 - (void)stopAllPlaying{
     [player stop];
-    [qPlayer pause];
+    //[qPlayer pause];
     [avplayer pause];
 }
 

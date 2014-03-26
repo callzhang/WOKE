@@ -501,6 +501,43 @@
     return notifArray;
 }
 
+
+- (void)fireSilentAlarmForTask:(EWTaskItem *)task{
+    UILocalNotification *silentAlarm = [[UILocalNotification alloc] init];
+    silentAlarm.alertBody = @"It's time to wake up";
+    silentAlarm.alertAction = @"Wake up!";
+    silentAlarm.userInfo = @{kPushTaskKey: task.ewtaskitem_id};
+    [[UIApplication sharedApplication] scheduleLocalNotification:silentAlarm];
+}
+
+
+- (void)checkScheduledNotifications{
+    NSInteger nNotification = [[[UIApplication sharedApplication] scheduledLocalNotifications] count];
+    NSInteger nTask = self.allTasks.count;
+    NSLog(@"There are %ld scheduled local notification and %ld stored task info", (long)nNotification, (long)nTask);
+    
+    //delete redundant alarm notif
+    for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
+        BOOL del = YES;
+        for (EWTaskItem *t in _allTasks) {
+            if([aNotif.userInfo[kPushTaskKey] isEqualToString:t.ewtaskitem_id]){
+                del=NO;
+                break;
+            }
+        }
+        if (del) {
+            NSLog(@"========Local Notification on %@ will be deleted due to no paired stored info========", aNotif.fireDate.weekday);
+            [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
+        }
+    }
+    
+    //schedule necessary alarm notif
+    for (EWTaskItem *t in _allTasks) {
+        [self scheduleNotificationForTask:t];
+    }
+    
+}
+
 #pragma mark - check
 - (BOOL)checkTasks{
     //time stemp for last check
@@ -567,60 +604,6 @@
 }
 
 
-- (void)checkScheduledNotifications{
-    NSInteger nNotification = [[[UIApplication sharedApplication] scheduledLocalNotifications] count];
-    NSInteger nTask = self.allTasks.count;
-    NSLog(@"There are %ld scheduled local notification and %ld stored task info", (long)nNotification, (long)nTask);
-    //delete redundant alarm notif
-    for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-        BOOL del = YES;
-        for (EWTaskItem *t in _allTasks) {
-            if([aNotif.userInfo[kPushTaskKey] isEqualToString:t.ewtaskitem_id] && [aNotif.fireDate isEqualToDate:t.time]){
-                del=NO;
-                break;
-            }
-        }
-        if (del) {
-            NSLog(@"========Local Notification on %@ will be deleted due to no paired stored info========", aNotif.fireDate.weekday);
-            [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
-        }
-    }
-    //schedule necessary alarm notif
-    for (EWTaskItem *t in _allTasks) {
-        BOOL createNotif = YES;
-        //stop if task not on
-        if ([t.state  isEqual: @NO]) {
-            createNotif = NO;
-            //break;
-        }else{
-            //stop if matching notif is found
-            for (UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-                if ([[aNotif.userInfo objectForKey:kPushTaskKey] isEqualToString:t.ewtaskitem_id]) {
-                    //NSLog(@"Found matching notif:%@ for task:%@", aNotif.userInfo[kLocalNotificationUserInfoKey], t.ewtaskitem_id);
-                    //found matching notif
-                    if ([aNotif.fireDate isEqualToDate:t.time]) {
-                        //indeed matching
-                        createNotif = NO;
-                        break;
-                    }else{
-                        //something wrong, need reschedule notif
-                        [self cancelNotificationForTask:t];
-                        break;
-                    }
-                    
-                }
-            }
-            
-            if (createNotif) {
-                NSLog(@"No notification found for task at weekday:%ld", (long)[t.time weekdayNumber]);
-                [self scheduleNotificationForTask:t];
-            }
 
-        }
-        
-    }
-    
-    //if no alarm, ask for schedule
-}
 
 @end

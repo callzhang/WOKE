@@ -98,7 +98,7 @@ EWPerson *currentUser;
 
 - (NSArray *)everyone{
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    userFetch.fetchLimit = 20;
+    userFetch.fetchLimit = 50;
     //option
     SMRequestOptions *options = [SMRequestOptions options];
     if (![timeEveryoneChecked isOutDated] && timeEveryoneChecked != nil) {

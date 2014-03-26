@@ -40,15 +40,15 @@
         boarderView.image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
-        //add
-        [self.contentView addSubview:profilePic];
-        [self.contentView addSubview:boarderView];
         
         //background
         self.contentView.backgroundColor = [UIColor clearColor];
         
         //label
-        name = [[UILabel alloc] initWithFrame:CGRectMake(0, 50, kCollectionViewCellWidth, kCollectionViewCellHeight - 2*kCollectionViewCellPersonRadius)];
+        name = [[UILabel alloc] initWithFrame:CGRectMake(0, kCollectionViewCellHeight, kCollectionViewCellWidth, 20)];
+        name.textAlignment = NSTextAlignmentCenter;
+        name.font = [UIFont systemFontOfSize:12];
+        name.textColor = [UIColor colorWithWhite:0.8 alpha:1];
         name.text = @"...";
         
         //mask
@@ -57,6 +57,12 @@
         maskView.layer.cornerRadius = kCollectionViewCellPersonRadius;
         maskView.image = [UIImage imageNamed:@"checkmark"];
         maskView.hidden = YES;
+        
+        
+        //add
+        [self.contentView addSubview:profilePic];
+        [self.contentView addSubview:boarderView];
+        [self.contentView addSubview:name];
         [self.contentView addSubview:maskView];
     }
     return self;

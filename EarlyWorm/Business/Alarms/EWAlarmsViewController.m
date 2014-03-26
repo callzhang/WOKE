@@ -359,7 +359,7 @@
 - (void)presentWakeUpView:(NSNotification *)notification{
     NSLog(@"Entered app with local notification");
     EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-    EWTaskItem *task = notification.userInfo[kLocalNotificationUserInfoKey];
+    EWTaskItem *task = notification.userInfo[kPushTaskKey];
     controller.task  = task;
     
     //[self presentViewController:navigationController animated:YES completion:NULL];

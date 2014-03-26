@@ -28,7 +28,7 @@
 
 @interface EWWakeUpViewController (){
     //NSManagedObjectContext *context;
-    NSInteger currentCell;
+    //NSInteger currentCell;
     NSMutableArray *medias;
     NSMutableDictionary *buzzers;
     NSMutableArray *listOfBuzzAndMedia; //list with time
@@ -65,7 +65,7 @@
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
         
         //notification
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     }
@@ -104,7 +104,10 @@
     
     
     //play
-    [self startPlayCells];
+    //[self startPlayCells];
+    
+    //start seeking progress bar
+    [self seekCurrentCell];
 }
 
 - (void)initData {
@@ -214,14 +217,14 @@
 
 #pragma mark - Functions
 
-- (void)startPlayCells{
-    currentCell = 0;
-    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentCell inSection:0]];
-    if (cell) {
-        [[AVManager sharedManager] playForCell:cell];
-    }
-    
-}
+//- (void)startPlayCells{
+//    currentCell = 0;
+//    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentCell inSection:0]];
+//    if (cell) {
+//        [[AVManager sharedManager] playForCell:cell];
+//    }
+//    
+//}
 
 - (void)OnCancel{
     [self.navigationController dismissViewControllerAnimated:YES completion:^{
@@ -417,7 +420,22 @@
     
 }
 
+- (void)seekCurrentCell{
+    NSString *url = [AVManager sharedManager].player.url.absoluteString;
+    for (unsigned i = 0; i < medias.count; i++) {
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+        if ([url isEqualToString:cell.media.audioKey]) {
+            [AVManager sharedManager].currentCell = cell;
+        }
+    }
+}
+
 @end
+
+
+
+
+
 
 
 @implementation EWWakeUpViewController (EWShakeManager)
@@ -438,17 +456,19 @@
     
 }
 
-- (void)playNextCell{
-    NSLog(@"Play next song");
-    if (currentCell < medias.count) {
-        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCell inSection:0]];
-        if (!cell) {
-            loopAllCells = NO;
-        }else{
-            
-            [[AVManager sharedManager] playForCell:cell];
-        }
-    }
-}
+//- (void)playNextCell{
+//    NSLog(@"Play next song");
+//    if (currentCell < medias.count) {
+//        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCell inSection:0]];
+//        if (!cell) {
+//            loopAllCells = NO;
+//        }else{
+//            
+//            [[AVManager sharedManager] playForCell:cell];
+//        }
+//    }
+//}
+
+
 
 @end

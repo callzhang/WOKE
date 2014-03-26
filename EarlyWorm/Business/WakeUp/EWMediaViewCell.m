@@ -23,6 +23,8 @@
         self.description.text = @"早上的虫子更好";
         //self.progressBar.maximumValueImage = [UIImage imageNamed:@"MediaCell"];
         self.backgroundColor = [UIColor clearColor];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCell:) name:kAudioPlayerWillStart object:nil];
     }
     return self;
 }
@@ -60,6 +62,14 @@
 - (IBAction)profile:(id)sender{
     NSLog(@"Profile");
     //need to figure out how to call tableViewController from here
+}
+
+- (void)updateCell:(NSNotification *)notification{
+    NSString *path = notification.userInfo[kAudioPlayerNextPath];
+    if ([path isEqualToString:self.media.audioKey]) {
+        //matched media cell with playing path
+        [AVManager sharedManager].currentCell = self;
+    }
 }
 
 @end

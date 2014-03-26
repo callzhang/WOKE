@@ -16,11 +16,13 @@
 #import "EWAlarmManager.h"
 #import "EWTaskStore.h"
 #import "EWPersonStore.h"
+#import "EWWakeUpManager.h"
 
 //tools
 #import "TestFlight.h"
 #import "FSAudioStream.h"
 #import "AVManager.h"
+#import "UIViewController+Blur.h"
 
 //model
 #import "EWTaskItem.h"
@@ -73,10 +75,10 @@ UIViewController *rootViewController;
         //Let server class to handle notif info
         if (localNotif) {
             NSLog(@"Launched with local notification: %@", localNotif);
-            [EWServer handleAppLaunchNotification:localNotif];
+            [EWWakeUpManager handleAppLaunchNotification:localNotif];
         }else if (remoteNotif){
             NSLog(@"Launched with push notification: %@", remoteNotif);
-            [EWServer handleAppLaunchNotification:remoteNotif];
+            [EWWakeUpManager handleAppLaunchNotification:remoteNotif];
         }
     }
     
@@ -235,47 +237,13 @@ UIViewController *rootViewController;
     
     //check time
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser];
-    if ([task.time isEarlierThan:[NSDate date]]) {
-        //time's up
-        //check download
-        EWDownloadManager *dlManager = [EWDownloadManager sharedInstance];
-        
-        
-        //>>>>> start download task <<<<<
-        [dlManager downloadTask:task withCompletionHandler:^{
-            //action to be performed at download finish
-            
-            //use EWWakeUpVC to start play
-            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
-            
-            if (![EWServer isRootPresentingWakeUpView]) {
-                //present wakeup view
-                [rootViewController dismissViewControllerAnimated:YES completion:^{
-                    [rootViewController presentViewController:controller animated:YES completion:^{
-                        //post notification
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.ewtaskitem_id}];
-                    }];
-                }];
-                
-            }else{
-                //play
-                [controller startPlayCells];
-            }
-        }];
-
-    }
     
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
-    if (timeLeft < 100) {
+    if (timeLeft < 100 && timeLeft > 0) {
         NSLog(@"About to imit alart timer in %fs, schedule a timer",timeLeft);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            //cancel local alarm
-            [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
-            //fire a silent alarm
-            [[EWTaskStore sharedInstance] fireAlarmForTask:task];
-            //play sounds
-            [AVManager sharedManager] play
+            [EWWakeUpManager handleAlarmTimerEvent];
         });
     }
     
@@ -428,7 +396,7 @@ UIViewController *rootViewController;
         if (self.musicList.count > 0) {
             [self playDownloadedMusic:[self.musicList objectAtIndex:self.musicList.count-1]];
         }*/
-        NSString *taskID = [notification.userInfo objectForKey:kLocalNotificationUserInfoKey];
+        NSString *taskID = [notification.userInfo objectForKey:kPushTaskKey];
         NSLog(@"The task is %@", taskID);
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
         controller.task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
@@ -456,12 +424,10 @@ UIViewController *rootViewController;
     }
     
     //handle push
-    [EWServer handlePushNotification:userInfo];
+    [EWWakeUpManager handlePushNotification:userInfo];
     
     //return handler
-    double delayInSeconds = 1.0;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NSLog(@"@@@@@@@ Push conpletion handle returned. @@@@@@@@@");
         completionHandler(UIBackgroundFetchResultNewData);
     });

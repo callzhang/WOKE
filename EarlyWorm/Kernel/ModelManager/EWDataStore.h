@@ -45,5 +45,9 @@ extern NSDate *lastChecked;
  */
 - (NSData *)getRemoteDataWithKey:(NSString *)key;
 
+/**
+ *Get local cached file path for url. If not cached, dispatch a download URLSession
+ */
+- (NSString *)localPathForUrl:(NSString *)url;
 
 @end

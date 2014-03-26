@@ -53,6 +53,7 @@
 - (void)scheduleNotificationForTask:(EWTaskItem *)task;
 - (void)cancelNotificationForTask:(EWTaskItem *)task;
 - (NSArray *)localNotificationForTask:(EWTaskItem *)task;
+- (void)fireSilentAlarmForTask:(EWTaskItem *)task;
 
 //check
 - (void)checkScheduledNotifications;

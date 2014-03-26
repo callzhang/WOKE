@@ -122,9 +122,6 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         
         [self.view setNeedsDisplay];
     }
-    
-    
-
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -135,6 +132,11 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+- (void)setPerson:(EWPerson *)p{
+    [context refreshObject:p mergeChanges:YES];
+    person = p;
 }
 
 #pragma mark - UI Events

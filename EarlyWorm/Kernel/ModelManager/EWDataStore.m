@@ -250,7 +250,11 @@ NSDate *lastChecked;
 }
 
 - (NSString *)localPathForUrl:(NSString *)url{
-    NSString *path = [FTWCache localPathForKey:url];
+    if (url.length > 500) {
+        NSLog(@"*** Something wrong with url, the url contains data");
+        return nil;
+    }
+    NSString *path = [FTWCache localPathForKey:url.MD5Hash];
     if (!path) {
         //not in local, need to download
         [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:url]];

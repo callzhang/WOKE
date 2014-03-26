@@ -141,6 +141,7 @@
 		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
 		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
 		AB2C18CD18737F670058BFAD /* EWAlarmEditCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */; };
+		AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */; };
 		AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB2DFBC718BA7CBE00534AF1 /* buzz.caf */; };
 		AB39BF0017D96143006C31C5 /* EWSocialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB39BEF517D96143006C31C5 /* EWSocialViewController.m */; };
 		AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3B9E4417A765CE00C2AD93 /* AVManager.m */; };
@@ -326,8 +327,8 @@
 		56FEA59017A5766B00FC2938 /* EarlyWorm-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EarlyWorm-Prefix.pch"; sourceTree = "<group>"; };
 		56FEA59317A5766B00FC2938 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		56FEA59417A5766B00FC2938 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		9B2DEEF518B811EC0046EB80 /* EWServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWServer.h; path = Server/EWServer.h; sourceTree = "<group>"; };
-		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWServer.m; path = Server/EWServer.m; sourceTree = "<group>"; };
+		9B2DEEF518B811EC0046EB80 /* EWServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWServer.h; sourceTree = "<group>"; };
+		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWServer.m; sourceTree = "<group>"; };
 		9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadManager.h; path = Download/EWDownloadManager.h; sourceTree = "<group>"; };
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
 		9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadMgr.h; path = Download/EWDownloadMgr.h; sourceTree = "<group>"; };
@@ -415,6 +416,8 @@
 		AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmEditCell.xib; sourceTree = "<group>"; };
 		AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmEditCell.h; sourceTree = "<group>"; };
 		AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmEditCell.m; sourceTree = "<group>"; };
+		AB2D195018E26ED100FED6F0 /* EWWakeUpManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWakeUpManager.h; sourceTree = "<group>"; };
+		AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWakeUpManager.m; sourceTree = "<group>"; };
 		AB2DFBC718BA7CBE00534AF1 /* buzz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buzz.caf; sourceTree = "<group>"; };
 		AB39BEF417D96143006C31C5 /* EWSocialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialViewController.h; sourceTree = "<group>"; };
 		AB39BEF517D96143006C31C5 /* EWSocialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialViewController.m; sourceTree = "<group>"; };
@@ -1006,7 +1009,8 @@
 		56FEA57B17A5763200FC2938 /* Kernel */ = {
 			isa = PBXGroup;
 			children = (
-				9B2DEEF418B811C10046EB80 /* Server */,
+				9B2DEEF518B811EC0046EB80 /* EWServer.h */,
+				9B2DEEF618B811EC0046EB80 /* EWServer.m */,
 				AB1B1406187E4F48009D1DB2 /* Statistics */,
 				AB1D2D0A1877A85000D2576F /* UserManagement */,
 				AB7807A8183A01F7007C8BFD /* Download */,
@@ -1017,6 +1021,8 @@
 				56FEA57C17A5763200FC2938 /* Delegate */,
 				56E0C36617B2CEC200835A6B /* AlarmKernel */,
 				56330CEA17FDEA57008A7922 /* SocialKernel */,
+				AB2D195018E26ED100FED6F0 /* EWWakeUpManager.h */,
+				AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */,
 			);
 			path = Kernel;
 			sourceTree = "<group>";
@@ -1028,15 +1034,6 @@
 				56FEA57E17A5763200FC2938 /* EWAppDelegate.m */,
 			);
 			path = Delegate;
-			sourceTree = "<group>";
-		};
-		9B2DEEF418B811C10046EB80 /* Server */ = {
-			isa = PBXGroup;
-			children = (
-				9B2DEEF518B811EC0046EB80 /* EWServer.h */,
-				9B2DEEF618B811EC0046EB80 /* EWServer.m */,
-			);
-			name = Server;
 			sourceTree = "<group>";
 		};
 		9BF7A7BD18CA27EF002EA7AC /* AWS */ = {
@@ -1639,6 +1636,7 @@
 				5671BE3818085C4100F35DF9 /* ASIFormDataRequest.m in Sources */,
 				AB4B837718CF65860087E654 /* Reachability.m in Sources */,
 				5671BE4518085C4100F35DF9 /* ASIS3Bucket.m in Sources */,
+				AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */,
 				AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */,
 				56330CE217FDDF49008A7922 /* NSString+SBJSON.m in Sources */,
 				ABF1261517C1DD5800C0FDAC /* EWIO.m in Sources */,

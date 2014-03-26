@@ -104,6 +104,11 @@
         
         [self downloadMedia:mi];
     }
+    
+    if (downloadQueue.count == 0) {
+        NSLog(@"All media is cached already, no audio will be downloaded");
+        block();
+    }
 }
 
 #pragma mark - URL delegate method
