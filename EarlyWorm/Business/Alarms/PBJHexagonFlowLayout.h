@@ -9,6 +9,7 @@
 
 @interface PBJHexagonFlowLayout : UICollectionViewFlowLayout
 {
+    NSMutableArray *attributeArray;
 }
 
 @property (nonatomic) NSInteger itemsPerRow;

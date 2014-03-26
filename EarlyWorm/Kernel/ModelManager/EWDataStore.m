@@ -235,6 +235,7 @@ NSDate *lastChecked;
     }else if(key.length > 500){
         //string contains data
         data = [SMBinaryDataConversion dataForString:key];
+        //TODO: save again.
         NSLog(@"Return the audio key as the data itself, please check!");
         
     }else if(![key hasPrefix:@"http"]){

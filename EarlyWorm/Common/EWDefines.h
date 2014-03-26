@@ -131,12 +131,12 @@
 
 
 //Collection View Identifier
-
 #define kCollectionViewCellPersonIdenfifier  @"CollectionViewIdentifier"
+#define kHexagonViewIdentifier          101
+#define kAlarmPageViewIdentifier        102
+#define kBlurViewIdentifier             99
 
-
-//Collection Cell Size
-
+//CollectionView Cell
 #define kCollectionViewCellWidth        80
 #define kCollectionViewCellHeight       80
 #define kCollectionViewCellPersonRadius 40

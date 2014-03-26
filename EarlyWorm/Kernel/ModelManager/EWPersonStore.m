@@ -108,7 +108,7 @@ EWPerson *currentUser;
         timeEveryoneChecked = [NSDate date];
     }
     //fetch
-    NSManagedObjectContext *myContext = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
+    NSManagedObjectContext *myContext = [[EWDataStore sharedInstance] currentContext];
     NSArray *allPerson = [myContext executeFetchRequestAndWait:userFetch returnManagedObjectIDs:NO options:options error:NULL];
     NSLog(@"Get a list of people: %@", [allPerson valueForKey:@"name"]);
     //check

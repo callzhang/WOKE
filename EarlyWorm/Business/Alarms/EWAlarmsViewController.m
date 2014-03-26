@@ -75,6 +75,7 @@
     [self initData];
     [self initView];
     [self reloadAlarmPage];
+    [_collectionView reloadData];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
@@ -131,11 +132,12 @@
     _collectionView.contentInset = UIEdgeInsetsMake(40, 40, 40, 40);
     [_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     _collectionView.backgroundColor = [UIColor clearColor];
-    [_collectionView reloadData];
+    _collectionView.tag = kHexagonViewIdentifier;
     
     //paging
     _scrollView.delegate = self;
     _scrollView.pagingEnabled = YES;
+    _scrollView.tag = kAlarmPageViewIdentifier;
     _pageView.currentPage = 0;
     
     //add button
@@ -276,12 +278,14 @@
 
 // At the end of scroll animation, reset the boolean used when scrolls originate from the UIPageControl
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    // load the visible page and the page on either side of it (to avoid flashes when the user starts scrolling)
-    // Switch the indicator when more than 50% of the previous/next page is visible
-    CGFloat pageWidth = _scrollView.frame.size.width;
-    NSInteger page = floor((_scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-    _pageView.currentPage = page;
-    [self reloadAlarmPage];
+    if (scrollView.tag == kAlarmPageViewIdentifier) {
+        // load the visible page and the page on either side of it (to avoid flashes when the user starts scrolling)
+        // Switch the indicator when more than 50% of the previous/next page is visible
+        CGFloat pageWidth = _scrollView.frame.size.width;
+        NSInteger page = floor((_scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+        _pageView.currentPage = page;
+        [self reloadAlarmPage];
+    }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
@@ -319,7 +323,6 @@
             
         case 2:{
             [self refreshView];
-            [_collectionView reloadData];
         }
             
         default:
@@ -395,6 +398,14 @@
     EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
     controller.person = allPeople[indexPath.row];
     [self presentViewControllerWithBlurBackground:controller];
+}
+
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
 }
 
 @end
