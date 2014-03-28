@@ -42,4 +42,8 @@
 
 + (NSString *)toString:(NSDictionary *)dic;
 
++ (CGFloat)distanceOfRectMid:(CGRect)rect1 toRectMid:(CGRect)rect2;
+
++ (CGFloat)distanceOfPoint:(CGPoint)point1 toPoint:(CGPoint)point2;
+
 @end

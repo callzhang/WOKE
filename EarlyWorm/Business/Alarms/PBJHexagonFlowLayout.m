@@ -6,7 +6,7 @@
 //
 
 #import "PBJHexagonFlowLayout.h"
-
+#import "EWUIUtil.h"
 
 
 
@@ -63,10 +63,35 @@
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
 {
     
-    NSLog(@"Flow Layout delegate is asking for rect:(%.1f,%.1f,%.1f,%.1f)", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+    //NSLog(@"Flow Layout delegate is asking for rect:(%.1f,%.1f,%.1f,%.1f)", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
     
     //list of containing indexPath
     NSArray *attributes = [self getContainedRect:rect fromAttributesArray:attributeArray];
+    
+    //apply zoom
+    CGRect bounds = self.collectionView.bounds;
+    //bounds.origin.x += self.collectionView.contentInset.left;
+    //bounds.origin.y += self.collectionView.contentInset.top;
+    bounds.origin.y -= self.collectionView.frame.origin.y;//compensate the frame origin
+    //only update cells in the screen
+    NSArray *attributesNeedZoom = [self getContainedRect:bounds fromAttributesArray:attributeArray];
+    
+    CGPoint midBounds = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
+    for (UICollectionViewLayoutAttributes *attribute in attributesNeedZoom) {
+        if (CGRectIntersectsRect(attribute.frame, bounds)) {
+            //get real center
+            CGRect cellFrame = CGRectMake(attribute.frame.origin.x, attribute.frame.origin.y, kCollectionViewCellWidth, kCollectionViewCellHeight);
+            CGPoint cellCenter = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
+            //calculate distance
+            CGFloat distance = [EWUIUtil distanceOfPoint:midBounds toPoint:cellCenter];
+            if (distance < _hexagonSize.width) {
+                CGFloat normDistance = distance / _hexagonSize.width;
+                CGFloat zoom = 1 + pow((1-normDistance),2)/4 ;
+                attribute.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
+                //attribute.zIndex = round(zoom);
+            }
+        }
+    }
 
     return attributes;
 }
@@ -90,7 +115,8 @@
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
-    return NO;
+    //NSLog(@"New bounds asked for updated layout: (%0f,%0f,%0f,%0f)", newBounds.origin.x, newBounds.origin.y, newBounds.size.width, newBounds.size.height);
+    return YES;
 }
 
 //- (void)invalidateLayoutWithContext:(UICollectionViewLayoutInvalidationContext *)context{
@@ -113,19 +139,31 @@
 }
 
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity{
+    
+    //possible cell
+    CGRect bounds = self.collectionView.bounds;
+    CGPoint proposedCenter = CGPointMake(proposedContentOffset.x +bounds.size.width/2, proposedContentOffset.y + bounds.size.height/2);
+    NSLog(@"Proposed center (%f, %f)", proposedCenter.x, proposedCenter.y);
+    CGRect proposedRect = CGRectMake(proposedCenter.x, proposedCenter.y, _hexagonSize.width, _hexagonSize.height);
+    NSArray *possibleCells = [self layoutAttributesForElementsInRect:proposedRect];
+    if (possibleCells.count == 0) {
+        possibleCells = attributeArray;
+    }
+    //compare
     double minDist = (double)NSIntegerMax;
-    CGPoint newPoint;
-    for (UICollectionViewLayoutAttributes *att in attributeArray) {
-        CGPoint center = att.center;
-        double distanceSq = pow((center.x + proposedContentOffset.x), 2) + pow((center.y + proposedContentOffset.y),2);
-        if (distanceSq < minDist) {
-            minDist = distanceSq;
+    CGPoint newPoint;//the center of the cell with cloest distance
+    for (UICollectionViewLayoutAttributes *attribute in possibleCells) {
+        //get real center
+        CGRect cellFrame = CGRectMake(attribute.frame.origin.x, attribute.frame.origin.y, kCollectionViewCellWidth, kCollectionViewCellHeight);
+        CGPoint center = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
+        CGFloat distance = [EWUIUtil distanceOfPoint:proposedCenter toPoint:center];
+        if (distance < minDist) {
+            minDist = distance;
             newPoint = center;
+            NSLog(@"Candidate cell with distance of %f from (%f, %f)", distance, newPoint.x, newPoint.y);
         }
     }
-    CGPoint resultPoint = CGPointMake(-1*newPoint.x, -1*newPoint.y);
-    
-    NSLog(@"Changed from %@ to %@", proposedContentOffset, resultPoint);
-    return resultPoint;
+    NSLog(@"Adjusted center to (%f, %f)", newPoint.x, newPoint.y);
+    return CGPointMake(newPoint.x - bounds.size.width/2, newPoint.y - bounds.size.height/2);
 }
 @end

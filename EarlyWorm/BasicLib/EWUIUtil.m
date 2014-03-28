@@ -55,4 +55,14 @@
     return str;
 }
 
++ (CGFloat)distanceOfRectMid:(CGRect)rect1 toRectMid:(CGRect)rect2{
+    
+    CGFloat distance = sqrt(pow((CGRectGetMidX(rect1) - CGRectGetMidX(rect2)),2) + pow((CGRectGetMidY(rect1) - CGRectGetMidY(rect2)), 2));
+    return distance;
+}
+
++ (CGFloat)distanceOfPoint:(CGPoint)point1 toPoint:(CGPoint)point2{
+    CGFloat distance = sqrt(pow((point1.x - point2.x),2) + pow((point1.y - point2.y), 2));
+    return distance;
+}
 @end

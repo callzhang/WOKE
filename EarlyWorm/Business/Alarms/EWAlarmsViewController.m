@@ -14,6 +14,7 @@
 #import "NSString+Extend.h"
 #import "NSDate+Extend.h"
 #import "UIViewController+Blur.h"
+#import "EWServer.h"
 
 // Manager
 #import "EWAlarmManager.h"
@@ -32,12 +33,14 @@
 #import "EWLogInViewController.h"
 #import "EWCollectionPersonCell.h"
 #import "EWSettingsViewController.h"
+#import "EWRecordingViewController.h"
 
 //backend
 #import "StackMob.h"
 
 @interface EWAlarmsViewController (){
     NSMutableArray *allPeople;
+    NSInteger selectedPersonIndex;
 }
 @end
 
@@ -129,7 +132,7 @@
     //collection view
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
-    _collectionView.contentInset = UIEdgeInsetsMake(40, 40, 40, 40);
+    _collectionView.contentInset = UIEdgeInsetsMake(_collectionView.frame.size.height, _collectionView.frame.size.width, _collectionView.frame.size.height, _collectionView.frame.size.width);
     [_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     _collectionView.backgroundColor = [UIColor clearColor];
     _collectionView.tag = kHexagonViewIdentifier;
@@ -171,6 +174,7 @@
 
 - (IBAction)mainActions:(id)sender {
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh Person", nil];
+    sheet.tag = 1002;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
 }
@@ -307,27 +311,61 @@
 
 #pragma mark - UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
-    switch (buttonIndex) {
-        case 0:{//Preference
-            EWSettingsViewController *controller = [[EWSettingsViewController alloc] initWithNibName:nil bundle:nil];
-            [self presentViewControllerWithBlurBackground:controller];
-            break;
+    if (actionSheet.tag == 1002) {
+        //main action
+        switch (buttonIndex) {
+            case 0:{//Preference
+                EWSettingsViewController *controller = [[EWSettingsViewController alloc] initWithNibName:nil bundle:nil];
+                [self presentViewControllerWithBlurBackground:controller];
+                break;
+            }
+                
+            case 1:{
+                TestViewController *controller = [[TestViewController alloc] init];
+                [self presentViewControllerWithBlurBackground:controller];
+                
+                break;
+            }
+                
+            case 2:{
+                [self refreshView];
+            }
+                
+            default:
+                break;
         }
-            
-        case 1:{
-            TestViewController *controller = [[TestViewController alloc] init];
-            [self presentViewControllerWithBlurBackground:controller];
-            
-            break;
+
+    }else if (actionSheet.tag == 1001){
+        //person cell action sheet
+        switch (buttonIndex) {
+            case 0:{
+                
+                EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+                controller.person = allPeople[selectedPersonIndex];
+                [self presentViewControllerWithBlurBackground:controller];
+                
+                break;
+            }
+            case 1:{
+                [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                EWPerson *person = allPeople[selectedPersonIndex];
+                [EWServer buzz:@[person]];
+                
+                break;
+            }
+            case 2:{
+                EWRecordingViewController *controller = [[EWRecordingViewController alloc] init];
+                EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:allPeople[selectedPersonIndex]];
+                controller.task = task;
+                [self presentViewControllerWithBlurBackground:controller];
+                break;
+            }
+                
+            default:
+                break;
         }
-            
-        case 2:{
-            [self refreshView];
-        }
-            
-        default:
-            break;
     }
+    
 }
 
 
@@ -395,9 +433,15 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
-    controller.person = allPeople[indexPath.row];
-    [self presentViewControllerWithBlurBackground:controller];
+    //get cell
+    EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    selectedPersonIndex = indexPath.row;
+    
+    //action sheet
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
+    sheet.tag = 1001;
+    [sheet showFromRect:cell.frame inView:self.view animated:YES];
+    
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{

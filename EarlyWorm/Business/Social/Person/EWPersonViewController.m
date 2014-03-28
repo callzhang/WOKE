@@ -10,7 +10,7 @@
 #import "StackMob.h"
 // Util
 #import "EWUIUtil.h"
-#import "MBProgressHUD.h"
+#import "UIViewController+Blur.h"
 
 // Model
 #import "EWPerson.h"
@@ -311,8 +311,8 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     
     EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithNibName:nil bundle:nil];
     controller.task = tasks[indexPath.row];
-    [self presentViewController:controller animated:YES completion:NULL];
-
+    //[self presentViewController:controller animated:YES completion:NULL];
+    [self presentViewControllerWithBlurBackground:controller];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{

@@ -132,8 +132,8 @@ UIViewController *rootViewController;
     
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:100 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
-    NSLog(@"Scheduled background task when app enters background with time left: %f", application.backgroundTimeRemaining);
+    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+    NSLog(@"Scheduled background with time left: %f", application.backgroundTimeRemaining);
 #endif
     
     application.applicationIconBadgeNumber = 0;
@@ -223,6 +223,7 @@ UIViewController *rootViewController;
 
 //Keep alive
 - (void) keepAlive:(NSTimer *)paramSender{
+    NSLog(@"=== Keep alive ===");
     
     UIApplication *application = [UIApplication sharedApplication];
     
@@ -240,6 +241,11 @@ UIViewController *rootViewController;
     
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
+    
+#ifdef DEV_TEST
+    timeLeft = 10;
+#endif
+    
     if (timeLeft < 100 && timeLeft > 0) {
         NSLog(@"About to imit alart timer in %fs, schedule a timer",timeLeft);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -400,8 +406,7 @@ UIViewController *rootViewController;
         NSLog(@"The task is %@", taskID);
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
         controller.task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-        [self.window.rootViewController presentViewController:navigationController animated:YES completion:^(void){}];
+        [self.window.rootViewController presentViewControllerWithBlurBackground:controller];
     }
 }
 /*

@@ -92,8 +92,10 @@
                                   @"type": kPushTypeBuzzKey};
     [EWServer AWSPush:pushMessage toUsers:(NSArray *)users onSuccess:^(SNSPublishResponse *response) {
         NSLog(@"Buzz sent via AWS: %@", response.messageId);
+        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     } onFailure:^(NSException *exception) {
         NSLog(@"Failed to send Buzz: %@", exception.description);
+        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     }];
     
     /*
