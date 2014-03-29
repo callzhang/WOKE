@@ -10,6 +10,7 @@
 #import "EWWakeUpViewController.h"
 #import "AVManager.h"
 #import "EWMediaSlider.h"
+#import "EWDataStore.h"
 
 @implementation EWMediaViewCell
 @synthesize controller, media;
@@ -66,7 +67,8 @@
 
 - (void)updateCell:(NSNotification *)notification{
     NSString *path = notification.userInfo[kAudioPlayerNextPath];
-    if ([path isEqualToString:self.media.audioKey]) {
+    NSString *localPath = [[EWDataStore sharedInstance] localPathForUrl:media.audioKey];
+    if ([path isEqualToString:localPath] || [path isEqualToString:media.audioKey]) {
         //matched media cell with playing path
         [AVManager sharedManager].currentCell = self;
     }

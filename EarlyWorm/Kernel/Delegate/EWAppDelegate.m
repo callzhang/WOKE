@@ -20,7 +20,6 @@
 
 //tools
 #import "TestFlight.h"
-#import "FSAudioStream.h"
 #import "AVManager.h"
 #import "UIViewController+Blur.h"
 
@@ -40,7 +39,6 @@ UIViewController *rootViewController;
     EWTaskItem *taskInAction;
     NSTimer *myTimer;
     long count;
-    FSAudioStream *_audioStream;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
@@ -199,7 +197,7 @@ UIViewController *rootViewController;
     for (EWTaskItem *task in currentUser.tasks) {
         
         //refresh
-        [context refreshObject:task mergeChanges:YES];
+        [task.managedObjectContext refreshObject:task mergeChanges:YES];
         
         //check
         if ([lastChecked isEarlierThan:task.lastmoddate]) {
@@ -372,7 +370,7 @@ UIViewController *rootViewController;
         [defaults synchronize];
         
         //sync
-        [context refreshObject:currentUser mergeChanges:YES];
+        [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
     }else{
         //found endPoint saved at local
         NSLog(@"found endPoint: %@ for user: %@", endPoint, username);

@@ -27,10 +27,11 @@
 @property (retain, nonatomic) AVAudioPlayer *player;
 @property (retain, nonatomic) AVAudioRecorder *recorder;
 @property (weak, nonatomic) EWMediaViewCell *currentCell; //current cell, assigned by others
-@property (retain, nonatomic) UIButton *recordStopBtn;
-@property (retain, nonatomic) UIButton *playStopBtn;
-@property (retain, nonatomic) EWMediaSlider *progressBar;
-@property (retain, nonatomic) UILabel *currentTime;
+@property (weak, nonatomic) EWMediaItem *media;
+@property (weak, nonatomic) UIButton *recordStopBtn;
+@property (weak, nonatomic) UIButton *playStopBtn;
+@property (weak, nonatomic) EWMediaSlider *progressBar;
+@property (weak, nonatomic) UILabel *currentTime;
 @property (nonatomic) BOOL loop;
 
 +(AVManager *)sharedManager;

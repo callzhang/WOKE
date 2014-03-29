@@ -118,7 +118,7 @@
         //save
         //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
         [context saveOnSuccess:^{
-            [context refreshObject:media mergeChanges:YES];
+            [media.managedObjectContext refreshObject:media mergeChanges:YES];
             
             //dismiss hud
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];

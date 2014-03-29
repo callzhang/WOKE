@@ -114,7 +114,7 @@
             //background refresh
             if (completionBlock) {
                 dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-                    [context refreshObject:currentUser mergeChanges:YES];
+                    [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
                     //completion block
                     NSLog(@"Run completion block after fb_user -> coredata_user");
                     completionBlock();
@@ -239,21 +239,28 @@
 
 - (void)logout{
     //log out SM
-    [client logoutOnSuccess:^(NSDictionary *result) {
-        NSLog(@"Successfully logged out");
+    if ([client isLoggedIn]) {
+        [client logoutOnSuccess:^(NSDictionary *result) {
+            NSLog(@"Successfully logged out");
+            //log out fb
+            [FBSession.activeSession closeAndClearTokenInformation];
+            //log in with device id
+            //[self loginWithDeviceIDWithCompletionBlock:NULL];
+            
+            //login view
+            EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+            [rootViewController presentViewController:loginVC animated:YES completion:NULL];
+        }
+         onFailure:^(NSError *error) {
+             EWAlert(@"Unable to logout, please try again.");
+         }];
+    }else{
         //log out fb
         [FBSession.activeSession closeAndClearTokenInformation];
-        //log in with device id
-        //[self loginWithDeviceIDWithCompletionBlock:NULL];
-        
         //login view
         EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
         [rootViewController presentViewController:loginVC animated:YES completion:NULL];
-        
-    } onFailure:^(NSError *error) {
-        EWAlert(@"Unable to logout, please check!");
-        
-    }];
+    };
 }
 
 
@@ -262,6 +269,9 @@
     
     [self registerAPNS];
     [self registerLocation];
+    [self updateLastSeen];
+    //update data with timely updates
+    [[EWDataStore sharedInstance] registerServerUpdateService];
 
 }
 
@@ -284,7 +294,7 @@
             } else {
                 NSLog(@"%@", error.debugDescription);
             }
-            [context refreshObject:currentUser mergeChanges:YES];
+            [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
             
 
         }];
@@ -296,13 +306,10 @@
     }];
 }
 
-#pragma mark - Keep alive
+#pragma mark - Last seen
 - (void)updateLastSeen{
     NSLog(@"scheduled update last seen recurring task");
-    [NSTimer timerWithTimeInterval:600 target:self selector:@selector(keepAlive) userInfo:nil repeats:YES];
-}
-
-- (void)keepAlive{
+    
     if (currentUser) {
         currentUser.lastSeenDate = [NSDate date];
         [context saveOnSuccess:^{
@@ -349,6 +356,8 @@
     
 }
 
+
+#pragma mark - FACEBOOK
 //after fb login, fetch user managed object
 - (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     //get currentUser first
@@ -393,11 +402,14 @@
     AFImageRequestOperation *operation;
     operation = [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image) {
         currentUser.profilePic = image;
+        [currentUser.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
+            NSLog(@"%s: failed to save profile pic when requesting from facebook", __func__);
+        }];
         [[NSNotificationCenter defaultCenter] postNotificationName:kPersonProfilePicDownloaded object:self userInfo:nil];
     }];
     [operation start];
     //broadcasting
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey: person}];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey: person}];
     
     //hide hud if possible
     //[MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES]; //handled in AlarmsVC
@@ -408,7 +420,7 @@
 
 }
 
-#pragma mark - FACEBOOK
+
 - (void)registerFacebook{
     //
 }

@@ -17,6 +17,7 @@
 #import "NSDate+Extend.h"
 #import "StackMob.h"
 #import "EWDataStore.h"
+#import "NSString+MD5.h"
 
 @implementation EWPerson
 @synthesize achievements;
@@ -76,8 +77,20 @@
 }
 
 - (void)setProfilePic:(UIImage *)pic{
+    //update memory
+    profilePic = pic;
+    
     NSData *picData = UIImagePNGRepresentation(pic);
+    //update cache
+    [[EWDataStore sharedInstance] updateCacheForKey:self.profilePicKey.MD5Hash withData:picData];
+    
+    //update server
     self.profilePicKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"profilePic.png" contentType:@"image/png"];
+    
+    [self.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"Profile not saved");
+    }];
+    
 }
 
 - (UIImage *)bgImage{
@@ -89,8 +102,19 @@
 
 
 - (void)setBgImage:(UIImage *)img{
+    //memory
+    bgImage = img;
+    
     NSData *imgData = UIImagePNGRepresentation(img);
+    //cache
+    [[EWDataStore sharedInstance] updateCacheForKey:self.bgImageKey.MD5Hash withData:imgData];
+    
+    //server
     self.bgImageKey = [SMBinaryDataConversion stringForBinaryData:imgData name:@"bgImage.png" contentType:@"image/png"];
+    
+    [self.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"BG img not saved");
+    }];
 }
 
 

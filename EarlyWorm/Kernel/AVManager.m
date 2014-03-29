@@ -21,7 +21,7 @@
 
 @implementation AVManager
 @synthesize player, recorder;
-@synthesize playStopBtn, recordStopBtn, currentCell, progressBar, currentTime;
+@synthesize playStopBtn, recordStopBtn, currentCell, progressBar, currentTime, media;
 
 
 +(AVManager *)sharedManager{
@@ -106,6 +106,7 @@
 - (void)setCurrentCell:(EWMediaViewCell *)cell{
     progressBar = cell.mediaBar;
     currentTime = progressBar.timeLabel;
+    media = cell.media;
 }
 
 
@@ -169,6 +170,7 @@
 }
 
 - (void)playMedia:(EWMediaItem *)mi{
+    media = mi;
     [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];
 }
 
@@ -194,14 +196,15 @@
 //        
 //    }
     
-    for (EWMediaItem *media in task.medias) {
-        NSString *path = [[EWDataStore sharedInstance] localPathForUrl:media.audioKey];
-        [playlist addObject:path];
-        
-    }
+//    for (EWMediaItem *media in task.medias) {
+//        NSString *path = [[EWDataStore sharedInstance] localPathForUrl:media.audioKey];
+//        [playlist addObject:path];
+//        
+//    }
+    playlist = [[task.medias allObjects] mutableCopy];
     
     if (playlist.firstObject) {
-        [self playMedia:];
+        [self playMedia:playlist.firstObject];
     }
     
 }
@@ -327,21 +330,21 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
     
     //play next
-    NSString *currentPath = p.url.absoluteString;
-    NSUInteger currentCount = [playlist indexOfObject:currentPath];
-    if (currentCount == NSNotFound) return;
-    NSString *nextPath;
-    if (currentCount < playlist.count - 1) {
-        nextPath = playlist[currentCount+1];
-    }else{
-        if (self.loop) {
-            nextPath = playlist.firstObject;
-        }else{
-            return;
-        }
-    }
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerWillStart object:nil userInfo:@{kAudioPlayerNextPath: nextPath}];
-    [self playSoundFromFile:nextPath];
+//    NSString *currentPath = p.url.absoluteString;
+//    NSUInteger currentCount = [playlist indexOfObject:currentPath];
+//    if (currentCount == NSNotFound) return;
+//    NSString *nextPath;
+//    if (currentCount < playlist.count - 1) {
+//        nextPath = playlist[currentCount+1];
+//    }else{
+//        if (self.loop) {
+//            nextPath = playlist.firstObject;
+//        }else{
+//            return;
+//        }
+//    }
+//    [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerWillStart object:nil userInfo:@{kAudioPlayerNextPath: nextPath}];
+//    [self playSoundFromFile:nextPath];
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
@@ -530,10 +533,6 @@ void RouteChangeListener(	void *inClientData,
     
     //completion callback
     AudioServicesAddSystemSoundCompletion(soundID, nil, nil, playSoundFinished, (void *)bgTaskId);
-}
-
-- (void)playSystemSoundForTask:(EWTaskItem *)task{
-    
 }
 
 void playSoundFinished (SystemSoundID sound, void *bgTaskId){

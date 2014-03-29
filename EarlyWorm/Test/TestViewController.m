@@ -122,11 +122,12 @@
     static NSString *identifier = @"CellIdentifier";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-    }
+//    if (!cell) {
+//        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+//    }
     
     cell.textLabel.text = [_dataSource objectAtIndex:indexPath.row];
+    cell.textLabel.textColor = [UIColor whiteColor];
     
     return cell;
 }

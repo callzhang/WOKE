@@ -90,7 +90,7 @@ EWPerson *currentUser;
     if ([user isFault]) {
         //[NSException raise:@"user fatched is fault" format:@"check your code"];
         NSLog(@"user is faulted, try to get faults filled");
-        [context refreshObject:currentUser mergeChanges:YES];
+        [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
         NSLog(@"There are %lu alarms and %lu tasks", (unsigned long)user.alarms.count, (unsigned long)user.tasks.count);
     }
     return user;
@@ -115,7 +115,7 @@ EWPerson *currentUser;
     for (EWPerson *person in allPerson) {
         if ([person isFault]) {
             NSLog(@"Person %@ is faulted, fetching from server", person.name);
-            [myContext refreshObject:person mergeChanges:YES];
+            [person.managedObjectContext refreshObject:person mergeChanges:YES];
         }
     }
     //return

@@ -23,7 +23,7 @@
 #define kColorMediumGray    EWSTR2COLOR(@"7e7e7e")
 #define kCustomLightGray    EWSTR2COLOR(@"#DDDDDD")
 
-#define MADEL_HEADER_HEIGHT             70;
+#define MADEL_HEADER_HEIGHT             70.0;
 
 // Keys
 #define kStackMobKeyDevelopment         @"4757c535-5583-46f9-8a55-3b8276d96f06"

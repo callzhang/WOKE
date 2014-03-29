@@ -32,7 +32,8 @@
     NSMutableArray *medias;
     NSMutableDictionary *buzzers;
     NSMutableArray *listOfBuzzAndMedia; //list with time
-    BOOL loopAllCells;
+    BOOL next;
+    NSInteger loopCount;
     CGRect headerFrame;
     UIButton * postWakeUpVCBtn;
 }
@@ -65,7 +66,7 @@
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
         
         //notification
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     }
@@ -79,7 +80,8 @@
     
     
     //first time loop
-    loopAllCells = YES;
+    next = YES;
+    loopCount = 3;
     
     //origin header frame
     headerFrame = header.frame;
@@ -93,7 +95,7 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [tableView_ reloadData];
+    //[tableView_ reloadData];
     
     //position the content
     [self scrollViewDidScroll:tableView_];
@@ -102,12 +104,16 @@
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     
+    NSLog(@"WakeUp view did appear, preparing to play audio");
+    if ([AVManager sharedManager].player.playing) {
+        //start seeking progress bar
+        NSInteger i = [self seekCurrentCell];
+        NSLog(@"Player is already playing %ld", (long)i);
+    }else{
+        //play
+        [self startPlayCells];
+    }
     
-    //play
-    //[self startPlayCells];
-    
-    //start seeking progress bar
-    [self seekCurrentCell];
 }
 
 - (void)initData {
@@ -217,14 +223,13 @@
 
 #pragma mark - Functions
 
-//- (void)startPlayCells{
-//    currentCell = 0;
-//    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentCell inSection:0]];
-//    if (cell) {
-//        [[AVManager sharedManager] playForCell:cell];
-//    }
-//    
-//}
+- (void)startPlayCells{
+    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
+    if (cell) {
+        [[AVManager sharedManager] playForCell:cell];
+    }
+    
+}
 
 - (void)OnCancel{
     [self.navigationController dismissViewControllerAnimated:YES completion:^{
@@ -244,11 +249,8 @@
         postWakeUpVC.taskItem = task;
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            
-            [self presentViewController:postWakeUpVC animated:YES completion:^{
-                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                
-            }];
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+            [self presentViewControllerWithBlurBackground:postWakeUpVC];
         });
     });
 }
@@ -385,7 +387,7 @@
 {
     NSLog(@"Media clicked");
     [[AVManager sharedManager] playForCell:[tableView cellForRowAtIndexPath:indexPath]];
-    loopAllCells = NO;
+    next = NO;
 }
 
 
@@ -410,7 +412,7 @@
     CGRect footerFrame = postWakeUpVCBtn.frame;
     if (scrollView.contentSize.height < 1) {
         //init phrase
-        footerFrame.origin.y = self.view.frame.size.height;
+        footerFrame.origin.y = self.view.frame.size.height - footerFrame.size.height;
     }else{
         NSInteger footerOffset = scrollView.contentSize.height + scrollView.contentInset.top - (scrollView.contentOffset.y + scrollView.frame.size.height);
         footerFrame.origin.y = MAX(scrollView.frame.size.height + footerOffset, self.view.frame.size.height - footerFrame.size.height) ;
@@ -420,15 +422,47 @@
     
 }
 
-- (void)seekCurrentCell{
+#pragma mark - Handle player events
+
+- (NSInteger)seekCurrentCell{
     NSString *url = [AVManager sharedManager].player.url.absoluteString;
     for (unsigned i = 0; i < medias.count; i++) {
         EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-        if ([url isEqualToString:cell.media.audioKey]) {
+        NSString *mediaAudioKey = cell.media.audioKey;
+        NSString *mediaAudioLocalPath = [[EWDataStore sharedInstance] localPathForUrl:mediaAudioKey];
+        if ([url isEqualToString:mediaAudioKey] || [url isEqualToString:mediaAudioLocalPath]) {
             [AVManager sharedManager].currentCell = cell;
+            NSLog(@"Found current cell (%ld)", (long)i);
+            return i;
         }
     }
+    return -1;
 }
+
+
+- (void)playNextCell{
+    //check if need to play next
+    if (!next) return;
+    
+    NSLog(@"Play next song");
+    NSInteger currentCellCount = [self seekCurrentCell];
+    if (currentCellCount < 0) {
+        NSLog(@"No matching cell found for current audio");
+        return;
+    }else if (currentCellCount < medias.count) {
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCellCount inSection:0]];
+            
+        [[AVManager sharedManager] playForCell:cell];
+    }else if(currentCellCount == medias.count && (--loopCount)>0 ){
+        //play the first if loopCount > 0
+        currentCellCount = 0;
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:currentCellCount inSection:0]];
+        [[AVManager sharedManager] playForCell:cell];
+    }else{
+        [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%d)", (long)currentCellCount, medias.count];
+    }
+}
+
 
 @end
 
@@ -448,27 +482,6 @@
     // TODO: Shake 之后做什么：
     // 解锁
 }
-
-#pragma mark - Notification actions
-- (void)nextVoice:(NSNotification *)notification{
-    NSString *song = [notification userInfo][@"track"];
-    NSLog(@"Received song %@ finish notification", song);
-    
-}
-
-//- (void)playNextCell{
-//    NSLog(@"Play next song");
-//    if (currentCell < medias.count) {
-//        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCell inSection:0]];
-//        if (!cell) {
-//            loopAllCells = NO;
-//        }else{
-//            
-//            [[AVManager sharedManager] playForCell:cell];
-//        }
-//    }
-//}
-
 
 
 @end

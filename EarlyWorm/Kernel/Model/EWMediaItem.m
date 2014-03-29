@@ -79,7 +79,7 @@
     self.imageKey = [SMBinaryDataConversion stringForBinaryData:imgData name:@"alarmImage.jpg" contentType:@"image/jpg"];
     //save and merge
     [context saveOnSuccess:^{
-        [context refreshObject:self mergeChanges:YES];
+        [self.managedObjectContext refreshObject:self mergeChanges:YES];
     } onFailure:^(NSError *error) {
         [NSException raise:@"Unable to save image" format:@"Reason: %@", error.description];
     }];

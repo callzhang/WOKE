@@ -60,8 +60,7 @@
 }
 
 - (void)initView {
-    
-    self.view.backgroundColor = kCustomGray;
+    self.view.backgroundColor = [UIColor clearColor];
     
     //UISegmentedControl
     UISegmentedControl *settingGroupController = [[UISegmentedControl alloc] initWithItems: @[@"Profile", @"Preference", @"About"]];
@@ -71,7 +70,13 @@
                                action:@selector(changeSettingGroup:)
                      forControlEvents:UIControlEventValueChanged];
     settingGroup = settingGroupProfile;
+    
+    //navigationItem
     self.navigationItem.titleView = settingGroupController;
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    self.navigationController.navigationBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStyleDone target:self action:@selector(onDone:)];
     
     //TableView
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
@@ -79,7 +84,7 @@
     _tableView.delegate = self;
     _tableView.backgroundColor = [UIColor clearColor];
     _tableView.backgroundView = nil;
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    _tableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.1];
     [self.view addSubview:_tableView];
 }
 
@@ -92,6 +97,11 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [_tableView reloadData];
+}
+
+#pragma mark - IBAction
+- (IBAction)onDone:(id)sender{
+    [self.presentingViewController dismissViewControllerWithBlurBackground:self];
 }
 
 #pragma mark - RingtongSelectionDelegate
@@ -362,10 +372,18 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if ([alertView.title isEqualToString:@"Log out"]) {
         if (buttonIndex == 1) {
-            //log out
-            [[EWUserManagement sharedInstance ] logout];
+            [self dismissViewControllerAnimated:YES completion:^{
+                //log out
+                [[EWUserManagement sharedInstance ] logout];
+            }];
+            
         }
     }
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    cell.backgroundColor = [UIColor clearColor];
+    cell.textLabel.textColor = [UIColor whiteColor];
 }
 
 @end

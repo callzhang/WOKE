@@ -28,6 +28,7 @@ extern NSDate *lastChecked;
 @property (nonatomic) NSManagedObjectModel *model;
 @property (nonatomic) SMCoreDataStore *coreDataStore;
 @property (nonatomic) dispatch_queue_t dispatch_queue;
+@property (nonatomic, retain) NSTimer *serverUpdateTimer;
 /**
  This is considered thread safe way to call context for current thread
  */
@@ -50,4 +51,8 @@ extern NSDate *lastChecked;
  */
 - (NSString *)localPathForUrl:(NSString *)url;
 
+- (void)updateCacheForKey:(NSString *)key withData:(NSData *)data;
+
+
+- (void)registerServerUpdateService;
 @end

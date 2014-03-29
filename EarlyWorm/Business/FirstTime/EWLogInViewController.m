@@ -163,7 +163,7 @@
     [[FBRequest requestForMe] startWithCompletionHandler:
      ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
          if (!error) {
-             EWPerson *oldUser = currentUser;
+             __block EWPerson *oldUser = currentUser;
              [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:fb_user.username onSuccess:^(NSDictionary *result) {
                  NSLog(@"Logged in facebook for:%@", fb_user.name);
                  

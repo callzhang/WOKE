@@ -22,6 +22,8 @@
 - (void)registerFacebook;
 - (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
 - (void)registerPushNotification;
+- (void)updateLastSeen;
+
 
 /**
  Login with username for cached coredata info
@@ -32,5 +34,8 @@
  Login with local plist or ADID
  */
 - (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
+
+
+
 
 @end

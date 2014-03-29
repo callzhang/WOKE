@@ -143,7 +143,7 @@
     //possible cell
     CGRect bounds = self.collectionView.bounds;
     CGPoint proposedCenter = CGPointMake(proposedContentOffset.x +bounds.size.width/2, proposedContentOffset.y + bounds.size.height/2);
-    NSLog(@"Proposed center (%f, %f)", proposedCenter.x, proposedCenter.y);
+    //NSLog(@"Proposed center (%f, %f)", proposedCenter.x, proposedCenter.y);
     CGRect proposedRect = CGRectMake(proposedCenter.x, proposedCenter.y, _hexagonSize.width, _hexagonSize.height);
     NSArray *possibleCells = [self layoutAttributesForElementsInRect:proposedRect];
     if (possibleCells.count == 0) {
@@ -160,10 +160,10 @@
         if (distance < minDist) {
             minDist = distance;
             newPoint = center;
-            NSLog(@"Candidate cell with distance of %f from (%f, %f)", distance, newPoint.x, newPoint.y);
+            //NSLog(@"Candidate cell with distance of %f from (%f, %f)", distance, newPoint.x, newPoint.y);
         }
     }
-    NSLog(@"Adjusted center to (%f, %f)", newPoint.x, newPoint.y);
+    //NSLog(@"Adjusted center to (%f, %f)", newPoint.x, newPoint.y);
     return CGPointMake(newPoint.x - bounds.size.width/2, newPoint.y - bounds.size.height/2);
 }
 @end

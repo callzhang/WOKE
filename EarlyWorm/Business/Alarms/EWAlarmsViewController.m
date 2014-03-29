@@ -66,8 +66,6 @@
         //
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskChangedNotification object:nil];//TODO: update specific alarm
-        //user KVO
-        [currentUser addObserver:self forKeyPath:@"profilePic" options:NSKeyValueObservingOptionNew context:NULL];
         //UI
         self.hidesBottomBarWhenPushed = NO;
     }
@@ -105,6 +103,10 @@
         
         //person
         allPeople = [[[EWPersonStore sharedInstance] everyone] mutableCopy];
+        
+        
+        //user KVO
+        [currentUser addObserver:self forKeyPath:@"profilePicKey" options:NSKeyValueObservingOptionNew context:NULL];
         
     }else{
         alarms = nil;
@@ -185,16 +187,16 @@
 }
 
 - (IBAction)profile:(id)sender {
-    if (!currentUser.facebook) {
-        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-        [loginVC loginInBackground];
-        
-    }else{
+//    if (!currentUser.facebook) {
+//        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+//        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+//        [loginVC loginInBackground];
+//        
+//    }else{
         EWPersonViewController *controller = [[EWPersonViewController alloc] init];
         controller.person = currentUser;
         [self presentViewController:controller animated:YES completion:NULL];
-    }
+//    }
     
     
 }
@@ -260,12 +262,19 @@
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+
     if ([object isKindOfClass:[EWPerson class]]) {
         NSLog(@"Observed change for user: %@", change);
-        if ([keyPath isEqualToString:@"profilePic"]) {
+        if ([keyPath isEqualToString:@"profilePicKey"]) {
             //profile updated
             self.profileImageView.image = currentUser.profilePic;
-            [self.view setNeedsDisplay];
+            [self.profileImageView setNeedsDisplay];
+            
+            //update cell
+            NSInteger i = [allPeople indexOfObject:currentUser];
+            EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+            cell.profilePic.image = currentUser.profilePic;
+            
         }else if ([keyPath isEqualToString:@"tasks"]){
             NSLog(@"KVO observed tasks changed");
         }else if ([keyPath isEqualToString:@"alarms"]){
@@ -316,7 +325,8 @@
         switch (buttonIndex) {
             case 0:{//Preference
                 EWSettingsViewController *controller = [[EWSettingsViewController alloc] initWithNibName:nil bundle:nil];
-                [self presentViewControllerWithBlurBackground:controller];
+                UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
+                [self presentViewControllerWithBlurBackground:nav];
                 break;
             }
                 

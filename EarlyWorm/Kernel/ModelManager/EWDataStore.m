@@ -157,7 +157,7 @@ NSDate *lastChecked;
     //refresh current user
     dispatch_async(dispatch_queue, ^{
         NSLog(@"1. refresh current user");
-        [context refreshObject:currentUser mergeChanges:YES];
+        [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
     });
     
     //check alarm, task, and local notif
@@ -250,6 +250,8 @@ NSDate *lastChecked;
     return data;
 }
 
+#pragma mark - local cache
+
 - (NSString *)localPathForUrl:(NSString *)url{
     if (url.length > 500) {
         NSLog(@"*** Something wrong with url, the url contains data");
@@ -264,6 +266,28 @@ NSDate *lastChecked;
     return path;
 }
 
-#pragma mark - other
+- (void)updateCacheForKey:(NSString *)key withData:(NSData *)data{
+    [FTWCache setObject:data forKey:key];
+    
+}
+
+#pragma mark - Timely sync
+- (void)registerServerUpdateService{
+    self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:serverUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:nil repeats:0];
+    
+}
+     
+- (void)serverUpdate:(NSTimer *)timer{
+    //services that need to run periodically
+    
+    //sync server
+    [self.coreDataStore syncWithServer];
+    
+    //lsat seen
+    [[EWUserManagement sharedInstance] updateLastSeen];
+    
+    //location
+    [[EWUserManagement sharedInstance] registerLocation];
+}
 
 @end

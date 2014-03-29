@@ -135,7 +135,10 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 }
 
 - (void)setPerson:(EWPerson *)p{
-    [context refreshObject:p mergeChanges:YES];
+    if ([p isFault]) {
+        [p.managedObjectContext refreshObject:p mergeChanges:YES];
+    }
+    
     person = p;
 }
 

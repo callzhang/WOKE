@@ -109,8 +109,8 @@
     request.predicate = predicate;
     SMRequestOptions *options = [SMRequestOptions options];
     options.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
-    NSArray *medias = [[[EWDataStore sharedInstance] currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:options error:NULL];
-    NSInteger mCount = medias.count;
+    [[[EWDataStore sharedInstance] currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:options error:NULL];
+    NSInteger mCount = task.medias.count;
     
     if (mCount > 0) {
         [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];

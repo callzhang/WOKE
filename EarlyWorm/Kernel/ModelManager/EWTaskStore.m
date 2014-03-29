@@ -46,7 +46,7 @@
     self = [super init];
     if (self) {
         NSLog(@"scheduled timely task checking");
-        [NSTimer timerWithTimeInterval:600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
+        //[NSTimer timerWithTimeInterval:600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -143,7 +143,10 @@
     request.predicate = [NSPredicate predicateWithFormat:@"ewtaskitem_id == %@", taskID];
     NSError *err;
     NSArray *tasks = [[EWDataStore sharedInstance].currentContext executeFetchRequestAndWait:request error:&err];
-    if (tasks.count != 1) NSLog(@"Error getting task from ID: %@. Error: %@", taskID, err.description);
+    if (tasks.count != 1) {
+        NSLog(@"Error getting task from ID: %@. Error: %@", taskID, err.description);
+        return nil;
+    }
     return tasks[0];
 }
 
@@ -204,7 +207,7 @@
                 
                 //check receiprocal relationship
                 if (![a.tasks containsObject:t]) {
-                    [context refreshObject:a mergeChanges:YES];
+                    [a.managedObjectContext refreshObject:a mergeChanges:YES];
                     NSLog(@"====Alarm->Task relation was not fetched. After refresh, alarm has %lu tasks=====", (unsigned long)a.tasks.count);
                 }
             }
@@ -318,7 +321,7 @@
 
 - (void)updateTaskTimeForAlarm:(EWAlarmItem *)a{
     if (!a.tasks.count) {
-        [context refreshObject:a mergeChanges:YES];
+        [a.managedObjectContext refreshObject:a mergeChanges:YES];
         NSLog(@"Alarm's tasks not fetched, refresh from server. New tasks relation has %lu tasks", (unsigned long)a.tasks.count);
     }
     NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
@@ -349,7 +352,7 @@
     
     if (!a.tasks.count){
         NSLog(@"alarm's task not fetched, refresh it from server");
-        [context refreshObject:a mergeChanges:YES];
+        [a.managedObjectContext refreshObject:a mergeChanges:YES];
     }
     
     for (EWTaskItem *t in a.tasks) {
@@ -360,13 +363,14 @@
 }
 
 - (void)updateTaskMedia:(NSNotification *)notif{
-    // NSString *mediaID = [notif userInfo][kPushMediaKey];
+    //NSString *mediaID = [notif userInfo][kPushMediaKey];
     NSString *taskID = [notif userInfo][kPushTaskKey];
+    if ([taskID isEqualToString:@""]) return;
     EWTaskItem *task = [self getTaskByID:taskID];
     //EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
     //NSAssert([task.medias containsObject:media], @"Media and Task should have relation");
     dispatch_async(dispatch_get_main_queue(), ^{
-        [context refreshObject:task mergeChanges:YES];
+        [task.managedObjectContext refreshObject:task mergeChanges:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{kPushTaskKey: task}];
     });
 }
@@ -553,7 +557,7 @@
     if (pastTasks.count > 0) {
         //change task relationship
         if ([currentUser isFault]) {
-            [context refreshObject:currentUser mergeChanges:YES];
+            [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
             NSLog(@"fetched user info from server");
         }
         for (EWTaskItem *t in pastTasks) {

@@ -33,6 +33,7 @@
     NSString *mediaID = notification[kPushMediaKey];
     NSString *personID = notification[kPushPersonKey];
     
+    
     if ([type isEqualToString:kPushTypeBuzzKey]) {
         // ============== Buzz ================
         NSLog(@"Received buzz from %@", personID);
@@ -44,6 +45,10 @@
             task = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser];
             taskID = task.ewtaskitem_id;
         }
+        if (!mediaID) {
+            mediaID = @"";
+        }
+        
         if (task.success) {
             //the buzz window has passed
             return;
@@ -99,7 +104,6 @@
         });
         
         //broadcast event
-        if (!taskID) taskID = @"";
         [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: taskID}];
         [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: taskID}];
         
