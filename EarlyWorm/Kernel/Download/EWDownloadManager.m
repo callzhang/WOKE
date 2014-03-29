@@ -17,14 +17,14 @@
 
 @interface EWDownloadManager(){}
 
-@property (nonatomic) EWTaskItem *task;
+//@property (nonatomic) EWTaskItem *task;
 @end
 
 @implementation EWDownloadManager
 @synthesize session;
 @synthesize downloadQueue;
 @synthesize backgroundSessionCompletionHandler;
-@synthesize task;
+//@synthesize task;
 @synthesize completionTask;
 
 + (EWDownloadManager *)sharedInstance{
@@ -98,7 +98,7 @@
 }
 
 - (void)downloadTask:(EWTaskItem *)t withCompletionHandler:(void (^)(void))block{
-    task = t;
+    //task = t;
     completionTask = block;
     for (EWMediaItem *mi in t.medias) {
         
@@ -175,8 +175,10 @@
     {
         NSLog(@"Task: %@ completed with error: %@", t, [error localizedDescription]);
     }
+    if (completionTask) {
+        completionTask();
+    }
     
-    completionTask();
 }
 
 /*
@@ -190,13 +192,11 @@
     
     
     //clear task
-    task = nil;
+    //task = nil;
     if (backgroundSessionCompletionHandler) {
         NSLog(@"All tasks are finished, completionHandler returned");
         backgroundSessionCompletionHandler();
     }
-    
-    
 }
 
 //Tells the delegate that the download task has resumed downloading. (required)

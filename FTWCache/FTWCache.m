@@ -67,7 +67,7 @@ static NSTimeInterval cacheTime =  (double)3600*24*30*12;  //1year
         //NSLog(@"Find cache path: %@ for Key: %@", path, key);
         return path;
     }
-    NSLog(@"Could not find local cache for remote content: %@", key);
+    //NSLog(@"Could not find local cache for remote content: %@", key);
     return nil;
 }
 

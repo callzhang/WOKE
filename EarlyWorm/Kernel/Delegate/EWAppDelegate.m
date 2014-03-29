@@ -132,7 +132,7 @@ UIViewController *rootViewController;
     
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+    myTimer = [NSTimer scheduledTimerWithTimeInterval:100 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
     NSLog(@"Scheduled background with time left: %f", application.backgroundTimeRemaining);
 #endif
     
@@ -224,6 +224,7 @@ UIViewController *rootViewController;
 //Keep alive
 - (void) keepAlive:(NSTimer *)paramSender{
     NSLog(@"=== Keep alive ===");
+    [[AVManager sharedManager] playSystemSound:[NSURL URLWithString:[[NSBundle mainBundle] pathForResource:@"tock" ofType:@"caf"]]];
     
     UIApplication *application = [UIApplication sharedApplication];
     

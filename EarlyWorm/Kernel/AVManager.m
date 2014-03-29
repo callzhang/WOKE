@@ -199,7 +199,11 @@
         [playlist addObject:path];
         
     }
-    [self playSoundFromFile:playlist.firstObject];
+    
+    if (playlist.firstObject) {
+        [self playMedia:];
+    }
+    
 }
 
 #pragma mark - UI event
