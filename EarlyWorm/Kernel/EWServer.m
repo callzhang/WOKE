@@ -196,6 +196,11 @@
     request.messageStructure = @"json";
     
     for (EWPerson *target in users) {
+        if (!target.aws_id) {
+            NSString *str = [NSString stringWithFormat:@"User (%@) doesn't have a valid push key to receive buzz", target.name];
+            EWAlert(str);
+            continue;
+        }
         request.targetArn = target.aws_id;
         if (!currentUser.aws_id) NSLog(@"Unable to send message: no AWS ID found on target:%@", target.username);
         NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);

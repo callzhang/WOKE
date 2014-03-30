@@ -51,8 +51,17 @@ extern NSDate *lastChecked;
  */
 - (NSString *)localPathForUrl:(NSString *)url;
 
+//Update the data for key
 - (void)updateCacheForKey:(NSString *)key withData:(NSData *)data;
 
+//check cache data
+- (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key;
 
+
+/**
+ * Register the server update process, which will run periodically to sync with server data
+ */
 - (void)registerServerUpdateService;
+
+
 @end

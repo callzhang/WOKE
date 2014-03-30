@@ -18,6 +18,7 @@
 #import "StackMob.h"
 #import "EWDataStore.h"
 #import "NSString+MD5.h"
+#import "EWDownloadManager.h"
 
 @implementation EWPerson
 @synthesize achievements;
@@ -72,7 +73,20 @@
 - (UIImage *)profilePic{
     if (!profilePic) {
         profilePic = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.profilePicKey]];
+        
+    }else{
+        NSDate *modDate = [[EWDataStore sharedInstance] lastModifiedDateForObjectAtKey:self.profilePicKey];
+        if([modDate isOutDated]){
+            [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:self.profilePicKey] withCompletionBlock:^(NSData *data) {
+                UIImage *img = [UIImage imageWithData:data];
+                if (![profilePic isEqual:img]) {
+                    self.profilePic = img;
+                }
+            }];
+        }
     }
+    
+    
     return profilePic;
 }
 
@@ -96,6 +110,16 @@
 - (UIImage *)bgImage{
     if (!bgImage) {
         bgImage = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.bgImageKey]];
+    }else{
+        NSDate *modDate = [[EWDataStore sharedInstance] lastModifiedDateForObjectAtKey:self.bgImageKey];
+        if([modDate isOutDated]){
+            [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:self.bgImageKey] withCompletionBlock:^(NSData *data) {
+                UIImage *img = [UIImage imageWithData:data];
+                if (![bgImage isEqual:img]) {
+                    self.bgImage = img;
+                }
+            }];
+        }
     }
     return bgImage;
 }

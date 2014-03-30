@@ -252,15 +252,15 @@ NSDate *lastChecked;
 
 #pragma mark - local cache
 
-- (NSString *)localPathForUrl:(NSString *)url{
-    if (url.length > 500) {
+- (NSString *)localPathForKey:(NSString *)key{
+    if (key.length > 500) {
         NSLog(@"*** Something wrong with url, the url contains data");
         return nil;
     }
-    NSString *path = [FTWCache localPathForKey:url.MD5Hash];
+    NSString *path = [FTWCache localPathForKey:key.MD5Hash];
     if (!path) {
         //not in local, need to download
-        [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:url]];
+        [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:key]];
         return nil;
     }
     return path;
@@ -269,6 +269,18 @@ NSDate *lastChecked;
 - (void)updateCacheForKey:(NSString *)key withData:(NSData *)data{
     [FTWCache setObject:data forKey:key];
     
+}
+
+- (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSString *path = [self localPathForKey:key];
+	
+	if ([fileManager fileExistsAtPath:path])
+	{
+		NSDate *modificationDate = [[fileManager attributesOfItemAtPath:path error:nil] objectForKey:NSFileModificationDate];
+        return modificationDate;
+    }
+    return nil;
 }
 
 #pragma mark - Timely sync

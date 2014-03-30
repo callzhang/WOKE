@@ -26,6 +26,7 @@
 @synthesize backgroundSessionCompletionHandler;
 //@synthesize task;
 @synthesize completionTask;
+@synthesize completionTaskQueue;
 
 + (EWDownloadManager *)sharedInstance{
     static EWDownloadManager *manager;
@@ -33,9 +34,11 @@
     dispatch_once(&onceToken, ^{
         manager = [[EWDownloadManager alloc] init];
         manager.downloadQueue = [[NSMutableDictionary alloc] init];
+        manager.completionTaskQueue = [[NSMutableDictionary alloc] init];
     });
     return manager;
 }
+
 
 - (NSURLSession *)session{
     if (session == nil) {
@@ -67,6 +70,14 @@
     [downloadTask resume];
     
     NSLog(@"Url download task dispatched %@", Url);
+}
+
+- (void)downloadUrl:(NSURL *)Url withCompletionBlock:(void (^)(NSData *data))block{
+    //assign
+    [completionTaskQueue setObject:block forKey:Url];
+    
+    //dispatch
+    [self downloadUrl:Url];
 }
 
 - (void)downloadMedia:(EWMediaItem *)media{
@@ -140,6 +151,18 @@
     NSURLRequest *request = downloadTask.originalRequest;
     NSString *str = request.URL.absoluteString;
     NSString *keyHash = [str MD5Hash];
+    
+    //save
+    [FTWCache setObject:data forKey:keyHash];
+    NSLog(@"Set FTW cache for %@", keyHash);
+    
+    //completion task
+    void (^completionBlock)(NSData *data) = completionTaskQueue[str];
+    if (completionBlock) {
+        NSLog(@"Excuting block for url task: %@", str);
+        completionBlock(data);
+    }
+    
     //media
     EWMediaItem *mi = downloadQueue[request.URL.absoluteString];
     if (mi) {
@@ -148,9 +171,6 @@
         [downloadQueue removeObjectForKey:str];
     }
     
-    //save
-    [FTWCache setObject:data forKey:keyHash];
-    NSLog(@"Set FTW cache for %@", keyHash);
     
     
 }
