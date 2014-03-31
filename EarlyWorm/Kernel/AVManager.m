@@ -456,7 +456,7 @@ void RouteChangeListener(	void *inClientData,
     if (!path) {
         soundUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"new" ofType:@"caf"]];
     }else{
-        if ([path isFileURL]) {
+        if ([path isFileURL] || ![path.absoluteString hasPrefix:@"http"]) {
             //local file
             soundUrl = path;
         }else{

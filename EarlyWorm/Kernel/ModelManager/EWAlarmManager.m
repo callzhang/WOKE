@@ -30,7 +30,7 @@
 + (EWAlarmManager *)sharedInstance {
     BOOL mainThread = [NSThread isMainThread];
     if (!mainThread) {
-        NSLog(@"**** ALARM Store not on main thread ****");
+        NSLog(@"**** Alarm Store not on main thread ****");
     }
     
     static EWAlarmManager *g_alarmManager = nil;

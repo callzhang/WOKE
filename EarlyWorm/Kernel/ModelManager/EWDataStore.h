@@ -25,6 +25,7 @@ extern SMPushClient *pushClient;
 extern AmazonSNSClient *snsClient;
 //extern NSDate *lastChecked;
 
+@class EWPerson;
 @interface EWDataStore : NSObject
 
 @property (nonatomic, retain) NSManagedObjectContext *context;
@@ -86,4 +87,9 @@ extern AmazonSNSClient *snsClient;
  * User obj's id to fetch from server on another thread
  */
 + (NSManagedObject *)refreshObjectWithServer:(NSManagedObject *)obj;
+
+/**
+ * The thread safe way to get current user
+ */
++ (EWPerson *)user;
 @end

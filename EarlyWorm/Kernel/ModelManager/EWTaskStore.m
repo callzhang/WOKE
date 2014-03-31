@@ -52,7 +52,7 @@
 - (id)init{
     self = [super init];
     if (self) {
-        NSLog(@"scheduled timely task checking");
+        //NSLog(@"scheduled timely task checking");
         //[NSTimer timerWithTimeInterval:600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
     }
     return self;
@@ -94,10 +94,10 @@
         //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         request.predicate = predicate1;
         
-        if (![NSThread isMainThread]) NSLog(@"Fetch on other thread");
+        if (![NSThread isMainThread]) NSLog(@"**** Fetch on other thread");
         
         tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
-        
+        Cannot retrieve referenceObject from an objectID that was not created by this store
     }
     //sort
     [tasks valueForKey:@"time"];
@@ -159,63 +159,50 @@
 //schedule new task in the future
 - (NSArray *)scheduleTasks{
     NSLog(@"Start scheduling tasks");
-    //forfeit if no alarm scheduled
-    if (EWAlarmManager.sharedInstance.allAlarms.count == 0 && _allTasks.count == 0) {
+    
+    //check necessity
+    NSMutableArray *tasks = [self.allTasks mutableCopy];
+    if (EWAlarmManager.sharedInstance.allAlarms.count == 0 && tasks.count == 0) {
+        NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
         return nil;
     }
-    NSMutableArray *tasks = [_allTasks mutableCopy];
-    //need to schedule tasks
-//    NSDate *lastTime;
-//    if (tasks.count == 0) {
-//        lastTime = [NSDate date];
-//        tasks = [[NSMutableArray alloc] init];
-//    } else {
-//        tasks = [[tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]] mutableCopy];
-//        EWTaskItem *lastTask = [tasks lastObject];
-//        lastTime = lastTask.time;
-//    }
+    
     //for each alarm, find matching task, or create new task
     BOOL newTaskNotify = NO;
     NSArray *alarms = [[NSArray alloc] initWithArray:EWAlarmManager.sharedInstance.allAlarms];
+    NSMutableArray *goodTasks = [[NSMutableArray alloc] init];
     
-    for (EWAlarmItem *a in alarms){
+    for (EWAlarmItem *a in alarms){//loop through alarms
         
         for (unsigned i=0; i<nWeeksToScheduleTask; i++) {//loop for week
+            
             //next time for alarm, this is what the time should be there
             NSDate *time = [a.time nextOccurTime:i];
-            BOOL taskWithTimeFound = NO;
+            
             //loop through the tasks to verify the target time has been scheduled
             for (EWTaskItem *t in tasks) {
                 if ([t.time isEqualToDate:time]) {
-                    //find the task
-                    taskWithTimeFound = YES;
+                    //find the task, move to good task
+                    [goodTasks addObject:t];
+                    [tasks removeObject:t];
+                    //break here to avoid creating new task
                     break;
                 }
             }
             
-            //if ([lastTime isEarlierThan:time]) {//if last task is out dated
-            
-            if (!taskWithTimeFound) {
-                NSLog(@"Task with time: %@ has not been found, creating!", time);
-                //new task
-                EWTaskItem *t = [self newTask];
-                t.time = time;
-                t.alarm = a;
-                t.owner = a.owner;
-                t.state = a.state;
-                [tasks addObject:t];
-                //localNotif
-                [self scheduleNotificationForTask:t];
-                //prepare to broadcast
-                newTaskNotify = YES;
-                
-                //check receiprocal relationship
-                if (![a.tasks containsObject:t]) {
-                    //[context refreshObject:a mergeChanges:YES];
-                    [EWDataStore refreshObjectWithServer:a];
-                    NSLog(@"====Alarm->Task relation was not fetched. After refresh, alarm has %lu tasks=====", (unsigned long)a.tasks.count);
-                }
-            }
+            //start scheduling task
+            NSLog(@"Task with time: %@ has not been found, creating!", time);
+            //new task
+            EWTaskItem *t = [self newTask];
+            t.time = time;
+            t.alarm = a;
+            t.owner = a.owner;
+            t.state = a.state;
+            [goodTasks addObject:t];
+            //localNotif
+            [self scheduleNotificationForTask:t];
+            //prepare to broadcast
+            newTaskNotify = YES;
         }
     }
     if (newTaskNotify) {
@@ -228,12 +215,14 @@
     
     
     //nullify old task's relation to alarm
-    /*
+    
     NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
-    NSArray *outDatedTasks = [_allTasks filteredArrayUsingPredicate:old];
+    NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
     for (EWTaskItem *t in outDatedTasks) {
         t.alarm = NULL;
-    }*/
+        t.pastOwner = currentUser;
+        
+    }
     
     //save to _allTasks
     _allTasks = tasks;

@@ -119,7 +119,7 @@
                     //[context refreshObject:currentUser mergeChanges:YES];
                     //[EWDataStore refreshObjectWithServer:currentUser];
                     //completion block
-                    NSLog(@"[c] Run completion block.");
+                    NSLog(@"[d] Run completion block.");
                     completionBlock();
                 });
             }
@@ -128,7 +128,7 @@
         }
         
         //Broadcast user login event
-        NSLog(@"[d] Broadcast Person login notification");
+        NSLog(@"[c] Broadcast Person login notification");
         [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
         
         //login to fb

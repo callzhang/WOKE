@@ -7,7 +7,7 @@
 //
 
 #import "FTWCache.h"
-#import "NSString+MD5.h"
+//#import "NSString+MD5.h"
 
 static NSTimeInterval cacheTime =  (double)3600*24*30*12;  //1year
 

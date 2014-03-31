@@ -244,7 +244,7 @@ AmazonSNSClient *snsClient;
     NSData *data = nil;
     
     //local file
-    if ([[NSURL URLWithString:key] isFileURL]) {
+    if ([[NSURL URLWithString:key] isFileURL] || ![key hasPrefix:@"http"]) {
         NSLog(@"Is local file path, return data directly");
         data = [NSData dataWithContentsOfFile:key];
         return data;
@@ -338,16 +338,20 @@ AmazonSNSClient *snsClient;
         [self.coreDataStore syncWithServer];
         
         //lsat seen
-        NSLog(@"scheduled update last seen recurring task");
+        NSLog(@"update last seen recurring task");
         [[EWUserManagement sharedInstance] updateLastSeen];
         
         //location
-        NSLog(@"scheduled update location recurring task");
+        NSLog(@"update location recurring task");
         [[EWUserManagement sharedInstance] registerLocation];
         
         //profilePic & bgImg
+        NSLog(@"Update profile pic recurring task");
         [[EWUserManagement sharedInstance] checkUserCache];
-
+        
+        //check task
+        NSLog(@"Update task recurring task");
+        [[EWTaskStore sharedInstance] scheduleTasks];
     });
     
 }
@@ -370,23 +374,29 @@ AmazonSNSClient *snsClient;
 }
 
 
-#pragma mark - Core Data concuurent
+#pragma mark - Core Data with multithreading
 + (void)saveDataInContext:(void(^)(NSManagedObjectContext *currentContext))block
 {
 	NSManagedObjectContext *currentContext = [EWDataStore sharedInstance].coreDataStore.contextForCurrentThread;
 	[currentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-    
 	[context setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
 	[context observeContext:currentContext];
     
-	block(currentContext);
-	if ([currentContext hasChanges])
-	{
+    //execute change block
+    if (block) {
+        block(currentContext);
+    }
+	
+    //save
+	if ([currentContext hasChanges]){
+        //commit save to background context
 		[currentContext saveOnSuccess:^{
             NSLog(@"Background change saved to context");
         }onFailure:^(NSError *error) {
             NSLog(@"Save in background thread context failed");
         }];
+        //revert the default merge policy for main context
+        [context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
 	}
 }
 
@@ -395,11 +405,11 @@ AmazonSNSClient *snsClient;
 	dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
 		[self saveDataInContext:saveBlock];
         
-        dispatch_sync(dispatch_get_main_queue(), ^{
-			completion();
-            //revert the default merge policy for main context
-            [context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-		});
+        if (completion) {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                completion();
+            });
+        }
 	});
 }
 
@@ -410,7 +420,18 @@ AmazonSNSClient *snsClient;
             NSLog(@"Fetched obj at background: %@", newObj.objectID);
         }];
     });
+    
+    NSAssert([obj.managedObjectContext isEqual:[EWDataStore currentContext]], @"Current context is not equal to obj's context");
+    
     obj = [obj.managedObjectContext objectWithID:obj.objectID];
     return obj;
+}
+
++ (EWPerson *)user{
+    if ([NSThread isMainThread]) {
+        return currentUser;
+    }else{
+        
+    }
 }
 @end
