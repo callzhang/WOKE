@@ -59,7 +59,7 @@
         NSLog(@"Url is local file");
         return;
     }else if ([FTWCache objectForKey:Url.absoluteString.MD5Hash]){
-        NSLog(@"Url already cached");
+        //NSLog(@"Url already cached");
         return;
     }
     

@@ -56,15 +56,6 @@
 - (void)stopAllPlaying;
 
 /**
- *Register self as the first responder for remote control event
- */
-- (void)prepareRemoteControlEventsListener;
-/**
- *Resign self as the first responder for remote control event
- */
-- (void)resignRemoteControlEventsListener;
-
-/**
  *register for AudioSession
  */
 - (void)registerAudioSession;
@@ -75,5 +66,21 @@
 - (void)playAvplayerWithURL:(NSURL *)url;
 
 - (void)playSystemSound:(NSURL *)path;
+
+
+
+/**
+ Display the playing info to lock screen
+ */
+- (void)displayNowPlayingInfoToLockScreen:(EWMediaItem *)media;
+
+///**
+// *Register self as the first responder for remote control event
+// */
+//- (void)prepareRemoteControlEventsListener;
+///**
+// *Resign self as the first responder for remote control event
+// */
+//- (void)resignRemoteControlEventsListener;
 
 @end

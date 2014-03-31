@@ -10,7 +10,8 @@
 #import "EWDataStore.h"
 #import "SMPushClient.h"
 #import "EWAppDelegate.h"
-#import <CoreLocation/CoreLocation.h>
+#import "EWDownloadManager.h"
+@import CoreLocation;
 
 //model
 #import "EWPerson.h"
@@ -50,6 +51,7 @@
         //fetch user in coredata cache(offline) with related objects
         [client getLoggedInUserOnSuccess:^(NSDictionary *result) {
             
+            NSLog(@"[a]Get SM logged in user: %@", result[@"username"]);
             [self loginWithCachedDataStore:result[@"username"] withCompletionBlock:^{}];
             
             
@@ -90,33 +92,34 @@
     userFetch.returnsObjectsAsFaults = NO;
     
     //cache only
-    SMRequestOptions *options = [SMRequestOptions options];
-    options.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
+    __block SMRequestOptions *options = [EWDataStore optionFetchCacheElseNetwork];
     
     //fetch
-    [context executeFetchRequest:userFetch returnManagedObjectIDs:NO successCallbackQueue:nil failureCallbackQueue:nil options:options onSuccess:^(NSArray *results) {
+    [[EWDataStore currentContext] executeFetchRequest:userFetch returnManagedObjectIDs:NO successCallbackQueue:nil failureCallbackQueue:nil options:[EWDataStore optionFetchCacheElseNetwork] onSuccess:^(NSArray *results) {
         
         if (results.count == 0) {
             
             NSLog(@"No local user for %@, fetch from server", username);
-            NSArray *newResult = [context executeFetchRequestAndWait:userFetch error:NULL];
+            options = [EWDataStore optionFetchNetworkElseCache];
+            NSArray *newResult = [[EWDataStore currentContext] executeFetchRequestAndWait:userFetch error:NULL];
             currentUser = newResult[0];
             
             //completion block
             completionBlock();
         }else{
             //contineue user log in tasks
-            NSLog(@"UserManagement: User %@ data has fetched from cache", username);
+            NSLog(@"[b] User %@ data has fetched from cache as {CurrentUser}", username);
             
-            //merge changes
+            //set current user
             currentUser = results[0];
             
             //background refresh
             if (completionBlock) {
-                dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-                    [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    //[context refreshObject:currentUser mergeChanges:YES];
+                    //[EWDataStore refreshObjectWithServer:currentUser];
                     //completion block
-                    NSLog(@"Run completion block after fb_user -> coredata_user");
+                    NSLog(@"[c] Run completion block.");
                     completionBlock();
                 });
             }
@@ -124,10 +127,8 @@
             
         }
         
-        //check alarms and tasks
-        //[[EWDataStore sharedInstance] checkAlarmData];
-        
         //Broadcast user login event
+        NSLog(@"[d] Broadcast Person login notification");
         [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
         
         //login to fb
@@ -141,7 +142,11 @@
         // Reset local session info
         [client.session clearSessionInfo];
         // fetch remote
-        [context executeFetchRequest:userFetch onSuccess:^(NSArray *results) {
+        options = [EWDataStore optionFetchNetworkElseCache];
+        [[EWDataStore currentContext] executeFetchRequest:userFetch
+                                   returnManagedObjectIDs:NO successCallbackQueue:nil
+                                     failureCallbackQueue:nil options:options
+                                                onSuccess:^(NSArray *results) {
             
             //assign current user
             if (results.count == 1) {
@@ -207,7 +212,7 @@
         [defaults setObject:password forKey:@"password"];
         
         //save new user
-        [context saveOnSuccess:^{
+        [[EWDataStore currentContext] saveOnSuccess:^{
             NSLog(@"New user %@ created", newMe.username);
             
             //login
@@ -266,14 +271,26 @@
 
 #pragma mark - userLoginEventHandler
 - (void)userLoginEventHandler{
-    
+    NSLog(@"[%s]", __func__);
     [self registerAPNS];
     [self registerLocation];
     [self updateLastSeen];
-    //update data with timely updates
-    [[EWDataStore sharedInstance] registerServerUpdateService];
 
 }
+
+#pragma mark - PUSH
+
+- (void)registerAPNS{
+    //push
+#if TARGET_IPHONE_SIMULATOR
+    //Code specific to simulator
+#else
+    //pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
+    //register everytime in case for events like phone replacement
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
+#endif
+}
+
 
 #pragma mark - location
 - (void)registerLocation{
@@ -294,8 +311,8 @@
             } else {
                 NSLog(@"%@", error.debugDescription);
             }
-            [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
-            
+            //[context refreshObject:currentUser mergeChanges:YES];
+            [[EWDataStore sharedInstance].coreDataStore syncWithServer];
 
         }];
         
@@ -308,7 +325,6 @@
 
 #pragma mark - Last seen
 - (void)updateLastSeen{
-    NSLog(@"scheduled update last seen recurring task");
     
     if (currentUser) {
         currentUser.lastSeenDate = [NSDate date];
@@ -320,18 +336,6 @@
     }
 }
 
-#pragma mark - PUSH
-
-- (void)registerAPNS{
-    //push
-#if TARGET_IPHONE_SIMULATOR
-    //Code specific to simulator
-#else
-    pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
-    //register everytime in case for events like phone replacement
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
-#endif
-}
 
 - (void)registerPushNotification{
     //register notification, need both token and user ready
@@ -405,7 +409,7 @@
         [currentUser.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
             NSLog(@"%s: failed to save profile pic when requesting from facebook", __func__);
         }];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonProfilePicDownloaded object:self userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonProfileNewNotification object:self userInfo:nil];
     }];
     [operation start];
     //broadcasting
@@ -446,6 +450,43 @@
 -  (void)didReceiveWeiboSDKResponse:(id)JsonObject err:(NSError *)error {
     EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
     [weiboManager didReceiveWeiboSDKResponse:JsonObject err:error];
+}
+
+#pragma mark - check
+- (void)checkUserCache{
+    NSArray *allPerson = [EWPersonStore sharedInstance].everyone;
+    for (__block EWPerson *person in allPerson) {
+        
+        NSDate *modDate = [[EWDataStore sharedInstance] lastModifiedDateForObjectAtKey:person.profilePicKey];
+        if([modDate isOutDated] && [modDate isEarlierThan:person.lastmoddate]){
+            [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:person.profilePicKey] withCompletionBlock:^(NSData *data) {
+                UIImage *img = [UIImage imageWithData:data];
+                if (![person.profilePic isEqual:img]) {
+                    //found change
+                    NSLog(@"Found updated profile for user: %@", person.name);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        person.profilePic = img;
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonProfileNewNotification object:person userInfo:@{@"person": person}];
+                    });
+                    
+                }
+            }];
+        }
+        
+        modDate = [[EWDataStore sharedInstance] lastModifiedDateForObjectAtKey:person.bgImageKey];
+        if([modDate isOutDated]){
+            [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:person.bgImageKey] withCompletionBlock:^(NSData *data) {
+                UIImage *img = [UIImage imageWithData:data];
+                if (![person.bgImage isEqual:img]) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        person.bgImage = img;
+                    });
+                    
+                }
+            }];
+        }
+
+    }
 }
 
 

@@ -16,7 +16,7 @@
 /**
  Contains all tasks scheduled as alarm for current user
  */
-@property (retain, nonatomic) NSMutableArray *allTasks;
+@property (retain, nonatomic) NSArray *allTasks;
 
 + (EWTaskStore *)sharedInstance;
 //find

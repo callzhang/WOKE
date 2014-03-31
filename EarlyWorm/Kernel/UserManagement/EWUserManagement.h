@@ -35,7 +35,10 @@
  */
 - (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
 
-
+/**
+ 
+ */
+- (void)checkUserCache;
 
 
 @end

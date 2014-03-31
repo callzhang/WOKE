@@ -20,6 +20,11 @@
 //@synthesize context;
 
 +(EWMediaStore *)sharedInstance{
+    BOOL mainThread = [NSThread isMainThread];
+    if (!mainThread) {
+        NSLog(@"**** Media Store not on main thread ****");
+    }
+    
     static EWMediaStore *sharedStore_ = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -57,7 +62,7 @@
     //PFFile *f = [PFFile fileWithName:vmName contentsAtPath:[[NSBundle mainBundle] pathForResource:nameArray[0] ofType:nameArray[1]]];
     m.audioKey = vmName;
      */
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Media created");
     } onFailure:^(NSError *error) {
         //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
@@ -71,7 +76,7 @@
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"EWMediaItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"ewmediaitem_id == %@", mediaID];
     NSError *err;
-    NSArray *medias = [[EWDataStore sharedInstance].currentContext executeFetchRequestAndWait:request error:&err];
+    NSArray *medias = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:&err];
     if (medias.count == 0) NSLog(@"Could not fetch media for ID: %@, error: %@", mediaID, err.description);
     return medias[0];
 }
@@ -81,7 +86,7 @@
     request.predicate = [NSPredicate predicateWithFormat:@"author == %@", person];
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"createddate" ascending:YES]];
     NSError *err;
-    return [context executeFetchRequestAndWait:request error:&err];
+    return [[EWDataStore currentContext] executeFetchRequestAndWait:request error:&err];
 }
 
 - (NSArray *)mediasForPerson:(EWPerson *)person{
@@ -99,9 +104,9 @@
     EWPerson *me = currentUser;
     NSArray *medias = [self mediaCreatedByPerson:me];
     for (EWMediaItem *m in medias) {
-        [context deleteObject:m];
+        [[EWDataStore currentContext] deleteObject:m];
     }
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"All media for person: %@ has been purged", me.name);
     } onFailure:^(NSError *error) {
         [NSException raise:@"Unable to delete media" format:@"Reason: %@", error.description];

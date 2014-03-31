@@ -46,42 +46,31 @@
 }
 
 - (UIImage *)image{
-    if (!image) {
-        __block UIImage *img;
-        if ([SMBinaryDataConversion stringContainsURL:self.imageKey]) {
-            //read from URL
-            NSURL* imageURL = [NSURL URLWithString:self.imageKey];
-            
-            NSString *key = [imageURL.absoluteString MD5Hash];
-            NSData *data = [FTWCache objectForKey:key];
-            if (data) {
-                //data in cache
-                img = [UIImage imageWithData:data];
-                
-            } else {
-                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
-                dispatch_async(queue, ^{
-                    NSData *data = [NSData dataWithContentsOfURL:imageURL];
-                    [FTWCache setObject:data forKey:key];
-                    img = [UIImage imageWithData:data];
-                });
-            }
-        } else {
-            img = [UIImage imageWithData:[SMBinaryDataConversion dataForString:self.imageKey]];
-        }
-        image = img;
+    if (!self.imageKey || [self.imageKey isEqualToString:@""]) {
+        return nil;
     }
+    
+    if (!image) {
+        image = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.audioKey]];
+    }
+    
     return image;
 }
 
-- (void)setImage:(UIImage *)img{
-    NSData *imgData = UIImageJPEGRepresentation(img, 0.7);
-    self.imageKey = [SMBinaryDataConversion stringForBinaryData:imgData name:@"alarmImage.jpg" contentType:@"image/jpg"];
-    //save and merge
-    [context saveOnSuccess:^{
-        [self.managedObjectContext refreshObject:self mergeChanges:YES];
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Unable to save image" format:@"Reason: %@", error.description];
+- (void)setImage:(UIImage *)img{ 
+    
+    //update memory
+    image = img;
+    
+    NSData *picData = UIImagePNGRepresentation(img);
+    //update cache
+    [[EWDataStore sharedInstance] updateCacheForKey:self.imageKey withData:picData];
+    
+    //update server
+    self.imageKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"media.png" contentType:@"image/png"];
+    
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"Image not saved");
     }];
 }
 

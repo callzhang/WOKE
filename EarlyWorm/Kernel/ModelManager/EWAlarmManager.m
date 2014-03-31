@@ -28,13 +28,15 @@
 //@synthesize context;
 
 + (EWAlarmManager *)sharedInstance {
+    BOOL mainThread = [NSThread isMainThread];
+    if (!mainThread) {
+        NSLog(@"**** ALARM Store not on main thread ****");
+    }
+    
     static EWAlarmManager *g_alarmManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         g_alarmManager = [[EWAlarmManager alloc] init];
-        //notification
-        //[[NSNotificationCenter defaultCenter] addObserver:g_alarmManager selector:@selector(loginCheck) name:kPersonLoggedIn object:Nil];
-        //[[NSNotificationCenter defaultCenter] addObserver:g_alarmManager selector:@selector(logOut) name:kPersonLoggedOut object:Nil];
     }); 
     
     return g_alarmManager;
@@ -45,9 +47,6 @@
 
 - (NSMutableArray *)allAlarms{
     _allAlarms = [[currentUser.alarms allObjects] mutableCopy];
-    //sort
-    //NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
-    //[_allAlarms sortUsingDescriptors:@[sort]];
     
     _allAlarms = [[_allAlarms sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         NSInteger wkd1 = [(EWAlarmItem *)obj1 time].weekdayNumber;
@@ -75,7 +74,7 @@
     a.owner = currentUser; //also sets the reverse
     
     //save
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         //NSLog(@"EWAlarmItem saved successfully");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error saving EWAlarmItem" format:@"Reason: %@", error.description];
@@ -92,8 +91,7 @@
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWAlarmItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
     request.relationshipKeyPathsForPrefetching = @[@"tasks"];
-    NSArray *alarms = [context executeFetchRequestAndWait:request error:NULL];
-    //user.alarms = [NSSet setWithArray:alarms];
+    NSArray *alarms = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
     return alarms;
 }
 
@@ -118,7 +116,7 @@
     //check excess
     if (alarms.count > 7) {
         [self deleteAllAlarms];
-        [context saveAndWait:NULL];
+        [[EWDataStore currentContext] saveAndWait:NULL];
     }
     
     //schedule alarm from Sunday to Saturday of current week
@@ -163,7 +161,7 @@
         //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmsAllNewNotification object:self userInfo:nil];
     }
     //save all alarms
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         //
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error in saving Alarms" format:@"Error:%@", error.description];
@@ -175,11 +173,11 @@
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"tasks":alarm.tasks}];
-    [context deleteObject:alarm];
+    [[EWDataStore currentContext] deleteObject:alarm];
     for (EWTaskItem *t in alarm.tasks) {
-        [context deleteObject:t];
+        [[EWDataStore currentContext] deleteObject:t];
     }
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Alarm deleted");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error in deleting Alarm" format:@"Alarm:%@", alarm];
@@ -190,13 +188,13 @@
     NSMutableArray *tasksToDelete = [[NSMutableArray alloc] initWithCapacity:self.allAlarms.count * nWeeksToScheduleTask];
     for (EWAlarmItem *alarm in self.allAlarms) {
         [tasksToDelete addObject:alarm.tasks];
-        [context deleteObject:alarm];
+        [[EWDataStore currentContext] deleteObject:alarm];
     }
     //notification
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"tasks":tasksToDelete}];
     //save
     NSError *err;
-    [context saveAndWait:&err];
+    [[EWDataStore currentContext] saveAndWait:&err];
 }
 
 #pragma mark - CHECK

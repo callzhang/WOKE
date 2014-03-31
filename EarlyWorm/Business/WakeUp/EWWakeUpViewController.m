@@ -325,11 +325,11 @@
         //remove from task relation
         if (task) {
             [task removeMediasObject:mi];
-            [context saveOnSuccess:^{
+            [[EWDataStore currentContext] saveOnSuccess:^{
                 [self initData];//refresh
-                [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+                [rootViewController.view showSuccessNotification:@"Deleted"];
             } onFailure:^(NSError *error) {
-                [NSException raise:@"Unable to delete the row" format:@"Reason: %@", error.description];
+                [rootViewController.view showNotification:@"Failed to delete" WithStyle:hudStyleFailed];
             }];
         }else{
             /*
@@ -360,18 +360,9 @@
                     [t removeMediasObject:mi];
                     [context saveOnSuccess:^{
                         [self initData];//refresh
-                        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-                        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-                        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-                        hud.mode = MBProgressHUDModeCustomView;
-                        hud.labelText = @"Sent";
-                        [hud hide:YES afterDelay:1.5];
+                        [rootViewController.view showSuccessNotification:@"Deleted"];
                     } onFailure:^(NSError *error) {
-                        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-                        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-                        hud.mode = MBProgressHUDModeCustomView;
-                        hud.labelText = @"Failed";
-                        [hud hide:YES afterDelay:1.5];
+                        [rootViewController.view showNotification:@"Failed" WithStyle:hudStyleFailed];
                     }];
                 }
             }
@@ -429,7 +420,7 @@
     for (unsigned i = 0; i < medias.count; i++) {
         EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
         NSString *mediaAudioKey = cell.media.audioKey;
-        NSString *mediaAudioLocalPath = [[EWDataStore sharedInstance] localPathForUrl:mediaAudioKey];
+        NSString *mediaAudioLocalPath = [[EWDataStore sharedInstance] localPathForKey:mediaAudioKey];
         if ([url isEqualToString:mediaAudioKey] || [url isEqualToString:mediaAudioLocalPath]) {
             [AVManager sharedManager].currentCell = cell;
             NSLog(@"Found current cell (%ld)", (long)i);

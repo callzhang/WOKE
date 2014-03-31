@@ -67,7 +67,7 @@
 
 - (void)updateCell:(NSNotification *)notification{
     NSString *path = notification.userInfo[kAudioPlayerNextPath];
-    NSString *localPath = [[EWDataStore sharedInstance] localPathForUrl:media.audioKey];
+    NSString *localPath = [[EWDataStore sharedInstance] localPathForKey:media.audioKey];
     if ([path isEqualToString:localPath] || [path isEqualToString:media.audioKey]) {
         //matched media cell with playing path
         [AVManager sharedManager].currentCell = self;

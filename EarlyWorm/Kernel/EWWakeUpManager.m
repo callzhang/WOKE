@@ -69,7 +69,7 @@
             [task addWakerObject:sender];
             //add buzzer
             [task addBuzzer:sender atTime:[NSDate date]];
-            [context saveOnSuccess:^{
+            [[EWDataStore currentContext] saveOnSuccess:^{
                 //
             } onFailure:^(NSError *error) {
                 NSLog(@"Unable to save: %@", error.description);
@@ -166,7 +166,7 @@
                     EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:currentUser];
                     [task removeMediasObject:media];
                     [nextTask addMediasObject:media];
-                    [context saveOnSuccess:^{
+                    [[EWDataStore currentContext] saveOnSuccess:^{
                         //
                     } onFailure:^(NSError *error) {
                         NSLog(@"Unable to save: %@", error.description);
@@ -226,6 +226,7 @@
         
         //present wakeupViewController
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+        controller.task = task;
         if (![EWWakeUpManager isRootPresentingWakeUpView]) {
             [rootViewController dismissViewControllerAnimated:YES completion:^{
                 [rootViewController presentViewControllerWithBlurBackground:controller];

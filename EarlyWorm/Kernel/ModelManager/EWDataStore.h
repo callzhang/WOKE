@@ -16,19 +16,27 @@
 #import <AWSRuntime/AWSRuntime.h>
 #import <AWSSNS/AWSSNS.h>
 
+/**
+ *Shortcut for context for Main thread
+ */
 extern NSManagedObjectContext *context;
 extern SMClient *client;
 extern SMPushClient *pushClient;
 extern AmazonSNSClient *snsClient;
-extern NSDate *lastChecked;
+//extern NSDate *lastChecked;
 
 @interface EWDataStore : NSObject
 
 @property (nonatomic, retain) NSManagedObjectContext *context;
 @property (nonatomic) NSManagedObjectModel *model;
 @property (nonatomic) SMCoreDataStore *coreDataStore;
-@property (nonatomic) dispatch_queue_t dispatch_queue;
+@property (nonatomic) dispatch_queue_t dispatch_queue;//Task dispatch queue runs in serial
+@property (nonatomic) dispatch_queue_t coredata_queue;//coredata queue runs in serial
 @property (nonatomic, retain) NSTimer *serverUpdateTimer;
+/**
+ *The date that last sync with server
+ */
+@property (nonatomic) NSDate *lastChecked;
 /**
  This is considered thread safe way to call context for current thread
  */
@@ -48,8 +56,9 @@ extern NSDate *lastChecked;
 
 /**
  *Get local cached file path for url. If not cached, dispatch a download URLSession
+ @param key: the normal string url, not MD5 value
  */
-- (NSString *)localPathForUrl:(NSString *)url;
+- (NSString *)localPathForKey:(NSString *)key;
 
 //Update the data for key
 - (void)updateCacheForKey:(NSString *)key withData:(NSData *)data;
@@ -63,5 +72,18 @@ extern NSDate *lastChecked;
  */
 - (void)registerServerUpdateService;
 
+//CoreData
++ (SMRequestOptions *)optionFetchCacheElseNetwork;
++ (SMRequestOptions *)optionFetchNetworkElseCache;
++ (NSManagedObjectContext *)currentContext;
+/**
+ *Using block to save ManagedObject in designated background thread serial queue.
+ *When change occured in given context
+ */
++ (void)saveDataInBackgroundInBlock:(void(^)(NSManagedObjectContext *currentContext))saveBlock completion:(void(^)(void))completion;
 
+/**
+ * User obj's id to fetch from server on another thread
+ */
++ (NSManagedObject *)refreshObjectWithServer:(NSManagedObject *)obj;
 @end

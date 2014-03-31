@@ -109,6 +109,13 @@ UIViewController *rootViewController;
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     NSLog(@"Entered background with active time left: %f", application.backgroundTimeRemaining);
     
+    //responder to remote control
+    [self prepareRemoteControlEventsListener];
+    
+    //save core data
+    [[EWDataStore sharedInstance] save];
+    
+    
     //detect multithreading
     BOOL result = NO;
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]){
@@ -117,8 +124,7 @@ UIViewController *rootViewController;
         return;
     }
     
-    //responder to remote control
-    [[AVManager sharedManager] prepareRemoteControlEventsListener];
+    
 
 #ifdef BACKGROUND_TEST
     
@@ -158,6 +164,9 @@ UIViewController *rootViewController;
     
     //audio session
     [[AVManager sharedManager] registerAudioSession];
+    
+    //remote control
+    [self resignRemoteControlEventsListener];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -197,10 +206,10 @@ UIViewController *rootViewController;
     for (EWTaskItem *task in currentUser.tasks) {
         
         //refresh
-        [task.managedObjectContext refreshObject:task mergeChanges:YES];
+        [[EWDataStore currentContext] refreshObject:task mergeChanges:YES];
         
         //check
-        if ([lastChecked isEarlierThan:task.lastmoddate]) {
+        if ([[EWDataStore sharedInstance].lastChecked isEarlierThan:task.lastmoddate]) {
             NSLog(@"Find task on %@ has possible updates", task.time.weekday);
             [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
             
@@ -210,7 +219,7 @@ UIViewController *rootViewController;
     }
     
     //update checked time
-    lastChecked = [NSDate date];
+    [EWDataStore sharedInstance].lastChecked = [NSDate date];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NSLog(@"Returned background fetch handler");
@@ -370,7 +379,7 @@ UIViewController *rootViewController;
         [defaults synchronize];
         
         //sync
-        [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
+        [[EWDataStore currentContext] refreshObject:currentUser mergeChanges:YES];
     }else{
         //found endPoint saved at local
         NSLog(@"found endPoint: %@ for user: %@", endPoint, username);
@@ -446,6 +455,59 @@ UIViewController *rootViewController;
     //store the completionHandler
     EWDownloadManager *manager = [EWDownloadManager sharedInstance];
 	manager.backgroundSessionCompletionHandler = completionHandler;
+}
+
+#pragma mark - Remote Control Event
+- (void)prepareRemoteControlEventsListener{
+    
+    //register for remote control
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    
+    // Set itself as the first responder
+    BOOL success = [self becomeFirstResponder];
+    if (success) {
+        NSLog(@"Registered AVManager for remote control events");
+    }else{
+        NSLog(@"@@@ AVManager failed to listen remote control events @@@");
+    }
+}
+
+- (BOOL)canBecomeFirstResponder{
+    return YES;
+}
+
+- (void)resignRemoteControlEventsListener{
+    
+    // Turn off remote control event delivery
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    
+    // Resign as first responder
+    [self resignFirstResponder];
+}
+
+- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
+    
+    if (receivedEvent.type == UIEventTypeRemoteControl) {
+        
+        switch (receivedEvent.subtype) {
+                
+            case UIEventSubtypeRemoteControlTogglePlayPause:
+                NSLog(@"Received remote control: play");
+                [[AVManager sharedManager].player play];
+                break;
+                
+            case UIEventSubtypeRemoteControlPreviousTrack:
+                NSLog(@"Received remote control: Previous");
+                break;
+                
+            case UIEventSubtypeRemoteControlNextTrack:
+                NSLog(@"Received remote control: Next");
+                break;
+                
+            default:
+                break;
+        }
+    }
 }
 
 @end

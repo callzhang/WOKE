@@ -67,13 +67,12 @@
 }
 
 - (void)updateView {
-    /*
+
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         [self.btnLoginLogout setTitle:@"Log out" forState:UIControlStateNormal];
     } else {
         [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
-    }*/
-    [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
+    }
     
     if (currentUser) {
         self.name.text = currentUser.name;

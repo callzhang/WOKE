@@ -9,6 +9,7 @@
 #import "AVManager.h"
 #import "EWMediaViewCell.h"
 #import "EWTaskItem.h"
+#import "EWMediaItem.h"
 #import "EWTaskStore.h"
 #import <AVFoundation/AVAudioPlayer.h>
 #import "FTWCache.h"
@@ -17,7 +18,7 @@
 #import "EWMediaSlider.h"
 #import "EWDownloadManager.h"
 
-@import AudioToolbox;
+@import MediaPlayer;
 
 @implementation AVManager
 @synthesize player, recorder;
@@ -51,7 +52,7 @@
         [self registerAudioSession];
         
         //Register for remote control event
-        [self prepareRemoteControlEventsListener];
+        //[self prepareRemoteControlEventsListener];
         
         //playlist
         playlist = [[NSMutableArray alloc] init];
@@ -101,6 +102,9 @@
     
     //play
     [self playSoundFromURL:[NSURL URLWithString:mediaCell.media.audioKey]];
+    
+    //lock screen
+    [self displayNowPlayingInfoToLockScreen:mediaCell.media];
 }
 
 - (void)setCurrentCell:(EWMediaViewCell *)cell{
@@ -440,59 +444,6 @@ void RouteChangeListener(	void *inClientData,
 }
 
 
-#pragma mark - Remote Control Event
-- (void)prepareRemoteControlEventsListener{
-    
-    //register for remote control
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    
-    // Set itself as the first responder
-    BOOL success = [self becomeFirstResponder];
-    if (success) {
-        NSLog(@"Registered AVManager for remote control events");
-    }else{
-        NSLog(@"@@@ AVManager failed to listen remote control events @@@");
-    }
-}
-
-- (BOOL)canBecomeFirstResponder{
-    return YES;
-}
-
-- (void)resignRemoteControlEventsListener{
-    
-    // Turn off remote control event delivery
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
-    
-    // Resign as first responder
-    [self resignFirstResponder];
-}
-
-- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
-    
-    if (receivedEvent.type == UIEventTypeRemoteControl) {
-        
-        switch (receivedEvent.subtype) {
-                
-            case UIEventSubtypeRemoteControlTogglePlayPause:
-                NSLog(@"Received remote control: play");
-                [player play];
-                break;
-                
-            case UIEventSubtypeRemoteControlPreviousTrack:
-                NSLog(@"Received remote control: Previous");
-                break;
-                
-            case UIEventSubtypeRemoteControlNextTrack:
-                NSLog(@"Received remote control: Next");
-                break;
-                
-            default:
-                break;
-        }
-    }
-}
-
 
 #pragma  mark - System Sound Service
 - (void)playSystemSound:(NSURL *)path{
@@ -509,7 +460,7 @@ void RouteChangeListener(	void *inClientData,
             //local file
             soundUrl = path;
         }else{
-            NSString *cachePath = [FTWCache localPathForKey:path.absoluteString];
+            NSString *cachePath = [[EWDataStore sharedInstance] localPathForKey:path.absoluteString];
             if (cachePath) {
                 soundUrl = [NSURL fileURLWithPath:cachePath];
             }else{
@@ -543,4 +494,30 @@ void playSoundFinished (SystemSoundID sound, void *bgTaskId){
     NSLog(@"System sound finished and bg task returned");
 }
 
+
+#pragma mark - Remote control
+- (void)displayNowPlayingInfoToLockScreen:(EWMediaItem *)m{
+    //only support iOS5+
+    if (NSClassFromString(@"MPNowPlayingInfoCenter")){
+        NSLog(@"Assigning media cover info");
+        
+        if (!m) m = media;
+        EWTaskItem *task = [m.tasks anyObject];
+        NSString *str = task.statement ? task.statement : @"";
+        
+        //info
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+        dict[MPMediaItemPropertyTitle] = @"Voice alarm from Woke";
+        dict[MPMediaItemPropertyArtist] = m.author.name;
+        dict[MPMediaItemPropertyAlbumTitle] = str;
+        
+        //cover
+        UIImage *cover = media.image ? media.image : media.author.profilePic;
+        MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:cover];
+        dict[MPMediaItemPropertyArtwork] = artwork;
+        
+        //set
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = dict;
+    }
+}
 @end

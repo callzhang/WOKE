@@ -71,7 +71,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [[EWAlarmManager sharedInstance] scheduleAlarm];
         [[EWTaskStore sharedInstance] scheduleTasks];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey: currentUser}];
         alarms = EWAlarmManager.sharedInstance.allAlarms;
         tasks = EWTaskStore.sharedInstance.allTasks;
         [_tableView reloadData];
@@ -95,7 +94,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     for (EWAlarmEditCell *cell in cellArray) {
         //state
         if (cell.alarmOn != [cell.alarm.state boolValue]) {
@@ -112,7 +111,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         //time
         if (![cell.myTime isEqual:cell.task.time]) {
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
-            cell.alarm.time = cell.myTime;//TODO: ask if the time change is once or for all
+            cell.alarm.time = cell.myTime;
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
         }
         //statement
@@ -127,7 +126,10 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             NSLog(@"Alarms failed to save");
         }];
     }
-
+    
+    
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    
     [super viewWillDisappear:animated];
 }
 

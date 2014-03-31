@@ -49,7 +49,7 @@
         //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
         
         //listener
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadData) name:kPersonLoggedIn object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadData) name:kPersonLoggedIn object:nil];
     }
     return self;
 }

@@ -38,7 +38,7 @@
         self.hidesBottomBarWhenPushed = NO;
         
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initData) name:kPersonLoggedIn object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewDidLoad) name:kPersonLoggedIn object:nil];
         
         cellIdentifier = @"CellIdentifier";
     }

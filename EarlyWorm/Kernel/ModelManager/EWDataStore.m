@@ -21,21 +21,22 @@
 //Util
 #import "FTWCache.h"
 #import "SMBinaryDataConversion.h"
-#import "AVManager.h"
 
 //Global variable
 NSManagedObjectContext *context;
 SMClient *client;
 SMPushClient *pushClient;
 AmazonSNSClient *snsClient;
-NSDate *lastChecked;
+//NSDate *lastChecked;
 
 @implementation EWDataStore
 @synthesize model;
 @synthesize currentContext;
-@synthesize dispatch_queue;
+@synthesize dispatch_queue, coredata_queue;
+@synthesize lastChecked;
 
 + (EWDataStore *)sharedInstance{
+    
     static EWDataStore *sharedStore_ = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -49,14 +50,11 @@ NSDate *lastChecked;
     if (self) {
         //dispatch queue
         dispatch_queue = dispatch_queue_create("com.wokealarm.datastore.dispatchQueue", DISPATCH_QUEUE_SERIAL);
-        
-        //lastChecked
-        lastChecked = [NSDate date];
+        coredata_queue = dispatch_queue_create("com.wokealarm.datastore.coreDataQueue", DISPATCH_QUEUE_SERIAL);
         
         //AWS
         snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
         snsClient.endpoint = [AmazonEndpoints snsEndpoint:US_WEST_2];
-        
         
         //stackMob
         SM_CACHE_ENABLED = YES;//enable cache
@@ -67,13 +65,12 @@ NSDate *lastChecked;
         
         //core data
         self.coreDataStore = [client coreDataStoreWithManagedObjectModel:self.model];
-        context = [self.coreDataStore contextForCurrentThread];
-        
+        //context = [self.coreDataStore contextForCurrentThread];
+        context = [self.coreDataStore mainThreadContext];
         
         //cache policy
-        self.coreDataStore.fetchPolicy = SMFetchPolicyCacheOnly;
+        self.coreDataStore.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
         __block SMCoreDataStore *blockCoreDataStore = self.coreDataStore;
-        //self.coreDataStore.fetchPolicy = SMFetchPolicyCacheOnly; //initial fetch should from cache
         self.coreDataStore.defaultSMMergePolicy = SMMergePolicyLastModifiedWins;
         [client.networkMonitor setNetworkStatusChangeBlock:^(SMNetworkStatus status) {
             if (status == SMNetworkStatusReachable) {
@@ -93,7 +90,12 @@ NSDate *lastChecked;
         
         [self.coreDataStore setSyncCompletionCallback:^(NSArray *objects){
             NSLog(@"Syncing is complete, item synced: %@. Change the datastore policy to fetch from the network", objects);
-            [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
+            
+            
+            //Change fetch policy
+            //[blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
+            
+            
             // Notify other views that they should reload their data from the network
             if (objects.count) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:kFinishedSync object:nil];//TODO
@@ -136,32 +138,61 @@ NSDate *lastChecked;
 }
 
 - (void)save{
+    //save context on main thread
     [context saveOnSuccess:^{
         NSLog(@"Core Data saved");
     } onFailure:^(NSError *error) {
         NSLog(@"Error in save Core Data objects: %@", error.description);
     }];
+    //save on current thread
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"Failed to save on app enter background");
+    }];
+    //save on designated thread
+    [EWDataStore saveDataInBackgroundInBlock:NULL completion:NULL];
 }
 
 - (NSManagedObjectContext *)currentContext{
-    return [self.coreDataStore contextForCurrentThread];
+    NSManagedObjectContext *c = [self.coreDataStore contextForCurrentThread];
+    
+    [context observeContext:c];
+    
+    return c;
+}
+
+- (NSDate *)lastChecked{
+    NSUserDefaults *defalts = [NSUserDefaults standardUserDefaults];
+    NSDate *timeStamp = [defalts objectForKey:kLastChecked];
+    return timeStamp;
+}
+
+- (void)setLastChecked:(NSDate *)time{
+    if (lastChecked) {
+        NSUserDefaults *defalts = [NSUserDefaults standardUserDefaults];
+        [defalts setObject:time forKey:kLastChecked];
+        [defalts synchronize];
+    }
 }
 
 
 #pragma mark - Login Check
 - (void)loginDataCheck{
+    NSLog(@"[%s]", __func__);
+    
     //change fetch policy
-    NSLog(@"%s: user logged in, start sync with server", __func__);
+    NSLog(@"0. Start sync with server");
     [self.coreDataStore syncWithServer];
     
     //refresh current user
-    dispatch_async(dispatch_queue, ^{
-        NSLog(@"1. refresh current user");
-        [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
-    });
+    NSLog(@"1. refresh current user");
+    [EWDataStore refreshObjectWithServer:currentUser];
     
     //check alarm, task, and local notif
     [self checkAlarmData];
+    
+    
+    //update data with timely updates
+    [[EWDataStore sharedInstance] registerServerUpdateService];
     
 }
 
@@ -180,6 +211,7 @@ NSDate *lastChecked;
         NSLog(@"2. Alarm not set up yet");
         dispatch_async(dispatch_queue, ^{
             [[EWAlarmManager sharedInstance] scheduleAlarm];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmNewNotification object:nil userInfo:nil];
         });
         
     }
@@ -190,6 +222,7 @@ NSDate *lastChecked;
         NSLog(@"3. Task needs to be scheduled");
         dispatch_async(dispatch_queue, ^{
             [EWTaskStore.sharedInstance scheduleTasks];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
         });
         
     }
@@ -257,7 +290,7 @@ NSDate *lastChecked;
         NSLog(@"*** Something wrong with url, the url contains data");
         return nil;
     }
-    NSString *path = [FTWCache localPathForKey:key.MD5Hash];
+    NSString *path = [FTWCache localPathForKey:[key MD5Hash]];
     if (!path) {
         //not in local, need to download
         [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:key]];
@@ -267,11 +300,18 @@ NSDate *lastChecked;
 }
 
 - (void)updateCacheForKey:(NSString *)key withData:(NSData *)data{
-    [FTWCache setObject:data forKey:key];
+    if (key.length == 15) {
+        [NSException raise:@"Passed in MD5 value" format:@"Please provide original url string"];
+    }
+    NSString *hashKey = [key MD5Hash];
+    [FTWCache setObject:data forKey:hashKey];
     
 }
 
 - (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key{
+    if (!key) {
+        return nil;
+    }
     NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSString *path = [self localPathForKey:key];
 	
@@ -286,20 +326,91 @@ NSDate *lastChecked;
 #pragma mark - Timely sync
 - (void)registerServerUpdateService{
     self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:serverUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:nil repeats:0];
-    
+    [self serverUpdate:nil];
 }
      
 - (void)serverUpdate:(NSTimer *)timer{
     //services that need to run periodically
+    NSLog(@"%s: Start sync service", __func__);
     
-    //sync server
-    [self.coreDataStore syncWithServer];
+    dispatch_async(dispatch_queue, ^{
+        //sync server
+        [self.coreDataStore syncWithServer];
+        
+        //lsat seen
+        NSLog(@"scheduled update last seen recurring task");
+        [[EWUserManagement sharedInstance] updateLastSeen];
+        
+        //location
+        NSLog(@"scheduled update location recurring task");
+        [[EWUserManagement sharedInstance] registerLocation];
+        
+        //profilePic & bgImg
+        [[EWUserManagement sharedInstance] checkUserCache];
+
+    });
     
-    //lsat seen
-    [[EWUserManagement sharedInstance] updateLastSeen];
-    
-    //location
-    [[EWUserManagement sharedInstance] registerLocation];
 }
 
+#pragma mark - Utilities
++ (SMRequestOptions*)optionFetchCacheElseNetwork{
+    SMRequestOptions *options = [SMRequestOptions options];
+    options.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
+    return options;
+}
+
++ (SMRequestOptions *)optionFetchNetworkElseCache{
+    SMRequestOptions *options = [SMRequestOptions options];
+    options.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
+    return options;
+}
+
++ (NSManagedObjectContext *)currentContext{
+    return [EWDataStore sharedInstance].currentContext;
+}
+
+
+#pragma mark - Core Data concuurent
++ (void)saveDataInContext:(void(^)(NSManagedObjectContext *currentContext))block
+{
+	NSManagedObjectContext *currentContext = [EWDataStore sharedInstance].coreDataStore.contextForCurrentThread;
+	[currentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+    
+	[context setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
+	[context observeContext:currentContext];
+    
+	block(currentContext);
+	if ([currentContext hasChanges])
+	{
+		[currentContext saveOnSuccess:^{
+            NSLog(@"Background change saved to context");
+        }onFailure:^(NSError *error) {
+            NSLog(@"Save in background thread context failed");
+        }];
+	}
+}
+
++ (void)saveDataInBackgroundInBlock:(void(^)(NSManagedObjectContext *context))saveBlock completion:(void(^)(void))completion
+{
+	dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+		[self saveDataInContext:saveBlock];
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
+			completion();
+            //revert the default merge policy for main context
+            [context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+		});
+	});
+}
+
++ (NSManagedObject *)refreshObjectWithServer:(NSManagedObject *)obj{
+    dispatch_sync([EWDataStore sharedInstance].coredata_queue, ^{
+        [self saveDataInContext:^(NSManagedObjectContext *currentContext) {
+            NSManagedObject *newObj = [currentContext objectWithID:obj.objectID];
+            NSLog(@"Fetched obj at background: %@", newObj.objectID);
+        }];
+    });
+    obj = [obj.managedObjectContext objectWithID:obj.objectID];
+    return obj;
+}
 @end

@@ -23,10 +23,10 @@
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
 
-@property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
-@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *locationLabel;
-@property (weak, nonatomic) IBOutlet UILabel *rankLabel;
+//@property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
+//@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+//@property (weak, nonatomic) IBOutlet UILabel *locationLabel;
+//@property (weak, nonatomic) IBOutlet UILabel *rankLabel;
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
 
 //action
@@ -34,6 +34,8 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender;
 - (IBAction)changePage:(id)sender;
 - (IBAction)scheduleInitialAlarms:(id)sender;
-- (IBAction)profile:(id)sender;
+//- (IBAction)profile:(id)sender;
 - (IBAction)mainActions:(id)sender;
+
+
 @end

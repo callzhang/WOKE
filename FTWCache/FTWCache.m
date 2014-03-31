@@ -60,10 +60,10 @@ static NSTimeInterval cacheTime =  (double)3600*24*30*12;  //1year
 }
 
 + (NSString *)localPathForKey:(NSString *)key{
-    NSString *hashKey = [key MD5Hash];
-    if ([FTWCache objectForKey:hashKey]) {
+    //NSString *hashKey = [key MD5Hash];
+    if ([FTWCache objectForKey:key]) {
         //has cache
-        NSString *path = [[FTWCache cacheDirectory] stringByAppendingPathComponent:hashKey];
+        NSString *path = [[FTWCache cacheDirectory] stringByAppendingPathComponent:key];
         //NSLog(@"Find cache path: %@ for Key: %@", path, key);
         return path;
     }

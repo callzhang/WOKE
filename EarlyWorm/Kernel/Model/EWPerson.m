@@ -74,17 +74,8 @@
     if (!profilePic) {
         profilePic = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.profilePicKey]];
         
-    }else{
-        NSDate *modDate = [[EWDataStore sharedInstance] lastModifiedDateForObjectAtKey:self.profilePicKey];
-        if([modDate isOutDated]){
-            [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:self.profilePicKey] withCompletionBlock:^(NSData *data) {
-                UIImage *img = [UIImage imageWithData:data];
-                if (![profilePic isEqual:img]) {
-                    self.profilePic = img;
-                }
-            }];
-        }
     }
+    
     
     
     return profilePic;
@@ -101,7 +92,7 @@
     //update server
     self.profilePicKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"profilePic.png" contentType:@"image/png"];
     
-    [self.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSLog(@"Profile not saved");
     }];
     
@@ -110,16 +101,6 @@
 - (UIImage *)bgImage{
     if (!bgImage) {
         bgImage = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.bgImageKey]];
-    }else{
-        NSDate *modDate = [[EWDataStore sharedInstance] lastModifiedDateForObjectAtKey:self.bgImageKey];
-        if([modDate isOutDated]){
-            [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:self.bgImageKey] withCompletionBlock:^(NSData *data) {
-                UIImage *img = [UIImage imageWithData:data];
-                if (![bgImage isEqual:img]) {
-                    self.bgImage = img;
-                }
-            }];
-        }
     }
     return bgImage;
 }
@@ -136,7 +117,7 @@
     //server
     self.bgImageKey = [SMBinaryDataConversion stringForBinaryData:imgData name:@"bgImage.png" contentType:@"image/png"];
     
-    [self.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSLog(@"BG img not saved");
     }];
 }

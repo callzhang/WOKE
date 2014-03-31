@@ -90,7 +90,7 @@
 - (EWGroup *)getGroupForTime:(NSDate *)time{
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWGroup"];
     request.predicate = [NSPredicate predicateWithFormat:@"wakeupTime >= %@ AND wakeupTime < %@ AND topic == %@", time, [time nextAlarmIntervalTime], @"autoGroup"];
-    NSArray *groups = [context executeFetchRequestAndWait:request error:NULL];
+    NSArray *groups = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
     EWGroup *group;
     if (groups.count == 0) {
         //need to create the group

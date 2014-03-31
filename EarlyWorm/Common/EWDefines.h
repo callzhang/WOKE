@@ -93,10 +93,11 @@
 #define kTaskDeleteNotification         @"EWTaskDelete"  //key: task
 #define kTaskTimeChangedNotification    @"EWTaskTimeChanged"  //key: task
 #define kTaskChangedNotification        @"EWTaskChanged" //key: task
+
 //person store
 #define kPersonLoggedIn                 @"PersonLoggedIn"
 #define kPersonLoggedOut                @"PersonLoggedOut"
-#define kPersonProfilePicDownloaded     @"PersonPicDownloaded"
+
 //media store
 //#define kMediaNewNotification           @"EWMediaNew"
 
@@ -127,7 +128,7 @@
 #define kUserLoggedInUserKey            @"user"
 #define kAWSEndPointDicKey              @"AWS_EndPoint_dic"
 #define kAWSTopicDicKey                 @"AWS_Topic_dic"
-
+#define kLastChecked                    @"last_checked"
 
 
 //Collection View Identifier
@@ -142,3 +143,7 @@
 #define kCollectionViewCellPersonRadius 40
 #define CELL_SPACE_RATIO                1.8
 #endif
+
+//EWAlarmsViewController
+#define kPersonProfileNewNotification   @"new_profile"
+

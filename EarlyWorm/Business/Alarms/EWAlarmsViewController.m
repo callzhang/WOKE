@@ -48,26 +48,24 @@
 @synthesize alarms, tasks;
 @synthesize scrollView = _scrollView;
 @synthesize pageView = _pageView;
-@synthesize profileImageView = _profileImageView;
-@synthesize nameLabel = _nameLabel;
-@synthesize locationLabel = _locationLabel;
-@synthesize rankLabel = _rankLabel;
 @synthesize collectionView = _collectionView;
 
 - (id)init {
     self = [super init];
     if (self) {
         
-        //self.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemHistory tag:0];
         //launch with local notif
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentWakeUpView:) name:UIApplicationLaunchOptionsLocalNotificationKey object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentWakeUpView:) name:UIApplicationLaunchOptionsLocalNotificationKey object:nil];
+        
         //listen to user log in, and updates its view
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
-        //
+        
+        //Task: only new task will update the view, other changes is observed in alarmPageView
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskChangedNotification object:nil];//TODO: update specific alarm
-        //UI
-        self.hidesBottomBarWhenPushed = NO;
+        
+        
+        //handle person profile pic update
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateProfilePic:) name:kPersonProfileNewNotification object:nil];
     }
     return self;
 }
@@ -93,16 +91,17 @@
         tasks = [EWTaskStore sharedInstance].allTasks;
         if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
             NSLog(@"===== Something wrong with the Alarm(%ld) or Task(%lu) data, please check! =====", (long)alarms.count, (unsigned long)tasks.count);
-            //[[EWDataStore sharedInstance] checkAlarmData];
             alarms = nil;
             tasks = nil;
         }else{
            //alarmPages
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
+            
+            //person
+            allPeople = [[[EWPersonStore sharedInstance] everyone] mutableCopy];
         }
         
-        //person
-        allPeople = [[[EWPersonStore sharedInstance] everyone] mutableCopy];
+        
         
         
         //user KVO
@@ -117,19 +116,6 @@
 }
 
 - (void)initView {
-    
-    //owner info
-    if (currentUser) {
-        self.profileImageView.image = currentUser.profilePic;
-        self.nameLabel.text = currentUser.name;
-        self.locationLabel.text = currentUser.city ? currentUser.city : @"Somewhere";
-        self.rankLabel.text = [NSString stringWithFormat:@"Last activity: %@", [currentUser.createddate date2numberDateString]];
-    }else{
-        self.profileImageView.image = [UIImage imageNamed:@"profile"];
-        self.nameLabel.text = @"";
-        self.locationLabel.text = @"";
-        self.rankLabel.text = @"";
-    }
     
     //collection view
     _collectionView.delegate = self;
@@ -260,16 +246,13 @@
 }
 
 
-#pragma mark - KVO
+#pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
 
     if ([object isKindOfClass:[EWPerson class]]) {
-        NSLog(@"Observed change for user: %@", change);
+        
         if ([keyPath isEqualToString:@"profilePicKey"]) {
-            //profile updated
-            self.profileImageView.image = currentUser.profilePic;
-            [self.profileImageView setNeedsDisplay];
-            
+            NSLog(@"Observed profile pic changed for user: %@", [(EWPerson *)object name]);
             //update cell
             NSInteger i = [allPeople indexOfObject:currentUser];
             EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
@@ -279,8 +262,22 @@
             NSLog(@"KVO observed tasks changed");
         }else if ([keyPath isEqualToString:@"alarms"]){
             NSLog(@"KVO observed alarms changed");
+        }else{
+            NSLog(@"KVO observed change %@", change);
         }
     }
+}
+
+- (void)updateProfilePic:(NSNotification *)notif{
+    EWPerson *person = (EWPerson *)([notif.object isKindOfClass:[EWPerson class]]?notif.object:notif.userInfo[@"person"]);
+    NSInteger row = [allPeople indexOfObject:person];
+    EWCollectionPersonCell *cell;
+    if (row < allPeople.count) {
+        cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:row inSection:0]];
+    }
+    cell.profilePic.image = person.profilePic;
+    //[_collectionView reloadData];
+    [_collectionView setNeedsDisplay];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -408,7 +405,7 @@
 
 #pragma mark - launch option
 - (void)presentWakeUpView:(NSNotification *)notification{
-    NSLog(@"Entered app with local notification");
+    NSLog(@"Received local notification");
     EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
     EWTaskItem *task = notification.userInfo[kPushTaskKey];
     controller.task  = task;

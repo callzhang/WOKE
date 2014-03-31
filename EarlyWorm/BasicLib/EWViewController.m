@@ -27,7 +27,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.view.backgroundColor = kCustomWhite;
+    //self.view.backgroundColor = kCustomWhite;
 
 #ifdef __IPHONE_7_0
     if ([EWDeviceInfo isIOS7_Plus]) {

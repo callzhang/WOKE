@@ -22,6 +22,11 @@
 //@synthesize context;
 
 +(EWTaskStore *)sharedInstance{
+    BOOL mainThread = [NSThread isMainThread];
+    if (!mainThread) {
+        NSLog(@"**** Task Store not on main thread ****");
+    }
+    
     static EWTaskStore *sharedTaskStore_ = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -38,6 +43,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskMedia:) name:kNewMediaNotification object:nil];
         //watch alarm deletion
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(alarmRemoved:) name:kAlarmDeleteNotification object:nil];
+        //task state change
+        [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskState:) name:kTaskStateChangedNotification object:nil];
     });
     return sharedTaskStore_;
 }
@@ -55,18 +62,7 @@
 - (NSArray *)allTasks{
 
     //get from relationship
-    if (currentUser.tasks.count != 0 &&currentUser.tasks.count !=  7 * nWeeksToScheduleTask) {
-        NSLog(@"%s Something wrong with local data of tasks on current user, only %lu tasks at local, start fetch from server", __func__, (unsigned long)currentUser.tasks.count);
-        _allTasks = [[self getTasksByPerson:currentUser] mutableCopy];
-        NSLog(@"After fetch, server returned %lu tasks, current user has %lu tasks.", (unsigned long)_allTasks.count, (unsigned long)currentUser.tasks.count);
-    }else{
-        _allTasks = [[currentUser.tasks allObjects] mutableCopy];
-    }
-    
-    //sort
-    [_allTasks valueForKey:@"time"];
-    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
-    [_allTasks sortUsingDescriptors:@[sort]];
+    _allTasks = [self getTasksByPerson:currentUser];
     
     
     return _allTasks;
@@ -79,24 +75,32 @@
 
 #pragma mark - SEARCH
 - (NSArray *)getTasksByPerson:(EWPerson *)person{
-    NSArray *tasks = [[NSArray alloc] init];
-    if (person.tasks.count == 7 * nWeeksToScheduleTask) {
-        tasks = [person.tasks allObjects];
-    }else{
+    NSArray *tasks = [person.tasks allObjects];
+    BOOL fetch = YES;
+    
+    //check if person is outdated or task count is wrong
+    if (![person.lastmoddate isOutDated]) {
+        
+        if (tasks.count == 7 * nWeeksToScheduleTask) {
+            fetch = NO;
+        }
+    }
+    
+    if (fetch) {
         //this usually not happen
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
-        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
+        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", person];
         //NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time >= %@", [NSDate date]];
         //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         request.predicate = predicate1;
-        tasks = [context executeFetchRequestAndWait:request error:NULL];
-        //save to person
-        if (tasks.count > 0) {
-            person.tasks = [NSSet setWithArray:tasks];
-        }
+        
+        if (![NSThread isMainThread]) NSLog(@"Fetch on other thread");
+        
+        tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
         
     }
     //sort
+    [tasks valueForKey:@"time"];
     tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
     
     return tasks;
@@ -104,7 +108,7 @@
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
     NSArray *tasks = [[NSArray alloc] init];
-    if (![lastChecked isOutDated] && person.tasks) {
+    if (![[EWDataStore sharedInstance].lastChecked isOutDated] && person.tasks) {
         tasks = [person.pastTasks allObjects];
     }else{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
@@ -113,7 +117,7 @@
         NSPredicate *predicate3 = [NSPredicate predicateWithFormat:@"state == %@", @YES];
         request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2, predicate3]];
         //request.sortDescriptors = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
-        tasks = [context executeFetchRequestAndWait:request error:NULL];
+        tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
         //save to person
         person.pastTasks = [NSSet setWithArray:tasks];
     }
@@ -142,7 +146,7 @@
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"EWTaskItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"ewtaskitem_id == %@", taskID];
     NSError *err;
-    NSArray *tasks = [[EWDataStore sharedInstance].currentContext executeFetchRequestAndWait:request error:&err];
+    NSArray *tasks = [EWDataStore.currentContext executeFetchRequestAndWait:request error:&err];
     if (tasks.count != 1) {
         NSLog(@"Error getting task from ID: %@. Error: %@", taskID, err.description);
         return nil;
@@ -159,7 +163,7 @@
     if (EWAlarmManager.sharedInstance.allAlarms.count == 0 && _allTasks.count == 0) {
         return nil;
     }
-    NSMutableArray *tasks = _allTasks;
+    NSMutableArray *tasks = [_allTasks mutableCopy];
     //need to schedule tasks
 //    NSDate *lastTime;
 //    if (tasks.count == 0) {
@@ -207,7 +211,8 @@
                 
                 //check receiprocal relationship
                 if (![a.tasks containsObject:t]) {
-                    [a.managedObjectContext refreshObject:a mergeChanges:YES];
+                    //[context refreshObject:a mergeChanges:YES];
+                    [EWDataStore refreshObjectWithServer:a];
                     NSLog(@"====Alarm->Task relation was not fetched. After refresh, alarm has %lu tasks=====", (unsigned long)a.tasks.count);
                 }
             }
@@ -234,14 +239,14 @@
     _allTasks = tasks;
     
     //save
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         //NSLog(@"Scheduled new tasks");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Unable to save new tasks" format:@"Error:%@", error.description];
     }];
     
     //last checked
-    lastChecked = [NSDate date];
+    [EWDataStore sharedInstance].lastChecked = [NSDate date];
     return tasks;
 }
 
@@ -256,7 +261,7 @@
     //others
     t.added = [NSDate date];
     //save
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         //NSLog(@"New task saved");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Failed in creating task" format:@"error: %@",error.description];
@@ -278,9 +283,16 @@
 }*/
 
 - (void)updateTaskState:(NSNotification *)notif{
-    EWAlarmItem *a = notif.userInfo[@"alarm"];
-    if (!a) [NSException raise:@"No alarm info" format:@"Check notification"];
-    [self updateTaskStateForAlarm:a];
+    id alarm = notif.userInfo[@"alarm"];
+    id task = notif.userInfo[@"task"];
+    if([alarm isKindOfClass:[EWAlarmItem class]]){
+        [self updateTaskStateForAlarm:(EWAlarmItem *)alarm];
+    }else if([task isKindOfClass:[EWTaskItem class]]){
+        [self scheduleNotificationForTask:(EWTaskItem *)task];
+    }else{
+        [NSException raise:@"No alarm/task info" format:@"Check notification"];
+    }
+    
 }
 
 - (void)updateTaskStateForAlarm:(EWAlarmItem *)a{
@@ -304,7 +316,7 @@
         }
     }
     if (updated) {
-        [context saveOnSuccess:^{
+        [[EWDataStore currentContext] saveOnSuccess:^{
             NSArray *wd = weekdays;
             NSLog(@"Updated alarm's state on %@", wd[a.time.weekdayNumber]);
         } onFailure:^(NSError *error) {
@@ -321,7 +333,8 @@
 
 - (void)updateTaskTimeForAlarm:(EWAlarmItem *)a{
     if (!a.tasks.count) {
-        [a.managedObjectContext refreshObject:a mergeChanges:YES];
+        //[a.managedObjectContext refreshObject:a mergeChanges:YES];
+        [EWDataStore refreshObjectWithServer:a];
         NSLog(@"Alarm's tasks not fetched, refresh from server. New tasks relation has %lu tasks", (unsigned long)a.tasks.count);
     }
     NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
@@ -335,12 +348,12 @@
             [self cancelNotificationForTask:t];
             [self scheduleNotificationForTask:t];
             //Notification
-            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:t userInfo:@{@"task": t}];
+            //[[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:t userInfo:@{@"task": t}];
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskTimeChangedNotification object:t userInfo:@{@"task": t}];
             
         }
     }
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Task time updated");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Task time update error" format:@"Reason: %@", error.description];
@@ -352,7 +365,8 @@
     
     if (!a.tasks.count){
         NSLog(@"alarm's task not fetched, refresh it from server");
-        [a.managedObjectContext refreshObject:a mergeChanges:YES];
+        //[a.managedObjectContext refreshObject:a mergeChanges:YES];
+        [EWDataStore refreshObjectWithServer:a];
     }
     
     for (EWTaskItem *t in a.tasks) {
@@ -370,7 +384,8 @@
     //EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
     //NSAssert([task.medias containsObject:media], @"Media and Task should have relation");
     dispatch_async(dispatch_get_main_queue(), ^{
-        [task.managedObjectContext refreshObject:task mergeChanges:YES];
+        //[task.managedObjectContext refreshObject:task mergeChanges:YES];
+        [EWDataStore refreshObjectWithServer:task];
         [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{kPushTaskKey: task}];
     });
 }
@@ -379,9 +394,9 @@
     NSLog(@"Delete task due to alarm deleted");
     NSArray *tasks = notif.userInfo[@"tasks"];
     for (EWTaskItem *t in tasks) {
-        [context deleteObject:t];
+        [[EWDataStore currentContext] deleteObject:t];
     }
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Task removed due to alarm deleted");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error in deleting task after alarm deleted" format:@"Error: %@", error.description];
@@ -401,8 +416,8 @@
 #pragma mark - DELETE
 - (void)removeTask:(EWTaskItem *)task{
     [self cancelNotificationForTask:task];
-    [context deleteObject:task];
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] deleteObject:task];
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Task deleted");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Task deletion error" format:@"Reason: %@", error.description];
@@ -412,10 +427,10 @@
 - (void)deleteAllTasks{
     for (EWTaskItem *t in self.allTasks) {
         [self cancelNotificationForTask:t];
-        [context deleteObject:t];
+        [[EWDataStore currentContext] deleteObject:t];
     }
     //save
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"All tasks has been purged");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Unable to delete all tasks" format:@"Reason: %@", error.description];
@@ -545,7 +560,7 @@
 #pragma mark - check
 - (BOOL)checkTasks{
     //time stemp for last check
-    lastChecked = [NSDate date];
+    [EWDataStore sharedInstance].lastChecked = [NSDate date];
     NSLog(@"Checking tasks");
     NSMutableArray *tasks = [[self getTasksByPerson:currentUser] mutableCopy];
 
@@ -557,7 +572,8 @@
     if (pastTasks.count > 0) {
         //change task relationship
         if ([currentUser isFault]) {
-            [currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
+            //[currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
+            [EWDataStore refreshObjectWithServer:currentUser];
             NSLog(@"fetched user info from server");
         }
         for (EWTaskItem *t in pastTasks) {
@@ -569,7 +585,7 @@
         }
         //[self scheduleTasks];
         //return NO;
-        [context saveOnSuccess:^{
+        [[EWDataStore currentContext] saveOnSuccess:^{
             //
         } onFailure:^(NSError *error) {
             NSLog(@"Failed to save psat task");
