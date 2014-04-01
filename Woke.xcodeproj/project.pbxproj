@@ -93,7 +93,6 @@
 		AB245FA818CCD59F00551721 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABF0289A1859846E00A7D38E /* QuartzCore.framework */; };
 		AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56A0106817A8358D00625EC0 /* AVFoundation.framework */; };
 		AB245FAA18CCD5BB00551721 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB49BC8D18542402004A38DB /* Accounts.framework */; };
-		AB245FAC18CCD63100551721 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB198C69186034EC008C1F15 /* FacebookSDK.framework */; };
 		AB245FAD18CCD67200551721 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABF028971859838A00A7D38E /* CFNetwork.framework */; };
 		AB245FAE18CCD70000551721 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB49BC89185423E6004A38DB /* Social.framework */; };
 		AB245FAF18CCD70C00551721 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABDD0BC01852E374005EA59B /* CoreLocation.framework */; };
@@ -304,7 +303,6 @@
 		AB1745BE17F7D974009B4DB0 /* WeiboSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = WeiboSDK.bundle; sourceTree = "<group>"; };
 		AB1745BF17F7D974009B4DB0 /* WeiboSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeiboSDK.h; sourceTree = "<group>"; };
 		AB1951AB185AB2AD003C7EE0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		AB198C69186034EC008C1F15 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		AB198C821861818B008C1F15 /* EWAlarmItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmItem.h; sourceTree = "<group>"; };
 		AB198C831861818B008C1F15 /* EWAlarmItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmItem.m; sourceTree = "<group>"; };
 		AB198C841861818B008C1F15 /* EWGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWGroup.h; sourceTree = "<group>"; };
@@ -519,7 +517,6 @@
 				AB245FAF18CCD70C00551721 /* CoreLocation.framework in Frameworks */,
 				AB245FAA18CCD5BB00551721 /* Accounts.framework in Frameworks */,
 				AB245FB018CCD75400551721 /* SystemConfiguration.framework in Frameworks */,
-				AB245FAC18CCD63100551721 /* FacebookSDK.framework in Frameworks */,
 				ABC8F96318E8890D0096C073 /* MediaPlayer.framework in Frameworks */,
 				AB245FB118CCD79D00551721 /* Security.framework in Frameworks */,
 				AB245FB318CCD99E00551721 /* Foundation.framework in Frameworks */,
@@ -640,7 +637,6 @@
 				AB245FA118CCD2E400551721 /* Reveal.framework */,
 				9BF7A7BD18CA27EF002EA7AC /* AWS */,
 				9BA08C5918B6C39900E785ED /* MapKit.framework */,
-				AB198C69186034EC008C1F15 /* FacebookSDK.framework */,
 				AB1951AB185AB2AD003C7EE0 /* CoreGraphics.framework */,
 				ABF0289A1859846E00A7D38E /* QuartzCore.framework */,
 				ABF028971859838A00A7D38E /* CFNetwork.framework */,
