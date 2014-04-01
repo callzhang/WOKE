@@ -93,7 +93,7 @@ AmazonSNSClient *snsClient;
             
             
             //Change fetch policy
-            //[blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
+            [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
             
             
             // Notify other views that they should reload their data from the network
@@ -155,7 +155,7 @@ AmazonSNSClient *snsClient;
 - (NSManagedObjectContext *)currentContext{
     NSManagedObjectContext *c = [self.coreDataStore contextForCurrentThread];
     
-    [context observeContext:c];
+    //[context observeContext:c];//No need to observe because both context are child-context of SM private context
     
     return c;
 }

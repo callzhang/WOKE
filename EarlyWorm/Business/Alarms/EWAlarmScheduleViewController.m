@@ -203,6 +203,10 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 //when click one item in table, push view to detail page
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
+    [tableView beginUpdates];
+    
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (selected == indexPath.row) {
         selected = 99;
@@ -210,7 +214,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         selected = indexPath.row;
     }
     
-    [tableView beginUpdates];
+    
     [tableView endUpdates];
 }
 

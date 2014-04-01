@@ -94,10 +94,10 @@
         //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         request.predicate = predicate1;
         
-        if (![NSThread isMainThread]) NSLog(@"**** Fetch on other thread");
+        NSLog(@"==== Start fetching tasks for person =====");
         
         tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
-        Cannot retrieve referenceObject from an objectID that was not created by this store
+        //Cannot retrieve referenceObject from an objectID that was not created by this store
     }
     //sort
     [tasks valueForKey:@"time"];
@@ -107,7 +107,7 @@
 }
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
-    NSArray *tasks = [[NSArray alloc] init];
+    NSArray *tasks = [NSArray new];
     if (![[EWDataStore sharedInstance].lastChecked isOutDated] && person.tasks) {
         tasks = [person.pastTasks allObjects];
     }else{
