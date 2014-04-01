@@ -1,7 +1,6 @@
 PODS:
   - AFNetworking (1.1.0)
   - Facebook-iOS-SDK (3.13.0)
-  - JSONKit (1.5pre)
   - Reachability (3.1.1)
   - StackMob (2.2.0):
     - AFNetworking (= 1.1.0)
@@ -9,7 +8,6 @@ PODS:
 
 DEPENDENCIES:
   - Facebook-iOS-SDK (~> 3.13)
-  - JSONKit (~> 1.4)
   - Reachability (~> 3.0)
   - StackMob (~> 2.2)
   - Weibo (~> 2.4)
@@ -17,7 +15,6 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   AFNetworking: 761a418233d280c1e0580bcb76ff9cb4c3073d17
   Facebook-iOS-SDK: 5788541337dc88265bc940cb5ffb05915f9b64e3
-  JSONKit: 409734ab3407fce90ef7eaa95d7168f38d9a6601
   Reachability: be4883bb93f31e38266ae3365e5600a317aae735
   StackMob: d824b7837fe14776cac7c0602cfa7bb1fe20984a
   Weibo: 5a4a1550ea5c605f7f14a1b1aed526e15aa8cc4f

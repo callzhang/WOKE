@@ -18,13 +18,6 @@
 #define COCOAPODS_VERSION_MINOR_Facebook_iOS_SDK 13
 #define COCOAPODS_VERSION_PATCH_Facebook_iOS_SDK 0
 
-// JSONKit
-#define COCOAPODS_POD_AVAILABLE_JSONKit
-// This library does not follow semantic-versioning,
-// so we were not able to define version macros.
-// Please contact the author.
-// Version: 1.5pre.
-
 // Reachability
 #define COCOAPODS_POD_AVAILABLE_Reachability
 #define COCOAPODS_VERSION_MAJOR_Reachability 3
