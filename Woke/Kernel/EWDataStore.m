@@ -58,7 +58,7 @@ AmazonSNSClient *snsClient;
         
         //stackMob
         SM_CACHE_ENABLED = YES;//enable cache
-        SM_CORE_DATA_DEBUG = YES; //enable core data debug
+        //SM_CORE_DATA_DEBUG = YES; //enable core data debug
         client = [[SMClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment];
         client.userSchema = @"EWPerson";
         client.userPrimaryKeyField = @"username";
@@ -417,7 +417,7 @@ AmazonSNSClient *snsClient;
     dispatch_sync([EWDataStore sharedInstance].coredata_queue, ^{
         [self saveDataInContext:^(NSManagedObjectContext *currentContext) {
             NSManagedObject *newObj = [currentContext objectWithID:obj.objectID];
-            NSLog(@"Fetched obj at background: %@", newObj.objectID);
+            NSLog(@"Fetched obj at background: %@", newObj.class);
         }];
     });
     

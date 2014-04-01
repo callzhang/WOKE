@@ -190,7 +190,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		51A8FE5368154201B1B4247E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		51A8FE5368154201B1B4247E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libPods.a; path = "../Debug-iphonesimulator/libPods.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		561ECB5117BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
