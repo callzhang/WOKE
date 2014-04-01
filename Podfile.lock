@@ -1,0 +1,19 @@
+PODS:
+  - AFNetworking (1.1.0)
+  - JSONKit (1.5pre)
+  - Reachability (3.1.1)
+  - StackMob (2.2.0):
+    - AFNetworking (= 1.1.0)
+
+DEPENDENCIES:
+  - JSONKit (~> 1.4)
+  - Reachability (~> 3.0)
+  - StackMob (~> 2.2)
+
+SPEC CHECKSUMS:
+  AFNetworking: 761a418233d280c1e0580bcb76ff9cb4c3073d17
+  JSONKit: 409734ab3407fce90ef7eaa95d7168f38d9a6601
+  Reachability: be4883bb93f31e38266ae3365e5600a317aae735
+  StackMob: d824b7837fe14776cac7c0602cfa7bb1fe20984a
+
+COCOAPODS: 0.31.1
