@@ -80,12 +80,11 @@ UIViewController *rootViewController;
         }
     }
     
+    //init coredata and backend server
+    [EWDataStore sharedInstance];
     
     //window
     [self.window makeKeyAndVisible];
-    
-    //init coredata and backend server
-    [EWDataStore sharedInstance];
     
     //User login
     [[EWUserManagement sharedInstance] login];

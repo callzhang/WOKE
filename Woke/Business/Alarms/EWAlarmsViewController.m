@@ -151,23 +151,26 @@
     }
     
     //predicate
-    NSDate *nextWakeTime = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser].time;
-//    SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
-//    NSPredicate *timePredicate1 = [NSPredicate predicateWithFormat:@"ANY tasks.time < %@", [[NSDate date] timeByAddingMinutes:60]];
-//    NSPredicate *timePredicate2 = [NSPredicate predicateWithFormat:@"ANY tasks.time > %@", [NSDate date]];
-//    NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[timePredicate1, timePredicate2]];
+    SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
+//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SUBQUERY(tasks, $task, $task.time >= %@ AND $task.time <= %@).@count != 0", [NSDate date], [[NSDate date] timeByAddingMinutes:60]];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
     
     //sort
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastSeenDate" ascending:YES];
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time == %@", nextWakeTime];
+    request.predicate = locPredicate;
     request.sortDescriptors = @[sort];
+    
+    
+    //test
+    NSArray *result = [[EWDataStore currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:NULL];
     
     //controller
     fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:[EWDataStore currentContext] sectionNameKeyPath:nil cacheName:@"com.wokealarm.fetchControllerCache"];
     fetchController.delegate = self;
+    request.fetchLimit = 100;
     
     //fetch everyone
     NSError *err;
