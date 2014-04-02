@@ -33,10 +33,10 @@ EWPerson *currentUser;
 //@synthesize currentUser;
 
 +(EWPersonStore *)sharedInstance{
-    BOOL mainThread = [NSThread isMainThread];
-    if (!mainThread) {
-        NSLog(@"**** Person Store not on main thread ****");
-    }
+//    BOOL mainThread = [NSThread isMainThread];
+//    if (!mainThread) {
+//        NSLog(@"**** Person Store not on main thread ****");
+//    }
     static EWPersonStore *sharedPersonStore_ = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

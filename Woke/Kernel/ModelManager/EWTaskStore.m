@@ -22,10 +22,10 @@
 //@synthesize context;
 
 +(EWTaskStore *)sharedInstance{
-    BOOL mainThread = [NSThread isMainThread];
-    if (!mainThread) {
-        NSLog(@"**** Task Store not on main thread ****");
-    }
+//    BOOL mainThread = [NSThread isMainThread];
+//    if (!mainThread) {
+//        NSLog(@"**** Task Store not on main thread ****");
+//    }
     
     static EWTaskStore *sharedTaskStore_ = nil;
     static dispatch_once_t onceToken;
