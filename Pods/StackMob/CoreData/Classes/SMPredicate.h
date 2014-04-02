@@ -169,10 +169,4 @@ typedef enum {
  */
 + (SMPredicate *)predicateWhere:(NSString *)field nearGeoPoint:(SMGeoPoint *)geoPoint;
 
-
-/**
- Custome definition of NSCopying protocol
- */
-- (id)copyWithZone:(NSZone *)zone;
-
 @end

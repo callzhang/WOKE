@@ -24,7 +24,6 @@
 // Model
 #import "EWPerson.h"
 #import "EWAlarmItem.h"
-#import "EWTaskItem.h"
 
 // UI
 #import "TestViewController.h"
@@ -40,23 +39,16 @@
 #import "StackMob.h"
 
 @interface EWAlarmsViewController (){
-    //NSMutableArray *allPeople;
-    NSMutableArray *cellChangeArray;
+    NSMutableArray *allPeople;
     NSInteger selectedPersonIndex;
 }
-@property (nonatomic, retain) NSFetchedResultsController *fetchController;
 @end
-
-
-
-
 
 @implementation EWAlarmsViewController
 @synthesize alarms, tasks;
 @synthesize scrollView = _scrollView;
 @synthesize pageView = _pageView;
 @synthesize collectionView = _collectionView;
-@synthesize fetchController;
 
 - (id)init {
     self = [super init];
@@ -72,8 +64,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
         
         
-        //handle person profile pic update ==> replaced by fetched controller
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateProfilePic:) name:kPersonProfileNewNotification object:nil];
+        //handle person profile pic update
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateProfilePic:) name:kPersonProfileNewNotification object:nil];
     }
     return self;
 }
@@ -93,32 +85,32 @@
 }
 
 - (void)initData {
-    //fetch everyone
-    NSError *err;
-    if (![self.fetchController performFetch:&err]) {
-        NSLog(@"Failed to fetch everyone: %@", err);
-    }
-    cellChangeArray = [NSMutableArray new];
-    
     //init alarm page container
     if (currentUser) {
         alarms = [EWAlarmManager sharedInstance].allAlarms;
         tasks = [EWTaskStore sharedInstance].allTasks;
         if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
-            NSLog(@"Alarm(%ld) and Task(%ld)", (long)alarms.count, (long)tasks.count);
+            NSLog(@"===== Something wrong with the Alarm(%ld) or Task(%lu) data, please check! =====", (long)alarms.count, (unsigned long)tasks.count);
             alarms = nil;
             tasks = nil;
         }else{
            //alarmPages
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
+            
+            //person
+            allPeople = [[[EWPersonStore sharedInstance] everyone] mutableCopy];
         }
         
+        
+        
+        
         //user KVO
-        //[currentUser addObserver:self forKeyPath:@"profilePicKey" options:NSKeyValueObservingOptionNew context:NULL];
+        [currentUser addObserver:self forKeyPath:@"profilePicKey" options:NSKeyValueObservingOptionNew context:NULL];
         
     }else{
         alarms = nil;
         tasks = nil;
+        allPeople = nil;
         [_alarmPages removeAllObjects];
     }
 }
@@ -142,43 +134,6 @@
     //add button
     self.addBtn.alpha = (alarms.count == 0) ? 1:0;
     
-}
-
-#pragma mark - Core functions
-- (NSFetchedResultsController *)fetchController{
-    if (fetchController) {
-        return fetchController;
-    }
-    
-    //predicate
-    SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
-//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SUBQUERY(tasks, $task, $task.time >= %@ AND $task.time <= %@).@count != 0", [NSDate date], [[NSDate date] timeByAddingMinutes:60]];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
-    
-    //sort
-    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastSeenDate" ascending:YES];
-    
-    //request
-    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    request.predicate = locPredicate;
-    request.sortDescriptors = @[sort];
-    
-    
-    //test
-    NSArray *result = [[EWDataStore currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:NULL];
-    
-    //controller
-    fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:[EWDataStore currentContext] sectionNameKeyPath:nil cacheName:@"com.wokealarm.fetchControllerCache"];
-    fetchController.delegate = self;
-    request.fetchLimit = 100;
-    
-    //fetch everyone
-    NSError *err;
-    if (![self.fetchController performFetch:&err]) {
-        NSLog(@"Failed to fetch everyone: %@", err);
-    }
-    
-    return fetchController;
 }
 
 - (void)reloadAlarmPage {
@@ -292,38 +247,38 @@
 
 
 #pragma mark - KVO & Notification
-//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-//
-//    if ([object isKindOfClass:[EWPerson class]]) {
-//        
-//        if ([keyPath isEqualToString:@"profilePicKey"]) {
-//            NSLog(@"Observed profile pic changed for user: %@", [(EWPerson *)object name]);
-//            //update cell
-//            NSInteger i = [allPeople indexOfObject:currentUser];
-//            EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-//            cell.profilePic.image = currentUser.profilePic;
-//            
-//        }else if ([keyPath isEqualToString:@"tasks"]){
-//            NSLog(@"KVO observed tasks changed");
-//        }else if ([keyPath isEqualToString:@"alarms"]){
-//            NSLog(@"KVO observed alarms changed");
-//        }else{
-//            NSLog(@"KVO observed change %@", change);
-//        }
-//    }
-//}
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
 
-//- (void)updateProfilePic:(NSNotification *)notif{
-//    EWPerson *person = (EWPerson *)([notif.object isKindOfClass:[EWPerson class]]?notif.object:notif.userInfo[@"person"]);
-//    NSInteger row = [allPeople indexOfObject:person];
-//    EWCollectionPersonCell *cell;
-//    if (row < allPeople.count) {
-//        cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:row inSection:0]];
-//    }
-//    cell.profilePic.image = person.profilePic;
-//    //[_collectionView reloadData];
-//    [_collectionView setNeedsDisplay];
-//}
+    if ([object isKindOfClass:[EWPerson class]]) {
+        
+        if ([keyPath isEqualToString:@"profilePicKey"]) {
+            NSLog(@"Observed profile pic changed for user: %@", [(EWPerson *)object name]);
+            //update cell
+            NSInteger i = [allPeople indexOfObject:currentUser];
+            EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+            cell.profilePic.image = currentUser.profilePic;
+            
+        }else if ([keyPath isEqualToString:@"tasks"]){
+            NSLog(@"KVO observed tasks changed");
+        }else if ([keyPath isEqualToString:@"alarms"]){
+            NSLog(@"KVO observed alarms changed");
+        }else{
+            NSLog(@"KVO observed change %@", change);
+        }
+    }
+}
+
+- (void)updateProfilePic:(NSNotification *)notif{
+    EWPerson *person = (EWPerson *)([notif.object isKindOfClass:[EWPerson class]]?notif.object:notif.userInfo[@"person"]);
+    NSInteger row = [allPeople indexOfObject:person];
+    EWCollectionPersonCell *cell;
+    if (row < allPeople.count) {
+        cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:row inSection:0]];
+    }
+    cell.profilePic.image = person.profilePic;
+    //[_collectionView reloadData];
+    [_collectionView setNeedsDisplay];
+}
 
 #pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
@@ -389,25 +344,25 @@
 
     }else if (actionSheet.tag == 1001){
         //person cell action sheet
-        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         switch (buttonIndex) {
             case 0:{
                 
                 EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
-                controller.person = person;
+                controller.person = allPeople[selectedPersonIndex];
                 [self presentViewControllerWithBlurBackground:controller];
                 
                 break;
             }
             case 1:{
                 [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                EWPerson *person = allPeople[selectedPersonIndex];
                 [EWServer buzz:@[person]];
                 
                 break;
             }
             case 2:{
                 EWRecordingViewController *controller = [[EWRecordingViewController alloc] init];
-                EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
+                EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:allPeople[selectedPersonIndex]];
                 controller.task = task;
                 [self presentViewControllerWithBlurBackground:controller];
                 break;
@@ -461,24 +416,25 @@
 
 #pragma mark - CollectionViewDelegate
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    id <NSFetchedResultsSectionInfo> sectionInfo = self.fetchController.sections[section];
-    return [sectionInfo numberOfObjects];
+    if (section == 0) {
+        return allPeople.count;
+    }else{
+        return 0;
+    }
     
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
-    NSArray *sections = self.fetchController.sections;
-    return sections.count;
+    return 1;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    //Cell
     EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
-    //Data
-    EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
-    //UI
+    EWPerson *person = allPeople[indexPath.row];
     cell.profilePic.image = person.profilePic;
     cell.name.text = person.name;
+    
+    
     
     return cell;
 }
@@ -501,118 +457,6 @@
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
-}
-
-
-
-#pragma mark - FetchedResultController delegate
-- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id<NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type{
-    NSLog(@"FetchController detected session change");
-}
-
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath{
-    NSMutableDictionary *change = [NSMutableDictionary new];
-    switch(type)
-    {
-        case NSFetchedResultsChangeInsert:
-            change[@(type)] = newIndexPath;
-            break;
-        case NSFetchedResultsChangeDelete:
-            change[@(type)] = indexPath;
-            break;
-        case NSFetchedResultsChangeUpdate:
-            change[@(type)] = indexPath;
-            break;
-        case NSFetchedResultsChangeMove:
-            change[@(type)] = @[indexPath, newIndexPath];
-            break;
-    }
-    [cellChangeArray addObject:change];
-}
-
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller{
-    NSLog(@"Content of collection view will change");
-}
-
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
-    if (cellChangeArray.count > 0)
-    {
-        
-        if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {
-            // This is to prevent a bug in UICollectionView from occurring.
-            // The bug presents itself when inserting the first object or deleting the last object in a collection view.
-            // http://stackoverflow.com/questions/12611292/uicollectionview-assertion-failure
-            // This code should be removed once the bug has been fixed, it is tracked in OpenRadar
-            // http://openradar.appspot.com/12954582
-            [self.collectionView reloadData];
-            
-        } else {
-        
-        [self.collectionView performBatchUpdates:^{
-            
-            for (NSDictionary *change in cellChangeArray)
-            {
-                [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
-                    
-                    NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-                    switch (type)
-                    {
-                        case NSFetchedResultsChangeInsert:
-                            [self.collectionView insertItemsAtIndexPaths:@[obj]];
-                            break;
-                        case NSFetchedResultsChangeDelete:
-                            [self.collectionView deleteItemsAtIndexPaths:@[obj]];
-                            break;
-                        case NSFetchedResultsChangeUpdate:
-                            [self.collectionView reloadItemsAtIndexPaths:@[obj]];
-                            break;
-                        case NSFetchedResultsChangeMove:
-                            [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
-                            break;
-                    }
-                }];
-            }
-        } completion:^(BOOL finished){
-            NSLog(@"Updates for collection view completed: %uud", finished);
-        }];
-        }
-    }
-    
-    [cellChangeArray removeAllObjects];
-}
-
-- (BOOL)shouldReloadCollectionViewToPreventKnownIssue {
-    __block BOOL shouldReload = NO;
-    for (NSDictionary *change in cellChangeArray) {
-        [change enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-            NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-            NSIndexPath *indexPath = obj;
-            switch (type) {
-                case NSFetchedResultsChangeInsert:
-                    if ([self.collectionView numberOfItemsInSection:indexPath.section] == 0) {
-                        shouldReload = YES;
-                    } else {
-                        shouldReload = NO;
-                    }
-                    break;
-                case NSFetchedResultsChangeDelete:
-                    if ([self.collectionView numberOfItemsInSection:indexPath.section] == 1) {
-                        shouldReload = YES;
-                    } else {
-                        shouldReload = NO;
-                    }
-                    break;
-                case NSFetchedResultsChangeUpdate:
-                    shouldReload = NO;
-                    break;
-                case NSFetchedResultsChangeMove:
-                    shouldReload = NO;
-                    break;
-            }
-        }];
-    }
-    
-    return shouldReload;
 }
 
 @end

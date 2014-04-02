@@ -9,10 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "EWAlarmPageView.h"
 
-@import CoreData;
-
 @class EWPerson;
-@interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,NSFetchedResultsControllerDelegate> {
+@interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
     NSMutableArray * _alarmPages; //alarm page container
 }
 
@@ -24,6 +22,11 @@
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
+
+//@property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
+//@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+//@property (weak, nonatomic) IBOutlet UILabel *locationLabel;
+//@property (weak, nonatomic) IBOutlet UILabel *rankLabel;
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
 
 //action

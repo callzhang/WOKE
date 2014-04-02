@@ -161,14 +161,4 @@
     return [self predicateWhere:field near:point];
 }
 
-- (id)copyWithZone:(NSZone *)zone{
-    SMPredicate *copied = [[SMPredicate alloc] init];
-    copied.predicateDictionary = self.predicateDictionary;
-    copied.sm_predicateOperatorType = self.sm_predicateOperatorType;
-
-    return copied;
-}
-
-
-
 @end

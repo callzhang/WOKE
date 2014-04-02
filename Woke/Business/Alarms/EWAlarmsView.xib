@@ -44,24 +44,10 @@
                         <action selector="changePage:" destination="-1" eventType="valueChanged" id="5JT-XS-3pY"/>
                     </connections>
                 </pageControl>
-                <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o2s-kb-Yuz">
-                    <rect key="frame" x="20" y="39" width="22" height="22"/>
+                <button opaque="NO" alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o2s-kb-Yuz">
+                    <rect key="frame" x="135" y="479" width="50" height="50"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" red="1" green="0.0" blue="0.10805122821495416" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <state key="normal" title="1"/>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                            <integer key="value" value="4"/>
-                        </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
-                            <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
-                            <integer key="value" value="1"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
+                    <state key="normal" image="addBtn"/>
                     <connections>
                         <action selector="scheduleInitialAlarms:" destination="-1" eventType="touchUpInside" id="IEa-cD-2wi"/>
                     </connections>
@@ -86,5 +72,6 @@
     <resources>
         <image name="AlarmViewBar" width="320" height="100"/>
         <image name="Default" width="320" height="480"/>
+        <image name="addBtn" width="50" height="50"/>
     </resources>
 </document>
