@@ -94,7 +94,7 @@
         //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         request.predicate = predicate1;
         
-        NSLog(@"==== Start fetching tasks for person =====");
+        NSLog(@"==== Start fetching tasks for %@ =====", person.name);
         
         tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
         //Cannot retrieve referenceObject from an objectID that was not created by this store
@@ -611,8 +611,6 @@
     
     return NO;
 }
-
-
 
 
 @end

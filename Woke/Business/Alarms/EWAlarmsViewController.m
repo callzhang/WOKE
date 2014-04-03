@@ -569,7 +569,12 @@
                 }];
             }
         } completion:^(BOOL finished){
-            NSLog(@"Updates for collection view completed: %uud", finished);
+            if (finished) {
+                NSLog(@"Updates for collection view completed");
+            }else{
+                NSLog(@"*** Update of collection view failed");
+            }
+            
         }];
         }
     }

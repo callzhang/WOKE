@@ -226,14 +226,7 @@
             } else if ([rhs isKindOfClass:[NSManagedObject class]]) {
                 rhs = (NSString *)[self referenceObjectForObjectID:[rhs objectID]];;
             } else if ([rhs isKindOfClass:[NSManagedObjectID class]]) {
-                @try {
-                    rhs = (NSString *)[self referenceObjectForObjectID:rhs];
-                }
-                @catch (NSException *exception) {
-                    NSLog(@"%@", exception);
-                    
-                }
-                
+                rhs = (NSString *)[self referenceObjectForObjectID:rhs];
             }
             [*query where:lhs isEqualTo:rhs];
             break;
