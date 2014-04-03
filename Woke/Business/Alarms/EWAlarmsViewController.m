@@ -151,21 +151,17 @@
     }
     
     //predicate
-    SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
-//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SUBQUERY(tasks, $task, $task.time >= %@ AND $task.time <= %@).@count != 0", [NSDate date], [[NSDate date] timeByAddingMinutes:60]];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
+    //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
+    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
+    //'to-many key not allowed here'
     
     //sort
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastSeenDate" ascending:YES];
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    request.predicate = locPredicate;
+    //request.predicate = predicate;
     request.sortDescriptors = @[sort];
-    
-    
-    //test
-    NSArray *result = [[EWDataStore currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:NULL];
     
     //controller
     fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:[EWDataStore currentContext] sectionNameKeyPath:nil cacheName:@"com.wokealarm.fetchControllerCache"];
