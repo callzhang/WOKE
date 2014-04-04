@@ -180,7 +180,7 @@
                          
                          //leaving
                          [self dismissViewControllerAnimated:YES completion:^{
-                             [context saveOnSuccess:^{
+                             [[EWDataStore currentContext] saveOnSuccess:^{
                                  NSLog(@"User %@ logged in from facebook", fb_user.username);
                              } onFailure:^(NSError *error) {
                                  NSLog(@"Unable to save user info");

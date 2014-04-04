@@ -96,7 +96,7 @@
     EWMediaViewCell *mediaCell = (EWMediaViewCell *)cell;
     
     //link progress bar with cell's progress bar
-    currentCell = mediaCell;
+    self.currentCell = mediaCell;
     [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
 
     

@@ -16,7 +16,7 @@
 /**
  Contains all tasks scheduled as alarm for current user
  */
-@property (retain, nonatomic) NSArray *allTasks;
+//@property (retain, nonatomic) NSArray *allTasks;
 
 + (EWTaskStore *)sharedInstance;
 //find
@@ -24,6 +24,12 @@
  get future task for person
  */
 - (NSArray *)getTasksByPerson:(EWPerson *)person;
+
+/**
+ Shortcut for all tasks from current user
+ */
++ (NSArray *)myTasks;
+
 /**
  get task for next n'th day
  */

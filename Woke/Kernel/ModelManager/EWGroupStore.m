@@ -76,8 +76,8 @@
 
 
 -(EWGroup *)createGroup{
-    EWGroup *group = [NSEntityDescription insertNewObjectForEntityForName:@"EWGroup" inManagedObjectContext:context];
-    [context saveOnSuccess:^{
+    EWGroup *group = [NSEntityDescription insertNewObjectForEntityForName:@"EWGroup" inManagedObjectContext:[EWDataStore currentContext]];
+    [[EWDataStore currentContext] saveOnSuccess:^{
         //
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error in creating Group" format:@"Reason: %@",error.description];
@@ -102,7 +102,7 @@
         group.image = [UIImage imageNamed:@"logoTest.png"];
         group.created = [NSDate date];
         //save
-        [context saveOnSuccess:NULL onFailure:NULL];
+        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:NULL];
     }else{
         group = groups[0];
     }

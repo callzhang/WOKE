@@ -1,5 +1,18 @@
 PODS:
   - AFNetworking (1.1.0)
+  - ASIHTTPRequest (1.8.2):
+    - ASIHTTPRequest/ASIWebPageRequest
+    - ASIHTTPRequest/CloudFiles
+    - ASIHTTPRequest/Core
+    - ASIHTTPRequest/S3
+  - ASIHTTPRequest/ASIWebPageRequest (1.8.2):
+    - ASIHTTPRequest/Core
+  - ASIHTTPRequest/CloudFiles (1.8.2):
+    - ASIHTTPRequest/Core
+  - ASIHTTPRequest/Core (1.8.2):
+    - Reachability
+  - ASIHTTPRequest/S3 (1.8.2):
+    - ASIHTTPRequest/Core
   - Facebook-iOS-SDK (3.13.0)
   - Reachability (3.1.1)
   - StackMob (2.2.0):
@@ -7,13 +20,14 @@ PODS:
   - Weibo (2.4.2)
 
 DEPENDENCIES:
-  - Facebook-iOS-SDK (~> 3.13)
-  - Reachability (~> 3.0)
-  - StackMob (~> 2.2)
-  - Weibo (~> 2.4)
+  - ASIHTTPRequest
+  - Facebook-iOS-SDK
+  - StackMob
+  - Weibo
 
 SPEC CHECKSUMS:
   AFNetworking: 761a418233d280c1e0580bcb76ff9cb4c3073d17
+  ASIHTTPRequest: 4bd3ed65bf8a726292c5fa79ea5c0a2e02c97241
   Facebook-iOS-SDK: 5788541337dc88265bc940cb5ffb05915f9b64e3
   Reachability: be4883bb93f31e38266ae3365e5600a317aae735
   StackMob: d824b7837fe14776cac7c0602cfa7bb1fe20984a

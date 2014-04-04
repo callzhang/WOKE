@@ -200,7 +200,7 @@
     } onFailure:^(NSError *error) {
         NSLog(@"Unable to login with username: %@. Error: %@", username, error.description);
         //if not logged in, register one
-        EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:context];
+        EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:[EWDataStore currentContext]];
         [newMe setUsername:username];
         [newMe setPassword:password];
         newMe.name = [NSString stringWithFormat:@"User_%@", username];
@@ -328,7 +328,7 @@
     
     if (currentUser) {
         currentUser.lastSeenDate = [NSDate date];
-        [context saveOnSuccess:^{
+        [[EWDataStore currentContext] saveOnSuccess:^{
             NSLog(@"Updated last seen date");
         } onFailure:^(NSError *error) {
             NSLog(@"Failed to update last seen date");

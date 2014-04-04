@@ -18,7 +18,7 @@
 
 @implementation EWTaskStore
 //@synthesize context, model;
-@synthesize allTasks = _allTasks;
+//@synthesize allTasks = _allTasks;
 //@synthesize context;
 
 +(EWTaskStore *)sharedInstance{
@@ -58,30 +58,25 @@
     return self;
 }
 
-#pragma mark - SETTER & GETTER
-- (NSArray *)allTasks{
-
-    //get from relationship
-    _allTasks = [self getTasksByPerson:currentUser];
-    
-    
-    return _allTasks;
-}
-
 - (void)setAllTasks:(NSMutableArray *)allTasks{
     NSLog(@"**** Please do not explicitly save all tasks to local ****");
 }
 
 
 #pragma mark - SEARCH
-- (NSArray *)getTasksByPerson:(EWPerson *)person{
+- (NSArray *)getTasksByPerson:(EWPerson *)p{
+    if (![NSThread isMainThread]) {
+        NSLog(@"Getting task by person in bg thread");
+    }
+    EWPerson *person = [EWDataStore objectForCurrentContext:p];
     NSArray *tasks = [person.tasks allObjects];
     BOOL fetch = YES;
     
-    //check if person is outdated or task count is wrong
-    if (![person.lastmoddate isOutDated]) {
-        
+    //if self or person is not outdated
+    if ([person.objectID isEqual:currentUser.objectID] || ![person.lastmoddate isOutDated]) {
+        //plus the task count is 7n
         if (tasks.count == 7 * nWeeksToScheduleTask) {
+            //skip fetch
             fetch = NO;
         }
     }
@@ -89,7 +84,7 @@
     if (fetch) {
         //this usually not happen
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
-        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner.username == %@", person.username];
+        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", person];
         //NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time >= %@", [NSDate date]];
         //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         request.predicate = predicate1;
@@ -104,6 +99,10 @@
     tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
     
     return tasks;
+}
+
++ (NSArray *)myTasks{
+    return [[EWTaskStore sharedInstance] getTasksByPerson:[EWDataStore user]];
 }
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
@@ -161,16 +160,16 @@
     NSLog(@"Start scheduling tasks");
     
     //check necessity
-    NSMutableArray *tasks = [self.allTasks mutableCopy];
-    if (EWAlarmManager.sharedInstance.allAlarms.count == 0 && tasks.count == 0) {
+    NSMutableArray *tasks = [[self getTasksByPerson:[EWDataStore user]] mutableCopy];
+    NSArray *alarms = [[NSArray alloc] initWithArray:[EWAlarmManager myAlarms]];
+    if (alarms.count == 0 && tasks.count == 0) {
         NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
         return nil;
     }
     
     //for each alarm, find matching task, or create new task
     BOOL newTaskNotify = NO;
-    NSArray *alarms = [[NSArray alloc] initWithArray:EWAlarmManager.sharedInstance.allAlarms];
-    NSMutableArray *goodTasks = [[NSMutableArray alloc] init];
+    NSMutableArray *goodTasks = [NSMutableArray new];
     
     for (EWAlarmItem *a in alarms){//loop through alarms
         
@@ -178,34 +177,40 @@
             
             //next time for alarm, this is what the time should be there
             NSDate *time = [a.time nextOccurTime:i];
-            
+            BOOL taskMatched = NO;
             //loop through the tasks to verify the target time has been scheduled
             for (EWTaskItem *t in tasks) {
                 if ([t.time isEqualToDate:time]) {
                     //find the task, move to good task
                     [goodTasks addObject:t];
                     [tasks removeObject:t];
+                    taskMatched = YES;
                     //break here to avoid creating new task
                     break;
                 }
             }
             
-            //start scheduling task
-            NSLog(@"Task with time: %@ has not been found, creating!", time);
-            //new task
-            EWTaskItem *t = [self newTask];
-            t.time = time;
-            t.alarm = a;
-            t.owner = a.owner;
-            t.state = a.state;
-            [goodTasks addObject:t];
-            //localNotif
-            [self scheduleNotificationForTask:t];
-            //prepare to broadcast
-            newTaskNotify = YES;
+            if (!taskMatched) {
+                //start scheduling task
+                NSLog(@"Task on %@ has not been found, creating!", time.weekday);
+                //new task
+                EWTaskItem *t = [self newTask];
+                t.time = time;
+                t.alarm = a;
+                t.owner = a.owner;
+                t.state = a.state;
+                [goodTasks addObject:t];
+                //localNotif
+                [self scheduleNotificationForTask:t];
+                //prepare to broadcast
+                newTaskNotify = YES;
+            }
         }
     }
     if (newTaskNotify) {
+        //save
+        [[EWDataStore currentContext] saveAndWait:NULL];
+        
         //notification of new task (to interface)
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
@@ -223,9 +228,7 @@
         t.pastOwner = currentUser;
         
     }
-    
-    //save to _allTasks
-    _allTasks = tasks;
+
     
     //save
     [[EWDataStore currentContext] saveOnSuccess:^{
@@ -236,17 +239,17 @@
     
     //last checked
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
-    return tasks;
+    return goodTasks;
 }
 
 #pragma mark - NEW
 - (EWTaskItem *)newTask{
     
-    EWTaskItem *t = [NSEntityDescription insertNewObjectForEntityForName:@"EWTaskItem" inManagedObjectContext:context];
+    EWTaskItem *t = [NSEntityDescription insertNewObjectForEntityForName:@"EWTaskItem" inManagedObjectContext:[EWDataStore currentContext]];
     //assign id
     [t assignObjectId];
     //relation
-    t.owner = currentUser;
+    t.owner = [EWDataStore objectForCurrentContext:currentUser];
     //others
     t.added = [NSDate date];
     //save
@@ -321,9 +324,10 @@
 }
 
 - (void)updateTaskTimeForAlarm:(EWAlarmItem *)a{
-    if (!a.tasks.count) {
+    EWAlarmItem *alarm = (EWAlarmItem *)[[EWDataStore currentContext] objectWithID:a.objectID];
+    if (!alarm.tasks.count) {
         //[a.managedObjectContext refreshObject:a mergeChanges:YES];
-        [EWDataStore refreshObjectWithServer:a];
+        //[EWDataStore refreshObjectWithServer:a];
         NSLog(@"Alarm's tasks not fetched, refresh from server. New tasks relation has %lu tasks", (unsigned long)a.tasks.count);
     }
     NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
@@ -351,14 +355,15 @@
 
 - (void)updateNotifTone:(NSNotification *)notif{
     EWAlarmItem *a = notif.userInfo[@"alarm"];
+    EWAlarmItem *alarm = (EWAlarmItem *)[EWDataStore objectForCurrentContext:a];
     
-    if (!a.tasks.count){
+    if (!alarm.tasks.count){
         NSLog(@"alarm's task not fetched, refresh it from server");
         //[a.managedObjectContext refreshObject:a mergeChanges:YES];
-        [EWDataStore refreshObjectWithServer:a];
+        //[EWDataStore refreshObjectWithServer:a];
     }
     
-    for (EWTaskItem *t in a.tasks) {
+    for (EWTaskItem *t in alarm.tasks) {
         [self cancelNotificationForTask:t];
         [self scheduleNotificationForTask:t];
         NSLog(@"Notification on %@ tone updated to: %@", t.time.date2String, a.tone);
@@ -374,8 +379,9 @@
     //NSAssert([task.medias containsObject:media], @"Media and Task should have relation");
     dispatch_async(dispatch_get_main_queue(), ^{
         //[task.managedObjectContext refreshObject:task mergeChanges:YES];
-        [EWDataStore refreshObjectWithServer:task];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{kPushTaskKey: task}];
+        //[EWDataStore refreshObjectWithServer:task];
+        EWTaskItem *task_ = (EWTaskItem *)[EWDataStore objectForCurrentContext:task];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{kPushTaskKey: task_}];
     });
 }
 
@@ -414,16 +420,14 @@
 }
 
 - (void)deleteAllTasks{
-    for (EWTaskItem *t in self.allTasks) {
+    NSLog(@"*** Deleting all tasks");
+    
+    for (EWTaskItem *t in [self getTasksByPerson:[EWDataStore user]]) {
         [self cancelNotificationForTask:t];
         [[EWDataStore currentContext] deleteObject:t];
     }
     //save
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        NSLog(@"All tasks has been purged");
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Unable to delete all tasks" format:@"Reason: %@", error.description];
-    }];
+    [[EWDataStore currentContext] saveAndWait:NULL];
 }
 
 #pragma mark - Local Notification
@@ -521,26 +525,27 @@
 
 - (void)checkScheduledNotifications{
     NSInteger nNotification = [[[UIApplication sharedApplication] scheduledLocalNotifications] count];
-    NSInteger nTask = self.allTasks.count;
+    NSArray *tasks = [self getTasksByPerson:[EWDataStore user]];
+    NSInteger nTask = tasks.count;
     NSLog(@"There are %ld scheduled local notification and %ld stored task info", (long)nNotification, (long)nTask);
     
     //delete redundant alarm notif
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
         BOOL del = YES;
-        for (EWTaskItem *t in _allTasks) {
+        for (EWTaskItem *t in tasks) {
             if([aNotif.userInfo[kPushTaskKey] isEqualToString:t.ewtaskitem_id]){
                 del=NO;
                 break;
             }
         }
         if (del) {
-            NSLog(@"========Local Notification on %@ will be deleted due to no paired stored info========", aNotif.fireDate.weekday);
+            NSLog(@"===== Local Notification on %@ will be deleted =====", aNotif.fireDate);
             [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
         }
     }
     
     //schedule necessary alarm notif
-    for (EWTaskItem *t in _allTasks) {
+    for (EWTaskItem *t in tasks) {
         [self scheduleNotificationForTask:t];
     }
     
@@ -560,11 +565,7 @@
     NSArray *pastTasks = [tasks filteredArrayUsingPredicate:predicate];
     if (pastTasks.count > 0) {
         //change task relationship
-        if ([currentUser isFault]) {
-            //[currentUser.managedObjectContext refreshObject:currentUser mergeChanges:YES];
-            [EWDataStore refreshObjectWithServer:currentUser];
-            NSLog(@"fetched user info from server");
-        }
+        
         for (EWTaskItem *t in pastTasks) {
             t.owner = nil;
             t.pastOwner = currentUser;

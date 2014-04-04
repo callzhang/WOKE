@@ -177,7 +177,7 @@ static NSString *g_textFieldCellIdentifier = @"textFieldCell";
     [self dismissViewControllerAnimated:YES completion:NULL];
     
     //save
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Alarm updated");
     } onFailure:^(NSError *error) {
         [NSException raise:@"Alarm save failed" format:@"Reason: %@", error.description];
@@ -416,8 +416,8 @@ static NSString *g_textFieldCellIdentifier = @"textFieldCell";
     if (buttonIndex != actionSheet.cancelButtonIndex) {
         // Delete alarm item
         
-        [context deleteObject:_alarm];
-        [context saveOnSuccess:^{
+        [[EWDataStore currentContext] deleteObject:_alarm];
+        [[EWDataStore currentContext] saveOnSuccess:^{
             NSLog(@"Alarm deleted");
         } onFailure:^(NSError *error) {
             [NSException raise:@"Error in deleting alarm" format:@"Reason: %@",error.description];

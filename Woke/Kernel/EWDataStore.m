@@ -23,7 +23,7 @@
 #import "SMBinaryDataConversion.h"
 
 //Global variable
-NSManagedObjectContext *context;
+//NSManagedObjectContext *context;
 SMClient *client;
 SMPushClient *pushClient;
 AmazonSNSClient *snsClient;
@@ -65,11 +65,9 @@ AmazonSNSClient *snsClient;
         
         //core data
         self.coreDataStore = [client coreDataStoreWithManagedObjectModel:self.model];
-        //context = [self.coreDataStore contextForCurrentThread];
-        context = [self.coreDataStore mainThreadContext];
         
         //cache policy
-        self.coreDataStore.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
+        self.coreDataStore.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
         __block SMCoreDataStore *blockCoreDataStore = self.coreDataStore;
         self.coreDataStore.defaultSMMergePolicy = SMMergePolicyLastModifiedWins;
         [client.networkMonitor setNetworkStatusChangeBlock:^(SMNetworkStatus status) {
@@ -138,24 +136,25 @@ AmazonSNSClient *snsClient;
 }
 
 - (void)save{
-    //save context on main thread
-    [context saveOnSuccess:^{
-        NSLog(@"Core Data saved");
-    } onFailure:^(NSError *error) {
-        NSLog(@"Error in save Core Data objects: %@", error.description);
-    }];
+
     //save on current thread
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"Failed to save on app enter background");
+        NSLog(@"Failed to save on app enter ");
     }];
+    
     //save on designated thread
-    [EWDataStore saveDataInBackgroundInBlock:NULL completion:NULL];
+    dispatch_async(coredata_queue, ^{
+        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+            NSLog(@"Failed to save on dedicated queue");
+        }];
+    });
 }
 
 - (NSManagedObjectContext *)currentContext{
-    NSManagedObjectContext *c = [self.coreDataStore contextForCurrentThread];
+    NSManagedObjectContext *c = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     
-    //[context observeContext:c];//No need to observe because both context are child-context of SM private context
+    //[context observeContext:c];
+    //No need to observe because both context are child-context of SM private context
     
     return c;
 }
@@ -185,7 +184,7 @@ AmazonSNSClient *snsClient;
     
     //refresh current user
     NSLog(@"1. refresh current user");
-    [EWDataStore refreshObjectWithServer:currentUser];
+    [EWDataStore objectForCurrentContext:currentUser];
     
     //check alarm, task, and local notif
     [self checkAlarmData];
@@ -198,8 +197,8 @@ AmazonSNSClient *snsClient;
 
 
 - (void)checkAlarmData{
-    NSInteger nAlarm = [[EWAlarmManager sharedInstance] allAlarms].count;
-    NSInteger nTask = [[EWTaskStore sharedInstance] allTasks].count;
+    NSInteger nAlarm = [[EWAlarmManager sharedInstance] alarmsForUser:currentUser].count;
+    NSInteger nTask = [EWTaskStore myTasks].count;
     if (nTask == 0 && nAlarm == 0) {
         return;
     }
@@ -370,68 +369,74 @@ AmazonSNSClient *snsClient;
 }
 
 + (NSManagedObjectContext *)currentContext{
-    return [EWDataStore sharedInstance].currentContext;
+    return [SMClient defaultClient].coreDataStore.contextForCurrentThread;
 }
 
 
 #pragma mark - Core Data with multithreading
-+ (void)saveDataInContext:(void(^)(NSManagedObjectContext *currentContext))block
-{
-	NSManagedObjectContext *currentContext = [EWDataStore sharedInstance].coreDataStore.contextForCurrentThread;
-	[currentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-	[context setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
-	[context observeContext:currentContext];
-    
-    //execute change block
-    if (block) {
-        block(currentContext);
-    }
-	
-    //save
-	if ([currentContext hasChanges]){
-        //commit save to background context
-		[currentContext saveOnSuccess:^{
-            NSLog(@"Background change saved to context");
-        }onFailure:^(NSError *error) {
-            NSLog(@"Save in background thread context failed");
-        }];
-        //revert the default merge policy for main context
-        [context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-	}
-}
+//+ (void)saveDataInContext:(void(^)(NSManagedObjectContext *currentContext))block
+//{
+//	NSManagedObjectContext *currentContext = [EWDataStore currentContext];
+//	[currentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+//	[context setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
+//	[context observeContext:currentContext];
+//    
+//    //execute change block
+//    if (block) {
+//        block(currentContext);
+//    }
+//	
+//    //save
+//	if ([currentContext hasChanges]){
+//        //commit save to background context
+//		[currentContext saveOnSuccess:^{
+//            NSLog(@"Background change saved to context");
+//        }onFailure:^(NSError *error) {
+//            NSLog(@"Save in background thread context failed");
+//        }];
+//        //revert the default merge policy for main context
+//        [context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+//	}
+//}
 
-+ (void)saveDataInBackgroundInBlock:(void(^)(NSManagedObjectContext *context))saveBlock completion:(void(^)(void))completion
-{
-	dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
-		[self saveDataInContext:saveBlock];
-        
-        if (completion) {
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                completion();
-            });
-        }
-	});
-}
+//+ (void)saveDataInBackgroundInBlock:(void(^)(NSManagedObjectContext *context))saveBlock completion:(void(^)(void))completion
+//{
+//	dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+//		[self saveDataInContext:saveBlock];
+//        
+//        if (completion) {
+//            dispatch_sync(dispatch_get_main_queue(), ^{
+//                completion();
+//            });
+//        }
+//	});
+//}
 
-+ (NSManagedObject *)refreshObjectWithServer:(NSManagedObject *)obj{
-    dispatch_sync([EWDataStore sharedInstance].coredata_queue, ^{
-        [self saveDataInContext:^(NSManagedObjectContext *currentContext) {
-            NSManagedObject *newObj = [currentContext objectWithID:obj.objectID];
-            NSLog(@"Fetched obj at background: %@", newObj.class);
-        }];
-    });
-    
-    NSAssert([obj.managedObjectContext isEqual:[EWDataStore currentContext]], @"Current context is not equal to obj's context");
-    
-    obj = [obj.managedObjectContext objectWithID:obj.objectID];
-    return obj;
+//+ (NSManagedObject *)refreshObjectWithServer:(NSManagedObject *)obj{
+//    dispatch_sync([EWDataStore sharedInstance].coredata_queue, ^{
+//        [self saveDataInContext:^(NSManagedObjectContext *currentContext) {
+//            NSManagedObject *newObj = [currentContext objectWithID:obj.objectID];
+//            NSLog(@"Fetched obj at background: %@", newObj.class);
+//        }];
+//    });
+//    
+//    NSAssert([obj.managedObjectContext isEqual:[EWDataStore currentContext]], @"Current context is not equal to obj's context");
+//    
+//    obj = [obj.managedObjectContext objectWithID:obj.objectID];
+//    return obj;
+//}
+
++ (NSManagedObject *)objectForCurrentContext:(NSManagedObject *)obj{
+    NSManagedObject * objForCurrentContext = [[EWDataStore sharedInstance].currentContext objectWithID:obj.objectID];
+    NSAssert([[objForCurrentContext class] isEqual: [obj class]], @"Returned different class");
+    return objForCurrentContext;
 }
 
 + (EWPerson *)user{
     if ([NSThread isMainThread]) {
         return currentUser;
     }else{
-        NSLog(@"**** Gett current user on background thread");
+        NSLog(@"**** Gett current user on background thread ****");
         return (EWPerson *)[[EWDataStore currentContext] objectWithID:currentUser.objectID];
     }
     return nil;

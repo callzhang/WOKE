@@ -213,7 +213,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
                 //OK
                 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                 [currentUser addFriendsObject:person];
-                [context saveOnSuccess:^{
+                [[EWDataStore currentContext] saveOnSuccess:^{
                     hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
                     hud.mode = MBProgressHUDModeCustomView;
                     hud.labelText = @"Added";
@@ -231,7 +231,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         if (buttonIndex == 0) {
             MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             [currentUser removeFriendedObject:person];
-            [context saveOnSuccess:^{
+            [[EWDataStore currentContext] saveOnSuccess:^{
                 hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
                 hud.mode = MBProgressHUDModeCustomView;
                 hud.labelText = @"Unfriended";
@@ -380,7 +380,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         if (person != currentUser) {
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             [currentUser addFriendsObject:person];
-            [context saveOnSuccess:^{
+            [[EWDataStore currentContext] saveOnSuccess:^{
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
                 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
                 hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];

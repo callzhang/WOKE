@@ -109,7 +109,7 @@
     //set ringtone
     preference[@"tone"] = tone;
     currentUser.preference = preference;
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         //
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error in saving preference" format:@"Reason: %@", error.description];

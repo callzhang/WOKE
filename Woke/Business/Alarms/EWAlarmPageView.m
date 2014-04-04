@@ -56,7 +56,7 @@
 //    a.state = [NSNumber numberWithBool:sender.on];
     
     task.state = [NSNumber numberWithBool:sender.on];
-    [context saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         //
     } onFailure:^(NSError *error) {
         NSLog(@"Task state failed to save");

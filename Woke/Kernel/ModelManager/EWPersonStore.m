@@ -53,7 +53,7 @@ EWPerson *currentUser;
 #pragma mark - CREATE USER
 -(EWPerson *)createPersonWIthUsername:(NSString *)username{
     //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
-    EWPerson *newUser = [[EWPerson alloc] initNewUserInContext:context];
+    EWPerson *newUser = [[EWPerson alloc] initNewUserInContext:[EWDataStore currentContext]];
     [newUser setValue:username forKey:[newUser primaryKeyField]];
     
     [[EWDataStore currentContext] saveOnSuccess:^{

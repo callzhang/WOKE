@@ -21,6 +21,7 @@
 #import "EWFoundation.h"
 #import "MBProgressHUD.h"
 #import "UIViewController+Blur.h"
+#import "EWDataStore.h"
 #import "UIView+HUD.h"
 
 #import <SystemConfiguration/SystemConfiguration.h>

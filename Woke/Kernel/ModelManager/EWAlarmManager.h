@@ -14,8 +14,6 @@
 
 @interface EWAlarmManager : NSObject//EWStore
 
-@property (nonatomic, retain) NSMutableArray *allAlarms;
-
 // Singleton
 + (EWAlarmManager *)sharedInstance ;
 
@@ -26,8 +24,8 @@
 - (void)deleteAllAlarms;
 
 // Search
-- (NSArray *)allAlarmsForUser:(EWPerson *)user;
-//- (EWAlarmItem *)getAlarmAtWeekday:(NSInteger)dayIndex;
+- (NSArray *)alarmsForUser:(EWPerson *)user;
++ (NSArray *)myAlarms;
 - (EWAlarmItem *)nextAlarm;
 
 // change

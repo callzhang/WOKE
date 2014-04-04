@@ -28,7 +28,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 @implementation EWAlarmScheduleViewController{
     NSInteger selected;
-    NSMutableArray *cellArray;
 }
 
 - (void)viewDidLoad{
@@ -50,11 +49,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [backBtn addTarget:self action:@selector(OnDone) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:backBtn];
     
-//    UIButton *cancelBtn = [[UIButton alloc] initWithFrame:CGRectMake(230, 30, 80, 30)];
-//    [cancelBtn setTitle:@"Cancel" forState:UIControlStateNormal];
-//    [cancelBtn addTarget:self action:@selector(OnCancel) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:cancelBtn];
-    
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
     [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
     
@@ -64,8 +58,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)initData{
     //data source
-    alarms = EWAlarmManager.sharedInstance.allAlarms;
-    tasks = EWTaskStore.sharedInstance.allTasks;
+    alarms = [EWAlarmManager myAlarms];
+    tasks = [EWTaskStore myTasks];
     /*
     if (alarms.count == 0 && tasks.count == 0) {
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -76,7 +70,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         [_tableView reloadData];
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     }*/
-    cellArray = [[NSMutableArray alloc] initWithCapacity:7];
     selected = 99;
 }
 
@@ -95,7 +88,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)viewWillDisappear:(BOOL)animated{
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    for (EWAlarmEditCell *cell in cellArray) {
+    for (unsigned i=0; i<[_tableView numberOfRowsInSection:0]; i++) {
+        EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+        
         //state
         if (cell.alarmOn != [cell.alarm.state boolValue]) {
             NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmOn?@"ON":@"OFF");
@@ -120,7 +115,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             
         }
         //save
-        [context saveOnSuccess:^{
+        [[EWDataStore currentContext] saveOnSuccess:^{
             //
         } onFailure:^(NSError *error) {
             NSLog(@"Alarms failed to save");
@@ -168,14 +163,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     EWAlarmEditCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     //data
-    if (!cell.task) {
-        cell.task = tasks[indexPath.row];
-    }
+    cell.task = tasks[indexPath.row];//alarm set automatically
+    
     
     //breaking MVC pattern to get ringtonVC work
     cell.presentingViewController = self;
-    //save to list
-    cellArray[indexPath.row] = cell;
     //return
     return cell;
 }

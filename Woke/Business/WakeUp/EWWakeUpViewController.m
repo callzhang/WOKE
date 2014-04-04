@@ -327,9 +327,9 @@
             [task removeMediasObject:mi];
             [[EWDataStore currentContext] saveOnSuccess:^{
                 [self initData];//refresh
-                [rootViewController.view showSuccessNotification:@"Deleted"];
+                //[rootViewController.view showSuccessNotification:@"Deleted"];
             } onFailure:^(NSError *error) {
-                [rootViewController.view showNotification:@"Failed to delete" WithStyle:hudStyleFailed];
+                //[rootViewController.view showNotification:@"Failed to delete" WithStyle:hudStyleFailed];
             }];
         }else{
             /*
@@ -358,11 +358,11 @@
                 if (t.owner == currentUser || t.pastOwner == currentUser) {
                     NSLog(@"Found task to delete: %@", task.ewtaskitem_id);
                     [t removeMediasObject:mi];
-                    [context saveOnSuccess:^{
+                    [[EWDataStore currentContext] saveOnSuccess:^{
                         [self initData];//refresh
-                        [rootViewController.view showSuccessNotification:@"Deleted"];
+                        //[rootViewController.view showSuccessNotification:@"Deleted"];
                     } onFailure:^(NSError *error) {
-                        [rootViewController.view showNotification:@"Failed" WithStyle:hudStyleFailed];
+                        //[rootViewController.view showNotification:@"Failed" WithStyle:hudStyleFailed];
                     }];
                 }
             }

@@ -24,7 +24,6 @@
 #import "EWAlarmScheduleViewController.h"
 
 @implementation EWAlarmManager
-@synthesize allAlarms = _allAlarms;
 //@synthesize context;
 
 + (EWAlarmManager *)sharedInstance {
@@ -43,30 +42,11 @@
 }
 
 
-#pragma mark - Setter & Getter
-
-- (NSMutableArray *)allAlarms{
-    _allAlarms = [[currentUser.alarms allObjects] mutableCopy];
-    
-    _allAlarms = [[_allAlarms sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSInteger wkd1 = [(EWAlarmItem *)obj1 time].weekdayNumber;
-        NSInteger wkd2 = [(EWAlarmItem *)obj2 time].weekdayNumber;
-        if (wkd1 > wkd2) {
-            return NSOrderedDescending;
-        }else if (wkd1 < wkd2){
-            return NSOrderedAscending;
-        }else{
-            return NSOrderedSame;
-        }
-    }] mutableCopy];
-    return _allAlarms;
-}
-
 #pragma mark - NEW
 //add new alarm, save, add to current user, save user
 - (EWAlarmItem *)newAlarm{
     NSLog(@"Create new Alarm");
-    EWAlarmItem *a = [NSEntityDescription insertNewObjectForEntityForName:@"EWAlarmItem" inManagedObjectContext:context];
+    EWAlarmItem *a = [NSEntityDescription insertNewObjectForEntityForName:@"EWAlarmItem" inManagedObjectContext:[EWDataStore currentContext]];
     //assign id
     [a assignObjectId];
     
@@ -87,24 +67,42 @@
 }
 
 #pragma mark - SEARCH
-- (NSArray *)allAlarmsForUser:(EWPerson *)user{
+- (NSArray *)alarmsForUser:(EWPerson *)user{
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWAlarmItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
     request.relationshipKeyPathsForPrefetching = @[@"tasks"];
     NSArray *alarms = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
-    return alarms;
+    
+    //sort
+    NSArray *sortedAlarms = [alarms sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSInteger wkd1 = [(EWAlarmItem *)obj1 time].weekdayNumber;
+        NSInteger wkd2 = [(EWAlarmItem *)obj2 time].weekdayNumber;
+        if (wkd1 > wkd2) {
+            return NSOrderedDescending;
+        }else if (wkd1 < wkd2){
+            return NSOrderedAscending;
+        }else{
+            return NSOrderedSame;
+        }
+    }];
+    
+    return sortedAlarms;
 }
 
++ (NSArray *)myAlarms{
+    return [[EWAlarmManager sharedInstance] alarmsForUser:[EWDataStore user]];
+}
 
 - (EWAlarmItem *)nextAlarm{
     EWAlarmItem *nextA;
+    NSArray *alarms = [self alarmsForUser:[EWDataStore user]];
     //determine if the day need to be next week
     NSInteger dow = [[NSDate date] weekdayNumber];
-    EWAlarmItem *a = _allAlarms[dow];
+    EWAlarmItem *a = alarms[dow];
     if ([a.time isEarlierThan:[NSDate date]]) {
-        nextA = _allAlarms[(dow+1)%7];
+        nextA = alarms[(dow+1)%7];
     }else{
-        nextA = _allAlarms[dow%7];
+        nextA = alarms[dow%7];
     }
     return nextA;
 }
@@ -112,7 +110,7 @@
 #pragma mark - SCHEDULE
 //schedule according to alarms array. If array is empty, schedule according to default template.
 - (NSArray *)scheduleAlarm{
-    NSArray *alarms = [self.allAlarms copy];
+    NSArray *alarms = [self alarmsForUser:[EWDataStore user]];
     //check excess
     if (alarms.count > 7) {
         [self deleteAllAlarms];
@@ -124,6 +122,7 @@
     //check if alarm exsit
     for (EWAlarmItem *a in alarms) {
         NSInteger i = [a.time weekdayNumber];
+        NSAssert([newAlarms[i] isEqual:@NO], @"Duplicated alarm!");
         newAlarms[i] = a;
     }
     //start add alarm if blank
@@ -131,29 +130,32 @@
     for (NSInteger i=0; i<7; i++) {
         if ([newAlarms[i] isKindOfClass:[EWAlarmItem class]]) {
             continue;
+        }else if ([newAlarms[i] isEqual:@NO]){
+            NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
+            EWAlarmItem *a = [self newAlarm];
+            //set time
+            NSDate *d = [NSDate date];
+            NSInteger wkd = [d weekdayNumber];
+            NSCalendar *cal = [NSCalendar currentCalendar];//TIMEZONE
+            NSDateComponents *comp = [[NSDateComponents alloc] init];
+            comp.day = i-wkd;
+            NSDate *time = [cal dateByAddingComponents:comp toDate:d options:0];//set the weekday
+            
+            //set time
+            comp = [cal components: (NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit |NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:time];
+            comp.hour = 8;
+            comp.minute = 0;
+            time = [cal dateFromComponents:comp];//set time
+            //set alarm time
+            a.time = time;
+            a.state = @YES;
+            a.tone = currentUser.preference[@"DefaultTone"];
+            //add to temp array
+            newAlarms[i] = a;
+            newAlarm = YES;
+        }else{
+            [NSException raise:@"Unknown state" format:@"Check weekday: %d", i];
         }
-        NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
-        EWAlarmItem *a = [self newAlarm];
-        //set time
-        NSDate *d = [NSDate date];
-        NSInteger wkd = [d weekdayNumber];
-        NSCalendar *cal = [NSCalendar currentCalendar];//TIMEZONE
-        NSDateComponents *comp = [[NSDateComponents alloc] init];
-        comp.day = i-wkd;
-        NSDate *time = [cal dateByAddingComponents:comp toDate:d options:0];//set the weekday
-        
-        //set time
-        comp = [cal components: (NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit |NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:time];
-        comp.hour = 8;
-        comp.minute = 0;
-        time = [cal dateFromComponents:comp];//set time
-        //set alarm time
-        a.time = time;
-        a.state = @YES;
-        a.tone = currentUser.preference[@"DefaultTone"];
-        //add to temp array
-        [newAlarms addObject:a];
-        newAlarm = YES;
     }
     if (newAlarm) {
         //notification
@@ -185,8 +187,9 @@
 }
 
 - (void)deleteAllAlarms{
-    NSMutableArray *tasksToDelete = [[NSMutableArray alloc] initWithCapacity:self.allAlarms.count * nWeeksToScheduleTask];
-    for (EWAlarmItem *alarm in self.allAlarms) {
+    NSArray *alarms = [self alarmsForUser:[EWDataStore user]];
+    NSMutableArray *tasksToDelete = [[NSMutableArray alloc] initWithCapacity:alarms.count * nWeeksToScheduleTask];
+    for (EWAlarmItem *alarm in alarms) {
         [tasksToDelete addObject:alarm.tasks];
         [[EWDataStore currentContext] deleteObject:alarm];
     }
@@ -200,7 +203,7 @@
 #pragma mark - CHECK
 - (BOOL)checkAlarms{
     //YES means alarms are good
-    NSArray *alarms = [self allAlarmsForUser:currentUser];
+    NSArray *alarms = [self alarmsForUser:currentUser];
     
     if (alarms.count == 0) {
         //need set up later

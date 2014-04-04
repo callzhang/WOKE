@@ -19,7 +19,7 @@
 /**
  *Shortcut for context for Main thread
  */
-extern NSManagedObjectContext *context;
+//extern NSManagedObjectContext *context;
 extern SMClient *client;
 extern SMPushClient *pushClient;
 extern AmazonSNSClient *snsClient;
@@ -29,19 +29,19 @@ extern AmazonSNSClient *snsClient;
 @interface EWDataStore : NSObject
 
 @property (nonatomic, retain) NSManagedObjectContext *context;
-@property (nonatomic) NSManagedObjectModel *model;
-@property (nonatomic) SMCoreDataStore *coreDataStore;
-@property (nonatomic) dispatch_queue_t dispatch_queue;//Task dispatch queue runs in serial
-@property (nonatomic) dispatch_queue_t coredata_queue;//coredata queue runs in serial
+@property (nonatomic, retain) NSManagedObjectModel *model;
+@property (nonatomic, retain) SMCoreDataStore *coreDataStore;
+@property (nonatomic, retain) dispatch_queue_t dispatch_queue;//Task dispatch queue runs in serial
+@property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in serial
 @property (nonatomic, retain) NSTimer *serverUpdateTimer;
 /**
  *The date that last sync with server
  */
-@property (nonatomic) NSDate *lastChecked;
+@property (nonatomic, retain) NSDate *lastChecked;
 /**
  This is considered thread safe way to call context for current thread
  */
-@property (nonatomic) NSManagedObjectContext *currentContext;
+@property (nonatomic, retain) NSManagedObjectContext *currentContext;
 
 
 + (EWDataStore *)sharedInstance;
@@ -77,16 +77,17 @@ extern AmazonSNSClient *snsClient;
 + (SMRequestOptions *)optionFetchCacheElseNetwork;
 + (SMRequestOptions *)optionFetchNetworkElseCache;
 + (NSManagedObjectContext *)currentContext;
++ (id)objectForCurrentContext:(NSManagedObject *)obj;
 /**
  *Using block to save ManagedObject in designated background thread serial queue.
  *When change occured in given context
  */
-+ (void)saveDataInBackgroundInBlock:(void(^)(NSManagedObjectContext *currentContext))saveBlock completion:(void(^)(void))completion;
+//+ (void)saveDataInBackgroundInBlock:(void(^)(NSManagedObjectContext *currentContext))saveBlock completion:(void(^)(void))completion;
 
 /**
  * User obj's id to fetch from server on another thread
  */
-+ (NSManagedObject *)refreshObjectWithServer:(NSManagedObject *)obj;
+//+ (NSManagedObject *)refreshObjectWithServer:(NSManagedObject *)obj;
 
 /**
  * The thread safe way to get current user

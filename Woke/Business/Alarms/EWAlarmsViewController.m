@@ -82,7 +82,7 @@
     [self initData];
     [self initView];
     [self reloadAlarmPage];
-    [_collectionView reloadData];
+    //[_collectionView reloadData];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
@@ -102,8 +102,8 @@
     
     //init alarm page container
     if (currentUser) {
-        alarms = [EWAlarmManager sharedInstance].allAlarms;
-        tasks = [EWTaskStore sharedInstance].allTasks;
+        alarms = [[EWAlarmManager sharedInstance] alarmsForUser:currentUser];
+        tasks = [EWTaskStore myTasks];
         if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
             NSLog(@"Alarm(%ld) and Task(%ld)", (long)alarms.count, (long)tasks.count);
             alarms = nil;
@@ -239,24 +239,30 @@
 
 #pragma mark - ScrollView
 - (void)loadScrollViewWithPage:(NSInteger)page {
+    
+    //page also means future day count
+    
+    //skip if page is out of bound
     if (page < 0 || page >= _alarmPages.count) {
         return;
     }
     
     
+    //data
+    EWTaskItem *task = tasks[page];
+    
+    
 	// View
     // replace the placeholder if necessary
     if ([_alarmPages[page] isKindOfClass: [EWAlarmPageView class]]) {
+        EWAlarmPageView *pageView = (EWAlarmPageView *)_alarmPages[page];
+        pageView.task = task;
         return;
     }
     
     EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] init];
     _alarmPages[page] = alarmPage;
     
-    //data
-    //page also means future day count
-    //EWAlarmItem *alarm = alarms[page];
-    EWTaskItem *task = tasks[page];
     
     //fill info
     alarmPage.task = task;
@@ -368,7 +374,7 @@
                 break;
             }
                 
-            case 1:{
+            case 1:{ //test view
                 TestViewController *controller = [[TestViewController alloc] init];
                 [self presentViewControllerWithBlurBackground:controller];
                 
@@ -429,13 +435,10 @@
         
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         //refresh
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             [self initData];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self initView];
-                [self reloadAlarmPage];
-            });
-            
+            [self initView];
+            [self reloadAlarmPage];
         });
     }
     //pop up alarmScheduleView

@@ -153,7 +153,7 @@
 //page switch
 - (void)onNewsRefreshAction{
     NSLog(@"News page refresh");
-    [context refreshObject:currentUser mergeChanges:YES];
+    [[EWDataStore currentContext] refreshObject:currentUser mergeChanges:YES];
     friends = [currentUser.friends allObjects];
     [self.tableView reloadData];
 }

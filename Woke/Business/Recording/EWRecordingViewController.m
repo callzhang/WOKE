@@ -117,7 +117,7 @@
         
         //save
         //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
-        [context saveOnSuccess:^{
+        [[EWDataStore currentContext] saveOnSuccess:^{
             [media.managedObjectContext refreshObject:media mergeChanges:YES];
             
             //dismiss hud

@@ -50,7 +50,7 @@
 
 
 - (EWMediaItem *)createMedia{
-    EWMediaItem *m = [NSEntityDescription insertNewObjectForEntityForName:@"EWMediaItem" inManagedObjectContext:context];
+    EWMediaItem *m = [NSEntityDescription insertNewObjectForEntityForName:@"EWMediaItem" inManagedObjectContext:[EWDataStore currentContext]];
     [m assignObjectId];
     m.author = currentUser;
     /*
