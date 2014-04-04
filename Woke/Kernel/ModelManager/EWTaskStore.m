@@ -89,12 +89,12 @@
     if (fetch) {
         //this usually not happen
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
-        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", person];
+        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner.username == %@", person.username];
         //NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time >= %@", [NSDate date]];
         //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         request.predicate = predicate1;
         
-        NSLog(@"==== Start fetching tasks for %@ =====", person.name);
+        //NSLog(@"==== Start fetching tasks for %@ =====", person.name);
         
         tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
         //Cannot retrieve referenceObject from an objectID that was not created by this store

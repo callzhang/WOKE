@@ -213,6 +213,11 @@
     //task
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser];
     
+    if (!task) {
+        NSLog(@"%s No task found for next task, abord", __func__);
+        return;
+    }
+    
     //download
     [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:^{
         //cancel local alarm

@@ -26,7 +26,8 @@
         //get CALayer image
         UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
         [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
-        
+        //CGContextRef contextRef = UIGraphicsGetCurrentContext();
+        //[self.view.layer performSelectorOnMainThread:@selector(renderInContext:) withObject:(__bridge id)(contextRef) waitUntilDone:YES];
         UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
         
         UIGraphicsEndImageContext();

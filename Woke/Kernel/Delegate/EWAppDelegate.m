@@ -254,7 +254,7 @@ UIViewController *rootViewController;
 #endif
     
     if (timeLeft < 100 && timeLeft > 0) {
-        NSLog(@"About to imit alart timer in %fs, schedule a timer",timeLeft);
+        NSLog(@"About to init alart timer in %fs, schedule a timer",timeLeft);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [EWWakeUpManager handleAlarmTimerEvent];
         });

@@ -140,8 +140,8 @@
     _pageView.currentPage = 0;
     
     //add button
-    self.addBtn.alpha = (alarms.count == 0) ? 1:0;
-    
+    self.addBtn.alpha = (tasks.count == 0) ? 1:0;
+    self.addBtn.backgroundColor = [UIColor clearColor];
 }
 
 #pragma mark - Core functions
