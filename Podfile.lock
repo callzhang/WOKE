@@ -15,14 +15,18 @@ PODS:
     - ASIHTTPRequest/Core
   - Facebook-iOS-SDK (3.13.0)
   - Reachability (3.1.1)
+  - Reveal-iOS-SDK (1.0.3)
   - StackMob (2.2.0):
     - AFNetworking (= 1.1.0)
+  - TestFlightSDK (3.0.0)
   - Weibo (2.4.2)
 
 DEPENDENCIES:
   - ASIHTTPRequest
   - Facebook-iOS-SDK
+  - Reveal-iOS-SDK
   - StackMob
+  - TestFlightSDK
   - Weibo
 
 SPEC CHECKSUMS:
@@ -30,7 +34,9 @@ SPEC CHECKSUMS:
   ASIHTTPRequest: 4bd3ed65bf8a726292c5fa79ea5c0a2e02c97241
   Facebook-iOS-SDK: 5788541337dc88265bc940cb5ffb05915f9b64e3
   Reachability: be4883bb93f31e38266ae3365e5600a317aae735
+  Reveal-iOS-SDK: f2525cb560a564fdc086316e89ec45ced6977fd3
   StackMob: d824b7837fe14776cac7c0602cfa7bb1fe20984a
+  TestFlightSDK: 71e3e78d3a46144dbad975a4bf80a14dae6a818a
   Weibo: 5a4a1550ea5c605f7f14a1b1aed526e15aa8cc4f
 
 COCOAPODS: 0.31.1

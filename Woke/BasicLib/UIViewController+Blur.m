@@ -24,16 +24,18 @@
     
     [self presentViewController:viewController animated:YES completion:^{
         //get CALayer image
-        //UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
+        /*
+        UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
         //[self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
-        //CGContextRef contextRef = UIGraphicsGetCurrentContext();
-        //[self.view.layer performSelectorOnMainThread:@selector(renderInContext:) withObject:(__bridge id)(contextRef) waitUntilDone:YES];
-        //UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
-        //UIGraphicsEndImageContext();
+        CGContextRef contextRef = UIGraphicsGetCurrentContext();
+        [self.view.layer performSelectorOnMainThread:@selector(renderInContext:) withObject:(__bridge id)(contextRef) waitUntilDone:YES];
+        UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();*/
+        UIImage *img = [UIImage imageNamed:@"Default"];
         
         //get image
         UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
-        imgView.image = [UIImage imageNamed:@"Default"];
+        imgView.image = img;
         imgView.tag = 99;
         [viewController.view addSubview:imgView];
         [viewController.view sendSubviewToBack:imgView];

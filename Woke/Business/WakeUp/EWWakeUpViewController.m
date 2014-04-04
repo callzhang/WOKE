@@ -327,9 +327,9 @@
             [task removeMediasObject:mi];
             [[EWDataStore currentContext] saveOnSuccess:^{
                 [self initData];//refresh
-                //[rootViewController.view showSuccessNotification:@"Deleted"];
+                [rootViewController.view showSuccessNotification:@"Deleted"];
             } onFailure:^(NSError *error) {
-                //[rootViewController.view showNotification:@"Failed to delete" WithStyle:hudStyleFailed];
+                [rootViewController.view showNotification:@"Failed to delete" WithStyle:hudStyleFailed];
             }];
         }else{
             /*
@@ -360,9 +360,9 @@
                     [t removeMediasObject:mi];
                     [[EWDataStore currentContext] saveOnSuccess:^{
                         [self initData];//refresh
-                        //[rootViewController.view showSuccessNotification:@"Deleted"];
+                        [rootViewController.view showSuccessNotification:@"Deleted"];
                     } onFailure:^(NSError *error) {
-                        //[rootViewController.view showNotification:@"Failed" WithStyle:hudStyleFailed];
+                        [rootViewController.view showNotification:@"Failed" WithStyle:hudStyleFailed];
                     }];
                 }
             }

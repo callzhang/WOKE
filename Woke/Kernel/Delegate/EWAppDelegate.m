@@ -49,8 +49,6 @@ UIViewController *rootViewController;
 
 @implementation EWAppDelegate
 @synthesize backgroundTaskIdentifier;
-//@synthesize myTimer;
-//@synthesize count;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
