@@ -67,7 +67,7 @@ AmazonSNSClient *snsClient;
         self.coreDataStore = [client coreDataStoreWithManagedObjectModel:self.model];
         
         //cache policy
-        self.coreDataStore.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
+        self.coreDataStore.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
         __block SMCoreDataStore *blockCoreDataStore = self.coreDataStore;
         self.coreDataStore.defaultSMMergePolicy = SMMergePolicyLastModifiedWins;
         [client.networkMonitor setNetworkStatusChangeBlock:^(SMNetworkStatus status) {
@@ -345,8 +345,8 @@ AmazonSNSClient *snsClient;
         [[EWUserManagement sharedInstance] registerLocation];
         
         //profilePic & bgImg
-        NSLog(@"Update profile pic recurring task");
-        [[EWUserManagement sharedInstance] checkUserCache];
+        //NSLog(@"Update profile pic recurring task");
+        //[[EWUserManagement sharedInstance] checkUserCache];
         
         //check task
         NSLog(@"Update task recurring task");

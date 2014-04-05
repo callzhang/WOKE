@@ -54,11 +54,7 @@
     a.owner = currentUser; //also sets the reverse
     
     //save
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        //NSLog(@"EWAlarmItem saved successfully");
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Error saving EWAlarmItem" format:@"Reason: %@", error.description];
-    }];
+    [[EWDataStore currentContext] saveAndWait:NULL];
     
     //notification
     //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmNewNotification object:self userInfo:@{@"alarm": a}];
@@ -69,7 +65,7 @@
 #pragma mark - SEARCH
 - (NSArray *)alarmsForUser:(EWPerson *)user{
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWAlarmItem"];
-    request.predicate = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
+    request.predicate = [NSPredicate predicateWithFormat:@"owner == %@", [EWDataStore user]];
     request.relationshipKeyPathsForPrefetching = @[@"tasks"];
     NSArray *alarms = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
     

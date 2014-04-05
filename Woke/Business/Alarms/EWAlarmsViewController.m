@@ -102,7 +102,7 @@
     
     //init alarm page container
     if (currentUser) {
-        alarms = [[EWAlarmManager sharedInstance] alarmsForUser:currentUser];
+        alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskStore myTasks];
         if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
             NSLog(@"Alarm(%ld) and Task(%ld)", (long)alarms.count, (long)tasks.count);
@@ -260,8 +260,15 @@
         return;
     }
     
+    //if page empty, add that to the page array
     EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] init];
     _alarmPages[page] = alarmPage;
+    //check
+    for (UIView *view in self.scrollView.subviews) {
+        if (view.frame.origin.x == self.scrollView.frame.size.width * page) {
+            [NSException raise:@"Duplicated alarm page" format:@"Please check"];
+        }
+    }
     
     
     //fill info
@@ -427,6 +434,7 @@
 #pragma mark - EWAlarmItemEditProtocal
 
 - (void)scheduleAlarm{
+    //TODO: make it faster
     //pop up alarmScheduleView
     if (alarms.count == 0 && tasks.count == 0) {
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -530,7 +538,7 @@
 }
 
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller{
-    NSLog(@"Content of collection view will change");
+    //NSLog(@"Content of collection view will change");
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
@@ -573,7 +581,7 @@
             }
         } completion:^(BOOL finished){
             if (finished) {
-                NSLog(@"Updates for collection view completed");
+                //NSLog(@"Updates for collection view completed");
             }else{
                 NSLog(@"*** Update of collection view failed");
             }

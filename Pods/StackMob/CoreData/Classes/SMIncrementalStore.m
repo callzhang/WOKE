@@ -1691,20 +1691,26 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
 
 - (id)SM_fetchObjectsFromCache:(NSFetchRequest *)fetchRequest withContext:(NSManagedObjectContext *)context error:(NSError * __autoreleasing *)error {
     
+    
     if (SM_CORE_DATA_DEBUG) { DLog() }
     
     if ([self containsSMPredicate:[fetchRequest predicate]]) {
         return [NSArray array];
     }
     
-    if (fetchRequest.predicate) {
-        [fetchRequest setPredicate:[self SM_parsePredicate:fetchRequest.predicate]];
+    
+    //============== Copy the fetch request to local so this method doesn't change the fetch request ================
+    NSFetchRequest *fetchRequestForCache = [fetchRequest copy];
+    
+    if (fetchRequestForCache.predicate) {
+        // ***** This line changes the predicate and assign back to the fetchRequest, causing the fetchRequest.predicate...objectID invaild to remote database ***
+        [fetchRequestForCache setPredicate:[self SM_parsePredicate:fetchRequestForCache.predicate]];
     }
     
     __block NSArray *localCacheResults = nil;
     __block NSError *localCacheError = nil;
     [self.localManagedObjectContext performBlockAndWait:^{
-        localCacheResults = [self.localManagedObjectContext executeFetchRequest:fetchRequest error:&localCacheError];
+        localCacheResults = [self.localManagedObjectContext executeFetchRequest:fetchRequestForCache error:&localCacheError];
     }];
     
     // Error check
@@ -1716,12 +1722,12 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
     }
     
     __block NSString *primaryKeyField = nil;
-    if ([[[[fetchRequest entity] name] lowercaseString] isEqualToString:[self.coreDataStore.session userSchema]]) {
+    if ([[[[fetchRequestForCache entity] name] lowercaseString] isEqualToString:[self.coreDataStore.session userSchema]]) {
         primaryKeyField = [self.coreDataStore.session userPrimaryKeyField];
     } else {
-        primaryKeyField = [fetchRequest.entity primaryKeyField];
+        primaryKeyField = [fetchRequestForCache.entity primaryKeyField];
         if (!primaryKeyField) {
-            [NSEntityDescription SM_throwExceptionNoPrimaryKey:fetchRequest.entity];
+            [NSEntityDescription SM_throwExceptionNoPrimaryKey:fetchRequestForCache.entity];
         }
     }
     
@@ -1732,7 +1738,7 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         NSString *relatedObjectRemoteID = [obj valueForKey:primaryKeyField];
         NSRange range = [relatedObjectRemoteID rangeOfString:@":nil"];
         if (range.location == NSNotFound) {
-            NSManagedObjectID *sm_managedObjectID = [self newObjectIDForEntity:fetchRequest.entity referenceObject:relatedObjectRemoteID];
+            NSManagedObjectID *sm_managedObjectID = [self newObjectIDForEntity:fetchRequestForCache.entity referenceObject:relatedObjectRemoteID];
             
             // Allows us to always return object, faulted or not
             NSManagedObject *sm_managedObject = [context objectWithID:sm_managedObjectID];
@@ -1866,7 +1872,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
 
 - (NSPredicate *)SM_parsePredicate:(NSPredicate *)predicate
 {
-    NSPredicate *predicateToReturn = predicate;
+    //NSPredicate *predicateToReturn = predicate;
+    NSPredicate *predicateToReturn = [predicate copy];
     
     if ([predicate isKindOfClass:[NSCompoundPredicate class]]) {
         // apply SM_parsePredicate to each subpredicate of the compound predicate

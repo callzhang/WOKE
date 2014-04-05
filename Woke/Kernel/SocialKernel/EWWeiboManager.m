@@ -9,6 +9,7 @@
 #import "EWWeiboManager.h"
 #import "EWAppDelegate.h"
 #import "EWDownloadMgr.h"
+#import "WeiboSDk.h"
 
 #import "JSON.h"
 
