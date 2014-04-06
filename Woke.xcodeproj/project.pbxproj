@@ -21,7 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		49FDDA26ACEA46E4B84B836D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222E31C5F1A14B58B80A1E2F /* libPods.a */; };
+		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
@@ -47,7 +47,6 @@
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
 		9B8D3EE418EF3DA2009B8D6C /* libWeiboSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B8D3EE318EF3DA2009B8D6C /* libWeiboSDK.a */; };
-		9B8D3EE618EF3EDF009B8D6C /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B8D3EE518EF3EDF009B8D6C /* libTestFlight.a */; };
 		9BBA5F9018EB3ED500C07809 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8518EB3ED500C07809 /* NSObject+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9BBA5F9118EB3ED500C07809 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8718EB3ED500C07809 /* NSString+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9BBA5F9218EB3ED500C07809 /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8918EB3ED500C07809 /* SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -124,6 +123,8 @@
 		AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837D18D2C8BA0087E654 /* tock.caf */; };
 		AB6BE34F18D7C03A00444ABC /* EWRoundButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */; };
 		AB6BE35218D804C700444ABC /* EWMediaSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE35118D804C700444ABC /* EWMediaSlider.m */; };
+		AB7243CC18F0B08100AE7041 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB7243CB18F0B08100AE7041 /* libTestFlight.a */; };
+		AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB7243CD18F0B09800AE7041 /* Reveal.framework */; };
 		AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78078E18393A66007C8BFD /* EWAlarmManager.m */; };
 		AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079218393A66007C8BFD /* EWGroupStore.m */; };
 		AB7807A218393A66007C8BFD /* EWImageStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079418393A66007C8BFD /* EWImageStore.m */; };
@@ -164,7 +165,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		222E31C5F1A14B58B80A1E2F /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		561ECB5117BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -228,10 +228,7 @@
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
 		9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadMgr.h; path = Download/EWDownloadMgr.h; sourceTree = "<group>"; };
 		9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadMgr.m; path = Download/EWDownloadMgr.m; sourceTree = "<group>"; };
-		9B8D3EDF18EF3D68009B8D6C /* libPods-Weibo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-Weibo.a"; path = "Pods/build/Debug-iphoneos/libPods-Weibo.a"; sourceTree = "<group>"; };
-		9B8D3EE118EF3D73009B8D6C /* libPods-TestFlightSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-TestFlightSDK.a"; path = "Pods/build/Debug-iphoneos/libPods-TestFlightSDK.a"; sourceTree = "<group>"; };
 		9B8D3EE318EF3DA2009B8D6C /* libWeiboSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libWeiboSDK.a; path = Pods/Weibo/libWeiboSDK/libWeiboSDK.a; sourceTree = "<group>"; };
-		9B8D3EE518EF3EDF009B8D6C /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = Pods/TestFlightSDK/libTestFlight.a; sourceTree = "<group>"; };
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9BBA5F8318EB3ED500C07809 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		9BBA5F8418EB3ED500C07809 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
@@ -312,7 +309,7 @@
 		AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWWakeUpView.xib; sourceTree = "<group>"; };
 		AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
 		AB29C4C918DEBCE700C0A141 /* UIViewController+Blur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Blur.h"; sourceTree = "<group>"; };
-		AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Blur.m"; sourceTree = "<group>"; };
+		AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 1; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Blur.m"; sourceTree = "<group>"; tabWidth = 1; };
 		AB29C4CC18DF7C8A00C0A141 /* PBJHexagonFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBJHexagonFlowLayout.h; sourceTree = "<group>"; };
 		AB29C4CD18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBJHexagonFlowLayout.m; sourceTree = "<group>"; };
 		AB2C18C218733C7F0058BFAD /* image.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = image.xcassets; sourceTree = "<group>"; };
@@ -338,6 +335,8 @@
 		AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWRoundButton.m; path = "UI Components/EWRoundButton.m"; sourceTree = "<group>"; };
 		AB6BE35018D804C700444ABC /* EWMediaSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWMediaSlider.h; path = "UI Components/EWMediaSlider.h"; sourceTree = "<group>"; };
 		AB6BE35118D804C700444ABC /* EWMediaSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWMediaSlider.m; path = "UI Components/EWMediaSlider.m"; sourceTree = "<group>"; };
+		AB7243CB18F0B08100AE7041 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = Pods/TestFlightSDK/libTestFlight.a; sourceTree = "<group>"; };
+		AB7243CD18F0B09800AE7041 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reveal.framework; path = "Pods/Reveal-iOS-SDK/Reveal-Framework-1.0.3/Reveal.framework"; sourceTree = "<group>"; };
 		AB78078D18393A66007C8BFD /* EWAlarmManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmManager.h; sourceTree = "<group>"; };
 		AB78078E18393A66007C8BFD /* EWAlarmManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmManager.m; sourceTree = "<group>"; };
 		AB78079118393A66007C8BFD /* EWGroupStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWGroupStore.h; sourceTree = "<group>"; };
@@ -405,6 +404,7 @@
 		ABFCB2DD186E957100355781 /* Tropical Delight.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Tropical Delight.caf"; sourceTree = "<group>"; };
 		ABFCB2DE186E957100355781 /* Sunny Afternoon.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sunny Afternoon.caf"; sourceTree = "<group>"; };
 		ABFCB2DF186E957100355781 /* Drive.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Drive.caf; sourceTree = "<group>"; };
+		ECF3A8B63334474C9C7D2A62 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F97D08D0DECC469FB88EFBA5 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -413,12 +413,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B8D3EE618EF3EDF009B8D6C /* libTestFlight.a in Frameworks */,
 				9B8D3EE418EF3DA2009B8D6C /* libWeiboSDK.a in Frameworks */,
 				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
 				AB245FB618CCF86500551721 /* AWSSNS.framework in Frameworks */,
 				AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */,
+				AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */,
 				AB245FB218CCD99500551721 /* CoreData.framework in Frameworks */,
 				AB245FAE18CCD70000551721 /* Social.framework in Frameworks */,
 				AB245FAD18CCD67200551721 /* CFNetwork.framework in Frameworks */,
@@ -427,6 +427,7 @@
 				AB245FA518CCD58800551721 /* MobileCoreServices.framework in Frameworks */,
 				AB245FA418CCD57E00551721 /* MapKit.framework in Frameworks */,
 				AB245FAF18CCD70C00551721 /* CoreLocation.framework in Frameworks */,
+				AB7243CC18F0B08100AE7041 /* libTestFlight.a in Frameworks */,
 				AB245FAA18CCD5BB00551721 /* Accounts.framework in Frameworks */,
 				AB245FB018CCD75400551721 /* SystemConfiguration.framework in Frameworks */,
 				ABC8F96318E8890D0096C073 /* MediaPlayer.framework in Frameworks */,
@@ -434,7 +435,7 @@
 				AB245FB318CCD99E00551721 /* Foundation.framework in Frameworks */,
 				AB245FA618CCD58F00551721 /* UIKit.framework in Frameworks */,
 				9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */,
-				49FDDA26ACEA46E4B84B836D /* libPods.a in Frameworks */,
+				12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,11 +538,10 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				9B8D3EE518EF3EDF009B8D6C /* libTestFlight.a */,
+				AB7243CB18F0B08100AE7041 /* libTestFlight.a */,
 				9B8D3EE318EF3DA2009B8D6C /* libWeiboSDK.a */,
-				9B8D3EE118EF3D73009B8D6C /* libPods-TestFlightSDK.a */,
-				9B8D3EDF18EF3D68009B8D6C /* libPods-Weibo.a */,
 				9BBA5F9918EF295200C07809 /* libz.dylib */,
+				AB7243CD18F0B09800AE7041 /* Reveal.framework */,
 				ABC8F96218E8890D0096C073 /* MediaPlayer.framework */,
 				ABDE25EE18CF575D00DDBDB5 /* AudioToolbox.framework */,
 				9BF7A7BD18CA27EF002EA7AC /* AWS */,
@@ -560,7 +560,7 @@
 				56A0106817A8358D00625EC0 /* AVFoundation.framework */,
 				568CC787178DD2C900AB1579 /* UIKit.framework */,
 				568CC789178DD2C900AB1579 /* Foundation.framework */,
-				222E31C5F1A14B58B80A1E2F /* libPods.a */,
+				ECF3A8B63334474C9C7D2A62 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1295,8 +1295,10 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Derek Zhang (SRS98HY45T)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Derek Zhang (SRS98HY45T)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1311,6 +1313,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "5ED148AD-2A90-4379-A45F-7173B5A95021";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -1326,7 +1329,10 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1334,6 +1340,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PROVISIONING_PROFILE = "E7F588AD-8D3A-4E7E-98EA-B9BD94C8B1F9";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1347,11 +1354,13 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Derek Zhang (SRS98HY45T)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Pods/Reveal-iOS-SDK/Reveal-Framework-1.0.3",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1361,7 +1370,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
-					"$(PROJECT_DIR)/Pods/Weibo/libWeiboSDK",
 					"$(PROJECT_DIR)/Pods/TestFlightSDK",
 				);
 				ONLY_ACTIVE_ARCH = YES;
@@ -1370,7 +1378,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "AB2A2D02-84D5-42B0-BD5D-81459D8B7286";
+				PROVISIONING_PROFILE = "69072AED-0F4C-41A6-B92E-52CCC337CDC2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1384,11 +1392,13 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Pods/Reveal-iOS-SDK/Reveal-Framework-1.0.3",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1397,8 +1407,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",
 					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
-					"$(PROJECT_DIR)/Pods/Weibo/libWeiboSDK",
 					"$(PROJECT_DIR)/Pods/TestFlightSDK",
 				);
 				OTHER_LDFLAGS = (
@@ -1406,7 +1416,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "AB2A2D02-84D5-42B0-BD5D-81459D8B7286";
+				PROVISIONING_PROFILE = "E7F588AD-8D3A-4E7E-98EA-B9BD94C8B1F9";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};

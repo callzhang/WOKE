@@ -34,13 +34,28 @@
  get task for next n'th day
  */
 - (EWTaskItem *)nextTaskAtDayCount:(NSInteger)n ForPerson:(EWPerson *)person;
+/**
+ Get task for next day
+ */
 - (EWTaskItem *)nextTaskForPerson:(EWPerson *)person;
+/**
+ Main method for getting task:
+ First decide if a fetch is needed. A fetch is needed if
+ 1) It is not current user
+ 2) OR It is current user but timed out
+ 
+ After fetch or get, Filter the tasks by current time. If User's task has less then 7n that are 'current', tasks need to reschedule. Call 'scheduleTask'.
+ */
 - (NSArray *)pastTasksByPerson:(EWPerson *)person;
 - (EWTaskItem *)getTaskByID:(NSString *)taskID;
 
 //Schedule
 /**
  This method schedules tasks. It goes from last task time to the possible future tasks defined by Alarms and nWeeksToScheduleTask, to create tasks needed.
+ 
+ When new tasks created, notification of kTaskNewNotification is sent and causes main alarmVC to refresh its task page view
+ 
+ 
  */
 - (NSArray *)scheduleTasks;
 

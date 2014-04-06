@@ -436,7 +436,7 @@ AmazonSNSClient *snsClient;
     if ([NSThread isMainThread]) {
         return currentUser;
     }else{
-        NSLog(@"**** Gett current user on background thread ****");
+        //NSLog(@"**** Get current user on background thread ****");
         return (EWPerson *)[[EWDataStore currentContext] objectWithID:currentUser.objectID];
     }
     return nil;

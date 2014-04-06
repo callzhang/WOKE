@@ -104,7 +104,10 @@
     [self playSoundFromURL:[NSURL URLWithString:mediaCell.media.audioKey]];
     
     //lock screen
-    [self displayNowPlayingInfoToLockScreen:mediaCell.media];
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        [self displayNowPlayingInfoToLockScreen:mediaCell.media];
+    }
+    
 }
 
 - (void)setCurrentCell:(EWMediaViewCell *)cell{

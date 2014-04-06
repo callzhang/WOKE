@@ -72,7 +72,7 @@
     NSArray *tasks = [person.tasks allObjects];
     BOOL fetch = YES;
     
-    //if self or person is not outdated
+    //if self OR person is not outdated, skip fetch
     if ([person.objectID isEqual:currentUser.objectID] || ![person.lastmoddate isOutDated]) {
         //plus the task count is 7n
         if (tasks.count == 7 * nWeeksToScheduleTask) {
@@ -81,6 +81,7 @@
         }
     }
     
+    //fetch
     if (fetch) {
         //this usually not happen
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
@@ -89,15 +90,22 @@
         //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         request.predicate = predicate1;
         
-        //NSLog(@"==== Start fetching tasks for %@ =====", person.name);
-        
         tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
         //Cannot retrieve referenceObject from an objectID that was not created by this store
     }
-    //sort
-    [tasks valueForKey:@"time"];
-    tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
     
+    
+    
+    //detect if all tasks are current
+    NSArray *pastTasks = [tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time < %@", [NSDate date]]];
+    if (pastTasks.count > 0) {
+        //need to schedule new
+        tasks = [self scheduleTasks];
+    }
+    
+    
+    //sort
+    tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
     return tasks;
 }
 
@@ -220,7 +228,6 @@
     
     
     //nullify old task's relation to alarm
-    
     NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
     NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
     for (EWTaskItem *t in outDatedTasks) {
@@ -417,6 +424,7 @@
     } onFailure:^(NSError *error) {
         [NSException raise:@"Task deletion error" format:@"Reason: %@", error.description];
     }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:self userInfo:nil];
 }
 
 - (void)deleteAllTasks{
@@ -427,7 +435,15 @@
         [[EWDataStore currentContext] deleteObject:t];
     }
     //save
-    [[EWDataStore currentContext] saveAndWait:NULL];
+    if ([NSThread isMainThread]) {
+        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+            NSLog(@"@@@ Failed to save all task deletion");
+        }];
+    }else{
+        [[EWDataStore currentContext] saveAndWait:NULL];
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:self userInfo:nil];
+   
 }
 
 #pragma mark - Local Notification
@@ -598,7 +614,7 @@
     //check orphan
     for (EWTaskItem *t in tasks) {
         if (!t.alarm) {
-            NSLog(@"Something wrong with tasks");
+            NSLog(@"Task do not have alarm %@", t);
             [self deleteAllTasks];
             return NO;
         }

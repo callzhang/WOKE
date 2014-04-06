@@ -81,8 +81,8 @@
 - (void)refreshView{
     [self initData];
     [self initView];
+    [_collectionView reloadData];
     [self reloadAlarmPage];
-    //[_collectionView reloadData];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
@@ -140,11 +140,16 @@
     _pageView.currentPage = 0;
     
     //add button
-    self.addBtn.alpha = (tasks.count == 0) ? 1:0;
+    self.addBtn.hidden = (tasks.count == 0) ? NO:YES;
     self.addBtn.backgroundColor = [UIColor clearColor];
+    
+    //load page
+    [self reloadAlarmPage];
 }
 
-#pragma mark - Core functions
+
+
+#pragma mark - Fetch Controller
 - (NSFetchedResultsController *)fetchController{
     if (fetchController) {
         return fetchController;
@@ -177,67 +182,47 @@
     return fetchController;
 }
 
+
+
+#pragma mark - ScrollView
 - (void)reloadAlarmPage {
-    _pageView.numberOfPages = self.alarms.count;
+    
     if (alarms.count == 0 || tasks.count == 0) {
-        NSLog(@"Alarm or Task count is zero, delete all subviews");
+        self.addBtn.hidden = NO;
+        //remove all page
         for (EWAlarmPageView *view in _scrollView.subviews) {
             if ([view isKindOfClass:[EWAlarmPageView class]]) {
                 [view removeFromSuperview];
             }
         }
+        //reset the page
+        [_alarmPages removeAllObjects];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
         _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
         return;
     }
     
-    [self loadScrollViewWithPage:_pageView.currentPage - 1];
-    [self loadScrollViewWithPage:_pageView.currentPage];
-    [self loadScrollViewWithPage:_pageView.currentPage + 1];
+    _pageView.numberOfPages = tasks.count;
+    //determine if scroll need flash
+    bool flash = NO;
+    if ([_alarmPages[0] isEqual: @NO]){
+        NSLog(@"First time, need flash scroll");
+        flash = YES;
+    }
+    
+    self.addBtn.hidden = YES;
+    [self loadScrollViewWithPage:[self currentPage] - 1];
+    [self loadScrollViewWithPage:[self currentPage]];
+    [self loadScrollViewWithPage:[self currentPage] + 1];
     [self.view setNeedsDisplay];
     [self.scrollView setNeedsDisplay];
     
-}
-
-#pragma mark - UI Events
-
-- (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh Person", nil];
-    sheet.tag = 1002;
-    [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
+    //flash
+    if (flash) [_scrollView flashScrollIndicators];
     
 }
 
 
-- (IBAction)scheduleInitialAlarms:(id)sender {
-    [self scheduleAlarm];
-}
-
-- (IBAction)profile:(id)sender {
-//    if (!currentUser.facebook) {
-//        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-//        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-//        [loginVC loginInBackground];
-//        
-//    }else{
-        EWPersonViewController *controller = [[EWPersonViewController alloc] init];
-        controller.person = currentUser;
-        [self presentViewController:controller animated:YES completion:NULL];
-//    }
-    
-    
-}
-
-- (void)OnTest {
-#ifndef CLEAR_TEST
-    TestViewController *controller = [[TestViewController alloc] init];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-    [self presentViewController:navigationController animated:YES completion:^{}];
-#endif
-}
-
-
-#pragma mark - ScrollView
 - (void)loadScrollViewWithPage:(NSInteger)page {
     
     //page also means future day count
@@ -254,10 +239,12 @@
     
 	// View
     // replace the placeholder if necessary
-    if ([_alarmPages[page] isKindOfClass: [EWAlarmPageView class]]) {
+    if ([_alarmPages[page] isMemberOfClass: [EWAlarmPageView class]]) {
         EWAlarmPageView *pageView = (EWAlarmPageView *)_alarmPages[page];
         pageView.task = task;
         return;
+    }else{
+        NSLog(@"Class in alarmPage[%d] is %@", page, [_alarmPages[page] class]);
     }
     
     //if page empty, add that to the page array
@@ -299,6 +286,46 @@
     _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
 }
 
+#pragma mark - UI Events
+
+- (IBAction)mainActions:(id)sender {
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh Person", nil];
+    sheet.tag = 1002;
+    [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
+    
+}
+
+
+- (IBAction)scheduleInitialAlarms:(id)sender {
+    [self scheduleAlarm];
+}
+
+- (IBAction)profile:(id)sender {
+//    if (!currentUser.facebook) {
+//        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+//        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+//        [loginVC loginInBackground];
+//        
+//    }else{
+        EWPersonViewController *controller = [[EWPersonViewController alloc] init];
+        controller.person = currentUser;
+        [self presentViewController:controller animated:YES completion:NULL];
+//    }
+    
+    
+}
+
+- (void)OnTest {
+#ifndef CLEAR_TEST
+    TestViewController *controller = [[TestViewController alloc] init];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewController:navigationController animated:YES completion:^{}];
+#endif
+}
+
+
+
+
 
 #pragma mark - KVO & Notification
 //- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
@@ -335,6 +362,11 @@
 //}
 
 #pragma mark - UIScrollViewDelegate
+- (NSInteger)currentPage{
+    CGFloat pageWidth = _scrollView.frame.size.width;
+    return lroundf(_scrollView.contentOffset.x / pageWidth);
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     
     // A possible optimization would be to unload the views+controllers which are no longer visible
@@ -345,9 +377,9 @@
     if (scrollView.tag == kAlarmPageViewIdentifier) {
         // load the visible page and the page on either side of it (to avoid flashes when the user starts scrolling)
         // Switch the indicator when more than 50% of the previous/next page is visible
-        CGFloat pageWidth = _scrollView.frame.size.width;
-        NSInteger page = floor((_scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+        NSInteger page = [self currentPage];
         _pageView.currentPage = page;
+        NSLog(@"Current page is %d", page);
         [self reloadAlarmPage];
     }
 }

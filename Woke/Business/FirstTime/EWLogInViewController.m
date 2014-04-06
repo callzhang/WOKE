@@ -163,6 +163,16 @@
      ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
          if (!error) {
              __block EWPerson *oldUser = currentUser;
+             __block BOOL newUser;
+             
+             //test if facebook user exists
+             [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken onSuccess:^(NSDictionary *result) {
+                 newUser = NO;
+             } onFailure:^(NSError *error) {
+                 newUser = YES;
+             }];
+             
+             //login
              [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:fb_user.username onSuccess:^(NSDictionary *result) {
                  NSLog(@"Logged in facebook for:%@", fb_user.name);
                  
@@ -181,7 +191,13 @@
                          //leaving
                          [self dismissViewControllerAnimated:YES completion:^{
                              [[EWDataStore currentContext] saveOnSuccess:^{
-                                 NSLog(@"User %@ logged in from facebook", fb_user.username);
+                                 if (newUser) {
+                                     NSDictionary *msg = @{@"alert": [NSString stringWithFormat:@"Welcome %@ joining Woke!", fb_user.name]};
+                                     [pushClient broadcastMessage:msg onSuccess:NULL onFailure:NULL];
+                                 }else{
+                                     NSLog(@"User %@ logged in from facebook", fb_user.name);
+                                 }
+                                 
                              } onFailure:^(NSError *error) {
                                  NSLog(@"Unable to save user info");
                              }];

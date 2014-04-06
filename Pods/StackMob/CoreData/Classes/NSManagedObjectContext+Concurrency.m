@@ -83,9 +83,10 @@
     NSManagedObjectContext *mainContext = nil;
     NSManagedObjectContext *temporaryContext = nil;
     if ([self concurrencyType] == NSMainQueueConcurrencyType) {
+        //*** mamory leak here
         mainContext = self;
         temporaryContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        temporaryContext.parentContext = mainContext;
+        temporaryContext.parentContext = self;
     } else {
         temporaryContext = self;
         mainContext = temporaryContext.parentContext;

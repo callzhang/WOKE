@@ -101,6 +101,7 @@ UIViewController *rootViewController;
     NSLog(@"Canceled HUD");
 }
 
+//================= Point to enter background =================
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
@@ -236,7 +237,7 @@ UIViewController *rootViewController;
     [application endBackgroundTask:backgroundTaskIdentifier];
     
     //开启一个新的后台
-    NSInteger ct = count;
+    NSInteger ct = count++;
     backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
         NSLog(@"BG task will end (%ld)", (long)ct);
     }];
@@ -463,9 +464,9 @@ UIViewController *rootViewController;
     // Set itself as the first responder
     BOOL success = [self becomeFirstResponder];
     if (success) {
-        NSLog(@"Registered AVManager for remote control events");
+        NSLog(@"APP degelgate AVManager for remote control events");
     }else{
-        NSLog(@"@@@ AVManager failed to listen remote control events @@@");
+        NSLog(@"@@@ degelgate failed to listen remote control events @@@");
     }
 }
 

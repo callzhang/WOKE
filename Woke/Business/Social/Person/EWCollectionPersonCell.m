@@ -17,32 +17,34 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        //mask
+        [self applyHexagonMaskForView:self.contentView];
+        self.contentView.layer.masksToBounds = YES;
+        
         // profilePic
         profilePic = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,kCollectionViewCellPersonRadius * 2, kCollectionViewCellPersonRadius * 2)];
-        profilePic.layer.masksToBounds = YES;
-        //profilePic.layer.cornerRadius = kCollectionViewCellPersonRadius;
-        //profilePic.layer.borderColor = [UIColor colorWithWhite:1 alpha:0.5].CGColor;
-        //profilePic.layer.borderWidth = 1.0f;
-        
-        //mask
-        CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:profilePic.layer];
-        UIBezierPath *hexagonPath = [self getHexagonMask];
-        hexagonMask.path = hexagonPath.CGPath;
-        profilePic.layer.mask  = hexagonMask;
         
         //boarder
         UIImageView *boarderView = [[UIImageView alloc] initWithFrame:profilePic.frame];
         UIGraphicsBeginImageContext(boarderView.frame.size);
         [boarderView.image drawInRect:boarderView.frame];
-        [[UIColor colorWithWhite:1.0 alpha:0.5] setStroke];
-        hexagonPath.lineWidth = 2.0;
+        [[UIColor colorWithWhite:1.0 alpha:1.0] setStroke];
+        UIBezierPath *hexagonPath = [self getHexagonPath];
+        hexagonPath.lineWidth = 4.0;
         [hexagonPath stroke];
         boarderView.image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
         
         //background
-        self.contentView.backgroundColor = [UIColor clearColor];
+        self.contentView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
+//        UIToolbar *bg = [[UIToolbar alloc] initWithFrame:profilePic.frame];
+//        //bg.barTintColor = [UIColor colorWithWhite:1 alpha:0.1];
+//        bg.barStyle = UIBarStyleDefault;
+//        bg.barStyle = UIBarStyleBlack;
+//        [self applyHexagonMaskForView:bg];
+//        [self addSubview:bg];
+//        [self sendSubviewToBack:bg];
         
         //label
         name = [[UILabel alloc] initWithFrame:CGRectMake(0, kCollectionViewCellHeight, kCollectionViewCellWidth, 20)];
@@ -60,10 +62,12 @@
         
         
         //add
+        
         [self.contentView addSubview:profilePic];
         [self.contentView addSubview:boarderView];
         [self.contentView addSubview:name];
         [self.contentView addSubview:maskView];
+        
     }
     return self;
 }
@@ -77,7 +81,14 @@
 }
 */
 
-- (UIBezierPath *)getHexagonMask{
+- (void)applyHexagonMaskForView:(UIView *)view{
+    CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
+    UIBezierPath *hexagonPath = [self getHexagonPath];
+    hexagonMask.path = hexagonPath.CGPath;
+    view.layer.mask  = hexagonMask;
+}
+
+- (UIBezierPath *)getHexagonPath{
     
     UIBezierPath* polygonPath = [UIBezierPath bezierPath];
     [polygonPath moveToPoint: CGPointMake(70.23, 17.06)];

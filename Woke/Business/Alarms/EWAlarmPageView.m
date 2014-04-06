@@ -79,14 +79,14 @@
 
 - (void)setTask:(EWTaskItem *)t{
     //unsubscribe previous task if possible
-    @try {
-        [task removeObserver:self forKeyPath:@"state"];
-        [task removeObserver:self forKeyPath:@"medias"];
-        [task removeObserver:self forKeyPath:@"time"];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"%@",exception);
-    }
+//    @try {
+//        [task removeObserver:self forKeyPath:@"state"];
+//        [task removeObserver:self forKeyPath:@"medias"];
+//        [task removeObserver:self forKeyPath:@"time"];
+//    }
+//    @catch (NSException *exception) {
+//        NSLog(@"%@",exception);
+//    }
     
     //setting the hours left
     task = t;

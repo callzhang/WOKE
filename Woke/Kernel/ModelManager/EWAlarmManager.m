@@ -27,10 +27,10 @@
 //@synthesize context;
 
 + (EWAlarmManager *)sharedInstance {
-    BOOL mainThread = [NSThread isMainThread];
-    if (!mainThread) {
-        NSLog(@"**** Alarm Store not on main thread ****");
-    }
+//    BOOL mainThread = [NSThread isMainThread];
+//    if (!mainThread) {
+//        NSLog(@"**** Alarm Store not on main thread ****");
+//    }
     
     static EWAlarmManager *g_alarmManager = nil;
     static dispatch_once_t onceToken;
@@ -150,7 +150,7 @@
             newAlarms[i] = a;
             newAlarm = YES;
         }else{
-            [NSException raise:@"Unknown state" format:@"Check weekday: %d", i];
+            [NSException raise:@"Unknown state" format:@"Check weekday: %ld", (long)i];
         }
     }
     if (newAlarm) {
