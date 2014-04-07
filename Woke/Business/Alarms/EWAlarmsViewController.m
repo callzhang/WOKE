@@ -80,7 +80,7 @@
 
 - (void)refreshView{
     [self initData];
-    [self initView];
+    //[self initView];
     [_collectionView reloadData];
     [self reloadAlarmPage];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
@@ -239,24 +239,23 @@
     
 	// View
     // replace the placeholder if necessary
-    if ([_alarmPages[page] isMemberOfClass: [EWAlarmPageView class]]) {
+    if ((BOOL)[_alarmPages[page] isKindOfClass: [EWAlarmPageView class]]) {
         EWAlarmPageView *pageView = (EWAlarmPageView *)_alarmPages[page];
         pageView.task = task;
         return;
-    }else{
-        NSLog(@"Class in alarmPage[%d] is %@", page, [_alarmPages[page] class]);
+    }
+    
+    //check
+    for (UIView *view in self.scrollView.subviews) {
+        if (view.frame.origin.x == self.scrollView.frame.size.width * page) {
+            //[NSException raise:@"Duplicated alarm page" format:@"Please check"];
+            NSLog(@"@@@@ Duplicated alarm page at %ld", (long)page);
+        }
     }
     
     //if page empty, add that to the page array
     EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] init];
     _alarmPages[page] = alarmPage;
-    //check
-    for (UIView *view in self.scrollView.subviews) {
-        if (view.frame.origin.x == self.scrollView.frame.size.width * page) {
-            [NSException raise:@"Duplicated alarm page" format:@"Please check"];
-        }
-    }
-    
     
     //fill info
     alarmPage.task = task;

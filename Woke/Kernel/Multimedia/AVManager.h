@@ -5,6 +5,15 @@
 //  Created by Lei on 7/29/13.
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
+/**  AVManager: Controls the overall audio/video play
+//
+//  - playForCell: highest level of control, controlled by WakeUpManager
+//          |
+//  - playMedia: Intermediate level of play, controlled by avmanager self
+//          |
+//  - playSoundFromURL: Lower level control, may called from outside
+//
+*/
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
@@ -21,7 +30,7 @@
     //AVQueuePlayer *qPlayer;
     AVPlayer *avplayer;
     SystemSoundID soundID;
-    NSMutableArray *playlist;//array of nsstring
+    //NSMutableArray *playlist;//array of nsstring
 }
 
 @property (retain, nonatomic) AVAudioPlayer *player;
@@ -48,6 +57,10 @@
 - (void)playForCell:(UITableViewCell *)cell;
 - (void)playMedia:(EWMediaItem *)media;
 - (void)updateViewForPlayerState:(AVAudioPlayer *)player;
+/**
+ (Depreciated)
+ Use WakeUpManager to control the playing
+ */
 - (void)playTask:(EWTaskItem *)task;
 - (NSURL *)record;
 

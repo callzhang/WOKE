@@ -21,4 +21,10 @@
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
 //- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;
 - (void)startPlayCells;
+
+/**
+ Search for cell that has media that has the audioKey that metches the playing URL in AVManager.
+ Returns the index of current playing cell.
+ */
+- (NSInteger)seekCurrentCell;
 @end

@@ -8,7 +8,7 @@
 
 #import "EWDownloadManager.h"
 #import "EWMediaItem.h"
-#import "FTWCache.h"
+#import "EWDataStore.h"
 #import "EWTaskItem.h"
 #import "NSString+MD5.h"
 #import "AVManager.h"
@@ -55,10 +55,10 @@
 
 #pragma mark - Main download methods
 - (void)downloadUrl:(NSURL *)Url{
-    if ([Url isFileURL]) {
+    if ([Url isFileURL] || ![Url.absoluteString hasPrefix:@"http"]) {
         NSLog(@"Url is local file");
         return;
-    }else if ([FTWCache objectForKey:Url.absoluteString.MD5Hash]){
+    }else if ([[EWDataStore sharedInstance] localPathForKey:Url.absoluteString]){
         //NSLog(@"Url already cached");
         return;
     }
@@ -83,14 +83,12 @@
 - (void)downloadMedia:(EWMediaItem *)media{
     //assume only audio to be downloaded
     NSString *path = media.audioKey;
-    NSURL *pathURL = [NSURL URLWithString:path];
-    NSString *pathHash = [pathURL.absoluteString MD5Hash];
     
     //check if task has already exsited
     if ([downloadQueue objectForKey:path]) {
         return;
         
-    }else if([FTWCache objectForKey:pathHash]){
+    }else if([[EWDataStore sharedInstance] localPathForKey:path]){
         //already cached
         NSLog(@"Media already cached: %@", path);
         return;
@@ -150,16 +148,15 @@
     NSData *data = [NSData dataWithContentsOfURL:downloadURL];
     NSURLRequest *request = downloadTask.originalRequest;
     NSString *str = request.URL.absoluteString;
-    NSString *keyHash = [str MD5Hash];
     
     //save
-    [FTWCache setObject:data forKey:keyHash];
-    NSLog(@"Set FTW cache for %@", keyHash);
+    [[EWDataStore sharedInstance] updateCacheForKey:str withData:data];
+    NSLog(@"Saved FTW cache for %@", str);
     
     //completion task
     void (^completionBlock)(NSData *data) = completionTaskQueue[str];
     if (completionBlock) {
-        NSLog(@"Excuting block for url task: %@", str);
+        NSLog(@"Excuting completion task for url download task: %@", str);
         completionBlock(data);
     }
     
@@ -170,8 +167,6 @@
         //remove task from queue
         [downloadQueue removeObjectForKey:str];
     }
-    
-    
     
 }
 

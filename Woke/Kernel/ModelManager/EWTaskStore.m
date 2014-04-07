@@ -95,13 +95,9 @@
     }
     
     
-    
-    //detect if all tasks are current
-    NSArray *pastTasks = [tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time < %@", [NSDate date]]];
-    if (pastTasks.count > 0) {
-        //need to schedule new
-        tasks = [self scheduleTasks];
-    }
+    //check past task
+    NSMutableArray *goodTasks = [tasks mutableCopy];
+    [self checkPastTasks:goodTasks];
     
     
     //sort
@@ -227,14 +223,7 @@
     }
     
     
-    //nullify old task's relation to alarm
-    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
-    NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
-    for (EWTaskItem *t in outDatedTasks) {
-        t.alarm = NULL;
-        t.pastOwner = currentUser;
-        
-    }
+    [self checkPastTasks:[tasks mutableCopy]];
 
     
     //save
@@ -247,6 +236,24 @@
     //last checked
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
     return goodTasks;
+}
+
+
+- (void)checkPastTasks:(NSMutableArray *)tasks{
+    //nullify old task's relation to alarm
+    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
+    NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
+    for (EWTaskItem *t in outDatedTasks) {
+        t.alarm = nil;
+        t.owner = nil;
+        t.pastOwner = currentUser;
+        [tasks removeObject:t];
+        NSLog(@"Past task on %@ moved", [t.time date2dayString]);
+    }
+    
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"@@@ Failed to save past task chenges");
+    }];
 }
 
 #pragma mark - NEW
@@ -532,7 +539,7 @@
 
 - (void)fireSilentAlarmForTask:(EWTaskItem *)task{
     UILocalNotification *silentAlarm = [[UILocalNotification alloc] init];
-    silentAlarm.alertBody = @"It's time to wake up";
+    silentAlarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
     silentAlarm.alertAction = @"Wake up!";
     silentAlarm.userInfo = @{kPushTaskKey: task.ewtaskitem_id};
     [[UIApplication sharedApplication] scheduleLocalNotification:silentAlarm];

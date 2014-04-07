@@ -28,7 +28,6 @@
 
 //Tool
 #import "EWUIUtil.h"
-#import "FTWCache.h"
 
 @implementation EWServer
 
@@ -90,12 +89,19 @@
                                             },
                                   kPushPersonKey: currentUser.username,
                                   @"type": kPushTypeBuzzKey};
+    
+    //delayed hide
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+    });
+    
+    //send
     [EWServer AWSPush:pushMessage toUsers:(NSArray *)users onSuccess:^(SNSPublishResponse *response) {
         NSLog(@"Buzz sent via AWS: %@", response.messageId);
-        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+        [rootViewController.view showSuccessNotification:@"Sent"];
     } onFailure:^(NSException *exception) {
         NSLog(@"Failed to send Buzz: %@", exception.description);
-        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+        [rootViewController.view showFailureNotification:@"Failed"];
     }];
     
     /*
@@ -202,15 +208,23 @@
             continue;
         }
         request.targetArn = target.aws_id;
-        if (!currentUser.aws_id) NSLog(@"Unable to send message: no AWS ID found on target:%@", target.username);
-        NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);
+        if (!currentUser.aws_id){
+            NSString *str = [NSString stringWithFormat:@"Unable to send message: User not registered for push:%@", target.name];
+            NSLog(@"Unable to send message: no AWS ID found on target:%@", target.username);
+            EWAlert(str);
+        }
+        //NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             @try {
                 SNSPublishResponse *response = [snsClient publish:request];
-                successBlock(response);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    successBlock(response);
+                });
             }
             @catch (NSException *exception) {
-                failureBlock(exception);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    failureBlock(exception);
+                });
             }
         });
     }

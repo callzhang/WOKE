@@ -52,7 +52,7 @@
     CGFloat vertOffset = 0;
     
     UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-    attributes.size = _hexagonSize;
+    attributes.size = CGSizeMake(kCollectionViewCellWidth, kCollectionViewCellHeight);
     attributes.center = CGPointMake((col * _hexagonSize.width) + (0.5f * _hexagonSize.width) + horiOffset,
                                     row * 0.75f * _hexagonSize.height + 0.5f * _hexagonSize.height + vertOffset);
     

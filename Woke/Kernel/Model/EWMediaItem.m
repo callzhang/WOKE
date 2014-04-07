@@ -14,7 +14,6 @@
 #import "EWDataStore.h"
 #import "StackMob.h"
 #import "NSString+MD5.h"
-#import "FTWCache.h"
 
 @implementation EWMediaItem
 

@@ -61,7 +61,9 @@ extern AmazonSNSClient *snsClient;
  */
 - (NSString *)localPathForKey:(NSString *)key;
 
-//Update the data for key
+/**
+ Update the data for key. Create object if not cached.
+ */
 - (void)updateCacheForKey:(NSString *)key withData:(NSData *)data;
 
 //check cache data

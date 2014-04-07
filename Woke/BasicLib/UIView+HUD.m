@@ -11,6 +11,7 @@
 @implementation UIView(HUD)
 
 - (void)showNotification:(NSString *)alert WithStyle:(HUDStyle)style{
+    [MBProgressHUD hideAllHUDsForView:self animated:YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
     UIImage *img;
     switch (style) {
@@ -37,6 +38,10 @@
 
 - (void)showSuccessNotification:(NSString *)alert{
     [self showNotification:alert WithStyle:hudStyleSuccess];
+}
+
+- (void)showFailureNotification:(NSString *)alert{
+    [self showNotification:alert WithStyle:hudStyleFailed];
 }
 
 @end

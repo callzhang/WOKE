@@ -143,7 +143,8 @@
                     [[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded
                     
                 }else if (!task.completed){
-                    NSLog(@"Task is not completed, playing audio");
+                    
+                    NSLog(@"Struggle mode, playing audio. (Need to rework on this)");
                     //struggle (or passed 10 min) -> play media
                     [[AVManager sharedManager] playMedia:media];
                     
@@ -209,7 +210,7 @@
 }
 
 + (void)handleAlarmTimerEvent{
-    
+    NSLog(@"Start handle timer event");
     //task
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser];
     
@@ -217,6 +218,9 @@
         NSLog(@"%s No task found for next task, abord", __func__);
         return;
     }
+    
+    //if no media for task, create a pseudo media
+    [[EWMediaStore sharedInstance] createPseudoMediaForTask:task];
     
     //download
     [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:^{
@@ -226,12 +230,13 @@
         //fire a silent alarm
         [[EWTaskStore sharedInstance] fireSilentAlarmForTask:task];
         
-        //play sounds
-        [[AVManager sharedManager] playTask:task];
-        
         //present wakeupViewController
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
         controller.task = task;
+        
+        //play sounds
+        [controller startPlayCells];
+        
         if (![EWWakeUpManager isRootPresentingWakeUpView]) {
             [rootViewController dismissViewControllerAnimated:YES completion:^{
                 [rootViewController presentViewControllerWithBlurBackground:controller];

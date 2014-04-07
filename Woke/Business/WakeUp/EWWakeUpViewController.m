@@ -109,6 +109,11 @@
         //start seeking progress bar
         NSInteger i = [self seekCurrentCell];
         NSLog(@"Player is already playing %ld", (long)i);
+        
+        //assign cell so the progress can be updated to cell
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+        [AVManager sharedManager].currentCell = cell;
+        
     }else{
         //play
         [self startPlayCells];
@@ -223,13 +228,6 @@
 
 #pragma mark - Functions
 
-- (void)startPlayCells{
-    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-    if (cell) {
-        [[AVManager sharedManager] playForCell:cell];
-    }
-    
-}
 
 - (void)OnCancel{
     [self.navigationController dismissViewControllerAnimated:YES completion:^{
@@ -414,20 +412,38 @@
 }
 
 #pragma mark - Handle player events
+- (void)startPlayCells{
+    NSInteger currentPlayingCellIndex = 0;
+    if ([AVManager sharedManager].currentCell) {
+        //AVManager has current cell means it is paused
+        NSLog(@"Continue playing");
+        currentPlayingCellIndex = [self seekCurrentCell];
+    }
+    //get the cell
+    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
+    if (cell) {
+        [[AVManager sharedManager] playForCell:cell];
+    }
+    
+}
+
 
 - (NSInteger)seekCurrentCell{
-    NSString *url = [AVManager sharedManager].player.url.absoluteString;
+    NSString *urlPlaying = [AVManager sharedManager].player.url.absoluteString;
     for (unsigned i = 0; i < medias.count; i++) {
-        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-        NSString *mediaAudioKey = cell.media.audioKey;
+        
+        NSString *mediaAudioKey = [(EWMediaItem *)medias[i] audioKey];
         NSString *mediaAudioLocalPath = [[EWDataStore sharedInstance] localPathForKey:mediaAudioKey];
-        if ([url isEqualToString:mediaAudioKey] || [url isEqualToString:mediaAudioLocalPath]) {
+        if ([urlPlaying isEqualToString:mediaAudioKey] || [urlPlaying isEqualToString:mediaAudioLocalPath]) {
+            EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
             [AVManager sharedManager].currentCell = cell;
             NSLog(@"Found current cell (%ld)", (long)i);
             return i;
         }
     }
-    return -1;
+    
+    //if not found, play the first one
+    return 0;
 }
 
 
@@ -436,21 +452,28 @@
     if (!next) return;
     
     NSLog(@"Play next song");
-    NSInteger currentCellCount = [self seekCurrentCell];
-    if (currentCellCount < 0) {
+    NSInteger currentCellPlaying = [self seekCurrentCell];
+    if (currentCellPlaying < 0) {
         NSLog(@"No matching cell found for current audio");
         return;
-    }else if (currentCellCount < medias.count) {
-        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCellCount inSection:0]];
+    }else if (currentCellPlaying < medias.count){
+        //get next cell
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCellPlaying inSection:0]];
             
         [[AVManager sharedManager] playForCell:cell];
-    }else if(currentCellCount == medias.count && (--loopCount)>0 ){
-        //play the first if loopCount > 0
-        currentCellCount = 0;
-        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:currentCellCount inSection:0]];
-        [[AVManager sharedManager] playForCell:cell];
+    }else if(currentCellPlaying == medias.count){
+        if ((--loopCount)>0) {
+            //play the first if loopCount > 0
+            currentCellPlaying = 0;
+            EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:currentCellPlaying inSection:0]];
+            [[AVManager sharedManager] playForCell:cell];
+        }else{
+            NSLog(@"Loop finished, stop playing");
+            //nullify all cell info in avmanager
+            [AVManager sharedManager].currentCell = nil;
+        }
     }else{
-        [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%d)", (long)currentCellCount, medias.count];
+        [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%d)", (long)currentCellPlaying, medias.count];
     }
 }
 

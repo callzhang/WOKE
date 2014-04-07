@@ -22,6 +22,8 @@
 
 //add
 - (EWMediaItem *)createMedia;
+- (EWMediaItem *)createPseudoMedia;
+- (void)createPseudoMediaForTask:(EWTaskItem *)task;
 
 //delete
 //- (void)removeMediaItem:(EWMediaItem *)mi;

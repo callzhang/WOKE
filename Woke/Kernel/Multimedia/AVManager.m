@@ -12,7 +12,6 @@
 #import "EWMediaItem.h"
 #import "EWTaskStore.h"
 #import <AVFoundation/AVAudioPlayer.h>
-#import "FTWCache.h"
 #import "EWDataStore.h"
 #import "TestFlight.h"
 #import "EWMediaSlider.h"
@@ -49,13 +48,13 @@
         recordingFileUrl = [[NSURL alloc] initFileURLWithPath: soundFilePath];
         
         //Audio session
-        [self registerAudioSession];
+        //[self registerAudioSession];
         
         //Register for remote control event
         //[self prepareRemoteControlEventsListener];
         
         //playlist
-        playlist = [[NSMutableArray alloc] init];
+        //playlist = [[NSMutableArray alloc] init];
         
         //Loop
         self.loop = YES;
@@ -101,12 +100,9 @@
 
     
     //play
-    [self playSoundFromURL:[NSURL URLWithString:mediaCell.media.audioKey]];
-    
-    //lock screen
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        [self displayNowPlayingInfoToLockScreen:mediaCell.media];
-    }
+    //[self playSoundFromURL:[NSURL URLWithString:mediaCell.media.audioKey]];
+    [self playMedia:mediaCell.media];
+
     
 }
 
@@ -179,42 +175,23 @@
 - (void)playMedia:(EWMediaItem *)mi{
     media = mi;
     [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];
+    
+    //lock screen
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        [self displayNowPlayingInfoToLockScreen:mi];
+    }
 }
 
-//play media for task using AVQueuePlayer
-- (void)playTask:(EWTaskItem *)task{
-//    NSMutableArray *queue = [[NSMutableArray alloc] initWithCapacity:task.medias.count];
-//    AVPlayerItem *track;
-//    for (EWMediaItem *mi in task.medias) {
-//        NSString *path = [FTWCache localPathForKey:mi.audioKey];
-//        if (path) {
-//            track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:path]];
-//        }else{
-//            //need to download
-//            track = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:mi.audioKey]];
-//        }
-//        [queue addObject:track];
+//play media for task (Depreciated)
+//- (void)playTask:(EWTaskItem *)task{
+//
+//    playlist = [[task.medias allObjects] mutableCopy];
+//    
+//    if (playlist.firstObject) {
+//        [self playMedia:playlist.firstObject];
 //    }
-//    NSLog(@"About to play for task: %@", task.ewtaskitem_id);
-//    qPlayer = [[AVQueuePlayer alloc] initWithItems:queue];
-//    [qPlayer play];
-//    if (qPlayer.error) {
-//        //something wrong
-//        
-//    }
-    
-//    for (EWMediaItem *media in task.medias) {
-//        NSString *path = [[EWDataStore sharedInstance] localPathForUrl:media.audioKey];
-//        [playlist addObject:path];
-//        
-//    }
-    playlist = [[task.medias allObjects] mutableCopy];
-    
-    if (playlist.firstObject) {
-        [self playMedia:playlist.firstObject];
-    }
-    
-}
+//    
+//}
 
 #pragma mark - UI event
 - (IBAction)sliderChanged:(UISlider *)sender {
@@ -486,10 +463,10 @@ void RouteChangeListener(	void *inClientData,
     }];
     
     //completion callback
-    AudioServicesAddSystemSoundCompletion(soundID, nil, nil, playSoundFinished, (void *)bgTaskId);
+    AudioServicesAddSystemSoundCompletion(soundID, nil, nil, systemSoundFinished, (void *)bgTaskId);
 }
 
-void playSoundFinished (SystemSoundID sound, void *bgTaskId){
+void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     NSLog(@"System audio playback fnished");
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
     [[UIApplication sharedApplication] endBackgroundTask:(NSInteger)bgTaskId];

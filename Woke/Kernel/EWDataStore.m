@@ -292,7 +292,7 @@ AmazonSNSClient *snsClient;
     NSString *path = [FTWCache localPathForKey:[key MD5Hash]];
     if (!path) {
         //not in local, need to download
-        [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:key]];
+        //[[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:key]];
         return nil;
     }
     return path;

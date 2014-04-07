@@ -47,21 +47,13 @@
 }
 
 
-
+#pragma mark - create media
 
 - (EWMediaItem *)createMedia{
     EWMediaItem *m = [NSEntityDescription insertNewObjectForEntityForName:@"EWMediaItem" inManagedObjectContext:[EWDataStore currentContext]];
     [m assignObjectId];
     m.author = currentUser;
-    /*
-    //TODO: update method here
-    NSInteger k = arc4random() % 6;
-    NSArray *vmList = @[@"vm1.m4a", @"vm2.m4a", @"vm3.m4a", @"vm3.m4a", @"vm5.m4a", @"vm6.m4a"];
-    NSString *vmName = vmList[k];
-    //NSArray *nameArray = [vmName componentsSeparatedByString:@"."];
-    //PFFile *f = [PFFile fileWithName:vmName contentsAtPath:[[NSBundle mainBundle] pathForResource:nameArray[0] ofType:nameArray[1]]];
-    m.audioKey = vmName;
-     */
+    
     [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Media created");
     } onFailure:^(NSError *error) {
@@ -69,6 +61,35 @@
         EWAlert(@"Failed to send voice. You can send it again.");
     }];
     return m;
+}
+
+- (EWMediaItem *)createPseudoMedia{
+    EWMediaItem *media = [self createMedia];
+    
+    //create ramdom media
+    NSInteger k = arc4random_uniform(6);
+    NSArray *vmList = @[@"vm1.m4a", @"vm2.m4a", @"vm3.m4a", @"vm3.m4a", @"vm5.m4a", @"vm6.m4a"];
+    NSString *vmName = vmList[k];
+    NSArray *name = [vmName componentsSeparatedByString:@"."];
+    NSString *path = [[NSBundle mainBundle] pathForResource:name[0] ofType:name[1]];
+    media.audioKey = path;
+    
+    media.message = @"This is a test voice tone";
+    
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"Failed to save pseudo media");
+    }];
+    
+    return media;
+}
+
+- (void)createPseudoMediaForTask:(EWTaskItem *)task{
+    EWTaskItem *task_ = [EWDataStore objectForCurrentContext:task];
+    EWMediaItem *media = [self createPseudoMedia];
+    [task_ addMediasObject:media];
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"Failed to save task for pseudo media");
+    }];
 }
 
 #pragma mark - SEARCH
