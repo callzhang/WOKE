@@ -244,7 +244,6 @@ AmazonSNSClient *snsClient;
     
     //local file
     if ([[NSURL URLWithString:key] isFileURL] || ![key hasPrefix:@"http"]) {
-        NSLog(@"Is local file path, return data directly");
         data = [NSData dataWithContentsOfFile:key];
         return data;
     }
@@ -286,7 +285,7 @@ AmazonSNSClient *snsClient;
 
 - (NSString *)localPathForKey:(NSString *)key{
     if ([[NSURL URLWithString:key] isFileURL] || ![key hasPrefix:@"http"]) {
-        NSLog(@"Is local file path, return key directly");
+        //NSLog(@"Is local file path, return key directly");
         return key;
     }else if (key.length > 500) {
         NSLog(@"*** Something wrong with url, the url contains data");

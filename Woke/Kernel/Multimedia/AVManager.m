@@ -96,7 +96,6 @@
     
     //link progress bar with cell's progress bar
     self.currentCell = mediaCell;
-    [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
 
     
     //play
@@ -110,6 +109,9 @@
     progressBar = cell.mediaBar;
     currentTime = progressBar.timeLabel;
     media = cell.media;
+    
+    
+    [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
 }
 
 
@@ -142,7 +144,11 @@
 
 //main play function
 - (void)playSoundFromURL:(NSURL *)url{
-    NSLog(@"About to play %@", [url path]);
+    if (!url) {
+        NSLog(@"Url is empty, skip playing");
+        //[self audioPlayerDidFinishPlaying:player successfully:YES];
+        return;
+    }
     
     //data
     NSError *err;
@@ -468,10 +474,12 @@ void RouteChangeListener(	void *inClientData,
 
 void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     NSLog(@"System audio playback fnished");
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
-    [[UIApplication sharedApplication] endBackgroundTask:(NSInteger)bgTaskId];
     
-    NSLog(@"System sound finished and bg task returned");
+    if ([AVManager sharedManager].media) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
+        NSLog(@"broadcasting finish event");
+    }    
+    [[UIApplication sharedApplication] endBackgroundTask:(NSInteger)bgTaskId];
 }
 
 

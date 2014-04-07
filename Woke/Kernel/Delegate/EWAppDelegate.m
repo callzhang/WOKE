@@ -244,12 +244,20 @@ UIViewController *rootViewController;
     
     //check time
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser];
+    if (task.state == NO) {
+        return;
+    }
     
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
     
 #ifdef DEV_TEST
-    timeLeft = 10;
+//    NSArray *notifs = [[EWTaskStore sharedInstance] localNotificationForTask:task];
+//    if (notifs.count > 0) {
+//        //task has not been tested
+//        timeLeft = 10;
+//    }
+    
 #endif
     
     if (timeLeft < 100 && timeLeft > 0) {

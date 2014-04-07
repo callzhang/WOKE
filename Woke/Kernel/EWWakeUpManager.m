@@ -220,7 +220,9 @@
     }
     
     //if no media for task, create a pseudo media
-    [[EWMediaStore sharedInstance] createPseudoMediaForTask:task];
+    if (task.medias.count == 0) {
+        [[EWMediaStore sharedInstance] createPseudoMediaForTask:task];
+    }
     
     //download
     [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:^{

@@ -130,15 +130,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 #pragma mark - UI events
 - (void)OnDone{
-    //[self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
-    //[self.navigationController popViewControllerAnimated:YES];
-    [self.presentingViewController dismissViewControllerWithBlurBackground:self];
+    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
 - (void)OnCancel{
-    //[self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
-    //[self.navigationController popViewControllerAnimated:YES];
-    [self.presentingViewController dismissViewControllerWithBlurBackground:self];
+    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
 - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item{

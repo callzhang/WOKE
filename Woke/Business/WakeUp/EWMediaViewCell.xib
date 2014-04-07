@@ -31,7 +31,7 @@
                         <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="TopLeft" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="17">
-                        <rect key="frame" x="65" y="2" width="183" height="21"/>
+                        <rect key="frame" x="63" y="0.0" width="183" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <attributedString key="attributedText">
                             <fragment content="Description  ">
@@ -92,8 +92,8 @@
                 <outlet property="description" destination="17" id="112"/>
                 <outlet property="like" destination="UNh-aX-O06" id="iiX-ph-9M0"/>
                 <outlet property="mediaBar" destination="uv8-tp-MBO" id="ive-4t-tgC"/>
+                <outlet property="name" destination="14" id="SiG-TJ-CzI"/>
                 <outlet property="profilePic" destination="4" id="122"/>
-                <outlet property="title" destination="14" id="120"/>
             </connections>
         </tableViewCell>
     </objects>

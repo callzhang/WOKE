@@ -34,7 +34,7 @@
 #import "EWLogInViewController.h"
 #import "EWCollectionPersonCell.h"
 #import "EWSettingsViewController.h"
-#import "EWRecordingViewController.h"
+#import "EWRecordingViewController.h"Ø
 
 //backend
 #import "StackMob.h"

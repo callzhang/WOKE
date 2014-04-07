@@ -20,8 +20,8 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        self.title.text = @"早上好";
-        self.description.text = @"早上的虫子更好";
+        self.name.text = @"";
+        self.description.text = @"";
         //self.progressBar.maximumValueImage = [UIImage imageNamed:@"MediaCell"];
         self.backgroundColor = [UIColor clearColor];
         

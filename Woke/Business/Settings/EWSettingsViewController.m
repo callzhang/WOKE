@@ -101,7 +101,7 @@
 
 #pragma mark - IBAction
 - (IBAction)onDone:(id)sender{
-    [self.presentingViewController dismissViewControllerWithBlurBackground:self];
+    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
 #pragma mark - RingtongSelectionDelegate

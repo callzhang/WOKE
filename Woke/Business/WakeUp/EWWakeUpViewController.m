@@ -274,7 +274,7 @@
     EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
     
     //title
-    cell.title.text = mi.author.name;
+    cell.name.text = mi.author.name;
     if (mi.message) {
         cell.description.text = mi.message;
     }else{
@@ -454,21 +454,18 @@
     //check if need to play next
     if (!next) return;
     
-    NSLog(@"Play next song");
     NSInteger currentCellPlaying = [self seekCurrentCell];
-    if (currentCellPlaying < 0) {
-        NSLog(@"No matching cell found for current audio");
-        return;
-    }else if (currentCellPlaying < medias.count){
+    currentCellPlaying++;
+    if (currentCellPlaying < medias.count){
         //get next cell
-        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:++currentCellPlaying inSection:0]];
-            
+        NSLog(@"Play next song (%d)", currentCellPlaying);
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:currentCellPlaying inSection:0]];
         [[AVManager sharedManager] playForCell:cell];
     }else if(currentCellPlaying == medias.count){
         if ((--loopCount)>0) {
             //play the first if loopCount > 0
-            currentCellPlaying = 0;
-            EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:currentCellPlaying inSection:0]];
+            NSLog(@"Looping");
+            EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
             [[AVManager sharedManager] playForCell:cell];
         }else{
             NSLog(@"Loop finished, stop playing");

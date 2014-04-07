@@ -10,5 +10,5 @@
 
 @interface UIViewController (Blur)
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController;
-- (void)dismissViewControllerWithBlurBackground:(UIViewController *)viewController;
+- (void)dismissBlurViewControllerWithCompletionHandler:(void(^)(void))completion;
 @end

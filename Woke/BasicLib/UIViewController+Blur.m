@@ -43,12 +43,12 @@
     
 }
 
-- (void)dismissViewControllerWithBlurBackground:(UIViewController *)viewController{
+- (void)dismissBlurViewControllerWithCompletionHandler:(void(^)(void))completion{
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        UIView *view = [viewController.view viewWithTag:99];
+        UIView *view = [self.presentedViewController.view viewWithTag:99];
         [view removeFromSuperview];
     });
-    [self dismissViewControllerAnimated:YES completion:NULL];
+    [self dismissViewControllerAnimated:YES completion:completion];
 }
 
 @end
