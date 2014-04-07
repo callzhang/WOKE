@@ -423,6 +423,9 @@
     EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
     if (cell) {
         [[AVManager sharedManager] playForCell:cell];
+    }else{
+        cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
+        [[AVManager sharedManager] playForCell:cell];
     }
     
 }

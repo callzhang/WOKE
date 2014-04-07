@@ -285,10 +285,14 @@ AmazonSNSClient *snsClient;
 #pragma mark - local cache
 
 - (NSString *)localPathForKey:(NSString *)key{
-    if (key.length > 500) {
+    if ([[NSURL URLWithString:key] isFileURL] || ![key hasPrefix:@"http"]) {
+        NSLog(@"Is local file path, return key directly");
+        return key;
+    }else if (key.length > 500) {
         NSLog(@"*** Something wrong with url, the url contains data");
         return nil;
     }
+    
     NSString *path = [FTWCache localPathForKey:[key MD5Hash]];
     if (!path) {
         //not in local, need to download
