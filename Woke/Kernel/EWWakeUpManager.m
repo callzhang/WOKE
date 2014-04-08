@@ -217,7 +217,7 @@
     if (!task) {
         NSLog(@"%s No task found for next task, abord", __func__);
         return;
-    }
+    } 
     
     //if no media for task, create a pseudo media
     if (task.medias.count == 0) {
@@ -233,11 +233,12 @@
         [[EWTaskStore sharedInstance] fireSilentAlarmForTask:task];
         
         //present wakeupViewController
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-        controller.task = task;
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
         
-        //play sounds
-        [controller startPlayCells];
+        //play sounds after 30s
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+             [controller startPlayCells];
+        });
         
         if (![EWWakeUpManager isRootPresentingWakeUpView]) {
             [rootViewController dismissViewControllerAnimated:YES completion:^{
@@ -246,7 +247,6 @@
             }];
         }
     }];
-    
     
 }
 

@@ -74,8 +74,8 @@
 
 
 //type
-#define kMediaType                      @"media"
-#define kBuzzType                       @"buzz"
+#define kMediaTypeVoice                 @"voice"
+#define kMediaTypeBuzz                  @"buzz"
 
 //event
 //alarm store

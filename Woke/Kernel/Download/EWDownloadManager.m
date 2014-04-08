@@ -83,7 +83,7 @@
 - (void)downloadMedia:(EWMediaItem *)media{
     //assume only audio to be downloaded
     NSString *path = media.audioKey;
-    if (!path) return;
+    if (!path || path.length>500) return;
     
     //check if task has already exsited
     if ([downloadQueue objectForKey:path]) {
@@ -91,7 +91,7 @@
         
     }else if([[EWDataStore sharedInstance] localPathForKey:path]){
         //already cached
-        NSLog(@"Media already cached: %@", path);
+        NSLog(@"Media already cached");
         return;
         
     }else{

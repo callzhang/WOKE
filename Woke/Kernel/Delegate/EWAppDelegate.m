@@ -31,6 +31,8 @@
 #import "EWUserManagement.h"
 #import "EWDataStore.h"
 
+#define kAlarmTimerInterval         100
+
 //global view for HUD
 UIViewController *rootViewController;
 
@@ -134,7 +136,7 @@ UIViewController *rootViewController;
     
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:100 target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+    myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerInterval target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
     NSLog(@"Scheduled background with time left: %f", application.backgroundTimeRemaining);
 #endif
     
@@ -251,16 +253,7 @@ UIViewController *rootViewController;
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
     
-#ifdef DEV_TEST
-//    NSArray *notifs = [[EWTaskStore sharedInstance] localNotificationForTask:task];
-//    if (notifs.count > 0) {
-//        //task has not been tested
-//        timeLeft = 10;
-//    }
-    
-#endif
-    
-    if (timeLeft < 100 && timeLeft > 0) {
+    if (timeLeft < kAlarmTimerInterval && timeLeft > 0) {
         NSLog(@"About to init alart timer in %fs, schedule a timer",timeLeft);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [EWWakeUpManager handleAlarmTimerEvent];

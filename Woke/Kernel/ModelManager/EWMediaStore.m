@@ -72,13 +72,20 @@
     NSString *vmName = vmList[k];
     NSArray *name = [vmName componentsSeparatedByString:@"."];
     NSString *path = [[NSBundle mainBundle] pathForResource:name[0] ofType:name[1]];
-    media.audioKey = path;
     
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:data name:@"test_tone.caf" contentType:@"audio/caf"];
+    
+    media.audioKey = recordDataString;
+    media.type = kMediaTypeVoice;
     media.message = @"This is a test voice tone";
     
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"Failed to save pseudo media");
-    }];
+    
+    [[EWDataStore currentContext] saveAndWait:NULL];
+    [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
+    if (media.audioKey.length > 500) {
+        media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+    }
     
     return media;
 }
@@ -121,6 +128,22 @@
 }
 
 #pragma mark - DELETE
+- (void)deleteMedia:(EWMediaItem *)mi{
+    if ([mi.type isEqualToString:kMediaTypeVoice]) {
+        [[EWDataStore sharedInstance] deleteCacheForKey:mi.audioKey];
+    }else if ([mi.type isEqualToString:kMediaTypeBuzz]){
+        //
+    
+    }else if(mi.audioKey){
+        [[EWDataStore sharedInstance] deleteCacheForKey:mi.audioKey];
+    }
+    [[EWDataStore currentContext] deleteObject:mi];
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"failed to save media deletion");
+    }];
+}
+
+
 - (void)deleteAllMedias{
     EWPerson *me = currentUser;
     NSArray *medias = [self mediaCreatedByPerson:me];

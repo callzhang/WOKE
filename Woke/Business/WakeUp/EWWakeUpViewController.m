@@ -30,8 +30,6 @@
     //NSManagedObjectContext *context;
     //NSInteger currentCell;
     NSMutableArray *medias;
-    NSMutableDictionary *buzzers;
-    NSMutableArray *listOfBuzzAndMedia; //list with time
     BOOL next;
     NSInteger loopCount;
     CGRect headerFrame;
@@ -54,6 +52,7 @@
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)t{
     self = [self initWithNibName:nil bundle:nil];
     self.task = t;
+    medias = [[task.medias allObjects] mutableCopy];
     return self;
 }
 
@@ -86,8 +85,9 @@
     //origin header frame
     headerFrame = header.frame;
     
-    //context
-    //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
+    //HUD
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
     
     [self initData];
     [self initView];
@@ -125,31 +125,16 @@
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //depend on whether passed in with task or person, the media will populaeed accordingly
     if (task) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            medias = [[task.medias allObjects] mutableCopy];
-            buzzers = [task.buzzers mutableCopy];
-            listOfBuzzAndMedia = [NSMutableArray arrayWithArray:medias];
-            [listOfBuzzAndMedia addObjectsFromArray:[buzzers allKeys]];
-            timer.text = [task.time date2String];
-            
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [tableView_ reloadData];
-                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                
-            });
-        });
+        
+        timer.text = [task.time date2String];
+        [tableView_ reloadData];
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        
     }else{
         NSLog(@"Task didn't pass into view controller");
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [tableView_ reloadData];
-                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-            });
-        });
-        
-        
+        medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
+        [tableView_ reloadData];
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     }
     
     
@@ -223,6 +208,7 @@
 
 - (void)setTask:(EWTaskItem *)t{
     task = t;
+    medias = [[task.medias allObjects] mutableCopy];
     [self initData];
 }
 
@@ -281,15 +267,15 @@
         cell.description.text = @"No description for this autio";
     }
     
-    //type
-    if ([mi.type isEqualToString:kMediaType]) {
+    //TODO: add buzz type
+    if ([mi.type isEqualToString:kMediaTypeVoice]) {
         //media
-        cell.mediaBar.type = kMediaType;
-    }else if ([mi.type isEqualToString:kBuzzType]){
+        cell.mediaBar.type = kMediaTypeVoice;
+    }else if ([mi.type isEqualToString:kMediaTypeBuzz]){
         //buzz
-        cell.mediaBar.type = kBuzzType;
+        cell.mediaBar.type = kMediaTypeBuzz;
     }else{
-        cell.mediaBar.type = kMediaType;
+        cell.mediaBar.type = kMediaTypeVoice;
     }
     
     //date
@@ -313,9 +299,17 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     if (editingStyle == UITableViewCellEditingStyleDelete) {
+        //media
         EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
+    
         //remove from data source
         [medias removeObject:mi];
+        
+        //stop play if media is being played
+        if ([[AVManager sharedManager].player.url.absoluteString isEqualToString:mi.audioKey] || [[AVManager sharedManager].player.url.absoluteString isEqualToString: [[EWDataStore sharedInstance] localPathForKey:mi.audioKey]]) {
+            //media is being played
+            [self playNextCell];
+        }
         
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -323,6 +317,7 @@
         //remove from task relation
         if (task) {
             [task removeMediasObject:mi];
+            [EWMediaStore sharedInstance];
             [[EWDataStore currentContext] saveOnSuccess:^{
                 [self initData];//refresh
                 [rootViewController.view showSuccessNotification:@"Deleted"];
@@ -330,28 +325,7 @@
                 [rootViewController.view showNotification:@"Failed to delete" WithStyle:hudStyleFailed];
             }];
         }else{
-            /*
-            NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%@ IN medias && (owner == %@ || pastOwner == %@)", mi, currentUser, currentUser];
-            request.predicate = predicate;
-            [context executeFetchRequest:request onSuccess:^(NSArray *results) {
-                if (results.count==1) {
-                    NSLog(@"get task: %d", results.count);
-                    EWTaskItem *t = results[0];
-                    [t removeMediasObject:mi];
-                    [context saveOnSuccess:^{
-                        //
-                    } onFailure:^(NSError *error) {
-                        //
-                    }];
-
-                }else{
-                    EWAlert(@"Can't locate the task, operation abord");
-                }
-                [tableView_ reloadData];
-            } onFailure:^(NSError *error) {
-                NSLog(@"%@", error);
-            }];*/
+            
             for (EWTaskItem *t in mi.tasks) {
                 if (t.owner == currentUser || t.pastOwner == currentUser) {
                     NSLog(@"Found task to delete: %@", task.ewtaskitem_id);
@@ -461,7 +435,7 @@
         NSLog(@"Play next song (%d)", currentCellPlaying);
         EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:currentCellPlaying inSection:0]];
         [[AVManager sharedManager] playForCell:cell];
-    }else if(currentCellPlaying == medias.count){
+    }else if(currentCellPlaying >= medias.count){
         if ((--loopCount)>0) {
             //play the first if loopCount > 0
             NSLog(@"Looping");

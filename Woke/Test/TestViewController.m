@@ -27,16 +27,17 @@
 @interface TestViewController ()
 
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) NSArray *dataSource;
 
 @end
 
 @interface TestViewController (UITableView) <UITableViewDataSource, UITableViewDelegate>
 @end
 
-@implementation TestViewController
+@implementation TestViewController{
+    NSArray *titles;
+    NSArray *subTitles;
+}
 @synthesize tableView = _tableView;
-@synthesize dataSource = _dataSource;
 
 - (id)init {
     self = [super init];
@@ -56,7 +57,21 @@
 
 
 - (void)initData {
-    _dataSource = @[@"Voicetone View", @"Shake test", @"Social Network API", @"Local Notifications", @"Clear Alarms & Tasks", @"Test push notification", @"Test Alarm Timer"];
+    titles = @[@"Wake Up View",
+               @"Shake test",
+               @"Social Network API",
+               @"Local Notifications",
+               @"Clear all Alarms & Tasks",
+               @"Test buzz",
+               @"Test Alarm Timer"];
+    
+    subTitles = @[@"Pop up the WakeUp View",
+                  @"Test shake",
+                  @"Test social networking capabilities",
+                  @"List local notifications",
+                  @"Delete all alarm & tasks.  Use it only when data is corrupted",
+                  @"Send self a buzz",
+                  @"Test alarm timer event. Cloase app after this!"];
 }
 
 - (void)initView {
@@ -107,7 +122,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _dataSource.count;
+    return titles.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -116,7 +131,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.row >= _dataSource.count) {
+    if (indexPath.row >= titles.count) {
         return nil;
     }
     
@@ -125,11 +140,13 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
         //This method dequeues an existing cell if one is available or creates a new one using the class or nib file you previously registered. If no cell is available for reuse and you did not register a class or nib file, this method returns nil.
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
     }
     
-    cell.textLabel.text = [_dataSource objectAtIndex:indexPath.row];
+    cell.textLabel.text = titles[indexPath.row];
+    cell.detailTextLabel.text = subTitles[indexPath.row];
     cell.textLabel.textColor = [UIColor whiteColor];
+    cell.detailTextLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.8];
     
     return cell;
 }
@@ -220,7 +237,7 @@
                 [EWWakeUpManager handleAlarmTimerEvent];
             });
             [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
-                [rootViewController.view showSuccessNotification:@"Exit app in 10s"];
+                [rootViewController.view showSuccessNotification:@"Exit app now!"];
             }];
         }
             break;

@@ -541,6 +541,7 @@
     UILocalNotification *silentAlarm = [[UILocalNotification alloc] init];
     silentAlarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
     silentAlarm.alertAction = @"Wake up!";
+    silentAlarm.soundName = task.alarm.tone;
     silentAlarm.userInfo = @{kPushTaskKey: task.ewtaskitem_id};
     [[UIApplication sharedApplication] scheduleLocalNotification:silentAlarm];
 }

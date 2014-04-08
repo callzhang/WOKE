@@ -68,7 +68,8 @@ extern AmazonSNSClient *snsClient;
 
 //check cache data
 - (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key;
-
+//deletion
+- (void)deleteCacheForKey:(NSString *)key;
 
 /**
  * Register the server update process, which will run periodically to sync with server data

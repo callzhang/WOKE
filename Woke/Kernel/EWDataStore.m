@@ -284,12 +284,12 @@ AmazonSNSClient *snsClient;
 #pragma mark - local cache
 
 - (NSString *)localPathForKey:(NSString *)key{
-    if ([[NSURL URLWithString:key] isFileURL] || ![key hasPrefix:@"http"]) {
-        //NSLog(@"Is local file path, return key directly");
-        return key;
-    }else if (key.length > 500) {
+    if (key.length > 500) {
         NSLog(@"*** Something wrong with url, the url contains data");
         return nil;
+    }else if ([[NSURL URLWithString:key] isFileURL] || [key hasPrefix:@"/"] || [key hasPrefix:@"\\"]) {
+        //NSLog(@"Is local file path, return key directly");
+        return key;
     }
     
     NSString *path = [FTWCache localPathForKey:[key MD5Hash]];
@@ -323,6 +323,18 @@ AmazonSNSClient *snsClient;
         return modificationDate;
     }
     return nil;
+}
+
+- (void)deleteCacheForKey:(NSString *)key{
+    if (!key) return;
+    NSString *path = [self localPathForKey:key];
+    if (path){
+        NSError *err;
+        [[NSFileManager defaultManager] removeItemAtPath:path error:&err];
+        if (err) {
+            NSLog(@"Delete cache with error: %@", err);
+        }
+    }
 }
 
 #pragma mark - Timely sync

@@ -26,7 +26,7 @@
 - (void)createPseudoMediaForTask:(EWTaskItem *)task;
 
 //delete
-//- (void)removeMediaItem:(EWMediaItem *)mi;
+- (void)deleteMedia:(EWMediaItem *)mi;
 - (void)deleteAllMedias;
 
 //search
