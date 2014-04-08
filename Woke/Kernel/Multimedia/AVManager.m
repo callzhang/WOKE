@@ -57,7 +57,7 @@
         //playlist = [[NSMutableArray alloc] init];
         
         //Loop
-        self.loop = YES;
+        //self.loop = YES;
         
     }
     return self;

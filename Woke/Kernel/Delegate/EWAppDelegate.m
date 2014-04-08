@@ -57,6 +57,7 @@ UIViewController *rootViewController;
     //test flight
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     
+    
     //background fetch
     [application setMinimumBackgroundFetchInterval:7200]; //fetch interval: 2hr
     
@@ -103,18 +104,19 @@ UIViewController *rootViewController;
     NSLog(@"Canceled HUD");
 }
 
-//================= Point to enter background =================
+
+
+//=================>> Point to enter background <<===================
+
+
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     NSLog(@"Entered background with active time left: %f", application.backgroundTimeRemaining);
-    
-    //responder to remote control
-    [self prepareRemoteControlEventsListener];
+
     
     //save core data
     [[EWDataStore sharedInstance] save];
-    
     
     //detect multithreading
     BOOL result = NO;
@@ -164,9 +166,6 @@ UIViewController *rootViewController;
     
     //audio session
     [[AVManager sharedManager] registerAudioSession];
-    
-    //remote control
-    [self resignRemoteControlEventsListener];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -456,58 +455,7 @@ UIViewController *rootViewController;
 	manager.backgroundSessionCompletionHandler = completionHandler;
 }
 
-#pragma mark - Remote Control Event
-- (void)prepareRemoteControlEventsListener{
-    
-    //register for remote control
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    
-    // Set itself as the first responder
-    BOOL success = [self becomeFirstResponder];
-    if (success) {
-        NSLog(@"APP degelgate AVManager for remote control events");
-    }else{
-        NSLog(@"@@@ degelgate failed to listen remote control events @@@");
-    }
-}
 
-- (BOOL)canBecomeFirstResponder{
-    return YES;
-}
-
-- (void)resignRemoteControlEventsListener{
-    
-    // Turn off remote control event delivery
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
-    
-    // Resign as first responder
-    [self resignFirstResponder];
-}
-
-- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
-    
-    if (receivedEvent.type == UIEventTypeRemoteControl) {
-        
-        switch (receivedEvent.subtype) {
-                
-            case UIEventSubtypeRemoteControlTogglePlayPause:
-                NSLog(@"Received remote control: play");
-                [[AVManager sharedManager].player play];
-                break;
-                
-            case UIEventSubtypeRemoteControlPreviousTrack:
-                NSLog(@"Received remote control: Previous");
-                break;
-                
-            case UIEventSubtypeRemoteControlNextTrack:
-                NSLog(@"Received remote control: Next");
-                break;
-                
-            default:
-                break;
-        }
-    }
-}
 
 @end
 

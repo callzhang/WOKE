@@ -110,7 +110,7 @@
 }
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
-    NSArray *tasks = [NSArray new];
+    NSArray *tasks;
     if (![[EWDataStore sharedInstance].lastChecked isOutDated] && person.tasks) {
         tasks = [person.pastTasks allObjects];
     }else{

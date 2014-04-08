@@ -41,29 +41,31 @@
 @property (weak, nonatomic) UIButton *playStopBtn;
 @property (weak, nonatomic) EWMediaSlider *progressBar;
 @property (weak, nonatomic) UILabel *currentTime;
-@property (nonatomic) BOOL loop;
+//@property (nonatomic) BOOL loop;
 
 +(AVManager *)sharedManager;
 
-/**
- Play sound from main bundle
- @param fileName: the file name without path
- */
-- (void)playSoundFromFile:(NSString *)fileName;
+//play
+- (void)playForCell:(UITableViewCell *)cell;
+- (void)playMedia:(EWMediaItem *)media;
+
 /**
  Main play function. Support FTW cache method.
  */
 - (void)playSoundFromURL:(NSURL *)url;
-- (void)playForCell:(UITableViewCell *)cell;
-- (void)playMedia:(EWMediaItem *)media;
+- (void)playSoundFromFile:(NSString *)fileName;
+
+//update states
 - (void)updateViewForPlayerState:(AVAudioPlayer *)player;
+
 /**
  (Depreciated)
  Use WakeUpManager to control the playing
  */
-- (void)playTask:(EWTaskItem *)task;
-- (NSURL *)record;
+//- (void)playTask:(EWTaskItem *)task;
 
+
+- (NSURL *)record;
 
 // - (void)stopPlaying:(NSString *)fileName;
 - (void)stopAllPlaying;
