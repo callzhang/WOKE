@@ -27,8 +27,7 @@
 
 
 @interface EWWakeUpViewController (){
-    //NSManagedObjectContext *context;
-    //NSInteger currentCell;
+    
     NSMutableArray *medias;
     NSMutableDictionary *buzzers;
     NSMutableArray *listOfBuzzAndMedia; //list with time
@@ -86,8 +85,6 @@
     //origin header frame
     headerFrame = header.frame;
     
-    //context
-    //context = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
     
     [self initData];
     [self initView];
@@ -104,6 +101,10 @@
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     
+    
+    //responder to remote control
+    [self prepareRemoteControlEventsListener];
+    
     NSLog(@"WakeUp view did appear, preparing to play audio");
     if ([AVManager sharedManager].player.playing) {
         //start seeking progress bar
@@ -119,6 +120,11 @@
         [self startPlayCells];
     }
     
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [self resignRemoteControlEventsListener];
 }
 
 - (void)initData {
@@ -458,7 +464,7 @@
     currentCellPlaying++;
     if (currentCellPlaying < medias.count){
         //get next cell
-        NSLog(@"Play next song (%d)", currentCellPlaying);
+        NSLog(@"Play next song (%ld)", (long)currentCellPlaying);
         EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:currentCellPlaying inSection:0]];
         [[AVManager sharedManager] playForCell:cell];
     }else if(currentCellPlaying == medias.count){
@@ -473,7 +479,72 @@
             [AVManager sharedManager].currentCell = nil;
         }
     }else{
-        [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%d)", (long)currentCellPlaying, medias.count];
+        [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%lu)", (long)currentCellPlaying, (unsigned long)medias.count];
+    }
+}
+
+#pragma mark - Remote Control Event
+- (void)prepareRemoteControlEventsListener{
+    
+    //register for remote control
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    
+    // Set itself as the first responder
+    BOOL success = [self becomeFirstResponder];
+    if (success) {
+        NSLog(@"APP degelgated %@ remote control events", [self class]);
+    }else{
+        NSLog(@"@@@ %@ failed to listen remote control events @@@", self.class);
+    }
+}
+
+- (BOOL)canBecomeFirstResponder{
+    return YES;
+}
+
+- (void)resignRemoteControlEventsListener{
+    
+    // Turn off remote control event delivery
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    
+    // Resign as first responder
+    BOOL sucess = [self resignFirstResponder];
+    
+    if (sucess) {
+        NSLog(@"%@ resigned as first responder", self.class);
+        
+    }else{
+        NSLog(@"%@ failed to resign first responder", self.class);
+    }
+}
+
+- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
+    
+    if (receivedEvent.type == UIEventTypeRemoteControl) {
+        
+        switch (receivedEvent.subtype) {
+                
+            case UIEventSubtypeRemoteControlPlay:
+                NSLog(@"Received remote control: play");
+                [self startPlayCells];
+                break;
+                
+            case UIEventSubtypeRemoteControlPreviousTrack:
+                NSLog(@"Received remote control: Previous");
+                break;
+                
+            case UIEventSubtypeRemoteControlNextTrack:
+                NSLog(@"Received remote control: Next");
+                break;
+                
+            case UIEventSubtypeRemoteControlStop:
+                NSLog(@"Received remote control Stop");
+                [[AVManager sharedManager] stopAllPlaying];
+                break;
+                
+            default:
+                break;
+        }
     }
 }
 
