@@ -11,24 +11,27 @@
 @implementation EWCollectionPersonCell
 @synthesize profilePic;
 @synthesize name;
-@synthesize maskView;
+@synthesize selectionView;
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        //mask
-        [self applyHexagonMaskForView:self.contentView];
-        self.contentView.layer.masksToBounds = YES;
+        self.contentView.backgroundColor = [UIColor clearColor];
         
         // profilePic
+        UIView *profileView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+        profileView.backgroundColor = [UIColor clearColor];
+        //mask
+        [self applyHexagonMaskForView:profileView];
+        
         profilePic = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,kCollectionViewCellPersonRadius * 2, kCollectionViewCellPersonRadius * 2)];
         
         //boarder
         UIImageView *boarderView = [[UIImageView alloc] initWithFrame:profilePic.frame];
         UIGraphicsBeginImageContext(boarderView.frame.size);
         [boarderView.image drawInRect:boarderView.frame];
-        [[UIColor colorWithWhite:1.0 alpha:1.0] setStroke];
+        [[UIColor colorWithWhite:1.0 alpha:0.8] setStroke];
         UIBezierPath *hexagonPath = [self getHexagonPath];
         hexagonPath.lineWidth = 4.0;
         [hexagonPath stroke];
@@ -37,7 +40,6 @@
         
         
         //background
-        self.contentView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
 //        UIToolbar *bg = [[UIToolbar alloc] initWithFrame:profilePic.frame];
 //        //bg.barTintColor = [UIColor colorWithWhite:1 alpha:0.1];
 //        bg.barStyle = UIBarStyleDefault;
@@ -51,22 +53,23 @@
         name.textAlignment = NSTextAlignmentCenter;
         name.font = [UIFont systemFontOfSize:12];
         name.textColor = [UIColor colorWithWhite:0.8 alpha:1];
-        name.text = @"...";
+        //[name sizeToFit];
         
-        //mask
-        maskView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,kCollectionViewCellPersonRadius *2, kCollectionViewCellPersonRadius *2)];
-        maskView.layer.masksToBounds = YES;
-        maskView.layer.cornerRadius = kCollectionViewCellPersonRadius;
-        maskView.image = [UIImage imageNamed:@"checkmark"];
-        maskView.hidden = YES;
+        //selection view
+        selectionView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0,kCollectionViewCellPersonRadius *2, kCollectionViewCellPersonRadius *2)];
+        selectionView.layer.masksToBounds = YES;
+        selectionView.layer.cornerRadius = kCollectionViewCellPersonRadius;
+        selectionView.image = [UIImage imageNamed:@"checkmark"];
+        selectionView.hidden = YES;
         
         
         //add
         
-        [self.contentView addSubview:profilePic];
-        [self.contentView addSubview:boarderView];
+        [profileView addSubview:profilePic];
+        [profileView addSubview:boarderView];
+        [self.contentView addSubview:profileView];
         [self.contentView addSubview:name];
-        [self.contentView addSubview:maskView];
+        [self.contentView addSubview:selectionView];
         
     }
     return self;
@@ -86,6 +89,7 @@
     UIBezierPath *hexagonPath = [self getHexagonPath];
     hexagonMask.path = hexagonPath.CGPath;
     view.layer.mask  = hexagonMask;
+    view.layer.masksToBounds = YES;
 }
 
 - (UIBezierPath *)getHexagonPath{

@@ -228,10 +228,7 @@
     //page also means future day count
     
     //skip if page is out of bound
-    if (page < 0 || page >= _alarmPages.count) {
-        return;
-    }
-    
+    if (page < 0 || page >= _alarmPages.count) return;
     
     //data
     EWTaskItem *task = tasks[page];

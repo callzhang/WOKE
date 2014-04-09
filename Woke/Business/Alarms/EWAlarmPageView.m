@@ -36,10 +36,10 @@
             [self addSubview:view];
         }
         //Notifications
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kAlarmChangedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskTimeChangedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskStateChangedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskChangedNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kAlarmChangedNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskTimeChangedNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskStateChangedNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskChangedNotification object:nil];
     }
     return self;
 }
@@ -79,20 +79,24 @@
 
 - (void)setTask:(EWTaskItem *)t{
     //unsubscribe previous task if possible
-//    @try {
-//        [task removeObserver:self forKeyPath:@"state"];
-//        [task removeObserver:self forKeyPath:@"medias"];
-//        [task removeObserver:self forKeyPath:@"time"];
-//    }
-//    @catch (NSException *exception) {
-//        NSLog(@"%@",exception);
-//    }
+    if (![task isEqual:t]) {
+        @try {
+            [task removeObserver:self forKeyPath:@"state"];
+            [task removeObserver:self forKeyPath:@"medias"];
+            [task removeObserver:self forKeyPath:@"time"];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"*** Alarm page unable to remove task observer: %@",exception);
+        }
+    }
+    
     
     //setting the hours left
     task = t;
     alarm = task.alarm;
     self.alarmState.on = t.state.boolValue;
     self.timeText.text = [t.time date2timeShort];
+    self.AM.text = [t.time date2am];
     
     float h = ([t.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
 
@@ -103,13 +107,13 @@
         self.timeLeftText.text = @"Just alarmed";
     }
     
-
-    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"task == %@", task];
-    request.predicate = predicate;
-    SMRequestOptions *options = [SMRequestOptions options];
-    options.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
-    [[[EWDataStore sharedInstance] currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:options error:NULL];
+//
+//    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
+//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"task == %@", task];
+//    request.predicate = predicate;
+//    SMRequestOptions *options = [SMRequestOptions options];
+//    options.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
+//    [[[EWDataStore sharedInstance] currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:options error:NULL];
     NSInteger mCount = task.medias.count;
     
     if (mCount > 0) {
@@ -122,45 +126,71 @@
     self.descriptionText.text = t.statement;
     [self.descriptionText sizeToFit];
     
+    
+    //test
     self.dateText.hidden = YES;
     self.typeText.hidden = YES;
     
-//    //kvo <= KVO not working because it constantly updates the value
-//    [task addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:NULL];
-//    [task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:NULL];
-//    [task addObserver:self forKeyPath:@"time" options:NSKeyValueObservingOptionNew context:NULL];
+    //kvo <= KVO not working because it constantly updates the value
+    [task addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:NULL];
+    [task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:NULL];
+    [task addObserver:self forKeyPath:@"time" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)setAlarm:(EWAlarmItem *)a{
     self.alarmState.on = a.state.boolValue;
 }
 
-#pragma mark - NOTIFICATION
-- (void)updatedPage:(NSNotification *)notif{
-    id sender = [notif object];
-    if ([sender isMemberOfClass:[EWAlarmItem class]]) {
-        if ([[(EWAlarmItem *)sender ewalarmitem_id] isEqual:alarm.ewalarmitem_id]) {
-            self.alarm = sender;
-            [self setNeedsDisplay];
-        }
-    } else if([sender isMemberOfClass:[EWTaskItem class]]) {
-        if ([[(EWTaskItem *)sender ewtaskitem_id] isEqual:task.ewtaskitem_id]) {
-            NSLog(@"Alarm page (%@) received task change notification", task.time.weekday);
-            self.task = sender;
-            [self setNeedsDisplay];
-        }
-    }
-    
-}
+//#pragma mark - NOTIFICATION
+//- (void)updatedPage:(NSNotification *)notif{
+//    id sender = [notif object];
+//    if ([sender isMemberOfClass:[EWAlarmItem class]]) {
+//        if ([[(EWAlarmItem *)sender ewalarmitem_id] isEqual:alarm.ewalarmitem_id]) {
+//            self.alarm = sender;
+//            [self setNeedsDisplay];
+//        }
+//    } else if([sender isMemberOfClass:[EWTaskItem class]]) {
+//        if ([[(EWTaskItem *)sender ewtaskitem_id] isEqual:task.ewtaskitem_id]) {
+//            NSLog(@"Alarm page (%@) received task change notification", task.time.weekday);
+//            self.task = sender;
+//            [self setNeedsDisplay];
+//        }
+//    }
+//    
+//}
 
 #pragma mark - KVO
-//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-//    if ([object isKindOfClass:[EWTaskItem class]]) {
-//        //TODO: dispatch different tasks for each updates
-//        NSLog(@"Observed change for task %@", [[(EWTaskItem *)object time] date2dayString]);
-//        self.task = object;
-//        [self setNeedsDisplay];
-//    }
-//}
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if (![object isEqual:task]) {
+        NSLog(@"Received task change that not belongs to this alarm page, check observer set up!");
+        return;
+    }
+    if ([object isKindOfClass:[EWTaskItem class]]) {
+        //TODO: dispatch different tasks for each updates
+        if ([keyPath isEqualToString:@"state"]) {
+            self.alarmState.on = [change[NSKeyValueChangeNewKey] boolValue];
+        }else if ([keyPath isEqualToString:@"medias"]){
+            [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];
+            
+        }else if ([keyPath isEqualToString:@"time"]){
+            self.timeText.text = [task.time date2timeShort];
+            self.AM.text = [task.time date2am];
+        }else{
+            NSLog(@"Unhandled task %@ change: %@", keyPath, change);
+        }
+        [self setNeedsDisplay];
+    }
+}
+
+- (void)dealloc{
+    @try {
+        [task removeObserver:self forKeyPath:@"state"];
+        [task removeObserver:self forKeyPath:@"medias"];
+        [task removeObserver:self forKeyPath:@"time"];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"*** Alarm page unable to remove task observer: %@",exception);
+    }
+}
 
 @end

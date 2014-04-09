@@ -323,13 +323,13 @@
     {
         //取消被选中状态
         [selectedPersonSet removeObject:person];
-        cell.maskView.hidden = YES;
+        cell.selectionView.hidden = YES;
     }
     else
     {
         //选中
         [selectedPersonSet addObject:person];
-        cell.maskView.hidden = NO;
+        cell.selectionView.hidden = NO;
     }
     
     //[collectionView reloadData];

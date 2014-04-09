@@ -296,6 +296,7 @@
 
 -(void)updateCurrentTime{
     if (!progressBar.isTouchInside) {
+        player.volume = 1.0;
         progressBar.value = player.currentTime;
         currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (long)player.currentTime / 60, (long)player.currentTime % 60, nil];
     }
@@ -471,7 +472,7 @@ void RouteChangeListener(	void *inClientData,
 }
 
 void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
-    //NSLog(@"System audio playback fnished");
+    NSLog(@"System audio playback fnished");
     
     if ([AVManager sharedManager].media) {
         [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];

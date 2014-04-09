@@ -51,7 +51,6 @@
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)t{
     self = [self initWithNibName:nil bundle:nil];
     self.task = t;
-    medias = [[task.medias allObjects] mutableCopy];
     return self;
 }
 
@@ -133,17 +132,19 @@
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //depend on whether passed in with task or person, the media will populaeed accordingly
     if (task) {
-        
         timer.text = [task.time date2String];
+        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastmoddate" ascending:YES];
+        medias = [[task.medias allObjects] mutableCopy];
+        [medias sortedArrayUsingDescriptors:@[sort]];
         [tableView_ reloadData];
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         
     }else{
         NSLog(@"Task didn't pass into view controller");
         medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
         [tableView_ reloadData];
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     }
+    
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     
     
     //_shakeManager = [[EWShakeManager alloc] init];
@@ -310,14 +311,17 @@
         //media
         EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
     
+        
+        //stop play if media is being played
+        if ([[AVManager sharedManager].media isEqual:mi]) {
+            //media is being played
+            NSLog(@"Deleting current cell, play next");
+            [self playNextCell];
+        }
+        
         //remove from data source
         [medias removeObject:mi];
         
-        //stop play if media is being played
-        if ([[AVManager sharedManager].player.url.absoluteString isEqualToString:mi.audioKey] || [[AVManager sharedManager].player.url.absoluteString isEqualToString: [[EWDataStore sharedInstance] localPathForKey:mi.audioKey]]) {
-            //media is being played
-            [self playNextCell];
-        }
         
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -414,18 +418,7 @@
 
 
 - (NSInteger)seekCurrentCell{
-//    NSString *urlPlaying = [AVManager sharedManager].player.url.absoluteString;
-//    for (unsigned i = 0; i < medias.count; i++) {
-//        
-//        NSString *mediaAudioKey = [(EWMediaItem *)medias[i] audioKey];
-//        NSString *mediaAudioLocalPath = [[EWDataStore sharedInstance] localPathForKey:mediaAudioKey];
-//        if ([urlPlaying isEqualToString:mediaAudioKey] || [urlPlaying isEqualToString:mediaAudioLocalPath]) {
-//            EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-//            [AVManager sharedManager].currentCell = cell;
-//            NSLog(@"Found current cell (%ld)", (long)i);
-//            return i;
-//        }
-//    }
+    [self initData];
     
     for (NSInteger i=0; i<medias.count; i++) {
         if ([[AVManager sharedManager].media isEqual:medias[i]]) {
@@ -507,9 +500,14 @@
         
         switch (receivedEvent.subtype) {
                 
-            case UIEventSubtypeRemoteControlPlay:
+            case UIEventSubtypeRemoteControlPlay:{
                 NSLog(@"Received remote control: play");
-                [self startPlayCells];
+                AVManager *manager = [AVManager sharedManager];
+                if (![manager.player play]) {
+                    [manager playMedia:manager.media];
+                }
+            }
+                
                 break;
                 
             case UIEventSubtypeRemoteControlPreviousTrack:
@@ -525,7 +523,13 @@
                 [[AVManager sharedManager] stopAllPlaying];
                 break;
                 
+            case UIEventSubtypeRemoteControlPause:
+                NSLog(@"Received remote control pause");
+                //[[AVManager sharedManager] stopAllPlaying];
+                break;
+                
             default:
+                NSLog(@"Received remote control %d", receivedEvent.subtype);
                 break;
         }
     }

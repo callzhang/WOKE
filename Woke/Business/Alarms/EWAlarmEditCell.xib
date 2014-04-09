@@ -27,7 +27,7 @@
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Say something to the waker" minimumFontSize="16" clearButtonMode="unlessEditing" translatesAutoresizingMaskIntoConstraints="NO" id="tzv-qF-b9m">
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Say something to myself" minimumFontSize="16" clearButtonMode="unlessEditing" translatesAutoresizingMaskIntoConstraints="NO" id="tzv-qF-b9m">
                         <rect key="frame" x="53" y="121" width="254" height="30"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="textColor" red="0.48559622819999998" green="0.5963714255" blue="0.78003427930000002" alpha="1" colorSpace="calibratedRGB"/>

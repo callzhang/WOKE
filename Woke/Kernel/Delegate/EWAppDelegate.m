@@ -233,14 +233,15 @@ UIViewController *rootViewController;
     
     UIApplication *application = [UIApplication sharedApplication];
     
-    //结束旧的后台任务
-    [application endBackgroundTask:backgroundTaskIdentifier];
-    
     //开启一个新的后台
     NSInteger ct = count++;
     backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
         NSLog(@"BG task will end (%ld)", (long)ct);
     }];
+    
+    //结束旧的后台任务
+    [application endBackgroundTask:backgroundTaskIdentifier];
+
     
     //check time
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser];
@@ -252,12 +253,11 @@ UIViewController *rootViewController;
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
     
     if (timeLeft < kAlarmTimerInterval && timeLeft > 0) {
-        NSLog(@"About to init alart timer in %fs, schedule a timer",timeLeft);
+        NSLog(@"KeepAlive: About to init alart timer in %fs",timeLeft);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [EWWakeUpManager handleAlarmTimerEvent];
         });
     }
-    
     
     NSLog(@"Background task is still working with time left %f (%ld)",[UIApplication sharedApplication].backgroundTimeRemaining , count++);
 

@@ -247,6 +247,7 @@
             break;
         
         case 7:{
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:[EWDataStore user]];
             for (unsigned i=0; i< 6 - task.medias.count; i++) {
                 //add some medias
@@ -255,6 +256,7 @@
             
             EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
             [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
+                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
                 [rootViewController presentViewControllerWithBlurBackground:controller];
             }];
             

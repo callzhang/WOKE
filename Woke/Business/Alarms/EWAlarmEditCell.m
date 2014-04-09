@@ -55,10 +55,10 @@
 - (IBAction)toggleAlarm:(UIButton *)sender {
     if (alarmOn) {
         alarmOn = NO;
-        //sender.backgroundColor = [UIColor clearColor];
+        sender.backgroundColor = [UIColor clearColor];
     } else {
         alarmOn = YES;
-        //sender.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:0.8];
+        sender.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:0.8];
     }
     NSString *alarmState = alarmOn ? @"ON":@"OFF";
     [self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
