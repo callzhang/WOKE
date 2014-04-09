@@ -5,6 +5,7 @@
 //  Created by shenslu on 13-7-11.
 //  Copyright (c) 2013年 Shens. All rights reserved.
 //
+static int i=1;
 
 #import "EWAlarmsViewController.h"
 
@@ -525,13 +526,96 @@
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
+ 
+//    AMBlurView *aview=[[AMBlurView alloc]initWithFrame:CGRectMake(0, 0, 320, 568)];
     
+//    [self.view addSubview:aview];
+    UIView *view=[[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 568)];
+    view.backgroundColor=[UIColor whiteColor];
+    view.alpha=0.7;
+    _alphaview=view;
+    [self.view addSubview:_alphaview];
+
+    UIButton *abutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x-30 ,cell.frame.origin.y-30 , 30, 30)];
+    abutton.center=cell.center;
+    _profilebutton=abutton;
+    
+    UIButton *bbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width ,cell.frame.origin.y-30 , 30, 30)];
+    bbutton.center=cell.center;
+    _buzzbutton=bbutton;
+
+    UIButton *cbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y-45 , 30, 30)];
+    cbutton.center=cell.center;
+    _voicebutton=cbutton;
+
+    UIButton *dbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y+cell.frame.size.height+15 , 30, 30)];
+    dbutton.center=cell.center;
+    _closebutton=dbutton;
+    [_closebutton addTarget:self action:@selector(closemeun) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+
+    
+//    UIButton *abutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x-30 ,cell.frame.origin.y-30 , 30, 30)];
+//    UIButton *bbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width ,cell.frame.origin.y-30 , 30, 30)];
+//    UIButton *cbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y-45 , 30, 30)];
+//    UIButton *dbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y+cell.frame.size.height+15 , 30, 30)];
+    UIImageView *imageview=[[UIImageView alloc]initWithFrame:cell.frame];
+    imageview.image=cell.profilePic.image;
+    _personview=imageview;
+
+    
+    abutton.backgroundColor=[UIColor redColor];
+    bbutton.backgroundColor=[UIColor redColor];
+    cbutton.backgroundColor=[UIColor redColor];
+    dbutton.backgroundColor=[UIColor redColor];
+    [self.view addSubview:_profilebutton];
+    [self.view addSubview:_buzzbutton];
+    [self.view addSubview:_voicebutton];
+    [self.view addSubview:_closebutton];
+    [self.view addSubview:_personview];
+    
+    
+    [timer isValid];
+    if(timer==nil)
+    {
+        timer=[NSTimer scheduledTimerWithTimeInterval:1.0/60.0
+                                               target:self
+                                             selector:@selector(movbutton)
+                                             userInfo:NULL
+                                              repeats:YES];
+    }
+
+    
+
     //action sheet
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
-    sheet.tag = 1001;
-    [sheet showFromRect:cell.frame inView:self.view animated:YES];
+//    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
+//    sheet.tag = 1001;
+//    [sheet showFromRect:cell.frame inView:self.view animated:YES];
+}
+-(void)movbutton
+{
+    i++;
+    if(i>=60)
+    [timer invalidate];
+    [_profilebutton setFrame:CGRectMake(_profilebutton.x-1, _profilebutton.y-1, 30, 30)];
+    [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y-1.5, 30, 30)];
+    [_voicebutton setFrame:CGRectMake(_voicebutton.x+1, _voicebutton.y-1, 30, 30)];
+    [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y+1.5, 30, 30)];
+    
     
 }
+-(void)closemeun
+{
+    [_personview removeFromSuperview];
+    [_profilebutton removeFromSuperview];
+    [_buzzbutton removeFromSuperview];
+    [_voicebutton removeFromSuperview];
+    [_closebutton removeFromSuperview];
+    [_alphaview removeFromSuperview];
+    
+}
+
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{
     return YES;

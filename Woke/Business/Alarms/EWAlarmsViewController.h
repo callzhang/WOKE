@@ -8,12 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "EWAlarmPageView.h"
-
 @import CoreData;
 
 @class EWPerson;
-@interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,NSFetchedResultsControllerDelegate> {
+@interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,NSFetchedResultsControllerDelegate>
+{
     NSMutableArray * _alarmPages; //alarm page container
+    NSTimer *timer;
 }
 
 @property (nonatomic) NSArray *alarms;
@@ -25,6 +26,13 @@
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
+@property(strong,nonatomic) UIButton *profilebutton;
+@property(strong,nonatomic) UIButton *buzzbutton;
+@property(strong,nonatomic) UIButton *voicebutton;
+@property(strong,nonatomic) UIButton *closebutton;
+@property(strong,nonatomic) UIImageView *personview;
+@property(strong,nonatomic) UIView *alphaview;
+
 
 //action
 - (void)loadScrollViewWithPage:(NSInteger)page;
