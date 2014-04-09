@@ -45,29 +45,40 @@
 + (void)getPersonWakingUpForTime:(NSDate *)time location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock{
     NSLog(@"%s", __func__);
     
-    NSString *userId = currentUser.username;
-    NSInteger timeSince1970 = (NSInteger)[time timeIntervalSince1970];
-    NSString *timeStr = [NSString stringWithFormat:@"%ld", (long)timeSince1970];
-    NSString *lat = [geoPoint.latitude stringValue];
-    NSString *lon = [geoPoint.longitude stringValue];
-    NSString *geoStr = [NSString stringWithFormat:@"%@,%@", lat, lon];
+//    NSString *userId = currentUser.username;
+//    NSInteger timeSince1970 = (NSInteger)[time timeIntervalSince1970];
+//    NSString *timeStr = [NSString stringWithFormat:@"%ld", (long)timeSince1970];
+//    NSString *lat = [geoPoint.latitude stringValue];
+//    NSString *lon = [geoPoint.longitude stringValue];
+//    NSString *geoStr = [NSString stringWithFormat:@"%@,%@", lat, lon];
+//    
+//    
+//    SMCustomCodeRequest *request = [[SMCustomCodeRequest alloc]
+//                                    initGetRequestWithMethod:@"get_person_waking_up"];
+//    
+//    [request addQueryStringParameterWhere:@"personId" equals:userId];
+//    [request addQueryStringParameterWhere:@"time" equals:timeStr];
+//    [request addQueryStringParameterWhere:@"location" equals:geoStr];
+//    
+//    [[[SMClient defaultClient] dataStore]
+//     performCustomCodeRequest:request
+//     onSuccess:successBlock
+//     onFailure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id responseBody){
+//         [NSException raise:@"Server custom code error" format:@"Reason: %@", error.description];
+//         //retry...
+//         
+//     }];
     
-    
-    SMCustomCodeRequest *request = [[SMCustomCodeRequest alloc]
-                                    initGetRequestWithMethod:@"get_person_waking_up"];
-    
-    [request addQueryStringParameterWhere:@"personId" equals:userId];
-    [request addQueryStringParameterWhere:@"time" equals:timeStr];
-    [request addQueryStringParameterWhere:@"location" equals:geoStr];
-    
-    [[[SMClient defaultClient] dataStore]
-     performCustomCodeRequest:request
-     onSuccess:successBlock
-     onFailure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id responseBody){
-         [NSException raise:@"Server custom code error" format:@"Reason: %@", error.description];
-         //retry...
-         
-     }];
+    SMPredicate *locationPredicate =[SMPredicate predicateWhere:@"lastLocation" isWithin:10 kilometersOfGeoPoint:[EWDataStore user].lastLocation];
+    NSPredicate *timePredicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
+    NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[locationPredicate, timePredicate]];
+    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
+    request.predicate = predicate;
+    [[EWDataStore currentContext] executeFetchRequest:request onSuccess:^(NSArray *results) {
+        //
+    } onFailure:^(NSError *error) {
+        NSLog(@"*** Failed to fetch around me list: %@", error.description);
+    }];
 }
 
 #pragma mark - Push Notification
