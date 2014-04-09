@@ -69,9 +69,7 @@
             [task addWakerObject:sender];
             //add buzzer
             [task addBuzzer:sender atTime:[NSDate date]];
-            [[EWDataStore currentContext] saveOnSuccess:^{
-                //
-            } onFailure:^(NSError *error) {
+            [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
                 NSLog(@"Unable to save: %@", error.description);
             }];
             

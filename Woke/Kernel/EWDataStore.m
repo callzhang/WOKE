@@ -91,7 +91,7 @@ AmazonSNSClient *snsClient;
             
             
             //Change fetch policy
-            [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryNetworkElseCache];
+            [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
             
             
             // Notify other views that they should reload their data from the network

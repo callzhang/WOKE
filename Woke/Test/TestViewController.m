@@ -23,6 +23,8 @@
 #import "StackMob.h"
 #import "EWTaskStore.h"
 #import "EWWakeUpManager.h"
+#import "EWMediaStore.h"
+#import "EWTaskItem.h"
 
 @interface TestViewController ()
 
@@ -63,7 +65,8 @@
                @"Local Notifications",
                @"Clear all Alarms & Tasks",
                @"Test buzz",
-               @"Test Alarm Timer"];
+               @"Test Alarm Timer",
+               @"Lock screen"];
     
     subTitles = @[@"Pop up the WakeUp View",
                   @"Test shake",
@@ -71,7 +74,8 @@
                   @"List local notifications",
                   @"Delete all alarm & tasks.  Use it only when data is corrupted",
                   @"Send self a buzz",
-                  @"Test alarm timer event. Cloase app after this!"];
+                  @"Test alarm timer event. Cloase app after this!",
+                  @"Test lock screen media cover info"];
 }
 
 - (void)initView {
@@ -241,7 +245,22 @@
             }];
         }
             break;
+        
+        case 7:{
+            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:[EWDataStore user]];
+            for (unsigned i=0; i< 6 - task.medias.count; i++) {
+                //add some medias
+                [[EWMediaStore sharedInstance] createPseudoMediaForTask:task];
+            }
             
+            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
+            [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
+                [rootViewController presentViewControllerWithBlurBackground:controller];
+            }];
+            
+            
+        }
+            break;
         default:
             break;
     }

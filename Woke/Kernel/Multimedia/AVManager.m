@@ -69,7 +69,7 @@
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     //set category
-    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers error: &error];
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: &error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     //force speaker
     success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
@@ -183,9 +183,7 @@
     [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];
     
     //lock screen
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        [self displayNowPlayingInfoToLockScreen:mi];
-    }
+    [self displayNowPlayingInfoToLockScreen:mi];
 }
 
 //play media for task (Depreciated)
@@ -316,7 +314,7 @@
     [updateTimer invalidate];
     self.player.currentTime = 0.0;
     progressBar.value = 0.0;
-    NSLog(@"Playback fnished");
+    //NSLog(@"Playback fnished");
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
     
     //play next
@@ -473,7 +471,7 @@ void RouteChangeListener(	void *inClientData,
 }
 
 void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
-    NSLog(@"System audio playback fnished");
+    //NSLog(@"System audio playback fnished");
     
     if ([AVManager sharedManager].media) {
         [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
@@ -487,25 +485,27 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
 - (void)displayNowPlayingInfoToLockScreen:(EWMediaItem *)m{
     //only support iOS5+
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
-        NSLog(@"Assigning media cover info");
         
         if (!m) m = media;
         EWTaskItem *task = [m.tasks anyObject];
-        NSString *str = task.statement ? task.statement : @"";
+        NSString *title = [task.time weekday];
         
         //info
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        dict[MPMediaItemPropertyTitle] = @"Voice alarm from Woke";
+        NSMutableDictionary *dict = [NSMutableDictionary new];
+        dict[MPMediaItemPropertyTitle] = @"Time to wake up";
         dict[MPMediaItemPropertyArtist] = m.author.name;
-        dict[MPMediaItemPropertyAlbumTitle] = str;
+        dict[MPMediaItemPropertyAlbumTitle] = title;
         
         //cover
         UIImage *cover = media.image ? media.image : media.author.profilePic;
         MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:cover];
         dict[MPMediaItemPropertyArtwork] = artwork;
+        //TODO: media message can be rendered on image
         
         //set
-        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = dict;
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
+        
+        NSLog(@"Set lock screen informantion");
     }
 }
 @end

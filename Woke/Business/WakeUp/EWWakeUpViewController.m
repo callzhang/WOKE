@@ -414,21 +414,27 @@
 
 
 - (NSInteger)seekCurrentCell{
-    NSString *urlPlaying = [AVManager sharedManager].player.url.absoluteString;
-    for (unsigned i = 0; i < medias.count; i++) {
-        
-        NSString *mediaAudioKey = [(EWMediaItem *)medias[i] audioKey];
-        NSString *mediaAudioLocalPath = [[EWDataStore sharedInstance] localPathForKey:mediaAudioKey];
-        if ([urlPlaying isEqualToString:mediaAudioKey] || [urlPlaying isEqualToString:mediaAudioLocalPath]) {
-            EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-            [AVManager sharedManager].currentCell = cell;
-            NSLog(@"Found current cell (%ld)", (long)i);
+//    NSString *urlPlaying = [AVManager sharedManager].player.url.absoluteString;
+//    for (unsigned i = 0; i < medias.count; i++) {
+//        
+//        NSString *mediaAudioKey = [(EWMediaItem *)medias[i] audioKey];
+//        NSString *mediaAudioLocalPath = [[EWDataStore sharedInstance] localPathForKey:mediaAudioKey];
+//        if ([urlPlaying isEqualToString:mediaAudioKey] || [urlPlaying isEqualToString:mediaAudioLocalPath]) {
+//            EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+//            [AVManager sharedManager].currentCell = cell;
+//            NSLog(@"Found current cell (%ld)", (long)i);
+//            return i;
+//        }
+//    }
+    
+    for (NSInteger i=0; i<medias.count; i++) {
+        if ([[AVManager sharedManager].media isEqual:medias[i]]) {
             return i;
         }
     }
     
     //if not found, play the first one
-    return 0;
+    return -1;
 }
 
 
@@ -453,6 +459,7 @@
             NSLog(@"Loop finished, stop playing");
             //nullify all cell info in avmanager
             [AVManager sharedManager].currentCell = nil;
+            [AVManager sharedManager].media = nil;
         }
     }else{
         [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%lu)", (long)currentCellPlaying, (unsigned long)medias.count];
