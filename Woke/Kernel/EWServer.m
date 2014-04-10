@@ -69,7 +69,7 @@
 //         
 //     }];
     
-    SMPredicate *locationPredicate =[SMPredicate predicateWhere:@"lastLocation" isWithin:10 kilometersOfGeoPoint:geoPoint];
+    SMPredicate *locationPredicate =[SMPredicate predicateWhere:@"last_location" isWithin:10 kilometersOfGeoPoint:geoPoint];
     //NSPredicate *timePredicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[time, [time timeByAddingMinutes:60]]];
     //NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[locationPredicate, timePredicate]];
     

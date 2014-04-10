@@ -113,24 +113,28 @@
         //fetch everyone
         SMGeoPoint *location;
         id locData = currentUser.lastLocation;
-        if ([locData isKindOfClass:[SMGeoPoint class]]) {
+        if ([locData isKindOfClass:[NSDictionary class]]) {
             location = (SMGeoPoint *)locData;
         }else{
             
             location =  [NSKeyedUnarchiver unarchiveObjectWithData:locData];
             currentUser.lastLocation = location;
+            [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:NULL];
             NSLog(@"Unarchived location: %@", location);
         }
         
         [EWServer getPersonAlarmAtTime:[NSDate date] location:location completion:^(NSArray *results) {
             //assign result
-            people = results;
-            
-            //reflesh
-            NSError *err;
-            if (![self.fetchController performFetch:&err]) {
-                NSLog(@"Failed to fetch everyone: %@", err);
+            NSMutableArray 
+            for (EWPerson *p in results) {
+                <#statements#>
             }
+            people = results;
+            if (people.count == 0 && currentUser) {
+                people = @[currentUser];
+            }
+            //reflesh
+            [self.fetchController performFetch:NULL];
         }];
 
         
@@ -177,10 +181,8 @@
     //'to-many key not allowed here'
     //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
     //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
-    if (people.count == 0 && currentUser) {
-        people = @[currentUser];
-    }
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self IN %@", people];
+
+    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self IN %@", people];
     
     
     //sort
@@ -188,7 +190,7 @@
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    request.predicate = predicate;
+    //request.predicate = predicate;
     request.sortDescriptors = @[sort];
     
     //controller
