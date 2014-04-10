@@ -111,7 +111,17 @@
         }
         
         //fetch everyone
-        SMGeoPoint *location = currentUser.lastLocation;
+        SMGeoPoint *location;
+        id locData = currentUser.lastLocation;
+        if ([locData isKindOfClass:[SMGeoPoint class]]) {
+            location = (SMGeoPoint *)locData;
+        }else{
+            
+            location =  [NSKeyedUnarchiver unarchiveObjectWithData:locData];
+            currentUser.lastLocation = location;
+            NSLog(@"Unarchived location: %@", location);
+        }
+        
         [EWServer getPersonAlarmAtTime:[NSDate date] location:location completion:^(NSArray *results) {
             //assign result
             people = results;

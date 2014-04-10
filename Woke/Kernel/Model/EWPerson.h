@@ -23,11 +23,11 @@
 @property (nonatomic, retain) NSString * email;
 @property (nonatomic, retain) NSString * facebook;
 @property (nonatomic, retain) NSString * gender;
-@property (nonatomic, retain) id lastLocation;
+@property (nonatomic, retain) SMGeoPoint* lastLocation;
 @property (nonatomic, retain) NSDate * lastmoddate;
 @property (nonatomic, retain) NSDate * lastSeenDate;
 @property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) id preference;
+@property (nonatomic, retain) NSDictionary* preference;
 @property (nonatomic, retain) NSString * profilePicKey;
 @property (nonatomic, retain) NSString * region;
 @property (nonatomic, retain) NSString * statement;

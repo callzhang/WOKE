@@ -32,8 +32,8 @@
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="topic" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="wakeupTime" optional="YES" attributeType="Date" syncable="YES"/>
-        <relationship name="admin" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="groups" inverseEntity="EWPerson" syncable="YES"/>
-        <relationship name="member" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" syncable="YES"/>
+        <relationship name="admin" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="groupsManaging" inverseEntity="EWPerson" syncable="YES"/>
+        <relationship name="member" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="groups" inverseEntity="EWPerson" syncable="YES"/>
     </entity>
     <entity name="EWGroupTask" representedClassName="EWGroupTask" syncable="YES">
         <attribute name="added" optional="YES" attributeType="Date" syncable="YES"/>
@@ -86,7 +86,7 @@
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="lastSeenDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="preference" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="preference" optional="YES" attributeType="Transformable" valueTransformerName="" syncable="YES"/>
         <attribute name="profilePicKey" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="region" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
@@ -96,8 +96,8 @@
         <relationship name="alarms" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="EWAlarmItem" inverseName="owner" inverseEntity="EWAlarmItem" syncable="YES"/>
         <relationship name="friended" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="friends" inverseEntity="EWPerson" syncable="YES"/>
         <relationship name="friends" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="friended" inverseEntity="EWPerson" syncable="YES"/>
-        <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="admin" inverseEntity="EWGroup" syncable="YES"/>
-        <relationship name="groupsManaging" optional="YES" toMany="YES" minCount="1" deletionRule="Nullify" destinationEntity="EWGroup" syncable="YES"/>
+        <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="member" inverseEntity="EWGroup" syncable="YES"/>
+        <relationship name="groupsManaging" optional="YES" toMany="YES" minCount="1" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="admin" inverseEntity="EWGroup" syncable="YES"/>
         <relationship name="groupTasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroupTask" inverseName="participents" inverseEntity="EWGroupTask" syncable="YES"/>
         <relationship name="medias" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMediaItem" inverseName="author" inverseEntity="EWMediaItem" syncable="YES"/>
         <relationship name="pastTasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWTaskItem" inverseName="pastOwner" inverseEntity="EWTaskItem" syncable="YES"/>

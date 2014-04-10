@@ -295,7 +295,7 @@
 #pragma mark - location
 - (void)registerLocation{
     [SMGeoPoint getGeoPointForCurrentLocationOnSuccess:^(SMGeoPoint *geoPoint) {
-        currentUser.lastLocation = [NSKeyedArchiver archivedDataWithRootObject:geoPoint];
+        currentUser.lastLocation = geoPoint;//[NSKeyedArchiver archivedDataWithRootObject:geoPoint];
         NSLog(@"Get user location with lat: %@, lon: %@", geoPoint.latitude, geoPoint.longitude);
         
         //reverse search address

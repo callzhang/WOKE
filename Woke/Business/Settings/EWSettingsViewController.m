@@ -361,7 +361,11 @@
 }
 
 - (void)OnBedTimeNotificationSwitchChanged:(UISwitch *)sender{
-    [currentUser.preference setObject:@(sender.on) forKey:@"BedTimeNotification"];
+    NSMutableDictionary *pref = [currentUser.preference mutableCopy];
+    [pref setObject:@(sender.on) forKey:@"BedTimeNotification"];
+    self.preference = [pref copy];
+    
+    //TODO: night notification
     if (sender.on == YES) {
         //schedule night notification
     }else{

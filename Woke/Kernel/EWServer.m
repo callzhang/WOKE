@@ -70,12 +70,13 @@
 //     }];
     
     SMPredicate *locationPredicate =[SMPredicate predicateWhere:@"lastLocation" isWithin:10 kilometersOfGeoPoint:geoPoint];
-    NSPredicate *timePredicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[time, [time timeByAddingMinutes:60]]];
-    NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[locationPredicate, timePredicate]];
+    //NSPredicate *timePredicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[time, [time timeByAddingMinutes:60]]];
+    //NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[locationPredicate, timePredicate]];
+    
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    request.predicate = predicate;
+    request.predicate = locationPredicate;
     NSError *err;
-    NSArray *personAround = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:&err];
+    NSArray *personAround = [[EWDataStore currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:&err];
     return personAround;
 }
 
