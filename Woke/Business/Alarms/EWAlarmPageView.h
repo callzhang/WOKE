@@ -38,6 +38,5 @@
 - (IBAction)editAlarm:(id)sender;
 - (IBAction)OnAlarmSwitchChanged:(id)sender;
 - (IBAction)playMessage:(id)sender;
-- (void)updatedPage:(NSNotification *)notif;
 
 @end

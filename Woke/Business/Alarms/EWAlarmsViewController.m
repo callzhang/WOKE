@@ -111,6 +111,9 @@
         }else{
            //alarmPages
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
+            for (EWAlarmPageView *view in _scrollView.subviews) {
+                [view removeFromSuperview];
+            }
         }
         
         //user KVO

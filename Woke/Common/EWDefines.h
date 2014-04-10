@@ -139,7 +139,7 @@
 
 //CollectionView Cell
 #define kCollectionViewCellWidth        80
-#define kCollectionViewCellHeight       80
+#define kCollectionViewCellHeight       100
 #define kCollectionViewCellPersonRadius 40
 #define CELL_SPACE_RATIO                1.8
 #endif

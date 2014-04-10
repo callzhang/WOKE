@@ -49,7 +49,7 @@
 //        [self sendSubviewToBack:bg];
         
         //label
-        name = [[UILabel alloc] initWithFrame:CGRectMake(0, kCollectionViewCellHeight, kCollectionViewCellWidth, 20)];
+        name = [[UILabel alloc] initWithFrame:CGRectMake(0, kCollectionViewCellPersonRadius * 2, kCollectionViewCellWidth, 20)];
         name.textAlignment = NSTextAlignmentCenter;
         name.font = [UIFont systemFontOfSize:12];
         name.textColor = [UIColor colorWithWhite:0.8 alpha:1];

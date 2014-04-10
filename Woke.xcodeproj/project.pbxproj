@@ -1374,6 +1374,7 @@
 				OTHER_LDFLAGS = (
 					"-\"lxml2\"",
 					"-ObjC",
+					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "69072AED-0F4C-41A6-B92E-52CCC337CDC2";
@@ -1412,6 +1413,7 @@
 				OTHER_LDFLAGS = (
 					"-\"lxml2\"",
 					"-ObjC",
+					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "E7F588AD-8D3A-4E7E-98EA-B9BD94C8B1F9";

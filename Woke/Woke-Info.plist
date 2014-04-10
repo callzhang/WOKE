@@ -43,16 +43,16 @@
 			<string>com.facebook</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb226235527539229</string>
+				<string>878112625538046</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>FacebookAppID</key>
-	<string>226235527539229</string>
+	<string>878112625538046</string>
 	<key>FacebookDisplayName</key>
-	<string>EarlyWorm</string>
+	<string>Woke</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIBackgroundModes</key>

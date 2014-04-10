@@ -71,9 +71,9 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 - (void)initView {
     if (person == currentUser && !person.facebook) {
-        self.loginBtn.alpha = 1;
+        self.loginBtn.hidden = NO;
     }else{
-        self.loginBtn.alpha = 0;
+        self.loginBtn.hidden = YES;
     }
     //========table for tasks========
     
@@ -92,6 +92,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
     collectionView.backgroundView = nil;
+    collectionView.contentInset = UIEdgeInsetsMake(20, 20, 20, 20);
     [collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     
     //======= UI =======
@@ -109,6 +110,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.friends.count] forSegmentAtIndex:0];
         [tabView setTitle:[NSString stringWithFormat:@"%ld\"", (long)[stats.aveWakeupTime integerValue]] forSegmentAtIndex:1];
         [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.achievements.count] forSegmentAtIndex:2];
+        tabView.selectedSegmentIndex = 1;//initial tab
         
         //statement
         EWTaskItem *t = tasks.firstObject;
@@ -349,6 +351,11 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     
     NSLog(@"Selected tab for wake up history");
     return 0;
+}
+
+-(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return CGSizeMake(kCollectionViewCellWidth, kCollectionViewCellHeight);
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
