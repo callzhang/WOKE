@@ -91,6 +91,10 @@
                 [mainResult addObject:p_];
             }
             
+            if (mainResult.count == 0) {
+                mainResult = [@[currentUser] mutableCopy];
+            }
+            
             //call back
             successBlock(mainResult);
         });
