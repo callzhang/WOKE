@@ -529,7 +529,7 @@
                 break;
                 
             default:
-                NSLog(@"Received remote control %d", receivedEvent.subtype);
+                NSLog(@"Received remote control %ld", receivedEvent.subtype);
                 break;
         }
     }
