@@ -42,7 +42,7 @@
 
 
 #pragma mark - Main Server method
-+ (void)getPersonWakingUpForTime:(NSDate *)time location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock{
++ (NSArray *)getPersonAlarmAtTime:(NSDate *)time location:(SMGeoPoint *)geoPoint{
     NSLog(@"%s", __func__);
     
 //    NSString *userId = currentUser.username;
@@ -69,16 +69,31 @@
 //         
 //     }];
     
-    SMPredicate *locationPredicate =[SMPredicate predicateWhere:@"lastLocation" isWithin:10 kilometersOfGeoPoint:[EWDataStore user].lastLocation];
-    NSPredicate *timePredicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
+    SMPredicate *locationPredicate =[SMPredicate predicateWhere:@"lastLocation" isWithin:10 kilometersOfGeoPoint:geoPoint];
+    NSPredicate *timePredicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[time, [time timeByAddingMinutes:60]]];
     NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[locationPredicate, timePredicate]];
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     request.predicate = predicate;
-    [[EWDataStore currentContext] executeFetchRequest:request onSuccess:^(NSArray *results) {
-        //
-    } onFailure:^(NSError *error) {
-        NSLog(@"*** Failed to fetch around me list: %@", error.description);
-    }];
+    NSError *err;
+    NSArray *personAround = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:&err];
+    return personAround;
+}
+
++ (void)getPersonAlarmAtTime:(NSDate *)time location:(SMGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock{
+    __block NSArray *result;
+    dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+        result = [EWServer getPersonAlarmAtTime:time location:geoPoint];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableArray *mainResult = [NSMutableArray new];
+            for (EWPerson *p in result) {
+                EWPerson *p_ = [EWDataStore objectForCurrentContext:p];
+                [mainResult addObject:p_];
+            }
+            
+            //call back
+            successBlock(mainResult);
+        });
+    });
 }
 
 #pragma mark - Push Notification

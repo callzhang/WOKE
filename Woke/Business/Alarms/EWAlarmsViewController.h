@@ -18,9 +18,9 @@
 
 @property (nonatomic) NSArray *alarms;
 @property (nonatomic) NSArray *tasks;
+@property (nonatomic) NSArray *people;
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
@@ -35,5 +35,6 @@
 //- (IBAction)profile:(id)sender;
 - (IBAction)mainActions:(id)sender;
 
+- (IBAction)tapped:(id)sender;
 
 @end

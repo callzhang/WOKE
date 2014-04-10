@@ -394,8 +394,7 @@
     //preference
     if(!person.preference){
         //new user
-        NSDictionary *defaults = userDefaults;
-        person.preference = [defaults mutableCopy];
+        person.preference = userDefaults;
     }
     //profile pic, async download, need to assign img to person before leave
     NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];

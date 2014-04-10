@@ -24,7 +24,6 @@
 @synthesize achievements;
 @dynamic aws_id;
 @synthesize bgImage;
-@synthesize preference;
 @synthesize profilePic;
 @dynamic bgImageKey;
 @dynamic birthday;
@@ -37,8 +36,8 @@
 @dynamic lastmoddate;
 @dynamic lastSeenDate;
 @dynamic name;
-@dynamic preferenceString;
 @dynamic profilePicKey;
+@dynamic preference;
 @dynamic region;
 @dynamic statement;
 @dynamic username;
@@ -123,28 +122,29 @@
 }
 
 
-#pragma mark - Preference
-- (NSDictionary *)preference{
-    if (self.preferenceString) {
-        NSData *prefData = [self.preferenceString dataUsingEncoding:NSUTF8StringEncoding];
-        NSError *err;
-        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:prefData options:0 error:&err];
-        return json;
-    }else{
-        NSDictionary *defaults = userDefaults;
-        self.preference = [defaults mutableCopy];
-        NSLog(@"Set user defaults");
-        return self.preference;
-    }
-    return nil;
-}
+//#pragma mark - Preference
+//- (NSDictionary *)preference{
+//    if (self.preferenceString) {
+//        NSData *prefData = [self.preferenceString dataUsingEncoding:NSUTF8StringEncoding];
+//        NSError *err;
+//        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:prefData options:0 error:&err];
+//        return json;
+//    }else{
+//        NSDictionary *defaults = userDefaults;
+//        self.preference = [defaults mutableCopy];
+//        NSLog(@"Set user defaults");
+//        return self.preference;
+//    }
+//    return nil;
+//}
+//
+//- (void)setPreference:(NSDictionary *)p{
+//    NSError *err;
+//    NSData *prefData = [NSJSONSerialization dataWithJSONObject:p options:NSJSONWritingPrettyPrinted error:&err];
+//    NSString *prefStr = [[NSString alloc] initWithData:prefData encoding:NSUTF8StringEncoding];
+//    self.preferenceString = prefStr;
+//}
 
-- (void)setPreference:(NSDictionary *)p{
-    NSError *err;
-    NSData *prefData = [NSJSONSerialization dataWithJSONObject:p options:NSJSONWritingPrettyPrinted error:&err];
-    NSString *prefStr = [[NSString alloc] initWithData:prefData encoding:NSUTF8StringEncoding];
-    self.preferenceString = prefStr;
-}
 
 
 @end

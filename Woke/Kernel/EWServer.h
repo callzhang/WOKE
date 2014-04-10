@@ -12,8 +12,8 @@
 #import <AWSSNS/AWSSNS.h>
 
 @interface EWServer : NSObject <UIAlertViewDelegate>
-+ (void)getPersonWakingUpForTime:(NSDate *)timeSince1970 location:(SMGeoPoint *)geoPoint callbackBlock:(SMFullResponseSuccessBlock)successBlock;
-
++ (NSArray *)getPersonAlarmAtTime:(NSDate *)time location:(SMGeoPoint *)geoPoint;
++ (void)getPersonAlarmAtTime:(NSDate *)time location:(SMGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock;
 /**
  Send buzz
  */

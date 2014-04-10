@@ -34,7 +34,7 @@
 #import "EWLogInViewController.h"
 #import "EWCollectionPersonCell.h"
 #import "EWSettingsViewController.h"
-#import "EWRecordingViewController.h"Ø
+#import "EWRecordingViewController.h"
 
 //backend
 #import "StackMob.h"
@@ -52,7 +52,7 @@
 
 
 @implementation EWAlarmsViewController
-@synthesize alarms, tasks;
+@synthesize alarms, tasks, people; //data source
 @synthesize scrollView = _scrollView;
 @synthesize pageView = _pageView;
 @synthesize collectionView = _collectionView;
@@ -71,17 +71,17 @@
         //Task: only new task will update the view, other changes is observed in alarmPageView
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
         
-        
-        //handle person profile pic update ==> replaced by fetched controller
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateProfilePic:) name:kPersonProfileNewNotification object:nil];
+        //initial value
+        people = [NSArray new];
+        _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
+        cellChangeArray = [NSMutableArray new];
     }
     return self;
 }
 
 - (void)refreshView{
     [self initData];
-    //[self initView];
-    [_collectionView reloadData];
+    [self.fetchController performFetch:NULL];
     [self reloadAlarmPage];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
@@ -93,12 +93,6 @@
 }
 
 - (void)initData {
-    //fetch everyone
-    NSError *err;
-    if (![self.fetchController performFetch:&err]) {
-        NSLog(@"Failed to fetch everyone: %@", err);
-    }
-    cellChangeArray = [NSMutableArray new];
     
     //init alarm page container
     if (currentUser) {
@@ -116,8 +110,19 @@
             }
         }
         
-        //user KVO
-        //[currentUser addObserver:self forKeyPath:@"profilePicKey" options:NSKeyValueObservingOptionNew context:NULL];
+        //fetch everyone
+        SMGeoPoint *location = currentUser.lastLocation;
+        [EWServer getPersonAlarmAtTime:[NSDate date] location:location completion:^(NSArray *results) {
+            //assign result
+            people = results;
+            
+            //reflesh
+            NSError *err;
+            if (![self.fetchController performFetch:&err]) {
+                NSLog(@"Failed to fetch everyone: %@", err);
+            }
+        }];
+
         
     }else{
         alarms = nil;
@@ -159,20 +164,28 @@
     }
     
     //predicate
+    //'to-many key not allowed here'
     //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
     //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
-    //'to-many key not allowed here'
+    if (people.count == 0 && currentUser) {
+        people = @[currentUser];
+    }
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self IN %@", people];
+    
     
     //sort
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastSeenDate" ascending:YES];
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    //request.predicate = predicate;
+    request.predicate = predicate;
     request.sortDescriptors = @[sort];
     
     //controller
-    fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:[EWDataStore currentContext] sectionNameKeyPath:nil cacheName:@"com.wokealarm.fetchControllerCache"];
+    fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                          managedObjectContext:[EWDataStore currentContext]
+                                                            sectionNameKeyPath:nil
+                                                                     cacheName:@"com.wokealarm.fetchControllerCache"];
     fetchController.delegate = self;
     request.fetchLimit = 100;
     
@@ -506,7 +519,10 @@
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
     NSArray *sections = self.fetchController.sections;
-    return sections.count;
+    if (sections) {
+        return sections.count;
+    }
+    return 1;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
