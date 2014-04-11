@@ -14,7 +14,9 @@
 @interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,NSFetchedResultsControllerDelegate>
 {
     NSMutableArray * _alarmPages; //alarm page container
-    NSTimer *timer;
+    NSTimer *timer1;
+    NSTimer *timer2;
+
 }
 
 @property (nonatomic) NSArray *alarms;
