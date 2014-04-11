@@ -24,6 +24,7 @@
 #import "EWTaskStore.h"
 #import "EWWakeUpManager.h"
 #import "EWMediaStore.h"
+#import "EWMediaItem.h"
 #import "EWTaskItem.h"
 
 @interface TestViewController ()
@@ -68,14 +69,14 @@
                @"Test Alarm Timer",
                @"Lock screen"];
     
-    subTitles = @[@"Pop up the WakeUp View",
+    subTitles = @[@"Pop up the WakeUp View with all medias of mine",
                   @"Test shake",
                   @"Test social networking capabilities",
                   @"List local notifications",
                   @"Delete all alarm & tasks.  Use it only when data is corrupted",
                   @"Send self a buzz",
                   @"Test alarm timer event. Cloase app after this!",
-                  @"Test lock screen media cover info"];
+                  @"Add some medias to next task"];
 }
 
 - (void)initView {
@@ -248,17 +249,36 @@
         
         case 7:{
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:[EWDataStore user]];
-            for (unsigned i=0; i< 6 - task.medias.count; i++) {
-                //add some medias
-                [[EWMediaStore sharedInstance] createPseudoMediaForTask:task];
-            }
+            dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+                EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:[EWDataStore user]];
+                NSInteger m = 6 - task.medias.count;
+                for (unsigned i=0; i< m; i++) {
+                    NSInteger x = arc4random_uniform(2);
+                    if (x==0) {
+                        //buzz
+                        EWMediaItem *media = [[EWMediaStore sharedInstance] createBuzzMedia];
+                        [task addMediasObject:media];
+                        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+                            NSLog(@"Failed to save buzz: %@", error.description);
+                        }];
+                    }else{
+                        //voice
+                        [[EWMediaStore sharedInstance] createPseudoMediaForTask:task];
+                    }
+                    
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
+                    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
+                        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                        [rootViewController presentViewControllerWithBlurBackground:controller];
+                    }];
+                });
+            });
             
-            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
-            [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
-                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                [rootViewController presentViewControllerWithBlurBackground:controller];
-            }];
+            
+            
             
             
         }

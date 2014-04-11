@@ -10,7 +10,7 @@
 #import "EWMediaItem.h"
 #import "EWPerson.h"
 
-@class EWMediaSlider;
+@class EWMediaSlider, EWMediaItem;
 
 @interface EWMediaViewCell : UITableViewCell
 //controller
@@ -21,13 +21,12 @@
 @property (weak, nonatomic) IBOutlet UILabel *name;
 @property (weak, nonatomic) IBOutlet UILabel *date;
 @property (weak, nonatomic) IBOutlet UILabel *description;
-@property (weak, nonatomic) IBOutlet UIButton *like;
 @property (weak, nonatomic) IBOutlet EWMediaSlider *mediaBar;
+@property (weak, nonatomic) IBOutlet UIButton *buzzIcon;
 
 //action
 - (IBAction)play:(id)sender;
 - (IBAction)profile:(id)sender;
-- (IBAction)like:(id)sender;
 
 //content
 @property (weak, nonatomic) EWMediaItem *media;

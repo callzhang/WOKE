@@ -264,7 +264,6 @@
     
     //Use reusable cell or create a new cell
     EWMediaViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    //EWMediaViewCell *cell = [[EWMediaViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
     //get media item
     EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
     
@@ -276,13 +275,6 @@
         cell.description.text = @"No description for this autio";
     }
     
-    //TODO: add buzz type
-    if (mi.type) {
-        cell.mediaBar.type = mi.type;
-    }else{
-        cell.mediaBar.type = mediaTypeVoice;
-    }
-    
     //date
     cell.date.text = [mi.createddate date2String];
     
@@ -292,7 +284,7 @@
     //control
     cell.controller = self;
     
-    //mediafile
+    //media -> set type and UI
     cell.media = mi;
     
     
@@ -358,6 +350,11 @@
 {
     NSLog(@"Media clicked");
     [[AVManager sharedManager] playForCell:[tableView cellForRowAtIndexPath:indexPath]];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    });
+    
     next = NO;
 }
 
@@ -405,7 +402,7 @@
     EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
     if (cell) {
         [[AVManager sharedManager] playForCell:cell];
-    }else{
+    }else if(medias.count > 0){
         cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
         [[AVManager sharedManager] playForCell:cell];
     }
@@ -436,12 +433,17 @@
     if (currentCellPlaying < medias.count){
         //get next cell
         NSLog(@"Play next song (%ld)", (long)currentCellPlaying);
-        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:currentCellPlaying inSection:0]];
+        NSIndexPath *path = [NSIndexPath indexPathForRow:currentCellPlaying inSection:0];
+        EWMediaViewCell *cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
+        if (!cell) {
+            cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
+        }
+        
         [[AVManager sharedManager] playForCell:cell];
     }else if(currentCellPlaying >= medias.count){
         if ((--loopCount)>0) {
             //play the first if loopCount > 0
-            NSLog(@"Looping");
+            NSLog(@"Looping, play (0)");
             EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
             [[AVManager sharedManager] playForCell:cell];
         }else{

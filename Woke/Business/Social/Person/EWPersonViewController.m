@@ -50,6 +50,15 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 @synthesize collectionView;
 @synthesize tabView;
 
+- (EWPersonViewController *)initWithPerson:(EWPerson *)p{
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        self.person = p;
+        
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];

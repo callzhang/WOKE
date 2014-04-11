@@ -22,7 +22,7 @@
 +(EWMediaStore *)sharedInstance{
     BOOL mainThread = [NSThread isMainThread];
     if (!mainThread) {
-        NSLog(@"**** Media Store not on main thread ****");
+        NSLog(@"Media Store not on main thread");
     }
     
     static EWMediaStore *sharedStore_ = nil;
@@ -52,12 +52,14 @@
 - (EWMediaItem *)createMedia{
     EWMediaItem *m = [NSEntityDescription insertNewObjectForEntityForName:@"EWMediaItem" inManagedObjectContext:[EWDataStore currentContext]];
     [m assignObjectId];
-    m.author = currentUser;
-    
+    EWPerson *user = [EWDataStore user];
+    m.author = user;
+    m.type = kMediaTypeVoice;
     [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Media created");
     } onFailure:^(NSError *error) {
         //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
+        NSLog(@"Error to save new media: %@", error);
         EWAlert(@"Ooops, something wrong. Please try again.");
     }];
     return m;
@@ -77,7 +79,7 @@
     NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:data name:@"test_tone.caf" contentType:@"audio/caf"];
     
     media.audioKey = recordDataString;
-    media.type = mediaTypeBuzz;
+    media.type = kMediaTypeVoice;
     media.message = @"This is a test voice tone";
     
     
@@ -101,7 +103,7 @@
 
 - (EWMediaItem *)createBuzzMedia{
     EWMediaItem *media = [self createMedia];
-    media.type = mediaTypeBuzz;
+    media.type = kMediaTypeBuzz;
     media.buzzKey = [currentUser.preference objectForKey:@"buzzKey"];
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSLog(@"Failed to save for buzz");
@@ -115,7 +117,10 @@
     request.predicate = [NSPredicate predicateWithFormat:@"ewmediaitem_id == %@", mediaID];
     NSError *err;
     NSArray *medias = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:&err];
-    if (medias.count == 0) NSLog(@"Could not fetch media for ID: %@, error: %@", mediaID, err.description);
+    if (medias.count == 0){
+        NSLog(@"Could not fetch media for ID: %@, error: %@", mediaID, err.description);
+        return nil;
+    }
     return medias[0];
 }
 

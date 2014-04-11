@@ -468,6 +468,8 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
 
 #pragma mark - Remote control
 - (void)displayNowPlayingInfoToLockScreen:(EWMediaItem *)m{
+    if (!m.author) return;
+        
     //only support iOS5+
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
         
@@ -478,8 +480,8 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
         //info
         NSMutableDictionary *dict = [NSMutableDictionary new];
         dict[MPMediaItemPropertyTitle] = @"Time to wake up";
-        dict[MPMediaItemPropertyArtist] = m.author.name;
-        dict[MPMediaItemPropertyAlbumTitle] = title;
+        dict[MPMediaItemPropertyArtist] = m.author.name?m.author.name:@"";
+        dict[MPMediaItemPropertyAlbumTitle] = title?title:@"";
         
         //cover
         UIImage *cover = media.image ? media.image : media.author.profilePic;

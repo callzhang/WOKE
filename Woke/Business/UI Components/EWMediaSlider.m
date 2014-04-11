@@ -9,6 +9,8 @@
 #import "EWMediaSlider.h"
 #import "EWMediaItem.h"
 
+#define maxLength20s        150000;//defined the length of data under 20s recording time
+
 @implementation EWMediaSlider
 @synthesize timeLabel, buzzIcon, playIndicator;
 
@@ -62,9 +64,7 @@
     typeLabel.textColor = [UIColor whiteColor];
     [self addSubview:typeLabel];
     
-    //buzz
-    buzzIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"liked"]];
-    buzzIcon.frame = CGRectMake(frame.size.width - 30, (frame.size.height - 10)/2, buzzIcon.frame.size.width, buzzIcon.frame.size.height);
+
     
     //color
     self.tintColor = [UIColor whiteColor];
@@ -77,25 +77,6 @@
 
 - (void)stop{
     NSLog(@"Slider is called to stop");
-}
-
-
-//UI
-- (void)setUpWithMedia:(EWMediaItem *)media{
-    
-}
-
-- (void)setType:(NSInteger)type{
-    if (type == mediaTypeVoice) {
-        typeLabel.text = @"Voice Tone";
-        timeLabel.alpha = 1;
-    }else if (type == mediaTypeBuzz){
-        typeLabel.text = @"Buzz";
-        timeLabel.alpha = 0;
-    }else{
-        typeLabel.text = @"Voice Tone";
-        timeLabel.alpha = 1;
-    }
 }
 
 @end

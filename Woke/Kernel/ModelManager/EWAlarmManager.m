@@ -51,7 +51,7 @@
     [a assignObjectId];
     
     //add relation
-    a.owner = currentUser; //also sets the reverse
+    a.owner = [EWDataStore user]; //also sets the reverse
     
     //save
     [[EWDataStore currentContext] saveAndWait:NULL];

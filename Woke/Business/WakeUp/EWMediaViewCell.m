@@ -11,9 +11,10 @@
 #import "AVManager.h"
 #import "EWMediaSlider.h"
 #import "EWDataStore.h"
+#import "EWPersonViewController.h"
 
 @implementation EWMediaViewCell
-@synthesize controller, media;
+@synthesize media;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -22,10 +23,9 @@
         // Initialization code
         self.name.text = @"";
         self.description.text = @"";
-        //self.progressBar.maximumValueImage = [UIImage imageNamed:@"MediaCell"];
         self.backgroundColor = [UIColor clearColor];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCell:) name:kAudioPlayerWillStart object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCell:) name:kAudioPlayerWillStart object:nil];
     }
     return self;
 }
@@ -54,24 +54,40 @@
     
 }
 
-
-- (IBAction)like:(id)sender {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Like" message:@"Like function is not available yet." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alert show];
+- (void)setMedia:(EWMediaItem *)m{
+    if ([m.type isEqualToString:kMediaTypeBuzz]) {
+        self.mediaBar.hidden = YES;
+        self.buzzIcon.hidden = NO;
+    }else{
+        self.mediaBar.hidden = NO;
+        self.buzzIcon.hidden = YES;
+    }
+    
+    media = m;
 }
+
 
 - (IBAction)profile:(id)sender{
-    NSLog(@"Profile");
-    //need to figure out how to call tableViewController from here
+    EWPersonViewController *profileVC = [[EWPersonViewController alloc] initWithPerson:[EWDataStore user]];
+    [self.controller presentViewControllerWithBlurBackground:profileVC];
+    
+//    if([self.superview isKindOfClass:[UITableView class]]){
+//        UITableView *table = (UITableView *)self.superview;
+//        if ([table.delegate isKindOfClass:[EWWakeUpViewController class]]) {
+//            EWWakeUpViewController *presenter = (EWWakeUpViewController *)table.delegate;
+//            [presenter presentViewControllerWithBlurBackground:controller];
+//        }
+//    }
+
 }
 
-- (void)updateCell:(NSNotification *)notification{
-    NSString *path = notification.userInfo[kAudioPlayerNextPath];
-    NSString *localPath = [[EWDataStore sharedInstance] localPathForKey:media.audioKey];
-    if ([path isEqualToString:localPath] || [path isEqualToString:media.audioKey]) {
-        //matched media cell with playing path
-        [AVManager sharedManager].currentCell = self;
-    }
-}
+//- (void)updateCell:(NSNotification *)notification{
+//    NSString *path = notification.userInfo[kAudioPlayerNextPath];
+//    NSString *localPath = [[EWDataStore sharedInstance] localPathForKey:media.audioKey];
+//    if ([path isEqualToString:localPath] || [path isEqualToString:media.audioKey]) {
+//        //matched media cell with playing path
+//        [AVManager sharedManager].currentCell = self;
+//    }
+//}
 
 @end

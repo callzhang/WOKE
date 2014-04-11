@@ -33,5 +33,6 @@
 - (IBAction)login:(id)sender;
 - (IBAction)tabTapped:(UISegmentedControl *)sender;
 
+- (EWPersonViewController *)initWithPerson:(EWPerson *)person;
 
 @end

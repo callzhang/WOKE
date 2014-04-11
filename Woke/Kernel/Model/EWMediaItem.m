@@ -34,6 +34,7 @@
 @dynamic lastmoddate;
 @dynamic ewmediaitem_id;
 @dynamic type;
+@dynamic played;
 
 - (id)init
 {

@@ -10,10 +10,8 @@
 #import <CoreData/CoreData.h>
 //#import "_EWMediaItem.h"
 
-typedef enum{
-    mediaTypeVoice,
-    mediaTypeBuzz
-} mediaType;
+#define kMediaTypeBuzz      @"buzz"
+#define kMediaTypeVoice     @"voice"
 
 @class EWGroupTask, EWPerson, EWTaskItem;
 @interface EWMediaItem : NSManagedObject
@@ -34,7 +32,7 @@ typedef enum{
 @property (nonatomic, retain) UIImage *thumbnail;
 @property (nonatomic, retain) NSString * videoKey;
 @property (nonatomic, retain) NSSet *tasks;
-@property (nonatomic) NSInteger type;
+@property (nonatomic, retain) NSString *type;
 
 -(UIImage *)setThumbnailDataFromImage:(UIImage *)image;
 //Data

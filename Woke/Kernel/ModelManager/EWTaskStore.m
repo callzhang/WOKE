@@ -65,9 +65,6 @@
 
 #pragma mark - SEARCH
 - (NSArray *)getTasksByPerson:(EWPerson *)p{
-    if (![NSThread isMainThread]) {
-        NSLog(@"Getting task by person in bg thread");
-    }
     EWPerson *person = [EWDataStore objectForCurrentContext:p];
     NSArray *tasks = [person.tasks allObjects];
     BOOL fetch = YES;
@@ -263,7 +260,7 @@
     //assign id
     [t assignObjectId];
     //relation
-    t.owner = [EWDataStore objectForCurrentContext:currentUser];
+    t.owner = [EWDataStore user];
     //others
     t.added = [NSDate date];
     //save
