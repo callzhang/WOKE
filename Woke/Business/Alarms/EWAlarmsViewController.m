@@ -428,7 +428,8 @@ static int i=1;
                 break;
         }
 
-    }else if (actionSheet.tag == 1001){
+    }
+    else if (actionSheet.tag == 1001){
         //person cell action sheet
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         switch (buttonIndex) {
@@ -541,14 +542,14 @@ static int i=1;
     _profilebutton=abutton;
     UIImage *aimge=[UIImage imageNamed:@"button_p.png"];
     [_profilebutton setImage:aimge forState:UIControlStateNormal];
-    
+    [_profilebutton addTarget:self action:@selector(toperson) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton *bbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width ,cell.frame.origin.y-30 , 30, 30)];
     bbutton.center=cell.center;
     _buzzbutton=bbutton;
     UIImage *bimge=[UIImage imageNamed:@"button_b.png"];
     [_buzzbutton setImage:bimge forState:UIControlStateNormal];
-    
+    [_buzzbutton addTarget:self action:@selector(tobuzz) forControlEvents:UIControlEventTouchUpInside];
 
 
     UIButton *cbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y-45 , 30, 30)];
@@ -556,6 +557,8 @@ static int i=1;
     _voicebutton=cbutton;
     UIImage *cimge=[UIImage imageNamed:@"button_v.png"];
     [_voicebutton setImage:cimge forState:UIControlStateNormal];
+    [_voicebutton addTarget:self action:@selector(tovoice) forControlEvents:UIControlEventTouchUpInside];
+
 
 
     UIButton *dbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y+cell.frame.size.height+15 , 30, 30)];
@@ -565,14 +568,11 @@ static int i=1;
     UIImage *dimge=[UIImage imageNamed:@"button_x.png"];
     [_closebutton setImage:dimge forState:UIControlStateNormal];
 
-
-    
-
-    
 //    UIButton *abutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x-30 ,cell.frame.origin.y-30 , 30, 30)];
 //    UIButton *bbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width ,cell.frame.origin.y-30 , 30, 30)];
 //    UIButton *cbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y-45 , 30, 30)];
 //    UIButton *dbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y+cell.frame.size.height+15 , 30, 30)];
+
     EWCollectionPersonCell *personcell=[[EWCollectionPersonCell alloc]initWithFrame:cell.frame];
     UIImageView *imageview=[[UIImageView alloc]initWithFrame:cell.frame];
     imageview.image=cell.profilePic.image;
@@ -607,6 +607,35 @@ static int i=1;
 //    sheet.tag = 1001;
 //    [sheet showFromRect:cell.frame inView:self.view animated:YES];
 }
+-(void)toperson
+{
+    NSLog(@"toperson");
+    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+    controller.person = person;
+    [self presentViewControllerWithBlurBackground:controller];
+    
+}
+
+-(void)tobuzz
+{
+    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [EWServer buzz:@[person]];
+
+
+    
+}
+
+-(void)tovoice
+{
+    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+    EWRecordingViewController *controller = [[EWRecordingViewController alloc] init];
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
+    controller.task = task;
+    [self presentViewControllerWithBlurBackground:controller];
+}
+
 -(void)movbutton
 {
     i++;
