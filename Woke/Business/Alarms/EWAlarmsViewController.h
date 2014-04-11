@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "EWAlarmPageView.h"
+#import "EWCollectionPersonCell.h"
 @import CoreData;
 
 @class EWPerson;
@@ -34,6 +35,7 @@
 @property(strong,nonatomic) UIButton *closebutton;
 @property(strong,nonatomic) UIImageView *personview;
 @property(strong,nonatomic) UIView *alphaview;
+@property(strong,nonatomic) EWCollectionPersonCell *personcellview;
 
 
 //action

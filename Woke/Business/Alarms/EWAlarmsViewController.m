@@ -578,6 +578,8 @@ static int i=1;
     imageview.image=cell.profilePic.image;
     _personview=imageview;
     personcell.profilePic.image =imageview.image;
+    _personcellview=personcell;
+    
 
     
     abutton.backgroundColor=[UIColor clearColor];
@@ -589,7 +591,7 @@ static int i=1;
     [self.view addSubview:_voicebutton];
     [self.view addSubview:_closebutton];
 //  [self.view addSubview:_personview];
-    [self.view addSubview:personcell];
+    [self.view addSubview:_personcellview];
     
     
     timer1=[NSTimer scheduledTimerWithTimeInterval:1.0/60.0
@@ -608,19 +610,41 @@ static int i=1;
 -(void)movbutton
 {
     i++;
-    if(i>=20)[timer1 invalidate];
+    if(i>=25)[timer1 invalidate];
+
+    if(i>=20)
+    {
+        [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
+        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
+        [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
+        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
+    }
     else
     {
-    [_profilebutton setFrame:CGRectMake(_profilebutton.x-3, _profilebutton.y-3, 30, 30)];
-    [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y-4.5, 30, 30)];
-    [_voicebutton setFrame:CGRectMake(_voicebutton.x+3, _voicebutton.y-3, 30, 30)];
-    [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y+4.5, 30, 30)];
+        _profilebutton.alpha=0;
+        _buzzbutton.alpha=0;
+        _voicebutton.alpha=0;
+        _closebutton.alpha=0;
+        if(i>=10)
+        {   _profilebutton.alpha=0.5*(i-10)*(i-10)/50;
+            _buzzbutton.alpha=0.5*(i-10)*(i-10)/50;
+            _voicebutton.alpha=0.5*(i-10)*(i-10)/50;
+            _closebutton.alpha=0.5*(i-10)*(i-10)/50;
+        }
+        [_profilebutton setFrame:CGRectMake(_profilebutton.x-3, _profilebutton.y-3, 30, 30)];
+        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y-4.5, 30, 30)];
+        [_voicebutton setFrame:CGRectMake(_voicebutton.x+3, _voicebutton.y-3, 30, 30)];
+        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y+4.5, 30, 30)];
     }
 }
 -(void)movbutton2
 {
     i--;
-    if(i<=0)[timer2 invalidate];
+    if(i<=10)
+    {
+        i=0;
+        [timer2 invalidate];
+    }
     else
     {
     [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
@@ -628,14 +652,17 @@ static int i=1;
     [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
     [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
     }
-    if(i<=0)
+    if(i<=10)
     {
-    [_personview removeFromSuperview];
+
+//    [_personview removeFromSuperview];
     [_profilebutton removeFromSuperview];
     [_buzzbutton removeFromSuperview];
     [_voicebutton removeFromSuperview];
     [_closebutton removeFromSuperview];
     [_alphaview removeFromSuperview];
+    [_personcellview removeFromSuperview];
+    
     }
 
 
