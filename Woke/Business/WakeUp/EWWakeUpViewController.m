@@ -135,7 +135,7 @@
         timer.text = [task.time date2String];
         NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastmoddate" ascending:YES];
         medias = [[task.medias allObjects] mutableCopy];
-        [medias sortedArrayUsingDescriptors:@[sort]];
+        [medias sortUsingDescriptors:@[sort]];
         [tableView_ reloadData];
         
     }else{
@@ -277,14 +277,10 @@
     }
     
     //TODO: add buzz type
-    if ([mi.type isEqualToString:kMediaTypeVoice]) {
-        //media
-        cell.mediaBar.type = kMediaTypeVoice;
-    }else if ([mi.type isEqualToString:kMediaTypeBuzz]){
-        //buzz
-        cell.mediaBar.type = kMediaTypeBuzz;
+    if (mi.type) {
+        cell.mediaBar.type = mi.type;
     }else{
-        cell.mediaBar.type = kMediaTypeVoice;
+        cell.mediaBar.type = mediaTypeVoice;
     }
     
     //date

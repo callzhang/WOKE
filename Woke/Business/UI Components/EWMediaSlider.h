@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class EWMediaItem;
 
 @interface EWMediaSlider : UISlider{
     UILabel *typeLabel;
@@ -14,9 +15,10 @@
 @property (nonatomic) UILabel *timeLabel;
 @property (nonatomic) UIImageView *buzzIcon;
 @property (nonatomic) UIImageView *playIndicator;
-@property (nonatomic) NSString *type;
+@property (nonatomic) NSInteger type;
 
 
 - (void)play;
 - (void)stop;
+- (void)setUpWithMedia:(EWMediaItem *)media;
 @end

@@ -185,8 +185,8 @@
 		56330CF317FDF2C2008A7922 /* EWFacebookFriendListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFacebookFriendListViewController.h; sourceTree = "<group>"; };
 		56330CF417FDF2C2008A7922 /* EWFacebookFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFacebookFriendListViewController.m; sourceTree = "<group>"; };
 		5642AF4017ACCB6D000C73E8 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		5642AF4917ACCE48000C73E8 /* EWUIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWUIUtil.h; sourceTree = "<group>"; };
-		5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWUIUtil.m; sourceTree = "<group>"; };
+		5642AF4917ACCE48000C73E8 /* EWUIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWUIUtil.h; path = ../BasicLib/EWUIUtil.h; sourceTree = "<group>"; };
+		5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWUIUtil.m; path = ../BasicLib/EWUIUtil.m; sourceTree = "<group>"; };
 		5642AF4C17ACCF90000C73E8 /* UIView+Layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Layout.h"; sourceTree = "<group>"; };
 		5642AF4D17ACCF90000C73E8 /* UIView+Layout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Layout.m"; sourceTree = "<group>"; };
 		5642AF4F17ACDA4C000C73E8 /* TestShakeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestShakeViewController.h; sourceTree = "<group>"; };
@@ -215,7 +215,7 @@
 		56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmsViewController.m; sourceTree = "<group>"; };
 		56FEA55A17A5763200FC2938 /* EWSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSettingsViewController.h; sourceTree = "<group>"; };
 		56FEA55B17A5763200FC2938 /* EWSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSettingsViewController.m; sourceTree = "<group>"; };
-		56FEA57917A5763200FC2938 /* EWDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDefines.h; path = Common/EWDefines.h; sourceTree = "<group>"; };
+		56FEA57917A5763200FC2938 /* EWDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDefines.h; path = ../Common/EWDefines.h; sourceTree = "<group>"; };
 		56FEA57D17A5763200FC2938 /* EWAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAppDelegate.h; sourceTree = "<group>"; };
 		56FEA57E17A5763200FC2938 /* EWAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAppDelegate.m; sourceTree = "<group>"; };
 		56FEA58F17A5766B00FC2938 /* Woke-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Woke-Info.plist"; sourceTree = "<group>"; };
@@ -466,8 +466,6 @@
 				AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */,
 				5642AF4C17ACCF90000C73E8 /* UIView+Layout.h */,
 				5642AF4D17ACCF90000C73E8 /* UIView+Layout.m */,
-				5642AF4917ACCE48000C73E8 /* EWUIUtil.h */,
-				5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */,
 				56E0C36317B2CC6400835A6B /* EWViewController.h */,
 				56E0C36417B2CC6400835A6B /* EWViewController.m */,
 				56D997F317B426C3003EDA53 /* NSDate+Extend.h */,
@@ -583,7 +581,6 @@
 			isa = PBXGroup;
 			children = (
 				56FEA59217A5766B00FC2938 /* InfoPlist.strings */,
-				56FEA57917A5763200FC2938 /* EWDefines.h */,
 				56FEA58F17A5766B00FC2938 /* Woke-Info.plist */,
 				56FEA59017A5766B00FC2938 /* Woke-Prefix.pch */,
 				56FEA59417A5766B00FC2938 /* main.m */,
@@ -717,6 +714,9 @@
 		56FEA57B17A5763200FC2938 /* Kernel */ = {
 			isa = PBXGroup;
 			children = (
+				56FEA57917A5763200FC2938 /* EWDefines.h */,
+				5642AF4917ACCE48000C73E8 /* EWUIUtil.h */,
+				5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */,
 				9BBA5F9618EB416700C07809 /* EWIO.h */,
 				9BBA5F9718EB416700C07809 /* EWIO.m */,
 				9B2DEEF518B811EC0046EB80 /* EWServer.h */,

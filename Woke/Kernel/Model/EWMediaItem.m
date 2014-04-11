@@ -18,13 +18,13 @@
 @implementation EWMediaItem
 
 @dynamic created;
+@dynamic buzzKey;
 @synthesize image;
 @dynamic imageKey;
 @dynamic videoKey;
 @synthesize audio;
 @dynamic audioKey;
 @dynamic message;
-@dynamic mediaType;
 @synthesize thumbnail;
 @dynamic title;
 @dynamic author;

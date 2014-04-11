@@ -69,7 +69,7 @@
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     //set category
-    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: &error];
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord error: &error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     //force speaker
     success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
@@ -218,8 +218,7 @@
         
         [[AVAudioSession sharedInstance] setActive: NO error: nil];
         
-        return recordingFileUrl;
-        NSLog(@"Recording finished: %@", recordingFileUrl);
+        NSLog(@"Recording stopped");
     } else {
         NSDictionary *recordSettings = @{AVEncoderAudioQualityKey: @(AVAudioQualityLow),
                                          //AVEncoderAudioQualityKey: [NSNumber numberWithInt:kAudioFormatLinearPCM],
@@ -243,12 +242,13 @@
         if (![recorder record]){
             int errorCode = CFSwapInt32HostToBig ([err code]);
             NSLog(@"Error: %@ [%4.4s])" , [err localizedDescription], (char*)&errorCode);
+            NSLog(@"Unable to record");
+            return nil;
         }
         //setup the UI
         [self updateViewForRecorderState:recorder];
-        NSLog(@"Recording...");
     }
-    return nil;
+    return recordingFileUrl;
 }
 
 #pragma mark - update UI
@@ -269,7 +269,7 @@
 	}
 	else{
 		//[lvlMeter_in setPlayer:nil];
-		updateTimer = nil;
+		[updateTimer invalidate];
 	}
 }
 
@@ -317,29 +317,12 @@
     progressBar.value = 0.0;
     //NSLog(@"Playback fnished");
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
-    
-    //play next
-//    NSString *currentPath = p.url.absoluteString;
-//    NSUInteger currentCount = [playlist indexOfObject:currentPath];
-//    if (currentCount == NSNotFound) return;
-//    NSString *nextPath;
-//    if (currentCount < playlist.count - 1) {
-//        nextPath = playlist[currentCount+1];
-//    }else{
-//        if (self.loop) {
-//            nextPath = playlist.firstObject;
-//        }else{
-//            return;
-//        }
-//    }
-//    [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerWillStart object:nil userInfo:@{kAudioPlayerNextPath: nextPath}];
-//    [self playSoundFromFile:nextPath];
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
     [updateTimer invalidate];
     [recordStopBtn setTitle:@"Record" forState:UIControlStateNormal];
-    //NSLog(@"Recording reached max length");
+    NSLog(@"Recording reached max length");
 }
 
 
@@ -348,6 +331,7 @@
     [player stop];
     //[qPlayer pause];
     [avplayer pause];
+    [updateTimer invalidate];
 }
 
 - (void)audioPlayerBeginInterruption:(AVAudioPlayer *)p{

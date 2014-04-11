@@ -72,7 +72,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
         
         //initial value
-        people = [NSArray new];
+        people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"];
+        if (!people) people = @[@"Dummy"];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
         cellChangeArray = [NSMutableArray new];
     }
@@ -125,18 +126,21 @@
         
         [EWServer getPersonAlarmAtTime:[NSDate date] location:location completion:^(NSArray *results) {
             //assign result
-            NSMutableArray 
+            NSMutableArray *newPeople = [NSMutableArray new];
             for (EWPerson *p in results) {
-                <#statements#>
+                [newPeople addObject:p.username];
             }
-            people = results;
+            people = newPeople;
+            [[NSUserDefaults standardUserDefaults] setObject:people forKey:@"peopleList"];
             if (people.count == 0 && currentUser) {
-                people = @[currentUser];
+                NSLog(@"*** no result from around me fetch, please check!");
             }
             //reflesh
-            [self.fetchController performFetch:NULL];
+            BOOL success = [self.fetchController performFetch:NULL];
+            if (!success) {
+                NSLog(@"Fetch failed");
+            }
         }];
-
         
     }else{
         alarms = nil;
@@ -181,8 +185,8 @@
     //'to-many key not allowed here'
     //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
     //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
-
-    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self IN %@", people];
+    
+    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"username IN %@", people];
     
     
     //sort
@@ -613,39 +617,39 @@
             [self.collectionView reloadData];
             
         } else {
-        
-        [self.collectionView performBatchUpdates:^{
             
-            for (NSDictionary *change in cellChangeArray)
-            {
-                [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
-                    
-                    NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-                    switch (type)
-                    {
-                        case NSFetchedResultsChangeInsert:
-                            [self.collectionView insertItemsAtIndexPaths:@[obj]];
-                            break;
-                        case NSFetchedResultsChangeDelete:
-                            [self.collectionView deleteItemsAtIndexPaths:@[obj]];
-                            break;
-                        case NSFetchedResultsChangeUpdate:
-                            [self.collectionView reloadItemsAtIndexPaths:@[obj]];
-                            break;
-                        case NSFetchedResultsChangeMove:
-                            [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
-                            break;
-                    }
-                }];
-            }
-        } completion:^(BOOL finished){
-            if (finished) {
-                //NSLog(@"Updates for collection view completed");
-            }else{
-                NSLog(@"*** Update of collection view failed");
-            }
-            
-        }];
+            [self.collectionView performBatchUpdates:^{
+                
+                for (NSDictionary *change in cellChangeArray)
+                {
+                    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
+                        
+                        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                        switch (type)
+                        {
+                            case NSFetchedResultsChangeInsert:
+                                [self.collectionView insertItemsAtIndexPaths:@[obj]];
+                                break;
+                            case NSFetchedResultsChangeDelete:
+                                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
+                                break;
+                            case NSFetchedResultsChangeUpdate:
+                                [self.collectionView reloadItemsAtIndexPaths:@[obj]];
+                                break;
+                            case NSFetchedResultsChangeMove:
+                                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
+                                break;
+                        }
+                    }];
+                }
+            } completion:^(BOOL finished){
+                if (finished) {
+                    //NSLog(@"Updates for collection view completed");
+                }else{
+                    NSLog(@"*** Update of collection view failed");
+                }
+                
+            }];
         }
     }
     

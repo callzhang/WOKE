@@ -35,6 +35,5 @@
 //- (IBAction)profile:(id)sender;
 - (IBAction)mainActions:(id)sender;
 
-- (IBAction)tapped:(id)sender;
 
 @end

@@ -49,13 +49,14 @@
     </entity>
     <entity name="EWMediaItem" representedClassName="EWMediaItem" syncable="YES">
         <attribute name="audioKey" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="buzzKey" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="ewmediaitem_id" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="imageKey" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="mediaType" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="played" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="videoKey" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="author" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="medias" inverseEntity="EWPerson" syncable="YES"/>
         <relationship name="groupTask" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroupTask" inverseName="medias" inverseEntity="EWGroupTask" syncable="YES"/>
@@ -129,7 +130,7 @@
         <element name="EWAlarmItem" positionX="0" positionY="0" width="128" height="210"/>
         <element name="EWGroup" positionX="0" positionY="0" width="128" height="210"/>
         <element name="EWGroupTask" positionX="0" positionY="0" width="128" height="195"/>
-        <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="225"/>
+        <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="30"/>
         <element name="EWMessage" positionX="0" positionY="0" width="128" height="195"/>
         <element name="EWPerson" positionX="0" positionY="0" width="128" height="510"/>
         <element name="EWTaskItem" positionX="0" positionY="0" width="128" height="285"/>

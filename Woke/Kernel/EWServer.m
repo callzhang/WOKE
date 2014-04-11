@@ -104,36 +104,70 @@
 #pragma mark - Push Notification
 
 + (void)buzz:(NSArray *)users{
-    //TODO: buzz sound selection
-    //TODO: buzz message selection
-    //TODO: bedge number
-    NSMutableArray *userIDs = [[NSMutableArray alloc] initWithCapacity:users.count];
-    for (EWPerson *person in users) {
-        [userIDs addObject:person.username];
-    }
-        
-    //send push notification, The payload can consist of the alert, badge, and sound keys.
-    NSDictionary *pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
-                                            @"badge": @1,
-                                            @"sound": @"buzz.caf",
-                                            @"content-available": @1,
-                                            },
-                                  kPushPersonKey: currentUser.username,
-                                  @"type": kPushTypeBuzzKey};
-    
     //delayed hide
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     });
     
-    //send
-    [EWServer AWSPush:pushMessage toUsers:(NSArray *)users onSuccess:^(SNSPublishResponse *response) {
-        NSLog(@"Buzz sent via AWS: %@", response.messageId);
-        [rootViewController.view showSuccessNotification:@"Sent"];
-    } onFailure:^(NSException *exception) {
-        NSLog(@"Failed to send Buzz: %@", exception.description);
-        [rootViewController.view showFailureNotification:@"Failed"];
+    for (EWPerson *person in users) {
+        //get next task
+        EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
+        //create buzz
+        EWMediaItem *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
+        
+        
+        if ([[NSDate date] isEarlierThan:task.time]) {
+            
+            //before wake, add to task
+            [task addMediasObject:buzz];
+            
+            
+            
+        }else if (!task.completed){
+            //struggle state
+            //send push notification, The payload can consist of the alert, badge, and sound keys.
+            
+            NSString *buzzType = buzz.buzzKey;
+            NSString *buzzSound;
+            if (buzzType) {
+                NSDictionary *sounds = buzzSounds;
+                buzzSound = sounds[buzzType];
+            }else{
+                buzzSound = @"buzz.caf";
+            }
+            NSDictionary *pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
+                                                    @"badge": @1,
+                                                    @"sound": buzzSound,
+                                                    @"content-available": @1,
+                                                    },
+                                          kPushMediaKey: buzz.ewmediaitem_id,
+                                          kPushTypeKey: kPushTypeBuzzKey};
+            
+            //send
+            [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
+                NSLog(@"Buzz sent via AWS: %@", response.messageId);
+                [rootViewController.view showSuccessNotification:@"Sent"];
+            } onFailure:^(NSException *exception) {
+                NSLog(@"Failed to send Buzz: %@", exception.description);
+                [rootViewController.view showFailureNotification:@"Failed"];
+            }];
+
+        }else{
+            
+            
+            //add to next task
+            EWTaskItem *tmrTask = [[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:person];
+            [tmrTask addMediasObject:buzz];
+        }
+    }
+    
+    //save
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"*** Save buzz to task failed, retry...");
+        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:NULL];
     }];
+    
+        
     
     /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{

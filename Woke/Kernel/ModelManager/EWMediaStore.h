@@ -23,6 +23,7 @@
 //add
 - (EWMediaItem *)createMedia;
 - (EWMediaItem *)createPseudoMedia;
+- (EWMediaItem *)createBuzzMedia;
 - (void)createPseudoMediaForTask:(EWTaskItem *)task;
 
 //delete

@@ -68,6 +68,13 @@
 }
 
 - (IBAction)play:(id)sender {
+    if (!recordingFileUrl){
+        NSLog(@"Recording url empty");
+        return;
+    }
+    if ([manager.recorder isRecording]) {
+        return;
+    }
     manager.progressBar = (EWMediaSlider *)progressBar;
     manager.playStopBtn = playBtn;
     

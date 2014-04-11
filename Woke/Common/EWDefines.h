@@ -70,12 +70,9 @@
 
 #define weekdays @[@"Sunday", @"Monday", @"Tuesday", @"Wednesday", @"Thursday", @"Friday", @"Saturday"];
 
-#define userDefaults @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00"};
+#define userDefaults @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00", @"buzzType":@"buzz"};
 
-
-//type
-#define kMediaTypeVoice                 @"voice"
-#define kMediaTypeBuzz                  @"buzz"
+#define buzzSounds @{@"default": @"buzz.caf"};
 
 //event
 //alarm store
@@ -116,6 +113,7 @@
 #define kPushTypeTimerKey               @"timer"
 #define kFinishedSync                   @"FinishedSync" //server has finished syncing (usually at startup)
 #define kADIDKey                        @"ADID" //key for ADID
+#define kPushTypeKey                    @"type"
 
 //Audio & Video
 #define kMaxRecordTime                  20.0;

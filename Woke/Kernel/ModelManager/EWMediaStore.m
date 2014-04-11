@@ -58,7 +58,7 @@
         NSLog(@"Media created");
     } onFailure:^(NSError *error) {
         //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
-        EWAlert(@"Failed to send voice. You can send it again.");
+        EWAlert(@"Ooops, something wrong. Please try again.");
     }];
     return m;
 }
@@ -77,7 +77,7 @@
     NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:data name:@"test_tone.caf" contentType:@"audio/caf"];
     
     media.audioKey = recordDataString;
-    media.type = kMediaTypeVoice;
+    media.type = mediaTypeBuzz;
     media.message = @"This is a test voice tone";
     
     
@@ -97,6 +97,16 @@
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSLog(@"Failed to save task for pseudo media");
     }];
+}
+
+- (EWMediaItem *)createBuzzMedia{
+    EWMediaItem *media = [self createMedia];
+    media.type = mediaTypeBuzz;
+    media.buzzKey = [currentUser.preference objectForKey:@"buzzKey"];
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"Failed to save for buzz");
+    }];
+    return media;
 }
 
 #pragma mark - SEARCH
@@ -129,12 +139,7 @@
 
 #pragma mark - DELETE
 - (void)deleteMedia:(EWMediaItem *)mi{
-    if ([mi.type isEqualToString:kMediaTypeVoice]) {
-        [[EWDataStore sharedInstance] deleteCacheForKey:mi.audioKey];
-    }else if ([mi.type isEqualToString:kMediaTypeBuzz]){
-        //
-    
-    }else if(mi.audioKey){
+    if(mi.audioKey){
         [[EWDataStore sharedInstance] deleteCacheForKey:mi.audioKey];
     }
     [[EWDataStore currentContext] deleteObject:mi];

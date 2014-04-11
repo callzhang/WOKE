@@ -7,6 +7,7 @@
 //
 
 #import "EWMediaSlider.h"
+#import "EWMediaItem.h"
 
 @implementation EWMediaSlider
 @synthesize timeLabel, buzzIcon, playIndicator;
@@ -46,7 +47,6 @@
     [self setMinimumTrackImage:leftImg forState:UIControlStateNormal];
     [self setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
     
-    
     //text
     timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.size.width - 50, (frame.size.height - 14)/2, 50, 20)];
     timeLabel.text = @"0:00";
@@ -79,13 +79,22 @@
     NSLog(@"Slider is called to stop");
 }
 
-- (void)setType:(NSString *)type{
-    if ([type isEqualToString:@"media"]) {
+
+//UI
+- (void)setUpWithMedia:(EWMediaItem *)media{
+    
+}
+
+- (void)setType:(NSInteger)type{
+    if (type == mediaTypeVoice) {
         typeLabel.text = @"Voice Tone";
         timeLabel.alpha = 1;
-    }else if ([type isEqualToString:@"buzz"]){
+    }else if (type == mediaTypeBuzz){
         typeLabel.text = @"Buzz";
         timeLabel.alpha = 0;
+    }else{
+        typeLabel.text = @"Voice Tone";
+        timeLabel.alpha = 1;
     }
 }
 

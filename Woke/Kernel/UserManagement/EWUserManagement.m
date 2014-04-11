@@ -101,7 +101,7 @@
             
             NSLog(@"No local user for %@, fetch from server", username);
             options = [EWDataStore optionFetchNetworkElseCache];
-            NSArray *newResult = [[EWDataStore currentContext] executeFetchRequestAndWait:userFetch error:NULL];
+            NSArray *newResult = [[EWDataStore currentContext] executeFetchRequestAndWait:userFetch returnManagedObjectIDs:NO options:options error:NULL];
             currentUser = newResult[0];
             
             //completion block
@@ -294,20 +294,24 @@
 
 #pragma mark - location
 - (void)registerLocation{
+    if (![[EWDataStore user].lastSeenDate isOutDated]) {
+        return;
+    }
     [SMGeoPoint getGeoPointForCurrentLocationOnSuccess:^(SMGeoPoint *geoPoint) {
-        currentUser.lastLocation = geoPoint;//[NSKeyedArchiver archivedDataWithRootObject:geoPoint];
+        EWPerson *user = [EWDataStore user];
+        user.lastLocation = geoPoint;//[NSKeyedArchiver archivedDataWithRootObject:geoPoint];
         NSLog(@"Get user location with lat: %@, lon: %@", geoPoint.latitude, geoPoint.longitude);
         
         //reverse search address
         CLGeocoder *geoloc = [[CLGeocoder alloc] init];
         CLLocation *clloc = [[CLLocation alloc] initWithLatitude:[geoPoint.latitude doubleValue] longitude:[geoPoint.longitude doubleValue]];
         [geoloc reverseGeocodeLocation:clloc completionHandler:^(NSArray *placemarks, NSError *error) {
-            NSLog(@"Found placemarks: %@, error", placemarks);
+            //NSLog(@"Found placemarks: %@, error", placemarks);
             if (error == nil && [placemarks count] > 0) {
                 CLPlacemark *placemark = [placemarks lastObject];
                 //get info
-                currentUser.city = placemark.locality;
-                currentUser.region = placemark.country;
+                user.city = placemark.locality;
+                user.region = placemark.country;
             } else {
                 NSLog(@"%@", error.debugDescription);
             }

@@ -59,6 +59,8 @@ NSSet * AFContentTypesFromHTTPHeader(NSString *string) {
 }
 
 static void AFGetMediaTypeAndSubtypeWithString(NSString *string, NSString **type, NSString **subtype) {
+    //Skip empty string
+    if (!string) return;
     NSScanner *scanner = [NSScanner scannerWithString:string];
     [scanner setCharactersToBeSkipped:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     [scanner scanUpToString:@"/" intoString:type];
