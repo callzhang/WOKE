@@ -60,12 +60,10 @@
         //self.navigationItem.title = @"WakeUpView";
         
         //[self.navigationItem setLeftBarButtonItem:self.editButtonItem];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
+        //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
         
         //notification
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     }
     return self;
 }
@@ -74,7 +72,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     
     //first time loop
     next = YES;
@@ -86,17 +83,27 @@
     //HUD
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    
     [self initData];
     [self initView];
+    
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    [self scrollViewDidScroll:tableView_];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    //[tableView_ reloadData];
     
     //position the content
     [self scrollViewDidScroll:tableView_];
+    [self.view setNeedsDisplay];
+    
+    //notification
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -125,11 +132,17 @@
 
 - (void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
+    
     [self resignRemoteControlEventsListener];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
+    
+    NSLog(@"WakeUpViewController popped out of view: remote control event listner stopped. Observers removed.");
 }
 
 - (void)initData {
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //depend on whether passed in with task or person, the media will populaeed accordingly
     if (task) {
         timer.text = [task.time date2String];
@@ -144,7 +157,6 @@
         [tableView_ reloadData];
     }
     
-    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     
     
     //_shakeManager = [[EWShakeManager alloc] init];
@@ -204,6 +216,12 @@
 
 - (void)dealloc {
     [_shakeManager unregister];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
+    
+    NSLog(@"WakeUpViewController deallocated. Observers removed.");
 }
 
 
@@ -235,7 +253,14 @@
     //stop music
     [[AVManager sharedManager] stopAllPlaying];
     
+    //set wakeup time
+    task.completed = [NSDate date];
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"Failed to save wakeup time for task");
+    }];
+    
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [self scrollViewDidScroll:self.tableView];//prevent header move
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:nil bundle:nil];
@@ -295,6 +320,7 @@
 //remove item
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    [self scrollViewDidScroll:tableView];
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         //media
         EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
@@ -309,7 +335,6 @@
         
         //remove from data source
         [medias removeObject:mi];
-        
         
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -339,6 +364,10 @@
                 }
             }
         }
+        
+        //update UI
+        [self scrollViewDidScroll:self.tableView];
+        
     }
     if (editingStyle==UITableViewCellEditingStyleInsert) {
         //do something
@@ -348,10 +377,13 @@
 //when click one item in table, push view to detail page
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"Media clicked");
-    [[AVManager sharedManager] playForCell:[tableView cellForRowAtIndexPath:indexPath]];
+    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+    if ([cell.media.type isEqualToString:kMediaTypeVoice] || !cell.media.type) {
+        [[AVManager sharedManager] playForCell:cell];
+    }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     });
     
@@ -392,18 +424,22 @@
 
 #pragma mark - Handle player events
 - (void)startPlayCells{
-    NSInteger currentPlayingCellIndex = 0;
-    if ([AVManager sharedManager].currentCell) {
-        //AVManager has current cell means it is paused
-        NSLog(@"Continue playing");
-        currentPlayingCellIndex = [self seekCurrentCell];
+    NSInteger currentPlayingCellIndex = [self seekCurrentCell];
+    if (currentPlayingCellIndex < 0) {
+        currentPlayingCellIndex = 0;
     }
+    if ([AVManager sharedManager].player.playing) {
+        //AVManager has current cell means it is paused
+        NSLog(@"AVManager is playing media %d", currentPlayingCellIndex);
+        return;
+    }
+    
     //get the cell
     EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
     if (cell) {
         [[AVManager sharedManager] playForCell:cell];
     }else if(medias.count > 0){
-        cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
+        cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
         [[AVManager sharedManager] playForCell:cell];
     }
     
@@ -426,36 +462,58 @@
 
 - (void)playNextCell{
     //check if need to play next
-    if (!next) return;
+    if (!next){
+        NSLog(@"Next is disabled, stop playing next");
+        return;
+    }
     
     NSInteger currentCellPlaying = [self seekCurrentCell];
+
+    EWMediaViewCell *cell;
+    
     currentCellPlaying++;
+    
     if (currentCellPlaying < medias.count){
+        
         //get next cell
         NSLog(@"Play next song (%ld)", (long)currentCellPlaying);
         NSIndexPath *path = [NSIndexPath indexPathForRow:currentCellPlaying inSection:0];
-        EWMediaViewCell *cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
+        cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
         if (!cell) {
             cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
         }
         
-        [[AVManager sharedManager] playForCell:cell];
+        
     }else if(currentCellPlaying >= medias.count){
         if ((--loopCount)>0) {
             //play the first if loopCount > 0
             NSLog(@"Looping, play (0)");
-            EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-            [[AVManager sharedManager] playForCell:cell];
+            cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+            
         }else{
             NSLog(@"Loop finished, stop playing");
             //nullify all cell info in avmanager
             [AVManager sharedManager].currentCell = nil;
             [AVManager sharedManager].media = nil;
+            next = NO;
         }
+        
     }else{
         [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%lu)", (long)currentCellPlaying, (unsigned long)medias.count];
     }
+    
+    //delay 5s
+    if ([cell.media.type isEqualToString: kMediaTypeVoice]) {
+        NSLog(@"Delay 5s to play next cell");
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [[AVManager sharedManager] playForCell:cell];
+        });
+    }else if ([cell.media.type isEqualToString: kMediaTypeBuzz]){
+        [[AVManager sharedManager] playForCell:cell];
+    }
+    
 }
+
 
 #pragma mark - Remote Control Event
 - (void)prepareRemoteControlEventsListener{

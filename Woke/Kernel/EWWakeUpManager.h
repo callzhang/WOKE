@@ -30,7 +30,14 @@
 + (void)handlePushNotification:(NSDictionary *)notification;
 
 /**
- *Individual method to handle alarm time up event
+ Handle alarm time up event
+ 1. Get next task
+ 2. Try to download all medias for task
+ 3. If there is no media, create a pesudo media
+ 4. After download
+    a. cancel local notif
+    b. fire silent alarm
+    c. present wakeupVC and start play in 30s
  */
 + (void)handleAlarmTimerEvent;
 

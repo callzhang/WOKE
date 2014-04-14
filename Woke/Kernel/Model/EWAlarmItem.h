@@ -16,7 +16,7 @@
 @property (nonatomic, retain) NSString * ewalarmitem_id;
 @property (nonatomic, retain) NSNumber * important;
 @property (nonatomic, retain) NSDate * lastmoddate;
-@property (nonatomic, retain) NSNumber * state;
+@property (nonatomic) BOOL state;
 @property (nonatomic, retain) NSDate * time;
 @property (nonatomic, retain) NSString * todo;
 @property (nonatomic, retain) NSString * tone;

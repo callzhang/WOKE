@@ -35,7 +35,7 @@
     //data
     task = t;
     self.alarm = task.alarm;
-    alarmOn = [self.alarm.state boolValue];
+    alarmOn = self.alarm.state;
     myTime = self.task.time;
     myMusic = self.alarm.tone;
     myStatement = self.task.statement;

@@ -22,10 +22,8 @@
 @property (nonatomic, retain) NSDate * createddate;
 @property (nonatomic, retain) NSString * ewtaskitem_id;
 @property (nonatomic, retain) NSDate * lastmoddate;
-@property (nonatomic, retain) NSNumber * length;
-@property (nonatomic, retain) NSNumber * state;
+@property (nonatomic) BOOL state;
 @property (nonatomic, retain) NSString * statement;
-@property (nonatomic, retain) NSNumber * success;
 @property (nonatomic, retain) NSDate * time;
 @property (nonatomic, retain) EWAlarmItem *alarm;
 @property (nonatomic, retain) NSSet *medias;

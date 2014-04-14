@@ -69,7 +69,7 @@
                         </connections>
                     </button>
                     <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" continuous="NO" id="uv8-tp-MBO" customClass="EWMediaSlider">
-                        <rect key="frame" x="61" y="20" width="241" height="31"/>
+                        <rect key="frame" x="61" y="20" width="240" height="31"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <connections>
                             <action selector="play:" destination="3" eventType="valueChanged" id="jiI-c0-2dj"/>

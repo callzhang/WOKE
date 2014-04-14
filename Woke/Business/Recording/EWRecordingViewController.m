@@ -15,6 +15,7 @@
 
 //object
 #import "EWTaskItem.h"
+#import "EWTaskStore.h"
 #import "EWMediaItem.h"
 #import "EWMediaStore.h"
 #import "EWPerson.h"
@@ -45,12 +46,21 @@
     return self;
 }
 
+- (EWRecordingViewController *)initWithTask:(EWTaskItem *)t{
+    self = [super init];
+    if (self) {
+        //task
+        task = t;
+        //person
+        person = task.owner?task.owner:task.pastOwner;
+    }
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    //person
-    person = task.owner?task.owner:task.pastOwner;
-    self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
+    
     self.profilePic.image = person.profilePic;
     self.profilePic.layer.cornerRadius = 50;
     self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", person.name, [task.time weekday]];
@@ -148,7 +158,7 @@
             }
             
             //send push notification
-            [EWServer pushMedia:media.ewmediaitem_id ForUsers:@[person] ForTask:task.ewtaskitem_id];
+            [EWServer pushMedia:media.ewmediaitem_id ForUser:person];
             
             //dismiss
             [self dismissViewControllerAnimated:YES completion:NULL];

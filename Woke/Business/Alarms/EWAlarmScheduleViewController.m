@@ -92,9 +92,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
         
         //state
-        if (cell.alarmOn != [cell.alarm.state boolValue]) {
+        if (cell.alarmOn != cell.alarm.state) {
             NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmOn?@"ON":@"OFF");
-            cell.alarm.state = [NSNumber numberWithBool:cell.alarmOn];
+            cell.alarm.state = cell.alarmOn;
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
         }
         //music

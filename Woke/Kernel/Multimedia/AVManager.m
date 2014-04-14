@@ -16,8 +16,15 @@
 #import "TestFlight.h"
 #import "EWMediaSlider.h"
 #import "EWDownloadManager.h"
+#import "EWMediaStore.h"
 
 @import MediaPlayer;
+
+@interface AVManager(){
+    id AVPlayerUpdateTimer;
+}
+
+@end
 
 @implementation AVManager
 @synthesize player, recorder;
@@ -69,12 +76,12 @@
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     //set category
-    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord error: &error];
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord withOptions:9 error:&error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     //force speaker
-    success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
-                                                                 error:&error];
-    if (!success || error) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
+//    success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
+//                                                                 error:&error];
+//    if (!success || error) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
     //set active
     success = [[AVAudioSession sharedInstance] setActive:YES error:&error];
     if (!success || error){
@@ -82,7 +89,8 @@
     }else{
         NSLog(@"Audio session activated!");
     }
-    
+    //set active bg sound
+    [self playSilentSound];
 }
 
 
@@ -106,13 +114,75 @@
 }
 
 - (void)setCurrentCell:(EWMediaViewCell *)cell{
+    
+    //assign new value
     progressBar = cell.mediaBar;
     currentTime = progressBar.timeLabel;
     media = cell.media;
-    
-    
-    [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
+    currentCell = cell;
 }
+
+
+- (void)playMedia:(EWMediaItem *)mi{
+    media = [EWDataStore objectForCurrentContext:mi];
+    if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
+        
+        if (media.audioKey.length > 500) {
+            media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+        }
+        [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];
+        
+        //lock screen
+        [self displayNowPlayingInfoToLockScreen:mi];
+    }else if([media.type isEqualToString:kMediaTypeBuzz]){
+        if ([media.buzzKey isEqualToString: @"default"]) {
+            [self playSoundFromFile:@"buzz.caf"];
+        }else{
+            //TODO
+            [self playSoundFromFile:@"buzz.caf"];
+        }
+        
+    }else{
+        NSLog(@"Unknown type of media, skip");
+        [self playSoundFromFile:@"Silence04s.caf"];
+        
+    }
+    
+}
+
+//main play function
+- (void)playSoundFromURL:(NSURL *)url{
+    if (!url) {
+        NSLog(@"Url is empty, skip playing");
+        //[self audioPlayerDidFinishPlaying:player successfully:YES];
+        return;
+    }
+    
+    //data
+    NSError *err;
+    NSString *path = [[EWDataStore alloc] localPathForKey:url.absoluteString];
+    //play
+    if (path) {
+        player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:&err];
+    }else{
+        player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
+    }
+    player.volume = 1.0;
+    
+    if (err) {
+        NSLog(@"Cannot init player. Reason: %@", err);
+        [self playSystemSound:url];
+        return;
+    }
+    self.player.delegate = self;
+    if ([player play]){
+        [self updateViewForPlayerState:player];
+    }else{
+        NSLog(@"Could not play with AVPlayer, using system sound");
+        [self playSystemSound:url];
+    }
+}
+
 
 
 //play for file in main bundle
@@ -142,67 +212,14 @@
     [self playSoundFromURL:soundURL];
 }
 
-//main play function
-- (void)playSoundFromURL:(NSURL *)url{
-    if (!url) {
-        NSLog(@"Url is empty, skip playing");
-        //[self audioPlayerDidFinishPlaying:player successfully:YES];
-        return;
-    }
-    
-    //data
-    NSError *err;
-    NSData *audioData = [[EWDataStore alloc] getRemoteDataWithKey:url.absoluteString];
-    //play
-    if (audioData) {
-        player = [[AVAudioPlayer alloc] initWithData:audioData error:&err];
-    }else{
-        player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
-    }
-    player.volume = 1.0;
-    
-    if (err) {
-        NSLog(@"Cannot init player. Reason: %@", err);
-        [self playSystemSound:url];
-        return;
-    }
-    self.player.delegate = self;
-    if ([player play]){
-        [self updateViewForPlayerState:player];
-    }else{
-        NSLog(@"Could not play with AVPlayer, using system sound");
-        [self playSystemSound:url];
-    }
-    
-    
 
-}
-
-- (void)playMedia:(EWMediaItem *)mi{
-    media = mi;
-    [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];
-    
-    //lock screen
-    [self displayNowPlayingInfoToLockScreen:mi];
-}
-
-//play media for task (Depreciated)
-//- (void)playTask:(EWTaskItem *)task{
-//
-//    playlist = [[task.medias allObjects] mutableCopy];
-//    
-//    if (playlist.firstObject) {
-//        [self playMedia:playlist.firstObject];
-//    }
-//    
-//}
 
 #pragma mark - UI event
 - (IBAction)sliderChanged:(UISlider *)sender {
     // Fast skip the music when user scroll the UISlider
     [player stop];
     [player setCurrentTime:progressBar.value];
-    NSString *timeStr = [NSString stringWithFormat:@"%ld:%02ld", (long)progressBar.value / 60, (long)progressBar.value % 60, nil];
+    NSString *timeStr = [NSString stringWithFormat:@"%02ld", (long)progressBar.value % 60];
     currentTime.text = timeStr;
     [player prepareToPlay];
     [player play];
@@ -214,6 +231,7 @@
     if (recorder.isRecording) {
         
         [recorder stop];
+        [updateTimer invalidate];
         recorder = nil;
         
         [[AVAudioSession sharedInstance] setActive: NO error: nil];
@@ -256,7 +274,7 @@
 {
     //init the progress bar
     if (progressBar) {
-        [self updateCurrentTime];
+        //[self updateCurrentTime];
         progressBar.maximumValue = player.duration;
     }
     //timer stop first
@@ -265,7 +283,9 @@
     //set up timer
 	if (p.playing){
 		//[lvlMeter_in setPlayer:p];
-		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTime) userInfo:p repeats:YES];
+        //add new target
+        [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
+		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTime:) userInfo:p repeats:YES];
 	}
 	else{
 		//[lvlMeter_in setPlayer:nil];
@@ -275,7 +295,7 @@
 
 - (void)updateViewForRecorderState:(AVAudioRecorder *)r{
     if (progressBar) {
-        [self updateCurrentTimeForRecorder];
+        //[self updateCurrentTimeForRecorder];
         progressBar.maximumValue = kMaxRecordTime;
     }
     
@@ -285,7 +305,7 @@
 	if (r.recording)
 	{
 		//[lvlMeter_in setPlayer:p];
-		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTimeForRecorder) userInfo:r repeats:YES];
+		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTimeForRecorder:) userInfo:r repeats:YES];
 	}
 	else
 	{
@@ -294,27 +314,36 @@
 	}
 }
 
--(void)updateCurrentTime{
+-(void)updateCurrentTime:(NSTimer *)timer{
+    AVAudioPlayer *p = (AVAudioPlayer *)timer.userInfo;
+    NSAssert([p isEqual:player], @"Player passed in is not correct");
     if (!progressBar.isTouchInside) {
         player.volume = 1.0;
         progressBar.value = player.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (long)player.currentTime / 60, (long)player.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%02ld\"", (long)player.currentTime % 60, nil];
     }
 }
 
--(void)updateCurrentTimeForRecorder{
+-(void)updateCurrentTimeForRecorder:(NSTimer *)timer{
+    AVAudioRecorder *r = (AVAudioRecorder *)timer.userInfo;
+    NSAssert([r isEqual:recorder], @"Recorder passed in is not correct");
     if (!progressBar.isTouchInside) {
         progressBar.value = recorder.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%ld:%02ld", (long)recorder.currentTime / 60, (long)recorder.currentTime % 60, nil];
+        currentTime.text = [NSString stringWithFormat:@"%02ld\"", (long)recorder.currentTime % 60, nil];
     }
 }
 
 
 #pragma mark - AVAudioPlayer delegate method
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)p successfully:(BOOL)flag {
+    NSString *success = flag?@"Success":@"Failed";
+    NSLog(@"Player finished %@ (%@)", p.url, success);
+    p.delegate = nil;
+    p = nil;
+    [progressBar removeTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
     [updateTimer invalidate];
     self.player.currentTime = 0.0;
-    progressBar.value = 0.0;
+    //progressBar.value = 0.0;
     //NSLog(@"Playback fnished");
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
 }
@@ -344,26 +373,52 @@
 
 #pragma mark - AVPlayer (used to play sound and keep the audio capability open)
 - (void)playAvplayerWithURL:(NSURL *)url{
+    if (AVPlayerUpdateTimer) {
+        [avplayer removeTimeObserver:AVPlayerUpdateTimer];
+        [AVPlayerUpdateTimer invalidate];
+    }
+    
     NSLog(@"AVPlayer is about to play %@", url);
     AVPlayerItem *item = [AVPlayerItem playerItemWithURL:url];
     avplayer = [AVPlayer playerWithPlayerItem:item];
     [avplayer setActionAtItemEnd:AVPlayerActionAtItemEndNone];
     avplayer.volume = 1.0;
-    //[avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
+    [avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
     [avplayer play];
+}
+
+- (void)playSilentSound{
+    NSURL *path = [[NSBundle mainBundle] URLForResource:@"Silence04s" withExtension:@"caf"];
+    [self playAvplayerWithURL:path];
+    //avplayer.volume = 0.01;
+}
+
+- (void)stopAvplayer{
+    [avplayer pause];
+    @try {
+        [avplayer removeTimeObserver:AVPlayerUpdateTimer];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"AVplayer cannot remove update timer");
+    }
+    [AVPlayerUpdateTimer invalidate];
+    avplayer = nil;
 }
 
 
 
-//- (void)observeValueForKeyPath:(NSString *)keyPath
-//                      ofObject:(id)object
-//                        change:(NSDictionary *)change
-//                       context:(void *)context{
-//    if ([object isKindOfClass:[avplayer class]] && [keyPath isEqual:@"status"]) {
-//        //observed status change for avplayer
-//        if (avplayer.status == AVPlayerStatusReadyToPlay) {
-//            [avplayer play];
-//            //tracking time
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context{
+    AVPlayer *p = (AVPlayer *)object;
+    if(![p isEqual:avplayer]) NSLog(@"@@@ Inconsistant player");
+    
+    if ([object isKindOfClass:[avplayer class]] && [keyPath isEqual:@"status"]) {
+        //observed status change for avplayer
+        if (avplayer.status == AVPlayerStatusReadyToPlay) {
+            //[avplayer play];
+            //tracking time
 //            Float64 durationSeconds = CMTimeGetSeconds([avplayer.currentItem duration]);
 //            CMTime durationInterval = CMTimeMakeWithSeconds(durationSeconds/100, 1);
 //            
@@ -374,12 +429,21 @@
 //                CFBridgingRelease(CMTimeCopyDescription(NULL, time));
 //                NSLog(@"Passed a boundary at %@", timeDescription);
 //            }];
-//        }else if(avplayer.status == AVPlayerStatusFailed){
-//            // deal with failure
-//            NSLog(@"Failed to load audio");
-//        }
-//    }
-//}
+            
+            CMTime interval = CMTimeMake(30, 1);//30s
+            AVPlayerUpdateTimer = [avplayer addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time){
+                CMTime endTime = CMTimeConvertScale (p.currentItem.asset.duration, p.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
+                if (CMTimeCompare(endTime, kCMTimeZero) != 0) {
+                    double normalizedTime = (double) p.currentTime.value / (double) endTime.value;
+                    NSLog(@"AVPlayer is still playing %f", normalizedTime);
+                }
+            }];
+        }else if(avplayer.status == AVPlayerStatusFailed){
+            // deal with failure
+            NSLog(@"Failed to load audio");
+        }
+    }
+}
 
 
 
@@ -443,8 +507,8 @@ void RouteChangeListener(	void *inClientData,
     //play
     NSLog(@"Start playing system sound");
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)soundUrl, &soundID);
-    AudioServicesPlayAlertSound(soundID);
-    //AudioServicesPlaySystemSound(soundID);
+    //AudioServicesPlayAlertSound(soundID);
+    AudioServicesPlaySystemSound(soundID);
     
     //long background server
     UIBackgroundTaskIdentifier bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -485,8 +549,11 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
         
         //cover
         UIImage *cover = media.image ? media.image : media.author.profilePic;
-        MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:cover];
-        dict[MPMediaItemPropertyArtwork] = artwork;
+        if (cover) {
+            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:cover];
+            dict[MPMediaItemPropertyArtwork] = artwork;
+        }
+        
         //TODO: media message can be rendered on image
         
         //set

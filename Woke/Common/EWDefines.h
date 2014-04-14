@@ -60,7 +60,7 @@
 #define nLocalNotifPerTask              5
 #define serverUpdateInterval            1800 //30 min
 #define alarmInterval                   600 //10min
-#define kMaxWakeTime                    600 // 10min
+#define kMaxWakeTime                    3600 // 60min
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."
 
@@ -70,7 +70,7 @@
 
 #define weekdays @[@"Sunday", @"Monday", @"Tuesday", @"Wednesday", @"Thursday", @"Friday", @"Saturday"];
 
-#define userDefaults @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00", @"buzzType":@"buzz"};
+#define userDefaults @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00", @"buzzSound":@"default"};
 
 #define buzzSounds @{@"default": @"buzz.caf"};
 
@@ -144,4 +144,7 @@
 
 //EWAlarmsViewController
 #define kPersonProfileNewNotification   @"new_profile"
+
+//Media Play
+#define kMediaPlayInterval              3 //3s
 

@@ -37,9 +37,15 @@
     NSInteger success = 0;
     NSInteger totalWakeUpLength = 0;
     for (EWTaskItem *task in pTasks) {
-        totalWakeUpLength += [task.length integerValue];
+        NSInteger wakeupTime;
+        if (task.completed) {
+            wakeupTime = [task.completed timeIntervalSinceDate:task.time];
+        }else{
+            wakeupTime = kMaxWakeTime;
+        }
+        totalWakeUpLength += wakeupTime;
         totalWakeUpTime += [task.time timeIntervalSinceReferenceDate];
-        success += (NSInteger)task.success;
+        success += task.completed?1:0;
     }
     [stats setValue:[NSNumber numberWithInteger:totalWakeUpLength/nTask] forKey:@"AverageWakeUpLength"];
     [stats setValue:[NSDate dateWithTimeIntervalSinceReferenceDate:totalWakeUpTime/nTask] forKey:@"AverageWakeUpTime"];

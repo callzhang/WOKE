@@ -134,7 +134,7 @@ static NSString *g_textFieldCellIdentifier = @"textFieldCell";
     newTime = alarm.time;
     _datePicker.date = alarm.time;
     newTone = alarm.tone;
-    newState = [alarm.state boolValue];
+    newState = alarm.state;
     _alarm = alarm;
 }
 
@@ -157,8 +157,8 @@ static NSString *g_textFieldCellIdentifier = @"textFieldCell";
         self.alarm.time = newTime;//TODO
         [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": self.alarm}];
     }
-    if (newState != [self.alarm.state boolValue]) {
-        self.alarm.state = [NSNumber numberWithBool:newState];//TODO
+    if (newState != self.alarm.state) {
+        self.alarm.state = newState;//TODO
         [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": self.alarm}];
     }
     //text

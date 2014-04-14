@@ -249,35 +249,36 @@
         
         case 7:{
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
-                EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:[EWDataStore user]];
-                NSInteger m = 6 - task.medias.count;
-                for (unsigned i=0; i< m; i++) {
-                    NSInteger x = arc4random_uniform(2);
-                    if (x==0) {
-                        //buzz
-                        EWMediaItem *media = [[EWMediaStore sharedInstance] createBuzzMedia];
-                        [task addMediasObject:media];
-                        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                            NSLog(@"Failed to save buzz: %@", error.description);
-                        }];
-                    }else{
-                        //voice
-                        [[EWMediaStore sharedInstance] createPseudoMediaForTask:task];
-                    }
-                    
+            
+            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:[EWDataStore user]];
+            NSInteger m = 6 - task.medias.count;
+            for (unsigned i=0; i< m; i++) {
+                NSInteger x = arc4random_uniform(2);
+                if (x==0) {
+                    //buzz
+                    EWMediaItem *media = [[EWMediaStore sharedInstance] createBuzzMedia];
+                    [task addMediasObject:media];
+                    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+                        NSLog(@"Failed to save buzz: %@", error.description);
+                    }];
+                }else{
+                    //voice
+                    EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
+                    //[task addMediasObject:media];
+                    [media addTasksObject:task];
+                    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+                        NSLog(@"Failed to save task for pseudo media: %@", error);
+                    }];
                 }
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
-                    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
-                        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                        [rootViewController presentViewControllerWithBlurBackground:controller];
-                    }];
-                });
-            });
+            }
             
             
+            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:[EWDataStore objectForCurrentContext:task]];
+            [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
+                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                [rootViewController presentViewControllerWithBlurBackground:controller];
+            }];
             
             
             

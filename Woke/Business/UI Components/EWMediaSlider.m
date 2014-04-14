@@ -9,7 +9,6 @@
 #import "EWMediaSlider.h"
 #import "EWMediaItem.h"
 
-#define maxLength20s        150000;//defined the length of data under 20s recording time
 
 @implementation EWMediaSlider
 @synthesize timeLabel, buzzIcon, playIndicator;
@@ -50,20 +49,20 @@
     [self setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
     
     //text
-    timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.size.width - 50, (frame.size.height - 14)/2, 50, 20)];
-    timeLabel.text = @"0:00";
+    //timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.size.width - 50, (frame.size.height - 20)/2, 50, 20)];
+    timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, (frame.size.height - 24)/2, 80, 20)];
+    timeLabel.text = @"0\"";
     timeLabel.textColor = [UIColor whiteColor];
     timeLabel.font = [UIFont systemFontOfSize:14];
     [self addSubview:timeLabel];
-    timeLabel.alpha = 0;
     
     //typeLabel
-    typeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, (frame.size.height - 14)/2, 80, 20)];
+    typeLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, (frame.size.height - 24)/2, 80, 20)];
     typeLabel.text = @"Voice Tone";
     typeLabel.font = [UIFont systemFontOfSize:15];
     typeLabel.textColor = [UIColor whiteColor];
     [self addSubview:typeLabel];
-    
+    typeLabel.hidden = YES;
 
     
     //color

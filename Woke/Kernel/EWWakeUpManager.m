@@ -27,83 +27,74 @@
 
 #pragma mark - Handle push notification
 + (void)handlePushNotification:(NSDictionary *)notification{
-    NSString *type = notification[@"type"];
-    //NSString *message = notification[@"aps"][@"alert"];
+    NSString *type = notification[kPushTypeKey];
     NSString *taskID = notification[kPushTaskKey];
     NSString *mediaID = notification[kPushMediaKey];
     NSString *personID = notification[kPushPersonKey];
     
+    __block EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+    __block EWTaskItem *task;
+    //get task
+    if (!taskID) {
+        task = [media.tasks anyObject];
+        taskID = task.ewtaskitem_id;
+    }
+    if (!personID) {
+        personID = media.author.username;
+    }
     
     if ([type isEqualToString:kPushTypeBuzzKey]) {
         // ============== Buzz ================
-        NSLog(@"Received buzz from %@", personID);
-        //get task
-        EWTaskItem *task;
-        NSInteger delayInSeconds = 0;
-        if (!taskID) {
-            //get taskID
-            task = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser];
-            taskID = task.ewtaskitem_id;
-        }
-        if (!mediaID) {
-            mediaID = @"";
-        }
         
-        if (task.success) {
+        
+        NSLog(@"Received buzz from %@", personID);
+        
+        //sound
+        NSString *buzzType = media.buzzKey;
+        NSDictionary *sounds = buzzSounds;
+        NSString *buzzSound = buzzType?sounds[buzzType]:@"buzz.caf";
+        
+        if (task.completed || [[NSDate date] timeIntervalSinceDate:task.time] > kMaxWakeTime) {
             //the buzz window has passed
-            return;
-        }else if ([[NSDate date] isEarlierThan:task.time]){
-            //delay the message if earlier than alarm, otherwise no delay
-            delayInSeconds = [task.time timeIntervalSinceDate:[NSDate date]];
-#ifdef DEV_TEST
-            delayInSeconds = 3;
-#endif
-            NSLog(@"Delay for %zd seconds", delayInSeconds);
-        }
-        //add sender to task
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            //save buzzers and waker
-            EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-            EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByID:personID];
-            //add waker
-            [task addWakerObject:sender];
-            //add buzzer
-            [task addBuzzer:sender atTime:[NSDate date]];
+            NSLog(@"@@@ Buzz window has passed, save it to next day");
+            EWTaskItem *tmrTask = [[EWTaskStore sharedInstance] nextTaskForPerson:[EWDataStore user]];
+            [media removeTasksObject:task];
+            [media addTasksObject:tmrTask];
             [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                NSLog(@"Unable to save: %@", error.description);
+                [[EWDataStore currentContext] saveAndWait:NULL];
             }];
             
-            //back to main thread with a delay to the time of alarm
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void){
-                //app state active
-                if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-                    //play sound
-                    [[AVManager sharedManager] playSoundFromFile:@"buzz.caf"];
-                    //determin if WakeUpViewController is presenting
-                    if ([EWWakeUpManager isRootPresentingWakeUpView]) {
-                        //wakeup vc is presenting
-                        if ([rootViewController.presentingViewController isKindOfClass:[EWWakeUpViewController class]]) {
-                            EWWakeUpViewController *vc = (EWWakeUpViewController *)rootViewController.presentingViewController;
-                            [vc.tableView reloadData];
-                        }
-                        
-                    }
-                    else{
-                        //present vc
-                        
-                        [rootViewController dismissViewControllerAnimated:YES completion:NULL];
-                        EWWakeUpViewController *wakeVC = [[EWWakeUpViewController alloc] initWithTask:task];
-                        [rootViewController presentViewController:wakeVC animated:YES completion:NULL];
-                        
-                    }
-                    
-                }
-            });
-        });
+            return;
+        }else if ([[NSDate date] isEarlierThan:task.time]){
+            //buzz earlier than alarm, schedule local notif
+            UILocalNotification *notif = [[UILocalNotification alloc] init];
+            //time
+            NSDate *fireTime = [task.time timeByAddingSeconds:(150 + arc4random_uniform(5)*30)];
+            notif.fireDate = fireTime;
+            //sound
+            
+            notif.soundName = buzzSound;
+            //message
+            notif.alertBody = [NSString stringWithFormat:@"Buzz from %@", media.author.name];
+            notif.userInfo = @{kPushTaskKey: taskID, kPushMediaKey: mediaID};
+            //schedule
+            [[UIApplication sharedApplication] scheduleLocalNotification:notif];
+            
+            NSLog(@"Scheduled local notif on %@", [fireTime date2String]);
+            
+#ifdef DEV_TEST
+            [[AVManager sharedManager] playSoundFromFile:buzzSound];
+#endif
+            
+        }else if (![self isRootPresentingWakeUpView]){
+            //struggle
+            //root is not presenting wakeupVC
+            [[AVManager sharedManager] playSoundFromFile:buzzSound];
+        }
         
-        //broadcast event
+      
+        //broadcast event so that wakeup VC can play it
         [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: taskID}];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: taskID}];
         
         
         //active: play alert
@@ -115,68 +106,49 @@
         
     }else if ([type isEqualToString:kPushTypeMediaKey]){
         // ============== Media ================
-        NSLog(@"Received media type push: %@", taskID);
-        //get task
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            //download
-            EWTaskItem *task;
-            EWMediaItem *media;
-            @try {
-                task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-                media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
-            }
-            @catch (NSException *exception) {
-                NSLog(@"%@", exception);
-            }
-            
-            
-            //back to main thread
-            dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"Received voice type push");
+        
                 
-                if ([[NSDate date] isEarlierThan:task.time]) {
-                    
-                    //pre alarm -> download
-                    
-                    NSLog(@"Download media: %@", media.ewmediaitem_id);
-                    [[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded
-                    
-                }else if (!task.completed){
-                    
-                    NSLog(@"Struggle mode, playing audio. (Need to rework on this)");
-                    //struggle (or passed 10 min) -> play media
-                    [[AVManager sharedManager] playMedia:media];
-                    
-                    //present WakeUpView
-                    if (![EWWakeUpManager isRootPresentingWakeUpView]) {
-                        NSLog(@"Presenting wakeUpView");
-                        [rootViewController dismissViewControllerAnimated:YES completion:^{
-                            [rootViewController presentViewController:[[EWWakeUpViewController alloc] initWithTask:task] animated:YES completion:^{
-                                //post notification
-                                [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: taskID}];
-                            }];
-                        }];
-                    }
-                    
-                    
-                }else{
-                    
-                    //Woke state -> assign media to next task, download
-                    
-                    EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:currentUser];
-                    [task removeMediasObject:media];
-                    [nextTask addMediasObject:media];
-                    [[EWDataStore currentContext] saveOnSuccess:^{
-                        //
-                    } onFailure:^(NSError *error) {
-                        NSLog(@"Unable to save: %@", error.description);
-                    }];
-                    
-                    //download to cache
-                    [[EWDownloadManager sharedInstance] downloadMedia:media];
-                }
-            });
+        if ([[NSDate date] isEarlierThan:task.time]) {
             
-        });
+            //pre alarm -> download
+            
+            NSLog(@"Download media: %@", media.ewmediaitem_id);
+            [[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded
+            
+        }else if (!task.completed && [[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
+            
+            NSLog(@"User struggle...");
+            
+            //present WakeUpView
+            if (![EWWakeUpManager isRootPresentingWakeUpView]) {
+                NSLog(@"Presenting wakeUpView");
+                [rootViewController dismissViewControllerAnimated:YES completion:^{
+                    [rootViewController presentViewController:[[EWWakeUpViewController alloc] initWithTask:task] animated:YES completion:^{
+                        //post notification
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: taskID}];
+                    }];
+                }];
+            }else{
+                //broadcast so wakeupVC can react to it
+                [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: taskID}];
+            }
+            
+            
+        }else{
+            
+            //Woke state -> assign media to next task, download
+            
+            EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:currentUser];
+            [task removeMediasObject:media];
+            [nextTask addMediasObject:media];
+            [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+                NSLog(@"Unable to save: %@", error.description);
+            }];
+            
+            //download to cache
+            [[EWDownloadManager sharedInstance] downloadMedia:media];
+        }
         
         
     }else if([type isEqualToString:kPushTypeTimerKey]){
@@ -219,7 +191,12 @@
     
     //if no media for task, create a pseudo media
     if (task.medias.count == 0) {
-        [[EWMediaStore sharedInstance] createPseudoMediaForTask:task];
+        
+        EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
+        [task addMediasObject:media];
+        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+            NSLog(@"Failed to save task for pseudo media: %@", error);
+        }];
     }
     
     //download
@@ -234,16 +211,21 @@
         EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
         
         //play sounds after 30s
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-             [controller startPlayCells];
+        [controller startPlayCells];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//             [controller startPlayCells];
+//        });
+        
+        //present wakeupVC
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (![EWWakeUpManager isRootPresentingWakeUpView]) {
+                [rootViewController dismissViewControllerAnimated:YES completion:^{
+                    [rootViewController presentViewControllerWithBlurBackground:controller];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.ewtaskitem_id}];
+                }];
+            }
         });
         
-        if (![EWWakeUpManager isRootPresentingWakeUpView]) {
-            [rootViewController dismissViewControllerAnimated:YES completion:^{
-                [rootViewController presentViewControllerWithBlurBackground:controller];
-                [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.ewtaskitem_id}];
-            }];
-        }
     }];
     
 }

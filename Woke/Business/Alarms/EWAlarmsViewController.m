@@ -119,9 +119,9 @@
         }else{
             
             location =  [NSKeyedUnarchiver unarchiveObjectWithData:locData];
-            currentUser.lastLocation = location;
-            [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:NULL];
-            NSLog(@"Unarchived location: %@", location);
+            //currentUser.lastLocation = location;
+            //[[EWDataStore currentContext] saveOnSuccess:NULL onFailure:NULL];
+            //NSLog(@"Unarchived location: %@", location);
         }
         
         [EWServer getPersonAlarmAtTime:[NSDate date] location:location completion:^(NSArray *results) {
@@ -190,7 +190,7 @@
     
     
     //sort
-    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastSeenDate" ascending:YES];
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastSeenDate" ascending:NO];
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
@@ -475,9 +475,8 @@
                 break;
             }
             case 2:{
-                EWRecordingViewController *controller = [[EWRecordingViewController alloc] init];
                 EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
-                controller.task = task;
+                EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithTask:task];
                 [self presentViewControllerWithBlurBackground:controller];
                 break;
             }

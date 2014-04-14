@@ -48,7 +48,6 @@
 
 
 #pragma mark - create media
-
 - (EWMediaItem *)createMedia{
     EWMediaItem *m = [NSEntityDescription insertNewObjectForEntityForName:@"EWMediaItem" inManagedObjectContext:[EWDataStore currentContext]];
     [m assignObjectId];
@@ -60,7 +59,6 @@
     } onFailure:^(NSError *error) {
         //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
         NSLog(@"Error to save new media: %@", error);
-        EWAlert(@"Ooops, something wrong. Please try again.");
     }];
     return m;
 }
@@ -84,27 +82,25 @@
     
     
     [[EWDataStore currentContext] saveAndWait:NULL];
-    [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
+    //[[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
     if (media.audioKey.length > 500) {
-        media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+        //media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ewmediaitem_id == %@", media.ewmediaitem_id];
+        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
+        request.predicate = predicate;
+        NSArray *medias = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
+        if (medias.count == 1) {
+            return medias[0];
+        }
     }
     
     return media;
 }
 
-- (void)createPseudoMediaForTask:(EWTaskItem *)task{
-    EWTaskItem *task_ = [EWDataStore objectForCurrentContext:task];
-    EWMediaItem *media = [self createPseudoMedia];
-    [task_ addMediasObject:media];
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"Failed to save task for pseudo media");
-    }];
-}
-
 - (EWMediaItem *)createBuzzMedia{
     EWMediaItem *media = [self createMedia];
     media.type = kMediaTypeBuzz;
-    media.buzzKey = [currentUser.preference objectForKey:@"buzzKey"];
+    media.buzzKey = [currentUser.preference objectForKey:@"buzzSound"];
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSLog(@"Failed to save for buzz");
     }];

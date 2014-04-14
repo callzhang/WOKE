@@ -55,7 +55,7 @@
 //    EWAlarmItem *a = task.alarm;
 //    a.state = [NSNumber numberWithBool:sender.on];
     
-    task.state = [NSNumber numberWithBool:sender.on];
+    task.state = sender.on;
     [[EWDataStore currentContext] saveOnSuccess:^{
         //
     } onFailure:^(NSError *error) {
@@ -94,7 +94,7 @@
     //setting the hours left
     task = t;
     alarm = task.alarm;
-    self.alarmState.on = t.state.boolValue;
+    self.alarmState.on = t.state;
     self.timeText.text = [t.time date2timeShort];
     self.AM.text = [t.time date2am];
     
@@ -138,7 +138,7 @@
 }
 
 - (void)setAlarm:(EWAlarmItem *)a{
-    self.alarmState.on = a.state.boolValue;
+    self.alarmState.on = a.state;
 }
 
 //#pragma mark - NOTIFICATION
@@ -165,21 +165,27 @@
         NSLog(@"Received task change that not belongs to this alarm page, check observer set up!");
         return;
     }
-    if ([object isKindOfClass:[EWTaskItem class]]) {
-        //TODO: dispatch different tasks for each updates
-        if ([keyPath isEqualToString:@"state"]) {
-            self.alarmState.on = [change[NSKeyValueChangeNewKey] boolValue];
-        }else if ([keyPath isEqualToString:@"medias"]){
-            [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];
-            
-        }else if ([keyPath isEqualToString:@"time"]){
-            self.timeText.text = [task.time date2timeShort];
-            self.AM.text = [task.time date2am];
-        }else{
-            NSLog(@"Unhandled task %@ change: %@", keyPath, change);
+    @try {
+        if ([object isKindOfClass:[EWTaskItem class]]) {
+            //TODO: dispatch different tasks for each updates
+            if ([keyPath isEqualToString:@"state"]) {
+                self.alarmState.on = [change[NSKeyValueChangeNewKey] boolValue];
+            }else if ([keyPath isEqualToString:@"medias"]){
+                [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];
+                
+            }else if ([keyPath isEqualToString:@"time"]){
+                self.timeText.text = [task.time date2timeShort];
+                self.AM.text = [task.time date2am];
+            }else{
+                NSLog(@"Unhandled task %@ change: %@", keyPath, change);
+            }
+            [self setNeedsDisplay];
         }
-        [self setNeedsDisplay];
     }
+    @catch (NSException *exception) {
+        NSLog(@"Failed to update alarm page %@", exception);
+    }
+    
 }
 
 - (void)dealloc{

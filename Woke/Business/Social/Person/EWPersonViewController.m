@@ -304,7 +304,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     NSString *MON = [formatter stringFromDate:task.time];
     cell.month.text = MON;
     
-    if ([task.success boolValue]) {
+    if (task.completed) {
         cell.wakeTime.text = [task.completed date2String];
         cell.taskInfo.text = [NSString stringWithFormat:@"Woke up by %lu users", (unsigned long)task.waker.count];
         

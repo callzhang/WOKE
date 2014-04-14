@@ -21,7 +21,7 @@
 #import "EWDownloadManager.h"
 
 @implementation EWPerson
-@synthesize achievements;
+@dynamic achievements;
 @dynamic aws_id;
 @synthesize bgImage;
 @synthesize profilePic;

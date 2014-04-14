@@ -13,6 +13,8 @@
 #import "EWDataStore.h"
 #import "EWPersonViewController.h"
 
+#define maxBytes        150000
+
 @implementation EWMediaViewCell
 @synthesize media;
 
@@ -61,6 +63,19 @@
     }else{
         self.mediaBar.hidden = NO;
         self.buzzIcon.hidden = YES;
+        
+        //set media bar length
+        CGRect frame = self.mediaBar.frame;
+        AVAudioPlayer *p = [[AVAudioPlayer alloc] initWithData:m.audio error:NULL];
+        double len = p.duration;
+        self.mediaBar.timeLabel.text = [NSString stringWithFormat:@"%.1f\"", len];
+        double ratio = len/30/2 + 0.5;
+        if (ratio > 1.0) ratio = 1.0;
+        frame.size.width = 240.0 * ratio;
+        self.mediaBar.frame = frame;
+        //NSLog(@"changed slider width to %f", frame.size.width);
+        
+        [self setNeedsDisplay];
     }
     
     media = m;

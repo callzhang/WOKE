@@ -2185,6 +2185,8 @@ NSString* truncateOutputIfExceedsMaxLogLength(id objectToCheck) {
         NSManagedObjectID *cacheObjectID = [self SM_retrieveCacheObjectForRemoteID:sm_managedObjectReferenceID entityName:[[sm_managedObject entity] name] createIfNeeded:NO];
         if (!cacheObjectID) {
             // TODO handle error
+            NSLog(@"No cache info, return nil!");
+            return nil;
         }
         NSManagedObject *objectFromCache = [self.localManagedObjectContext objectWithID:cacheObjectID];
         

@@ -32,4 +32,6 @@
 - (IBAction)seek:(id)sender;
 - (IBAction)back:(id)sender;
 
+- (EWRecordingViewController *)initWithTask:(EWTaskItem *)task;
+
 @end

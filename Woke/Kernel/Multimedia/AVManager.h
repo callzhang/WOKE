@@ -27,10 +27,8 @@
     //CALevelMeter *lvlMeter_in;
     NSTimer *updateTimer;
     NSURL *recordingFileUrl;
-    //AVQueuePlayer *qPlayer;
     AVPlayer *avplayer;
     SystemSoundID soundID;
-    //NSMutableArray *playlist;//array of nsstring
 }
 
 @property (retain, nonatomic) AVAudioPlayer *player;
@@ -79,7 +77,12 @@
  Play audio using AVPlayer
  */
 - (void)playAvplayerWithURL:(NSURL *)url;
+- (void)playSilentSound;
+- (void)stopAvplayer;
 
+/**
+ Play sound with system sound service
+ */
 - (void)playSystemSound:(NSURL *)path;
 
 

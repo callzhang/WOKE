@@ -15,8 +15,8 @@
 @property (weak, nonatomic) IBOutlet UIView *header;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-@property (nonatomic) EWPerson *person;
-@property (nonatomic) EWTaskItem *task;
+@property (nonatomic, weak) EWPerson *person;
+@property (nonatomic, weak) EWTaskItem *task;
 
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
 //- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;

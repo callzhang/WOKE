@@ -80,6 +80,8 @@
     return personAround;
 }
 
+
+//Get person with task time and with location in async mode and a completion block
 + (void)getPersonAlarmAtTime:(NSDate *)time location:(SMGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock{
     __block NSArray *result;
     dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
@@ -101,7 +103,7 @@
     });
 }
 
-#pragma mark - Push Notification
+#pragma mark - Push buzz
 
 + (void)buzz:(NSArray *)users{
     //delayed hide
@@ -109,11 +111,20 @@
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     });
     
+    
+    
     for (EWPerson *person in users) {
         //get next task
         EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
         //create buzz
         EWMediaItem *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
+        //add waker
+        [task addWakerObject:person];
+        //add sound
+        buzz.buzzKey = [EWDataStore user].preference[@"buzzSound"];
+        
+        //push payload
+        NSDictionary *pushMessage;
         
         
         if ([[NSDate date] isEarlierThan:task.time]) {
@@ -121,44 +132,58 @@
             //before wake, add to task
             [task addMediasObject:buzz];
             
+            //silent push
+            pushMessage = @{@"aps": @{@"badge": @1,
+                                      @"content-available": @1,
+                                      },
+                            kPushMediaKey: buzz.ewmediaitem_id,
+                            kPushTypeKey: kPushTypeBuzzKey};
+
             
-            
-        }else if (!task.completed){
+        }else if (!task.completed || [[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
             //struggle state
             //send push notification, The payload can consist of the alert, badge, and sound keys.
+            [buzz addTasksObject:task];
+            [[EWDataStore currentContext] saveAndWait:NULL];
             
             NSString *buzzType = buzz.buzzKey;
-            NSString *buzzSound;
-            if (buzzType) {
-                NSDictionary *sounds = buzzSounds;
-                buzzSound = sounds[buzzType];
-            }else{
-                buzzSound = @"buzz.caf";
-            }
-            NSDictionary *pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
+            NSDictionary *sounds = buzzSounds;
+            NSString *buzzSound = buzzType?sounds[buzzType]:@"buzz.caf";
+            
+            pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
                                                     @"badge": @1,
                                                     @"sound": buzzSound,
                                                     @"content-available": @1,
                                                     },
                                           kPushMediaKey: buzz.ewmediaitem_id,
                                           kPushTypeKey: kPushTypeBuzzKey};
-            
-            //send
-            [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
-                NSLog(@"Buzz sent via AWS: %@", response.messageId);
-                [rootViewController.view showSuccessNotification:@"Sent"];
-            } onFailure:^(NSException *exception) {
-                NSLog(@"Failed to send Buzz: %@", exception.description);
-                [rootViewController.view showFailureNotification:@"Failed"];
-            }];
 
         }else{
             
             
             //add to next task
             EWTaskItem *tmrTask = [[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:person];
-            [tmrTask addMediasObject:buzz];
+            
+            [buzz addTasksObject:tmrTask];
+            
+            //silent push
+            pushMessage = @{@"aps": @{@"badge": @1,
+                                      @"content-available": @1,
+                                      },
+                            kPushMediaKey: buzz.ewmediaitem_id,
+                            kPushTypeKey: kPushTypeBuzzKey};
         }
+        
+        
+        
+        //send
+        [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
+            NSLog(@"Buzz sent via AWS: %@", response.messageId);
+            [rootViewController.view showSuccessNotification:@"Sent"];
+        } onFailure:^(NSException *exception) {
+            NSLog(@"Failed to send Buzz: %@", exception.description);
+            [rootViewController.view showFailureNotification:@"Failed"];
+        }];
     }
     
     //save
@@ -180,38 +205,69 @@
     
 }
 
-+ (void)pushMedia:(NSString *)mediaId ForUsers:(NSArray *)users ForTask:(NSString *)taskId{
-    //users
-    NSMutableArray *userIDs = [[NSMutableArray alloc] initWithCapacity:users.count];
-    for (EWPerson *person in users) {
-        [userIDs addObject:person.username];
+#pragma mark - Send Voice tone
++ (void)pushMedia:(NSString *)mediaId ForUser:(EWPerson *)person{
+    
+    EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaId];
+    EWTaskItem *task = [media.tasks anyObject];
+    NSDictionary *pushMessage;
+    
+    //validate task
+    if (task.completed || task.state == NO) {
+        //something wrong, next task
+        task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
     }
-    //message
-    NSDictionary *pushMessage = @{@"aps": @{@"badge": @1,
-                                              @"sound": @"media.caf",
-                                              @"content-available": @1
-                                              },
-                                  @"type": kPushMediaKey,
-                                  kPushPersonKey: currentUser.username,
-                                  kPushMediaKey: mediaId,
-                                  kPushTaskKey: taskId};
-    [EWServer AWSPush:pushMessage toUsers:users onSuccess:^(SNSPublishResponse *response) {
-        NSLog(@"Push media successfully sent to %@, message ID: %@", userIDs, response.messageId);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-            hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-            hud.mode = MBProgressHUDModeCustomView;
-            hud.labelText = @"Sent";
-            [hud hide:YES afterDelay:1.5];
-        });
-        
+    
+    //form push payload
+    if ([[NSDate date] isEarlierThan:task.time]) {
+        //early, silent message
+        pushMessage = @{@"aps": @{@"badge": @1,
+                                  @"content-available": @1
+                                  },
+                        kPushTypeKey: kPushMediaKey,
+                        kPushPersonKey: currentUser.username,
+                        kPushMediaKey: mediaId};
 
+    }else if([[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
+        //struggle state
+        pushMessage = @{@"aps": @{@"badge": @1,
+                                  @"sound": @"media.caf",
+                                  @"content-available": @1
+                                  },
+                        kPushTypeKey: kPushMediaKey,
+                        kPushPersonKey: currentUser.username,
+                        kPushMediaKey: mediaId};
+        
+    }else{
+        //send to next task
+        [media removeTasksObject:task];
+        [media addTasksObject:[[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:person]];
+        pushMessage = @{@"aps": @{@"badge": @1,
+                                  @"content-available": @1
+                                  },
+                        kPushTypeKey: kPushMediaKey,
+                        kPushPersonKey: currentUser.username,
+                        kPushMediaKey: mediaId};
+    }
+
+    //push
+    [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
+        NSLog(@"Push media successfully sent to %@, message ID: %@", person.name, response.messageId);
+        
+        [rootViewController.view showSuccessNotification:@"Sent"];
+        
+        
     } onFailure:^(NSException *exception) {
-        NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, exception.description];
-        EWAlert(str);
+        NSLog(@"Send push message about media %@ failed. Reason:%@", mediaId, exception.description);
+        EWAlert(@"Server is unavailable, please try again.");
     }];
-    /*
+    
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"save voice media failed. Retry... Reason:%@", error.description);
+        [[EWDataStore currentContext] saveAndWait:NULL];
+    }];
+    
+        /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Push media successfully sent to %@", userIDs);
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
@@ -229,31 +285,32 @@
 
 
 
-#pragma mark - Alert Delegate
-/**
- action when user received push alert in active state
- 1. buzz: play the buzz (shouldn't be here)
- 2. media:
-    a. before woke: play voice
-    b. after woke or before timer: do nothing
- */
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    NSString *type = alertView.userInfo[@"type"];
-    
-    if ([type isEqualToString:kPushTypeBuzzKey]) {
-        NSLog(@"Clicked OK on buzz");
-        
-    }else if ([type isEqualToString:kPushTypeMediaKey]) {
-        //got taskInAction
-        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:alertView.userInfo[kPushTaskKey]];
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-        controller.task = task;
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-        EWAppDelegate * appDelegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-        [appDelegate.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
-    }
-
-}
+//#pragma mark - Alert Delegate
+///**
+// action when user received push alert in active state
+// 1. buzz: play the buzz (shouldn't be here)
+// 2. media:
+//    a. before woke: play voice
+//    b. after woke or before timer: do nothing
+// */
+//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+//    
+//    NSString *type = alertView.userInfo[@"type"];
+//    
+//    if ([type isEqualToString:kPushTypeBuzzKey]) {
+//        NSLog(@"Clicked OK on buzz");
+//        
+//    }else if ([type isEqualToString:kPushTypeMediaKey]) {
+//        //got taskInAction
+//        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:alertView.userInfo[kPushTaskKey]];
+//        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+//        controller.task = task;
+//        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+//        EWAppDelegate * appDelegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
+//        [appDelegate.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
+//    }
+//
+//}
 
 
 #pragma mark - AWS method
@@ -293,9 +350,6 @@
             }
         });
     }
-    
-    
-    
 
 }
 

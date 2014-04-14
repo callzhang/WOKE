@@ -124,8 +124,6 @@ UIViewController *rootViewController;
     }if (!result) {
         return;
     }
-    
-    
 
 #ifdef BACKGROUND_TEST
     
@@ -138,8 +136,13 @@ UIViewController *rootViewController;
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];
     myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerInterval target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
-    NSLog(@"Scheduled background with time left: %f", application.backgroundTimeRemaining);
+    
+    
 #endif
+    
+    //remove avplayer
+    [[AVManager sharedManager] stopAvplayer];
+    NSLog(@"Scheduled background with time left: %f", application.backgroundTimeRemaining);
     
     application.applicationIconBadgeNumber = 0;
 }
@@ -226,12 +229,17 @@ UIViewController *rootViewController;
     
 }
 
-//Keep alive
+// ============> Keep alive <=============
 - (void) keepAlive:(NSTimer *)paramSender{
     NSLog(@"=== Keep alive ===");
-    [[AVManager sharedManager] playSystemSound:[NSURL URLWithString:[[NSBundle mainBundle] pathForResource:@"tock" ofType:@"caf"]]];
+    NSLog(@"%s Time left (before) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
+    
+    [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
     
     UIApplication *application = [UIApplication sharedApplication];
+    
+    //结束旧的后台任务
+    [application endBackgroundTask:backgroundTaskIdentifier];
     
     //开启一个新的后台
     NSInteger ct = count++;
@@ -239,15 +247,17 @@ UIViewController *rootViewController;
         NSLog(@"BG task will end (%ld)", (long)ct);
     }];
     
-    //结束旧的后台任务
-    [application endBackgroundTask:backgroundTaskIdentifier];
 
+    //start avplayer
+//    [[AVManager sharedManager] playSilentSound];
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [[AVManager sharedManager] stopAvplayer];
+//    });
     
     //check time
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:currentUser];
-    if (task.state == NO) {
-        return;
-    }
+    if (!currentUser) return;
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
+    if (task.state == NO) return;
     
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
@@ -259,7 +269,7 @@ UIViewController *rootViewController;
         });
     }
     
-    NSLog(@"Background task is still working with time left %f (%ld)",[UIApplication sharedApplication].backgroundTimeRemaining , count++);
+    NSLog(@"%s Time left (after) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
 
 }
 
@@ -348,6 +358,7 @@ UIViewController *rootViewController;
                     SNSSetEndpointAttributesRequest *request = [[SNSSetEndpointAttributesRequest alloc] init];
                     request.endpointArn = endPointNew;
                     [request setAttributesValue:username forKey:@"CustomUserData"];
+                    [request setAttributesValue:@"ture" forKey:@"Enabled"];
                     [snsClient setEndpointAttributes:request];
                     NSLog(@"EndPoint updated");
                     
@@ -426,6 +437,9 @@ UIViewController *rootViewController;
 
 //Receive remote notification in background or in foreground
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+    if (!currentUser) {
+        return;
+    }
     
     if ([application applicationState] == UIApplicationStateActive) {
         NSLog(@"Push Notification received when app is running: %@", userInfo);

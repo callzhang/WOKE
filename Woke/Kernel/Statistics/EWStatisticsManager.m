@@ -43,7 +43,7 @@
         NSInteger total = tasks.count;
         NSInteger sCount = 0;
         for (EWTaskItem *t in tasks) {
-            if ([t.success boolValue]) {
+            if (t.completed) {
                 sCount++;
             }
         }

@@ -92,7 +92,7 @@
     }
     
     
-    //check past task
+    //check past task, move it to pastTasks and remove it from the array
     NSMutableArray *goodTasks = [tasks mutableCopy];
     [self checkPastTasks:goodTasks];
     
@@ -112,7 +112,7 @@
         tasks = [person.pastTasks allObjects];
     }else{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
-        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", currentUser];
+        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"pastOwner == %@", currentUser];
         NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
         NSPredicate *predicate3 = [NSPredicate predicateWithFormat:@"state == %@", @YES];
         request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2, predicate3]];
@@ -127,11 +127,22 @@
     return tasks;
 }
 
-//for auto group
+//next valid task
 - (EWTaskItem *)nextTaskForPerson:(EWPerson *)person{
-    return [self nextTaskAtDayCount:0 ForPerson:person];
+    NSArray *tasks = [self getTasksByPerson:[EWDataStore objectForCurrentContext:person]];
+    EWTaskItem *t0;
+    for (unsigned i=0; i<tasks.count; i++) {
+        t0 = tasks[i];
+        
+        //Task shoud be On and not finished
+        if (t0.state == YES && !t0.completed) {
+            return t0;
+        }
+    }
+    return nil;
 }
 
+//next task
 - (EWTaskItem *)nextTaskAtDayCount:(NSInteger)n ForPerson:(EWPerson *)person{
     NSArray *tasks = [self getTasksByPerson:person];
     if (tasks.count >= n+1) {
@@ -243,7 +254,7 @@
     for (EWTaskItem *t in outDatedTasks) {
         t.alarm = nil;
         t.owner = nil;
-        t.pastOwner = currentUser;
+        t.pastOwner = [EWDataStore user];
         [tasks removeObject:t];
         NSLog(@"Past task on %@ moved", [t.time date2dayString]);
     }
@@ -251,6 +262,7 @@
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSLog(@"@@@ Failed to save past task chenges");
     }];
+    
 }
 
 #pragma mark - NEW
@@ -306,7 +318,7 @@
             
             t.state = a.state;
             
-            if ([t.state isEqual:@YES]) {
+            if (t.state == YES) {
                 //schedule local notif
                 [self scheduleNotificationForTask:t];
             } else {
@@ -453,8 +465,10 @@
 #pragma mark - Local Notification
 - (void)scheduleNotificationForTask:(EWTaskItem *)task{
     //check state
-    if ([task.state  isEqual: @NO]) {
-        NSLog(@"Skip checking task (%@) with state: OFF", task.time.weekday);
+    if (task.state == NO) {
+        //NSLog(@"Skip checking task (%@) with state: OFF", task.time.weekday);
+        [self cancelNotificationForTask:task];
+        
         return;
     }
     
@@ -577,11 +591,11 @@
     //time stemp for last check
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
     NSLog(@"Checking tasks");
-    NSMutableArray *tasks = [[self getTasksByPerson:currentUser] mutableCopy];
+    NSMutableArray *tasks = [[self getTasksByPerson:[EWDataStore user]] mutableCopy];
 
     
     //check if any task has past
-    NSDate *time = [[NSDate date] timeByAddingMinutes:-120];
+    NSDate *time = [[NSDate date] timeByAddingMinutes:-kMaxWakeTime];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"time < %@", time];
     NSArray *pastTasks = [tasks filteredArrayUsingPredicate:predicate];
     if (pastTasks.count > 0) {

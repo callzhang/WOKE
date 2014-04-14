@@ -299,7 +299,7 @@
     }
     [SMGeoPoint getGeoPointForCurrentLocationOnSuccess:^(SMGeoPoint *geoPoint) {
         EWPerson *user = [EWDataStore user];
-        user.lastLocation = geoPoint;//[NSKeyedArchiver archivedDataWithRootObject:geoPoint];
+        user.lastLocation = [NSKeyedArchiver archivedDataWithRootObject:geoPoint];//geoPoint;//
         NSLog(@"Get user location with lat: %@, lon: %@", geoPoint.latitude, geoPoint.longitude);
         
         //reverse search address

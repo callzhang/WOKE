@@ -86,7 +86,6 @@
 
 -(void)initViews
 {
-    NSLog(@"%s",__func__);
     
     UICollectionViewFlowLayout *flowLayout=[[UICollectionViewFlowLayout alloc] init];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -139,7 +138,6 @@
 
 -(void)initData
 {
-    NSLog(@"%s",__func__);
 
     /*此处应将再上一个controller完成赋值，目前只是举个例子*/
     personArray = [[EWPersonStore sharedInstance] everyone];
@@ -165,7 +163,7 @@
 
 -(NSString *)getTime
 {
-    NSLog(@"%s",__func__);
+    
     NSString * timeStr;
     if (time < 60 && time >= 0)
     {
@@ -213,7 +211,6 @@
 }
 -(NSString *)getUnit
 {
-    NSLog(@"%s",__func__);
     
     if (time < 60 && time >= 0)
     {
@@ -249,7 +246,6 @@
 
 -(IBAction)wakeAllAction:(id)sender
 {
-    NSLog(@"%s",__func__);
     
     if ([selectedPersonSet count] != 0)
     {
@@ -282,10 +278,9 @@
 
 -(IBAction)doneAction:(id)sender
 {
-    NSLog(@"%s",__func__);
-    
+
     [rootViewController dismissViewControllerAnimated:YES completion:^{
-        //
+        [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
     }];
 }
 

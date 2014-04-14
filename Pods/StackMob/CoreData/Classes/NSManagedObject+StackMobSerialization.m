@@ -149,7 +149,7 @@
                     // ============== Added to save dict type transformable value ============
                     if ([propertyValue isKindOfClass:[NSDictionary class]]) {
                         [objectDictionary setObject:propertyValue forKey:fieldName];
-                        NSLog(@"Saved SMGeoPoint directly");
+                        //NSLog(@"Saved SMGeoPoint directly");
                     }else if([propertyValue isKindOfClass:[NSData class]]){
                         // make sure geopoint values are serialized as dictionaries
                         NSData *data = propertyValue;

@@ -22,10 +22,8 @@
 @dynamic createddate;
 @dynamic ewtaskitem_id;
 @dynamic lastmoddate;
-@dynamic length;
 @dynamic state;
 @dynamic statement;
-@dynamic success;
 @dynamic time;
 @dynamic alarm;
 @dynamic medias;
