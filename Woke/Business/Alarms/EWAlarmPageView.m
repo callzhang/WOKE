@@ -169,7 +169,7 @@
         if ([object isKindOfClass:[EWTaskItem class]]) {
             //TODO: dispatch different tasks for each updates
             if ([keyPath isEqualToString:@"state"]) {
-                self.alarmState.on = [change[NSKeyValueChangeNewKey] boolValue];
+                self.alarmState.on = (BOOL)change[NSKeyValueChangeNewKey];
             }else if ([keyPath isEqualToString:@"medias"]){
                 [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];
                 

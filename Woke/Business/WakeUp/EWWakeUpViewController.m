@@ -254,7 +254,10 @@
     [[AVManager sharedManager] stopAllPlaying];
     
     //set wakeup time
-    task.completed = [NSDate date];
+    NSDate *time = [NSDate date];
+    if ([task.time isEarlierThan:time]) {
+        task.completed = time;
+    }
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSLog(@"Failed to save wakeup time for task");
     }];

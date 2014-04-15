@@ -234,7 +234,7 @@ UIViewController *rootViewController;
     NSLog(@"=== Keep alive ===");
     NSLog(@"%s Time left (before) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
     
-    [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
+    [[AVManager sharedManager] playSoundFromFile:@"Silence04s.caf"];
     
     UIApplication *application = [UIApplication sharedApplication];
     
