@@ -81,7 +81,6 @@
 
 }
 
-//===============> Point of access <=================
 - (IBAction)connect:(id)sender {
     [self.indicator startAnimating];
     if (FBSession.activeSession.state == FBSessionStateOpen) {
@@ -301,13 +300,12 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 1) {
         NSLog(@"Starting to log in fb with cached info");
-//        [self.indicator startAnimating];
-//        [self.btnLoginLogout setTitle:@"Loading..." forState:UIControlStateNormal];
-//        
-//        [FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
-//            [self sessionStateChanged:session state:status error:error];
-//        }];
-        [self connect:nil];
+        [self.indicator startAnimating];
+        [self.btnLoginLogout setTitle:@"Loading..." forState:UIControlStateNormal];
+        
+        [FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
+            [self sessionStateChanged:session state:status error:error];
+        }];
     }
 }
 
