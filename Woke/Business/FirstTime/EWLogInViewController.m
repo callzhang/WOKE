@@ -28,22 +28,13 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         loginVC = [[EWLogInViewController alloc] init];
+        [[NSNotificationCenter defaultCenter] addObserver:loginVC selector:@selector(updateView) name:kPersonLoggedIn object:nil];
     });
     
     return loginVC;
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        //user login
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateView) name:kPersonLoggedIn object:nil];
 
-        
-    }
-    return self;
-}
 
 
 - (void)viewDidLoad
@@ -73,6 +64,8 @@
     } else {
         [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
     }
+    
+    [self.indicator stopAnimating];
     
     if (currentUser) {
         self.name.text = currentUser.name;
@@ -110,13 +103,8 @@
 //start register
 - (void)openSession
 {
-    NSArray *permissions = @[@"basic_info",
-                             @"user_location",
-                             @"user_birthday",
-                             @"email",
-                             @"user_photos"];
     
-    [FBSession openActiveSessionWithReadPermissions:permissions
+    [FBSession openActiveSessionWithReadPermissions:EWUserManagement.facebookPermissions
                                        allowLoginUI:YES
                                   completionHandler:
      ^(FBSession *session, FBSessionState state, NSError *error) {
@@ -143,7 +131,7 @@
     }
     
     if (error) {
-        NSLog(@"Failed to login fb: %@", error.description);
+        
         NSString *alertText;
         NSString *alertTitle;
         // If the error requires people using an app to make an action outside of the app in order to recover
@@ -174,6 +162,7 @@
                 alertTitle = @"Something went wrong";
                 alertText = [NSString stringWithFormat:@"Please retry. \n\n If the problem persists contact us and mention this error code: %@", [errorInformation objectForKey:@"message"]];
                 //[self showMessage:alertText withTitle:alertTitle];
+                NSLog(@"Failed to login fb: %@", error.description);
             }
         }
         // Clear this token
@@ -222,24 +211,27 @@
                      //update fb info
                      [[EWUserManagement sharedInstance] updateUserWithFBData:fb_user];
                      
+                     //welcome new user
+                     if (newUser) {
+                         NSDictionary *msg = @{@"alert": [NSString stringWithFormat:@"Welcome %@ joining Woke!", fb_user.name]};
+                         [pushClient broadcastMessage:msg onSuccess:^{
+                             NSLog(@"Welcome new user %@. Push sent!", fb_user.name);
+                         }onFailure:NULL];
+                         
+                     }else{
+                         NSLog(@"User %@ logged in from facebook", fb_user.name);
+                     }
+                     
                      dispatch_async(dispatch_get_main_queue(), ^{
                          //update UI
-                         [self updateView];
+                         //[self updateView];//notification used
                          
                          //stop indicator
-                         [self.indicator stopAnimating];
+                         //[self.indicator stopAnimating];//notifiaction used
                          
                          //leaving
                          [self dismissViewControllerAnimated:YES completion:^{
-                             [[EWDataStore currentContext] saveOnSuccess:^{
-                                 if (newUser) {
-                                     NSDictionary *msg = @{@"alert": [NSString stringWithFormat:@"Welcome %@ joining Woke!", fb_user.name]};
-                                     [pushClient broadcastMessage:msg onSuccess:NULL onFailure:NULL];
-                                 }else{
-                                     NSLog(@"User %@ logged in from facebook", fb_user.name);
-                                 }
-                                 
-                             } onFailure:^(NSError *error) {
+                             [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
                                  NSLog(@"Unable to save user info");
                              }];
                          }];
@@ -287,7 +279,9 @@
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         NSLog(@"Starting to log in fb with cached info");
         
-        [FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
+        [FBSession openActiveSessionWithReadPermissions:EWUserManagement.facebookPermissions
+                                           allowLoginUI:YES
+                                      completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
             [self sessionStateChanged:session state:status error:error];
         }];
     }else{
@@ -304,11 +298,16 @@
         [self.indicator startAnimating];
         [self.btnLoginLogout setTitle:@"Loading..." forState:UIControlStateNormal];
         
-        [FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
+        [FBSession openActiveSessionWithReadPermissions:EWUserManagement.facebookPermissions
+                                           allowLoginUI:NO
+                                      completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
             [self sessionStateChanged:session state:status error:error];
         }];
     }
 }
 
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kPersonLoggedIn object:nil];
+}
 
 @end

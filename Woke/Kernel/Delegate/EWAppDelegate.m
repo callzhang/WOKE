@@ -20,6 +20,7 @@
 
 //tools
 #import "TestFlight.h"
+#import "TestFlight+ManualSessions.h"
 #import "AVManager.h"
 #import "UIViewController+Blur.h"
 
@@ -55,6 +56,8 @@ UIViewController *rootViewController;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     //test flight
+    [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
+    [TestFlight manuallyStartSession];
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     
     
@@ -164,18 +167,20 @@ UIViewController *rootViewController;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    [FBSession.activeSession handleDidBecomeActive];
-    
+    //[FBSession.activeSession handleDidBecomeActive];
+    // Handle the user leaving the app while the Facebook login dialog is being shown
+    // For example: when the user presses the iOS "home" button while the login dialog is active
+    [FBAppCall handleDidBecomeActive];
     //audio session
     [[AVManager sharedManager] registerAudioSession];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    //[FBSession.activeSession close];
+    [FBSession.activeSession close];
+    
     NSLog(@"App is about to terminate");
-//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-//        NSLog(@"%ld", count++);
-//    }];
+
+    [TestFlight manuallyEndSession];
 }
 
 

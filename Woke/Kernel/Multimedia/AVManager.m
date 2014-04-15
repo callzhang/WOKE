@@ -397,11 +397,13 @@
     [avplayer pause];
     @try {
         [avplayer removeTimeObserver:AVPlayerUpdateTimer];
+        [AVPlayerUpdateTimer invalidate];
     }
     @catch (NSException *exception) {
-        NSLog(@"AVplayer cannot remove update timer");
+        NSLog(@"AVplayer cannot remove update timer: %@", exception.description);
+        
     }
-    [AVPlayerUpdateTimer invalidate];
+    
     avplayer = nil;
 }
 

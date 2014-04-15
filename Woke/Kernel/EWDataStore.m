@@ -184,7 +184,10 @@ AmazonSNSClient *snsClient;
     
     //refresh current user
     NSLog(@"1. refresh current user");
-    currentUser = [EWDataStore objectForCurrentContext:currentUser];
+    if ([NSThread isMainThread]) {
+        currentUser = [[EWPersonStore sharedInstance] getPersonByID:currentUser.username];
+    }
+    
     
     //check alarm, task, and local notif
     [self checkAlarmData];

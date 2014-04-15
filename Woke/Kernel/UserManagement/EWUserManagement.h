@@ -23,8 +23,8 @@
 - (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
 - (void)registerPushNotification;
 - (void)updateLastSeen;
-
-
+- (void)getFacebookFriends;
++ (NSArray *)facebookPermissions;
 /**
  Login with username for cached coredata info
  */

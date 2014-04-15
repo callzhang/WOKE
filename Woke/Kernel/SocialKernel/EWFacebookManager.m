@@ -13,8 +13,9 @@
 #import "JSON.h"
 #import <FacebookSDK/FacebookSDK.h>
 
-static EWFacebookManager *g_facebookMgr = nil;
 
+
+static EWFacebookManager *g_facebookMgr = nil;
 static BOOL g_isFriendListHasGotAll = NO;
 static NSMutableArray *g_friendList = nil;
 
@@ -50,10 +51,11 @@ static NSMutableArray *g_friendList = nil;
 }
 
 + (EWFacebookManager *)sharedInstance {
-    if (!g_facebookMgr) {
-        g_facebookMgr = [[EWFacebookManager alloc] init];
-    }
     
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        g_facebookMgr = [[EWFacebookManager alloc] init];
+    });
     return g_facebookMgr;
 }
 

@@ -71,6 +71,17 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
 }
 
++ (NSArray *)facebookPermissions{
+    NSArray *permissions = @[@"basic_info",
+                             @"user_location",
+                             @"user_birthday",
+                             @"email",
+                             @"user_photos",
+                             @"user_friends"];
+    return permissions;
+}
+
+
 - (void)loginWithFacebook{
     NSLog(@"Login with facebook info");
     EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
