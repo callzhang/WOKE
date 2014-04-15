@@ -81,6 +81,7 @@
 
 }
 
+//===============> Point of access <=================
 - (IBAction)connect:(id)sender {
     [self.indicator startAnimating];
     if (FBSession.activeSession.state == FBSessionStateOpen) {
