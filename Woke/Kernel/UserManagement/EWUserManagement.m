@@ -29,6 +29,9 @@
 //social network
 #import "EWWeiboManager.h"
 #import "EWFacebookManager.h"
+#import "EWSocialGraph.h"
+#import "EWSocialGraphManager.h"
+
 
 @implementation EWUserManagement
 
@@ -277,6 +280,20 @@
         EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
         [rootViewController presentViewController:loginVC animated:YES completion:NULL];
     };
+    
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedOut object:self userInfo:nil];
+    
+}
+
+
++ (void)handleNewUser{
+    
+    NSDictionary *msg = @{@"alert": [NSString stringWithFormat:@"Welcome %@ joining Woke!", currentUser.name]};
+    [pushClient broadcastMessage:msg onSuccess:^{
+        NSLog(@"Welcome new user %@. Push sent!", currentUser.name);
+    }onFailure:NULL];
+    
 }
 
 
@@ -377,6 +394,75 @@
 
 
 #pragma mark - FACEBOOK
++ (void)loginUsingFacebookWithCompletion:(void (^)(void))block{
+    
+    /*
+     Initiate a request for the current Facebook session user info, and apply the username to
+     the StackMob user that might be created if one doesn't already exist.  Then login to StackMob with Facebook credentials.
+     */
+    [[FBRequest requestForMe] startWithCompletionHandler:
+     ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
+         if (!error) {
+             __block EWPerson *oldUser = currentUser;
+             __block BOOL newUser;
+             
+             //test if facebook user exists
+             [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken onSuccess:^(NSDictionary *result) {
+                 newUser = NO;
+             } onFailure:^(NSError *error) {
+                 newUser = YES;
+             }];
+             
+             //login
+             [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:fb_user.username onSuccess:^(NSDictionary *result) {
+                 NSLog(@"Logged in facebook for:%@", fb_user.name);
+                 
+                 //fetch coredata person for fb_user
+                 [[EWUserManagement sharedInstance] loginWithCachedDataStore:fb_user.username withCompletionBlock:^{
+                     //update fb info
+                     [[EWUserManagement sharedInstance] updateUserWithFBData:fb_user];
+                     
+                     //welcome new user
+                     if (newUser) {
+                         [EWUserManagement handleNewUser];
+                         
+                     }else{
+                         NSLog(@"User %@ logged in from facebook", fb_user.name);
+                     }
+                     
+                     //save
+                     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+                         NSLog(@"Unable to save user info");
+                     }];
+                     
+                     //completion
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         block();
+                         
+                     });
+                     
+                     
+                 }];
+                 
+                 //void old user AWS token
+                 oldUser.aws_id = @"";
+                 
+                 
+             }onFailure:^(NSError *error) {
+                 NSLog(@"Error: %@", error);
+             }];
+         } else {
+             // Handle error accordingly
+             NSLog(@"Error getting current Facebook user data, %@", error);
+         }
+         
+         
+         
+     }];
+    
+}
+
+
 //after fb login, fetch user managed object
 - (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     //get currentUser first
@@ -438,10 +524,97 @@
 
 }
 
-
-- (void)registerFacebook{
-    //
+- (void)getFacebookFriends{
+    
+    // Request the permissions the user currently has
+    [FBRequestConnection startWithGraphPath:@"/me/friends"
+                          completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                              if (!error){
+                                  NSArray *friends = (NSArray *)result[@"friends"][@"data"];
+                                  if (friends) {
+                                      //get social graph of current user
+                                      //if not, create one
+                                      EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
+                                      NSMutableDictionary *facebookFriends = [graph.facebook_friends copy];
+                                      
+                                      if (friends.count == facebookFriends.count) {
+                                          //no change, return
+                                          return;
+                                      }
+                                      
+                                      //for each element as <id:name> pair, insert into the facebook_friends NSSet object
+                                      for (NSDictionary *pair in friends) {
+                                          NSString *fb_id = pair[@"id"];
+                                          NSString *name = pair[@"name"];
+                                          facebookFriends[fb_id] = name;
+                                      }
+                                      graph.facebook_friends = [facebookFriends copy];
+                                      
+                                      //save
+                                      [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+                                          NSLog(@"*** failed to save new facebook friends");
+                                      }];
+                                      
+                                  }else{
+                                      NSLog(@"*** Didn't get friends list for current user");
+                                  }
+                                  
+                              } else {
+                                  // An error occurred, we need to handle the error
+                                  // See: https://developers.facebook.com/docs/ios/errors
+                                  
+                                  //[self handleFacebookException:error];
+                              }
+                          }];
 }
+
++ (void)handleFacebookException:(NSError *)error{
+    NSString *alertText;
+    NSString *alertTitle;
+    // If the error requires people using an app to make an action outside of the app in order to recover
+    if ([FBErrorUtility shouldNotifyUserForError:error] == YES){
+        alertTitle = @"Something went wrong";
+        alertText = [FBErrorUtility userMessageForError:error];
+        //[self showMessage:alertText withTitle:alertTitle];
+    } else {
+        
+        // If the user cancelled login, do nothing
+        if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryUserCancelled) {
+            NSLog(@"User cancelled login");
+            
+            // Handle session closures that happen outside of the app
+        } else if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryAuthenticationReopenSession){
+            alertTitle = @"Session Error";
+            alertText = @"Your current session is no longer valid. Please log in again.";
+            //[self showMessage:alertText withTitle:alertTitle];
+            
+            // Here we will handle all other errors with a generic error message.
+            // We recommend you check our Handling Errors guide for more information
+            // https://developers.facebook.com/docs/ios/errors/
+        } else {
+            //Get more error information from the error
+            NSDictionary *errorInformation = [[[error.userInfo objectForKey:@"com.facebook.sdk:ParsedJSONResponseKey"] objectForKey:@"body"] objectForKey:@"error"];
+            
+            // Show the user an error message
+            alertTitle = @"Something went wrong";
+            alertText = [NSString stringWithFormat:@"Please retry. \n\n If the problem persists contact us and mention this error code: %@", [errorInformation objectForKey:@"message"]];
+            //[self showMessage:alertText withTitle:alertTitle];
+            NSLog(@"Failed to login fb: %@", error.description);
+        }
+    }
+    // Clear this token
+    [FBSession.activeSession closeAndClearTokenInformation];
+    
+    UIAlertView *alertView = [[UIAlertView alloc]
+                              initWithTitle:alertTitle
+                              message:alertText
+                              delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil];
+    [alertView show];
+
+}
+
 
 #pragma mark - Weibo SDK
 
@@ -466,42 +639,7 @@
     [weiboManager didReceiveWeiboSDKResponse:JsonObject err:error];
 }
 
-#pragma mark - check
-- (void)checkUserCache{
-    NSArray *allPerson = [EWPersonStore sharedInstance].everyone;
-    for (__block EWPerson *person in allPerson) {
-        
-        NSDate *modDate = [[EWDataStore sharedInstance] lastModifiedDateForObjectAtKey:person.profilePicKey];
-        if([modDate isOutDated] && [modDate isEarlierThan:person.lastmoddate]){
-            [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:person.profilePicKey] withCompletionBlock:^(NSData *data) {
-                UIImage *img = [UIImage imageWithData:data];
-                if (![person.profilePic isEqual:img]) {
-                    //found change
-                    NSLog(@"Found updated profile for user: %@", person.name);
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        person.profilePic = img;
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonProfileNewNotification object:person userInfo:@{@"person": person}];
-                    });
-                    
-                }
-            }];
-        }
-        
-        modDate = [[EWDataStore sharedInstance] lastModifiedDateForObjectAtKey:person.bgImageKey];
-        if([modDate isOutDated]){
-            [[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:person.bgImageKey] withCompletionBlock:^(NSData *data) {
-                UIImage *img = [UIImage imageWithData:data];
-                if (![person.bgImage isEqual:img]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        person.bgImage = img;
-                    });
-                    
-                }
-            }];
-        }
 
-    }
-}
 
 
 @end

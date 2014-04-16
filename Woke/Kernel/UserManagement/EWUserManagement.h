@@ -14,17 +14,11 @@
 @interface EWUserManagement : NSObject
 + (EWUserManagement *)sharedInstance;
 
+/**
+ Main point of login
+ */
 - (void)login;
-- (void)logout;
-- (void)registerAPNS;
-- (void)registerLocation;
-- (void)registerWeibo;
-- (void)registerFacebook;
-- (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
-- (void)registerPushNotification;
-- (void)updateLastSeen;
-- (void)getFacebookFriends;
-+ (NSArray *)facebookPermissions;
+
 /**
  Login with username for cached coredata info
  */
@@ -36,9 +30,36 @@
 - (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
 
 /**
- 
+ Cache user's data
  */
-- (void)checkUserCache;
+- (void)cacheUserData;
+
+//Log out
++ (void)logout;
+
+//Handle new user
++ (void)handleNewUser;
+
+
+
+//logged in tasks
+- (void)registerAPNS;
+- (void)registerLocation;
+- (void)registerPushNotification;
+- (void)updateLastSeen;
+
+//facebook
++ (NSArray *)facebookPermissions;
++ (void)loginUsingFacebookWithCompletion:(void (^)(void))block;
+- (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
+- (void)getFacebookFriends;
++ (void)handleFacebookException:(NSError *)exception;
+
+
+//weibo
+- (void)registerWeibo;
+
+
 
 
 @end
