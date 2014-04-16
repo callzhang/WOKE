@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "_EWAlarmItem.h"
+@class EWTaskItem;
 
 @interface EWAlarmItem : NSManagedObject {}
 @property (nonatomic, retain) NSString * alarmDescription;

@@ -60,16 +60,26 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     //data source
     alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskStore myTasks];
-    /*
+    
+    //pop up alarmScheduleView
     if (alarms.count == 0 && tasks.count == 0) {
+        
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        [[EWAlarmManager sharedInstance] scheduleAlarm];
-        [[EWTaskStore sharedInstance] scheduleTasks];
-        alarms = EWAlarmManager.sharedInstance.allAlarms;
-        tasks = EWTaskStore.sharedInstance.allTasks;
-        [_tableView reloadData];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+            [[EWAlarmManager sharedInstance] scheduleAlarm];
+            [[EWTaskStore sharedInstance] scheduleTasks];
+        });
+        
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-    }*/
+        
+        //refresh
+        alarms = [EWAlarmManager myAlarms];
+        tasks = [EWTaskStore myTasks];
+    }
+    
+    
     selected = 99;
 }
 

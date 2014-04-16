@@ -192,6 +192,10 @@ AmazonSNSClient *snsClient;
     //check alarm, task, and local notif
     [self checkAlarmData];
     
+    //updating facebook friends
+    NSLog(@"5. Updating facebook friends");
+    [EWUserManagement getFacebookFriends];
+    
     
     //update data with timely updates
     [[EWDataStore sharedInstance] registerServerUpdateService];
@@ -356,15 +360,11 @@ AmazonSNSClient *snsClient;
         
         //lsat seen
         NSLog(@"update last seen recurring task");
-        [[EWUserManagement sharedInstance] updateLastSeen];
+        [EWUserManagement updateLastSeen];
         
         //location
         NSLog(@"update location recurring task");
-        [[EWUserManagement sharedInstance] registerLocation];
-        
-        //profilePic & bgImg
-        //NSLog(@"Update profile pic recurring task");
-        //[[EWUserManagement sharedInstance] checkUserCache];
+        [EWUserManagement registerLocation];
         
         //check task
         NSLog(@"Update task recurring task");

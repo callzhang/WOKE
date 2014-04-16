@@ -59,7 +59,7 @@
 
 - (void)updateView {
 
-    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+    if (FBSession.activeSession.state == (FBSessionStateCreatedTokenLoaded | FBSessionStateOpenTokenExtended)) {
         [self.btnLoginLogout setTitle:@"Log out" forState:UIControlStateNormal];
     } else {
         [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
@@ -93,7 +93,7 @@
 - (IBAction)skip:(id)sender {//this function will not be called
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     [rootViewController dismissViewControllerAnimated:YES completion:NULL];
-    [[EWUserManagement sharedInstance] loginWithDeviceIDWithCompletionBlock:^{
+    [EWUserManagement loginWithDeviceIDWithCompletionBlock:^{
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     }];
 }
@@ -104,11 +104,8 @@
 - (void)openSession
 {
     
-    [FBSession openActiveSessionWithReadPermissions:EWUserManagement.facebookPermissions
-                                       allowLoginUI:YES
-                                  completionHandler:
-     ^(FBSession *session, FBSessionState state, NSError *error) {
-         [self sessionStateChanged:session state:state error:error];
+    [EWUserManagement openFacebookSessionWithCompletion:^{
+         [self sessionStateChanged:FBSession.activeSession state:FBSession.activeSession.state error:NULL];
      }];
 }
 
@@ -118,6 +115,11 @@
         case FBSessionStateOpen:
             [self loginUser];
             break;
+            
+        case FBSessionStateOpenTokenExtended:
+            [self loginUser];
+            break;
+            
         case FBSessionStateClosed:
             [FBSession.activeSession closeAndClearTokenInformation];
             //[self updateView];
@@ -134,9 +136,6 @@
         
         [EWUserManagement handleFacebookException:error];
     }
-    
-    
-
 }
 
 #pragma mark - Login & Logout
@@ -168,13 +167,10 @@
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         NSLog(@"Starting to log in fb with cached info");
         
-        [FBSession openActiveSessionWithReadPermissions:EWUserManagement.facebookPermissions
-                                           allowLoginUI:YES
-                                      completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
-            [self sessionStateChanged:session state:status error:error];
-        }];
+        [self sessionStateChanged:FBSession.activeSession state:FBSession.activeSession.state error:nil];
+        
     }else{
-        [self connect:nil];
+        [self openSession];
     }
 
 }

@@ -91,7 +91,7 @@ UIViewController *rootViewController;
     [self.window makeKeyAndVisible];
     
     //User login
-    [[EWUserManagement sharedInstance] login];
+    [EWUserManagement login];
     
     
 
@@ -323,7 +323,7 @@ UIViewController *rootViewController;
     }
     
     //Register Push on StackMob
-    [[EWUserManagement sharedInstance] registerPushNotification];
+    [EWUserManagement registerPushNotification];
     NSLog(@"Registered device token: %@", token);
     
     

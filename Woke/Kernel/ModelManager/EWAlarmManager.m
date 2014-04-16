@@ -144,7 +144,7 @@
             time = [cal dateFromComponents:comp];//set time
             //set alarm time
             a.time = time;
-            a.state = @YES;
+            a.state = YES;
             a.tone = currentUser.preference[@"DefaultTone"];
             //add to temp array
             newAlarms[i] = a;

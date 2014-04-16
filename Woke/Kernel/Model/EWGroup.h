@@ -1,5 +1,3 @@
-#import "_EWGroup.h"
-
 @interface EWGroup : NSManagedObject {}
 
 @property (nonatomic, retain) UIImage *image;

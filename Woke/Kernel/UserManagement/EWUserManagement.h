@@ -12,27 +12,27 @@
 
 
 @interface EWUserManagement : NSObject
-+ (EWUserManagement *)sharedInstance;
+//+ (EWUserManagement *)sharedInstance;
 
 /**
  Main point of login
  */
-- (void)login;
++ (void)login;
 
 /**
  Login with username for cached coredata info
  */
-- (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock;
++ (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock;
 
 /**
  Login with local plist or ADID
  */
-- (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
++ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
 
 /**
  Cache user's data
  */
-- (void)cacheUserData;
++ (void)cacheUserData;
 
 //Log out
 + (void)logout;
@@ -43,21 +43,26 @@
 
 
 //logged in tasks
-- (void)registerAPNS;
-- (void)registerLocation;
-- (void)registerPushNotification;
-- (void)updateLastSeen;
++ (void)registerAPNS;
++ (void)registerLocation;
++ (void)registerPushNotification;
++ (void)updateLastSeen;
 
 //facebook
-+ (NSArray *)facebookPermissions;
+//high level stuff
 + (void)loginUsingFacebookWithCompletion:(void (^)(void))block;
-- (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
-- (void)getFacebookFriends;
++ (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
++ (void)getFacebookFriends;
+//low level request
++ (NSArray *)facebookPermissions;
++ (void)openFacebookSessionWithCompletion:(void (^)(void))block;
 + (void)handleFacebookException:(NSError *)exception;
++ (void)facebookSessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error;
+
 
 
 //weibo
-- (void)registerWeibo;
++ (void)registerWeibo;
 
 
 

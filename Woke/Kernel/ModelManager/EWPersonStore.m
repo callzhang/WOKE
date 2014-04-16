@@ -163,8 +163,7 @@ EWPerson *currentUser;
         [[SMClient defaultClient] logoutOnSuccess:^(NSDictionary *result) {
             //facebook logout
             [[FBSession activeSession] closeAndClearTokenInformation];
-            EWUserManagement *userManager = [[EWUserManagement alloc] init];
-            [userManager login];
+            [EWUserManagement login];
         } onFailure:^(NSError *error) {
             [NSException raise:@"Error log out" format:@"Reason: %@", error.description];
         }];

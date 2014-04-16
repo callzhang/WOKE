@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "_EWMessage.h"
+@class EWTaskItem, EWGroupTask;
 
 @interface EWMessage : NSManagedObject
 @property (nonatomic, retain) NSDate * createddate;

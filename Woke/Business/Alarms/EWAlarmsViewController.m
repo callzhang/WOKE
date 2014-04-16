@@ -493,25 +493,10 @@
 #pragma mark - EWAlarmItemEditProtocal
 
 - (void)scheduleAlarm{
-    //TODO: make it faster
-    //pop up alarmScheduleView
-    if (alarms.count == 0 && tasks.count == 0) {
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        [[EWAlarmManager sharedInstance] scheduleAlarm];
-        [[EWTaskStore sharedInstance] scheduleTasks];
-        
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        //refresh
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self initData];
-            [self initView];
-            [self reloadAlarmPage];
-        });
-    }
     //pop up alarmScheduleView
     EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
-    //[self presentViewController:controller animated:YES completion:NULL];
     [self presentViewControllerWithBlurBackground:controller];
+    
 }
 
 #pragma mark - launch option

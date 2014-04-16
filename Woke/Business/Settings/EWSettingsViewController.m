@@ -378,7 +378,7 @@
         if (buttonIndex == 1) {
             [self dismissViewControllerAnimated:YES completion:^{
                 //log out
-                [[EWUserManagement sharedInstance ] logout];
+                [EWUserManagement logout];
             }];
             
         }

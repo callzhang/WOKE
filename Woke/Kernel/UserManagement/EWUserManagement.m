@@ -36,17 +36,21 @@
 @implementation EWUserManagement
 
 
-+ (EWUserManagement *)sharedInstance{
-    static EWUserManagement *userManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        userManager = [[EWUserManagement alloc] init];
-    });
-    return userManager;
+//+ (EWUserManagement *)sharedInstance{
+//    static EWUserManagement *userManager = nil;
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        userManager = [[EWUserManagement alloc] init];
+//    });
+//    return userManager;
+//}
+
+- (id)init{
+    [NSException raise:@"Should not init this class" format:@"Check your code!"];
+    return nil;
 }
 
-
-- (void)login{
++ (void)login{
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     //get logged in user
     if ([client isLoggedIn]) {
@@ -55,23 +59,24 @@
         [client getLoggedInUserOnSuccess:^(NSDictionary *result) {
             
             NSLog(@"[a]Get SM logged in user: %@", result[@"username"]);
-            [self loginWithCachedDataStore:result[@"username"] withCompletionBlock:^{}];
+            [EWUserManagement loginWithCachedDataStore:result[@"username"] withCompletionBlock:^{}];
             
             
         } onFailure:^(NSError *error) { //failed to get logged in user
             NSLog(@"%s: ======= Failed to get logged in user from SM Cache ======= %@", __func__, error);
-            [self loginWithFacebook];
+            [EWUserManagement loginUsingFacebookWithCompletion:NULL];
         }];
         
         
     }else{
         //log in using local machine info
-        [self loginWithFacebook];
+        [EWUserManagement loginUsingFacebookWithCompletion:NULL];
     }
     
     
     //watch for login event
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
+//login event handled by DataStore
 }
 
 + (NSArray *)facebookPermissions{
@@ -85,7 +90,7 @@
 }
 
 
-- (void)loginWithFacebook{
++ (void)loginWithFacebook{
     NSLog(@"Login with facebook info");
     EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
     [rootViewController presentViewController:loginVC animated:YES completion:NULL];
@@ -95,7 +100,7 @@
 
 
 //login with local user default info
-- (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock{
++ (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock{
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     hud.labelText = @"Loading";
@@ -170,20 +175,20 @@
                 //Broadcast user login event
                 [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
             }else{
-                [self loginWithDeviceIDWithCompletionBlock:completionBlock];
+                [EWUserManagement loginWithDeviceIDWithCompletionBlock:completionBlock];
             }
             
         } onFailure:^(NSError *error) {
             
             //login with device id
-            [self loginWithDeviceIDWithCompletionBlock:completionBlock];
+            [EWUserManagement loginWithDeviceIDWithCompletionBlock:completionBlock];
         }];
         
     }];
 }
 
 //log in using local machine info
-- (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block{
++ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block{
     //log out fb first
     [FBSession.activeSession closeAndClearTokenInformation];
     //get user default
@@ -256,7 +261,7 @@
 
 }
 
-- (void)logout{
++ (void)logout{
     //log out SM
     if ([client isLoggedIn]) {
         [client logoutOnSuccess:^(NSDictionary *result) {
@@ -298,30 +303,31 @@
 
 
 #pragma mark - userLoginEventHandler
-- (void)userLoginEventHandler{
-    NSLog(@"[%s]", __func__);
-    [self registerAPNS];
-    [self registerLocation];
-    [self updateLastSeen];
-
-}
+//- (void)userLoginEventHandler{
+//    NSLog(@"=== [%s] Logged in, performing login tasks.", __func__);
+//    [EWUserManagement registerAPNS];
+//    [EWUserManagement registerLocation];
+//    [EWUserManagement updateLastSeen];
+//    [EWUserManagement getFacebookFriends];
+//
+//}
 
 #pragma mark - PUSH
 
-- (void)registerAPNS{
++ (void)registerAPNS{
     //push
 #if TARGET_IPHONE_SIMULATOR
     //Code specific to simulator
 #else
     //pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
     //register everytime in case for events like phone replacement
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeNewsstandContentAvailability];
 #endif
 }
 
 
 #pragma mark - location
-- (void)registerLocation{
++ (void)registerLocation{
     if (![[EWDataStore user].lastSeenDate isOutDated]) {
         return;
     }
@@ -356,7 +362,7 @@
 }
 
 #pragma mark - Last seen
-- (void)updateLastSeen{
++ (void)updateLastSeen{
     
     if (currentUser) {
         currentUser.lastSeenDate = [NSDate date];
@@ -369,7 +375,7 @@
 }
 
 
-- (void)registerPushNotification{
++ (void)registerPushNotification{
     //register notification, need both token and user ready
     NSString *username = currentUser.username;
     if (!username) {
@@ -418,9 +424,9 @@
                  NSLog(@"Logged in facebook for:%@", fb_user.name);
                  
                  //fetch coredata person for fb_user
-                 [[EWUserManagement sharedInstance] loginWithCachedDataStore:fb_user.username withCompletionBlock:^{
+                 [EWUserManagement loginWithCachedDataStore:fb_user.username withCompletionBlock:^{
                      //update fb info
-                     [[EWUserManagement sharedInstance] updateUserWithFBData:fb_user];
+                     [EWUserManagement updateUserWithFBData:fb_user];
                      
                      //welcome new user
                      if (newUser) {
@@ -464,7 +470,7 @@
 
 
 //after fb login, fetch user managed object
-- (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
++ (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     //get currentUser first
     if(!currentUser){
         NSLog(@"======= Something wrong, currentUser is nil ========");
@@ -524,13 +530,16 @@
 
 }
 
-- (void)getFacebookFriends{
++ (void)getFacebookFriends{
     
     // Request the permissions the user currently has
     [FBRequestConnection startWithGraphPath:@"/me/friends"
                           completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                               if (!error){
-                                  NSArray *friends = (NSArray *)result[@"friends"][@"data"];
+                                  NSArray *friends = (NSArray *)result[@"data"];
+                                  NSString *nextPage = (NSString *)result[@"paging"];
+                                  NSLog(@"Next page of friends: %@", nextPage);
+                                  
                                   if (friends) {
                                       //get social graph of current user
                                       //if not, create one
@@ -563,10 +572,28 @@
                                   // An error occurred, we need to handle the error
                                   // See: https://developers.facebook.com/docs/ios/errors
                                   
-                                  //[self handleFacebookException:error];
+                                  [EWUserManagement handleFacebookException:error];
                               }
                           }];
 }
+
+
+
++ (void)openFacebookSessionWithCompletion:(void (^)(void))block{
+    
+    [FBSession openActiveSessionWithReadPermissions:EWUserManagement.facebookPermissions
+                                       allowLoginUI:YES
+                                  completionHandler:
+     ^(FBSession *session, FBSessionState state, NSError *error) {
+         
+         if (error) {
+             [EWUserManagement handleFacebookException:error];
+         }else if (block){
+             block();
+         }
+     }];
+}
+
 
 + (void)handleFacebookException:(NSError *)error{
     NSString *alertText;
@@ -618,23 +645,23 @@
 
 #pragma mark - Weibo SDK
 
-- (void)registerWeibo{
++ (void)registerWeibo{
     // Weibo SDK
     //EWWeiboManager *weiboMgr = [EWWeiboManager sharedInstance];
     //[weiboMgr registerApp];
 }
 
-- (void)didReceiveWeiboRequest:(WBBaseRequest *)request {
++ (void)didReceiveWeiboRequest:(WBBaseRequest *)request {
     EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
     [weiboManager didReceiveWeiboRequest:request];
 }
 
-- (void)didReceiveWeiboResponse:(WBBaseResponse *)response {
++ (void)didReceiveWeiboResponse:(WBBaseResponse *)response {
     EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
     [weiboManager didReceiveWeiboResponse:response];
 }
 
--  (void)didReceiveWeiboSDKResponse:(id)JsonObject err:(NSError *)error {
++  (void)didReceiveWeiboSDKResponse:(id)JsonObject err:(NSError *)error {
     EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
     [weiboManager didReceiveWeiboSDKResponse:JsonObject err:error];
 }
