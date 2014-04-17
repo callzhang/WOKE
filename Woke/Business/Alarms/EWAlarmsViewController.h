@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "EWAlarmPageView.h"
 #import "EWCollectionPersonCell.h"
+#import "EWAlarmMenu.h"
 @import CoreData;
 
 @class EWPerson;
-@interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,NSFetchedResultsControllerDelegate>
+@interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,NSFetchedResultsControllerDelegate,EWMenuButtonDelegate>
 {
     NSMutableArray * _alarmPages; //alarm page container
     NSTimer *timer1;

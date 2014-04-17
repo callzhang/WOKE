@@ -5,7 +5,6 @@
 //  Created by shenslu on 13-7-11.
 //  Copyright (c) 2013年 Shens. All rights reserved.
 //
-static int i=1;
 
 #import "EWAlarmsViewController.h"
 
@@ -527,87 +526,15 @@ static int i=1;
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
- 
-//    AMBlurView *aview=[[AMBlurView alloc]initWithFrame:CGRectMake(0, 0, 320, 568)];
-    
-//    [self.view addSubview:aview];
-    UIView *view=[[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 568)];
-    view.backgroundColor=[UIColor whiteColor];
-    view.alpha=0.7;
-    _alphaview=view;
-    [self.view addSubview:_alphaview];
-
-    UIButton *abutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x-30 ,cell.frame.origin.y-30 , 30, 30)];
-    abutton.center=cell.center;
-    _profilebutton=abutton;
-    UIImage *aimge=[UIImage imageNamed:@"button_p.png"];
-    [_profilebutton setImage:aimge forState:UIControlStateNormal];
-    [_profilebutton addTarget:self action:@selector(toperson) forControlEvents:UIControlEventTouchUpInside];
-    
-    UIButton *bbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width ,cell.frame.origin.y-30 , 30, 30)];
-    bbutton.center=cell.center;
-    _buzzbutton=bbutton;
-    UIImage *bimge=[UIImage imageNamed:@"button_b.png"];
-    [_buzzbutton setImage:bimge forState:UIControlStateNormal];
-    [_buzzbutton addTarget:self action:@selector(tobuzz) forControlEvents:UIControlEventTouchUpInside];
-
-
-    UIButton *cbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y-45 , 30, 30)];
-    cbutton.center=cell.center;
-    _voicebutton=cbutton;
-    UIImage *cimge=[UIImage imageNamed:@"button_v.png"];
-    [_voicebutton setImage:cimge forState:UIControlStateNormal];
-    [_voicebutton addTarget:self action:@selector(tovoice) forControlEvents:UIControlEventTouchUpInside];
-
-
-
-    UIButton *dbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y+cell.frame.size.height+15 , 30, 30)];
-    dbutton.center=cell.center;
-    _closebutton=dbutton;
-    [_closebutton addTarget:self action:@selector(closemeun) forControlEvents:UIControlEventTouchUpInside];
-    UIImage *dimge=[UIImage imageNamed:@"button_x.png"];
-    [_closebutton setImage:dimge forState:UIControlStateNormal];
-
-//    UIButton *abutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x-30 ,cell.frame.origin.y-30 , 30, 30)];
-//    UIButton *bbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width ,cell.frame.origin.y-30 , 30, 30)];
-//    UIButton *cbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y-45 , 30, 30)];
-//    UIButton *dbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15 ,cell.frame.origin.y+cell.frame.size.height+15 , 30, 30)];
-
-    EWCollectionPersonCell *personcell=[[EWCollectionPersonCell alloc]initWithFrame:cell.frame];
-    UIImageView *imageview=[[UIImageView alloc]initWithFrame:cell.frame];
-    imageview.image=cell.profilePic.image;
-    _personview=imageview;
-    personcell.profilePic.image =imageview.image;
-    _personcellview=personcell;
-    
-
-    
-    abutton.backgroundColor=[UIColor clearColor];
-    bbutton.backgroundColor=[UIColor clearColor];
-    cbutton.backgroundColor=[UIColor clearColor];
-    dbutton.backgroundColor=[UIColor clearColor];
-    [self.view addSubview:_profilebutton];
-    [self.view addSubview:_buzzbutton];
-    [self.view addSubview:_voicebutton];
-    [self.view addSubview:_closebutton];
-//  [self.view addSubview:_personview];
-    [self.view addSubview:_personcellview];
-    
-    
-    timer1=[NSTimer scheduledTimerWithTimeInterval:1.0/60.0
-                                               target:self
-                                             selector:@selector(movbutton)
-                                             userInfo:NULL
-                                              repeats:YES];
-
-    
-
+    EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithFrame:self.view.frame initWithCell:cell];
+    meun.delegate=self;
+    [self.view addSubview:meun];
     //action sheet
-//    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
+    //UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
 //    sheet.tag = 1001;
 //    [sheet showFromRect:cell.frame inView:self.view animated:YES];
 }
--(void)toperson
+-(void)buttontoperson
 {
     NSLog(@"toperson");
     EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
@@ -617,17 +544,15 @@ static int i=1;
     
 }
 
--(void)tobuzz
+-(void)buttontobuzz
 {
     EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [EWServer buzz:@[person]];
-
-
     
 }
 
--(void)tovoice
+-(void)buttontovoice
 {
     EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
     EWRecordingViewController *controller = [[EWRecordingViewController alloc] init];
@@ -636,76 +561,76 @@ static int i=1;
     [self presentViewControllerWithBlurBackground:controller];
 }
 
--(void)movbutton
-{
-    i++;
-    if(i>=25)[timer1 invalidate];
-
-    if(i>=20)
-    {
-        [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
-        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
-        [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
-        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
-    }
-    else
-    {
-        _profilebutton.alpha=0;
-        _buzzbutton.alpha=0;
-        _voicebutton.alpha=0;
-        _closebutton.alpha=0;
-        if(i>=10)
-        {   _profilebutton.alpha=0.5*(i-10)*(i-10)/50;
-            _buzzbutton.alpha=0.5*(i-10)*(i-10)/50;
-            _voicebutton.alpha=0.5*(i-10)*(i-10)/50;
-            _closebutton.alpha=0.5*(i-10)*(i-10)/50;
-        }
-        [_profilebutton setFrame:CGRectMake(_profilebutton.x-3, _profilebutton.y-3, 30, 30)];
-        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y-4.5, 30, 30)];
-        [_voicebutton setFrame:CGRectMake(_voicebutton.x+3, _voicebutton.y-3, 30, 30)];
-        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y+4.5, 30, 30)];
-    }
-}
--(void)movbutton2
-{
-    i--;
-    if(i<=10)
-    {
-        i=0;
-        [timer2 invalidate];
-    }
-    else
-    {
-    [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
-    [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
-    [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
-    [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
-    }
-    if(i<=10)
-    {
-
-//    [_personview removeFromSuperview];
-    [_profilebutton removeFromSuperview];
-    [_buzzbutton removeFromSuperview];
-    [_voicebutton removeFromSuperview];
-    [_closebutton removeFromSuperview];
-    [_alphaview removeFromSuperview];
-    [_personcellview removeFromSuperview];
-    
-    }
-
-
-    
-    
-}
--(void)closemeun
-{
-    timer2=[NSTimer scheduledTimerWithTimeInterval:1.0/60.0
-                                            target:self
-                                          selector:@selector(movbutton2)
-                                          userInfo:NULL
-                                           repeats:YES];
-}
+//-(void)movbutton
+//{
+//    i++;
+//    if(i>=25)[timer1 invalidate];
+//
+//    if(i>=20)
+//    {
+//        [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
+//        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
+//        [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
+//        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
+//    }
+//    else
+//    {
+//        _profilebutton.alpha=0;
+//        _buzzbutton.alpha=0;
+//        _voicebutton.alpha=0;
+//        _closebutton.alpha=0;
+//        if(i>=10)
+//        {   _profilebutton.alpha=0.5*(i-10)*(i-10)/50;
+//            _buzzbutton.alpha=0.5*(i-10)*(i-10)/50;
+//            _voicebutton.alpha=0.5*(i-10)*(i-10)/50;
+//            _closebutton.alpha=0.5*(i-10)*(i-10)/50;
+//        }
+//        [_profilebutton setFrame:CGRectMake(_profilebutton.x-3, _profilebutton.y-3, 30, 30)];
+//        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y-4.5, 30, 30)];
+//        [_voicebutton setFrame:CGRectMake(_voicebutton.x+3, _voicebutton.y-3, 30, 30)];
+//        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y+4.5, 30, 30)];
+//    }
+//}
+//-(void)movbutton2
+//{
+//    i--;
+//    if(i<=10)
+//    {
+//        i=0;
+//        [timer2 invalidate];
+//    }
+//    else
+//    {
+//    [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
+//    [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
+//    [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
+//    [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
+//    }
+//    if(i<=10)
+//    {
+//
+////    [_personview removeFromSuperview];
+//    [_profilebutton removeFromSuperview];
+//    [_buzzbutton removeFromSuperview];
+//    [_voicebutton removeFromSuperview];
+//    [_closebutton removeFromSuperview];
+//    [_alphaview removeFromSuperview];
+//    [_personcellview removeFromSuperview];
+//    
+//    }
+//
+//
+//    
+//    
+//}
+//-(void)closemeun
+//{
+//    timer2=[NSTimer scheduledTimerWithTimeInterval:1.0/60.0
+//                                            target:self
+//                                          selector:@selector(movbutton2)
+//                                          userInfo:NULL
+//                                           repeats:YES];
+//}
 
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{

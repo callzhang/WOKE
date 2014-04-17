@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
+		1817CED918FF9A5700EDB2A4 /* EWAlarmMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */; };
 		18676CE418F78EB700623B66 /* button_b.png in Resources */ = {isa = PBXBuildFile; fileRef = 18676CE018F78EB700623B66 /* button_b.png */; };
 		18676CE518F78EB700623B66 /* button_p.png in Resources */ = {isa = PBXBuildFile; fileRef = 18676CE118F78EB700623B66 /* button_p.png */; };
 		18676CE618F78EB700623B66 /* button_v.png in Resources */ = {isa = PBXBuildFile; fileRef = 18676CE218F78EB700623B66 /* button_v.png */; };
@@ -169,6 +170,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1817CED718FF9A5700EDB2A4 /* EWAlarmMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmMenu.h; sourceTree = "<group>"; };
+		1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmMenu.m; sourceTree = "<group>"; };
 		18676CE018F78EB700623B66 /* button_b.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button_b.png; sourceTree = "<group>"; };
 		18676CE118F78EB700623B66 /* button_p.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button_p.png; sourceTree = "<group>"; };
 		18676CE218F78EB700623B66 /* button_v.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button_v.png; sourceTree = "<group>"; };
@@ -663,6 +666,8 @@
 		56FEA55617A5763200FC2938 /* Alarms */ = {
 			isa = PBXGroup;
 			children = (
+				1817CED718FF9A5700EDB2A4 /* EWAlarmMenu.h */,
+				1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */,
 				18676CE018F78EB700623B66 /* button_b.png */,
 				18676CE118F78EB700623B66 /* button_p.png */,
 				18676CE218F78EB700623B66 /* button_v.png */,
@@ -1252,6 +1257,7 @@
 				9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */,
 				AB07BC0D17D6F7EA00E23F44 /* EWTextFieldCell.m in Sources */,
 				5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */,
+				1817CED918FF9A5700EDB2A4 /* EWAlarmMenu.m in Sources */,
 				AB07BC1417D82A4600E23F44 /* EWWeekDayPickerTableViewController.m in Sources */,
 				AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */,
 				AB07401E18125BA400AAFC90 /* EWGroupCell.m in Sources */,
