@@ -38,7 +38,7 @@
         //watch tone change
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateNotifTone:) name:kAlarmToneChangedNotification object:nil];
         //watch for new alarm
-        [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(scheduleTasks) name:kAlarmsAllNewNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(scheduleTasks) name:kAlarmChangedNotification object:nil];
         //watch media change
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskMedia:) name:kNewMediaNotification object:nil];
         //watch alarm deletion
@@ -173,11 +173,14 @@
     
     //check necessity
     NSMutableArray *tasks = [[self getTasksByPerson:[EWDataStore user]] mutableCopy];
-    NSArray *alarms = [[NSArray alloc] initWithArray:[EWAlarmManager myAlarms]];
+    NSArray *alarms = [EWAlarmManager myAlarms];
     if (alarms.count == 0 && tasks.count == 0) {
         NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
         return nil;
     }
+    
+    //assert
+    NSAssert(alarms.count == 7, @"Alarms only %d, please check your code", alarms.count);
     
     //for each alarm, find matching task, or create new task
     BOOL newTaskNotify = NO;
@@ -220,6 +223,8 @@
         }
     }
     if (newTaskNotify) {
+        NSLog(@"Save new tasks and broadcast notification");
+        
         //save
         [[EWDataStore currentContext] saveAndWait:NULL];
         
@@ -230,19 +235,27 @@
         
     }
     
+    //check past tasks
+    [self checkPastTasks:tasks];
     
-    [self checkPastTasks:[tasks mutableCopy]];
-
+    //check data integrety
+    if (tasks.count > 0) {
+        NSLog(@"After removing valid task and past task, there are still %d tasks left", tasks.count);
+        for (EWTaskItem *t in tasks) {
+            [self removeTask:t];
+        }
+    }
     
     //save
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        //NSLog(@"Scheduled new tasks");
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Unable to save new tasks" format:@"Error:%@", error.description];
-    }];
+    NSError *err;
+    [[EWDataStore currentContext] saveAndWait:&err];
+    if (err){
+        [NSException raise:@"Unable to save new tasks" format:@"Error:%@", err.description];
+    }
     
     //last checked
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
+    
     return goodTasks;
 }
 
@@ -276,9 +289,7 @@
     //others
     t.added = [NSDate date];
     //save
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        //NSLog(@"New task saved");
-    } onFailure:^(NSError *error) {
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         [NSException raise:@"Failed in creating task" format:@"error: %@",error.description];
     }];
     NSLog(@"Created new Task");

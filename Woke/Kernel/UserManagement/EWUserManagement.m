@@ -23,7 +23,7 @@
 
 
 //Util
-#import "EWIO.h"
+#import "EWUtil.h"
 #import "AFImageRequestOperation.h"
 
 //social network
@@ -194,7 +194,7 @@
     //get user default
     NSString *ADID = [[NSUserDefaults standardUserDefaults] objectForKey:kADIDKey];
     if (!ADID) {
-        ADID = [EWIO ADID];
+        ADID = [EWUtil ADID];
         [[NSUserDefaults standardUserDefaults] setObject:ADID forKey:kADIDKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
         NSLog(@"Stored new ADID: %@", ADID);

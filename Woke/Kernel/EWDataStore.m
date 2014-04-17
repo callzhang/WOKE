@@ -176,15 +176,15 @@ AmazonSNSClient *snsClient;
 
 #pragma mark - Login Check
 - (void)loginDataCheck{
-    NSLog(@"[%s]", __func__);
+    NSLog(@"========> %s <=========", __func__);
     
     //change fetch policy
     NSLog(@"0. Start sync with server");
     [self.coreDataStore syncWithServer];
     
     //refresh current user
-    NSLog(@"1. refresh current user");
     if ([NSThread isMainThread]) {
+        NSLog(@"1. refresh current user");
         currentUser = [[EWPersonStore sharedInstance] getPersonByID:currentUser.username];
     }
     
@@ -193,8 +193,10 @@ AmazonSNSClient *snsClient;
     [self checkAlarmData];
     
     //updating facebook friends
-    NSLog(@"5. Updating facebook friends");
-    [EWUserManagement getFacebookFriends];
+    dispatch_async(dispatch_queue, ^{
+        NSLog(@"5. Updating facebook friends");
+        [EWUserManagement getFacebookFriends];
+    });
     
     
     //update data with timely updates
@@ -214,10 +216,10 @@ AmazonSNSClient *snsClient;
     //check alarm
     BOOL alarmGood = [EWAlarmManager.sharedInstance checkAlarms];
     if (!alarmGood) {
-        NSLog(@"2. Alarm not set up yet");
+        
         dispatch_async(dispatch_queue, ^{
+            NSLog(@"2. Alarms need to be scheduled");
             [[EWAlarmManager sharedInstance] scheduleAlarm];
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmNewNotification object:nil userInfo:nil];
         });
         
     }
@@ -225,10 +227,10 @@ AmazonSNSClient *snsClient;
     //check task
     BOOL taskGood = [EWTaskStore.sharedInstance checkTasks];
     if (!taskGood) {
-        NSLog(@"3. Task needs to be scheduled");
+        
         dispatch_async(dispatch_queue, ^{
+            NSLog(@"3. Tasks needs to be scheduled");
             [EWTaskStore.sharedInstance scheduleTasks];
-            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
         });
         
     }
@@ -359,15 +361,15 @@ AmazonSNSClient *snsClient;
         [self.coreDataStore syncWithServer];
         
         //lsat seen
-        NSLog(@"update last seen recurring task");
+        NSLog(@"Start last seen recurring task");
         [EWUserManagement updateLastSeen];
         
         //location
-        NSLog(@"update location recurring task");
+        NSLog(@"Start location recurring task");
         [EWUserManagement registerLocation];
         
         //check task
-        NSLog(@"Update task recurring task");
+        NSLog(@"Start recurring task schedule");
         [[EWTaskStore sharedInstance] scheduleTasks];
     });
     
@@ -445,9 +447,10 @@ AmazonSNSClient *snsClient;
 //}
 
 + (NSManagedObject *)objectForCurrentContext:(NSManagedObject *)obj{
-    if ([obj.managedObjectContext isEqual:[EWDataStore currentContext]]) {
-        return obj;
-    }
+    //not thread save
+//    if ([obj.managedObjectContext isEqual:[EWDataStore currentContext]]) {
+//        return obj;
+//    }
     NSManagedObject * objForCurrentContext = [[EWDataStore sharedInstance].currentContext objectWithID:obj.objectID];
     NSAssert([[objForCurrentContext class] isEqual: [obj class]], @"Returned different class");
     return objForCurrentContext;

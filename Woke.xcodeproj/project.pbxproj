@@ -53,7 +53,7 @@
 		9BBA5F9318EB3ED500C07809 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8B18EB3ED500C07809 /* SBJsonBase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9BBA5F9418EB3ED500C07809 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8D18EB3ED500C07809 /* SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9BBA5F9518EB3ED500C07809 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8F18EB3ED500C07809 /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		9BBA5F9818EB416700C07809 /* EWIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F9718EB416700C07809 /* EWIO.m */; };
+		9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F9718EB416700C07809 /* EWUtil.m */; };
 		9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BBA5F9918EF295200C07809 /* libz.dylib */; };
 		AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */; };
 		AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */; };
@@ -245,8 +245,8 @@
 		9BBA5F8D18EB3ED500C07809 /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonParser.m; sourceTree = "<group>"; };
 		9BBA5F8E18EB3ED500C07809 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		9BBA5F8F18EB3ED500C07809 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
-		9BBA5F9618EB416700C07809 /* EWIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWIO.h; sourceTree = "<group>"; };
-		9BBA5F9718EB416700C07809 /* EWIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWIO.m; sourceTree = "<group>"; };
+		9BBA5F9618EB416700C07809 /* EWUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWUtil.h; sourceTree = "<group>"; };
+		9BBA5F9718EB416700C07809 /* EWUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWUtil.m; sourceTree = "<group>"; };
 		9BBA5F9918EF295200C07809 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSRuntime.framework; sourceTree = "<group>"; };
 		9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSSNS.framework; sourceTree = "<group>"; };
@@ -716,8 +716,8 @@
 				56FEA57917A5763200FC2938 /* EWDefines.h */,
 				5642AF4917ACCE48000C73E8 /* EWUIUtil.h */,
 				5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */,
-				9BBA5F9618EB416700C07809 /* EWIO.h */,
-				9BBA5F9718EB416700C07809 /* EWIO.m */,
+				9BBA5F9618EB416700C07809 /* EWUtil.h */,
+				9BBA5F9718EB416700C07809 /* EWUtil.m */,
 				9B2DEEF518B811EC0046EB80 /* EWServer.h */,
 				9B2DEEF618B811EC0046EB80 /* EWServer.m */,
 				AB78079B18393A66007C8BFD /* EWDataStore.h */,
@@ -1160,7 +1160,7 @@
 			files = (
 				ABC8F96A18E937BA0096C073 /* EWDownloadMgr.m in Sources */,
 				9BBA5F9118EB3ED500C07809 /* NSString+SBJSON.m in Sources */,
-				9BBA5F9818EB416700C07809 /* EWIO.m in Sources */,
+				9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */,
 				9BBA5F9518EB3ED500C07809 /* SBJsonWriter.m in Sources */,
 				9BBA5F9018EB3ED500C07809 /* NSObject+SBJSON.m in Sources */,
 				ABC8F96918E937B10096C073 /* EWWeiboFriendListViewController.m in Sources */,

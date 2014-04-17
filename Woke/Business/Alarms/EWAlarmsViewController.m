@@ -100,7 +100,7 @@
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskStore myTasks];
         if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
-            NSLog(@"Alarm(%ld) and Task(%ld)", (long)alarms.count, (long)tasks.count);
+            NSLog(@"%s: Alarm(%ld) and Task(%ld)", __func__, (long)alarms.count, (long)tasks.count);
             alarms = nil;
             tasks = nil;
         }else{

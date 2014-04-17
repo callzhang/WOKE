@@ -117,6 +117,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         if (![cell.myTime isEqual:cell.task.time]) {
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
             cell.alarm.time = cell.myTime;
+            //save alarm time to user defaults
+            [[EWAlarmManager sharedInstance] setSavedAlarmTime:cell.alarm];
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
         }
         //statement

@@ -63,22 +63,28 @@
 #define serverUpdateInterval            1800 //30 min
 #define alarmInterval                   600 //10min
 #define kMaxWakeTime                    3600 // 60min
+#define kMediaPlayInterval              3 //3s
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."
 
 //DEFAULT DATA
 
-#define ringtoneNameList @[@"Autumn Spring.caf", @"Daybreak.caf", @"Drive.caf", @"Parisian Dream.caf", @"Sunny Afternoon.caf", @"Tropical Delight.caf"];
+#define ringtoneNameList                @[@"Autumn Spring.caf", @"Daybreak.caf", @"Drive.caf", @"Parisian Dream.caf", @"Sunny Afternoon.caf", @"Tropical Delight.caf"];
+#define weekdays @[@"Sunday", @"Monday",@"Tuesday", @"Wednesday", @"Thursday", @"Friday", @"Saturday"];
+#define defaultAlarmTimes               @[@8.00, @8.00, @8.00, @8.00, @8.00, @8.00, @8.00];
+#define userDefaults                    @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00", @"buzzSound":@"default"};
+#define buzzSounds                      @{@"default": @"buzz.caf"};
 
-#define weekdays @[@"Sunday", @"Monday", @"Tuesday", @"Wednesday", @"Thursday", @"Friday", @"Saturday"];
-
-#define userDefaults @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00", @"buzzSound":@"default"};
-
-#define buzzSounds @{@"default": @"buzz.caf"};
+//user defaults key
+#define kPushTokenDicKey                @"push_token_dic" //the key for local defaults to get the array of tokenByUser dict
+#define kUserLoggedInUserKey            @"user"
+#define kAWSEndPointDicKey              @"AWS_EndPoint_dic"
+#define kAWSTopicDicKey                 @"AWS_Topic_dic"
+#define kLastChecked                    @"last_checked"
+#define kSavedAlarms                    @"saved_alarms"
 
 //event
 //alarm store
-#define kAlarmsAllNewNotification       @"EWAlarmsNew" //key: alarms
 #define kAlarmNewNotification           @"EWAlarmNew" //key: alarm
 #define kAlarmStateChangedNotification  @"EWAlarmStateChanged"//key: alarm
 #define kAlarmTimeChangedNotification   @"EWAlarmTimeChanged"//key: alarm
@@ -123,12 +129,7 @@
 #define kAudioPlayerWillStart           @"audio_will_start"
 #define kAudioPlayerNextPath            @"audio_next_path"
 
-//User Defaults
-#define kPushTokenDicKey                @"push_token_dic" //the key for local defaults to get the array of tokenByUser dict
-#define kUserLoggedInUserKey            @"user"
-#define kAWSEndPointDicKey              @"AWS_EndPoint_dic"
-#define kAWSTopicDicKey                 @"AWS_Topic_dic"
-#define kLastChecked                    @"last_checked"
+
 
 
 //Collection View Identifier
@@ -147,6 +148,5 @@
 //EWAlarmsViewController
 #define kPersonProfileNewNotification   @"new_profile"
 
-//Media Play
-#define kMediaPlayInterval              3 //3s
+
 

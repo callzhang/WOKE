@@ -39,6 +39,12 @@
  Check if alarm for current user is 0 or 7. Otherwise delete all alarm.
  */
 - (BOOL)checkAlarms;
+
 //KVO
+
+
+//UTIL
+- (NSDictionary *)getSavedAlarmTime:(EWAlarmItem *)alarm;
+- (void)setSavedAlarmTime:(EWAlarmItem *)alarm;
 
 @end
