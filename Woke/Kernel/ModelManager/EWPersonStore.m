@@ -160,13 +160,8 @@ EWPerson *currentUser;
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         //logout
-        [[SMClient defaultClient] logoutOnSuccess:^(NSDictionary *result) {
-            //facebook logout
-            [[FBSession activeSession] closeAndClearTokenInformation];
-            [EWUserManagement login];
-        } onFailure:^(NSError *error) {
-            [NSException raise:@"Error log out" format:@"Reason: %@", error.description];
-        }];
+        [EWUserManagement logout];
+        
     } onFailure:^(NSError *error) {
         [NSException raise:@"Error in save after clean" format:@"Reason: %@", error.description];
     }];

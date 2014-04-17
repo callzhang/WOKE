@@ -458,7 +458,11 @@
     NSLog(@"*** Deleting all tasks");
     
     for (EWTaskItem *t in [self getTasksByPerson:[EWDataStore user]]) {
+        //post notification
+        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t userInfo:@{kPushTaskKey: t}];
+        //cancel local notif
         [self cancelNotificationForTask:t];
+        //delete
         [[EWDataStore currentContext] deleteObject:t];
     }
     //save

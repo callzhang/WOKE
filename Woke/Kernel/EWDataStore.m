@@ -193,7 +193,7 @@ AmazonSNSClient *snsClient;
     [self checkAlarmData];
     
     //updating facebook friends
-    dispatch_async(dispatch_queue, ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         NSLog(@"5. Updating facebook friends");
         [EWUserManagement getFacebookFriends];
     });

@@ -435,7 +435,7 @@
                          
                          //save
                          [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                             NSLog(@"Unable to save user info");
+                             NSLog(@"Unable to save user");
                          }];
                          
                          //completion
@@ -529,52 +529,63 @@
 }
 
 + (void)getFacebookFriends{
+    NSLog(@"Updating facebook friends");
+    FBSessionState state = [FBSession activeSession].state;
+    if (state != FBSessionStateOpen && state != FBSessionStateOpenTokenExtended) {
+        //session not open, need to open
+        NSLog(@"facebook session state: %d", state);
+        [EWUserManagement openFacebookSessionWithCompletion:^{
+            NSLog(@"Facebook session opened: %d", [FBSession activeSession].state);
+            
+            [EWUserManagement getFacebookFriends];
+        }];
+        
+        return;
+    }
     
     // Request the permissions the user currently has
-    [FBRequestConnection startWithGraphPath:@"/me/friends"
-                          completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-                              if (!error){
-                                  NSArray *friends = (NSArray *)result[@"data"];
-                                  NSString *nextPage = (NSString *)result[@"paging"];
-                                  NSLog(@"Next page of friends: %@", nextPage);
-                                  
-                                  if (friends) {
-                                      //get social graph of current user
-                                      //if not, create one
-                                      EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
-                                      NSMutableDictionary *facebookFriends = [graph.facebook_friends copy];
-                                      
-                                      if (friends.count == facebookFriends.count) {
-                                          //no change, return
-                                          return;
-                                      }
-                                      
-                                      //for each element as <id:name> pair, insert into the facebook_friends NSSet object
-                                      for (NSDictionary *pair in friends) {
-                                          NSString *fb_id = pair[@"id"];
-                                          NSString *name = pair[@"name"];
-                                          facebookFriends[fb_id] = name;
-                                      }
-                                      graph.facebook_friends = [facebookFriends copy];
-                                      
-                                      //save
-                                      [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                                          NSLog(@"*** failed to save new facebook friends");
-                                      }];
-                                      
-                                  }else{
-                                      NSLog(@"*** Didn't get friends list for current user");
-                                  }
-                                  
-                              } else {
-                                  // An error occurred, we need to handle the error
-                                  // See: https://developers.facebook.com/docs/ios/errors
-                                  
-                                  [EWUserManagement handleFacebookException:error];
-                              }
-                          }];
+    [FBRequestConnection startWithGraphPath:@"/me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        NSLog(@"Got facebook friends list, start processing");
+        if (!error){
+            NSArray *friends = (NSArray *)result[@"data"];
+            NSString *nextPage = (NSString *)result[@"paging"];
+            
+            if (friends) {
+                //get social graph of current user
+                //if not, create one
+                EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
+                NSMutableDictionary *facebookFriends = [graph.facebook_friends copy];
+                if (!facebookFriends) facebookFriends = [NSMutableDictionary new];
+                if (friends.count == facebookFriends.count) {
+                    //no change, return
+                    return;
+                }
+                
+                //for each element as <id:name> pair, insert into the facebook_friends NSSet object
+                for (NSDictionary *pair in friends) {
+                    NSString *fb_id = pair[@"id"];
+                    NSString *name = pair[@"name"];
+                    facebookFriends[fb_id] = name;
+                }
+                graph.facebook_friends = [facebookFriends copy];
+                
+                //save
+                [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+                    NSLog(@"*** failed to save new facebook friends");
+                }];
+                
+            }else{
+                NSLog(@"*** Didn't get friends list for current user");
+            }
+            
+        } else {
+            // An error occurred, we need to handle the error
+            // See: https://developers.facebook.com/docs/ios/errors
+            
+            [EWUserManagement handleFacebookException:error];
+        }
+    }];
 }
-
 
 
 + (void)openFacebookSessionWithCompletion:(void (^)(void))block{

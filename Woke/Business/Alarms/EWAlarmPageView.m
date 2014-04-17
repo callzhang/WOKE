@@ -40,6 +40,7 @@
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskTimeChangedNotification object:nil];
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskStateChangedNotification object:nil];
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskChangedNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleTaskDeletion:) name:kTaskDeleteNotification object:nil];
     }
     return self;
 }
@@ -141,7 +142,7 @@
     self.alarmState.on = a.state;
 }
 
-//#pragma mark - NOTIFICATION
+#pragma mark - NOTIFICATION
 //- (void)updatedPage:(NSNotification *)notif{
 //    id sender = [notif object];
 //    if ([sender isMemberOfClass:[EWAlarmItem class]]) {
@@ -156,8 +157,20 @@
 //            [self setNeedsDisplay];
 //        }
 //    }
-//    
 //}
+
+- (void)handleTaskDeletion:(NSNotification *)notification{
+    id sender = [notification object];
+    if ([sender isKindOfClass:[EWTaskItem class]]) {
+        EWTaskItem *t = (EWTaskItem *)sender;
+        if ([t.ewtaskitem_id isEqualToString:task.ewtaskitem_id]) {
+            [task removeObserver:self forKeyPath:@"state"];
+            [task removeObserver:self forKeyPath:@"medias"];
+            [task removeObserver:self forKeyPath:@"time"];
+            NSLog(@"Removed KVO to task (%@)", task.ewtaskitem_id);
+        }
+    }
+}
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
@@ -193,6 +206,7 @@
         [task removeObserver:self forKeyPath:@"state"];
         [task removeObserver:self forKeyPath:@"medias"];
         [task removeObserver:self forKeyPath:@"time"];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kTaskDeleteNotification object:nil];
     }
     @catch (NSException *exception) {
         NSLog(@"*** Alarm page unable to remove task observer: %@",exception);

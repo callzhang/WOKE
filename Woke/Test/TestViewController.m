@@ -26,6 +26,7 @@
 #import "EWMediaStore.h"
 #import "EWMediaItem.h"
 #import "EWTaskItem.h"
+#import "EWUserManagement.h"
 
 @interface TestViewController ()
 
@@ -67,7 +68,8 @@
                @"Clear all Alarms & Tasks",
                @"Test buzz",
                @"Test Alarm Timer",
-               @"Lock screen"];
+               @"Add some media",
+               @"Update facebook friends"];
     
     subTitles = @[@"Pop up the WakeUp View with all medias of mine",
                   @"Test shake",
@@ -76,7 +78,8 @@
                   @"Delete all alarm & tasks.  Use it only when data is corrupted",
                   @"Send self a buzz",
                   @"Test alarm timer event. Cloase app after this!",
-                  @"Add some medias to next task"];
+                  @"Add some medias to next task",
+                  @"Test for facebook friends list and store"];
 }
 
 - (void)initView {
@@ -279,11 +282,13 @@
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
                 [rootViewController presentViewControllerWithBlurBackground:controller];
             }];
-            
-            
-            
         }
             break;
+            
+        case 8:
+            [EWUserManagement getFacebookFriends];
+            break;
+            
         default:
             break;
     }

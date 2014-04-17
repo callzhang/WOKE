@@ -52,13 +52,13 @@
     a.tone = currentUser.preference[@"DefaultTone"];
     
     //save
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+    //[[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSError *err;
         [[EWDataStore currentContext] saveAndWait:&err];
         if (err) {
             NSLog(@"Save alarm failed: %@", err.description);
         }
-    }];
+    //}];
     
     //notification
     //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmNewNotification object:self userInfo:@{@"alarm": a}];
@@ -101,6 +101,7 @@
 }
 
 + (NSArray *)myAlarms{
+    
     return [[EWAlarmManager sharedInstance] alarmsForUser:[EWDataStore user]];
 }
 
@@ -246,7 +247,7 @@
         BOOL dataCorrupted = NO;
         
         for (EWAlarmItem *a in alarms) {
-            if (!a.time || !a.state || !a.tone) {
+            if (!a.time || !a.state) {
                 dataCorrupted = YES;
                 NSLog(@"Something wrong with alarm. Need to reschedule alarm.\n%@",a);
                 break;

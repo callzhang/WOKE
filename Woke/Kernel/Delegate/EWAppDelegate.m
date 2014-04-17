@@ -57,8 +57,9 @@ UIViewController *rootViewController;
     
     //test flight
     [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
-    [TestFlight manuallyStartSession];
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
+    [TestFlight manuallyStartSession];
+    
     
     
     //background fetch

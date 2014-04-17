@@ -61,29 +61,45 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskStore myTasks];
     
-    //pop up alarmScheduleView
-    if (alarms.count == 0 && tasks.count == 0) {
-        
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            
-            [[EWAlarmManager sharedInstance] scheduleAlarm];
-            [[EWTaskStore sharedInstance] scheduleTasks];
-        });
-        
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        
-        //refresh
-        alarms = [EWAlarmManager myAlarms];
-        tasks = [EWTaskStore myTasks];
-    }
-    
-    
     selected = 99;
 }
 
 #pragma mark - View life cycle
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    //schedule alarm and tasks
+    //pop up alarmScheduleView
+    if (alarms.count != 7 || tasks.count != 7) {
+        NSLog(@"Need to check the data");
+        
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        
+        
+        dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+            [[EWAlarmManager sharedInstance] scheduleAlarm];
+            [[EWTaskStore sharedInstance] scheduleTasks];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                
+                //refresh
+                alarms = [EWAlarmManager myAlarms];
+                tasks = [EWTaskStore myTasks];
+                
+                //view
+                [_tableView reloadData];
+            });
+        });
+        
+        
+        
+        
+    }
+
+}
+
 //refrash data after edited
 - (void)viewDidAppear:(BOOL)animated
 {
