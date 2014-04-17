@@ -666,12 +666,12 @@
 		56FEA55617A5763200FC2938 /* Alarms */ = {
 			isa = PBXGroup;
 			children = (
-				1817CED718FF9A5700EDB2A4 /* EWAlarmMenu.h */,
-				1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */,
 				18676CE018F78EB700623B66 /* button_b.png */,
 				18676CE118F78EB700623B66 /* button_p.png */,
 				18676CE218F78EB700623B66 /* button_v.png */,
 				18676CE818F78EF800623B66 /* button_x.png */,
+				1817CED718FF9A5700EDB2A4 /* EWAlarmMenu.h */,
+				1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */,
 				56FEA55717A5763200FC2938 /* EWAlarmsViewController.h */,
 				56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */,
 				AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */,

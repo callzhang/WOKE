@@ -30,13 +30,7 @@
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
-@property(strong,nonatomic) UIButton *profilebutton;
-@property(strong,nonatomic) UIButton *buzzbutton;
-@property(strong,nonatomic) UIButton *voicebutton;
-@property(strong,nonatomic) UIButton *closebutton;
-@property(strong,nonatomic) UIImageView *personview;
-@property(strong,nonatomic) UIView *alphaview;
-@property(strong,nonatomic) EWCollectionPersonCell *personcellview;
+
 
 
 //action
