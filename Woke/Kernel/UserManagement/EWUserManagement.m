@@ -64,13 +64,13 @@
             
         } onFailure:^(NSError *error) { //failed to get logged in user
             NSLog(@"%s: ======= Failed to get logged in user from SM Cache ======= %@", __func__, error);
-            [EWUserManagement loginUsingFacebookWithCompletion:NULL];
+            [EWUserManagement showLoginPanel];
         }];
         
         
     }else{
         //log in using local machine info
-        [EWUserManagement loginUsingFacebookWithCompletion:NULL];
+        [EWUserManagement showLoginPanel];
     }
     
     
@@ -90,8 +90,8 @@
 }
 
 
-+ (void)loginWithFacebook{
-    NSLog(@"Login with facebook info");
++ (void)showLoginPanel{
+    NSLog(@"Display login panel");
     EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
     [rootViewController presentViewController:loginVC animated:YES completion:NULL];
 }
@@ -402,69 +402,67 @@
 #pragma mark - FACEBOOK
 + (void)loginUsingFacebookWithCompletion:(void (^)(void))block{
     
-    /*
-     Initiate a request for the current Facebook session user info, and apply the username to
-     the StackMob user that might be created if one doesn't already exist.  Then login to StackMob with Facebook credentials.
-     */
-    [[FBRequest requestForMe] startWithCompletionHandler:
-     ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
-         if (!error) {
-             __block EWPerson *oldUser = currentUser;
-             __block BOOL newUser;
-             
-             //test if facebook user exists
-             [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken onSuccess:^(NSDictionary *result) {
-                 newUser = NO;
-             } onFailure:^(NSError *error) {
-                 newUser = YES;
-             }];
-             
-             //login
-             [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:fb_user.username onSuccess:^(NSDictionary *result) {
-                 NSLog(@"Logged in facebook for:%@", fb_user.name);
+    [EWUserManagement openFacebookSessionWithCompletion:^{
+        [[FBRequest requestForMe] startWithCompletionHandler:
+         ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
+             if (!error) {
+                 __block EWPerson *oldUser = currentUser;
+                 __block BOOL newUser;
                  
-                 //fetch coredata person for fb_user
-                 [EWUserManagement loginWithCachedDataStore:fb_user.username withCompletionBlock:^{
-                     //update fb info
-                     [EWUserManagement updateUserWithFBData:fb_user];
-                     
-                     //welcome new user
-                     if (newUser) {
-                         [EWUserManagement handleNewUser];
-                         
-                     }else{
-                         NSLog(@"User %@ logged in from facebook", fb_user.name);
-                     }
-                     
-                     //save
-                     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                         NSLog(@"Unable to save user info");
-                     }];
-                     
-                     //completion
-                     dispatch_async(dispatch_get_main_queue(), ^{
-                         block();
-                         
-                     });
-                     
-                     
+                 //test if facebook user exists
+                 [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken onSuccess:^(NSDictionary *result) {
+                     newUser = NO;
+                 } onFailure:^(NSError *error) {
+                     newUser = YES;
                  }];
                  
-                 //void old user AWS token
-                 oldUser.aws_id = @"";
-                 
-                 
-             }onFailure:^(NSError *error) {
-                 NSLog(@"Error: %@", error);
-             }];
-         } else {
-             // Handle error accordingly
-             NSLog(@"Error getting current Facebook user data, %@", error);
-         }
-         
-         
-         
-     }];
+                 //login
+                 [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:fb_user.username onSuccess:^(NSDictionary *result) {
+                     NSLog(@"Logged in facebook for:%@", fb_user.name);
+                     
+                     //fetch coredata person for fb_user
+                     [EWUserManagement loginWithCachedDataStore:fb_user.username withCompletionBlock:^{
+                         //update fb info
+                         [EWUserManagement updateUserWithFBData:fb_user];
+                         
+                         //welcome new user
+                         if (newUser) {
+                             [EWUserManagement handleNewUser];
+                             
+                         }else{
+                             NSLog(@"User %@ logged in from facebook", fb_user.name);
+                         }
+                         
+                         //save
+                         [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+                             NSLog(@"Unable to save user info");
+                         }];
+                         
+                         //completion
+                         dispatch_async(dispatch_get_main_queue(), ^{
+                             block();
+                             
+                         });
+                         
+                         
+                     }];
+                     
+                     //void old user AWS token
+                     oldUser.aws_id = @"";
+                     
+                     
+                 }onFailure:^(NSError *error) {
+                     NSLog(@"Error: %@", error);
+                 }];
+             } else {
+                 // Handle error accordingly
+                 NSLog(@"Error getting current Facebook user data, %@", error);
+             }
+             
+             
+             
+         }];
+    }];
     
 }
 

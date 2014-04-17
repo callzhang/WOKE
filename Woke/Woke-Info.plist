@@ -43,7 +43,7 @@
 			<string>com.facebook</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>878112625538046</string>
+				<string>fb878112625538046</string>
 			</array>
 		</dict>
 	</array>

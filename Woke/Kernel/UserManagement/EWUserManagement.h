@@ -18,7 +18,7 @@
  Main point of login
  */
 + (void)login;
-
++ (void)showLoginPanel;
 /**
  Login with username for cached coredata info
  */
