@@ -50,7 +50,8 @@
     sg.owner = person.username;
     //save
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        [NSException raise:@"Failed in creating social graph" format:@"error: %@",error.description];
+        //[NSException raise:@"Failed in creating social graph" format:@"error: %@",error.description];
+        NSLog(@"Failed in creating social graph: %@", error.description );
     }];
     NSLog(@"Created new social graph for user %@", person.name);
     return sg;

@@ -456,7 +456,7 @@
                  }];
              } else {
                  // Handle error accordingly
-                 NSLog(@"Error getting current Facebook user data, %@", error);
+                 [EWUserManagement handleFacebookException:error];
              }
              
              
@@ -627,6 +627,10 @@
             // Here we will handle all other errors with a generic error message.
             // We recommend you check our Handling Errors guide for more information
             // https://developers.facebook.com/docs/ios/errors/
+        } else if (error.code == 5){
+            NSLog(@"Error (5): no internet");
+            [[[UIAlertView alloc] initWithTitle:@"Error" message:@"No internet connection." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+            
         } else {
             //Get more error information from the error
             NSDictionary *errorInformation = [[[error.userInfo objectForKey:@"com.facebook.sdk:ParsedJSONResponseKey"] objectForKey:@"body"] objectForKey:@"error"];

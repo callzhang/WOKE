@@ -425,10 +425,9 @@
     for (EWTaskItem *t in tasks) {
         [[EWDataStore currentContext] deleteObject:t];
     }
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        NSLog(@"Task removed due to alarm deleted");
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Error in deleting task after alarm deleted" format:@"Error: %@", error.description];
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        //[NSException raise:@"Error in deleting task after alarm deleted" format:@"Error: %@", error.description];
+        NSLog(@"Task removal save failed");
     }];
 }
 
