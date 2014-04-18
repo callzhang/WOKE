@@ -118,9 +118,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
         
         //state
-        if (cell.alarmOn != cell.alarm.state) {
-            NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmOn?@"ON":@"OFF");
-            cell.alarm.state = cell.alarmOn;
+        if (cell.alarmToggle.on != cell.alarm.state) {
+            NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmToggle.on?@"ON":@"OFF");
+            cell.alarm.state = cell.alarmToggle.on?YES:NO;
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
         }
         //music
@@ -201,7 +201,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:alpha];
     
     EWAlarmEditCell *myCell = (EWAlarmEditCell *)cell;
-    if (myCell.alarmOn) {
+    if (myCell.alarmToggle.on) {
         //myCell.alarmToggle.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:1];
     }
 }

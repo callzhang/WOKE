@@ -175,7 +175,7 @@
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if (![object isEqual:task]) {
-        NSLog(@"Received task change that not belongs to this alarm page, check observer set up!");
+        NSLog(@"*** Received task change that not belongs to this alarm page, check observer set up!");
         return;
     }
     @try {
@@ -183,6 +183,8 @@
             //TODO: dispatch different tasks for each updates
             if ([keyPath isEqualToString:@"state"]) {
                 self.alarmState.on = (BOOL)change[NSKeyValueChangeNewKey];
+                [self.alarmState setNeedsDisplay];
+                NSLog(@"Task on %@ chenged to %uud", task.time.weekday, self.alarmState.on);
             }else if ([keyPath isEqualToString:@"medias"]){
                 [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];
                 

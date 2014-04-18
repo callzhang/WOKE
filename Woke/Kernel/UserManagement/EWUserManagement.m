@@ -491,7 +491,7 @@
         person.birthday = [formatter dateFromString:user[@"birthday"]];
     }
     //facebook link
-    person.facebook = user.link;
+    person.facebook = user.id;
     //gender
     person.gender = user[@"gender"];
     //city
@@ -545,6 +545,10 @@
     
     // Request the permissions the user currently has
     [FBRequestConnection startWithGraphPath:@"/me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        if (!currentUser.facebook) {
+            NSLog(@"Current user doesn't have facebook ID, skip checking fb friends");
+            return;
+        }
         NSLog(@"Got facebook friends list, start processing");
         if (!error){
             NSArray *friends = (NSArray *)result[@"data"];
@@ -554,7 +558,7 @@
                 //get social graph of current user
                 //if not, create one
                 EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
-                NSMutableDictionary *facebookFriends = [graph.facebook_friends copy];
+                NSMutableDictionary *facebookFriends = [graph.facebookFriends mutableCopy];
                 if (!facebookFriends) facebookFriends = [NSMutableDictionary new];
                 if (friends.count == facebookFriends.count) {
                     //no change, return
@@ -565,9 +569,9 @@
                 for (NSDictionary *pair in friends) {
                     NSString *fb_id = pair[@"id"];
                     NSString *name = pair[@"name"];
-                    facebookFriends[fb_id] = name;
+                    [facebookFriends setObject:name forKey:fb_id];
                 }
-                graph.facebook_friends = [facebookFriends copy];
+                graph.facebookFriends = [facebookFriends copy];
                 
                 //save
                 [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {

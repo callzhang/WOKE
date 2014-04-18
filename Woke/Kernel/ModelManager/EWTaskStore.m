@@ -288,10 +288,12 @@
     t.owner = [EWDataStore user];
     //others
     t.added = [NSDate date];
+    
+    //save is committed at [scheduleTask]
     //save
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        [NSException raise:@"Failed in creating task" format:@"error: %@",error.description];
-    }];
+//    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+//        [NSException raise:@"Failed in creating task" format:@"error: %@",error.description];
+//    }];
     NSLog(@"Created new Task");
     return t;
 }
@@ -519,8 +521,11 @@
             localNotif.alertAction = LOCALSTR(@"Get up!");//TODO
             localNotif.soundName = alarm.tone;
             localNotif.applicationIconBadgeNumber = 1;
-            //user information passed to app delegate
+            
+            //======= user information passed to app delegate =======
             localNotif.userInfo = @{kPushTaskKey: task.ewtaskitem_id};
+            //======================================================
+            
             if (nWeeksToScheduleTask == 1) {
                 localNotif.repeatInterval = NSWeekCalendarUnit; //TODO: if last one
             }
@@ -562,16 +567,6 @@
 }
 
 
-- (void)fireSilentAlarmForTask:(EWTaskItem *)task{
-    UILocalNotification *silentAlarm = [[UILocalNotification alloc] init];
-    silentAlarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
-    silentAlarm.alertAction = @"Wake up!";
-    silentAlarm.soundName = task.alarm.tone;
-    silentAlarm.userInfo = @{kPushTaskKey: task.ewtaskitem_id};
-    [[UIApplication sharedApplication] scheduleLocalNotification:silentAlarm];
-}
-
-
 - (void)checkScheduledNotifications{
     NSInteger nNotification = [[[UIApplication sharedApplication] scheduledLocalNotifications] count];
     NSArray *tasks = [self getTasksByPerson:[EWDataStore user]];
@@ -579,16 +574,17 @@
     NSLog(@"There are %ld scheduled local notification and %ld stored task info", (long)nNotification, (long)nTask);
     
     //delete redundant alarm notif
+    NSArray *taskIDs = [tasks valueForKey:@"ewtaskitem_id"];
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
         BOOL del = YES;
-        for (EWTaskItem *t in tasks) {
-            if([aNotif.userInfo[kPushTaskKey] isEqualToString:t.ewtaskitem_id]){
+        for (NSString *tID in taskIDs) {
+            if([aNotif.userInfo[kPushTaskKey] isEqualToString:tID]){
                 del=NO;
                 break;
             }
         }
         if (del) {
-            NSLog(@"===== Local Notification on %@ will be deleted =====", aNotif.fireDate);
+            NSLog(@"===== Deleted Local Notif on %@ (%@) =====", aNotif.fireDate, aNotif.userInfo[kPushTaskKey]);
             [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
         }
     }
@@ -598,6 +594,16 @@
         [self scheduleNotificationForTask:t];
     }
     
+}
+
+
+- (void)fireSilentAlarmForTask:(EWTaskItem *)task{
+    UILocalNotification *silentAlarm = [[UILocalNotification alloc] init];
+    silentAlarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
+    silentAlarm.alertAction = @"Wake up!";
+    silentAlarm.soundName = task.alarm.tone;
+    silentAlarm.userInfo = @{kPushTaskKey: task.ewtaskitem_id};
+    [[UIApplication sharedApplication] scheduleLocalNotification:silentAlarm];
 }
 
 #pragma mark - check

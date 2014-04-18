@@ -228,7 +228,7 @@
                     break;
                 case 3: {
                     cell.textLabel.text = LOCALSTR(@"Facebook ID");
-                    cell.detailTextLabel.text = currentUser.username;
+                    cell.detailTextLabel.text = currentUser.facebook;
                 }
                     break;
                 case 4:{

@@ -21,6 +21,7 @@
 - (IBAction)connect:(id)sender; //register fb
 - (IBAction)check:(id)sender;
 - (IBAction)skip:(id)sender;
+- (IBAction)logout:(id)sender;
 
 - (void)loginInBackground;
 

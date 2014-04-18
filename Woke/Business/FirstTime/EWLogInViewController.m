@@ -98,6 +98,13 @@
     }];
 }
 
+- (IBAction)logout:(id)sender {
+    [self.indicator startAnimating];
+    if (FBSession.activeSession.state == FBSessionStateOpen) {
+        [self logoutUser];
+    }
+}
+
 
 
 //start register

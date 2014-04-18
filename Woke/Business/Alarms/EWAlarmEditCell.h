@@ -18,17 +18,17 @@
 //data
 @property (nonatomic) NSDate *myTime;
 @property (nonatomic) NSString *myStatement;
-@property (nonatomic) BOOL alarmOn;
+//@property (nonatomic) BOOL alarmOn;
 @property (nonatomic) NSString *myMusic;
 //outlet
-@property (weak, nonatomic) IBOutlet UIButton *alarmToggle;
+@property (weak, nonatomic) IBOutlet UISwitch *alarmToggle;
 @property (weak, nonatomic) IBOutlet UILabel *weekday;
 @property (weak, nonatomic) IBOutlet UILabel *time;
 @property (weak, nonatomic) IBOutlet UITextField *statement;
 @property (weak, nonatomic) IBOutlet UIStepper *timeStepper;
 @property (weak, nonatomic) IBOutlet UIButton *music;
 //action
-- (IBAction)toggleAlarm:(UIButton *)sender;
+- (IBAction)toggleAlarm:(UISwitch *)sender;
 - (IBAction)changeMusic:(id)sender;
 - (IBAction)hideKeyboard:(UITextField *)sender;
 - (IBAction)changeTime:(UIStepper *)sender;

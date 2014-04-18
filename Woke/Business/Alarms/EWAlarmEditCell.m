@@ -13,7 +13,7 @@
 
 @implementation EWAlarmEditCell
 @synthesize task, alarm;
-@synthesize myTime, myStatement, alarmOn, myMusic;
+@synthesize myTime, myStatement, myMusic;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -35,7 +35,7 @@
     //data
     task = t;
     self.alarm = task.alarm;
-    alarmOn = self.alarm.state;
+    //alarmOn = self.alarm.state;
     myTime = self.task.time;
     myMusic = self.alarm.tone;
     myStatement = self.task.statement;
@@ -46,22 +46,19 @@
     NSArray *name = [myMusic componentsSeparatedByString:@"."];
     [self.music setTitle:name[0] forState:UIControlStateNormal];
     self.statement.text = myStatement;
-    NSString *alarmState = alarmOn ? @"ON":@"OFF";
-    [self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
+    //NSString *alarmState = alarmOn ? @"ON":@"OFF";
+    //[self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
+    self.alarmToggle.on = task.state;
     
 }
 
-
-- (IBAction)toggleAlarm:(UIButton *)sender {
+- (IBAction)toggleAlarm:(UISwitch *)sender {
+    BOOL alarmOn = sender.on;
     if (alarmOn) {
-        alarmOn = NO;
-        sender.backgroundColor = [UIColor clearColor];
+        //sender.backgroundColor = [UIColor clearColor];
     } else {
-        alarmOn = YES;
-        sender.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:0.8];
+        //sender.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:0.8];
     }
-    NSString *alarmState = alarmOn ? @"ON":@"OFF";
-    [self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
 }
 
 - (IBAction)changeMusic:(id)sender {

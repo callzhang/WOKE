@@ -28,6 +28,7 @@
 @property (nonatomic, retain) NSDate * lastSeenDate;
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSDictionary* preference;
+@property (nonatomic, retain) NSString *preferenceString;
 @property (nonatomic, retain) NSString * profilePicKey;
 @property (nonatomic, retain) NSString * region;
 @property (nonatomic, retain) NSString * statement;
