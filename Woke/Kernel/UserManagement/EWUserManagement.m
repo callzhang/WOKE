@@ -553,7 +553,7 @@
         if (!error){
             NSArray *friends = (NSArray *)result[@"data"];
             NSString *nextPage = (NSString *)result[@"paging"];
-            
+            //TODO: next page
             if (friends) {
                 //get social graph of current user
                 //if not, create one
