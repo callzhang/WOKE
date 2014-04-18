@@ -529,6 +529,10 @@
     EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithFrame:self.view.frame initWithCell:cell];
     meun.delegate=self;
     [self.view addSubview:meun];
+    
+    UIWindow *AlertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    AlertWindow.backgroundColor = [UIColor cyanColor];
+    [AlertWindow makeKeyAndVisible];
     //action sheet
     //UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
 //    sheet.tag = 1001;
