@@ -526,7 +526,7 @@
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
-    EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithFrame:self.view.frame initWithCell:cell];
+    EWAlarmMenu *meun=[[EWAlarmMenu alloc] initWithFrame:self.view.frame initWithCell:cell];
     meun.delegate=self;
     [self.view addSubview:meun];
     

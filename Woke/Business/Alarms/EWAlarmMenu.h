@@ -29,6 +29,5 @@
 @property (nonatomic, retain) UIImageView *maskView;
 
 -(void)initbutton;
-- (id)initWithFrame:(CGRect)frame
-       initWithCell:(EWCollectionPersonCell*)cell;
+- (id)initWithFrame:(CGRect)frame initWithCell:(EWCollectionPersonCell*)cell;
 @end

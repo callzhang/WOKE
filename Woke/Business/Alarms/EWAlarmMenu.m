@@ -10,8 +10,7 @@
 
 @implementation EWAlarmMenu
 
-- (id)initWithFrame:(CGRect)frame
-       initWithCell:(EWCollectionPersonCell*)cell;
+- (id)initWithFrame:(CGRect)frame nitWithCell:(EWCollectionPersonCell*)cell;
 {
     self = [super initWithFrame:frame];
     if(self){
@@ -85,6 +84,8 @@
     [_closebutton setFrame:rect4];
         
     }
+    //[UIView commitAnimations];
+    
     return self;
 }
 
