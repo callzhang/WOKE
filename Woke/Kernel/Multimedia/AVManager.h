@@ -56,12 +56,6 @@
 //update states
 - (void)updateViewForPlayerState:(AVAudioPlayer *)player;
 
-/**
- (Depreciated)
- Use WakeUpManager to control the playing
- */
-//- (void)playTask:(EWTaskItem *)task;
-
 
 - (NSURL *)record;
 
@@ -69,7 +63,8 @@
 - (void)stopAllPlaying;
 
 /**
- *register for AudioSession
+ *register for NORMAL AudioSession
+ @discussion This session starts with optionof mix & speaker
  */
 - (void)registerAudioSession;
 

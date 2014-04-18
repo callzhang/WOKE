@@ -14,12 +14,14 @@
 @dynamic ewsocialgraph_id;
 @synthesize facebookFriends;
 @dynamic facebook_friends_string;
+@dynamic facebookUpdated;
 @dynamic createddate;
 @dynamic lastmoddate;
 @dynamic owner;
 @dynamic sm_owner;
 @synthesize weiboFriends;
 @dynamic weibo_friends_string;
+@dynamic weiboUpdated;
 
 
 

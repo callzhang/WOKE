@@ -70,13 +70,16 @@
     return self;
 }
 
+//register the normal audio session
 - (void)registerAudioSession{
     
     //audio session
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     //set category
-    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord withOptions:9 error:&error];
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord
+                                                    withOptions:(AVAudioSessionCategoryOptionMixWithOthers | AVAudioSessionCategoryOptionDefaultToSpeaker)
+                                                          error:&error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     //force speaker
 //    success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
@@ -92,6 +95,8 @@
     //set active bg sound
     [self playSilentSound];
 }
+
+//register the playing session
 
 
 #pragma mark - PLAY FUNCTIONS

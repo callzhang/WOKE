@@ -543,43 +543,61 @@
         return;
     }
     
-    // Request the permissions the user currently has
-    [FBRequestConnection startWithGraphPath:@"/me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-        if (!currentUser.facebook) {
-            NSLog(@"Current user doesn't have facebook ID, skip checking fb friends");
-            return;
-        }
+    //check facebook id exist
+    if (!currentUser.facebook) {
+        NSLog(@"Current user doesn't have facebook ID, skip checking fb friends");
+        return;
+    }
+    
+    //get social graph of current user
+    //if not, create one
+    EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
+    //skip if checked within a week
+    if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
+        NSLog(@"Facebook friends check skipped.");
+        return;
+    }
+    
+    //get the data
+    __block NSMutableDictionary *friends = [NSMutableDictionary new];
+    [EWUserManagement getFacebookFriendsWithPath:@"/me/friends" withReturnData:friends];
+    
+
+}
+
++ (void)getFacebookFriendsWithPath:(NSString *)path withReturnData:(NSMutableDictionary *)friendsHolder{
+    [FBRequestConnection startWithGraphPath:path completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        
         NSLog(@"Got facebook friends list, start processing");
         if (!error){
             NSArray *friends = (NSArray *)result[@"data"];
-            NSString *nextPage = (NSString *)result[@"paging"];
-            //TODO: next page
+            NSString *nextPage = (NSString *)result[@"paging"][@"next"]	;
+            //parse
             if (friends) {
-                //get social graph of current user
-                //if not, create one
-                EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
-                NSMutableDictionary *facebookFriends = [graph.facebookFriends mutableCopy];
-                if (!facebookFriends) facebookFriends = [NSMutableDictionary new];
-                if (friends.count == facebookFriends.count) {
-                    //no change, return
-                    return;
-                }
-                
-                //for each element as <id:name> pair, insert into the facebook_friends NSSet object
                 for (NSDictionary *pair in friends) {
                     NSString *fb_id = pair[@"id"];
                     NSString *name = pair[@"name"];
-                    [facebookFriends setObject:name forKey:fb_id];
+                    [friendsHolder setObject:name forKey:fb_id];
                 }
-                graph.facebookFriends = [facebookFriends copy];
+            }else{
+                NSLog(@"*** Didn't get friends list for current user");
+            }
+            
+            //next page
+            if (nextPage) {
+                //continue loading facebook friends
+                NSLog(@"Continue facebook friends request: %@", nextPage);
+                [self getFacebookFriendsWithPath:nextPage withReturnData:friendsHolder];
+            }else{
+                NSLog(@"Finished loading friends from facebook, transfer to social graph.");
+                EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
+                graph.facebookFriends = [friendsHolder copy];
+                graph.facebookUpdated = [NSDate date];
                 
                 //save
                 [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
                     NSLog(@"*** failed to save new facebook friends");
                 }];
-                
-            }else{
-                NSLog(@"*** Didn't get friends list for current user");
             }
             
         } else {
@@ -589,7 +607,9 @@
             [EWUserManagement handleFacebookException:error];
         }
     }];
+
 }
+
 
 
 + (void)openFacebookSessionWithCompletion:(void (^)(void))block{

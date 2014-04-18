@@ -46,7 +46,7 @@
     EWSocialGraph *sg = [NSEntityDescription insertNewObjectForEntityForName:@"EWSocialGraph" inManagedObjectContext:[EWDataStore currentContext]];
     //assign id
     [sg assignObjectId];
-    //owner string
+    //data
     sg.owner = person.username;
     //save
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {

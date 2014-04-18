@@ -237,7 +237,7 @@ UIViewController *rootViewController;
 
 // ============> Keep alive <=============
 - (void) keepAlive:(NSTimer *)paramSender{
-    NSLog(@"=== Keep alive ===");
+    TFLog(@"%s (%d)=== Keep alive ===", __PRETTY_FUNCTION__, __LINE__);
     NSLog(@"%s Time left (before) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
     
     [[AVManager sharedManager] playSoundFromFile:@"Silence04s.caf"];
@@ -274,8 +274,8 @@ UIViewController *rootViewController;
             [EWWakeUpManager handleAlarmTimerEvent];
         });
     }
-    
-    NSLog(@"%s Time left (after) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
+    NSInteger tLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
+    TFLog(@"%s Time left (after) %@ (%ld)", __func__, tLeft>1000?@"1000+s":[NSString stringWithFormat:@"%d",tLeft] , count++);
 
 }
 

@@ -27,6 +27,7 @@
 #import "EWMediaItem.h"
 #import "EWTaskItem.h"
 #import "EWUserManagement.h"
+#import "EWSocialGraphManager.h"
 
 @interface TestViewController ()
 
@@ -285,8 +286,12 @@
         }
             break;
             
-        case 8:
+        case 8:{
+            EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
+            graph.facebookUpdated = nil;
             [EWUserManagement getFacebookFriends];
+        }
+            
             break;
             
         default:

@@ -36,9 +36,6 @@
 
 #define AWS_SNS_EndPoint_test_id_1      @"2:260520558889:endpoint/APNS_SANDBOX/Woke_Dev/3b46d55e-0da2-397c-8116-603a9acf02be"
 
-//background fetch
-#define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
-
 
 // 开关宏
 /*
@@ -64,6 +61,9 @@
 #define alarmInterval                   600 //10min
 #define kMaxWakeTime                    3600 // 60min
 #define kMediaPlayInterval              3 //3s
+#define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
+#define kSocialGraphUpdateInterval      3600*24*7
+
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."
 

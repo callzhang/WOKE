@@ -86,8 +86,16 @@
     [self initData];
     [self initView];
     
+    //notification
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
+    
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-    [self scrollViewDidScroll:tableView_];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -97,13 +105,7 @@
     [self scrollViewDidScroll:tableView_];
     [self.view setNeedsDisplay];
     
-    //notification
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
+    [self scrollViewDidScroll:tableView_];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
