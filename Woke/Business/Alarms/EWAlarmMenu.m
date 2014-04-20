@@ -11,14 +11,19 @@
 @implementation EWAlarmMenu
 
 - (id)initWithFrame:(CGRect)frame
-       initWithCell:(EWCollectionPersonCell*)cell;
+       initWithCell:(EWCollectionPersonCell*)cell
 {
     self = [super initWithFrame:frame];
     if(self){
-    UIView *view=[[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 568)];
-    view.backgroundColor=[UIColor whiteColor];
-    view.alpha=0.7;
-    _alphaview=view;
+        UINavigationBar *nb=[[UINavigationBar alloc]initWithFrame:CGRectMake(-[[UIScreen mainScreen] bounds].size.width, -[[UIScreen mainScreen] bounds].size.height,([[UIScreen mainScreen] bounds].size.width)*4, ([[UIScreen mainScreen] bounds].size.height)*4)];
+        nb.backgroundColor=[UIColor whiteColor];
+        nb.alpha=0.7;
+        _alphaview=nb;
+    
+//    UIView *view=[[UIView alloc]initWithFrame:CGRectMake(-[[UIScreen mainScreen] bounds].size.width, -[[UIScreen mainScreen] bounds].size.height,([[UIScreen mainScreen] bounds].size.width)*5, ([[UIScreen mainScreen] bounds].size.height)*5)];
+//    view.backgroundColor=[UIColor whiteColor];
+//    view.alpha=0.7;
+//    _alphaview=view;
     
     UIButton *abutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x-30 ,cell.frame.origin.y-30 , 30, 30)];
     abutton.center=cell.center;
@@ -47,10 +52,21 @@
     [_closebutton addTarget:self action:@selector(closemeun) forControlEvents:UIControlEventTouchUpInside];
     UIImage *dimge=[UIImage imageNamed:@"button_x.png"];
     [_closebutton setImage:dimge forState:UIControlStateNormal];
-    
+//
+//        
+//    int index=[self.superview.subviews indexOfObject:cell];
+//    NSLog(@"index1:%i",index);
     _personcellview=cell;
+//    int index2=[self.superview.subviews indexOfObject:cell];
+//    NSLog(@"index2:%i",index2);
+        
+    
+        
+//    UIImage* newimage = [UIImage imageWithCGImage:CGImageCreateWithImageInRect()];
+    
 //    UIImageView *imageview=[[UIImageView alloc]initWithFrame:cell.frame];
-//    imageview.image=cell.profilePic.image;
+//    [imageview addSubview:cell.contentView];
+//    [imageview addSubview:cell.maskView];imageview.image=cell.profilePic.image;
 //    [imageview addSubview:cell.maskView];
 //    personcell.profilePic.image =imageview.image;
 //  _personcellview=personcell;
@@ -61,7 +77,11 @@
     [self addSubview:_buzzbutton];
     [self addSubview:_voicebutton];
     [self addSubview:_closebutton];
+//    [self addSubview:collectionview];
     [self addSubview:_personcellview];
+
+//        int index3=[self.superview.subviews indexOfObject:cell];
+//        NSLog(@"index3:%i",index3);
         
     CGContextRef context = UIGraphicsGetCurrentContext();
     [UIView beginAnimations:nil context:context];
@@ -83,6 +103,9 @@
     [_buzzbutton setFrame:rect2];
     [_voicebutton setFrame:rect3];
     [_closebutton setFrame:rect4];
+    
+    [UIView commitAnimations];
+
         
     }
     return self;
@@ -138,7 +161,6 @@
     [_voicebutton setFrame:rect3];
     [_closebutton setFrame:rect4];
     [UIView setAnimationDelegate:self];
-    // 动画完毕后调用animationFinished
     [UIView setAnimationDidStopSelector:@selector(stop)];
     [UIView commitAnimations];
     
@@ -185,5 +207,19 @@
     [self removeFromSuperview];
 
 }
-
+//-(UIImage*)saveImageWithCell:(EWCollectionPersonCell*)cell
+//{
+//    UIGraphicsBeginImageContext(CGSizeMake(cell.view.bounds.size.width, cell.view.bounds.size.height - 20));
+//    [cell.layer renderInContext:UIGraphicsGetCurrentContext()];
+//    UIImage *viewImage = UIGraphicsGetImageFromCurrentImageContext();
+//    UIGraphicsEndImageContext();
+//    return viewImage;
+//}
+//-(int)getSubviewIndex
+//
+//{
+//
+//    return [self.superview.subviews indexOfObject:self];
+//    
+//}
 @end

@@ -398,6 +398,7 @@
     frame.origin.x = frame.size.width * page;
     frame.origin.y = 0;
     [_scrollView scrollRectToVisible:frame animated:YES];
+    
 }
 
 #pragma mark - UIActionSheetDelegate
@@ -528,11 +529,12 @@
     selectedPersonIndex = indexPath.row;
     EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithFrame:self.view.frame initWithCell:cell];
     meun.delegate=self;
-    [self.view addSubview:meun];
+    [_collectionView addSubview:meun];
     
-    UIWindow *AlertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    AlertWindow.backgroundColor = [UIColor cyanColor];
-    [AlertWindow makeKeyAndVisible];
+    
+//    UIWindow *AlertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//    AlertWindow.backgroundColor = [UIColor cyanColor];
+//    [AlertWindow makeKeyAndVisible];
     //action sheet
     //UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
 //    sheet.tag = 1001;

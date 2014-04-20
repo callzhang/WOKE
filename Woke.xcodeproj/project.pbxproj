@@ -23,10 +23,6 @@
 /* Begin PBXBuildFile section */
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
 		1817CED918FF9A5700EDB2A4 /* EWAlarmMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */; };
-		18676CE418F78EB700623B66 /* button_b.png in Resources */ = {isa = PBXBuildFile; fileRef = 18676CE018F78EB700623B66 /* button_b.png */; };
-		18676CE518F78EB700623B66 /* button_p.png in Resources */ = {isa = PBXBuildFile; fileRef = 18676CE118F78EB700623B66 /* button_p.png */; };
-		18676CE618F78EB700623B66 /* button_v.png in Resources */ = {isa = PBXBuildFile; fileRef = 18676CE218F78EB700623B66 /* button_v.png */; };
-		18676CE918F78EF800623B66 /* button_x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18676CE818F78EF800623B66 /* button_x.png */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
@@ -172,10 +168,6 @@
 /* Begin PBXFileReference section */
 		1817CED718FF9A5700EDB2A4 /* EWAlarmMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmMenu.h; sourceTree = "<group>"; };
 		1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmMenu.m; sourceTree = "<group>"; };
-		18676CE018F78EB700623B66 /* button_b.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_b.png; path = ../Business/Alarms/button_b.png; sourceTree = "<group>"; };
-		18676CE118F78EB700623B66 /* button_p.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_p.png; path = ../Business/Alarms/button_p.png; sourceTree = "<group>"; };
-		18676CE218F78EB700623B66 /* button_v.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_v.png; path = ../Business/Alarms/button_v.png; sourceTree = "<group>"; };
-		18676CE818F78EF800623B66 /* button_x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_x.png; path = ../Business/Alarms/button_x.png; sourceTree = "<group>"; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		561ECB5117BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -499,10 +491,6 @@
 				AB44569E17E6A5870077FE45 /* Voice Message */,
 				AB94330417C3013F00ADC702 /* Ringtone */,
 				AB2C18C218733C7F0058BFAD /* image.xcassets */,
-				18676CE018F78EB700623B66 /* button_b.png */,
-				18676CE118F78EB700623B66 /* button_p.png */,
-				18676CE218F78EB700623B66 /* button_v.png */,
-				18676CE818F78EF800623B66 /* button_x.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1097,17 +1085,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18676CE618F78EB700623B66 /* button_v.png in Resources */,
 				56FEA59617A5766B00FC2938 /* InfoPlist.strings in Resources */,
 				561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */,
 				AB13C1D11862D32400231159 /* EWPersonCell.xib in Resources */,
 				AB13C1D21862D32400231159 /* EWPersonView.xib in Resources */,
-				18676CE418F78EB700623B66 /* button_b.png in Resources */,
 				AB1EBE3318A74AD1003154DB /* EWTaskHistoryCell.xib in Resources */,
-				18676CE518F78EB700623B66 /* button_p.png in Resources */,
 				AB07402218126EC200AAFC90 /* workGroup.png in Resources */,
 				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
-				18676CE918F78EF800623B66 /* button_x.png in Resources */,
 				AB19E9FC18698359000FBDD1 /* EWRecordingViewController.xib in Resources */,
 				AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */,
 				ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */,
