@@ -6,8 +6,8 @@
 //  Copyright (c) 2013年 Shens. All rights reserved.
 //
 
-#ifndef EarlyWorm_Defines_h
-#define EarlyWorm_Defines_h
+//#ifndef EarlyWorm_Defines_h
+//#define EarlyWorm_Defines_h
 
 //System
 #define iPhone5 ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO)
@@ -124,6 +124,7 @@
 #define kADIDKey                        @"ADID" //key for ADID
 #define kPushTypeKey                    @"type"
 #define kPushTypeNoticeKey              @"notice"
+#define kPushNofiticationKey            @"notification"
 
 //Audio & Video
 #define kMaxRecordTime                  20.0;
@@ -142,8 +143,13 @@
 #define kCollectionViewCellHeight       100
 #define kCollectionViewCellPersonRadius 40
 #define CELL_SPACE_RATIO                1.8
-#endif
+//#endif
 
 
-
+//Notification types
+#define kNotificationTypeFriendRequest  @"friendship_request"
+#define kNotificationTypeFriendAccepted @"friendship_accepted"
+#define kNotificationTypeTimer          @"timer"
+#define kNotificationTypeNotice         @"notice"
+#define kNotificationTypeNextTaskHasMedia     @"task_has_media" 
 

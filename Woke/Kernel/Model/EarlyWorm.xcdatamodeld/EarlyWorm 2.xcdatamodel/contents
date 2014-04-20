@@ -78,10 +78,13 @@
         <relationship name="sender" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="sentMessages" inverseEntity="EWPerson" syncable="YES"/>
         <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWTaskItem" inverseName="messages" inverseEntity="EWTaskItem" syncable="YES"/>
     </entity>
-    <entity name="EWNotification" syncable="YES">
-        <attribute name="body" optional="YES" attributeType="String" syncable="YES"/>
+    <entity name="EWNotification" representedClassName="EWNotification" syncable="YES">
+        <attribute name="completed" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="createddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="ewnotification_id" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="importance" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="lastmoddate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="sender" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="userInfoString" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="notifications" inverseEntity="EWPerson" syncable="YES"/>
@@ -107,8 +110,7 @@
         <attribute name="weibo" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="achievements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWAchievement" inverseName="owner" inverseEntity="EWAchievement" syncable="YES"/>
         <relationship name="alarms" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="EWAlarmItem" inverseName="owner" inverseEntity="EWAlarmItem" syncable="YES"/>
-        <relationship name="friended" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="friends" inverseEntity="EWPerson" syncable="YES"/>
-        <relationship name="friends" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="friended" inverseEntity="EWPerson" syncable="YES"/>
+        <relationship name="friends" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="member" inverseEntity="EWGroup" syncable="YES"/>
         <relationship name="groupsManaging" optional="YES" toMany="YES" minCount="1" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="admin" inverseEntity="EWGroup" syncable="YES"/>
         <relationship name="groupTasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroupTask" inverseName="participents" inverseEntity="EWGroupTask" syncable="YES"/>
@@ -159,11 +161,11 @@
         <element name="EWAlarmItem" positionX="0" positionY="0" width="128" height="210"/>
         <element name="EWGroup" positionX="0" positionY="0" width="128" height="210"/>
         <element name="EWGroupTask" positionX="0" positionY="0" width="128" height="195"/>
-        <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="300"/>
+        <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="30"/>
         <element name="EWMessage" positionX="0" positionY="0" width="128" height="195"/>
-        <element name="EWPerson" positionX="0" positionY="0" width="128" height="566"/>
+        <element name="EWNotification" positionX="9" positionY="153" width="128" height="30"/>
+        <element name="EWPerson" positionX="0" positionY="0" width="128" height="41"/>
         <element name="EWSocialGraph" positionX="9" positionY="153" width="128" height="210"/>
         <element name="EWTaskItem" positionX="0" positionY="0" width="128" height="270"/>
-        <element name="EWNotification" positionX="9" positionY="153" width="128" height="133"/>
     </elements>
 </model>

@@ -46,4 +46,6 @@
 
 + (CGFloat)distanceOfPoint:(CGPoint)point1 toPoint:(CGPoint)point2;
 
++ (void)addImage:(UIImage *)image toAlertView:(UIAlertView *)alert;
+
 @end

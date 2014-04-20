@@ -17,6 +17,7 @@
 #import "EWDownloadManager.h"
 #import "UIViewController+Blur.h"
 #import "EWDownloadManager.h"
+#import "EWNotificationManager.h"
 //UI
 #import "EWWakeUpViewController.h"
 
@@ -299,11 +300,11 @@
             }
             
             
-        }else if([type isEqualToString:kPushTaskNoticeKey]){
+        }else if([type isEqualToString:kPushTypeNoticeKey]){
             // ============== System notice ================
             
-            [EWWakeUpManager]
-            
+            NSString *notificationID = remoteNotif[kPushNofiticationKey];
+            [EWNotificationManager handleNotification:notificationID];
             
         }
     }else{

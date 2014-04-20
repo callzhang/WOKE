@@ -118,6 +118,7 @@
 		AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB2DFBC718BA7CBE00534AF1 /* buzz.caf */; };
 		AB39BF0017D96143006C31C5 /* EWSocialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB39BEF517D96143006C31C5 /* EWSocialViewController.m */; };
 		AB3ACDC019037DDE0066CF3F /* EWNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */; };
+		AB3ACDC4190387C10066CF3F /* EWNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3ACDC3190387C10066CF3F /* EWNotification.m */; };
 		AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3B9E4417A765CE00C2AD93 /* AVManager.m */; };
 		AB49BC921854248E004A38DB /* EWLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB49BC901854248E004A38DB /* EWLogInViewController.m */; };
 		AB49BC931854248E004A38DB /* EWLogInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB49BC911854248E004A38DB /* EWLogInViewController.xib */; };
@@ -330,6 +331,8 @@
 		AB39BEF517D96143006C31C5 /* EWSocialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialViewController.m; sourceTree = "<group>"; };
 		AB3ACDBE19037DDE0066CF3F /* EWNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationManager.h; sourceTree = "<group>"; };
 		AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWNotificationManager.m; sourceTree = "<group>"; };
+		AB3ACDC2190387C10066CF3F /* EWNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotification.h; sourceTree = "<group>"; };
+		AB3ACDC3190387C10066CF3F /* EWNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWNotification.m; sourceTree = "<group>"; };
 		AB3B9E4317A765CE00C2AD93 /* AVManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVManager.h; sourceTree = "<group>"; };
 		AB3B9E4417A765CE00C2AD93 /* AVManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AVManager.m; path = Woke/Kernel/Multimedia/AVManager.m; sourceTree = SOURCE_ROOT; };
 		AB49BC89185423E6004A38DB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
@@ -494,6 +497,8 @@
 		5671FDC817C126AC00794E0A /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				AB3ACDC2190387C10066CF3F /* EWNotification.h */,
+				AB3ACDC3190387C10066CF3F /* EWNotification.m */,
 				AB0DF50518FE504200CF5AB1 /* EWSocialGraph.h */,
 				AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */,
 				AB1B140D187E661E009D1DB2 /* EWAchievement.h */,
@@ -716,8 +721,6 @@
 		56FEA57B17A5763200FC2938 /* Kernel */ = {
 			isa = PBXGroup;
 			children = (
-				AB3ACDBE19037DDE0066CF3F /* EWNotificationManager.h */,
-				AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */,
 				56FEA57917A5763200FC2938 /* EWDefines.h */,
 				5642AF4917ACCE48000C73E8 /* EWUIUtil.h */,
 				5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */,
@@ -967,6 +970,8 @@
 		ABB98B5B17D01ADE005D8903 /* ModelManager */ = {
 			isa = PBXGroup;
 			children = (
+				AB3ACDBE19037DDE0066CF3F /* EWNotificationManager.h */,
+				AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */,
 				AB78078D18393A66007C8BFD /* EWAlarmManager.h */,
 				AB78078E18393A66007C8BFD /* EWAlarmManager.m */,
 				AB78079D18393A66007C8BFD /* EWTaskStore.h */,
@@ -1235,6 +1240,7 @@
 				AB2C18CD18737F670058BFAD /* EWAlarmEditCell.m in Sources */,
 				AB198C951861818B008C1F15 /* EWMediaItem.m in Sources */,
 				AB13C1CF1862D32400231159 /* EWPersonViewController.m in Sources */,
+				AB3ACDC4190387C10066CF3F /* EWNotification.m in Sources */,
 				AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */,
 				AB1EBE3618A74B41003154DB /* EWTaskHistoryCell.m in Sources */,
 				9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */,

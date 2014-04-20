@@ -65,4 +65,16 @@
     CGFloat distance = sqrt(pow((point1.x - point2.x),2) + pow((point1.y - point2.y), 2));
     return distance;
 }
+
++ (void)addImage:(UIImage *)image toAlertView:(UIAlertView *)alert{
+    
+    alert.message = [NSString stringWithFormat:@"\n\n\n\n\n%@", alert.message];
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:image];
+    CGRect frame = imgView.frame;
+    frame.origin.x = 40;
+    frame.origin.y = (alert.frame.size.width - imgView.frame.size.width)/2;
+    
+}
+
+
 @end
