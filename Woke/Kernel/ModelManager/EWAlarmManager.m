@@ -83,6 +83,11 @@
         NSLog(@"*** Failed to fetch alarm for user %@", user.name);
     }
     
+    //check
+    if (!alarms) {
+        NSLog(@"*** Didn't get alarms, please check code!");
+    }
+    
     
     //sort
     NSArray *sortedAlarms = [alarms sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {

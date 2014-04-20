@@ -133,6 +133,7 @@
         
         
         //save
+        [[EWDataStore currentContext] saveAndWait:NULL];
         [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
         [[EWDataStore currentContext] saveOnSuccess:^{
             
@@ -158,7 +159,7 @@
             }
             
             //send push notification
-            [EWServer pushMedia:media.ewmediaitem_id ForUser:person];
+            [EWServer pushMedia:media ForUser:person];
             
             //dismiss
             [self dismissViewControllerAnimated:YES completion:NULL];

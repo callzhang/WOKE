@@ -274,7 +274,7 @@
     if (socialList == socialViewNews) {
         UITableViewCell *cell = [self makeNewsCellInTableView:tableView];
         EWPerson *person = [friends objectAtIndex:indexPath.row];
-        EWTaskItem *task = [EWTaskStore.sharedInstance nextTaskAtDayCount:0 ForPerson:person];
+        EWTaskItem *task = [EWTaskStore.sharedInstance nextValidTaskForPerson:person];
         //name
         if (person.name) {
             cell.textLabel.text = person.name;

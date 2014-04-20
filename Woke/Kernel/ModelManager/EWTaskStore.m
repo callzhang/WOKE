@@ -128,24 +128,34 @@
 }
 
 //next valid task
-- (EWTaskItem *)nextTaskForPerson:(EWPerson *)person{
+- (EWTaskItem *)nextValidTaskForPerson:(EWPerson *)person{
+    return [self nextValidTaskForPerson:person];
+}
+
+- (EWTaskItem *)nextNth:(NSInteger)n validTaskForPerson:(EWPerson *)person{
     NSArray *tasks = [self getTasksByPerson:[EWDataStore objectForCurrentContext:person]];
-    EWTaskItem *t0;
+    EWTaskItem *nextTask;
     for (unsigned i=0; i<tasks.count; i++) {
-        t0 = tasks[i];
+        nextTask = tasks[i];
         
-        //Task shoud be On and not finished
-        if (t0.state == YES && !t0.completed) {
-            return t0;
+        //Task shoud be On AND not finished AND has less than the default max medias
+        if (nextTask.state == YES && !nextTask.completed && nextTask.medias.count <= kMaxMediasPerTask) {
+            n--;
+            if (n < 0) {
+                //find the task
+                return nextTask;
+            }
         }
     }
     return nil;
+
 }
 
 //next task
 - (EWTaskItem *)nextTaskAtDayCount:(NSInteger)n ForPerson:(EWPerson *)person{
-    NSArray *tasks = [self getTasksByPerson:person];
-    if (tasks.count >= n+1) {
+    
+    NSArray *tasks = [self getTasksByPerson:[EWDataStore objectForCurrentContext:person]];
+    if (tasks.count > n) {
         return tasks[n];
     }
     return nil;
@@ -172,15 +182,16 @@
     NSLog(@"Start scheduling tasks");
     
     //check necessity
-    NSMutableArray *tasks = [[self getTasksByPerson:[EWDataStore user]] mutableCopy];
+    NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];
     NSArray *alarms = [EWAlarmManager myAlarms];
+    if (!alarms) {
+        NSLog(@"Something wrong with my alarms, get nil");
+        return nil;
+    }
     if (alarms.count == 0 && tasks.count == 0) {
         NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
         return nil;
     }
-    
-    //assert
-    NSAssert(alarms.count == 7, @"Alarms only %d, please check your code", alarms.count);
     
     //for each alarm, find matching task, or create new task
     BOOL newTaskNotify = NO;

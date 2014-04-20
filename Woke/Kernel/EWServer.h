@@ -26,7 +26,7 @@
  @params users: array of EWPerson
  @params taskId: taskId
  */
-+ (void)pushMedia:(NSString *)mediaId ForUser:(EWPerson *)person;
++ (void)pushMedia:(EWMediaItem *)media ForUser:(EWPerson *)person;
 
 
 

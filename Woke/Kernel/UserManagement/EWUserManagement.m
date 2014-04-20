@@ -513,7 +513,6 @@
         [currentUser.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
             NSLog(@"%s: failed to save profile pic when requesting from facebook", __func__);
         }];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonProfileNewNotification object:self userInfo:nil];
     }];
     [operation start];
     //broadcasting

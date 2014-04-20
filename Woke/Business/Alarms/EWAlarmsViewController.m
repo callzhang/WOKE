@@ -475,7 +475,7 @@
                 break;
             }
             case 2:{
-                EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
+                EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
                 EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithTask:task];
                 [self presentViewControllerWithBlurBackground:controller];
                 break;

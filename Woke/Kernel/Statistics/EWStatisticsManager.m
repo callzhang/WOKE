@@ -52,4 +52,17 @@
     return [NSNumber numberWithFloat:rate];
 }
 
+- (NSInteger)wakability{
+    float aveTime = [self.aveWakeupTime floatValue];
+    NSInteger level = 10 - floor(aveTime/360);
+    return level;
+    
+}
+
+- (NSString *)wakabilityStr{
+    NSInteger level = [self wakability];
+    NSString *lvString = [NSString stringWithFormat:@"%ld/10", (long)level];
+    return lvString;
+}
+
 @end

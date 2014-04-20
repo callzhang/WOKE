@@ -16,4 +16,6 @@
 @property (nonatomic) NSNumber *aveWakeupTime;
 @property (nonatomic) NSNumber *successRate;
 
+- (NSInteger)wakability;
+- (NSString *)wakabilityStr;
 @end

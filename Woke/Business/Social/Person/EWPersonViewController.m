@@ -117,7 +117,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         //CGColorRef wCGColor = [wcolor CGColor];
         //tabView.layer.backgroundColor = wCGColor;
         [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.friends.count] forSegmentAtIndex:0];
-        [tabView setTitle:[NSString stringWithFormat:@"%ld\"", (long)[stats.aveWakeupTime integerValue]] forSegmentAtIndex:1];
+        [tabView setTitle:[stats wakabilityStr] forSegmentAtIndex:1];
         [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.achievements.count] forSegmentAtIndex:2];
         tabView.selectedSegmentIndex = 1;//initial tab
         
@@ -410,7 +410,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     }else if (buttonIndex == 1) {
         //send voice greeting
         EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithNibName:nil bundle:nil];
-        controller.task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:person];
+        controller.task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:currentUser];
         [self presentViewController:controller animated:YES completion:NULL];
     }
 }

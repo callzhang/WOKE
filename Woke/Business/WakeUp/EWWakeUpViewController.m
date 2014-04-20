@@ -475,14 +475,14 @@
     NSInteger currentCellPlaying = [self seekCurrentCell];
 
     EWMediaViewCell *cell;
-    
+    NSIndexPath *path;
     currentCellPlaying++;
     
     if (currentCellPlaying < medias.count){
         
         //get next cell
         NSLog(@"Play next song (%ld)", (long)currentCellPlaying);
-        NSIndexPath *path = [NSIndexPath indexPathForRow:currentCellPlaying inSection:0];
+        path = [NSIndexPath indexPathForRow:currentCellPlaying inSection:0];
         cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
         if (!cell) {
             cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
@@ -493,11 +493,14 @@
         if ((--loopCount)>0) {
             //play the first if loopCount > 0
             NSLog(@"Looping, play (0)");
-            cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+            path = [NSIndexPath indexPathForRow:0 inSection:0];
+            cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
+            
             
         }else{
             NSLog(@"Loop finished, stop playing");
             //nullify all cell info in avmanager
+            cell = nil;
             [AVManager sharedManager].currentCell = nil;
             [AVManager sharedManager].media = nil;
             next = NO;
@@ -515,6 +518,11 @@
         });
     }else if ([cell.media.type isEqualToString: kMediaTypeBuzz]){
         [[AVManager sharedManager] playForCell:cell];
+    }
+    
+    //highlight
+    if (cell) {
+        [tableView_ selectRowAtIndexPath:path animated:YES scrollPosition:UITableViewScrollPositionMiddle];
     }
     
 }
@@ -590,7 +598,7 @@
                 break;
                 
             default:
-                NSLog(@"Received remote control %ld", receivedEvent.subtype);
+                NSLog(@"Received remote control %ld", (long)receivedEvent.subtype);
                 break;
         }
     }

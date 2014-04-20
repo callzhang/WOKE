@@ -37,7 +37,8 @@
 /**
  Get task for next day
  */
-- (EWTaskItem *)nextTaskForPerson:(EWPerson *)person;
+- (EWTaskItem *)nextValidTaskForPerson:(EWPerson *)person;
+- (EWTaskItem *)nextNth:(NSInteger)n validTaskForPerson:(EWPerson *)person;
 /**
  Main method for getting task:
  First decide if a fetch is needed. A fetch is needed if

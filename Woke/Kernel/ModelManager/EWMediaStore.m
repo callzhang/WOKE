@@ -54,12 +54,12 @@
     EWPerson *user = [EWDataStore user];
     m.author = user;
     m.type = kMediaTypeVoice;
-    [[EWDataStore currentContext] saveOnSuccess:^{
+//    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Media created");
-    } onFailure:^(NSError *error) {
-        //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
-        NSLog(@"Error to save new media: %@", error);
-    }];
+//    } onFailure:^(NSError *error) {
+//        //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
+//        NSLog(@"Error to save new media: %@", error);
+//    }];
     return m;
 }
 

@@ -63,6 +63,7 @@
 #define kMediaPlayInterval              3 //3s
 #define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
 #define kSocialGraphUpdateInterval      3600*24*7
+#define kMaxMediasPerTask               3
 
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."
@@ -122,15 +123,13 @@
 #define kFinishedSync                   @"FinishedSync" //server has finished syncing (usually at startup)
 #define kADIDKey                        @"ADID" //key for ADID
 #define kPushTypeKey                    @"type"
+#define kPushTypeNoticeKey              @"notice"
 
 //Audio & Video
 #define kMaxRecordTime                  20.0;
 #define kAudioPlayerDidFinishPlaying    @"audio_finished_playing"
 #define kAudioPlayerWillStart           @"audio_will_start"
 #define kAudioPlayerNextPath            @"audio_next_path"
-
-
-
 
 //Collection View Identifier
 #define kCollectionViewCellPersonIdenfifier  @"CollectionViewIdentifier"
@@ -145,8 +144,6 @@
 #define CELL_SPACE_RATIO                1.8
 #endif
 
-//EWAlarmsViewController
-#define kPersonProfileNewNotification   @"new_profile"
 
 
 

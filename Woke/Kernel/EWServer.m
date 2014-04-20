@@ -115,13 +115,14 @@
     
     for (EWPerson *person in users) {
         //get next task
-        EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
+        EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
         //create buzz
         EWMediaItem *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
         //add waker
         [task addWakerObject:person];
         //add sound
-        buzz.buzzKey = [EWDataStore user].preference[@"buzzSound"];
+        NSString *sound = [EWDataStore user].preference[@"buzzSound"];
+        buzz.buzzKey = sound ? sound : @"default";
         
         //push payload
         NSDictionary *pushMessage;
@@ -148,7 +149,7 @@
             
             NSString *buzzType = buzz.buzzKey;
             NSDictionary *sounds = buzzSounds;
-            NSString *buzzSound = buzzType?sounds[buzzType]:@"buzz.caf";
+            NSString *buzzSound = sounds[buzzType];
             
             pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
                                                     @"badge": @1,
@@ -159,7 +160,6 @@
                                           kPushTypeKey: kPushTypeBuzzKey};
 
         }else{
-            
             
             //add to next task
             EWTaskItem *tmrTask = [[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:person];
@@ -206,16 +206,17 @@
 }
 
 #pragma mark - Send Voice tone
-+ (void)pushMedia:(NSString *)mediaId ForUser:(EWPerson *)person{
++ (void)pushMedia:(EWMediaItem *)m ForUser:(EWPerson *)person{
     
-    EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaId];
+    EWMediaItem *media = [EWDataStore objectForCurrentContext:m];
+    NSString *mediaId = media.ewmediaitem_id;
     EWTaskItem *task = [media.tasks anyObject];
     NSDictionary *pushMessage;
     
     //validate task
     if (task.completed || task.state == NO) {
         //something wrong, next task
-        task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
+        task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
     }
     
     //form push payload

@@ -7,8 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+@class EWTaskItem;
 
 @interface EWWakeUpManager : NSObject
+
++ (EWWakeUpManager *)sharedInstance;
+
 /**
  *Handles push notifications in varies mode
  @Discuss
@@ -55,4 +59,12 @@
  Detect if root view is presenting EWWakeUpViewController
  */
 + (BOOL)isRootPresentingWakeUpView;
+
+/**
+ Present EWWakeUpViewController on rootView.
+ Also it will register the presented wake up view controller as a retained value to prevent premature deallocation in ARC.
+ @discussion If rootView is displaying anything else, it will dismiss other view first.
+ */
++ (void)presentWakeUpView;
++ (void)presentWakeUpViewWithTask:(EWTaskItem *)task;
 @end

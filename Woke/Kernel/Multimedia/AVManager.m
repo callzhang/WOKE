@@ -383,16 +383,16 @@
         [AVPlayerUpdateTimer invalidate];
     }
     
-    NSLog(@"AVPlayer is about to play %@", url);
     AVPlayerItem *item = [AVPlayerItem playerItemWithURL:url];
     avplayer = [AVPlayer playerWithPlayerItem:item];
     [avplayer setActionAtItemEnd:AVPlayerActionAtItemEndNone];
     avplayer.volume = 1.0;
-    [avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
+    //[avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
     [avplayer play];
 }
 
 - (void)playSilentSound{
+    NSLog(@"AVPlayer is about to play silent sound");
     NSURL *path = [[NSBundle mainBundle] URLForResource:@"Silence04s" withExtension:@"caf"];
     [self playAvplayerWithURL:path];
     //avplayer.volume = 0.01;
