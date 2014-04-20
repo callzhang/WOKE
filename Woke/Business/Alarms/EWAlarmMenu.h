@@ -27,7 +27,7 @@
 @property(strong,nonatomic) UIImageView *personview;
 @property(strong,nonatomic) EWCollectionPersonCell *personcellview;
 @property (nonatomic, retain) UIImageView *maskView;
-
 - (id)initWithFrame:(CGRect)frame
        initWithCell:(EWCollectionPersonCell*)cell;
+
 @end

@@ -108,6 +108,8 @@
 
         
     }
+    //[UIView commitAnimations];
+    
     return self;
 }
 
