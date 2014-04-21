@@ -9,21 +9,47 @@
 #import "EWAlarmMenu.h"
 
 @implementation EWAlarmMenu
-
-- (id)initWithFrame:(CGRect)frame
-       initWithCell:(EWCollectionPersonCell*)cell
+-(id)initWithCollectionView:(UICollectionView *)collectionView
+               initWithCell:(EWCollectionPersonCell *)cell
+//- (id)initWithFrame:(CGRect)frame
+//       initWithCell:(EWCollectionPersonCell*)cell
 {
-    self = [super initWithFrame:frame];
+    self.tag=1;
+    _collectionView=collectionView;
+    self = [super initWithFrame:CGRectMake(0, 0, ([[UIScreen mainScreen] bounds].size.width)*4,  ([[UIScreen mainScreen] bounds].size.height)*4)];
     if(self){
-        UINavigationBar *nb=[[UINavigationBar alloc]initWithFrame:CGRectMake(-[[UIScreen mainScreen] bounds].size.width, -[[UIScreen mainScreen] bounds].size.height,([[UIScreen mainScreen] bounds].size.width)*4, ([[UIScreen mainScreen] bounds].size.height)*4)];
-        nb.backgroundColor=[UIColor whiteColor];
-        nb.alpha=0.7;
-        _alphaview=nb;
+//        UINavigationBar *nb=[[UINavigationBar alloc] initWithFrame:CGRectMake(-[[UIScreen mainScreen] bounds].size.width, -[[UIScreen mainScreen] bounds].size.height,([[UIScreen mainScreen] bounds].size.width)*4, ([[UIScreen mainScreen] bounds].size.height)*4)];
+//    UINavigationBar *nb=[[UINavigationBar alloc] initWithFrame:collectionView.frame];
+//        nb.backgroundColor=[UIColor whiteColor];
+//        nb.alpha=0.7;
+//        _alphaview=nb;
     
 //    UIView *view=[[UIView alloc]initWithFrame:CGRectMake(-[[UIScreen mainScreen] bounds].size.width, -[[UIScreen mainScreen] bounds].size.height,([[UIScreen mainScreen] bounds].size.width)*5, ([[UIScreen mainScreen] bounds].size.height)*5)];
 //    view.backgroundColor=[UIColor whiteColor];
 //    view.alpha=0.7;
 //    _alphaview=view;
+    
+//    UITableView *tbv=[[UITableView alloc] initWithFrame:CGRectMake(0, 0, ([[UIScreen mainScreen] bounds].size.width)*4, ([[UIScreen mainScreen] bounds].size.height)*4)];
+//        tbv.backgroundColor=[UIColor whiteColor];
+//        tbv.scrollEnabled=NO;
+//        tbv.alpha=0.78;
+//        _alphaview=tbv;
+        
+        UIToolbar *tb=[[UIToolbar alloc]initWithFrame:CGRectMake(-([[UIScreen mainScreen]bounds].size.width), -([[UIScreen mainScreen]bounds].size.height),([[UIScreen mainScreen] bounds].size.width)*4,  ([[UIScreen mainScreen] bounds].size.height)*4)];
+        _alphaview=tb;
+        _alphaview.alpha=0;
+//        [UIView beginAnimations:nil context:NULL];
+//        [UIView setAnimationDuration:1];
+//        [_alphaview setAlpha:0.0];
+//        [UIView commitAnimations];
+        
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDuration:0.5];
+        [_alphaview setAlpha:0.98];
+        [UIView commitAnimations];
+        
+    
+    _collectionView.scrollEnabled=NO;
     
     UIButton *abutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x-30 ,cell.frame.origin.y-30 , 30, 30)];
     abutton.center=cell.center;
@@ -46,7 +72,7 @@
     [_voicebutton setImage:cimge forState:UIControlStateNormal];
     [_voicebutton addTarget:self action:@selector(tovoice) forControlEvents:UIControlEventTouchUpInside];
    
-    UIButton *dbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15, cell.frame.origin.y+cell.frame.size.height+15 , 30, 30)];
+    UIButton *dbutton=[[UIButton alloc]initWithFrame:CGRectMake(cell.frame.origin.x+cell.frame.size.width/2-15, cell.frame.origin.y+cell.frame.size.height , 30, 30)];
     dbutton.center=cell.center;
     _closebutton=dbutton;
     [_closebutton addTarget:self action:@selector(closemeun) forControlEvents:UIControlEventTouchUpInside];
@@ -77,9 +103,9 @@
     [self addSubview:_buzzbutton];
     [self addSubview:_voicebutton];
     [self addSubview:_closebutton];
-//    [self addSubview:collectionview];
+//  [self addSubview:collectionview];
     [self addSubview:_personcellview];
-
+//    [self.superview bringSubviewToFront:_closebutton];
 //        int index3=[self.superview.subviews indexOfObject:cell];
 //        NSLog(@"index3:%i",index3);
         
@@ -97,7 +123,7 @@
     rect2.origin.y=cell.frame.origin.y-35;
     rect3.origin.x=cell.frame.origin.x+cell.frame.size.width-10;
     rect3.origin.y=cell.frame.origin.y-20;
-    rect4.origin.y=cell.frame.origin.y+cell.frame.size.height+5;
+    rect4.origin.y=cell.frame.origin.y+cell.frame.size.height;
         
     [_profilebutton setFrame:rect1];
     [_buzzbutton setFrame:rect2];
@@ -105,6 +131,8 @@
     [_closebutton setFrame:rect4];
     
     [UIView commitAnimations];
+    
+    self.collectionView.scrollEnabled = NO;
 
         
     }
@@ -165,7 +193,13 @@
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(stop)];
     [UIView commitAnimations];
+    [self.superview addSubview:_personcellview];
     
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    [_alphaview setAlpha:0];
+    [UIView commitAnimations];
+
     
     
     
@@ -205,8 +239,10 @@
 }
 -(void)stop
 {
+    _collectionView.scrollEnabled = YES;
     [self.superview addSubview:_personcellview];
     [self removeFromSuperview];
+    self.tag=0;
 
 }
 //-(UIImage*)saveImageWithCell:(EWCollectionPersonCell*)cell

@@ -5,7 +5,6 @@
 //  Created by shenslu on 13-7-11.
 //  Copyright (c) 2013年 Shens. All rights reserved.
 //
-
 #import <UIKit/UIKit.h>
 #import "EWAlarmPageView.h"
 #import "EWCollectionPersonCell.h"
@@ -23,6 +22,7 @@
 
 @property (nonatomic) NSArray *alarms;
 @property (nonatomic) NSArray *tasks;
+@property(nonatomic,retain)EWAlarmMenu *meun;
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;

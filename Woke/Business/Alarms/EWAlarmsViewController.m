@@ -125,6 +125,7 @@
 
 - (void)initView {
     
+    self.meun.tag=0;
     //collection view
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
@@ -138,7 +139,6 @@
     _scrollView.pagingEnabled = YES;
     _scrollView.tag = kAlarmPageViewIdentifier;
     _pageView.currentPage = 0;
-    
     //add button
     self.addBtn.hidden = (tasks.count == 0) ? NO:YES;
     self.addBtn.backgroundColor = [UIColor clearColor];
@@ -186,6 +186,7 @@
 
 #pragma mark - ScrollView
 - (void)reloadAlarmPage {
+    
     
     if (alarms.count == 0 || tasks.count == 0) {
         self.addBtn.hidden = NO;
@@ -255,6 +256,8 @@
     
     //if page empty, add that to the page array
     EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] init];
+    [alarmPage setFrame:CGRectMake(0, [[UIScreen mainScreen]bounds].size.height*(7/8), [[UIScreen mainScreen]bounds].size.width, ([[UIScreen mainScreen]bounds].size.height)/8)];
+    
     _alarmPages[page] = alarmPage;
     
     //fill info
@@ -279,10 +282,12 @@
         frame.origin.x = frame.size.width * page;
         frame.origin.y = 0;
         alarmPage.frame = frame;
+
         [_scrollView addSubview:alarmPage];
     }
     
     _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
+
 }
 
 #pragma mark - UI Events
@@ -527,10 +532,16 @@
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
-    EWAlarmMenu *meun=[[EWAlarmMenu alloc] initWithFrame:self.view.frame initWithCell:cell];
+//  EWAlarmMenu *meun=[[EWAlarmMenu alloc] initWithFrame:self.collectionView.frame initWithCell:cell];
+    if(self.meun.tag==0){
+    EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
+//  self.collectionView.scrollEnabled = NO;
     meun.delegate=self;
-    [_collectionView addSubview:meun];
-    
+    self.meun=meun;
+    [_collectionView addSubview:self.meun];
+    }
+   
+
     
 //    UIWindow *AlertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 //    AlertWindow.backgroundColor = [UIColor cyanColor];
@@ -540,9 +551,10 @@
 //    sheet.tag = 1001;
 //    [sheet showFromRect:cell.frame inView:self.view animated:YES];
 }
+#pragma mark - EWAlarmMenu delegate
+
 -(void)buttontoperson
 {
-    NSLog(@"toperson");
     EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
     EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
     controller.person = person;

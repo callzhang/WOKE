@@ -27,7 +27,12 @@
 @property(strong,nonatomic) UIImageView *personview;
 @property(strong,nonatomic) EWCollectionPersonCell *personcellview;
 @property (nonatomic, retain) UIImageView *maskView;
-- (id)initWithFrame:(CGRect)frame
-       initWithCell:(EWCollectionPersonCell*)cell;
+@property(nonatomic,retain)UICollectionView *collectionView;
+@property(nonatomic,retain)UIScrollView *scrollView;
+
+//- (id)initWithFrame:(CGRect)frame
+//       initWithCell:(EWCollectionPersonCell*)cell;
+-(id)initWithCollectionView:(UICollectionView *)collectionView
+               initWithCell:(EWCollectionPersonCell *)cell;
 
 @end
