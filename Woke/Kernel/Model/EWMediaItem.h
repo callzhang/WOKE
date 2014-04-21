@@ -22,6 +22,7 @@
 @property (nonatomic, retain) NSDate * created;
 @property (nonatomic, retain) NSDate * createddate;
 @property (nonatomic, retain) NSString *ewmediaitem_id;
+@property (nonatomic, retain) NSDate * fixedDate;
 @property (nonatomic, retain) NSSet *groupTask;
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic, retain) NSString * imageKey;
@@ -33,6 +34,7 @@
 @property (nonatomic, retain) NSString * videoKey;
 @property (nonatomic, retain) NSSet *tasks;
 @property (nonatomic, retain) NSString *type;
+@property (nonatomic, retain) EWPerson * receiver;
 
 -(UIImage *)setThumbnailDataFromImage:(UIImage *)image;
 //Data

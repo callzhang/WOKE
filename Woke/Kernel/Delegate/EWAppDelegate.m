@@ -110,8 +110,6 @@ UIViewController *rootViewController;
 
 
 //=================>> Point to enter background <<===================
-
-
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
@@ -135,18 +133,20 @@ UIViewController *rootViewController;
     backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
         
         NSLog(@"The first BG task will end (%ld)", count);
+        
     }];
     
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];
     myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerInterval target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
-    
+
     
 #endif
     
     //remove avplayer
-    [[AVManager sharedManager] stopAvplayer];
-    NSLog(@"Scheduled background with time left: %f", application.backgroundTimeRemaining);
+    //[[AVManager sharedManager] stopAvplayer];
+    
+    //NSLog(@"Scheduled background with time left: %f", application.backgroundTimeRemaining);
     
     application.applicationIconBadgeNumber = 0;
 }
@@ -237,28 +237,25 @@ UIViewController *rootViewController;
 
 // ============> Keep alive <=============
 - (void) keepAlive:(NSTimer *)paramSender{
-    TFLog(@"%s (%d)=== Keep alive ===", __PRETTY_FUNCTION__, __LINE__);
-    NSLog(@"%s Time left (before) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
+    TFLog(@"===========================>> Keep alive <<=============================");
+    //NSLog(@"%s Time left (before) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
     
-    [[AVManager sharedManager] playSoundFromFile:@"Silence04s.caf"];
     
-    UIApplication *application = [UIApplication sharedApplication];
+    //start avplayer
+    [[AVManager sharedManager] playSilentSound];
+    
+    //UIApplication *application = [UIApplication sharedApplication];
     
     //结束旧的后台任务
-    [application endBackgroundTask:backgroundTaskIdentifier];
+    //[application endBackgroundTask:backgroundTaskIdentifier];
     
     //开启一个新的后台
-    NSInteger ct = count++;
-    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        NSLog(@"BG task will end (%ld)", (long)ct);
-    }];
+//    NSInteger ct = count++;
+//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+//        NSLog(@"BG task will end (%ld)", (long)ct);
+//    }];
     
 
-    //start avplayer
-//    [[AVManager sharedManager] playSilentSound];
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        [[AVManager sharedManager] stopAvplayer];
-//    });
     
     //check time
     if (!currentUser) return;
@@ -275,7 +272,7 @@ UIViewController *rootViewController;
         });
     }
     NSInteger tLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
-    TFLog(@"%s Time left (after) %@ (%ld)", __func__, tLeft>1000?@"1000+s":[NSString stringWithFormat:@"%d",tLeft] , count++);
+    TFLog(@"%s Time left (after) %@ (%ld)", __func__, tLeft>1000?@"999s":[NSString stringWithFormat:@"%ld",(long)tLeft] , count++);
 
 }
 
@@ -417,18 +414,36 @@ UIViewController *rootViewController;
                               delegate:self
                               cancelButtonTitle:@"OK"
                               otherButtonTitles:nil];
+        
+        [[AVManager sharedManager] playSoundFromFile:currentUser.preference[@"DefaultTone"]];
         [alert show];
     } else {
+        //could be a state that user select a local notif in notification center while app is running
+        
         NSLog(@"Entered by local notification");
         /*
         if (self.musicList.count > 0) {
             [self playDownloadedMusic:[self.musicList objectAtIndex:self.musicList.count-1]];
         }*/
         NSString *taskID = [notification.userInfo objectForKey:kPushTaskKey];
-        NSLog(@"The task is %@", taskID);
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-        controller.task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-        [self.window.rootViewController presentViewControllerWithBlurBackground:controller];
+        
+        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        
+        if (!taskID) {
+            //unexpected notification
+            if (!notification) {
+                //Unidentified issue
+                
+#ifdef DEV_TEST
+                task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:currentUser];
+                
+#endif
+            }else{
+                return;
+            }
+        }
+        
+        [EWWakeUpManager presentWakeUpViewWithTask:task];
     }
 }
 /*

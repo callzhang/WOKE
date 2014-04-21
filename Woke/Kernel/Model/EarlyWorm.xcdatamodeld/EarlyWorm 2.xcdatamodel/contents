@@ -20,7 +20,7 @@
         <attribute name="todo" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tone" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="owner" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="alarms" inverseEntity="EWPerson" syncable="YES"/>
-        <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWTaskItem" inverseName="alarm" inverseEntity="EWTaskItem" syncable="YES"/>
+        <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="EWTaskItem" inverseName="alarm" inverseEntity="EWTaskItem" syncable="YES"/>
     </entity>
     <entity name="EWGroup" representedClassName="EWGroup" syncable="YES">
         <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
@@ -114,7 +114,7 @@
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="member" inverseEntity="EWGroup" syncable="YES"/>
         <relationship name="groupsManaging" optional="YES" toMany="YES" minCount="1" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="admin" inverseEntity="EWGroup" syncable="YES"/>
         <relationship name="groupTasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroupTask" inverseName="participents" inverseEntity="EWGroupTask" syncable="YES"/>
-        <relationship name="mediaAssets" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWMediaItem" inverseName="receiver" inverseEntity="EWMediaItem" syncable="YES"/>
+        <relationship name="mediaAssets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMediaItem" inverseName="receiver" inverseEntity="EWMediaItem" syncable="YES"/>
         <relationship name="medias" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMediaItem" inverseName="author" inverseEntity="EWMediaItem" syncable="YES"/>
         <relationship name="notifications" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWNotification" inverseName="owner" inverseEntity="EWNotification" syncable="YES"/>
         <relationship name="pastTasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWTaskItem" inverseName="pastOwner" inverseEntity="EWTaskItem" syncable="YES"/>
@@ -164,7 +164,7 @@
         <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="30"/>
         <element name="EWMessage" positionX="0" positionY="0" width="128" height="195"/>
         <element name="EWNotification" positionX="9" positionY="153" width="128" height="30"/>
-        <element name="EWPerson" positionX="0" positionY="0" width="128" height="41"/>
+        <element name="EWPerson" positionX="0" positionY="0" width="128" height="551"/>
         <element name="EWSocialGraph" positionX="9" positionY="153" width="128" height="210"/>
         <element name="EWTaskItem" positionX="0" positionY="0" width="128" height="270"/>
     </elements>

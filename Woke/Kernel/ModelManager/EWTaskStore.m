@@ -8,6 +8,7 @@
 
 #import "EWTaskStore.h"
 #import "EWPerson.h"
+#import "EWMediaItem.h"
 #import "EWMediaStore.h"
 #import "EWTaskItem.h"
 #import "EWAlarmItem.h"
@@ -129,7 +130,7 @@
 
 //next valid task
 - (EWTaskItem *)nextValidTaskForPerson:(EWPerson *)person{
-    return [self nextValidTaskForPerson:person];
+    return [self nextNth:0 validTaskForPerson:person];
 }
 
 - (EWTaskItem *)nextNth:(NSInteger)n validTaskForPerson:(EWPerson *)person{
@@ -138,13 +139,17 @@
     for (unsigned i=0; i<tasks.count; i++) {
         nextTask = tasks[i];
         
-        //Task shoud be On AND not finished AND has less than the default max medias
-        if (nextTask.state == YES && !nextTask.completed && nextTask.medias.count <= kMaxMediasPerTask) {
-            n--;
-            if (n < 0) {
-                //find the task
-                return nextTask;
+        //Task shoud be On AND not finished AND has less than the default max voices
+        if (nextTask.state == YES && !nextTask.completed) {
+            NSInteger nVoice = [self numberOfVoiceInTask:nextTask];
+            if (nVoice < kMaxVoicePerTask) {
+                n--;
+                if (n < 0) {
+                    //find the task
+                    return nextTask;
+                }
             }
+            
         }
     }
     return nil;
@@ -273,7 +278,7 @@
 
 - (void)checkPastTasks:(NSMutableArray *)tasks{
     //nullify old task's relation to alarm
-    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
+    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
     NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
     for (EWTaskItem *t in outDatedTasks) {
         t.alarm = nil;
@@ -434,9 +439,14 @@
 
 - (void)alarmRemoved:(NSNotification *)notif{
     NSLog(@"Delete task due to alarm deleted");
-    NSArray *tasks = notif.userInfo[@"tasks"];
-    for (EWTaskItem *t in tasks) {
-        [[EWDataStore currentContext] deleteObject:t];
+    //NSArray *tasks = notif.userInfo[@"tasks"];
+    NSArray *alarms = notif.userInfo[@"alarms"];
+    
+    for (EWAlarmItem *a in alarms) {
+        for (EWTaskItem *t in a.tasks) {
+            [[EWDataStore currentContext] deleteObject:t];
+        }
+        
     }
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         //[NSException raise:@"Error in deleting task after alarm deleted" format:@"Error: %@", error.description];
@@ -571,9 +581,7 @@
             [notifArray addObject:aNotif];
         }
     }
-    if (notifArray.count != nLocalNotifPerTask) {
-        NSLog(@"**** There is only %u local notifications for task on %@, expecting %d", (unsigned)notifArray.count, task.time.weekday, nLocalNotifPerTask);
-    }
+
     return notifArray;
 }
 
@@ -608,13 +616,14 @@
 }
 
 
-- (void)fireSilentAlarmForTask:(EWTaskItem *)task{
-    UILocalNotification *silentAlarm = [[UILocalNotification alloc] init];
-    silentAlarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
-    silentAlarm.alertAction = @"Wake up!";
-    silentAlarm.soundName = task.alarm.tone;
-    silentAlarm.userInfo = @{kPushTaskKey: task.ewtaskitem_id};
-    [[UIApplication sharedApplication] scheduleLocalNotification:silentAlarm];
+- (void)fireAlarmForTask:(EWTaskItem *)task{
+    NSLog(@"Firing alarm");
+    UILocalNotification *alarm = [[UILocalNotification alloc] init];
+    alarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
+    alarm.alertAction = @"Wake up!";
+    alarm.soundName = task.alarm.tone;
+    alarm.userInfo = @{kPushTaskKey: task.ewtaskitem_id};
+    [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
 }
 
 #pragma mark - check
@@ -679,5 +688,14 @@
     return NO;
 }
 
+- (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task{
+    NSInteger nMedia = 0;
+    for (EWMediaItem *m in task.medias) {
+        if ([m.type isEqualToString: kMediaTypeVoice]) {
+            nMedia++;
+        }
+    }
+    return nMedia;
+}
 
 @end

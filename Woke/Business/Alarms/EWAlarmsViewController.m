@@ -317,8 +317,8 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh Person", nil];
-    sheet.tag = 1002;
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", nil];
+    sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
 }
@@ -431,7 +431,7 @@
 
 #pragma mark - UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (actionSheet.tag == 1002) {
+    if (actionSheet.tag == kOptionsAlert) {
         //main action
         switch (buttonIndex) {
             case 0:{//Preference
@@ -456,7 +456,7 @@
                 break;
         }
 
-    }else if (actionSheet.tag == 1001){
+    }else if (actionSheet.tag == kCollectionViewCellAlert){
         //person cell action sheet
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         switch (buttonIndex) {
@@ -499,16 +499,16 @@
     
 }
 
-#pragma mark - launch option
-- (void)presentWakeUpView:(NSNotification *)notification{
-    NSLog(@"Received local notification");
-    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-    EWTaskItem *task = notification.userInfo[kPushTaskKey];
-    controller.task  = task;
-    
-    //[self presentViewController:navigationController animated:YES completion:NULL];
-    [self presentViewControllerWithBlurBackground:controller];
-}
+//#pragma mark - launch option
+//- (void)presentWakeUpView:(NSNotification *)notification{
+//    NSLog(@"Received local notification");
+//    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
+//    EWTaskItem *task = notification.userInfo[kPushTaskKey];
+//    controller.task  = task;
+//    
+//    //[self presentViewController:navigationController animated:YES completion:NULL];
+//    [self presentViewControllerWithBlurBackground:controller];
+//}
 
 #pragma mark - CollectionViewDelegate
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
@@ -544,7 +544,7 @@
     
     //action sheet
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
-    sheet.tag = 1001;
+    sheet.tag = kCollectionViewCellAlert;
     [sheet showFromRect:cell.frame inView:self.view animated:YES];
     
 }

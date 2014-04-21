@@ -72,13 +72,15 @@
 
 //register the normal audio session
 - (void)registerAudioSession{
+    //deactivated first
+    [[AVAudioSession sharedInstance] setActive:NO error:NULL];
     
     //audio session
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     //set category
-    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord
-                                                    withOptions:(AVAudioSessionCategoryOptionMixWithOthers | AVAudioSessionCategoryOptionDefaultToSpeaker)
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback
+                                                    withOptions:AVAudioSessionCategoryOptionMixWithOthers
                                                           error:&error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     //force speaker
@@ -88,20 +90,65 @@
     //set active
     success = [[AVAudioSession sharedInstance] setActive:YES error:&error];
     if (!success || error){
-        NSLog(@"Unable to activate audio session:%@", error);
+        NSLog(@"Unable to activate BACKGROUNDING audio session:%@", error);
     }else{
-        NSLog(@"Audio session activated!");
+        NSLog(@"BACKGROUNDING Audio session activated!");
     }
     //set active bg sound
     [self playSilentSound];
 }
 
 //register the playing session
+- (void)registerActiveAudioSession{
+    //deactivated first
+    [[AVAudioSession sharedInstance] setActive:NO error:NULL];
+    
+    //audio session
+    [[AVAudioSession sharedInstance] setDelegate: self];
+    NSError *error = nil;
+    
+    //set category
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback
+                                                    withOptions: AVAudioSessionCategoryOptionDuckOthers
+                                                          error: &error];
+    if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
+    
+    //set active
+    success = [[AVAudioSession sharedInstance] setActive:YES error:&error];
+    if (!success || error){
+        NSLog(@"Unable to activate ACTIVE audio session:%@", error);
+    }else{
+        NSLog(@"ACTIVE Audio session activated!");
+    }
+}
 
+- (void)registerRecordingAudioSession{
+    //deactivated first
+    [[AVAudioSession sharedInstance] setActive:NO error:NULL];
+    
+    [[AVAudioSession sharedInstance] setDelegate: self];
+    NSError *error = nil;
+    
+    //set category
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord
+                                                    withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker
+                                                          error:&error];
+    if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
+    
+    //set active
+    success = [[AVAudioSession sharedInstance] setActive:YES error:&error];
+    if (!success || error){
+        NSLog(@"Unable to activate ACTIVE audio session:%@", error);
+    }else{
+        NSLog(@"RECODING Audio session activated!");
+    }
+}
 
 #pragma mark - PLAY FUNCTIONS
 //play for cell with progress
 -(void)playForCell:(UITableViewCell *)cell{
+    //Active session
+    //[self registerActiveAudioSession];
     
     //determine cell type
     if (![cell isKindOfClass:[EWMediaViewCell class]]) return;
@@ -494,7 +541,7 @@ void RouteChangeListener(	void *inClientData,
     //SystemSound
     NSURL *soundUrl;
     if (!path) {
-        soundUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"new" ofType:@"caf"]];
+        soundUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"tock" ofType:@"caf"]];
     }else{
         if ([path isFileURL] || ![path.absoluteString hasPrefix:@"http"]) {
             //local file

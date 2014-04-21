@@ -47,6 +47,7 @@
 @property (nonatomic, retain) NSSet *sentMessages;
 @property (nonatomic, retain) NSSet *tasks;
 @property (nonatomic, retain) NSSet *tasksHelped;
+@property (nonatomic, retain) NSSet *mediaAssets;
 
 //local properties
 @property (nonatomic) UIImage *profilePic;
@@ -105,6 +106,11 @@
 - (void)removeMediasObject:(EWMediaItem *)value;
 - (void)addMedias:(NSSet *)values;
 - (void)removeMedias:(NSSet *)values;
+
+- (void)addMediaAssetsObject:(EWMediaItem *)value;
+- (void)removeMediaAssetsObject:(EWMediaItem *)value;
+- (void)addMediaAssets:(NSSet *)values;
+- (void)removeMediaAssets:(NSSet *)values;
 
 - (void)addReceivedMessagesObject:(EWMessage *)value;
 - (void)removeReceivedMessagesObject:(EWMessage *)value;

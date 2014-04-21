@@ -116,7 +116,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     for (unsigned i=0; i<[_tableView numberOfRowsInSection:0]; i++) {
         EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-        
+        if (!cell) {
+            continue;
+        }
         //state
         if (cell.alarmToggle.on != cell.alarm.state) {
             NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmToggle.on?@"ON":@"OFF");

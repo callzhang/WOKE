@@ -63,7 +63,7 @@
 #define kMediaPlayInterval              3 //3s
 #define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
 #define kSocialGraphUpdateInterval      3600*24*7
-#define kMaxMediasPerTask               3
+#define kMaxVoicePerTask               3
 
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."

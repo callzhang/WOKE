@@ -75,10 +75,11 @@
 - (void)scheduleNotificationForTask:(EWTaskItem *)task;
 - (void)cancelNotificationForTask:(EWTaskItem *)task;
 - (NSArray *)localNotificationForTask:(EWTaskItem *)task;
-- (void)fireSilentAlarmForTask:(EWTaskItem *)task;
+- (void)fireAlarmForTask:(EWTaskItem *)task;
 
 //check
 - (void)checkScheduledNotifications;
+- (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task;
 
 /**
 Checks the tasks relation from EWPerson. If task is in the past, this method moves it to Person.pastTasks relation, and schedule new task.

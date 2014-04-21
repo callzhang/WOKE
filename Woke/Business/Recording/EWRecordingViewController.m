@@ -71,6 +71,18 @@
 
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    [[AVManager sharedManager] registerRecordingAudioSession];
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    
+    [[AVManager sharedManager] registerAudioSession];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -126,7 +138,13 @@
             media = [[EWMediaStore sharedInstance] createMedia];
             media.author = currentUser;
             media.message = self.message.text;
-            [media addTasksObject:task];
+            
+            //add relationship
+            //[media addTasksObject:task];
+            //Add to media queue instead of task
+            media.receiver = task.owner;
+            
+            
             media.audioKey = recordDataString;
             media.createddate = [NSDate date];
         }

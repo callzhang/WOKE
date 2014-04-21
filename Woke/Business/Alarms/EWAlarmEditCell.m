@@ -53,7 +53,7 @@
 }
 
 - (IBAction)toggleAlarm:(UISwitch *)sender {
-    BOOL alarmOn = sender.on;
+    BOOL alarmOn = sender.on ? YES:NO;
     if (alarmOn) {
         //sender.backgroundColor = [UIColor clearColor];
     } else {

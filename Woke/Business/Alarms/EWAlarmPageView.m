@@ -45,6 +45,21 @@
     return self;
 }
 
+
+- (void)dealloc{
+    @try {
+        [task removeObserver:self forKeyPath:@"state"];
+        [task removeObserver:self forKeyPath:@"medias"];
+        [task removeObserver:self forKeyPath:@"time"];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kTaskDeleteNotification object:nil];
+        NSLog(@"Alarm page deallocated, KVO & Observer removed");
+    }
+    @catch (NSException *exception) {
+        NSLog(@"*** Alarm page unable to remove task observer: %@",exception);
+    }
+}
+
+
 #pragma mark - UI actions
 - (IBAction)editAlarm:(id)sender {
     NSLog(@"Edit task: %@", task.time);
@@ -57,9 +72,7 @@
 //    a.state = [NSNumber numberWithBool:sender.on];
     
     task.state = sender.on;
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        //
-    } onFailure:^(NSError *error) {
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSLog(@"Task state failed to save");
         sender.on = !(sender.on);
         [self setNeedsDisplay];
@@ -178,41 +191,41 @@
         NSLog(@"*** Received task change that not belongs to this alarm page, check observer set up!");
         return;
     }
-    @try {
-        if ([object isKindOfClass:[EWTaskItem class]]) {
-            //TODO: dispatch different tasks for each updates
-            if ([keyPath isEqualToString:@"state"]) {
-                self.alarmState.on = (BOOL)change[NSKeyValueChangeNewKey];
-                [self.alarmState setNeedsDisplay];
-                NSLog(@"Task on %@ chenged to %uud", task.time.weekday, self.alarmState.on);
-            }else if ([keyPath isEqualToString:@"medias"]){
-                [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];
-                
-            }else if ([keyPath isEqualToString:@"time"]){
-                self.timeText.text = [task.time date2timeShort];
-                self.AM.text = [task.time date2am];
+    
+    
+    if ([object isKindOfClass:[EWTaskItem class]]) {
+        //TODO: dispatch different tasks for each updates
+        if ([keyPath isEqualToString:@"state"]) {
+            
+            
+            self.alarmState.on = [(NSNumber *)change[NSKeyValueChangeNewKey] boolValue];
+            [self.alarmState setNeedsDisplay];
+            NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, self.alarmState.on?@"YES":@"NO");
+            
+            
+        }else if ([keyPath isEqualToString:@"medias"]){
+            
+            NSInteger nMedia = task.medias.count;
+            
+            if (nMedia == 0) {
+                [self.messages setTitle:@"" forState:UIControlStateNormal];
             }else{
-                NSLog(@"Unhandled task %@ change: %@", keyPath, change);
+                [self.messages setTitle:[NSString stringWithFormat:@"%ld voice tones", (long)nMedia] forState:UIControlStateNormal];
             }
-            [self setNeedsDisplay];
+            
+        }else if ([keyPath isEqualToString:@"time"]){
+            
+            self.timeText.text = [task.time date2timeShort];
+            self.AM.text = [task.time date2am];
+            
+        }else{
+            
+            NSLog(@"@@@ Unhandled task %@ change: %@", keyPath, change);
+            
         }
-    }
-    @catch (NSException *exception) {
-        NSLog(@"Failed to update alarm page %@", exception);
+        [self setNeedsDisplay];
     }
     
-}
-
-- (void)dealloc{
-    @try {
-        [task removeObserver:self forKeyPath:@"state"];
-        [task removeObserver:self forKeyPath:@"medias"];
-        [task removeObserver:self forKeyPath:@"time"];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kTaskDeleteNotification object:nil];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"*** Alarm page unable to remove task observer: %@",exception);
-    }
 }
 
 @end

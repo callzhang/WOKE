@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "EWAlarmPageView.h"
 
+#define kCollectionViewCellAlert    1001
+#define kOptionsAlert               1002
+
 @import CoreData;
 
 @class EWPerson;

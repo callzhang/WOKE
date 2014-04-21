@@ -18,6 +18,7 @@
 #import "UIViewController+Blur.h"
 #import "EWDownloadManager.h"
 #import "EWNotificationManager.h"
+#import "EWPerson.h"
 //UI
 #import "EWWakeUpViewController.h"
 
@@ -34,7 +35,7 @@
     static EWWakeUpManager *manager;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        manager = [super init];
+        manager = [[EWWakeUpManager alloc] init];
         
     });
     return manager;
@@ -207,21 +208,43 @@
     NSLog(@"Start handle timer event");
     //next REAL (not VALID) task
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
-    
+    if (task.state == NO) {
+        NSLog(@"Task is OFF, skip today's alarm");
+        return;
+    }
     if (!task) {
         NSLog(@"%s No task found for next task, abord", __func__);
         return;
     } 
     
-    //if no media for task, create a pseudo media
-    if (task.medias.count == 0) {
-        
+    //fill media from mediaAssets, if no media for task, create a pseudo media
+    NSInteger nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
+    NSInteger nVoiceNeeded = kMaxVoicePerTask - nVoice;
+    
+    for (EWMediaItem *media in [EWDataStore user].mediaAssets) {
+        if (!media.fixedDate || [media.fixedDate isEarlierThan:[NSDate date]]) {
+            if ([media.type isEqualToString: kMediaTypeVoice]) {
+                //find media to add
+                [task addMediasObject: media];
+                //remove media from mediaAssets
+                [[EWDataStore user] removeMediaAssetsObject:media];
+                //reduce the counter
+                nVoiceNeeded--;
+                if (nVoiceNeeded == 0) {
+                    break;
+                }
+            }
+        }
+    }
+    
+    nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
+    if (nVoice == 0) {
+        //need to create some voice
         EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
         [task addMediasObject:media];
-        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-            NSLog(@"Failed to save task for pseudo media: %@", error);
-        }];
+        [[EWDataStore currentContext] saveAndWait:NULL];
     }
+    
     
     //download
     [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:^{
@@ -229,18 +252,16 @@
         [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
         
         //fire a silent alarm
-        [[EWTaskStore sharedInstance] fireSilentAlarmForTask:task];
+        [[EWTaskStore sharedInstance] fireAlarmForTask:task];
         
-        //present wakeupViewController
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
         
-        //play sounds after 30s
+        //play sounds after 30s - time for alarm
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-             [controller startPlayCells];
+            //present wakeupVC and paly when displayed
+            [EWWakeUpManager presentWakeUpViewWithTask:task];
         });
         
-        //present wakeupVC
-        [EWWakeUpManager presentWakeUpViewWithTask:task];
+        
         
         //post notification
         [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.ewtaskitem_id}];
@@ -340,10 +361,14 @@
         //dispatch to main thread
         dispatch_async(dispatch_get_main_queue(), ^{
             NSLog(@"Presenting wakeUpView");
-            [rootViewController dismissViewControllerAnimated:YES completion:^{
-                
+            if (rootViewController.presentedViewController) {
+                [rootViewController dismissViewControllerAnimated:YES completion:^{
+                    [rootViewController presentViewController:controller animated:YES completion:NULL];
+                }];
+            }else{
                 [rootViewController presentViewController:controller animated:YES completion:NULL];
-            }];
+            }
+            
         });
         
         

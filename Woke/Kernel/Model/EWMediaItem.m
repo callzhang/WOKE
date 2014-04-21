@@ -24,6 +24,7 @@
 @dynamic videoKey;
 @synthesize audio;
 @dynamic audioKey;
+@dynamic fixedDate;
 @dynamic message;
 @synthesize thumbnail;
 @dynamic title;
@@ -35,6 +36,7 @@
 @dynamic ewmediaitem_id;
 @dynamic type;
 @dynamic played;
+@dynamic receiver;
 
 - (id)init
 {

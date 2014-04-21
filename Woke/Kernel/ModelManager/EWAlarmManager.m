@@ -210,7 +210,7 @@
 
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"tasks":alarm.tasks}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"alarm": alarm}];
     [[EWDataStore currentContext] deleteObject:alarm];
     for (EWTaskItem *t in alarm.tasks) {
         [[EWDataStore currentContext] deleteObject:t];
@@ -224,13 +224,15 @@
 
 - (void)deleteAllAlarms{
     NSArray *alarms = [self alarmsForUser:[EWDataStore user]];
-    NSMutableArray *tasksToDelete = [[NSMutableArray alloc] initWithCapacity:alarms.count * nWeeksToScheduleTask];
+    
+    //notification
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"alarm":alarms}];
+    
+    //delete
     for (EWAlarmItem *alarm in alarms) {
-        [tasksToDelete addObject:alarm.tasks];
         [[EWDataStore currentContext] deleteObject:alarm];
     }
-    //notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"tasks":tasksToDelete}];
+    
     //save
     NSError *err;
     [[EWDataStore currentContext] saveAndWait:&err];
@@ -252,10 +254,14 @@
         BOOL dataCorrupted = NO;
         
         for (EWAlarmItem *a in alarms) {
-            if (!a.time || !a.tone) {
+            if (!a.time) {
                 dataCorrupted = YES;
                 NSLog(@"Something wrong with alarm. Need to reschedule alarm.\n%@",a);
                 break;
+            }
+            if (!a.tone) {
+                NSLog(@"Tone not set");
+                a.tone = currentUser.preference[@"DefaultTone"];
             }
         }
         

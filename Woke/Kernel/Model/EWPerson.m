@@ -50,6 +50,7 @@
 @dynamic groupsManaging;
 @dynamic groupTasks;
 @dynamic medias;
+@dynamic mediaAssets;
 @dynamic receivedMessages;
 @dynamic sentMessages;
 @dynamic tasks;

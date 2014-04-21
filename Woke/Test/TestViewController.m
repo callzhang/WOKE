@@ -79,7 +79,7 @@
                   @"Delete all alarm & tasks.  Use it only when data is corrupted",
                   @"Send self a buzz",
                   @"Test alarm timer event. Cloase app after this!",
-                  @"Add some medias to next task",
+                  @"Add some medias to next task, takes 20s.",
                   @"Test for facebook friends list and store"];
 }
 

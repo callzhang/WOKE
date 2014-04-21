@@ -111,6 +111,8 @@
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     
+    //Active session
+    [[AVManager sharedManager] registerActiveAudioSession];
     
     //responder to remote control
     [self prepareRemoteControlEventsListener];
@@ -142,6 +144,9 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
     
     NSLog(@"WakeUpViewController popped out of view: remote control event listner stopped. Observers removed.");
+    
+    //Resume to normal session
+    [[AVManager sharedManager] registerAudioSession];
 }
 
 - (void)initData {

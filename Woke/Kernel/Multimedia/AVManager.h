@@ -63,10 +63,20 @@
 - (void)stopAllPlaying;
 
 /**
- *register for NORMAL AudioSession
- @discussion This session starts with optionof mix & speaker
+ *register for NORMAL AudioSession for backgrounding
+ @discussion This session starts with option of mix & speaker
  */
 - (void)registerAudioSession;
+
+/**
+ *register for ACTIVE PLAYING AudioSession
+ */
+- (void)registerActiveAudioSession;
+
+/**
+ *register for RECORDING AudioSession
+ */
+- (void)registerRecordingAudioSession;
 
 /**
  Play audio using AVPlayer
