@@ -26,6 +26,7 @@
 
 #pragma mark - UICollectionViewLayout Subclass hooks
 
+//Tells the layout object to update the current layout.
 - (void)prepareLayout
 {
     [super prepareLayout];
@@ -45,6 +46,7 @@
     
 }
 
+//get coordinate for cell at indexpath
 - (UICollectionViewLayoutAttributes *)centerForCellAtIndexPath:(NSIndexPath *)indexPath{
     NSInteger row = (NSInteger)( floorf((indexPath.row / _itemsPerRow)) );
     NSInteger col = indexPath.row % _itemsPerRow;
@@ -59,7 +61,7 @@
     return attributes;
 }
 
-
+//Returns the layout attributes for all of the cells and views in the specified rectangle.
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
 {
     
@@ -96,6 +98,8 @@
     return attributes;
 }
 
+
+//判断是与矩阵重叠
 - (NSArray *)getContainedRect:(CGRect)rect fromAttributesArray:(NSArray *)attributesArray{
     NSMutableArray *containedRects = [[NSMutableArray alloc] init];
     for (UICollectionViewLayoutAttributes *att in attributesArray) {
@@ -108,11 +112,14 @@
     return containedRects;
 }
 
+//Returns the layout attributes for the item at the specified index path.
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return attributeArray[indexPath.row];
 }
 
+
+//Asks the layout object if the new bounds require a layout update.
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
     //NSLog(@"New bounds asked for updated layout: (%0f,%0f,%0f,%0f)", newBounds.origin.x, newBounds.origin.y, newBounds.size.width, newBounds.size.height);
@@ -123,6 +130,7 @@
 //    
 //}
 
+//Returns the width and height of the collection view’s contents.
 - (CGSize)collectionViewContentSize
 {
     NSInteger row = _itemsPerRow == 0?0:_itemTotalCount / _itemsPerRow;
@@ -133,11 +141,14 @@
     return contentSize;
 }
 
+//Asks the delegate for the margins to apply to content in the specified section.
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
     NSInteger space = kCollectionViewCellWidth * CELL_SPACE_RATIO;
     return UIEdgeInsetsMake(space, space, space, space);
 }
 
+
+//Returns the point at which to stop scrolling.
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity{
     
     //possible cell

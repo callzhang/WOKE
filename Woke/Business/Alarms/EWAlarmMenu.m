@@ -44,7 +44,7 @@
 //        [UIView commitAnimations];
         
         [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:0.5];
+        [UIView setAnimationDuration:0.9];
         [_alphaview setAlpha:0.98];
         [UIView commitAnimations];
         
