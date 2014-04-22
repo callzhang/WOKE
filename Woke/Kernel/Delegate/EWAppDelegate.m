@@ -19,8 +19,8 @@
 #import "EWWakeUpManager.h"
 
 //tools
-#import "TestFlight.h"
-#import "TestFlight+ManualSessions.h"
+//#import "TestFlight.h"
+//#import "TestFlight+ManualSessions.h"
 #import "AVManager.h"
 #import "UIViewController+Blur.h"
 
@@ -56,9 +56,9 @@ UIViewController *rootViewController;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     //test flight
-    [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
-    [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
-    [TestFlight manuallyStartSession];
+    //[TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
+    //[TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
+    //[TestFlight manuallyStartSession];
     
     
     
@@ -181,7 +181,7 @@ UIViewController *rootViewController;
     
     NSLog(@"App is about to terminate");
 
-    [TestFlight manuallyEndSession];
+    //[TestFlight manuallyEndSession];
 }
 
 
@@ -237,7 +237,7 @@ UIViewController *rootViewController;
 
 // ============> Keep alive <=============
 - (void) keepAlive:(NSTimer *)paramSender{
-    TFLog(@"===========================>> Keep alive <<=============================");
+    NSLog(@"===========================>> Keep alive <<=============================");
     //NSLog(@"%s Time left (before) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
     
     
@@ -272,7 +272,7 @@ UIViewController *rootViewController;
         });
     }
     NSInteger tLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
-    TFLog(@"%s Time left (after) %@ (%ld)", __func__, tLeft>1000?@"999s":[NSString stringWithFormat:@"%ld",(long)tLeft] , count++);
+    NSLog(@"%s Time left (after) %@ (%ld)", __func__, tLeft>1000?@"999s":[NSString stringWithFormat:@"%ld",(long)tLeft] , count++);
 
 }
 

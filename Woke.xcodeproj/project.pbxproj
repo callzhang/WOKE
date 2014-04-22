@@ -127,7 +127,6 @@
 		AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837D18D2C8BA0087E654 /* tock.caf */; };
 		AB6BE34F18D7C03A00444ABC /* EWRoundButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */; };
 		AB6BE35218D804C700444ABC /* EWMediaSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE35118D804C700444ABC /* EWMediaSlider.m */; };
-		AB7243CC18F0B08100AE7041 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB7243CB18F0B08100AE7041 /* libTestFlight.a */; };
 		AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB7243CD18F0B09800AE7041 /* Reveal.framework */; };
 		AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78078E18393A66007C8BFD /* EWAlarmManager.m */; };
 		AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079218393A66007C8BFD /* EWGroupStore.m */; };
@@ -431,7 +430,6 @@
 				AB245FA518CCD58800551721 /* MobileCoreServices.framework in Frameworks */,
 				AB245FA418CCD57E00551721 /* MapKit.framework in Frameworks */,
 				AB245FAF18CCD70C00551721 /* CoreLocation.framework in Frameworks */,
-				AB7243CC18F0B08100AE7041 /* libTestFlight.a in Frameworks */,
 				AB245FAA18CCD5BB00551721 /* Accounts.framework in Frameworks */,
 				AB245FB018CCD75400551721 /* SystemConfiguration.framework in Frameworks */,
 				ABC8F96318E8890D0096C073 /* MediaPlayer.framework in Frameworks */,

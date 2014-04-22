@@ -529,6 +529,10 @@
 
 + (void)getFacebookFriends{
     NSLog(@"Updating facebook friends");
+    if (!currentUser.facebook) {
+        return;
+    }
+    
     FBSessionState state = [FBSession activeSession].state;
     if (state != FBSessionStateOpen && state != FBSessionStateOpenTokenExtended) {
         //session not open, need to open
