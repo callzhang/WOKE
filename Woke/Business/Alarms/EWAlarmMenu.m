@@ -35,7 +35,7 @@
 //        tbv.alpha=0.78;
 //        _alphaview=tbv;
         
-        UIToolbar *tb=[[UIToolbar alloc]initWithFrame:CGRectMake(-([[UIScreen mainScreen]bounds].size.width), -([[UIScreen mainScreen]bounds].size.height),([[UIScreen mainScreen] bounds].size.width)*4,  ([[UIScreen mainScreen] bounds].size.height)*4)];
+        UIToolbar *tb=[[UIToolbar alloc]initWithFrame:CGRectMake(-([[UIScreen mainScreen]bounds].size.width), -([[UIScreen mainScreen]bounds].size.height),([[UIScreen mainScreen] bounds].size.width)*5,  ([[UIScreen mainScreen] bounds].size.height)*5)];
         _alphaview=tb;
         _alphaview.alpha=0;
 //        [UIView beginAnimations:nil context:NULL];
@@ -44,7 +44,7 @@
 //        [UIView commitAnimations];
         
         [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:0.5];
+        [UIView setAnimationDuration:0.8];
         [_alphaview setAlpha:0.98];
         [UIView commitAnimations];
         
@@ -97,42 +97,90 @@
 //    personcell.profilePic.image =imageview.image;
 //  _personcellview=personcell;
 
-
+    UIButton *button=[[UIButton alloc]initWithFrame:CGRectMake(-([[UIScreen mainScreen]bounds].size.width), -([[UIScreen mainScreen]bounds].size.height),([[UIScreen mainScreen] bounds].size.width)*5,  ([[UIScreen mainScreen] bounds].size.height)*5)];
+    [button addTarget:self action:@selector(closemeun) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_alphaview];
+    [self addSubview:button];
     [self addSubview:_profilebutton];
     [self addSubview:_buzzbutton];
     [self addSubview:_voicebutton];
     [self addSubview:_closebutton];
 //  [self addSubview:collectionview];
     [self addSubview:_personcellview];
+        _profilebutton.alpha=0;
+        _buzzbutton.alpha=0;
+        _voicebutton.alpha=0;
+        _closebutton.alpha=0;
+        
+        
+
 //    [self.superview bringSubviewToFront:_closebutton];
 //        int index3=[self.superview.subviews indexOfObject:cell];
 //        NSLog(@"index3:%i",index3);
         
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    [UIView beginAnimations:nil context:context];
-    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-    [UIView setAnimationDuration:0.4];
-    CGRect rect1=[_profilebutton frame];
-    CGRect rect2=[_buzzbutton frame];
-    CGRect rect3=[_voicebutton frame];
-    CGRect rect4=[_closebutton frame];
+//    CGContextRef context = UIGraphicsGetCurrentContext();
+//    [UIView beginAnimations:nil context:context];
+//    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+        [UIView animateWithDuration:0.6 delay:0.2 options:UIViewAnimationOptionCurveEaseIn animations:^
+        {
+            CGRect rect1=[_profilebutton frame];
+            CGRect rect2=[_buzzbutton frame];
+            CGRect rect3=[_voicebutton frame];
+            CGRect rect4=[_closebutton frame];
+            
+            rect1.origin.x=cell.frame.origin.x-30;
+            rect1.origin.y=cell.frame.origin.y-30;
+            rect2.origin.y=cell.frame.origin.y-45;
+            rect3.origin.x=cell.frame.origin.x+cell.frame.size.width+5;
+            rect3.origin.y=cell.frame.origin.y-30;
+            rect4.origin.y=cell.frame.origin.y+cell.frame.size.height+10;
+            
+            [_profilebutton setFrame:rect1];
+            [_buzzbutton setFrame:rect2];
+            [_voicebutton setFrame:rect3];
+            [_closebutton setFrame:rect4];
+            
+
+        } completion:^(BOOL finished)
+        {
+                            [UIView animateWithDuration:0.15 delay:0.2 options:UIViewAnimationOptionCurveEaseIn animations:^
+                 {
+                     CGRect nrect1=[_profilebutton frame];
+                     CGRect nrect2=[_buzzbutton frame];
+                     CGRect nrect3=[_voicebutton frame];
+                     CGRect nrect4=[_closebutton frame];
+                     
+                     nrect1.origin.x=cell.frame.origin.x-20;
+                     nrect1.origin.y=cell.frame.origin.y-20;
+                     nrect2.origin.y=cell.frame.origin.y-35;
+                     nrect3.origin.x=cell.frame.origin.x+cell.frame.size.width-10;
+                     nrect3.origin.y=cell.frame.origin.y-20;
+                     nrect4.origin.y=cell.frame.origin.y+cell.frame.size.height;
+                     
+                     [_profilebutton setFrame:nrect1];
+                     [_buzzbutton setFrame:nrect2];
+                     [_voicebutton setFrame:nrect3];
+                     [_closebutton setFrame:nrect4];
+                     
+                 } completion:nil];
+
+        }
+         ];
         
-    rect1.origin.x=cell.frame.origin.x-20;
-    rect1.origin.y=cell.frame.origin.y-20;
-    rect2.origin.y=cell.frame.origin.y-35;
-    rect3.origin.x=cell.frame.origin.x+cell.frame.size.width-10;
-    rect3.origin.y=cell.frame.origin.y-20;
-    rect4.origin.y=cell.frame.origin.y+cell.frame.size.height;
-        
-    [_profilebutton setFrame:rect1];
-    [_buzzbutton setFrame:rect2];
-    [_voicebutton setFrame:rect3];
-    [_closebutton setFrame:rect4];
-    
-    [UIView commitAnimations];
+        [UIView animateWithDuration:1.8 delay:0.2 options:UIViewAnimationOptionCurveEaseIn animations:^
+         {
+                 _profilebutton.alpha=1;
+                 _buzzbutton.alpha=1;
+                 _voicebutton.alpha=1;
+                 _closebutton.alpha=1;
+             
+         } completion:nil];
     
     self.collectionView.scrollEnabled = NO;
+    
+
+    
+
 
         
     }
