@@ -155,7 +155,9 @@
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
     _collectionView.contentInset = UIEdgeInsetsMake(_collectionView.frame.size.height, _collectionView.frame.size.width, _collectionView.frame.size.height, _collectionView.frame.size.width);
-    [_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    //[_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
+    [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     _collectionView.backgroundColor = [UIColor clearColor];
     _collectionView.tag = kHexagonViewIdentifier;
     
@@ -164,6 +166,12 @@
     _scrollView.pagingEnabled = YES;
     _scrollView.tag = kAlarmPageViewIdentifier;
     _pageView.currentPage = 0;
+    
+    //add blur
+    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
+    blurBar.barStyle = UIBarStyleBlack;
+    [self.view insertSubview:blurBar aboveSubview:_collectionView];
+    
     
     //add button
     self.addBtn.hidden = (tasks.count == 0) ? NO:YES;
@@ -527,12 +535,29 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     //Cell
+    
     EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
+    
+    [cell applyHexagonMask];
+    
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
-    //UI
-    cell.profilePic.image = person.profilePic;
-    cell.name.text = person.name;
+    cell.name.text = [person.name initial];
+    cell.profilePic.image = [UIImage imageNamed:@"profile"];
+    
+    dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+        //Data
+        
+        UIImage *profile = person.profilePic;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //UI
+            cell.profilePic.image = profile;
+            
+            [cell setNeedsDisplay];
+            
+        });
+    });
     
     return cell;
 }

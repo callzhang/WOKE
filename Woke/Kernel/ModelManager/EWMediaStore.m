@@ -82,9 +82,9 @@
     
     
     [[EWDataStore currentContext] saveAndWait:NULL];
-    //[[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
-    if (media.audioKey.length > 500) {
-        //media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+    [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
+    NSInteger retry = 10;
+    while (media.audioKey.length > 500 && retry>0) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ewmediaitem_id == %@", media.ewmediaitem_id];
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
         request.predicate = predicate;
@@ -92,6 +92,8 @@
         if (medias.count == 1) {
             return medias[0];
         }
+        retry--;
+        NSLog(@"Still waiting for AWS url to be returned");
     }
     
     return media;
@@ -136,6 +138,10 @@
         }
     }
     return medias;
+}
+
+- (EWMediaItem *)nextValidVoiceForPerson:(EWPerson *)person{
+    
 }
 
 #pragma mark - DELETE

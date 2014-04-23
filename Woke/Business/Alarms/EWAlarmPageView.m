@@ -85,9 +85,8 @@
 
 - (IBAction)playMessage:(id)sender {
     if (task.medias.count) {
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-        controller.task = self.task;
-        [rootViewController presentViewController:controller animated:YES completion:^{}];
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:self.task];
+        [rootViewController presentViewControllerWithBlurBackground:controller];
     }
 }
 

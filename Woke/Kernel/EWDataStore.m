@@ -183,11 +183,8 @@ AmazonSNSClient *snsClient;
     [self.coreDataStore syncWithServer];
     
     //refresh current user
-    if ([NSThread isMainThread]) {
-        NSLog(@"1. refresh current user");
-        currentUser = [[EWPersonStore sharedInstance] getPersonByID:currentUser.username];
-    }
-    
+    NSLog(@"1. Register AWS push key");
+    [EWUserManagement registerAPNS];
     
     //check alarm, task, and local notif
     [self checkAlarmData];

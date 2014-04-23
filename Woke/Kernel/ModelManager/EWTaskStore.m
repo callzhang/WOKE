@@ -67,10 +67,10 @@
 #pragma mark - SEARCH
 - (NSArray *)getTasksByPerson:(EWPerson *)p{
     EWPerson *person = [EWDataStore objectForCurrentContext:p];
-    NSArray *tasks = [person.tasks allObjects];
+    NSMutableArray *tasks = [[person.tasks allObjects] mutableCopy];
     BOOL fetch = YES;
     
-    //if self OR person is not outdated, skip fetch
+    //if self OR person is up to date, skip fetch
     if ([person.objectID isEqual:currentUser.objectID] || ![person.lastmoddate isOutDated]) {
         //plus the task count is 7n
         if (tasks.count == 7 * nWeeksToScheduleTask) {
@@ -88,19 +88,23 @@
         //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         request.predicate = predicate1;
         
-        tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
+        tasks = [[[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL] mutableCopy];
         //Cannot retrieve referenceObject from an objectID that was not created by this store
     }
     
-    
-    //check past task, move it to pastTasks and remove it from the array
-    NSMutableArray *goodTasks = [tasks mutableCopy];
-    [self checkPastTasks:goodTasks];
-    
+    if ([person.username isEqualToString:currentUser.username]) {
+        //check past task, move it to pastTasks and remove it from the array
+        [self checkPastTasks:tasks];
+        
+        //check
+        if (tasks.count != 7) {
+            NSLog(@"Only %d found", tasks.count);
+            //[self scheduleTasks];
+        }
+    }
     
     //sort
-    tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
-    return tasks;
+    return [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
 }
 
 + (NSArray *)myTasks{
@@ -187,7 +191,7 @@
     NSLog(@"Start scheduling tasks");
     
     //check necessity
-    NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];
+    NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];//avoid using 'getTaskByPerson:' method to cycle calling
     NSArray *alarms = [EWAlarmManager myAlarms];
     if (!alarms) {
         NSLog(@"Something wrong with my alarms, get nil");
@@ -266,7 +270,7 @@
     NSError *err;
     [[EWDataStore currentContext] saveAndWait:&err];
     if (err){
-        [NSException raise:@"Unable to save new tasks" format:@"Error:%@", err.description];
+        NSLog(@"Unable to save new tasks: %@", err.description);
     }
     
     //last checked
@@ -278,9 +282,13 @@
 
 - (void)checkPastTasks:(NSMutableArray *)tasks{
     //nullify old task's relation to alarm
-    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
+    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingSeconds:-kMaxWakeTime]];
     NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
     for (EWTaskItem *t in outDatedTasks) {
+        if (![t.owner.username isEqualToString:currentUser.username]) {
+            NSLog(@"@@@ Passed in tasks are not for current user");
+            return;
+        }
         t.alarm = nil;
         t.owner = nil;
         t.pastOwner = [EWDataStore user];
@@ -473,7 +481,7 @@
     } onFailure:^(NSError *error) {
         [NSException raise:@"Task deletion error" format:@"Reason: %@", error.description];
     }];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:self userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:self userInfo:nil];
 }
 
 - (void)deleteAllTasks{

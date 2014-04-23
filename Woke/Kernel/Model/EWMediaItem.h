@@ -23,7 +23,7 @@
 @property (nonatomic, retain) NSDate * createddate;
 @property (nonatomic, retain) NSString *ewmediaitem_id;
 @property (nonatomic, retain) NSDate * fixedDate;
-@property (nonatomic, retain) NSSet *groupTask;
+@property (nonatomic, retain) EWGroupTask *groupTask;
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic, retain) NSString * imageKey;
 @property (nonatomic, retain) NSDate * lastmoddate;
@@ -32,7 +32,7 @@
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) UIImage *thumbnail;
 @property (nonatomic, retain) NSString * videoKey;
-@property (nonatomic, retain) NSSet *tasks;
+@property (nonatomic, retain) EWTaskItem *task;
 @property (nonatomic, retain) NSString *type;
 @property (nonatomic, retain) EWPerson * receiver;
 
@@ -46,16 +46,16 @@
 @end
 
 
-@interface EWMediaItem (CoreDataGeneratedAccessors)
+//@interface EWMediaItem (CoreDataGeneratedAccessors)
 
-- (void)addGroupTask:(NSSet*)value_;
-- (void)removeGroupTask:(NSSet*)value_;
-- (void)addGroupTaskObject:(EWGroupTask*)value_;
-- (void)removeGroupTaskObject:(EWGroupTask*)value_;
+//- (void)addGroupTask:(NSSet*)value_;
+//- (void)removeGroupTask:(NSSet*)value_;
+//- (void)addGroupTaskObject:(EWGroupTask*)value_;
+//- (void)removeGroupTaskObject:(EWGroupTask*)value_;
+//
+//- (void)addTasks:(NSSet*)value_;
+//- (void)removeTasks:(NSSet*)value_;
+//- (void)addTasksObject:(EWTaskItem*)value_;
+//- (void)removeTasksObject:(EWTaskItem*)value_;
 
-- (void)addTasks:(NSSet*)value_;
-- (void)removeTasks:(NSSet*)value_;
-- (void)addTasksObject:(EWTaskItem*)value_;
-- (void)removeTasksObject:(EWTaskItem*)value_;
-
-@end
+//@end

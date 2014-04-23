@@ -269,7 +269,7 @@
                     //voice
                     EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
                     //[task addMediasObject:media];
-                    [media addTasksObject:task];
+                    media.task = task;
                     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
                         NSLog(@"Failed to save task for pseudo media: %@", error);
                     }];

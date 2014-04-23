@@ -52,18 +52,23 @@
 
 #define UIColorFromHex(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
+#define TICK   NSDate *startTime = [NSDate date];
+#define TOCK   NSLog(@"Time: %f", -[startTime timeIntervalSinceNow]);
+
 //#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 //Global parameters
 #define nWeeksToScheduleTask            1
 #define nLocalNotifPerTask              5
 #define serverUpdateInterval            1800 //30 min
-#define alarmInterval                   600 //10min
+#define kAlarmTimerCheckInterval        150 //30 min
+#define alarmInterval                   600 //10 min
 #define kMaxWakeTime                    3600 // 60min
 #define kMediaPlayInterval              3 //3s
 #define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
 #define kSocialGraphUpdateInterval      3600*24*7
-#define kMaxVoicePerTask               3
+#define kMaxVoicePerTask                3
+#define kLoopMediaPlayCount             10
 
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."
@@ -84,7 +89,12 @@
 #define kLastChecked                    @"last_checked"
 #define kSavedAlarms                    @"saved_alarms"
 
-//event
+//events
+//App wide events
+#define kWokeNotification               @"woke"
+#define kNewBuzzNotification            @"buzz_event"
+#define kNewMediaNotification           @"media_event" //key: task & media
+#define kNewTimerNotification           @"alarm_timer"
 //alarm store
 #define kAlarmNewNotification           @"EWAlarmNew" //key: alarm
 #define kAlarmStateChangedNotification  @"EWAlarmStateChanged"//key: alarm
@@ -108,10 +118,6 @@
 //#define kMediaNewNotification           @"EWMediaNew"
 
 #define kPushAPNSRegisteredNotification @"APNSRegistered"
-//EWServer
-#define kNewBuzzNotification            @"buzz_event"
-#define kNewMediaNotification           @"media_event" //key: task & media
-#define kNewTimerNotification           @"alarm_timer"
 
 //Notification key
 #define kPushPersonKey                  @"person"
@@ -140,7 +146,7 @@
 
 //CollectionView Cell
 #define kCollectionViewCellWidth        80
-#define kCollectionViewCellHeight       100
+#define kCollectionViewCellHeight       80
 #define kCollectionViewCellPersonRadius 40
 #define CELL_SPACE_RATIO                1.8
 //#endif

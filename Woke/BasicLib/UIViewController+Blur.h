@@ -8,8 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum{
+    EWBlurViewOptionWhite,
+    EWBlurViewOptionBlack
+} EWBlurViewOptions;
+
 @interface UIViewController (Blur)
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController;
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController completion:(void (^)(void))block;
+- (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController option:(EWBlurViewOptions)blurOption completion:(void (^)(void))block;
 - (void)dismissBlurViewControllerWithCompletionHandler:(void(^)(void))completion;
 @end

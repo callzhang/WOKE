@@ -1,16 +1,11 @@
-//
-//  PBJHexagonFlowLayout.m
-//
-//  Created by Patrick Piemonte on 10/30/13.
-//  Copyright (c) 2013. All rights reserved.
-//
 
-#import "PBJHexagonFlowLayout.h"
+
+#import "EWHexagonFlowLayout.h"
 #import "EWUIUtil.h"
 
 
 
-@interface PBJHexagonFlowLayout ()
+@interface EWHexagonFlowLayout ()
 {
     NSInteger _itemsPerRow;
     NSInteger _itemTotalCount;
@@ -19,7 +14,7 @@
 
 @end
 
-@implementation PBJHexagonFlowLayout
+@implementation EWHexagonFlowLayout
 @synthesize itemsPerRow = _itemsPerRow;
 @synthesize itemTotalCount = _itemTotalCount;
 @synthesize hexagonSize = _hexagonSize;

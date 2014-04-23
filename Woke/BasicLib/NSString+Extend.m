@@ -52,6 +52,20 @@
     return repeatDays;
 }
 
+- (NSString *)initial{
+    NSArray *nameArray = [self componentsSeparatedByString:@" "];
+    NSString *first;
+    NSString *last;
+    @try {
+        first = [(NSString *)nameArray[0] substringToIndex:1];
+        last = [(NSString *)nameArray[1] substringToIndex:1];
+    }
+    @catch (NSException *exception) {
+        last = @" ";
+    }
+    return [NSString stringWithFormat:@"%@ %@", first, last];
+}
+
 
 @end
 

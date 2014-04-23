@@ -70,6 +70,7 @@
     return self;
 }
 
+#pragma mark - Audio Sessions
 //register the normal audio session
 - (void)registerAudioSession{
     //deactivated first
@@ -102,6 +103,7 @@
 - (void)registerActiveAudioSession{
     //deactivated first
     [[AVAudioSession sharedInstance] setActive:NO error:NULL];
+    [self stopAvplayer];
     
     //audio session
     [[AVAudioSession sharedInstance] setDelegate: self];
@@ -125,6 +127,7 @@
 - (void)registerRecordingAudioSession{
     //deactivated first
     [[AVAudioSession sharedInstance] setActive:NO error:NULL];
+    [self stopAvplayer];
     
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
@@ -440,7 +443,7 @@
 
 - (void)playSilentSound{
     NSLog(@"AVPlayer is about to play silent sound");
-    NSURL *path = [[NSBundle mainBundle] URLForResource:@"Silence04s" withExtension:@"caf"];
+    NSURL *path = [[NSBundle mainBundle] URLForResource:@"bg" withExtension:@"caf"];
     [self playAvplayerWithURL:path];
     //avplayer.volume = 0.01;
 }
@@ -592,7 +595,7 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
         
         if (!m) m = media;
-        EWTaskItem *task = [m.tasks anyObject];
+        EWTaskItem *task = m.task;
         NSString *title = [task.time weekday];
         
         //info

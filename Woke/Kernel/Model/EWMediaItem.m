@@ -29,7 +29,7 @@
 @synthesize thumbnail;
 @dynamic title;
 @dynamic author;
-@dynamic tasks;
+@dynamic task;
 @dynamic groupTask;
 @dynamic createddate;
 @dynamic lastmoddate;

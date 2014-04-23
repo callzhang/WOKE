@@ -110,7 +110,7 @@
 		AB286A9618DA8BA8003131C8 /* EWWakeUpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */; };
 		AB29C48118DE75BA00C0A141 /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */; };
 		AB29C4CB18DEBCE700C0A141 /* UIViewController+Blur.m in Sources */ = {isa = PBXBuildFile; fileRef = AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */; };
-		AB29C4CE18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AB29C4CD18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m */; };
+		AB29C4CE18DF7C8A00C0A141 /* EWHexagonFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AB29C4CD18DF7C8A00C0A141 /* EWHexagonFlowLayout.m */; };
 		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
 		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
 		AB2C18CD18737F670058BFAD /* EWAlarmEditCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */; };
@@ -165,6 +165,8 @@
 		ABFCB2E2186E957100355781 /* Tropical Delight.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DD186E957100355781 /* Tropical Delight.caf */; };
 		ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DE186E957100355781 /* Sunny Afternoon.caf */; };
 		ABFCB2E4186E957100355781 /* Drive.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DF186E957100355781 /* Drive.caf */; };
+		ABFECBE219064F6400DD5BDC /* EWCollectionPersonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABFECBE119064F6400DD5BDC /* EWCollectionPersonCell.xib */; };
+		ABFECBF719075F4200DD5BDC /* bg.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFECBF619075F4100DD5BDC /* bg.caf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -274,9 +276,9 @@
 		AB0DF50918FE509C00CF5AB1 /* EWSocialGraphManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialGraphManager.m; sourceTree = "<group>"; };
 		AB13C1C91862D32400231159 /* EWPersonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPersonViewController.h; sourceTree = "<group>"; };
 		AB13C1CA1862D32400231159 /* EWPersonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPersonViewController.m; sourceTree = "<group>"; };
-		AB13C1CB1862D32400231159 /* EWPersonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPersonCell.h; sourceTree = "<group>"; };
-		AB13C1CC1862D32400231159 /* EWPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPersonCell.m; sourceTree = "<group>"; };
-		AB13C1CD1862D32400231159 /* EWPersonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPersonCell.xib; sourceTree = "<group>"; };
+		AB13C1CB1862D32400231159 /* EWPersonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWPersonCell.h; path = Social/Person/EWPersonCell.h; sourceTree = "<group>"; };
+		AB13C1CC1862D32400231159 /* EWPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWPersonCell.m; path = Social/Person/EWPersonCell.m; sourceTree = "<group>"; };
+		AB13C1CD1862D32400231159 /* EWPersonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWPersonCell.xib; path = Social/Person/EWPersonCell.xib; sourceTree = "<group>"; };
 		AB13C1CE1862D32400231159 /* EWPersonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPersonView.xib; sourceTree = "<group>"; };
 		AB15A43B186FE95B00C4547E /* EarlyWorm 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "EarlyWorm 2.xcdatamodel"; sourceTree = "<group>"; };
 		AB1951AB185AB2AD003C7EE0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -317,12 +319,12 @@
 		AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
 		AB29C4C918DEBCE700C0A141 /* UIViewController+Blur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Blur.h"; sourceTree = "<group>"; };
 		AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 1; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Blur.m"; sourceTree = "<group>"; tabWidth = 1; };
-		AB29C4CC18DF7C8A00C0A141 /* PBJHexagonFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBJHexagonFlowLayout.h; sourceTree = "<group>"; };
-		AB29C4CD18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBJHexagonFlowLayout.m; sourceTree = "<group>"; };
+		AB29C4CC18DF7C8A00C0A141 /* EWHexagonFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWHexagonFlowLayout.h; path = Alarms/EWHexagonFlowLayout.h; sourceTree = "<group>"; };
+		AB29C4CD18DF7C8A00C0A141 /* EWHexagonFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWHexagonFlowLayout.m; path = Alarms/EWHexagonFlowLayout.m; sourceTree = "<group>"; };
 		AB2C18C218733C7F0058BFAD /* image.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = image.xcassets; sourceTree = "<group>"; };
-		AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmEditCell.xib; sourceTree = "<group>"; };
-		AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmEditCell.h; sourceTree = "<group>"; };
-		AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmEditCell.m; sourceTree = "<group>"; };
+		AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWAlarmEditCell.xib; path = Alarms/EWAlarmEditCell.xib; sourceTree = "<group>"; };
+		AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWAlarmEditCell.h; path = Alarms/EWAlarmEditCell.h; sourceTree = "<group>"; };
+		AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWAlarmEditCell.m; path = Alarms/EWAlarmEditCell.m; sourceTree = "<group>"; };
 		AB2D195018E26ED100FED6F0 /* EWWakeUpManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWakeUpManager.h; sourceTree = "<group>"; };
 		AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWakeUpManager.m; sourceTree = "<group>"; };
 		AB2DFBC718BA7CBE00534AF1 /* buzz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buzz.caf; sourceTree = "<group>"; };
@@ -407,6 +409,8 @@
 		ABFCB2DD186E957100355781 /* Tropical Delight.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Tropical Delight.caf"; sourceTree = "<group>"; };
 		ABFCB2DE186E957100355781 /* Sunny Afternoon.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sunny Afternoon.caf"; sourceTree = "<group>"; };
 		ABFCB2DF186E957100355781 /* Drive.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Drive.caf; sourceTree = "<group>"; };
+		ABFECBE119064F6400DD5BDC /* EWCollectionPersonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWCollectionPersonCell.xib; path = "UI Components/EWCollectionPersonCell.xib"; sourceTree = "<group>"; };
+		ABFECBF619075F4100DD5BDC /* bg.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = bg.caf; sourceTree = "<group>"; };
 		ECF3A8B63334474C9C7D2A62 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F97D08D0DECC469FB88EFBA5 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -660,8 +664,6 @@
 				56FEA55717A5763200FC2938 /* EWAlarmsViewController.h */,
 				56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */,
 				AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */,
-				AB29C4CC18DF7C8A00C0A141 /* PBJHexagonFlowLayout.h */,
-				AB29C4CD18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m */,
 				ABCCE68C17F298290078F8AA /* EWAlarmPageView.h */,
 				ABCCE68D17F298290078F8AA /* EWAlarmPageView.m */,
 				ABCCE68B17F15D0D0078F8AA /* EWAlarmPage.xib */,
@@ -674,9 +676,6 @@
 				AB07BC0E17D6F7FF00E23F44 /* EWTextFieldCell.xib */,
 				AB0740111810FA3C00AAFC90 /* EWAlarmScheduleViewController.h */,
 				AB0740121810FA3C00AAFC90 /* EWAlarmScheduleViewController.m */,
-				AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */,
-				AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */,
-				AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */,
 			);
 			path = Alarms;
 			sourceTree = "<group>";
@@ -798,9 +797,6 @@
 				AB13C1C91862D32400231159 /* EWPersonViewController.h */,
 				AB13C1CA1862D32400231159 /* EWPersonViewController.m */,
 				AB13C1CE1862D32400231159 /* EWPersonView.xib */,
-				AB13C1CB1862D32400231159 /* EWPersonCell.h */,
-				AB13C1CC1862D32400231159 /* EWPersonCell.m */,
-				AB13C1CD1862D32400231159 /* EWPersonCell.xib */,
 				AB1EBE3418A74B41003154DB /* EWTaskHistoryCell.h */,
 				AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */,
 				AB1EBE3218A74AD1003154DB /* EWTaskHistoryCell.xib */,
@@ -910,6 +906,15 @@
 				AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */,
 				ABDAF98E18C31C010075505B /* EWCollectionPersonCell.h */,
 				ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */,
+				ABFECBE119064F6400DD5BDC /* EWCollectionPersonCell.xib */,
+				AB13C1CB1862D32400231159 /* EWPersonCell.h */,
+				AB13C1CC1862D32400231159 /* EWPersonCell.m */,
+				AB13C1CD1862D32400231159 /* EWPersonCell.xib */,
+				AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */,
+				AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */,
+				AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */,
+				AB29C4CC18DF7C8A00C0A141 /* EWHexagonFlowLayout.h */,
+				AB29C4CD18DF7C8A00C0A141 /* EWHexagonFlowLayout.m */,
 			);
 			name = "UI Components";
 			sourceTree = "<group>";
@@ -930,6 +935,7 @@
 			children = (
 				AB4B837D18D2C8BA0087E654 /* tock.caf */,
 				AB4B837B18D2B9840087E654 /* new.caf */,
+				ABFECBF619075F4100DD5BDC /* bg.caf */,
 				AB4B837818CFE68F0087E654 /* Silence04s.caf */,
 				ABF192AB18C03D71006A4AA2 /* media.caf */,
 				AB2DFBC718BA7CBE00534AF1 /* buzz.caf */,
@@ -1083,6 +1089,7 @@
 				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
 				AB19E9FC18698359000FBDD1 /* EWRecordingViewController.xib in Resources */,
 				AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */,
+				ABFECBE219064F6400DD5BDC /* EWCollectionPersonCell.xib in Resources */,
 				ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */,
 				AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */,
 				ABA728B61831F74900595CFD /* EWFirstTimeViewController.xib in Resources */,
@@ -1096,6 +1103,7 @@
 				ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */,
 				ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */,
 				AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */,
+				ABFECBF719075F4200DD5BDC /* bg.caf in Resources */,
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
 				AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */,
 				AB286A9618DA8BA8003131C8 /* EWWakeUpView.xib in Resources */,
@@ -1179,7 +1187,7 @@
 				ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */,
 				ABDAF99018C31C010075505B /* EWCollectionPersonCell.m in Sources */,
 				56FEA57F17A5763200FC2938 /* EWAlarmsViewController.m in Sources */,
-				AB29C4CE18DF7C8A00C0A141 /* PBJHexagonFlowLayout.m in Sources */,
+				AB29C4CE18DF7C8A00C0A141 /* EWHexagonFlowLayout.m in Sources */,
 				56FEA58017A5763200FC2938 /* EWSettingsViewController.m in Sources */,
 				AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */,
 				5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */,
@@ -1336,7 +1344,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "E7F588AD-8D3A-4E7E-98EA-B9BD94C8B1F9";
+				PROVISIONING_PROFILE = "54F6A31C-94FE-4514-994A-A0C4003C166F";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1389,7 +1397,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Derek Zhang (SRS98HY45T)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1414,7 +1422,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "E7F588AD-8D3A-4E7E-98EA-B9BD94C8B1F9";
+				PROVISIONING_PROFILE = "69072AED-0F4C-41A6-B92E-52CCC337CDC2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};
