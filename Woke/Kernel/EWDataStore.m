@@ -222,15 +222,15 @@ AmazonSNSClient *snsClient;
     }
     
     //check task
-    BOOL taskGood = [EWTaskStore.sharedInstance checkTasks];
-    if (!taskGood) {
+    //BOOL taskGood = [EWTaskStore.sharedInstance checkTasks];
+    //if (!taskGood) {
         
         dispatch_async(dispatch_queue, ^{
-            NSLog(@"3. Tasks needs to be scheduled");
+            NSLog(@"3. Scheduling task");
             [EWTaskStore.sharedInstance scheduleTasks];
         });
         
-    }
+    //}
     
     //check local notif
     dispatch_async(dispatch_queue, ^{

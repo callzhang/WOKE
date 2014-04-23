@@ -197,7 +197,7 @@
         if ([keyPath isEqualToString:@"state"]) {
             
             
-            self.alarmState.on = [(NSNumber *)change[NSKeyValueChangeNewKey] boolValue];
+            self.alarmState.on = (BOOL)change[NSKeyValueChangeNewKey];
             [self.alarmState setNeedsDisplay];
             NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, self.alarmState.on?@"YES":@"NO");
             
