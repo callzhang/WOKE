@@ -223,7 +223,8 @@
         [newMe setUsername:username];
         [newMe setPassword:password];
         newMe.name = [NSString stringWithFormat:@"User_%@", username];
-        newMe.profilePic = [UIImage imageNamed:@"profile"];
+        NSString *profilePicFile = [NSString stringWithFormat:@"%d.jpg", arc4random_uniform(16)];
+        newMe.profilePic = [UIImage imageNamed:profilePicFile];
         currentUser = newMe;
         
         //persist password to user defaults locally

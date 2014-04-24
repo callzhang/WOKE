@@ -57,11 +57,13 @@
     NSString *first;
     NSString *last;
     @try {
-        first = [(NSString *)nameArray[0] substringToIndex:1];
-        last = [(NSString *)nameArray[1] substringToIndex:1];
+        first = [[(NSString *)nameArray[0] substringToIndex:1] uppercaseString];
+        last = [[(NSString *)nameArray[1] substringToIndex:1] uppercaseString];
     }
     @catch (NSException *exception) {
-        last = @" ";
+        NSString *alphabet  = @"ABCDEFGHIJKLMNOPQRSTUVWXZY";
+        NSInteger i = arc4random_uniform((unsigned)alphabet.length);
+        last = [NSString stringWithFormat:@"%C", [alphabet characterAtIndex:i]];
     }
     return [NSString stringWithFormat:@"%@ %@", first, last];
 }
