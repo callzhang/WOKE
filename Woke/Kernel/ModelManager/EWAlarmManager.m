@@ -31,7 +31,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[EWAlarmManager alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserver:manager selector:@selector(observedAlarmChange:) name:kAlarmChangedNotification object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:manager selector:@selector(observedAlarmChange:) name:kAlarmChangedNotification object:nil];
     }); 
     
     return manager;
@@ -127,32 +127,67 @@
 #pragma mark - SCHEDULE
 //schedule according to alarms array. If array is empty, schedule according to default template.
 - (NSArray *)scheduleAlarm{
-    NSArray *alarms = [self alarmsForUser:[EWDataStore user]];
-    //check excess
-    if (alarms.count > 7) {
-        [self deleteAllAlarms];
-        //[[EWDataStore currentContext] saveAndWait:NULL];
+    BOOL hasChange = NO;
+    
+    //get alarms
+    NSMutableArray *alarms = [[self alarmsForUser:currentUser] mutableCopy];
+    
+    //check if need to check
+    if (alarms.count==0) {
+        if ([EWTaskStore myTasks].count == 0) {
+            NSLog(@"Skip check");
+            return nil;
+        }
     }
     
-    //schedule alarm from Sunday to Saturday of current week
+    //Fill array with alarm, delete redundency
     NSMutableArray *newAlarms = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
     //check if alarm scheduled are duplicated
     for (EWAlarmItem *a in alarms) {
+        
+        //check time
+        if (!a.time) {
+            [self removeAlarm:a];
+            NSLog(@"Something wrong with alarm. Deleted. %@",[a.time date2detailDateString]);
+            continue;
+        }
+        
         //get the day alarm represents
         NSInteger i = [a.time weekdayNumber];
         
         //see if that day has alarm already
-        if ([newAlarms[i] isEqual:@NO]){
-            [self deleteAllAlarms];
+        if (![newAlarms[i] isEqual:@NO]){
+            //remove duplicacy
+            NSLog(@"@@@ Duplicated alarm on %@ found. Deleted!", a.time.weekday);
+            [self removeAlarm:a];
+            hasChange = YES;
+            continue;
         }
         
-        //fill that day
+        //check tone
+        if (!a.tone) {
+            NSLog(@"Tone not set");
+            a.tone = currentUser.preference[@"DefaultTone"];
+        }
+        
+        //fill that day to the new alarm array
         newAlarms[i] = a;
+        
     }
+    
+    //remove excess
+    for (EWAlarmItem *a in alarms) {
+        if (![newAlarms containsObject:a]) {
+            NSLog(@"Corruped alarm found and deleted: %@", [a.time date2detailDateString]);
+            [self removeAlarm:a];
+            hasChange = YES;
+        }
+    }
+    
     //start add alarm if blank
-    BOOL newAlarm = NO;
     for (NSInteger i=0; i<newAlarms.count; i++) {
         if ([newAlarms[i] isKindOfClass:[EWAlarmItem class]]) {
+            //skip if alarm exists
             continue;
         }else if ([newAlarms[i] isEqual:@NO]){
             NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
@@ -178,18 +213,18 @@
             a.tone = currentUser.preference[@"DefaultTone"];
             //add to temp array
             newAlarms[i] = a;
-            newAlarm = YES;
+            hasChange = YES;
         }else{
             [NSException raise:@"Unknown state" format:@"Check weekday: %ld", (long)i];
         }
     }
     
     //save
-    if (newAlarm) {
+    if (hasChange) {
         //notification
         NSLog(@"Saving new alarms");
         
-        //save all alarms
+        //save all changes
         NSError *err;
         [[EWDataStore currentContext] saveAndWait:&err];
         if (err) {
@@ -239,51 +274,49 @@
 }
 
 #pragma mark - CHECK
-- (BOOL)checkAlarms{
-    //YES means alarms are good
-    NSArray *alarms = [self alarmsForUser:currentUser];
-    
-    if (alarms.count == 0) {
-        //need set up later
-        if (currentUser.tasks.count == 0) {
-            return YES;
-        }
-        return NO;
-    }else if (alarms.count == 7){
-        //need to check into alarms to prevent data corrupt
-        BOOL dataCorrupted = NO;
-        
-        for (EWAlarmItem *a in alarms) {
-            if (!a.time) {
-                dataCorrupted = YES;
-                NSLog(@"Something wrong with alarm. Need to reschedule alarm.\n%@",a);
-                break;
-            }
-            if (!a.tone) {
-                NSLog(@"Tone not set");
-                a.tone = currentUser.preference[@"DefaultTone"];
-            }
-        }
-        
-        if (dataCorrupted) {
-            
-            [self deleteAllAlarms];
-            return NO;
-        }else{
-            return YES;
-        }
-        
-        
-    }else{
-        //something wrong
-        NSLog(@"Something wrong with alarms (%lu), delete all", (unsigned long)alarms.count);
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alarm data corrupted" message:@"Please wait for rebuilding the alarm data" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
-        //delete all alarms
-        [self deleteAllAlarms];
-        return NO;
-    }
-}
+//- (BOOL)checkAlarms{
+//    //YES means alarms are good
+//    NSArray *alarms = [self alarmsForUser:currentUser];
+//    
+//    if (alarms.count == 0) {
+//        //need set up later
+//        if ([EWTaskStore myTasks].count == 0) {
+//            return YES;
+//        }
+//        return NO;
+//    }else if (alarms.count == 7){
+//        //need to check into alarms to prevent data corrupt
+//        BOOL dataCorrupted = NO;
+//        
+//        for (EWAlarmItem *a in alarms) {
+//            if (!a.time) {
+//                dataCorrupted = YES;
+//                [self removeAlarm:a];
+//                NSLog(@"Something wrong with alarm. Need to reschedule alarm.\n%@",a);
+//                break;
+//            }
+//            if (!a.tone) {
+//                NSLog(@"Tone not set");
+//                a.tone = currentUser.preference[@"DefaultTone"];
+//            }
+//        }
+//        
+//        if (dataCorrupted) {
+//            return NO;
+//        }else{
+//            return YES;
+//        }
+//        
+//        
+//    }else{
+//        //something wrong
+//        NSLog(@"Something wrong with alarms (%lu), need to schedule alarm", (unsigned long)alarms.count);
+//        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+//        //delete all alarms
+//        //[self deleteAllAlarms];
+//        return NO;
+//    }
+//}
 
 #pragma mark - Utility
 - (NSDictionary *)getSavedAlarmTime:(EWAlarmItem *)alarm{
@@ -322,9 +355,9 @@
 
 
 #pragma mark - NOTIFICATION & KVO
-- (void)observedAlarmChange:(NSNotification *)notification{
-    //alarm change is handled in schedule alarm view controoler
-}
+//- (void)observedAlarmChange:(NSNotification *)notification{
+//    alarm change is handled in schedule alarm view controoler
+//}
 
 
 //KVO not recommended cause it doesn't preserve the observing state between app launches, which makes it a complex process to observe-remove etc..

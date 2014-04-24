@@ -543,6 +543,9 @@
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
     cell.name.text = [person.name initial];
+    if ([person.username isEqualToString: currentUser.username]) {
+        cell.name.text = @"YOU";
+    }
     cell.profilePic.image = [UIImage imageNamed:@"profile"];
     
     dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{

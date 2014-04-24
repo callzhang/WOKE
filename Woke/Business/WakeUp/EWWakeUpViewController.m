@@ -404,6 +404,17 @@
     return 80;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return @"Like";
+}
+
+- (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.view showSuccessNotification:@"Like sentØ"];
+    
+    // Hide the More/Delete menu.
+    [self setEditing:NO animated:YES];
+}
+
 
 #pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{

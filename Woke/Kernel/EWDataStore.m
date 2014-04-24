@@ -211,26 +211,16 @@ AmazonSNSClient *snsClient;
     
     
     //check alarm
-    BOOL alarmGood = [EWAlarmManager.sharedInstance checkAlarms];
-    if (!alarmGood) {
-        
-        dispatch_async(dispatch_queue, ^{
-            NSLog(@"2. Alarms need to be scheduled");
-            [[EWAlarmManager sharedInstance] scheduleAlarm];
-        });
-        
-    }
+    dispatch_async(dispatch_queue, ^{
+        NSLog(@"2. Check alarm");
+        [[EWAlarmManager sharedInstance] scheduleAlarm];
+    });
     
     //check task
-    //BOOL taskGood = [EWTaskStore.sharedInstance checkTasks];
-    //if (!taskGood) {
-        
-        dispatch_async(dispatch_queue, ^{
-            NSLog(@"3. Scheduling task");
-            [EWTaskStore.sharedInstance scheduleTasks];
-        });
-        
-    //}
+    dispatch_async(dispatch_queue, ^{
+        NSLog(@"3. Check task");
+        [EWTaskStore.sharedInstance scheduleTasks];
+    });
     
     //check local notif
     dispatch_async(dispatch_queue, ^{

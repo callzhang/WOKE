@@ -38,7 +38,7 @@
 /**
  Check if alarm for current user is 0 or 7. Otherwise delete all alarm.
  */
-- (BOOL)checkAlarms;
+//- (BOOL)checkAlarms;
 
 //KVO
 

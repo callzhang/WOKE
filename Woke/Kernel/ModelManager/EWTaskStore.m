@@ -188,7 +188,7 @@
 #pragma mark - SCHEDULE
 //schedule new task in the future
 - (NSArray *)scheduleTasks{
-    NSLog(@"Start scheduling tasks");
+    NSLog(@"Start check/scheduling tasks");
     
     //check necessity
     NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];//avoid using 'getTaskByPerson:' method to cycle calling
@@ -635,45 +635,45 @@
 }
 
 #pragma mark - check
-- (BOOL)checkTasks{
-    //time stemp for last check
-    [EWDataStore sharedInstance].lastChecked = [NSDate date];
-    NSLog(@"Checking tasks");
-    NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];
-
-    //check if any task has past
-    [self checkPastTasks:tasks];
-    
-    //check orphan
-    for (EWTaskItem *t in tasks) {
-        if (!t.alarm) {
-            NSLog(@"Task do not have alarm (%@)", [t.time date2detailDateString]);
-            [self removeTask:t];
-            [tasks removeObject:t];
-            return NO;
-        }
-    }
-    
-    if (tasks.count == currentUser.alarms.count * nWeeksToScheduleTask) {
-        return YES;
-    }else if(tasks.count == 0){
-        //initial state
-        NSLog(@"Task has not been setup yet");
-        if (currentUser.alarms.count == 0) return YES;
-        return NO;
-    }else if (tasks.count >  7 * nWeeksToScheduleTask) {
-        NSLog(@"Something is wrong with scheduled task: excessive tasks(%luu), please check.",(unsigned long) (unsigned long)tasks.count);
-        
-        [self deleteAllTasks];
-        return NO;
-    }
-    
-    
-    
-    NSLog(@"#### task is between 1 ~ 7n ####");
-    
-    return NO;
-}
+//- (BOOL)checkTasks{
+//    //time stemp for last check
+//    [EWDataStore sharedInstance].lastChecked = [NSDate date];
+//    NSLog(@"Checking tasks");
+//    NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];
+//
+//    //check if any task has past
+//    [self checkPastTasks:tasks];
+//    
+//    //check orphan
+//    for (EWTaskItem *t in tasks) {
+//        if (!t.alarm) {
+//            NSLog(@"Task do not have alarm (%@)", [t.time date2detailDateString]);
+//            [self removeTask:t];
+//            [tasks removeObject:t];
+//            return NO;
+//        }
+//    }
+//    
+//    if (tasks.count == currentUser.alarms.count * nWeeksToScheduleTask) {
+//        return YES;
+//    }else if(tasks.count == 0){
+//        //initial state
+//        NSLog(@"Task has not been setup yet");
+//        if (currentUser.alarms.count == 0) return YES;
+//        return NO;
+//    }else if (tasks.count >  7 * nWeeksToScheduleTask) {
+//        NSLog(@"Something is wrong with scheduled task: excessive tasks(%luu), please check.",(unsigned long) (unsigned long)tasks.count);
+//        
+//        [self deleteAllTasks];
+//        return NO;
+//    }
+//    
+//    
+//    
+//    NSLog(@"#### task is between 1 ~ 7n ####");
+//    
+//    return NO;
+//}
 
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task{
     NSInteger nMedia = 0;
