@@ -11,20 +11,16 @@
 @class EWTaskItem;
 
 
-@interface EWRecordingViewController : EWViewController{
-    NSURL *recordingFileUrl;
-    AVManager *manager;
-    EWMediaItem *media;
-}
+@interface EWRecordingViewController : EWViewController<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
-@property (nonatomic) EWTaskItem *task;
 @property (weak, nonatomic) IBOutlet UISlider *progressBar;
 @property (weak, nonatomic) IBOutlet UIButton *playBtn;
 @property (weak, nonatomic) IBOutlet UIButton *recordBtn;
 @property (weak, nonatomic) IBOutlet UITextField *message;
-@property (weak, nonatomic) IBOutlet UIImageView *profilePic;
+//@property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 @property (weak, nonatomic) IBOutlet UILabel *detail;
 @property (weak, nonatomic) IBOutlet UIButton *closeBtn;
+@property (weak, nonatomic) IBOutlet UICollectionView *peopleView;
 
 - (IBAction)play:(id)sender;
 - (IBAction)record:(id)sender;
@@ -32,6 +28,7 @@
 - (IBAction)seek:(id)sender;
 - (IBAction)back:(id)sender;
 
-- (EWRecordingViewController *)initWithTask:(EWTaskItem *)task;
 
+- (EWRecordingViewController *)initWithPerson:(EWPerson *)user;
+- (EWRecordingViewController *)initWithPeople:(NSSet *)personSet;
 @end

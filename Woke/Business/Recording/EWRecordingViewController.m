@@ -12,6 +12,7 @@
 //Util
 #import "NSDate+Extend.h"
 #import "MBProgressHUD.h"
+#import "EWCollectionPersonCell.h"
 
 //object
 #import "EWTaskItem.h"
@@ -27,32 +28,33 @@
 #import "EWServer.h"
 
 @interface EWRecordingViewController (){
-    EWPerson *person;
+    NSArray *personSet;
+    NSURL *recordingFileUrl;
+    AVManager *manager;
+    EWMediaItem *media;
 }
 
 @end
 
 @implementation EWRecordingViewController
 @synthesize progressBar, playBtn, recordBtn, closeBtn;
-@synthesize task;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+
+- (EWRecordingViewController *)initWithPerson:(EWPerson *)user{
+    self = [super init];
     if (self) {
-        // Custom initialization
+        //person
+        personSet = @[user];
         manager = [AVManager sharedManager];
     }
     return self;
 }
 
-- (EWRecordingViewController *)initWithTask:(EWTaskItem *)t{
+- (EWRecordingViewController *)initWithPeople:(NSSet *)ps{
     self = [super init];
     if (self) {
-        //task
-        task = t;
-        //person
-        person = task.owner?task.owner:task.pastOwner;
+        personSet = [ps allObjects];
+        manager = [AVManager sharedManager];
     }
     return self;
 }
@@ -60,14 +62,21 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    if (personSet.count == 1) {
+        EWPerson *receiver = personSet[0];
+        EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
+        self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", receiver.name, [task.time weekday]];
+    }else{
+        self.detail.text = @"Sent voice to wake them up";
+    }
     
-    self.profilePic.image = person.profilePic;
-    self.profilePic.layer.cornerRadius = 50;
-    self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", person.name, [task.time weekday]];
+    //collection view
+    UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
+    [self.peopleView registerNib:nib forCellWithReuseIdentifier:@"cellIdentifier"];
+    self.peopleView.backgroundColor = [UIColor clearColor];
+    
     //close btn
     closeBtn.layer.cornerRadius = 5;
-    closeBtn.layer.borderWidth = 1.0f;
-    closeBtn.layer.borderColor = [UIColor whiteColor].CGColor;
 
 }
 
@@ -88,6 +97,32 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - collection view
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
+    [cell applyHexagonMask];
+    EWPerson *receiver = personSet[indexPath.row];
+    cell.profilePic.image = receiver.profilePic;
+    cell.name.text = [receiver.name initial];
+    return cell;
+}
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+    return 1;
+}
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    return personSet.count;
+}
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
+{
+    
+    NSInteger numberOfCells = personSet.count;
+    NSInteger edgeInsets = (self.peopleView.frame.size.width - (numberOfCells * kCollectionViewCellWidth) - numberOfCells * 10) / 2;
+    edgeInsets = MAX(edgeInsets, 20);
+    return UIEdgeInsetsMake(0, edgeInsets, 0, edgeInsets);
+}
+
+#pragma mark- Actions
 
 - (IBAction)play:(id)sender {
     if (!recordingFileUrl){
@@ -130,61 +165,71 @@
         if (!recordData) {
             return;
         }
+        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [[NSDate date] date2detailDateString]];
+        
+        NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:fileName contentType:@"audio/aac"];
+        
         //save data to task
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [NSString stringWithFormat:@"%ld",(long)[NSDate timeIntervalSinceReferenceDate]]];
-        NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:fileName contentType:@"audio/aac"];
-        if (!media) {
-            media = [[EWMediaStore sharedInstance] createMedia];
-            media.author = currentUser;
-            media.message = self.message.text;
-            
-            //add relationship
-            //[media addTasksObject:task];
-            //Add to media queue instead of task
-            media.receiver = task.owner;
-            
-            
-            media.audioKey = recordDataString;
-            media.createddate = [NSDate date];
-        }
         
-        
-        //save
-        [[EWDataStore currentContext] saveAndWait:NULL];
-        [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
-        [[EWDataStore currentContext] saveOnSuccess:^{
+        for (EWPerson *receiver in personSet) {
             
-            //dismiss hud
-            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-            
-            if ([media.audioKey length]<300) {
-                //clean
-                recordingFileUrl = nil;
+            if (!media) {
+                media = [[EWMediaStore sharedInstance] createMedia];
+                media.author = currentUser;
+                media.message = self.message.text;
                 
-                NSLog(@"Audio uploaded to server: %@", media.audioKey);
-            }else{
-                media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
-                if (media.audioKey.length > 500) {
-                    NSLog(@"audioKey failed to upload to S3 server and remained as string data");
-                    EWAlert(@"Server busy, please try again.");
-                    
-                    return;
-                }else{
-                    recordingFileUrl = nil;
-                }
+                //add relationship
+                //[media addTasksObject:task];
+                //Add to media queue instead of task
+                media.receiver = receiver;
                 
+                
+                media.audioKey = recordDataString;
+                media.createddate = [NSDate date];
             }
             
-            //send push notification
-            [EWServer pushMedia:media ForUser:person];
             
-            //dismiss
-            [self dismissViewControllerAnimated:YES completion:NULL];
-            
-        } onFailure:^(NSError *error) {
-            EWAlert(@"Server failed to save. Please try again");
-        }];
+            //save
+            //[[EWDataStore currentContext] saveAndWait:NULL];
+            [[EWDataStore currentContext] saveOnSuccess:^{
+                [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
+                
+                if ([media.audioKey length]<300) {
+                    //clean
+                    recordingFileUrl = nil;
+                    
+                    NSLog(@"Audio uploaded to server: %@", media.audioKey);
+                }else{
+                    //pull the media again
+                    media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+                    
+                    if (media.audioKey.length > 500) {
+                        NSLog(@"audioKey failed to upload to S3 server and remained as string data");
+                        
+                        return;
+                    }
+                    
+                }
+                
+                //send push notification
+                [EWServer pushMedia:media ForUser:receiver];
+                
+            } onFailure:^(NSError *error) {
+                NSString *str = [NSString stringWithFormat:@"Server failed to send to %@. Please try again", receiver.name];
+                EWAlert(str);
+            }];
+        }
+        
+        //clean up
+        recordingFileUrl = nil;
+        media = nil;
+        
+        //dismiss hud
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        
+        //dismiss
+        [self dismissViewControllerAnimated:YES completion:NULL];
     }
 }
 
@@ -192,6 +237,6 @@
 }
 
 - (IBAction)back:(id)sender {
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 @end

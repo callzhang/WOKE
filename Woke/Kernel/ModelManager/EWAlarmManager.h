@@ -12,7 +12,8 @@
 
 @class EWAlarmItem, EWPerson;
 
-@interface EWAlarmManager : NSObject//EWStore
+@interface EWAlarmManager : NSObject
+@property (nonatomic) BOOL alarmNeedToSetup;
 
 // Singleton
 + (EWAlarmManager *)sharedInstance ;
@@ -32,6 +33,7 @@
 //- (void)setAlarm:(EWAlarmItem *)alarm;
 //- (void)setAlarmState:(BOOL)state atIndex:(NSUInteger)index;
 - (NSArray *)scheduleAlarm;
+- (void)scheduleNewAlarms;
 
 
 //check

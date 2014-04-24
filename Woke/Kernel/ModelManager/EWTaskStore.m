@@ -17,16 +17,15 @@
 #import "StackMob.h"
 #import "EWDataStore.h"
 
+@interface EWTaskStore(){
+    BOOL isCheckingTask;
+}
+
+@end
+
 @implementation EWTaskStore
-//@synthesize context, model;
-//@synthesize allTasks = _allTasks;
-//@synthesize context;
 
 +(EWTaskStore *)sharedInstance{
-//    BOOL mainThread = [NSThread isMainThread];
-//    if (!mainThread) {
-//        NSLog(@"**** Task Store not on main thread ****");
-//    }
     
     static EWTaskStore *sharedTaskStore_ = nil;
     static dispatch_once_t onceToken;
@@ -53,8 +52,7 @@
 - (id)init{
     self = [super init];
     if (self) {
-        //NSLog(@"scheduled timely task checking");
-        //[NSTimer timerWithTimeInterval:600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
+        //
     }
     return self;
 }
@@ -188,6 +186,11 @@
 #pragma mark - SCHEDULE
 //schedule new task in the future
 - (NSArray *)scheduleTasks{
+    if (isCheckingTask) {
+        NSLog(@"@@@ It is already checking task, skip!");
+        return nil;
+    }
+    isCheckingTask = YES;
     NSLog(@"Start check/scheduling tasks");
     
     //check necessity
@@ -276,6 +279,7 @@
     //last checked
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
     
+    isCheckingTask = NO;
     return goodTasks;
 }
 

@@ -31,6 +31,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[EWAlarmManager alloc] init];
+        manager.alarmNeedToSetup = NO;
         //[[NSNotificationCenter defaultCenter] addObserver:manager selector:@selector(observedAlarmChange:) name:kAlarmChangedNotification object:nil];
     }); 
     
@@ -125,6 +126,11 @@
 }
 
 #pragma mark - SCHEDULE
+- (void)scheduleNewAlarms{
+    self.alarmNeedToSetup = YES;
+    [self scheduleAlarm];
+}
+
 //schedule according to alarms array. If array is empty, schedule according to default template.
 - (NSArray *)scheduleAlarm{
     BOOL hasChange = NO;
@@ -134,8 +140,8 @@
     
     //check if need to check
     if (alarms.count==0) {
-        if ([EWTaskStore myTasks].count == 0) {
-            NSLog(@"Skip check");
+        if ([EWTaskStore myTasks].count == 0 && !self.alarmNeedToSetup) {
+            NSLog(@"Skip check alarm due to 0 tasks exists");
             return nil;
         }
     }
@@ -239,7 +245,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmChangedNotification object:self userInfo:nil];
     }
     
-    
+    self.alarmNeedToSetup = NO;
     return newAlarms;
 }
 

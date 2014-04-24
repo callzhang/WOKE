@@ -409,7 +409,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.view showSuccessNotification:@"Like sentØ"];
+    [self.view showSuccessNotification:@"Like sent"];
     
     // Hide the More/Delete menu.
     [self setEditing:NO animated:YES];

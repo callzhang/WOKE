@@ -77,7 +77,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         
         
         dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-            [[EWAlarmManager sharedInstance] scheduleAlarm];
+            [[EWAlarmManager sharedInstance] scheduleNewAlarms];//initial alarm
             [[EWTaskStore sharedInstance] scheduleTasks];
             
             dispatch_async(dispatch_get_main_queue(), ^{
