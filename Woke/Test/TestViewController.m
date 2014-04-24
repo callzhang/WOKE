@@ -177,7 +177,7 @@
             [self dismissViewControllerAnimated:YES completion:^{
                 EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
                 controller.person = currentUser;
-                [rootViewController presentViewController:controller animated:YES completion:NULL];
+                [rootViewController presentViewControllerWithBlurBackground:controller];
             }];
             
         }

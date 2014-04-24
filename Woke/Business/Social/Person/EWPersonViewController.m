@@ -161,7 +161,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 }
 
 - (IBAction)close:(id)sender {
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
 - (IBAction)login:(id)sender {

@@ -43,7 +43,7 @@
  
  [self presentViewController:viewController animated:YES completion:^{
   //before get image, get rid of blur layer
-  [[self.view viewWithTag:kBlurViewTag] removeFromSuperview];
+  [self.view viewWithTag:kBlurViewTag].hidden = YES;
   
   //get CALayer image
   
@@ -71,6 +71,9 @@
 
 
 - (void)dismissBlurViewControllerWithCompletionHandler:(void(^)(void))completion{
+ UIView *view = [self.view viewWithTag:kBlurViewTag];
+ view.hidden = NO;
+ [self.view setNeedsDisplay];
  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
   UIView *view = [self.presentedViewController.view viewWithTag:kBlurImageTag];
   [view removeFromSuperview];
