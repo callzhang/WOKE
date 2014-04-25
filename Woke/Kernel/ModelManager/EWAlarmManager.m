@@ -239,7 +239,12 @@
         
         //check
         NSArray *myAlarms = [EWAlarmManager myAlarms];
-        NSAssert(myAlarms.count == newAlarms.count, @"Something wrong with the saving process");
+        NSInteger retry = 3;
+        while (myAlarms.count != newAlarms.count && retry >0) {
+            myAlarms = [EWAlarmManager myAlarms];
+            [NSThread sleepForTimeInterval:0.5];
+            retry--;
+        }
         
         //notification
         [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmChangedNotification object:self userInfo:nil];

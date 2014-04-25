@@ -33,7 +33,7 @@
     NSArray *personSet;
     NSURL *recordingFileUrl;
     AVManager *manager;
-    EWMediaItem *media;
+    //EWMediaItem *media;
 }
 
 @end
@@ -175,54 +175,46 @@
         if (!recordData) {
             return;
         }
-        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [[NSDate date] date2detailDateString]];
+        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [[NSDate date] date2numberDateString]];
         
-        NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:fileName contentType:@"audio/aac"];
+        NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:	fileName contentType:@"audio/aac"];
         
         //save data to task
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         
         for (EWPerson *receiver in personSet) {
+            __block EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
+            media.author = currentUser;
+            media.message = self.message.text;
             
-            if (!media) {
-                media = [[EWMediaStore sharedInstance] createMedia];
-                media.author = currentUser;
-                media.message = self.message.text;
-                
-                //Add to media queue instead of task
-                media.receiver = receiver;
-                
-                media.audioKey = recordDataString;
-                media.createddate = [NSDate date];
-            }
+            //Add to media queue instead of task
+            media.receiver = receiver;
+            
+            media.audioKey = recordDataString;
+            media.createddate = [NSDate date];
             
             
             //save
-            [[EWDataStore currentContext] saveAndWait:NULL options:[EWDataStore optionFetchNetworkElseCache]];
-            [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
-            NSInteger n = 10;
-            while (media.audioKey.length > 500 && n > 0) {
-                media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
-                n--;
-                NSLog(@"Retry %d", n);
-            }
-            
-            //check
-            if (media.audioKey.length > 500) {
+            [[EWDataStore currentContext] saveOnSuccess:^{
+                [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
+                NSInteger n = 10;
+                while (media.audioKey.length > 500 && n > 0) {
+                    media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+                    n--;
+                    NSLog(@"Retry %ld", (long)n);
+                }
+                //send push notification
+                [EWServer pushMedia:media ForUser:receiver];
+            } onFailure:^(NSError *error) {
                 NSLog(@"*** Save media error audio data");
-            }else{
-                NSLog(@"Audio uploaded to server: %@", media.audioKey);
-            }
+            }];
             
-            //send push notification
-            [EWServer pushMedia:media ForUser:receiver];
         }
         
         
         
         //clean up
         recordingFileUrl = nil;
-        media = nil;
         
         //dismiss hud
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];

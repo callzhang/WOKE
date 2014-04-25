@@ -96,7 +96,7 @@
         
         //check
         if (tasks.count != 7) {
-            NSLog(@"Only %d found", tasks.count);
+            NSLog(@"Only %lu found", (unsigned long)tasks.count);
             //[self scheduleTasks];
         }
     }
