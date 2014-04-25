@@ -29,6 +29,7 @@
 @synthesize thumbnail;
 @dynamic title;
 @dynamic author;
+@dynamic priority;
 @dynamic task;
 @dynamic groupTask;
 @dynamic createddate;

@@ -30,6 +30,7 @@
 @property (nonatomic, retain) NSString * message;
 @property (nonatomic) BOOL played;
 @property (nonatomic, retain) NSString * title;
+@property (nonatomic) NSInteger priority;
 @property (nonatomic, retain) UIImage *thumbnail;
 @property (nonatomic, retain) NSString * videoKey;
 @property (nonatomic, retain) EWTaskItem *task;

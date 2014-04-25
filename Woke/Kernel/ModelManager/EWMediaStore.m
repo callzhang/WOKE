@@ -54,12 +54,12 @@
     EWPerson *user = [EWDataStore user];
     m.author = user;
     m.type = kMediaTypeVoice;
-//    [[EWDataStore currentContext] saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Media created");
-//    } onFailure:^(NSError *error) {
-//        //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
-//        NSLog(@"Error to save new media: %@", error);
-//    }];
+    } onFailure:^(NSError *error) {
+        //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
+        NSLog(@"Error to save new media: %@", error);
+    }];
     return m;
 }
 
@@ -114,7 +114,7 @@
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"EWMediaItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"ewmediaitem_id == %@", mediaID];
     NSError *err;
-    NSArray *medias = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:&err];
+    NSArray *medias = [[EWDataStore currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:&err];
     if (medias.count == 0){
         NSLog(@"Could not fetch media for ID: %@, error: %@", mediaID, err.description);
         return nil;
@@ -138,10 +138,6 @@
         }
     }
     return medias;
-}
-
-- (EWMediaItem *)nextValidVoiceForPerson:(EWPerson *)person{
-    
 }
 
 #pragma mark - DELETE

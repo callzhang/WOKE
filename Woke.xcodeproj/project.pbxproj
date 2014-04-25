@@ -175,6 +175,7 @@
 		ABF3FB621908B72F0017D2EF /* 13.jpg in Resources */ = {isa = PBXBuildFile; fileRef = ABF3FB521908B72F0017D2EF /* 13.jpg */; };
 		ABF3FB631908B72F0017D2EF /* 14.jpg in Resources */ = {isa = PBXBuildFile; fileRef = ABF3FB531908B72F0017D2EF /* 14.jpg */; };
 		ABF3FB641908B72F0017D2EF /* 15.jpg in Resources */ = {isa = PBXBuildFile; fileRef = ABF3FB541908B72F0017D2EF /* 15.jpg */; };
+		ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABF3FB6F190A05E80017D2EF /* SCSiriWaveformView.m */; };
 		ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2D9186E956900355781 /* Autumn Spring.caf */; };
 		ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DB186E957100355781 /* Daybreak.caf */; };
 		ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DC186E957100355781 /* Parisian Dream.caf */; };
@@ -435,6 +436,8 @@
 		ABF3FB521908B72F0017D2EF /* 13.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 13.jpg; sourceTree = "<group>"; };
 		ABF3FB531908B72F0017D2EF /* 14.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 14.jpg; sourceTree = "<group>"; };
 		ABF3FB541908B72F0017D2EF /* 15.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 15.jpg; sourceTree = "<group>"; };
+		ABF3FB6E190A05E80017D2EF /* SCSiriWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSiriWaveformView.h; sourceTree = "<group>"; };
+		ABF3FB6F190A05E80017D2EF /* SCSiriWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSiriWaveformView.m; sourceTree = "<group>"; };
 		ABFCB2D9186E956900355781 /* Autumn Spring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Autumn Spring.caf"; sourceTree = "<group>"; };
 		ABFCB2DB186E957100355781 /* Daybreak.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Daybreak.caf; sourceTree = "<group>"; };
 		ABFCB2DC186E957100355781 /* Parisian Dream.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Parisian Dream.caf"; sourceTree = "<group>"; };
@@ -739,6 +742,7 @@
 		56FEA57417A5763200FC2938 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				ABF3FB6D190A05E80017D2EF /* SCSiriWaveformView */,
 				9BBA5F8218EB3ED500C07809 /* JSON */,
 				ABD34DAA185C054C008CD2B8 /* FTWCache */,
 				AB207E6A182FFFC40076D93F /* MBProgressHUD */,
@@ -1055,6 +1059,15 @@
 			path = FTWCache;
 			sourceTree = "<group>";
 		};
+		ABF3FB6D190A05E80017D2EF /* SCSiriWaveformView */ = {
+			isa = PBXGroup;
+			children = (
+				ABF3FB6E190A05E80017D2EF /* SCSiriWaveformView.h */,
+				ABF3FB6F190A05E80017D2EF /* SCSiriWaveformView.m */,
+			);
+			path = SCSiriWaveformView;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1291,6 +1304,7 @@
 				AB1F3CFA18B7B5C500D3FB46 /* EWPostWakeUpViewController.m in Sources */,
 				AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */,
 				AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */,
+				ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */,
 				AB94332317C302C500ADC702 /* EWRingtoneSelectionViewController.m in Sources */,
 				AB00B61E1835C49D00DDD54B /* EWWakeUpViewController.m in Sources */,
 				56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */,

@@ -19,6 +19,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <AVFoundation/AVFoundation.h>
 #import "EWDefines.h"
+#import "SCSiriWaveformView.h"
 
 @class EWMediaViewCell, EWTaskItem, EWMediaItem, EWMediaSlider;
 
@@ -39,6 +40,7 @@
 @property (weak, nonatomic) UIButton *playStopBtn;
 @property (weak, nonatomic) EWMediaSlider *progressBar;
 @property (weak, nonatomic) UILabel *currentTime;
+@property (weak, nonatomic) SCSiriWaveformView *waveformView;
 //@property (nonatomic) BOOL loop;
 
 +(AVManager *)sharedManager;
@@ -54,7 +56,7 @@
 - (void)playSoundFromFile:(NSString *)fileName;
 
 //update states
-- (void)updateViewForPlayerState:(AVAudioPlayer *)player;
+//- (void)updateViewForPlayerState:(AVAudioPlayer *)player;
 
 
 - (NSURL *)record;

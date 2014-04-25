@@ -109,6 +109,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         [taskTableView reloadData];
         //UI
         self.profilePic.image = person.profilePic;
+        [EWUIUtil applyHexagonMaskForView:self.profilePic];
         self.name.text = person.name;
         self.location.text = person.city;
         

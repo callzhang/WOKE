@@ -13,6 +13,8 @@
 #import "NSDate+Extend.h"
 #import "MBProgressHUD.h"
 #import "EWCollectionPersonCell.h"
+#import "SCSiriWaveformView.h"
+#import "EWUIUtil.h"
 
 //object
 #import "EWTaskItem.h"
@@ -77,7 +79,15 @@
     
     //close btn
     closeBtn.layer.cornerRadius = 5;
-
+    
+    //waveform
+    [self.waveformView setWaveColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
+    [self.waveformView setPrimaryWaveLineWidth:1.0f];
+    [self.waveformView setSecondaryWaveLineWidth:0.5f];
+    [AVManager sharedManager].waveformView = self.waveformView;
+    
+    //slider
+    [progressBar setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -179,11 +189,8 @@
                 media.author = currentUser;
                 media.message = self.message.text;
                 
-                //add relationship
-                //[media addTasksObject:task];
                 //Add to media queue instead of task
                 media.receiver = receiver;
-                
                 
                 media.audioKey = recordDataString;
                 media.createddate = [NSDate date];
@@ -191,35 +198,27 @@
             
             
             //save
-            //[[EWDataStore currentContext] saveAndWait:NULL];
-            [[EWDataStore currentContext] saveOnSuccess:^{
-                [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
-                
-                if ([media.audioKey length]<300) {
-                    //clean
-                    recordingFileUrl = nil;
-                    
-                    NSLog(@"Audio uploaded to server: %@", media.audioKey);
-                }else{
-                    //pull the media again
-                    media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
-                    
-                    if (media.audioKey.length > 500) {
-                        NSLog(@"audioKey failed to upload to S3 server and remained as string data");
-                        
-                        return;
-                    }
-                    
-                }
-                
-                //send push notification
-                [EWServer pushMedia:media ForUser:receiver];
-                
-            } onFailure:^(NSError *error) {
-                NSString *str = [NSString stringWithFormat:@"Server failed to send to %@. Please try again", receiver.name];
-                EWAlert(str);
-            }];
+            [[EWDataStore currentContext] saveAndWait:NULL options:[EWDataStore optionFetchNetworkElseCache]];
+            [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
+            NSInteger n = 10;
+            while (media.audioKey.length > 500 && n > 0) {
+                media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+                n--;
+                NSLog(@"Retry %d", n);
+            }
+            
+            //check
+            if (media.audioKey.length > 500) {
+                NSLog(@"*** Save media error audio data");
+            }else{
+                NSLog(@"Audio uploaded to server: %@", media.audioKey);
+            }
+            
+            //send push notification
+            [EWServer pushMedia:media ForUser:receiver];
         }
+        
+        
         
         //clean up
         recordingFileUrl = nil;
@@ -229,7 +228,7 @@
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         
         //dismiss
-        [self dismissViewControllerAnimated:YES completion:NULL];
+        [rootViewController dismissViewControllerAnimated:YES completion:NULL];
     }
 }
 

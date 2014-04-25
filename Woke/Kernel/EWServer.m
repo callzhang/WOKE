@@ -318,16 +318,12 @@
     
     for (EWPerson *target in users) {
         if (!target.aws_id) {
-            NSString *str = [NSString stringWithFormat:@"User (%@) doesn't have a valid push key to receive buzz", target.name];
+            NSString *str = [NSString stringWithFormat:@"User (%@) doesn't have a valid push key to receive push", target.name];
             EWAlert(str);
             continue;
         }
         request.targetArn = target.aws_id;
-        if (!currentUser.aws_id){
-            NSString *str = [NSString stringWithFormat:@"Unable to send message: User not registered for push:%@", target.name];
-            NSLog(@"Unable to send message: no AWS ID found on target:%@", target.username);
-            EWAlert(str);
-        }
+
         //NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             @try {

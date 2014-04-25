@@ -44,9 +44,6 @@
  */
 - (NSArray *)mediasForPerson:(EWPerson *)person;
 
-//valid voice
-- (EWMediaItem *)nextValidVoiceForPerson:(EWPerson *)person;
-
 
 //edit
 
