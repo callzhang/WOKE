@@ -531,15 +531,28 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
+//    CGRect rect1=cell.frame;
+//    CGPoint point=CGPointMake(cell.center.x/([[UIScreen mainScreen]bounds].size.width), cell.center.y/([[UIScreen mainScreen]bounds].size.height));
     selectedPersonIndex = indexPath.row;
-//  EWAlarmMenu *meun=[[EWAlarmMenu alloc] initWithFrame:self.collectionView.frame initWithCell:cell];
-    if(self.meun.tag==0){
-    EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
-//  self.collectionView.scrollEnabled = NO;
-    meun.delegate=self;
-    self.meun=meun;
-    [_collectionView addSubview:self.meun];
+
+  
+        if(self.meun.tag==0){
+            EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
+            meun.delegate=self;
+            self.meun=meun;
+            [_collectionView addSubview:self.meun];
+       
+
+        
     }
+
+
+//        if(self.meun.tag==0){
+//    EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
+//    meun.delegate=self;
+//    self.meun=meun;
+//    [_collectionView addSubview:self.meun];
+//    }
    
 
     
