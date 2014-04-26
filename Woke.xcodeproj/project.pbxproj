@@ -22,8 +22,6 @@
 
 /* Begin PBXBuildFile section */
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
-		1817CED918FF9A5700EDB2A4 /* EWAlarmMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */; };
-		187860FA1904C556003F2AF9 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 187860F91904C556003F2AF9 /* Reveal.framework */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
@@ -178,6 +176,7 @@
 		ABF3FB631908B72F0017D2EF /* 14.jpg in Resources */ = {isa = PBXBuildFile; fileRef = ABF3FB531908B72F0017D2EF /* 14.jpg */; };
 		ABF3FB641908B72F0017D2EF /* 15.jpg in Resources */ = {isa = PBXBuildFile; fileRef = ABF3FB541908B72F0017D2EF /* 15.jpg */; };
 		ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABF3FB6F190A05E80017D2EF /* SCSiriWaveformView.m */; };
+		ABF3FB73190B79D10017D2EF /* EWPopupMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = ABF3FB72190B79D10017D2EF /* EWPopupMenu.m */; };
 		ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2D9186E956900355781 /* Autumn Spring.caf */; };
 		ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DB186E957100355781 /* Daybreak.caf */; };
 		ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DC186E957100355781 /* Parisian Dream.caf */; };
@@ -189,9 +188,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1817CED718FF9A5700EDB2A4 /* EWAlarmMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmMenu.h; sourceTree = "<group>"; };
-		1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmMenu.m; sourceTree = "<group>"; };
-		187860F91904C556003F2AF9 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Reveal.framework; sourceTree = "<group>"; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		561ECB5117BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -443,6 +439,8 @@
 		ABF3FB541908B72F0017D2EF /* 15.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 15.jpg; sourceTree = "<group>"; };
 		ABF3FB6E190A05E80017D2EF /* SCSiriWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSiriWaveformView.h; sourceTree = "<group>"; };
 		ABF3FB6F190A05E80017D2EF /* SCSiriWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSiriWaveformView.m; sourceTree = "<group>"; };
+		ABF3FB71190B79D10017D2EF /* EWPopupMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWPopupMenu.h; path = Alarms/EWPopupMenu.h; sourceTree = "<group>"; };
+		ABF3FB72190B79D10017D2EF /* EWPopupMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWPopupMenu.m; path = Alarms/EWPopupMenu.m; sourceTree = "<group>"; };
 		ABFCB2D9186E956900355781 /* Autumn Spring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Autumn Spring.caf"; sourceTree = "<group>"; };
 		ABFCB2DB186E957100355781 /* Daybreak.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Daybreak.caf; sourceTree = "<group>"; };
 		ABFCB2DC186E957100355781 /* Parisian Dream.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Parisian Dream.caf"; sourceTree = "<group>"; };
@@ -463,7 +461,6 @@
 				9B8D3EE418EF3DA2009B8D6C /* libWeiboSDK.a in Frameworks */,
 				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
-				187860FA1904C556003F2AF9 /* Reveal.framework in Frameworks */,
 				AB245FB618CCF86500551721 /* AWSSNS.framework in Frameworks */,
 				AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */,
 				AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */,
@@ -568,7 +565,6 @@
 		568CC77B178DD2C900AB1579 = {
 			isa = PBXGroup;
 			children = (
-				187860F91904C556003F2AF9 /* Reveal.framework */,
 				568CC78D178DD2C900AB1579 /* Woke */,
 				568CC786178DD2C900AB1579 /* Frameworks */,
 				568CC785178DD2C900AB1579 /* Products */,
@@ -703,8 +699,6 @@
 		56FEA55617A5763200FC2938 /* Alarms */ = {
 			isa = PBXGroup;
 			children = (
-				1817CED718FF9A5700EDB2A4 /* EWAlarmMenu.h */,
-				1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */,
 				56FEA55717A5763200FC2938 /* EWAlarmsViewController.h */,
 				56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */,
 				AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */,
@@ -976,6 +970,8 @@
 				AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */,
 				AB29C4CC18DF7C8A00C0A141 /* EWHexagonFlowLayout.h */,
 				AB29C4CD18DF7C8A00C0A141 /* EWHexagonFlowLayout.m */,
+				ABF3FB71190B79D10017D2EF /* EWPopupMenu.h */,
+				ABF3FB72190B79D10017D2EF /* EWPopupMenu.m */,
 			);
 			name = "UI Components";
 			sourceTree = "<group>";
@@ -1287,6 +1283,7 @@
 				56FEA59717A5766B00FC2938 /* main.m in Sources */,
 				AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */,
 				5642AF4E17ACCF90000C73E8 /* UIView+Layout.m in Sources */,
+				ABF3FB73190B79D10017D2EF /* EWPopupMenu.m in Sources */,
 				AB6BE34F18D7C03A00444ABC /* EWRoundButton.m in Sources */,
 				AB49BC921854248E004A38DB /* EWLogInViewController.m in Sources */,
 				ABF192AA18BF135C006A4AA2 /* UIAlertView+.m in Sources */,
@@ -1327,7 +1324,6 @@
 				9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */,
 				AB07BC0D17D6F7EA00E23F44 /* EWTextFieldCell.m in Sources */,
 				5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */,
-				1817CED918FF9A5700EDB2A4 /* EWAlarmMenu.m in Sources */,
 				AB07BC1417D82A4600E23F44 /* EWWeekDayPickerTableViewController.m in Sources */,
 				AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */,
 				AB07401E18125BA400AAFC90 /* EWGroupCell.m in Sources */,

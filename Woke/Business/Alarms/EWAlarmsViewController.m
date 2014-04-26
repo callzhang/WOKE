@@ -584,7 +584,7 @@
 
   
         if(self.meun.tag==0){
-            EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
+            EWPopupMenu *meun=[[EWPopupMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
             meun.delegate=self;
             self.meun=meun;
             [_collectionView addSubview:self.meun];

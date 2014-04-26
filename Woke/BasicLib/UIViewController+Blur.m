@@ -14,11 +14,6 @@
 @implementation UIViewController (Blur)
 
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController{
-<<<<<<< HEAD
-    
-=======
- 
->>>>>>> LZ2
  
  [self presentViewControllerWithBlurBackground:viewController completion:NULL];
  

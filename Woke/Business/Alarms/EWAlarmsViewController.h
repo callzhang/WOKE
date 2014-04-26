@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 #import "EWAlarmPageView.h"
 #import "EWCollectionPersonCell.h"
-#import "EWAlarmMenu.h"
+#import "EWPopupMenu.h"
 
 #define kCollectionViewCellAlert    1001
 #define kOptionsAlert               1002
@@ -27,17 +27,14 @@
 @property (nonatomic) NSArray *alarms;
 @property (nonatomic) NSArray *tasks;
 @property (nonatomic) NSArray *people;
-<<<<<<< HEAD
-@property(nonatomic,retain)EWAlarmMenu *meun;
-=======
->>>>>>> LZ2
 
-@property(nonatomic,retain)EWAlarmMenu *meun;
+@property(nonatomic,retain)EWPopupMenu *meun;
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
-@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+
 
 
 //action
