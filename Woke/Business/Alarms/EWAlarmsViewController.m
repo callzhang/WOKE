@@ -579,38 +579,20 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
-//    CGRect rect1=cell.frame;
-//    CGPoint point=CGPointMake(cell.center.x/([[UIScreen mainScreen]bounds].size.width), cell.center.y/([[UIScreen mainScreen]bounds].size.height));
     selectedPersonIndex = indexPath.row;
-
-  
-        if(self.meun.tag==0){
-            EWPopupMenu *meun=[[EWPopupMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
-            meun.delegate=self;
-            self.meun=meun;
-            [_collectionView addSubview:self.meun];
-       
-
-        
-    }
-
-
-//        if(self.meun.tag==0){
-//    EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
-//    meun.delegate=self;
-//    self.meun=meun;
-//    [_collectionView addSubview:self.meun];
-//    }
-   
-
     
-//    UIWindow *AlertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-//    AlertWindow.backgroundColor = [UIColor cyanColor];
-//    [AlertWindow makeKeyAndVisible];
+    
+//    if(self.meun.tag==0){
+//        EWPopupMenu *meun=[[EWPopupMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
+//        meun.delegate=self;
+//        self.meun=meun;
+//        [_collectionView addSubview:self.meun];
+//    }
+
     //action sheet
-    //UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
-//    sheet.tag = 1001;
-//    [sheet showFromRect:cell.frame inView:self.view animated:YES];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
+    sheet.tag = 1001;
+    [sheet showFromRect:cell.frame inView:self.view animated:YES];
 }
 #pragma mark - EWAlarmMenu delegate
 
