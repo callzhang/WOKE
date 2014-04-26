@@ -540,6 +540,8 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
+//    CGRect rect1=cell.frame;
+//    CGPoint point=CGPointMake(cell.center.x/([[UIScreen mainScreen]bounds].size.width), cell.center.y/([[UIScreen mainScreen]bounds].size.height));
     selectedPersonIndex = indexPath.row;
     
     //action sheet
