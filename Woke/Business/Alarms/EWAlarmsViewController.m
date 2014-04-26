@@ -44,7 +44,9 @@
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
 }
+
 @property (nonatomic, retain) NSFetchedResultsController *fetchController;
+
 @end
 
 
@@ -52,11 +54,13 @@
 
 
 @implementation EWAlarmsViewController
+
 @synthesize alarms, tasks, people; //data source
 @synthesize scrollView = _scrollView;
 @synthesize pageView = _pageView;
 @synthesize collectionView = _collectionView;
 @synthesize fetchController;
+
 
 - (id)init {
     self = [super init];
@@ -603,9 +607,18 @@
 //    AlertWindow.backgroundColor = [UIColor cyanColor];
 //    [AlertWindow makeKeyAndVisible];
     //action sheet
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
-    sheet.tag = kCollectionViewCellAlert;
-    [sheet showFromRect:cell.frame inView:self.view animated:YES];
+    //UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
+//    sheet.tag = 1001;
+//    [sheet showFromRect:cell.frame inView:self.view animated:YES];
+}
+#pragma mark - EWAlarmMenu delegate
+
+-(void)buttontoperson
+{
+    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+    controller.person = person;
+    [self presentViewControllerWithBlurBackground:controller];
     
 }
 
@@ -620,9 +633,7 @@
 -(void)buttontovoice
 {
     EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-    EWRecordingViewController *controller = [[EWRecordingViewController alloc] init];
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
-    controller.task = task;
+    EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
     [self presentViewControllerWithBlurBackground:controller];
 }
 
