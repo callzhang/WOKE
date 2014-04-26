@@ -71,22 +71,18 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     //schedule alarm and tasks
     //pop up alarmScheduleView
     if (alarms.count != 7 || tasks.count != 7) {
-        NSLog(@"Need to check the data");
+        NSLog(@"%s: Need to check the data", __func__);
         
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         
         
         dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-            [[EWAlarmManager sharedInstance] scheduleNewAlarms];//initial alarm
-            [[EWTaskStore sharedInstance] scheduleTasks];
+            alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];//initial alarm
+            tasks = [[EWTaskStore sharedInstance] scheduleTasks];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                
-                //refresh
-                alarms = [EWAlarmManager myAlarms];
-                tasks = [EWTaskStore myTasks];
                 
                 //view
                 [_tableView reloadData];

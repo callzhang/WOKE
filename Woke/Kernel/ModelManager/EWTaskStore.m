@@ -96,8 +96,11 @@
         
         //check
         if (tasks.count != 7) {
-            NSLog(@"Only %lu found", (unsigned long)tasks.count);
+            NSLog(@"Only %lu tasks found", (unsigned long)tasks.count);
             //[self scheduleTasks];
+            if (tasks.count == 0) {
+                return nil;
+            }
         }
     }
     
@@ -190,8 +193,6 @@
         NSLog(@"@@@ It is already checking task, skip!");
         return nil;
     }
-    isCheckingTask = YES;
-    NSLog(@"Start check/scheduling tasks");
     
     //check necessity
     NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];//avoid using 'getTaskByPerson:' method to cycle calling
@@ -204,6 +205,10 @@
         NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
         return nil;
     }
+    
+    //start check
+    NSLog(@"Start check/scheduling tasks");
+    isCheckingTask = YES;
     
     //for each alarm, find matching task, or create new task
     BOOL newTaskNotify = NO;

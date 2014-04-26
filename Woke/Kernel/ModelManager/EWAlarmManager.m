@@ -126,9 +126,9 @@
 }
 
 #pragma mark - SCHEDULE
-- (void)scheduleNewAlarms{
+- (NSArray *)scheduleNewAlarms{
     self.alarmNeedToSetup = YES;
-    [self scheduleAlarm];
+    return [self scheduleAlarm];
 }
 
 //schedule according to alarms array. If array is empty, schedule according to default template.

@@ -33,7 +33,7 @@
 //- (void)setAlarm:(EWAlarmItem *)alarm;
 //- (void)setAlarmState:(BOOL)state atIndex:(NSUInteger)index;
 - (NSArray *)scheduleAlarm;
-- (void)scheduleNewAlarms;
+- (NSArray *)scheduleNewAlarms;
 
 
 //check
