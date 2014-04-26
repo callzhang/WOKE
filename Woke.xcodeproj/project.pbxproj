@@ -22,6 +22,8 @@
 
 /* Begin PBXBuildFile section */
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
+		1817CED918FF9A5700EDB2A4 /* EWAlarmMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */; };
+		187860FA1904C556003F2AF9 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 187860F91904C556003F2AF9 /* Reveal.framework */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
@@ -168,6 +170,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1817CED718FF9A5700EDB2A4 /* EWAlarmMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmMenu.h; sourceTree = "<group>"; };
+		1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmMenu.m; sourceTree = "<group>"; };
+		187860F91904C556003F2AF9 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Reveal.framework; sourceTree = "<group>"; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		561ECB5117BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -419,6 +424,7 @@
 				9B8D3EE418EF3DA2009B8D6C /* libWeiboSDK.a in Frameworks */,
 				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
+				187860FA1904C556003F2AF9 /* Reveal.framework in Frameworks */,
 				AB245FB618CCF86500551721 /* AWSSNS.framework in Frameworks */,
 				AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */,
 				AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */,
@@ -523,6 +529,7 @@
 		568CC77B178DD2C900AB1579 = {
 			isa = PBXGroup;
 			children = (
+				187860F91904C556003F2AF9 /* Reveal.framework */,
 				568CC78D178DD2C900AB1579 /* Woke */,
 				568CC786178DD2C900AB1579 /* Frameworks */,
 				568CC785178DD2C900AB1579 /* Products */,
@@ -657,6 +664,8 @@
 		56FEA55617A5763200FC2938 /* Alarms */ = {
 			isa = PBXGroup;
 			children = (
+				1817CED718FF9A5700EDB2A4 /* EWAlarmMenu.h */,
+				1817CED818FF9A5700EDB2A4 /* EWAlarmMenu.m */,
 				56FEA55717A5763200FC2938 /* EWAlarmsViewController.h */,
 				56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */,
 				AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */,
@@ -1232,6 +1241,7 @@
 				9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */,
 				AB07BC0D17D6F7EA00E23F44 /* EWTextFieldCell.m in Sources */,
 				5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */,
+				1817CED918FF9A5700EDB2A4 /* EWAlarmMenu.m in Sources */,
 				AB07BC1417D82A4600E23F44 /* EWWeekDayPickerTableViewController.m in Sources */,
 				AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */,
 				AB07401E18125BA400AAFC90 /* EWGroupCell.m in Sources */,
@@ -1357,6 +1367,7 @@
 					"$(SRCROOT)/",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Pods/Reveal-iOS-SDK/Reveal-Framework-1.0.3",
+					"/Users/apple/开发者/WOKE",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1396,6 +1407,7 @@
 					"$(SRCROOT)/",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Pods/Reveal-iOS-SDK/Reveal-Framework-1.0.3",
+					"/Users/apple/开发者/WOKE",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";

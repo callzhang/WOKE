@@ -151,6 +151,7 @@
 
 - (void)initView {
     
+    self.meun.tag=0;
     //collection view
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
@@ -164,7 +165,6 @@
     _scrollView.pagingEnabled = YES;
     _scrollView.tag = kAlarmPageViewIdentifier;
     _pageView.currentPage = 0;
-    
     //add button
     self.addBtn.hidden = (tasks.count == 0) ? NO:YES;
     self.addBtn.backgroundColor = [UIColor clearColor];
@@ -218,6 +218,7 @@
 
 #pragma mark - ScrollView
 - (void)reloadAlarmPage {
+    
     
     if (alarms.count == 0 || tasks.count == 0) {
         self.addBtn.hidden = NO;
@@ -284,6 +285,8 @@
     
     //if page empty, add that to the page array
     EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] init];
+    [alarmPage setFrame:CGRectMake(0, [[UIScreen mainScreen]bounds].size.height*(7/8), [[UIScreen mainScreen]bounds].size.width, ([[UIScreen mainScreen]bounds].size.height)/8)];
+    
     _alarmPages[page] = alarmPage;
     
     //fill info
@@ -308,10 +311,12 @@
         frame.origin.x = frame.size.width * page;
         frame.origin.y = 0;
         alarmPage.frame = frame;
+
         [_scrollView addSubview:alarmPage];
     }
     
     _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
+
 }
 
 #pragma mark - UI Events
@@ -427,6 +432,7 @@
     frame.origin.x = frame.size.width * page;
     frame.origin.y = 0;
     [_scrollView scrollRectToVisible:frame animated:YES];
+    
 }
 
 #pragma mark - UIActionSheetDelegate
@@ -543,13 +549,135 @@
 //    CGRect rect1=cell.frame;
 //    CGPoint point=CGPointMake(cell.center.x/([[UIScreen mainScreen]bounds].size.width), cell.center.y/([[UIScreen mainScreen]bounds].size.height));
     selectedPersonIndex = indexPath.row;
+
+  
+        if(self.meun.tag==0){
+            EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
+            meun.delegate=self;
+            self.meun=meun;
+            [_collectionView addSubview:self.meun];
+       
+
+        
+    }
+
+
+//        if(self.meun.tag==0){
+//    EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
+//    meun.delegate=self;
+//    self.meun=meun;
+//    [_collectionView addSubview:self.meun];
+//    }
+   
+
     
+//    UIWindow *AlertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//    AlertWindow.backgroundColor = [UIColor cyanColor];
+//    [AlertWindow makeKeyAndVisible];
     //action sheet
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
-    sheet.tag = kCollectionViewCellAlert;
-    [sheet showFromRect:cell.frame inView:self.view animated:YES];
+    //UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
+//    sheet.tag = 1001;
+//    [sheet showFromRect:cell.frame inView:self.view animated:YES];
+}
+#pragma mark - EWAlarmMenu delegate
+
+-(void)buttontoperson
+{
+    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+    controller.person = person;
+    [self presentViewControllerWithBlurBackground:controller];
     
 }
+
+-(void)buttontobuzz
+{
+    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [EWServer buzz:@[person]];
+    
+}
+
+-(void)buttontovoice
+{
+    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+    EWRecordingViewController *controller = [[EWRecordingViewController alloc] init];
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
+    controller.task = task;
+    [self presentViewControllerWithBlurBackground:controller];
+}
+
+//-(void)movbutton
+//{
+//    i++;
+//    if(i>=25)[timer1 invalidate];
+//
+//    if(i>=20)
+//    {
+//        [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
+//        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
+//        [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
+//        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
+//    }
+//    else
+//    {
+//        _profilebutton.alpha=0;
+//        _buzzbutton.alpha=0;
+//        _voicebutton.alpha=0;
+//        _closebutton.alpha=0;
+//        if(i>=10)
+//        {   _profilebutton.alpha=0.5*(i-10)*(i-10)/50;
+//            _buzzbutton.alpha=0.5*(i-10)*(i-10)/50;
+//            _voicebutton.alpha=0.5*(i-10)*(i-10)/50;
+//            _closebutton.alpha=0.5*(i-10)*(i-10)/50;
+//        }
+//        [_profilebutton setFrame:CGRectMake(_profilebutton.x-3, _profilebutton.y-3, 30, 30)];
+//        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y-4.5, 30, 30)];
+//        [_voicebutton setFrame:CGRectMake(_voicebutton.x+3, _voicebutton.y-3, 30, 30)];
+//        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y+4.5, 30, 30)];
+//    }
+//}
+//-(void)movbutton2
+//{
+//    i--;
+//    if(i<=10)
+//    {
+//        i=0;
+//        [timer2 invalidate];
+//    }
+//    else
+//    {
+//    [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
+//    [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
+//    [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
+//    [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
+//    }
+//    if(i<=10)
+//    {
+//
+////    [_personview removeFromSuperview];
+//    [_profilebutton removeFromSuperview];
+//    [_buzzbutton removeFromSuperview];
+//    [_voicebutton removeFromSuperview];
+//    [_closebutton removeFromSuperview];
+//    [_alphaview removeFromSuperview];
+//    [_personcellview removeFromSuperview];
+//    
+//    }
+//
+//
+//    
+//    
+//}
+//-(void)closemeun
+//{
+//    timer2=[NSTimer scheduledTimerWithTimeInterval:1.0/60.0
+//                                            target:self
+//                                          selector:@selector(movbutton2)
+//                                          userInfo:NULL
+//                                           repeats:YES];
+//}
+
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{
     return YES;
