@@ -33,7 +33,7 @@
  */
 - (NSString *)date2dayString;
 /**
- return MM/DD/YYYY
+ return YYYYMMddHHmm
  */
 - (NSString *)date2numberDateString;
 /**

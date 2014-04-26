@@ -67,4 +67,5 @@
  */
 + (void)presentWakeUpView;
 + (void)presentWakeUpViewWithTask:(EWTaskItem *)task;
++ (void)woke;
 @end

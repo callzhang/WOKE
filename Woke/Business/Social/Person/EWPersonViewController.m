@@ -109,6 +109,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         [taskTableView reloadData];
         //UI
         self.profilePic.image = person.profilePic;
+        [EWUIUtil applyHexagonMaskForView:self.profilePic];
         self.name.text = person.name;
         self.location.text = person.city;
         
@@ -161,7 +162,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 }
 
 - (IBAction)close:(id)sender {
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
 - (IBAction)login:(id)sender {
@@ -323,9 +324,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 //tap cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithNibName:nil bundle:nil];
-    controller.task = tasks[indexPath.row];
-    //[self presentViewController:controller animated:YES completion:NULL];
+    EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
     [self presentViewControllerWithBlurBackground:controller];
 }
 
@@ -409,9 +408,8 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         }
     }else if (buttonIndex == 1) {
         //send voice greeting
-        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithNibName:nil bundle:nil];
-        controller.task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:currentUser];
-        [self presentViewController:controller animated:YES completion:NULL];
+        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
+        [self presentViewControllerWithBlurBackground:controller];
     }
 }
 

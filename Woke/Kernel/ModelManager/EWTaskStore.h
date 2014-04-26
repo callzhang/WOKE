@@ -84,6 +84,6 @@
 /**
 Checks the tasks relation from EWPerson. If task is in the past, this method moves it to Person.pastTasks relation, and schedule new task.
 */
-- (BOOL)checkTasks;
+//- (BOOL)checkTasks;
 
 @end

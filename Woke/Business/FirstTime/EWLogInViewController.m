@@ -45,9 +45,9 @@
     
     //If fb has already a token, log in SM.
     
-    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
-        [[[UIAlertView alloc] initWithTitle:@"Login" message:@"Do you want to log in with current Facebook information?" delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil] show];
-    }
+//    if (FBSession.activeSession.state == (FBSessionStateCreatedTokenLoaded | FBSessionStateOpenTokenExtended)) {
+//        [[[UIAlertView alloc] initWithTitle:@"Login" message:@"Do you want to log in with current Facebook information?" delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil] show];
+//    }
 }
 
 

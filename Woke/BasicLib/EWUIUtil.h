@@ -48,4 +48,8 @@
 
 + (void)addImage:(UIImage *)image toAlertView:(UIAlertView *)alert;
 
++ (void)applyHexagonMaskForView:(UIView *)view;
+
++ (UIBezierPath *)getHexagonPath;
+
 @end

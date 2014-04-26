@@ -17,16 +17,15 @@
 #import "StackMob.h"
 #import "EWDataStore.h"
 
+@interface EWTaskStore(){
+    BOOL isCheckingTask;
+}
+
+@end
+
 @implementation EWTaskStore
-//@synthesize context, model;
-//@synthesize allTasks = _allTasks;
-//@synthesize context;
 
 +(EWTaskStore *)sharedInstance{
-//    BOOL mainThread = [NSThread isMainThread];
-//    if (!mainThread) {
-//        NSLog(@"**** Task Store not on main thread ****");
-//    }
     
     static EWTaskStore *sharedTaskStore_ = nil;
     static dispatch_once_t onceToken;
@@ -53,8 +52,7 @@
 - (id)init{
     self = [super init];
     if (self) {
-        //NSLog(@"scheduled timely task checking");
-        //[NSTimer timerWithTimeInterval:600 target:self selector:@selector(scheduleTasks) userInfo:nil repeats:YES];
+        //
     }
     return self;
 }
@@ -67,10 +65,10 @@
 #pragma mark - SEARCH
 - (NSArray *)getTasksByPerson:(EWPerson *)p{
     EWPerson *person = [EWDataStore objectForCurrentContext:p];
-    NSArray *tasks = [person.tasks allObjects];
+    NSMutableArray *tasks = [[person.tasks allObjects] mutableCopy];
     BOOL fetch = YES;
     
-    //if self OR person is not outdated, skip fetch
+    //if self OR person is up to date, skip fetch
     if ([person.objectID isEqual:currentUser.objectID] || ![person.lastmoddate isOutDated]) {
         //plus the task count is 7n
         if (tasks.count == 7 * nWeeksToScheduleTask) {
@@ -88,19 +86,26 @@
         //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
         request.predicate = predicate1;
         
-        tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
+        tasks = [[[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL] mutableCopy];
         //Cannot retrieve referenceObject from an objectID that was not created by this store
     }
     
-    
-    //check past task, move it to pastTasks and remove it from the array
-    NSMutableArray *goodTasks = [tasks mutableCopy];
-    [self checkPastTasks:goodTasks];
-    
+    if ([person.username isEqualToString:currentUser.username]) {
+        //check past task, move it to pastTasks and remove it from the array
+        [self checkPastTasks:tasks];
+        
+        //check
+        if (tasks.count != 7) {
+            NSLog(@"Only %lu tasks found", (unsigned long)tasks.count);
+            //[self scheduleTasks];
+            if (tasks.count == 0) {
+                return nil;
+            }
+        }
+    }
     
     //sort
-    tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
-    return tasks;
+    return [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
 }
 
 + (NSArray *)myTasks{
@@ -184,10 +189,13 @@
 #pragma mark - SCHEDULE
 //schedule new task in the future
 - (NSArray *)scheduleTasks{
-    NSLog(@"Start scheduling tasks");
+    if (isCheckingTask) {
+        NSLog(@"@@@ It is already checking task, skip!");
+        return nil;
+    }
     
     //check necessity
-    NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];
+    NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];//avoid using 'getTaskByPerson:' method to cycle calling
     NSArray *alarms = [EWAlarmManager myAlarms];
     if (!alarms) {
         NSLog(@"Something wrong with my alarms, get nil");
@@ -197,6 +205,10 @@
         NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
         return nil;
     }
+    
+    //start check
+    NSLog(@"Start check/scheduling tasks");
+    isCheckingTask = YES;
     
     //for each alarm, find matching task, or create new task
     BOOL newTaskNotify = NO;
@@ -266,21 +278,26 @@
     NSError *err;
     [[EWDataStore currentContext] saveAndWait:&err];
     if (err){
-        [NSException raise:@"Unable to save new tasks" format:@"Error:%@", err.description];
+        NSLog(@"Unable to save new tasks: %@", err.description);
     }
     
     //last checked
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
     
+    isCheckingTask = NO;
     return goodTasks;
 }
 
 
 - (void)checkPastTasks:(NSMutableArray *)tasks{
     //nullify old task's relation to alarm
-    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
+    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingSeconds:-kMaxWakeTime]];
     NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
     for (EWTaskItem *t in outDatedTasks) {
+        if (![t.owner.username isEqualToString:currentUser.username]) {
+            NSLog(@"@@@ Passed in tasks are not for current user");
+            return;
+        }
         t.alarm = nil;
         t.owner = nil;
         t.pastOwner = [EWDataStore user];
@@ -473,7 +490,7 @@
     } onFailure:^(NSError *error) {
         [NSException raise:@"Task deletion error" format:@"Reason: %@", error.description];
     }];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:self userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:self userInfo:nil];
 }
 
 - (void)deleteAllTasks{
@@ -627,66 +644,45 @@
 }
 
 #pragma mark - check
-- (BOOL)checkTasks{
-    //time stemp for last check
-    [EWDataStore sharedInstance].lastChecked = [NSDate date];
-    NSLog(@"Checking tasks");
-    NSMutableArray *tasks = [[self getTasksByPerson:[EWDataStore user]] mutableCopy];
-
-    
-    //check if any task has past
-    NSDate *time = [[NSDate date] timeByAddingMinutes:-kMaxWakeTime];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"time < %@", time];
-    NSArray *pastTasks = [tasks filteredArrayUsingPredicate:predicate];
-    if (pastTasks.count > 0) {
-        //change task relationship
-        
-        for (EWTaskItem *t in pastTasks) {
-            t.owner = nil;
-            t.pastOwner = currentUser;
-            t.alarm = nil;
-            [tasks removeObject:t];
-            NSLog(@"Task has been moved to past tasks: %@", [t.time date2detailDateString]);
-        }
-        //[self scheduleTasks];
-        //return NO;
-        [[EWDataStore currentContext] saveOnSuccess:^{
-            //
-        } onFailure:^(NSError *error) {
-            NSLog(@"Failed to save psat task");
-        }];
-    }
-    
-    
-    if(tasks.count == 0){
-        //initial state
-        NSLog(@"Task has not been setup yet");
-        if (currentUser.alarms.count == 0) return YES;
-        return NO;
-    }else if (tasks.count >  7 * nWeeksToScheduleTask) {
-        NSLog(@"Something is wrong with scheduled task: excessive tasks(%luu), please check.",(unsigned long) (unsigned long)tasks.count);
-        
-        [self deleteAllTasks];
-        return NO;
-    }
-    
-    //check orphan
-    for (EWTaskItem *t in tasks) {
-        if (!t.alarm) {
-            NSLog(@"Task do not have alarm %@", t);
-            [self deleteAllTasks];
-            return NO;
-        }
-    }
-    
-    if (tasks.count == currentUser.alarms.count * nWeeksToScheduleTask) {
-        return YES;
-    }
-    
-    NSLog(@"#### task is between 1 ~ 7n ####");
-    
-    return NO;
-}
+//- (BOOL)checkTasks{
+//    //time stemp for last check
+//    [EWDataStore sharedInstance].lastChecked = [NSDate date];
+//    NSLog(@"Checking tasks");
+//    NSMutableArray *tasks = [[EWTaskStore myTasks] mutableCopy];
+//
+//    //check if any task has past
+//    [self checkPastTasks:tasks];
+//    
+//    //check orphan
+//    for (EWTaskItem *t in tasks) {
+//        if (!t.alarm) {
+//            NSLog(@"Task do not have alarm (%@)", [t.time date2detailDateString]);
+//            [self removeTask:t];
+//            [tasks removeObject:t];
+//            return NO;
+//        }
+//    }
+//    
+//    if (tasks.count == currentUser.alarms.count * nWeeksToScheduleTask) {
+//        return YES;
+//    }else if(tasks.count == 0){
+//        //initial state
+//        NSLog(@"Task has not been setup yet");
+//        if (currentUser.alarms.count == 0) return YES;
+//        return NO;
+//    }else if (tasks.count >  7 * nWeeksToScheduleTask) {
+//        NSLog(@"Something is wrong with scheduled task: excessive tasks(%luu), please check.",(unsigned long) (unsigned long)tasks.count);
+//        
+//        [self deleteAllTasks];
+//        return NO;
+//    }
+//    
+//    
+//    
+//    NSLog(@"#### task is between 1 ~ 7n ####");
+//    
+//    return NO;
+//}
 
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task{
     NSInteger nMedia = 0;

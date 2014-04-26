@@ -44,7 +44,9 @@
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
 }
+
 @property (nonatomic, retain) NSFetchedResultsController *fetchController;
+
 @end
 
 
@@ -52,11 +54,13 @@
 
 
 @implementation EWAlarmsViewController
+
 @synthesize alarms, tasks, people; //data source
 @synthesize scrollView = _scrollView;
 @synthesize pageView = _pageView;
 @synthesize collectionView = _collectionView;
 @synthesize fetchController;
+
 
 - (id)init {
     self = [super init];
@@ -156,7 +160,9 @@
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
     _collectionView.contentInset = UIEdgeInsetsMake(_collectionView.frame.size.height, _collectionView.frame.size.width, _collectionView.frame.size.height, _collectionView.frame.size.width);
-    [_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    //[_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
+    [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     _collectionView.backgroundColor = [UIColor clearColor];
     _collectionView.tag = kHexagonViewIdentifier;
     
@@ -165,6 +171,13 @@
     _scrollView.pagingEnabled = YES;
     _scrollView.tag = kAlarmPageViewIdentifier;
     _pageView.currentPage = 0;
+    
+    //add blur
+    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
+    blurBar.barStyle = UIBarStyleBlack;
+    [self.view insertSubview:blurBar aboveSubview:_collectionView];
+    
+    
     //add button
     self.addBtn.hidden = (tasks.count == 0) ? NO:YES;
     self.addBtn.backgroundColor = [UIColor clearColor];
@@ -481,8 +494,7 @@
                 break;
             }
             case 2:{
-                EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
-                EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithTask:task];
+                EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
                 [self presentViewControllerWithBlurBackground:controller];
                 break;
             }
@@ -533,12 +545,32 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     //Cell
+    
     EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
+    
+    [cell applyHexagonMask];
+    
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
-    //UI
-    cell.profilePic.image = person.profilePic;
-    cell.name.text = person.name;
+    cell.name.text = [person.name initial];
+    if ([person.username isEqualToString: currentUser.username]) {
+        cell.name.text = @"YOU";
+    }
+    cell.profilePic.image = [UIImage imageNamed:@"profile"];
+    
+    dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+        //Data
+        
+        UIImage *profile = person.profilePic;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //UI
+            cell.profilePic.image = profile;
+            
+            [cell setNeedsDisplay];
+            
+        });
+    });
     
     return cell;
 }
@@ -601,9 +633,7 @@
 -(void)buttontovoice
 {
     EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-    EWRecordingViewController *controller = [[EWRecordingViewController alloc] init];
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskForPerson:person];
-    controller.task = task;
+    EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
     [self presentViewControllerWithBlurBackground:controller];
 }
 

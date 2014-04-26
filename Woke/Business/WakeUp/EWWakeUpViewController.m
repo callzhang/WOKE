@@ -18,6 +18,7 @@
 #import "NSDate+Extend.h"
 #import "EWUIUtil.h"
 #import "EWMediaSlider.h"
+#import "EWWakeUpManager.h"
 
 //test
 #import "EWPostWakeUpViewController.h"
@@ -75,7 +76,7 @@
     
     //first time loop
     next = YES;
-    loopCount = 3;
+    loopCount = kLoopMediaPlayCount;
     
     //origin header frame
     headerFrame = header.frame;
@@ -174,10 +175,10 @@
 }
 
 - (void)initView {
-    //background
-    UIImageView *img = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default"]];
-    [self.view addSubview:img];
-    [self.view sendSubviewToBack:img];
+//    //background
+//    UIImageView *img = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default"]];
+//    [self.view addSubview:img];
+//    [self.view sendSubviewToBack:img];
     
     //header
     
@@ -259,6 +260,9 @@
 {
     //stop music
     [[AVManager sharedManager] stopAllPlaying];
+    
+    //release the pointer in wakeUpManager
+    [EWWakeUpManager woke];
     
     //set wakeup time
     NSDate *time = [NSDate date];
@@ -361,18 +365,13 @@
             }];
         }else{
             
-            for (EWTaskItem *t in mi.tasks) {
-                if (t.owner == currentUser || t.pastOwner == currentUser) {
-                    NSLog(@"Found task to delete: %@", task.ewtaskitem_id);
-                    [t removeMediasObject:mi];
-                    [[EWDataStore currentContext] saveOnSuccess:^{
-                        [self initData];//refresh
-                        [rootViewController.view showSuccessNotification:@"Deleted"];
-                    } onFailure:^(NSError *error) {
-                        [rootViewController.view showNotification:@"Failed" WithStyle:hudStyleFailed];
-                    }];
-                }
-            }
+            mi.task = nil;
+            [[EWDataStore currentContext] saveOnSuccess:^{
+                [self initData];//refresh
+                [rootViewController.view showSuccessNotification:@"Deleted"];
+            } onFailure:^(NSError *error) {
+                [rootViewController.view showNotification:@"Failed" WithStyle:hudStyleFailed];
+            }];
         }
         
         //update UI
@@ -403,6 +402,17 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return 80;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return @"Like";
+}
+
+- (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.view showSuccessNotification:@"Like sent"];
+    
+    // Hide the More/Delete menu.
+    [self setEditing:NO animated:YES];
 }
 
 
@@ -515,11 +525,16 @@
         [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%lu)", (long)currentCellPlaying, (unsigned long)medias.count];
     }
     
-    //delay 5s
+    //delay 3s
     if ([cell.media.type isEqualToString: kMediaTypeVoice]) {
-        NSLog(@"Delay 5s to play next cell");
+        NSLog(@"Delay 3s to play next cell");
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[AVManager sharedManager] playForCell:cell];
+            if (cell) {
+                [[AVManager sharedManager] playForCell:cell];
+            }else{
+                [self playNextCell];
+            }
+            
         });
     }else if ([cell.media.type isEqualToString: kMediaTypeBuzz]){
         [[AVManager sharedManager] playForCell:cell];

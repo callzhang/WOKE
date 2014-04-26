@@ -32,7 +32,7 @@
 #import "EWUserManagement.h"
 #import "EWDataStore.h"
 
-#define kAlarmTimerInterval         100
+
 
 //global view for HUD
 UIViewController *rootViewController;
@@ -113,7 +113,7 @@ UIViewController *rootViewController;
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    NSLog(@"Entered background with active time left: %f", application.backgroundTimeRemaining);
+    NSLog(@"Entered background with active time left: %f", application.backgroundTimeRemaining>999?999:application.backgroundTimeRemaining);
 
     
     //save core data
@@ -138,7 +138,7 @@ UIViewController *rootViewController;
     
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerInterval target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+    myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerCheckInterval target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
 
     
 #endif
@@ -178,7 +178,7 @@ UIViewController *rootViewController;
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     [FBSession.activeSession close];
-    
+    [[AVManager sharedManager] playSoundFromFile:@"new.caf"];
     NSLog(@"App is about to terminate");
 
     //[TestFlight manuallyEndSession];
@@ -235,9 +235,9 @@ UIViewController *rootViewController;
     
 }
 
-// ============> Keep alive <=============
+
 - (void) keepAlive:(NSTimer *)paramSender{
-    NSLog(@"===========================>> Keep alive <<=============================");
+    NSLog(@"===========================>> Check Alarm Timer <<=============================");
     //NSLog(@"%s Time left (before) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
     
     
@@ -255,6 +255,9 @@ UIViewController *rootViewController;
 //        NSLog(@"BG task will end (%ld)", (long)ct);
 //    }];
     
+#ifdef BACKGROUND_TEST
+    [UIApplication sharedApplication].applicationIconBadgeNumber = count;
+#endif
 
     
     //check time
@@ -265,7 +268,7 @@ UIViewController *rootViewController;
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
     
-    if (timeLeft < kAlarmTimerInterval && timeLeft > 0) {
+    if (timeLeft < kAlarmTimerCheckInterval && timeLeft > 0) {
         NSLog(@"KeepAlive: About to init alart timer in %fs",timeLeft);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [EWWakeUpManager handleAlarmTimerEvent];
@@ -338,6 +341,7 @@ UIViewController *rootViewController;
         request.platformApplicationArn = AWS_SNS_APP_ARN;
         SNSCreatePlatformEndpointResponse *response;
         NSString *endPointARN;
+        
         @try {
             response = [snsClient createPlatformEndpoint:request];
         }
@@ -361,36 +365,49 @@ UIViewController *rootViewController;
                     SNSSetEndpointAttributesRequest *request = [[SNSSetEndpointAttributesRequest alloc] init];
                     request.endpointArn = endPointNew;
                     [request setAttributesValue:username forKey:@"CustomUserData"];
-                    [request setAttributesValue:@"ture" forKey:@"Enabled"];
                     [snsClient setEndpointAttributes:request];
-                    NSLog(@"EndPoint updated");
+                    
+                    [request setAttributesValue:@"ture" forKey:@"Enabled"];
+                    @try {
+                        [snsClient setEndpointAttributes:request];
+                        NSLog(@"EndPoint updated");
+                    }
+                    @catch (NSException *exception) {
+                        NSLog(@"Failed to update ARNs field");
+                    }
+                    
                     
                     //save to local
                     arnByUserDic[username] = endPointARN;
                     [defaults setObject:arnByUserDic forKey:kAWSEndPointDicKey];
                     
-                }else{
-                    @throw exception;
                 }
             }else{
                 NSLog(@"%@", exception);
                 return;
             }
         }
-
-        if (response) {
-            endPointARN = response.endpointArn;
-            currentUser.aws_id = endPointARN;
-            NSLog(@"Created endpoint on AWS: %@", endPointARN);
+        @finally {
+            
+            if (response) {
+                endPointARN = response.endpointArn;
+                currentUser.aws_id = endPointARN;
+                NSLog(@"Created endpoint on AWS: %@", endPointARN);
+                
+                //save defaults
+                [arnByUserDic setObject:endPointARN forKey:username];
+                [defaults setObject:arnByUserDic forKey:kAWSEndPointDicKey];
+                [defaults synchronize];
+            }
+            
+            //sync
+            [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+                NSLog(@"Failed to save current user");
+            }];
         }
         
-        //save defaults
-        [arnByUserDic setObject:endPointARN forKey:username];
-        [defaults setObject:arnByUserDic forKey:kAWSEndPointDicKey];
-        [defaults synchronize];
+
         
-        //sync
-        [[EWDataStore currentContext] refreshObject:currentUser mergeChanges:YES];
     }else{
         //found endPoint saved at local
         NSLog(@"found endPoint: %@ for user: %@", endPoint, username);

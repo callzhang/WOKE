@@ -223,7 +223,8 @@
         [newMe setUsername:username];
         [newMe setPassword:password];
         newMe.name = [NSString stringWithFormat:@"User_%@", username];
-        newMe.profilePic = [UIImage imageNamed:@"profile"];
+        NSString *profilePicFile = [NSString stringWithFormat:@"%d.jpg", arc4random_uniform(16)];
+        newMe.profilePic = [UIImage imageNamed:profilePicFile];
         currentUser = newMe;
         
         //persist password to user defaults locally
@@ -303,6 +304,7 @@
 
 
 #pragma mark - userLoginEventHandler
+//handled by DataStore
 //- (void)userLoginEventHandler{
 //    NSLog(@"=== [%s] Logged in, performing login tasks.", __func__);
 //    [EWUserManagement registerAPNS];
@@ -321,7 +323,7 @@
 #else
     //pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
     //register everytime in case for events like phone replacement
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeNewsstandContentAvailability];
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeNewsstandContentAvailability | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
 #endif
 }
 
@@ -473,8 +475,6 @@
     if(!currentUser){
         NSLog(@"======= Something wrong, currentUser is nil ========");
     }
-        
-    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
     
     //get current user
     EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
@@ -501,29 +501,24 @@
         //new user
         person.preference = userDefaults;
     }
-    //profile pic, async download, need to assign img to person before leave
-    NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
-    //[self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
-    
-    //[self.profileView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]] placeholderImage:[UIImage imageNamed:@"profile.png"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {//
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]];
-    AFImageRequestOperation *operation;
-    operation = [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image) {
-        currentUser.profilePic = image;
-        [currentUser.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
-            NSLog(@"%s: failed to save profile pic when requesting from facebook", __func__);
+    //download profile picture if needed
+    if (!currentUser.profilePicKey) {
+        //profile pic, async download, need to assign img to person before leave
+        NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
+        //[self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
+        
+        //[self.profileView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]] placeholderImage:[UIImage imageNamed:@"profile.png"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {//
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]];
+        AFImageRequestOperation *operation;
+        operation = [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image) {
+            currentUser.profilePic = image;
+            [currentUser.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
+                NSLog(@"%s: failed to save profile pic when requesting from facebook", __func__);
+            }];
         }];
-    }];
-    [operation start];
-    //broadcasting
-    //[[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey: person}];
+        [operation start];
+    }
     
-    //hide hud if possible
-    //[MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES]; //handled in AlarmsVC
-            
-        
-        
-    //});
 
 }
 

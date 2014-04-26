@@ -54,12 +54,12 @@
     EWPerson *user = [EWDataStore user];
     m.author = user;
     m.type = kMediaTypeVoice;
-//    [[EWDataStore currentContext] saveOnSuccess:^{
+    [[EWDataStore currentContext] saveOnSuccess:^{
         NSLog(@"Media created");
-//    } onFailure:^(NSError *error) {
-//        //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
-//        NSLog(@"Error to save new media: %@", error);
-//    }];
+    } onFailure:^(NSError *error) {
+        //[NSException raise:@"Create media failed" format:@"Reason: %@",error.description];
+        NSLog(@"Error to save new media: %@", error);
+    }];
     return m;
 }
 
@@ -82,9 +82,9 @@
     
     
     [[EWDataStore currentContext] saveAndWait:NULL];
-    //[[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
-    if (media.audioKey.length > 500) {
-        //media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
+    [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
+    NSInteger retry = 10;
+    while (media.audioKey.length > 500 && retry>0) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ewmediaitem_id == %@", media.ewmediaitem_id];
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
         request.predicate = predicate;
@@ -92,6 +92,8 @@
         if (medias.count == 1) {
             return medias[0];
         }
+        retry--;
+        NSLog(@"Still waiting for AWS url to be returned");
     }
     
     return media;
@@ -112,7 +114,7 @@
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"EWMediaItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"ewmediaitem_id == %@", mediaID];
     NSError *err;
-    NSArray *medias = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:&err];
+    NSArray *medias = [[EWDataStore currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:&err];
     if (medias.count == 0){
         NSLog(@"Could not fetch media for ID: %@, error: %@", mediaID, err.description);
         return nil;

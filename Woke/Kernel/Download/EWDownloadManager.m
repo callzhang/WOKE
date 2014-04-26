@@ -117,7 +117,9 @@
     
     if (downloadQueue.count == 0) {
         NSLog(@"All media is cached already, no audio will be downloaded. Run completion block.");
-        block();
+        if (block) {
+            block();
+        }
     }
 }
 
@@ -133,7 +135,7 @@
      */
 
     double progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
-    NSLog(@"DownloadTask: %@ progress: (%.1lf)", downloadTask, progress * 100.0);
+    NSLog(@"DownloadTask: %@ progress: (%lf%%)", downloadTask, progress * 100.0);
     dispatch_async(dispatch_get_main_queue(), ^{
         //self.progressView.progress = progress;
     });

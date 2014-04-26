@@ -22,6 +22,7 @@
 
 @interface AVManager(){
     id AVPlayerUpdateTimer;
+    CADisplayLink *displaylink;
 }
 
 @end
@@ -70,6 +71,7 @@
     return self;
 }
 
+#pragma mark - Audio Sessions
 //register the normal audio session
 - (void)registerAudioSession{
     //deactivated first
@@ -102,6 +104,7 @@
 - (void)registerActiveAudioSession{
     //deactivated first
     [[AVAudioSession sharedInstance] setActive:NO error:NULL];
+    [self stopAvplayer];
     
     //audio session
     [[AVAudioSession sharedInstance] setDelegate: self];
@@ -125,6 +128,7 @@
 - (void)registerRecordingAudioSession{
     //deactivated first
     [[AVAudioSession sharedInstance] setActive:NO error:NULL];
+    [self stopAvplayer];
     
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
@@ -302,7 +306,7 @@
                                                                    settings: recordSettings
                                                                       error: &err];
         self.recorder = newRecorder;
-        
+        recorder.meteringEnabled = YES;
         recorder.delegate = self;
         NSTimeInterval maxTime = kMaxRecordTime;
         [recorder recordForDuration:maxTime];
@@ -317,6 +321,7 @@
         }
         //setup the UI
         [self updateViewForRecorderState:recorder];
+        
     }
     return recordingFileUrl;
 }
@@ -356,13 +361,28 @@
     
 	if (r.recording)
 	{
-		//[lvlMeter_in setPlayer:p];
-		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTimeForRecorder:) userInfo:r repeats:YES];
+        if (progressBar) {
+            NSLog(@"Updating progress bar");
+            updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTimeForRecorder:) userInfo:r repeats:YES];
+        }
+		
+        
+        if (self.waveformView) {
+            NSLog(@"Updating meter waveform");
+            displaylink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateMeters)];
+            [displaylink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+            
+            [UIView animateWithDuration:0.5 animations:^{
+                self.waveformView.alpha = 1;
+            }];
+            
+            
+        }
 	}
 	else
 	{
-		//[lvlMeter_in setPlayer:nil];
 		updateTimer = nil;
+        
 	}
 }
 
@@ -385,6 +405,12 @@
     }
 }
 
+- (void)updateMeters{
+	[self.recorder updateMeters];
+    CGFloat normalizedValue = pow (10, [self.recorder averagePowerForChannel:0]/10);
+    [self.waveformView updateWithLevel:normalizedValue];
+}
+
 
 #pragma mark - AVAudioPlayer delegate method
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)p successfully:(BOOL)flag {
@@ -402,6 +428,11 @@
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
     [updateTimer invalidate];
+    [displaylink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+    displaylink = nil;
+    [UIView animateWithDuration:0.5 animations:^{
+        self.waveformView.alpha = 0;
+    }];
     [recordStopBtn setTitle:@"Record" forState:UIControlStateNormal];
     NSLog(@"Recording reached max length");
 }
@@ -440,7 +471,7 @@
 
 - (void)playSilentSound{
     NSLog(@"AVPlayer is about to play silent sound");
-    NSURL *path = [[NSBundle mainBundle] URLForResource:@"Silence04s" withExtension:@"caf"];
+    NSURL *path = [[NSBundle mainBundle] URLForResource:@"bg" withExtension:@"caf"];
     [self playAvplayerWithURL:path];
     //avplayer.volume = 0.01;
 }
@@ -592,7 +623,7 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
         
         if (!m) m = media;
-        EWTaskItem *task = [m.tasks anyObject];
+        EWTaskItem *task = m.task;
         NSString *title = [task.time weekday];
         
         //info

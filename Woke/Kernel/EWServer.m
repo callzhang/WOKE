@@ -123,6 +123,7 @@
         //add sound
         NSString *sound = [EWDataStore user].preference[@"buzzSound"];
         buzz.buzzKey = sound ? sound : @"default";
+        buzz.receiver = person;//send to media pool
         
         //push payload
         NSDictionary *pushMessage;
@@ -130,11 +131,9 @@
         
         if ([[NSDate date] isEarlierThan:task.time]) {
             
-            //before wake, add to task
-            [task addMediasObject:buzz];
-            
             //silent push
             pushMessage = @{@"aps": @{@"badge": @1,
+                                      @"alert": @"Someone has sent you an buzz",
                                       @"content-available": @1,
                                       },
                             kPushMediaKey: buzz.ewmediaitem_id,
@@ -144,8 +143,6 @@
         }else if (!task.completed || [[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
             //struggle state
             //send push notification, The payload can consist of the alert, badge, and sound keys.
-            [buzz addTasksObject:task];
-            [[EWDataStore currentContext] saveAndWait:NULL];
             
             NSString *buzzType = buzz.buzzKey;
             NSDictionary *sounds = buzzSounds;
@@ -161,13 +158,10 @@
 
         }else{
             
-            //add to next task
-            EWTaskItem *tmrTask = [[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:person];
-            
-            [buzz addTasksObject:tmrTask];
-            
+            //tomorrow's task
             //silent push
             pushMessage = @{@"aps": @{@"badge": @1,
+                                      @"alert": @"Someone has sent you an buzz",
                                       @"content-available": @1,
                                       },
                             kPushMediaKey: buzz.ewmediaitem_id,
@@ -210,7 +204,8 @@
     
     EWMediaItem *media = [EWDataStore objectForCurrentContext:m];
     NSString *mediaId = media.ewmediaitem_id;
-    EWTaskItem *task = [media.tasks anyObject];
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:person];
+    
     NSDictionary *pushMessage;
     
     //validate task
@@ -223,6 +218,7 @@
     if ([[NSDate date] isEarlierThan:task.time]) {
         //early, silent message
         pushMessage = @{@"aps": @{@"badge": @1,
+                                  @"alert": @"Someone has sent you an voice greeting",
                                   @"content-available": @1
                                   },
                         kPushTypeKey: kPushMediaKey,
@@ -240,10 +236,10 @@
                         kPushMediaKey: mediaId};
         
     }else{
-        //send to next task
-        [media removeTasksObject:task];
-        [media addTasksObject:[[EWTaskStore sharedInstance] nextTaskAtDayCount:1 ForPerson:person]];
+        //send silent push for next task
+        
         pushMessage = @{@"aps": @{@"badge": @1,
+                                  @"alert": @"Someone has sent you an voice greeting",
                                   @"content-available": @1
                                   },
                         kPushTypeKey: kPushMediaKey,
@@ -326,16 +322,12 @@
     
     for (EWPerson *target in users) {
         if (!target.aws_id) {
-            NSString *str = [NSString stringWithFormat:@"User (%@) doesn't have a valid push key to receive buzz", target.name];
+            NSString *str = [NSString stringWithFormat:@"User (%@) doesn't have a valid push key to receive push", target.name];
             EWAlert(str);
             continue;
         }
         request.targetArn = target.aws_id;
-        if (!currentUser.aws_id){
-            NSString *str = [NSString stringWithFormat:@"Unable to send message: User not registered for push:%@", target.name];
-            NSLog(@"Unable to send message: no AWS ID found on target:%@", target.username);
-            EWAlert(str);
-        }
+
         //NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             @try {

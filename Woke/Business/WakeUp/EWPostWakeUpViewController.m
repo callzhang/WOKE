@@ -15,21 +15,20 @@
 #import "EWTaskItem.h"
 #import <QuartzCore/QuartzCore.h>
 #import "EWAppDelegate.h"
+#import "EWRecordingViewController.h"
 
 @interface EWPostWakeUpViewController ()
 {
-    IBOutlet UIImageView * backGroundImage;
+    //__weak IBOutlet UIImageView * backGroundImage;
     
-    IBOutlet UIButton * wakeThemBtn;
-    IBOutlet UIButton * doneBtn;
+    __weak IBOutlet UILabel * timeLabel;
+    __weak IBOutlet UILabel * unitLabel;
+    __weak IBOutlet UIView *timerView;
     
-    IBOutlet UILabel * timeLabel;
-    IBOutlet UILabel * unitLabel;
-    
-    IBOutlet UILabel * markALabel;
-    IBOutlet UILabel * markBLabel;
-    
-    IBOutlet UIImageView * barImageView;
+    __weak IBOutlet UILabel *markTitle;
+    __weak IBOutlet UILabel * markALabel;
+    __weak IBOutlet UILabel * markBLabel;
+    //__weak IBOutlet UIImageView * barImageView;
     
     NSInteger time;
 }
@@ -41,8 +40,9 @@
 -(void)initData;
 
 //click action
--(IBAction)wakeAllAction:(id)sender;
--(IBAction)doneAction:(id)sender;
+-(IBAction)wakeEm:(id)sender;
+-(IBAction)buzzEm:(id)sender;
+-(IBAction)cancel:(id)sender;
 
 @end
 
@@ -94,46 +94,21 @@
     {
         collectionView.frame = CGRectMake(34, 242, 253, 171);
         
-        wakeThemBtn.frame = CGRectMake(20, 427, 127, 39);
-        doneBtn.frame = CGRectMake(173, 427, 127, 39);
-        
-        markALabel.hidden = YES;
-        
-        markBLabel.frame = CGRectMake(0, 205, 320, 36);
-        barImageView.frame = CGRectMake(0, 413, 320, 67);
+        //markBLabel.frame = CGRectMake(0, 205, 320, 36);
+        //barImageView.frame = CGRectMake(0, 413, 320, 67);
     }
     
     //Collection view
-    [collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    //[collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
+    [collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     collectionView.dataSource = self;
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
     //collectionView.showsVerticalScrollIndicator = NO;
     collectionView.showsHorizontalScrollIndicator = NO;
-    [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 20, 20)];
+    [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
     
-    //bar area at the button
-    wakeThemBtn.layer.cornerRadius = 5;
-    wakeThemBtn.layer.borderWidth = 1.0f;
-    wakeThemBtn.layer.borderColor = [UIColor colorWithWhite:1.0f alpha:0.8f].CGColor;
-    wakeThemBtn.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
-    doneBtn.layer.cornerRadius = 5;
-    doneBtn.layer.borderWidth = 1.0f;
-    doneBtn.layer.borderColor = [UIColor colorWithWhite:1.0f alpha:0.8f].CGColor;
-    doneBtn.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
-    barImageView.layer.shadowColor = [UIColor blackColor].CGColor;
-    barImageView.layer.shadowOffset = CGSizeMake(0, -3);
-    barImageView.layer.shadowOpacity = 1.0f;
-    
-    
-    UIView * timerView = [[UIView alloc] initWithFrame:CGRectMake(100, 95, 110, 110)];
-    timerView.layer.cornerRadius = 55;
-    timerView.backgroundColor = [UIColor whiteColor];
-    timerView.layer.borderWidth = 1.0f;
-    timerView.layer.borderColor = [UIColor colorWithWhite:1 alpha:0.8f].CGColor;
-    timerView.backgroundColor = [UIColor whiteColor];
-    timerView.alpha = 0.4;
-    [self.view addSubview:timerView];
 }
 
 -(void)initData
@@ -148,6 +123,7 @@
     // coding ...
     
     timeLabel.text = [self getTime];
+    timeLabel.adjustsFontSizeToFitWidth = YES;
     unitLabel.text = [self getUnit];
 }
 
@@ -168,24 +144,20 @@
     if (time < 60 && time >= 0)
     {
         timeStr = [NSString stringWithFormat:@"%ld",(long)time];
-        return timeStr;
     }
     else if (time >= 60 && time < 3600)
     {
         if (time%60 == 0)
         {
             timeStr = [NSString stringWithFormat:@"%f",time/60.0];
-            return timeStr;
         }
         else
         {
             if (time/60.0 > 10.0)
             {
                 timeStr = [NSString stringWithFormat:@"%f",time/60.0];
-                return timeStr;
             }
             timeStr = [NSString stringWithFormat:@"%.1f",time/60.0];
-            return timeStr;
         }
     }
     else
@@ -193,21 +165,18 @@
         if (time%3600 == 0)
         {
             timeStr = [NSString stringWithFormat:@"%f",time/3600.0];
-            return timeStr;
         }
         else
         {
             if (time/3600.0 > 10.0)
             {
                 timeStr = [NSString stringWithFormat:@"%f",time/3600.0];
-                return timeStr;
             }
             timeStr = [NSString stringWithFormat:@"%.1f",time/3600.0];
-            return timeStr;
         }
     }
     
-    return nil;
+    return timeStr;
 }
 -(NSString *)getUnit
 {
@@ -244,39 +213,43 @@
 #pragma mark -
 #pragma mark - IBAction -
 
--(IBAction)wakeAllAction:(id)sender
-{
-    
+-(IBAction)wakeEm:(id)sender{
+    if ([selectedPersonSet count] != 0){
+        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPeople:selectedPersonSet];
+        [self presentViewControllerWithBlurBackground:controller];
+    }
+    else{
+        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"Reminder" message:@"Please select wakiees you want to wake up" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+        [alertView show];
+    }
+}
+
+- (IBAction)buzzEm:(id)sender{
+    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     if ([selectedPersonSet count] != 0)
     {
         
         for (EWPerson *person in selectedPersonSet) {
             
             //======== buzz ========
-            double delayInSeconds = 3.0;
+            double delayInSeconds = 0.1;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                 [EWServer buzz:@[person]];
             });
-            
-            //======= end of buzz ======
         }
         
-        [rootViewController dismissViewControllerAnimated:YES completion:^{
-            //
-        }];
+        [rootViewController dismissViewControllerAnimated:YES completion:NULL];
     }
     else
     {
-        NSLog(@"no person selected");
-        
-        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"提醒" message:@"请选择要被唤醒的朋友" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"Reminder" message:@"Please select wakiees you want to buzz" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
         [alertView show];
     }
 }
 
 
--(IBAction)doneAction:(id)sender
+-(IBAction)cancel:(id)sender
 {
 
     [rootViewController dismissViewControllerAnimated:YES completion:^{
@@ -284,8 +257,11 @@
     }];
 }
 
+#pragma mark - UIToolbar
 
-#pragma mark -
+
+
+
 #pragma mark - collection view delegate & dataSource -
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -298,14 +274,12 @@
 {
     
     EWCollectionPersonCell * cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
-    if (!cell) {
-        NSLog(@"Collection view cell needs init");
-        
-    }
+    [cell applyHexagonMask];
+    
     //person
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
     cell.profilePic.image = person.profilePic;
-    cell.name.text = person.name;
+    cell.name.text = [person.name initial];
     
     return cell;
 }

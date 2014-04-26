@@ -85,9 +85,8 @@
 
 - (IBAction)playMessage:(id)sender {
     if (task.medias.count) {
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-        controller.task = self.task;
-        [rootViewController presentViewController:controller animated:YES completion:^{}];
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:self.task];
+        [rootViewController presentViewControllerWithBlurBackground:controller];
     }
 }
 
@@ -198,7 +197,7 @@
         if ([keyPath isEqualToString:@"state"]) {
             
             
-            self.alarmState.on = [(NSNumber *)change[NSKeyValueChangeNewKey] boolValue];
+            self.alarmState.on = (BOOL)change[NSKeyValueChangeNewKey];
             [self.alarmState setNeedsDisplay];
             NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, self.alarmState.on?@"YES":@"NO");
             

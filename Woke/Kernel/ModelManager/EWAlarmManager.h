@@ -12,7 +12,8 @@
 
 @class EWAlarmItem, EWPerson;
 
-@interface EWAlarmManager : NSObject//EWStore
+@interface EWAlarmManager : NSObject
+@property (nonatomic) BOOL alarmNeedToSetup;
 
 // Singleton
 + (EWAlarmManager *)sharedInstance ;
@@ -32,13 +33,14 @@
 //- (void)setAlarm:(EWAlarmItem *)alarm;
 //- (void)setAlarmState:(BOOL)state atIndex:(NSUInteger)index;
 - (NSArray *)scheduleAlarm;
+- (NSArray *)scheduleNewAlarms;
 
 
 //check
 /**
  Check if alarm for current user is 0 or 7. Otherwise delete all alarm.
  */
-- (BOOL)checkAlarms;
+//- (BOOL)checkAlarms;
 
 //KVO
 

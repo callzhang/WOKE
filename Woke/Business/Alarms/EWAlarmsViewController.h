@@ -27,14 +27,17 @@
 @property (nonatomic) NSArray *alarms;
 @property (nonatomic) NSArray *tasks;
 @property (nonatomic) NSArray *people;
+<<<<<<< HEAD
 @property(nonatomic,retain)EWAlarmMenu *meun;
+=======
+>>>>>>> LZ2
 
-@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+@property(nonatomic,retain)EWAlarmMenu *meun;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
-
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 
 
 //action

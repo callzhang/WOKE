@@ -13,6 +13,7 @@
 - (NSDate *)string2Date;
 - (NSDate *)coredataString2Date;
 - (NSMutableArray *)repeatArray;
+- (NSString *)initial;
 @end
 
 
