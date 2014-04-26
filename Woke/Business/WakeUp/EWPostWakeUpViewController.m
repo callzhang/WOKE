@@ -117,13 +117,7 @@
     /*此处应将再上一个controller完成赋值，目前只是举个例子*/
     personArray = [[EWPersonStore sharedInstance] everyone];
     
-    //获取唤醒时间及单位
-    
-    /*此处写入两段时间的差值.例如：time = time1 - time2;*/
-    // coding ...
-    
     timeLabel.text = [self getTime];
-    timeLabel.adjustsFontSizeToFitWidth = YES;
     unitLabel.text = [self getUnit];
 }
 
@@ -280,7 +274,7 @@
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
     cell.profilePic.image = person.profilePic;
     cell.name.text = [person.name initial];
-    
+    [cell.loadingIndicator stopAnimating];
     return cell;
 }
 

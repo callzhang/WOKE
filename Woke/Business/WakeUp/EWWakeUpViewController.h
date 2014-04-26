@@ -12,8 +12,11 @@
 @interface EWWakeUpViewController : EWViewController <UIPopoverControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UILabel *title;
 @property (weak, nonatomic) IBOutlet UILabel *timer;
+@property (weak, nonatomic) IBOutlet UILabel *AM;
 @property (weak, nonatomic) IBOutlet UIView *header;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIView *alphaView;
+@property (weak, nonatomic) IBOutlet UILabel *seconds;
 
 @property (nonatomic, weak) EWPerson *person;
 @property (nonatomic, weak) EWTaskItem *task;

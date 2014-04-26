@@ -113,11 +113,12 @@
     
     float h = ([t.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
 
-    if (h > 0) {
-        self.timeLeftText.text = [NSString stringWithFormat:@"%.1f hours left", h];
-    }
-    else {
+    if (h < 0) {
         self.timeLeftText.text = @"Just alarmed";
+    }else if(h < 24){
+        self.timeLeftText.text = [NSString stringWithFormat:@"%.1f hours left", h];
+    }else{
+        self.timeLeftText.text = [t.time weekday];
     }
     
 //

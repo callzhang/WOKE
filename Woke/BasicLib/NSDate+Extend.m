@@ -23,7 +23,7 @@
 - (NSString *)date2timeShort{
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     
-    [formatter setDateFormat:@"HH:mm"];
+    [formatter setDateFormat:@"h:mm"];
     
     NSString *string = [formatter stringFromDate:self];
     return string;
@@ -64,6 +64,13 @@
     NSDateFormatter *parseFormatter = [[NSDateFormatter alloc] init];
     parseFormatter.timeZone = [NSTimeZone defaultTimeZone];
     parseFormatter.dateFormat = @"M/DD";
+    return [parseFormatter stringFromDate:self];
+}
+
+- (NSString *)time2HMMSS{
+    NSDateFormatter *parseFormatter = [[NSDateFormatter alloc] init];
+    parseFormatter.timeZone = [NSTimeZone defaultTimeZone];
+    parseFormatter.dateFormat = @"h:mm:ss";
     return [parseFormatter stringFromDate:self];
 }
 

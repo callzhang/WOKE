@@ -66,6 +66,7 @@
                         <rect key="frame" x="4" y="29" width="51" height="31"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="tintColor" red="0.51458560289999999" green="0.90120905880000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="onTintColor" red="0.51458560289999999" green="0.90120905880000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <connections>
                             <action selector="toggleAlarm:" destination="rDh-E1-XtL" eventType="valueChanged" id="pN3-sW-22B"/>
                         </connections>

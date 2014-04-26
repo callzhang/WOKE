@@ -185,8 +185,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     EWAlarmEditCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     //data
-    cell.task = tasks[indexPath.row];//alarm set automatically
-    
+    if (!cell.task) {
+        cell.task = tasks[indexPath.row];//alarm set automatically
+    }
     
     //breaking MVC pattern to get ringtonVC work
     cell.presentingViewController = self;

@@ -34,6 +34,7 @@
     NSInteger loopCount;
     CGRect headerFrame;
     UIButton * postWakeUpVCBtn;
+    NSTimer *timerTimer;
 }
 @property (nonatomic, strong) EWShakeManager *shakeManager;
 @end
@@ -55,19 +56,6 @@
     return self;
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        //self.navigationItem.title = @"WakeUpView";
-        
-        //[self.navigationItem setLeftBarButtonItem:self.editButtonItem];
-        //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
-        
-        //notification
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
-    }
-    return self;
-}
 
 #pragma mark - Life Cycle
 
@@ -99,16 +87,6 @@
     
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    
-    //position the content
-    [self scrollViewDidScroll:tableView_];
-    [self.view setNeedsDisplay];
-    
-    [self scrollViewDidScroll:tableView_];
-}
-
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     
@@ -133,6 +111,13 @@
         [self startPlayCells];
     }
     
+    //timer updates
+    timerTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
+    [self updateTimer];
+    
+    //position the content
+    [self scrollViewDidScroll:tableView_];
+    [self.view setNeedsDisplay];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -148,12 +133,16 @@
     
     //Resume to normal session
     [[AVManager sharedManager] registerAudioSession];
+    
+    //invalid timer
+    [timerTimer invalidate];
 }
 
 - (void)initData {
     //depend on whether passed in with task or person, the media will populaeed accordingly
     if (task) {
-        timer.text = [task.time date2String];
+        timer.text = [task.time date2timeShort];
+        self.AM.text = [task.time date2am];
         NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastmoddate" ascending:YES];
         medias = [[task.medias allObjects] mutableCopy];
         [medias sortUsingDescriptors:@[sort]];
@@ -175,23 +164,24 @@
 }
 
 - (void)initView {
-//    //background
-//    UIImageView *img = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default"]];
-//    [self.view addSubview:img];
-//    [self.view sendSubviewToBack:img];
-    
-    //header
-    
     
     //table view
     tableView_.dataSource = self;
     tableView_.delegate = self;
-    tableView_.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    tableView_.backgroundColor = [UIColor clearColor];
-    tableView_.backgroundView = nil;
     tableView_.separatorStyle = UITableViewCellSeparatorStyleNone;
     tableView_.contentInset = UIEdgeInsetsMake(120, 0, 80, 0);//the distance of the content to the frame of tableview
-    [self.view addSubview:tableView_];
+    
+    //alpha mask
+    CAGradientLayer *alphaMask = [CAGradientLayer layer];
+    alphaMask.anchorPoint = CGPointZero;
+    alphaMask.startPoint = CGPointZero;
+    alphaMask.endPoint = CGPointMake(0.0f, 1.0f);
+    UIColor *startColor = [UIColor colorWithWhite:1.0 alpha:0.0];
+    UIColor *endColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+    alphaMask.colors = @[(id)startColor.CGColor, (id)endColor.CGColor, (id)endColor.CGColor];
+    alphaMask.locations = @[@0.0f, @0.1f, @1.0f];
+    alphaMask.bounds = CGRectMake(0, 0, self.tableView.frame.size.width, self.tableView.frame.size.height);
+    self.alphaView.layer.mask = alphaMask;
     
     //load MediaViewCell
     UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
@@ -273,18 +263,14 @@
         NSLog(@"Failed to save wakeup time for task");
     }];
     
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [self scrollViewDidScroll:self.tableView];//prevent header move
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    //[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    //[self scrollViewDidScroll:self.tableView];//prevent header move
         
-        EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:nil bundle:nil];
-        postWakeUpVC.taskItem = task;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-            [self presentViewControllerWithBlurBackground:postWakeUpVC];
-        });
-    });
+    EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:nil bundle:nil];
+    postWakeUpVC.taskItem = task;
+    
+    //[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    [self presentViewControllerWithBlurBackground:postWakeUpVC];
 }
 
 #pragma mark - tableViewController delegate methods
@@ -425,6 +411,12 @@
     CGRect newFrame = headerFrame;
     newFrame.origin.y = MAX(headerFrame.origin.y - (120 + scrollView.contentOffset.y), -70);
     header.frame = newFrame;
+    //font size
+    CGRect f = self.timer.frame;
+    CGPoint c = self.timer.center;
+    f.size.width = 180 + newFrame.origin.y;
+    self.timer.frame = f;
+    self.timer.center = c;
     
     
     
@@ -526,23 +518,22 @@
     }
     
     //delay 3s
-    if ([cell.media.type isEqualToString: kMediaTypeVoice]) {
-        NSLog(@"Delay 3s to play next cell");
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (cell) {
-                [[AVManager sharedManager] playForCell:cell];
-            }else{
-                [self playNextCell];
-            }
-            
-        });
-    }else if ([cell.media.type isEqualToString: kMediaTypeBuzz]){
-        [[AVManager sharedManager] playForCell:cell];
-    }
+    NSLog(@"Delay 3s to play next cell");
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (cell) {
+            [[AVManager sharedManager] playForCell:cell];
+        }else{
+            [self playNextCell];
+        }
+        
+    });
     
     //highlight
     if (cell) {
         [tableView_ selectRowAtIndexPath:path animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [tableView_ deselectRowAtIndexPath:path animated:YES];
+        });
     }
     
 }
@@ -622,6 +613,20 @@
                 break;
         }
     }
+}
+
+#pragma mark - Timer update
+- (void)updateTimer{
+    NSDate *t = [NSDate date];
+    NSString *ts = [t date2timeShort];
+    self.timer.text = ts;
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"ss"];
+    NSString *string = [formatter stringFromDate:t];
+    self.seconds.text = [NSString stringWithFormat:@"%@\"", string];
+    
+    self.AM.text = [t date2am];
 }
 
 

@@ -69,7 +69,7 @@
         EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
         self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", receiver.name, [task.time weekday]];
     }else{
-        self.detail.text = @"Sent voice to wake them up";
+        self.detail.text = @"Sent voice greeting for their next wake up";
     }
     
     //collection view
@@ -113,6 +113,7 @@
     EWPerson *receiver = personSet[indexPath.row];
     cell.profilePic.image = receiver.profilePic;
     cell.name.text = [receiver.name initial];
+    [cell.loadingIndicator stopAnimating];
     return cell;
 }
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{

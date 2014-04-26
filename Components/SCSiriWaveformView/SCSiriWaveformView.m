@@ -44,16 +44,16 @@
 {
     self.frequency = 1.5f;
     
-    self.amplitude = 1.0f;
-    self.idleAmplitude = 0.1f;
+    self.amplitude = 3.0f;
+    self.idleAmplitude = 0.05f;
     
     self.numberOfWaves = 5;
-    self.phaseShift = -0.15f;
-    self.density = 5.0f;
+    self.phaseShift = -0.3f;
+    self.density = 10.0f;
     
     self.waveColor = [UIColor whiteColor];
     self.primaryWaveLineWidth = 1.0f;
-    self.secondaryWaveLineWidth = 0.5f;
+    self.secondaryWaveLineWidth = 0.2f;
 }
 
 -(void)updateWithLevel:(CGFloat)level

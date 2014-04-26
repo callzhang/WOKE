@@ -72,6 +72,11 @@
 - (NSInteger)HHMM;
 
 /**
+ 
+ */
+- (NSString *)time2HMMSS;
+
+/**
  add minutes to the receiver
  */
 - (NSDate *)timeByAddingMinutes:(NSInteger)minutes;
