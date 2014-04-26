@@ -52,8 +52,8 @@
     self.density = 5.0f;
     
     self.waveColor = [UIColor whiteColor];
-    self.primaryWaveLineWidth = 3.0f;
-    self.secondaryWaveLineWidth = 1.0f;
+    self.primaryWaveLineWidth = 1.0f;
+    self.secondaryWaveLineWidth = 0.5f;
 }
 
 -(void)updateWithLevel:(CGFloat)level

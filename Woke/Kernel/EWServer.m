@@ -133,6 +133,7 @@
             
             //silent push
             pushMessage = @{@"aps": @{@"badge": @1,
+                                      @"alert": @"Someone has sent you an buzz",
                                       @"content-available": @1,
                                       },
                             kPushMediaKey: buzz.ewmediaitem_id,
@@ -160,6 +161,7 @@
             //tomorrow's task
             //silent push
             pushMessage = @{@"aps": @{@"badge": @1,
+                                      @"alert": @"Someone has sent you an buzz",
                                       @"content-available": @1,
                                       },
                             kPushMediaKey: buzz.ewmediaitem_id,
@@ -216,6 +218,7 @@
     if ([[NSDate date] isEarlierThan:task.time]) {
         //early, silent message
         pushMessage = @{@"aps": @{@"badge": @1,
+                                  @"alert": @"Someone has sent you an voice greeting",
                                   @"content-available": @1
                                   },
                         kPushTypeKey: kPushMediaKey,
@@ -236,6 +239,7 @@
         //send silent push for next task
         
         pushMessage = @{@"aps": @{@"badge": @1,
+                                  @"alert": @"Someone has sent you an voice greeting",
                                   @"content-available": @1
                                   },
                         kPushTypeKey: kPushMediaKey,

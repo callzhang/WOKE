@@ -82,8 +82,6 @@
     
     //waveform
     [self.waveformView setWaveColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
-    [self.waveformView setPrimaryWaveLineWidth:1.0f];
-    [self.waveformView setSecondaryWaveLineWidth:0.5f];
     [AVManager sharedManager].waveformView = self.waveformView;
     
     //slider

@@ -407,7 +407,7 @@
 
 - (void)updateMeters{
 	[self.recorder updateMeters];
-    CGFloat normalizedValue = pow (10, [self.recorder averagePowerForChannel:1]);
+    CGFloat normalizedValue = pow (10, [self.recorder averagePowerForChannel:0]/10);
     [self.waveformView updateWithLevel:normalizedValue];
 }
 
