@@ -71,7 +71,7 @@
 //    EWAlarmItem *a = task.alarm;
 //    a.state = [NSNumber numberWithBool:sender.on];
     
-    task.state = sender.on;
+    task.state = (BOOL)sender.on;
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
         NSLog(@"Task state failed to save");
         sender.on = !(sender.on);
@@ -197,7 +197,7 @@
         if ([keyPath isEqualToString:@"state"]) {
             
             
-            self.alarmState.on = (BOOL)change[NSKeyValueChangeNewKey];
+            self.alarmState.on = [(NSNumber *)change[NSKeyValueChangeNewKey] boolValue];
             [self.alarmState setNeedsDisplay];
             NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, self.alarmState.on?@"YES":@"NO");
             
