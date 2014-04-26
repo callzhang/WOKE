@@ -30,11 +30,16 @@
                         <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
+                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="cmr-xh-PlO">
+                        <rect key="frame" x="21" y="22" width="37" height="37"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    </activityIndicatorView>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <size key="customSize" width="80" height="80"/>
             <connections>
+                <outlet property="loadingIndicator" destination="cmr-xh-PlO" id="XV8-N8-gz5"/>
                 <outlet property="name" destination="HUT-ao-1Nw" id="4wH-O9-Eek"/>
                 <outlet property="profilePic" destination="y0G-wX-h3D" id="NoS-z2-oq1"/>
                 <outlet property="selectionView" destination="KKS-Ed-oMT" id="zoN-mc-0Ze"/>

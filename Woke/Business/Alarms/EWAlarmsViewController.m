@@ -549,6 +549,7 @@
     EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     
     [cell applyHexagonMask];
+    [cell.loadingIndicator startAnimating];
     
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
@@ -566,7 +567,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             //UI
             cell.profilePic.image = profile;
-            
+            [cell.loadingIndicator stopAnimating];
             [cell setNeedsDisplay];
             
         });
