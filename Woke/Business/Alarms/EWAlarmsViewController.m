@@ -49,10 +49,6 @@
 
 @end
 
-
-
-
-
 @implementation EWAlarmsViewController
 
 @synthesize alarms, tasks, people; //data source
@@ -108,7 +104,7 @@
             alarms = nil;
             tasks = nil;
         }else{
-           //alarmPages
+            //alarmPages
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
             for (EWAlarmPageView *view in _scrollView.subviews) {
                 [view removeFromSuperview];
@@ -324,12 +320,12 @@
         frame.origin.x = frame.size.width * page;
         frame.origin.y = 0;
         alarmPage.frame = frame;
-
+        
         [_scrollView addSubview:alarmPage];
     }
     
     _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
-
+    
 }
 
 #pragma mark - UI Events
@@ -347,16 +343,16 @@
 }
 
 - (IBAction)profile:(id)sender {
-//    if (!currentUser.facebook) {
-//        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-//        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-//        [loginVC loginInBackground];
-//        
-//    }else{
-        EWPersonViewController *controller = [[EWPersonViewController alloc] init];
-        controller.person = currentUser;
-        [self presentViewController:controller animated:YES completion:NULL];
-//    }
+    //    if (!currentUser.facebook) {
+    //        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    //        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+    //        [loginVC loginInBackground];
+    //
+    //    }else{
+    EWPersonViewController *controller = [[EWPersonViewController alloc] init];
+    controller.person = currentUser;
+    [self presentViewController:controller animated:YES completion:NULL];
+    //    }
     
     
 }
@@ -377,14 +373,14 @@
 //- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
 //
 //    if ([object isKindOfClass:[EWPerson class]]) {
-//        
+//
 //        if ([keyPath isEqualToString:@"profilePicKey"]) {
 //            NSLog(@"Observed profile pic changed for user: %@", [(EWPerson *)object name]);
 //            //update cell
 //            NSInteger i = [allPeople indexOfObject:currentUser];
 //            EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
 //            cell.profilePic.image = currentUser.profilePic;
-//            
+//
 //        }else if ([keyPath isEqualToString:@"tasks"]){
 //            NSLog(@"KVO observed tasks changed");
 //        }else if ([keyPath isEqualToString:@"alarms"]){
@@ -431,7 +427,7 @@
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-//    CGFloat pageWidth = scrollView.frame.size.width;
+    //    CGFloat pageWidth = scrollView.frame.size.width;
 }
 
 - (IBAction)changePage:(id)sender {
@@ -474,7 +470,7 @@
             default:
                 break;
         }
-
+        
     }else if (actionSheet.tag == kCollectionViewCellAlert){
         //person cell action sheet
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
@@ -523,7 +519,7 @@
 //    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
 //    EWTaskItem *task = notification.userInfo[kPushTaskKey];
 //    controller.task  = task;
-//    
+//
 //    //[self presentViewController:navigationController animated:YES completion:NULL];
 //    [self presentViewControllerWithBlurBackground:controller];
 //}
@@ -579,137 +575,35 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
-//    CGRect rect1=cell.frame;
-//    CGPoint point=CGPointMake(cell.center.x/([[UIScreen mainScreen]bounds].size.width), cell.center.y/([[UIScreen mainScreen]bounds].size.height));
     selectedPersonIndex = indexPath.row;
-
-  
-        if(self.meun.tag==0){
-            EWPopupMenu *meun=[[EWPopupMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
-            meun.delegate=self;
-            self.meun=meun;
-            [_collectionView addSubview:self.meun];
-       
-
+    
+    //根据tag值判断是否创建meun
+    if(self.meun.tag==0){
+        //create menu with cell
+        EWPopupMenu *meun=[[EWPopupMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
+        //create button block
+        [meun toprofilebuttonWithBlock:^{
+            EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+            EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+            controller.person = person;
+            [self presentViewControllerWithBlurBackground:controller];
+        }];
+        [meun tobuzzbuttonWithBlock:^{
+            EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            [EWServer buzz:@[person]];
+        }];
+        [meun tovoicebuttonWithBlock:^{
+            EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+            EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
+            [self presentViewControllerWithBlurBackground:controller];
+        }];
         
+        self.meun=meun;
+        [_collectionView addSubview:self.meun];
+                
     }
-
-
-//        if(self.meun.tag==0){
-//    EWAlarmMenu *meun=[[EWAlarmMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
-//    meun.delegate=self;
-//    self.meun=meun;
-//    [_collectionView addSubview:self.meun];
-//    }
-   
-
-    
-//    UIWindow *AlertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-//    AlertWindow.backgroundColor = [UIColor cyanColor];
-//    [AlertWindow makeKeyAndVisible];
-    //action sheet
-    //UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
-//    sheet.tag = 1001;
-//    [sheet showFromRect:cell.frame inView:self.view animated:YES];
 }
-#pragma mark - EWAlarmMenu delegate
-
--(void)buttontoperson
-{
-    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
-    controller.person = person;
-    [self presentViewControllerWithBlurBackground:controller];
-    
-}
-
--(void)buttontobuzz
-{
-    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [EWServer buzz:@[person]];
-    
-}
-
--(void)buttontovoice
-{
-    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-    EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
-    [self presentViewControllerWithBlurBackground:controller];
-}
-
-//-(void)movbutton
-//{
-//    i++;
-//    if(i>=25)[timer1 invalidate];
-//
-//    if(i>=20)
-//    {
-//        [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
-//        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
-//        [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
-//        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
-//    }
-//    else
-//    {
-//        _profilebutton.alpha=0;
-//        _buzzbutton.alpha=0;
-//        _voicebutton.alpha=0;
-//        _closebutton.alpha=0;
-//        if(i>=10)
-//        {   _profilebutton.alpha=0.5*(i-10)*(i-10)/50;
-//            _buzzbutton.alpha=0.5*(i-10)*(i-10)/50;
-//            _voicebutton.alpha=0.5*(i-10)*(i-10)/50;
-//            _closebutton.alpha=0.5*(i-10)*(i-10)/50;
-//        }
-//        [_profilebutton setFrame:CGRectMake(_profilebutton.x-3, _profilebutton.y-3, 30, 30)];
-//        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y-4.5, 30, 30)];
-//        [_voicebutton setFrame:CGRectMake(_voicebutton.x+3, _voicebutton.y-3, 30, 30)];
-//        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y+4.5, 30, 30)];
-//    }
-//}
-//-(void)movbutton2
-//{
-//    i--;
-//    if(i<=10)
-//    {
-//        i=0;
-//        [timer2 invalidate];
-//    }
-//    else
-//    {
-//    [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
-//    [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
-//    [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
-//    [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
-//    }
-//    if(i<=10)
-//    {
-//
-////    [_personview removeFromSuperview];
-//    [_profilebutton removeFromSuperview];
-//    [_buzzbutton removeFromSuperview];
-//    [_voicebutton removeFromSuperview];
-//    [_closebutton removeFromSuperview];
-//    [_alphaview removeFromSuperview];
-//    [_personcellview removeFromSuperview];
-//    
-//    }
-//
-//
-//    
-//    
-//}
-//-(void)closemeun
-//{
-//    timer2=[NSTimer scheduledTimerWithTimeInterval:1.0/60.0
-//                                            target:self
-//                                          selector:@selector(movbutton2)
-//                                          userInfo:NULL
-//                                           repeats:YES];
-//}
-
-
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{
     return YES;
 }
