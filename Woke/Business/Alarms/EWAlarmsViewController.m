@@ -151,7 +151,6 @@
 
 - (void)initView {
     
-    self.meun.tag=0;
     //collection view
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
@@ -578,31 +577,35 @@
     selectedPersonIndex = indexPath.row;
     
     //根据tag值判断是否创建meun
-    if(self.meun.tag==0){
-        //create menu with cell
-        EWPopupMenu *meun=[[EWPopupMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
-        //create button block
-        [meun toprofilebuttonWithBlock:^{
-            EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-            EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
-            controller.person = person;
-            [self presentViewControllerWithBlurBackground:controller];
-        }];
-        [meun tobuzzbuttonWithBlock:^{
-            EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            [EWServer buzz:@[person]];
-        }];
-        [meun tovoicebuttonWithBlock:^{
-            EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-            EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
-            [self presentViewControllerWithBlurBackground:controller];
-        }];
-        
-        self.meun=meun;
-        [_collectionView addSubview:self.meun];
-                
+    if([rootViewController.view viewWithTag:kMenuTag]){
+        [NSException raise:@"Menu not released" format:@"Check your code"];
     }
+    
+    
+    //create menu with cell
+    EWPopupMenu *menu=[[EWPopupMenu alloc]initWithCollectionView:_collectionView initWithCell:cell];
+    menu.tag = kMenuTag;
+    
+    //create button block
+    [menu toprofilebuttonWithBlock:^{
+        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+        EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+        controller.person = person;
+        [self presentViewControllerWithBlurBackground:controller];
+    }];
+    [menu tobuzzbuttonWithBlock:^{
+        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [EWServer buzz:@[person]];
+    }];
+    [menu tovoicebuttonWithBlock:^{
+        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
+        [self presentViewControllerWithBlurBackground:controller];
+    }];
+    
+    [rootViewController.view addSubview:menu];
+    
 }
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{
     return YES;

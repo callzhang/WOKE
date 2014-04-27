@@ -17,19 +17,13 @@ typedef void(^voicebuttonBlock)(void);
 
 
 @interface EWPopupMenu : UIView
-{
-    profilebuttonBlock _toprofilebuttonBlock;
-    buzzbuttonBlock _tobuzzbuttonBlock;
-    voicebuttonBlock _tovoicebuttonBlock;
-}
+
 @property(strong,nonatomic) UIView *alphaview;
 @property(strong,nonatomic) UIButton *profilebutton;
 @property(strong,nonatomic) UIButton *buzzbutton;
 @property(strong,nonatomic) UIButton *voicebutton;
 @property(strong,nonatomic) UIButton *closebutton;
 @property(strong,nonatomic) UIImageView *personview;
-@property(strong,nonatomic) EWCollectionPersonCell *personcellview;
-@property(nonatomic,retain)UICollectionView *collectionView;
 
 -(id)initWithCollectionView:(UICollectionView *)collectionView
                initWithCell:(EWCollectionPersonCell *)cell;

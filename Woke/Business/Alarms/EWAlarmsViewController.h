@@ -12,6 +12,7 @@
 
 #define kCollectionViewCellAlert    1001
 #define kOptionsAlert               1002
+#define kMenuTag                    1003
 
 @import CoreData;
 
@@ -28,7 +29,6 @@
 @property (nonatomic) NSArray *tasks;
 @property (nonatomic) NSArray *people;
 
-@property(nonatomic,retain)EWPopupMenu *meun;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
