@@ -49,10 +49,6 @@
 
 @end
 
-
-
-
-
 @implementation EWAlarmsViewController
 
 @synthesize alarms, tasks, people; //data source
@@ -108,7 +104,7 @@
             alarms = nil;
             tasks = nil;
         }else{
-           //alarmPages
+            //alarmPages
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
             for (EWAlarmPageView *view in _scrollView.subviews) {
                 [view removeFromSuperview];
@@ -155,7 +151,6 @@
 
 - (void)initView {
     
-    self.meun.tag=0;
     //collection view
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
@@ -324,12 +319,12 @@
         frame.origin.x = frame.size.width * page;
         frame.origin.y = 0;
         alarmPage.frame = frame;
-
+        
         [_scrollView addSubview:alarmPage];
     }
     
     _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
-
+    
 }
 
 #pragma mark - UI Events
@@ -347,16 +342,16 @@
 }
 
 - (IBAction)profile:(id)sender {
-//    if (!currentUser.facebook) {
-//        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-//        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-//        [loginVC loginInBackground];
-//        
-//    }else{
-        EWPersonViewController *controller = [[EWPersonViewController alloc] init];
-        controller.person = currentUser;
-        [self presentViewController:controller animated:YES completion:NULL];
-//    }
+    //    if (!currentUser.facebook) {
+    //        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    //        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+    //        [loginVC loginInBackground];
+    //
+    //    }else{
+    EWPersonViewController *controller = [[EWPersonViewController alloc] init];
+    controller.person = currentUser;
+    [self presentViewController:controller animated:YES completion:NULL];
+    //    }
     
     
 }
@@ -377,14 +372,14 @@
 //- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
 //
 //    if ([object isKindOfClass:[EWPerson class]]) {
-//        
+//
 //        if ([keyPath isEqualToString:@"profilePicKey"]) {
 //            NSLog(@"Observed profile pic changed for user: %@", [(EWPerson *)object name]);
 //            //update cell
 //            NSInteger i = [allPeople indexOfObject:currentUser];
 //            EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
 //            cell.profilePic.image = currentUser.profilePic;
-//            
+//
 //        }else if ([keyPath isEqualToString:@"tasks"]){
 //            NSLog(@"KVO observed tasks changed");
 //        }else if ([keyPath isEqualToString:@"alarms"]){
@@ -431,7 +426,7 @@
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-//    CGFloat pageWidth = scrollView.frame.size.width;
+    //    CGFloat pageWidth = scrollView.frame.size.width;
 }
 
 - (IBAction)changePage:(id)sender {
@@ -474,7 +469,7 @@
             default:
                 break;
         }
-
+        
     }else if (actionSheet.tag == kCollectionViewCellAlert){
         //person cell action sheet
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
@@ -523,7 +518,7 @@
 //    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
 //    EWTaskItem *task = notification.userInfo[kPushTaskKey];
 //    controller.task  = task;
-//    
+//
 //    //[self presentViewController:navigationController animated:YES completion:NULL];
 //    [self presentViewControllerWithBlurBackground:controller];
 //}
@@ -581,6 +576,7 @@
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
     
+<<<<<<< HEAD
     
 //    if(self.meun.tag==0){
 //        EWPopupMenu *meun=[[EWPopupMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
@@ -602,16 +598,40 @@
     EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
     controller.person = person;
     [self presentViewControllerWithBlurBackground:controller];
+=======
+    //根据tag值判断是否创建meun
+    if([rootViewController.view viewWithTag:kMenuTag]){
+        [NSException raise:@"Menu not released" format:@"Check your code"];
+    }
+    
+>>>>>>> master4-27-zzh
+    
+    //create menu with cell
+    EWPopupMenu *menu=[[EWPopupMenu alloc]initWithCollectionView:_collectionView initWithCell:cell];
+    menu.tag = kMenuTag;
+    
+    //create button block
+    [menu toprofilebuttonWithBlock:^{
+        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+        EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+        controller.person = person;
+        [self presentViewControllerWithBlurBackground:controller];
+    }];
+    [menu tobuzzbuttonWithBlock:^{
+        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [EWServer buzz:@[person]];
+    }];
+    [menu tovoicebuttonWithBlock:^{
+        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
+        [self presentViewControllerWithBlurBackground:controller];
+    }];
+    
+    [rootViewController.view addSubview:menu];
     
 }
-
--(void)buttontobuzz
-{
-    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [EWServer buzz:@[person]];
-    
-}
+<<<<<<< HEAD
 
 -(void)buttontovoice
 {
@@ -692,6 +712,8 @@
 //}
 
 
+=======
+>>>>>>> master4-27-zzh
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{
     return YES;
 }

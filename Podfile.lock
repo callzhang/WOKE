@@ -13,7 +13,8 @@ PODS:
     - Reachability
   - ASIHTTPRequest/S3 (1.8.2):
     - ASIHTTPRequest/Core
-  - Facebook-iOS-SDK (3.13.0)
+  - Facebook-iOS-SDK (3.13.1)
+  - GPUImage (0.1.4)
   - Reachability (3.1.1)
   - Reveal-iOS-SDK (1.0.3)
   - StackMob (2.2.0):
@@ -24,6 +25,7 @@ PODS:
 DEPENDENCIES:
   - ASIHTTPRequest
   - Facebook-iOS-SDK
+  - GPUImage
   - Reveal-iOS-SDK
   - StackMob
   - TestFlightSDK
@@ -31,12 +33,13 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: 761a418233d280c1e0580bcb76ff9cb4c3073d17
-  ASIHTTPRequest: 4bd3ed65bf8a726292c5fa79ea5c0a2e02c97241
-  Facebook-iOS-SDK: 5788541337dc88265bc940cb5ffb05915f9b64e3
+  ASIHTTPRequest: 0b05282cf3c422c3474eff98c5bb8c1192b91b86
+  Facebook-iOS-SDK: 47ae9e54684c84f93d75d4e6ab47cd031abdf406
+  GPUImage: f9b32e12350792a630e596ffc7b050bea3662670
   Reachability: be4883bb93f31e38266ae3365e5600a317aae735
-  Reveal-iOS-SDK: f2525cb560a564fdc086316e89ec45ced6977fd3
+  Reveal-iOS-SDK: 8e6a6f22a9520437e4a180fe1d4e99f43b75430e
   StackMob: d824b7837fe14776cac7c0602cfa7bb1fe20984a
-  TestFlightSDK: 71e3e78d3a46144dbad975a4bf80a14dae6a818a
-  Weibo: 5a4a1550ea5c605f7f14a1b1aed526e15aa8cc4f
+  TestFlightSDK: fe0567a897456b6f65b180541892ef0154986e01
+  Weibo: 6a997663c8022500eb30ee93d42c67f85149e372
 
-COCOAPODS: 0.31.1
+COCOAPODS: 0.32.1

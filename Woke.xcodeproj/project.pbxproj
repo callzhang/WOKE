@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
+		185B5274190D1D82006D6FB9 /* UIView+Sreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
@@ -188,6 +189,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		185B5272190D1D82006D6FB9 /* UIView+Sreenshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Sreenshot.h"; sourceTree = "<group>"; };
+		185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Sreenshot.m"; sourceTree = "<group>"; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		561ECB5117BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -518,6 +521,8 @@
 				5632E38E17D1BF1A0079D81C /* EWFoundation.m */,
 				5632E39117D1C5950079D81C /* EWDeviceInfo.h */,
 				5632E39217D1C5950079D81C /* EWDeviceInfo.m */,
+				185B5272190D1D82006D6FB9 /* UIView+Sreenshot.h */,
+				185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */,
 			);
 			name = Extension;
 			path = BasicLib;
@@ -1317,6 +1322,7 @@
 				AB6BE35218D804C700444ABC /* EWMediaSlider.m in Sources */,
 				9BBA5F9218EB3ED500C07809 /* SBJSON.m in Sources */,
 				AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */,
+				185B5274190D1D82006D6FB9 /* UIView+Sreenshot.m in Sources */,
 				AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */,
 				ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */,
 				AB207E5E182F4D9E0076D93F /* ImageViewController.m in Sources */,
@@ -1450,6 +1456,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Pods/Reveal-iOS-SDK/Reveal-Framework-1.0.3",
 					"/Users/apple/开发者/WOKE",
+					"/Users/apple/Downloads/Video\\ Blurring\\ Final",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1490,6 +1497,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Pods/Reveal-iOS-SDK/Reveal-Framework-1.0.3",
 					"/Users/apple/开发者/WOKE",
+					"/Users/apple/Downloads/Video\\ Blurring\\ Final",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
