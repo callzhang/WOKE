@@ -10,6 +10,7 @@
     NSInteger _itemsPerRow;
     NSInteger _itemTotalCount;
     CGSize _hexagonSize;
+    BOOL applyZoomEffect;
 }
 
 @end
@@ -63,30 +64,33 @@
     //list of containing indexPath
     NSArray *attributes = [self getContainedRect:rect fromAttributesArray:attributeArray];
     
-    //apply zoom
-    CGRect bounds = self.collectionView.bounds;
-    //bounds.origin.x += self.collectionView.contentInset.left;
-    //bounds.origin.y += self.collectionView.contentInset.top;
-    bounds.origin.y -= self.collectionView.frame.origin.y;//compensate the frame origin
-    //only update cells in the screen
-    NSArray *attributesNeedZoom = [self getContainedRect:bounds fromAttributesArray:attributeArray];
-    
-    CGPoint midBounds = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
-    for (UICollectionViewLayoutAttributes *attribute in attributesNeedZoom) {
-        if (CGRectIntersectsRect(attribute.frame, bounds)) {
-            //get real center
-            CGRect cellFrame = CGRectMake(attribute.frame.origin.x, attribute.frame.origin.y, kCollectionViewCellWidth, kCollectionViewCellHeight);
-            CGPoint cellCenter = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
-            //calculate distance
-            CGFloat distance = [EWUIUtil distanceOfPoint:midBounds toPoint:cellCenter];
-            if (distance < _hexagonSize.width) {
-                CGFloat normDistance = distance / _hexagonSize.width;
-                CGFloat zoom = 1 + pow((1-normDistance),2)/4 ;
-                attribute.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
-                //attribute.zIndex = round(zoom);
+    if (applyZoomEffect) {
+        //apply zoom
+        CGRect bounds = self.collectionView.bounds;
+        //bounds.origin.x += self.collectionView.contentInset.left;
+        //bounds.origin.y += self.collectionView.contentInset.top;
+        bounds.origin.y -= self.collectionView.frame.origin.y;//compensate the frame origin
+        //only update cells in the screen
+        NSArray *attributesNeedZoom = [self getContainedRect:bounds fromAttributesArray:attributeArray];
+        
+        CGPoint midBounds = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
+        for (UICollectionViewLayoutAttributes *attribute in attributesNeedZoom) {
+            if (CGRectIntersectsRect(attribute.frame, bounds)) {
+                //get real center
+                CGRect cellFrame = CGRectMake(attribute.frame.origin.x, attribute.frame.origin.y, kCollectionViewCellWidth, kCollectionViewCellHeight);
+                CGPoint cellCenter = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
+                //calculate distance
+                CGFloat distance = [EWUIUtil distanceOfPoint:midBounds toPoint:cellCenter];
+                if (distance < _hexagonSize.width) {
+                    CGFloat normDistance = distance / _hexagonSize.width;
+                    CGFloat zoom = 1 + pow((1-normDistance),2)/4 ;
+                    attribute.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
+                    //attribute.zIndex = round(zoom);
+                }
             }
         }
     }
+    
 
     return attributes;
 }
@@ -111,7 +115,7 @@
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
     //NSLog(@"New bounds asked for updated layout: (%0f,%0f,%0f,%0f)", newBounds.origin.x, newBounds.origin.y, newBounds.size.width, newBounds.size.height);
-    return YES;
+    return applyZoomEffect ? YES : NO;
 }
 
 //- (void)invalidateLayoutWithContext:(UICollectionViewLayoutInvalidationContext *)context{
@@ -128,10 +132,11 @@
     return contentSize;
 }
 
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    NSInteger space = kCollectionViewCellWidth * CELL_SPACE_RATIO;
-    return UIEdgeInsetsMake(space, space, space, space);
-}
+//Asks the delegate for the margins to apply to content in the specified section.
+//- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+//    NSInteger space = kCollectionViewCellWidth * CELL_SPACE_RATIO;
+//    return UIEdgeInsetsMake(space, space, space, space);
+//}
 
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity{
     

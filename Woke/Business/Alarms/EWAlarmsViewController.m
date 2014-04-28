@@ -544,7 +544,7 @@
     EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     
     [cell applyHexagonMask];
-    [cell.loadingIndicator startAnimating];
+    //[cell.loadingIndicator startAnimating];
     
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
@@ -558,14 +558,23 @@
         //Data
         
         UIImage *profile = person.profilePic;
+        if (profile) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                cell.white.alpha = 1;
+                [UIView animateWithDuration:0.2 animations:^{
+                    cell.white.alpha = 0;
+                }];
+                
+                //UI
+                cell.profilePic.image = profile;
+                //text
+                cell.name.alpha = 0;
+                //[cell.loadingIndicator stopAnimating];
+                [cell setNeedsDisplay];
+                
+            });
+        }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            //UI
-            cell.profilePic.image = profile;
-            [cell.loadingIndicator stopAnimating];
-            [cell setNeedsDisplay];
-            
-        });
     });
     
     return cell;
@@ -575,145 +584,50 @@
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
-    
-<<<<<<< HEAD
-    
-//    if(self.meun.tag==0){
-//        EWPopupMenu *meun=[[EWPopupMenu alloc]initWithCollectionView:self.collectionView initWithCell:cell];
-//        meun.delegate=self;
-//        self.meun=meun;
-//        [_collectionView addSubview:self.meun];
-//    }
 
     //action sheet
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
-    sheet.tag = 1001;
-    [sheet showFromRect:cell.frame inView:self.view animated:YES];
-}
-#pragma mark - EWAlarmMenu delegate
+//    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
+//    sheet.tag = 1001;
+//    [sheet showFromRect:cell.frame inView:self.view animated:YES];
 
--(void)buttontoperson
-{
-    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
-    controller.person = person;
-    [self presentViewControllerWithBlurBackground:controller];
-=======
+
     //根据tag值判断是否创建meun
     if([rootViewController.view viewWithTag:kMenuTag]){
-        [NSException raise:@"Menu not released" format:@"Check your code"];
+        return;
     }
     
->>>>>>> master4-27-zzh
+
     
     //create menu with cell
-    EWPopupMenu *menu=[[EWPopupMenu alloc]initWithCollectionView:_collectionView initWithCell:cell];
+    EWPopupMenu *menu = [[EWPopupMenu alloc] initWithCell:cell];
     menu.tag = kMenuTag;
+    __weak EWPopupMenu *weakMenu = menu;
     
     //create button block
-    [menu toprofilebuttonWithBlock:^{
+    menu.toProfileButtonBlock = ^{
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
         controller.person = person;
         [self presentViewControllerWithBlurBackground:controller];
-    }];
-    [menu tobuzzbuttonWithBlock:^{
+        [weakMenu closeMenu];
+    };
+    
+    menu.toBuzzButtonBlock = ^{
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        //[MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
         [EWServer buzz:@[person]];
-    }];
-    [menu tovoicebuttonWithBlock:^{
+        [weakMenu closeMenu];
+    };
+    
+    menu.toVoiceButtonBlock = ^{
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
         [self presentViewControllerWithBlurBackground:controller];
-    }];
-    
-    [rootViewController.view addSubview:menu];
+        [weakMenu closeMenu];
+    };
     
 }
-<<<<<<< HEAD
 
--(void)buttontovoice
-{
-    EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-    EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
-    [self presentViewControllerWithBlurBackground:controller];
-}
-
-//-(void)movbutton
-//{
-//    i++;
-//    if(i>=25)[timer1 invalidate];
-//
-//    if(i>=20)
-//    {
-//        [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
-//        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
-//        [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
-//        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
-//    }
-//    else
-//    {
-//        _profilebutton.alpha=0;
-//        _buzzbutton.alpha=0;
-//        _voicebutton.alpha=0;
-//        _closebutton.alpha=0;
-//        if(i>=10)
-//        {   _profilebutton.alpha=0.5*(i-10)*(i-10)/50;
-//            _buzzbutton.alpha=0.5*(i-10)*(i-10)/50;
-//            _voicebutton.alpha=0.5*(i-10)*(i-10)/50;
-//            _closebutton.alpha=0.5*(i-10)*(i-10)/50;
-//        }
-//        [_profilebutton setFrame:CGRectMake(_profilebutton.x-3, _profilebutton.y-3, 30, 30)];
-//        [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y-4.5, 30, 30)];
-//        [_voicebutton setFrame:CGRectMake(_voicebutton.x+3, _voicebutton.y-3, 30, 30)];
-//        [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y+4.5, 30, 30)];
-//    }
-//}
-//-(void)movbutton2
-//{
-//    i--;
-//    if(i<=10)
-//    {
-//        i=0;
-//        [timer2 invalidate];
-//    }
-//    else
-//    {
-//    [_profilebutton setFrame:CGRectMake(_profilebutton.x+3, _profilebutton.y+3, 30, 30)];
-//    [_buzzbutton setFrame:CGRectMake(_buzzbutton.x, _buzzbutton.y+4.5, 30, 30)];
-//    [_voicebutton setFrame:CGRectMake(_voicebutton.x-3, _voicebutton.y+3, 30, 30)];
-//    [_closebutton setFrame:CGRectMake(_closebutton.x, _closebutton.y-4.5, 30, 30)];
-//    }
-//    if(i<=10)
-//    {
-//
-////    [_personview removeFromSuperview];
-//    [_profilebutton removeFromSuperview];
-//    [_buzzbutton removeFromSuperview];
-//    [_voicebutton removeFromSuperview];
-//    [_closebutton removeFromSuperview];
-//    [_alphaview removeFromSuperview];
-//    [_personcellview removeFromSuperview];
-//    
-//    }
-//
-//
-//    
-//
-//}
-//-(void)closemeun
-//{
-//    timer2=[NSTimer scheduledTimerWithTimeInterval:1.0/60.0
-//                                            target:self
-//                                          selector:@selector(movbutton2)
-//                                          userInfo:NULL
-//                                           repeats:YES];
-//}
-
-
-=======
->>>>>>> master4-27-zzh
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{
     return YES;
 }

@@ -83,6 +83,9 @@
     //waveform
     [self.waveformView setWaveColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
     [AVManager sharedManager].waveformView = self.waveformView;
+    [AVManager sharedManager].progressBar = (EWMediaSlider *)progressBar;
+    [AVManager sharedManager].playStopBtn = playBtn;
+    [AVManager sharedManager].recordStopBtn = recordBtn;
     
     //slider
     [progressBar setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
@@ -134,15 +137,15 @@
 #pragma mark- Actions
 
 - (IBAction)play:(id)sender {
+    
     if (!recordingFileUrl){
         NSLog(@"Recording url empty");
         return;
     }
+    
     if ([manager.recorder isRecording]) {
         return;
     }
-    manager.progressBar = (EWMediaSlider *)progressBar;
-    manager.playStopBtn = playBtn;
     
     if (!manager.player.isPlaying) {
         [playBtn setTitle:@"Stop" forState:UIControlStateNormal];
@@ -154,9 +157,7 @@
 }
 
 - (IBAction)record:(id)sender {
-    manager.progressBar = (EWMediaSlider *)progressBar;
     progressBar.maximumValue = kMaxRecordTime;
-    manager.recordStopBtn = recordBtn;
     recordingFileUrl = [manager record];
     
     if (manager.recorder.isRecording) {
@@ -209,8 +210,6 @@
             }];
             
         }
-        
-        
         
         //clean up
         recordingFileUrl = nil;

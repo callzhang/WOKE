@@ -11,25 +11,23 @@
 #import "EWPersonViewController.h"
 #import<QuartzCore/QuartzCore.h>
 
-typedef void(^profilebuttonBlock)(void);
-typedef void(^buzzbuttonBlock)(void);
-typedef void(^voicebuttonBlock)(void);
+typedef void(^profileButtonBlock)(void);
+typedef void(^buzzButtonBlock)(void);
+typedef void(^voiceButtonBlock)(void);
 
 
 @interface EWPopupMenu : UIView
 
-@property(strong,nonatomic) UIView *alphaview;
-@property(strong,nonatomic) UIButton *profilebutton;
-@property(strong,nonatomic) UIButton *buzzbutton;
-@property(strong,nonatomic) UIButton *voicebutton;
-@property(strong,nonatomic) UIButton *closebutton;
-@property(strong,nonatomic) UIImageView *personview;
+@property(strong,nonatomic) UIView *alphaView;
+@property(strong,nonatomic) UIButton *profileButton;
+@property(strong,nonatomic) UIButton *buzzButton;
+@property(strong,nonatomic) UIButton *voiceButton;
+@property(strong,nonatomic) UIButton *closeButton;
+@property (nonatomic, copy) profileButtonBlock toProfileButtonBlock;
+@property (nonatomic, copy) buzzButtonBlock toBuzzButtonBlock;
+@property (nonatomic, copy) voiceButtonBlock toVoiceButtonBlock;
 
--(id)initWithCollectionView:(UICollectionView *)collectionView
-               initWithCell:(EWCollectionPersonCell *)cell;
-
--(void)toprofilebuttonWithBlock:(profilebuttonBlock)profile;
--(void)tobuzzbuttonWithBlock:(buzzbuttonBlock)buzz;
--(void)tovoicebuttonWithBlock:(voicebuttonBlock)voice;
+- (instancetype)initWithCell:(EWCollectionPersonCell *)cell;
+- (void)closeMenu;
 
 @end
