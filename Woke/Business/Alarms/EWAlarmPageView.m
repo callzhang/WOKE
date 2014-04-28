@@ -27,20 +27,17 @@
 @synthesize task, alarm;
 @synthesize delegate;
 
-- (id)init {
-    self = [super init];
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
     if (self) {
-        NSArray *nibViews =  [[NSBundle mainBundle] loadNibNamed:@"EWAlarmPage" owner:self options:nil];
+        UIView *view =  [[[NSBundle mainBundle] loadNibNamed:@"EWAlarmPage" owner:self options:nil] firstObject];
         
-        for (UIView *view in nibViews) {
-            [self addSubview:view];
-        }
+        [self addSubview:view];
         //Notifications
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kAlarmChangedNotification object:nil];
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskTimeChangedNotification object:nil];
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskStateChangedNotification object:nil];
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskChangedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleTaskDeletion:) name:kTaskDeleteNotification object:nil];
     }
     return self;
 }
@@ -103,6 +100,7 @@
         }
     }
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleTaskDeletion:) name:kTaskDeleteNotification object:nil];
     
     //setting the hours left
     task = t;
@@ -156,24 +154,12 @@
 }
 
 #pragma mark - NOTIFICATION
-//- (void)updatedPage:(NSNotification *)notif{
-//    id sender = [notif object];
-//    if ([sender isMemberOfClass:[EWAlarmItem class]]) {
-//        if ([[(EWAlarmItem *)sender ewalarmitem_id] isEqual:alarm.ewalarmitem_id]) {
-//            self.alarm = sender;
-//            [self setNeedsDisplay];
-//        }
-//    } else if([sender isMemberOfClass:[EWTaskItem class]]) {
-//        if ([[(EWTaskItem *)sender ewtaskitem_id] isEqual:task.ewtaskitem_id]) {
-//            NSLog(@"Alarm page (%@) received task change notification", task.time.weekday);
-//            self.task = sender;
-//            [self setNeedsDisplay];
-//        }
-//    }
-//}
 
 - (void)handleTaskDeletion:(NSNotification *)notification{
     id sender = [notification object];
+    if (!sender) {
+        sender = notification.userInfo[kPushTaskKey];
+    }
     if ([sender isKindOfClass:[EWTaskItem class]]) {
         EWTaskItem *t = (EWTaskItem *)sender;
         if ([t.ewtaskitem_id isEqualToString:task.ewtaskitem_id]) {

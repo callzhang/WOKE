@@ -154,7 +154,7 @@
     //collection view
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
-    _collectionView.contentInset = UIEdgeInsetsMake(_collectionView.frame.size.height, _collectionView.frame.size.width, _collectionView.frame.size.height, _collectionView.frame.size.width);
+    _collectionView.contentInset = UIEdgeInsetsMake(200, 200, 200, 200);
     //[_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
@@ -292,8 +292,7 @@
     }
     
     //if page empty, add that to the page array
-    EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] init];
-    [alarmPage setFrame:CGRectMake(0, [[UIScreen mainScreen]bounds].size.height*(7/8), [[UIScreen mainScreen]bounds].size.width, ([[UIScreen mainScreen]bounds].size.height)/8)];
+    EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height*(7/8), self.view.frame.size.width, self.view.frame.size.height/8)];
     
     _alarmPages[page] = alarmPage;
     

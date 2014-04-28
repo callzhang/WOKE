@@ -76,7 +76,15 @@
 
 - (IBAction)changeTime:(UIStepper *)sender {
     NSInteger time2add = (NSInteger)sender.value;
+    NSDateComponents *comp = [myTime dateComponents];
+    if (comp.hour == 0 && comp.minute == 0 && time2add < 0) {
+        [myTime timeByAddingMinutes:60 * 24];
+    }else if (comp.hour == 23 && comp.minute == 50 && time2add > 0){
+        [myTime timeByAddingMinutes:-60 * 24];
+    }
+    
     myTime = [myTime timeByAddingMinutes:time2add];
+    
     self.time.text = [myTime date2String];
     sender.value = 0;//reset to 0
     NSLog(@"New value is: %ld, and new time is: %@", (long)time2add, myTime.date2String);

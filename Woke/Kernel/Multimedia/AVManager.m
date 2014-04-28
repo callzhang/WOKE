@@ -343,6 +343,15 @@
         //add new target
         [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
 		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTime:) userInfo:p repeats:YES];
+        
+        //unhide
+        [UIView animateWithDuration:0.5 animations:^{
+            self.progressBar.alpha = 1;
+        }];
+        [UIView animateWithDuration:0.5 animations:^{
+            self.waveformView.alpha = 0;
+        }];
+        
 	}
 	else{
 		//[lvlMeter_in setPlayer:nil];
@@ -361,10 +370,10 @@
     
 	if (r.recording)
 	{
-        if (progressBar) {
-            NSLog(@"Updating progress bar");
-            updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTimeForRecorder:) userInfo:r repeats:YES];
-        }
+//        if (progressBar) {
+//            NSLog(@"Updating progress bar");
+//            updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTimeForRecorder:) userInfo:r repeats:YES];
+//        }
 		
         
         if (self.waveformView) {
@@ -376,6 +385,9 @@
                 self.waveformView.alpha = 1;
             }];
             
+            [UIView animateWithDuration:0.5 animations:^{
+                self.progressBar.alpha = 0;
+            }];
             
         }
 	}

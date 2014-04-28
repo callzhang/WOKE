@@ -303,6 +303,7 @@
         t.pastOwner = [EWDataStore user];
         [tasks removeObject:t];
         NSLog(@"Past task on %@ moved", [t.time date2dayString]);
+        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
     }
     
     [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {

@@ -176,4 +176,10 @@
     return min;
 }
 
+- (NSDateComponents *)dateComponents{
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents* deltaComps = [cal components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSDayCalendarUnit) fromDate:self];
+    return deltaComps;
+}
+
 @end

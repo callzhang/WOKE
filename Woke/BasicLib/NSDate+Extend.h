@@ -95,4 +95,6 @@
  Return MM/DD format
  */
 - (NSString *)date2MMDD;
+
+- (NSDateComponents *)dateComponents;
 @end

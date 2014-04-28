@@ -138,32 +138,32 @@
 //    return UIEdgeInsetsMake(space, space, space, space);
 //}
 
-- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity{
-    
-    //possible cell
-    CGRect bounds = self.collectionView.bounds;
-    CGPoint proposedCenter = CGPointMake(proposedContentOffset.x +bounds.size.width/2, proposedContentOffset.y + bounds.size.height/2);
-    //NSLog(@"Proposed center (%f, %f)", proposedCenter.x, proposedCenter.y);
-    CGRect proposedRect = CGRectMake(proposedCenter.x, proposedCenter.y, _hexagonSize.width, _hexagonSize.height);
-    NSArray *possibleCells = [self layoutAttributesForElementsInRect:proposedRect];
-    if (possibleCells.count == 0) {
-        possibleCells = attributeArray;
-    }
-    //compare
-    double minDist = (double)NSIntegerMax;
-    CGPoint newPoint;//the center of the cell with cloest distance
-    for (UICollectionViewLayoutAttributes *attribute in possibleCells) {
-        //get real center
-        CGRect cellFrame = CGRectMake(attribute.frame.origin.x, attribute.frame.origin.y, kCollectionViewCellWidth, kCollectionViewCellHeight);
-        CGPoint center = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
-        CGFloat distance = [EWUIUtil distanceOfPoint:proposedCenter toPoint:center];
-        if (distance < minDist) {
-            minDist = distance;
-            newPoint = center;
-            //NSLog(@"Candidate cell with distance of %f from (%f, %f)", distance, newPoint.x, newPoint.y);
-        }
-    }
-    //NSLog(@"Adjusted center to (%f, %f)", newPoint.x, newPoint.y);
-    return CGPointMake(newPoint.x - bounds.size.width/2, newPoint.y - bounds.size.height/2);
-}
+//- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity{
+//    
+//    //possible cell
+//    CGRect bounds = self.collectionView.bounds;
+//    CGPoint proposedCenter = CGPointMake(proposedContentOffset.x +bounds.size.width/2, proposedContentOffset.y + bounds.size.height/2);
+//    //NSLog(@"Proposed center (%f, %f)", proposedCenter.x, proposedCenter.y);
+//    CGRect proposedRect = CGRectMake(proposedCenter.x, proposedCenter.y, _hexagonSize.width, _hexagonSize.height);
+//    NSArray *possibleCells = [self layoutAttributesForElementsInRect:proposedRect];
+//    if (possibleCells.count == 0) {
+//        possibleCells = attributeArray;
+//    }
+//    //compare
+//    double minDist = (double)NSIntegerMax;
+//    CGPoint newPoint;//the center of the cell with cloest distance
+//    for (UICollectionViewLayoutAttributes *attribute in possibleCells) {
+//        //get real center
+//        CGRect cellFrame = CGRectMake(attribute.frame.origin.x, attribute.frame.origin.y, kCollectionViewCellWidth, kCollectionViewCellHeight);
+//        CGPoint center = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
+//        CGFloat distance = [EWUIUtil distanceOfPoint:proposedCenter toPoint:center];
+//        if (distance < minDist) {
+//            minDist = distance;
+//            newPoint = center;
+//            //NSLog(@"Candidate cell with distance of %f from (%f, %f)", distance, newPoint.x, newPoint.y);
+//        }
+//    }
+//    //NSLog(@"Adjusted center to (%f, %f)", newPoint.x, newPoint.y);
+//    return CGPointMake(newPoint.x - bounds.size.width/2, newPoint.y - bounds.size.height/2);
+//}
 @end

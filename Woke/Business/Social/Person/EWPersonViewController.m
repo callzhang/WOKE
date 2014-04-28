@@ -102,7 +102,9 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     collectionView.backgroundColor = [UIColor clearColor];
     collectionView.backgroundView = nil;
     collectionView.contentInset = UIEdgeInsetsMake(20, 20, 20, 20);
-    [collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    //[collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    UINib *personNib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
+    [collectionView registerNib:personNib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     
     //======= UI =======
     if (person) {
@@ -372,7 +374,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         //friends
         EWPerson *friend = [[person.friends allObjects] objectAtIndex:indexPath.row];
         cell.profilePic.image = friend.profilePic;
-        cell.name.text = friend.name;
+        cell.name.text = [friend.name initial];
         
     }else if (tabView.selectedSegmentIndex == 2){
         //achievements

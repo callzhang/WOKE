@@ -42,6 +42,16 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)aDecoder{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        self.contentView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
+        //mask
+        [self applyHexagonMask];
+    }
+    return self;
+}
+
 - (void)applyHexagonMask{
     [EWUIUtil applyHexagonMaskForView:self.contentView];
 }
