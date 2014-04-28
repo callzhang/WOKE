@@ -13,6 +13,7 @@
     CGPoint cellCenter;
     EWCollectionPersonCell *cell;
     UIScrollView *collectionView;
+    UILabel *name;
 }
 
 @end
@@ -43,6 +44,7 @@
         cellFrame.origin.y = cellFrame.origin.y - collectionView.bounds.origin.y;
         cellCenter.x = cellFrame.origin.x + cellFrame.size.width/2;
         cellCenter.y = cellFrame.origin.y + cellFrame.size.height/2;
+        
         
         //move distance
 //        CGPoint collectionViewCenter = _personcellview.center;
@@ -76,6 +78,11 @@
         UIImage *dimge=[UIImage imageNamed:@"Callout_Close_Btn"];
         [_closeButton setImage:dimge forState:UIControlStateNormal];
         
+        //name
+        name = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kCollectionViewCellWidth, 30)];
+        name.center = cellCenter;
+        name.text = cell.name;
+        NSLog(@"%@", name.text);
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeMenu)];
         [self addGestureRecognizer:tap];
@@ -88,52 +95,56 @@
         _buzzButton.alpha=0;
         _voiceButton.alpha=0;
         _closeButton.alpha=0;
+        name.alpha = 0;
         
         
         //bring cell to the top
         [collectionView bringSubviewToFront:cell];
         
         //animation
-        [UIView transitionWithView:cell duration:0.4 options:UIViewAnimationOptionTransitionFlipFromRight animations:^{
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             //CGAffineTransform flip = CGAffineTransformMakeRotation(M_PI);
             CGAffineTransform scale = CGAffineTransformMakeScale(1.25, 1.25);
-            cell.white.alpha = 0.8;
-            
+            //cell.white.alpha = 0.8;
             //CGAffineTransform trans = CGAffineTransformConcat(flip, scale);
             cell.transform = scale;
-        } completion:^(BOOL finished) {
-            //button animation
-            [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-                
-                 _alphaView.alpha = 1;
-                 
-                 cell.name.alpha = 1;
-                 
-                 CGRect nrect1=[_profileButton frame];
-                 CGRect nrect2=[_buzzButton frame];
-                 CGRect nrect3=[_voiceButton frame];
-                 CGRect nrect4=[_closeButton frame];
-                 
-                 nrect1.origin.x -= 55;
-                 nrect1.origin.y -= 55;
-                 nrect2.origin.y -= 80;
-                 nrect3.origin.x += 55;
-                 nrect3.origin.y -= 55;
-                 nrect4.origin.y += 70;
-                 
-                 _profileButton.alpha=1;
-                 _buzzButton.alpha=1;
-                 _voiceButton.alpha=1;
-                 _closeButton.alpha=1;
-                 
-                 [_profileButton setFrame:nrect1];
-                 [_buzzButton setFrame:nrect2];
-                 [_voiceButton setFrame:nrect3];
-                 [_closeButton setFrame:nrect4];
-                 
-             } completion:^(BOOL finished){
-                 
-             }];
+            //cell.name.alpha = 1;
+            
+            //shadow
+            cell.layer.shadowColor = [UIColor blackColor].CGColor;
+            cell.layer.shadowOpacity = 0.5;
+            cell.layer.shadowRadius = 5;
+            cell.layer.shadowOffset = CGSizeMake(0,0);
+            cell.clipsToBounds = NO;
+            
+            //location
+            CGRect nrect1=[_profileButton frame];
+            CGRect nrect2=[_buzzButton frame];
+            CGRect nrect3=[_voiceButton frame];
+            CGRect nrect4=[_closeButton frame];
+            CGRect nameRect = name.frame;
+            
+            nrect1.origin.x -= kCollectionViewCellWidth / 2 + 15;
+            nrect1.origin.y -= kCollectionViewCellHeight / 2 + 15;
+            nrect2.origin.y -= kCollectionViewCellHeight / 2 + 40;
+            nrect3.origin.x += kCollectionViewCellWidth / 2 + 15;
+            nrect3.origin.y -= kCollectionViewCellHeight / 2 + 15;
+            nameRect.origin.y += kCollectionViewCellHeight / 2 + 10;
+            nrect4.origin.y = nameRect.origin.y + nameRect.size.height;
+            
+            _alphaView.alpha = 1;
+            _profileButton.alpha=1;
+            _buzzButton.alpha=1;
+            _voiceButton.alpha=1;
+            _closeButton.alpha=1;
+            
+            [_profileButton setFrame:nrect1];
+            [_buzzButton setFrame:nrect2];
+            [_voiceButton setFrame:nrect3];
+            [_closeButton setFrame:nrect4];
+            
+        } completion:^(BOOL finished){
+            
         }];
         
         
@@ -163,29 +174,26 @@
 //close method
 - (void)closeMenu
 {
-    [UIView transitionWithView:cell duration:0.4 options:UIViewAnimationOptionTransitionFlipFromLeft animations:^{
-        CGAffineTransform scale = CGAffineTransformMakeScale(1.0, 1.0);
-        cell.transform = scale;
-    } completion:^(BOOL finished) {
-        
-    }];
     
     [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        
+        CGAffineTransform scale = CGAffineTransformMakeScale(1.0, 1.0);
+        cell.transform = scale;
         cell.white.alpha = 0;
-        
-        cell.name.alpha = 0;
+        //cell.initial.alpha = 0;
+        cell.layer.shadowRadius = 0;
         
         _profileButton.center = cellCenter;
         _buzzButton.center = cellCenter;
         _voiceButton.center = cellCenter;
         _closeButton.center = cellCenter;
+        name.center = cellCenter;
         
         _profileButton.alpha=0;
         _buzzButton.alpha=0;
         _voiceButton.alpha=0;
         _closeButton.alpha=0;
         _alphaView.alpha=0;
+        name.alpha = 0;
         
     } completion:^(BOOL finished) {
         collectionView.scrollEnabled = YES;
@@ -193,6 +201,38 @@
         
         
     }];
+}
+
++ (void)flipCell:(EWCollectionPersonCell *)cell completion:(void (^)(void))block{
+    if (cell.white.alpha == 0) {
+        //initial state
+        [UIView transitionWithView:cell duration:0.4 options:UIViewAnimationOptionTransitionFlipFromLeft animations:^{
+            cell.white.alpha = 0.8;
+            cell.distance.alpha = 1;
+            cell.time.alpha = 1;
+            cell.initial.alpha = 0;
+        } completion:^(BOOL finished) {
+            if (block) {
+                block();
+            }
+        }];
+        [UIView animateWithDuration:0.4 animations:^{
+            
+        }];
+    }else{
+        [UIView transitionWithView:cell duration:0.4 options:UIViewAnimationOptionTransitionFlipFromRight animations:^{
+            cell.white.alpha = 0;
+            cell.distance.alpha = 0;
+            cell.time.alpha = 0;
+            if ([cell.initial.text isEqualToString:@"YOU"]) {
+                cell.initial.alpha = 1;
+            }
+        } completion:^(BOOL finished) {
+            if (block) {
+                block();
+            }
+        }];
+    }
 }
 
 @end

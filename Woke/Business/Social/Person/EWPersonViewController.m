@@ -374,12 +374,12 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         //friends
         EWPerson *friend = [[person.friends allObjects] objectAtIndex:indexPath.row];
         cell.profilePic.image = friend.profilePic;
-        cell.name.text = [friend.name initial];
+        cell.initial.text = [friend.name initial];
         
     }else if (tabView.selectedSegmentIndex == 2){
         //achievements
         EWAchievement *a = [[person.achievements allObjects] objectAtIndex:indexPath.row];
-        cell.name.text = a.name;
+        cell.initial.text = a.name;
         if (a.image) {
             cell.profilePic.image = a.image;
         }else{

@@ -547,10 +547,11 @@
     
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
-    cell.name.text = [person.name initial];
+    cell.initial.text = [person.name initial];
     if ([person.username isEqualToString: currentUser.username]) {
-        cell.name.text = @"YOU";
+        cell.initial.text = @"YOU";
     }
+    cell.initial.alpha = 1;
     cell.profilePic.image = [UIImage imageNamed:@"profile"];
     
     dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
@@ -566,8 +567,12 @@
                 
                 //UI
                 cell.profilePic.image = profile;
+                
                 //text
-                cell.name.alpha = 0;
+                if (![person.username isEqualToString: currentUser.username]) {
+                    cell.initial.alpha = 0;
+                }
+                
                 //[cell.loadingIndicator stopAnimating];
                 [cell setNeedsDisplay];
                 
@@ -592,6 +597,9 @@
 
     //根据tag值判断是否创建meun
     if([rootViewController.view viewWithTag:kMenuTag]){
+        [EWPopupMenu flipCell:cell completion:^{
+            //
+        }];
         return;
     }
     

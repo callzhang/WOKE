@@ -130,11 +130,11 @@ UIViewController *rootViewController;
 #ifdef BACKGROUND_TEST
     
     //开启一个后台任务
-    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        
-        NSLog(@"The first BG task will end (%ld)", count);
-        
-    }];
+//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+//        
+//        NSLog(@"The first BG task will end (%ld)", count);
+//        
+//    }];
     
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];

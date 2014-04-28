@@ -273,8 +273,8 @@
     //person
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
     cell.profilePic.image = person.profilePic;
-    cell.name.text = [person.name initial];
-    [cell.loadingIndicator stopAnimating];
+    cell.name = person.name;
+    cell.initial.text = person.name.initial;
     return cell;
 }
 

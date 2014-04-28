@@ -314,8 +314,7 @@
             NSLog(@"Unable to start record");
         };
         if (![recorder record]){
-            int errorCode = CFSwapInt32HostToBig ([err code]);
-            NSLog(@"Error: %@ [%4.4s])" , [err localizedDescription], (char*)&errorCode);
+            NSLog(@"Error: %@ [%ld])" , [err localizedDescription], err.code);
             NSLog(@"Unable to record");
             return nil;
         }

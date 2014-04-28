@@ -115,8 +115,7 @@
     [cell applyHexagonMask];
     EWPerson *receiver = personSet[indexPath.row];
     cell.profilePic.image = receiver.profilePic;
-    cell.name.text = [receiver.name initial];
-    [cell.loadingIndicator stopAnimating];
+    cell.initial.text = [receiver.name initial];
     return cell;
 }
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
