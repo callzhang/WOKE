@@ -553,6 +553,7 @@
     }
     cell.initial.alpha = 1;
     cell.profilePic.image = [UIImage imageNamed:@"profile"];
+    cell.name = person.name;
     
     dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
         //Data
@@ -589,17 +590,9 @@
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
 
-    //action sheet
-//    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Profile", @"Buzz", @"Voice", nil];
-//    sheet.tag = 1001;
-//    [sheet showFromRect:cell.frame inView:self.view animated:YES];
-
 
     //根据tag值判断是否创建meun
     if([rootViewController.view viewWithTag:kMenuTag]){
-        [EWPopupMenu flipCell:cell completion:^{
-            //
-        }];
         return;
     }
     

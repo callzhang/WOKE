@@ -52,4 +52,6 @@
 
 + (UIBezierPath *)getHexagonPath;
 
++ (void)applyShadow:(UIView *)view;
+
 @end

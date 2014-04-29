@@ -110,5 +110,19 @@
     return polygonPath;
 }
 
++ (void)applyShadow:(UIView *)view{
+    view.layer.shadowColor = [UIColor blackColor].CGColor;
+    float op = 0.4;
+    float r = 5;
+    if ([view isKindOfClass:[UILabel class]]) {
+        op = 1.0;
+        r = 3;
+    }
+    view.layer.shadowOpacity = op;
+    view.layer.shadowRadius = r;
+    view.layer.shadowOffset = CGSizeMake(0,0);
+    view.clipsToBounds = NO;
+}
+
 
 @end
