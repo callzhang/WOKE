@@ -50,7 +50,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
     //UIBarButtonItem *cancelBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
-    self.navBar
     
     
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
