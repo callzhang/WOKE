@@ -166,6 +166,7 @@
     _scrollView.pagingEnabled = YES;
     _scrollView.tag = kAlarmPageViewIdentifier;
     _pageView.currentPage = 0;
+    _pageView.hidden = YES;
     
     //add blur
     UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
@@ -292,19 +293,14 @@
     }
     
     //if page empty, add that to the page array
-    EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height*(7/8), self.view.frame.size.width, self.view.frame.size.height/8)];
+    //EWAlarmPageView *alarmPage = [[EWAlarmPageView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height*(7/8), self.view.frame.size.width, self.view.frame.size.height/8)];
+    
+    EWAlarmPageView *alarmPage =  [[[NSBundle mainBundle] loadNibNamed:@"EWAlarmPage" owner:self options:nil] firstObject];
     
     _alarmPages[page] = alarmPage;
     
     //fill info
     alarmPage.task = task;
-    
-    if (page == 0) {
-        alarmPage.typeText.text = @"Next";
-    }
-    else {
-        alarmPage.typeText.text = @"Upcoming";
-    }
     
     alarmPage.delegate = self;
     
@@ -507,20 +503,10 @@
 - (void)scheduleAlarm{
     //pop up alarmScheduleView
     EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
-    [self presentViewControllerWithBlurBackground:controller];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewControllerWithBlurBackground:nav];
     
 }
-
-//#pragma mark - launch option
-//- (void)presentWakeUpView:(NSNotification *)notification{
-//    NSLog(@"Received local notification");
-//    EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-//    EWTaskItem *task = notification.userInfo[kPushTaskKey];
-//    controller.task  = task;
-//
-//    //[self presentViewController:navigationController animated:YES completion:NULL];
-//    [self presentViewControllerWithBlurBackground:controller];
-//}
 
 #pragma mark - CollectionViewDelegate
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{

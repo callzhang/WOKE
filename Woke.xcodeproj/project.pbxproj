@@ -126,6 +126,7 @@
 		AB4B837918CFE68F0087E654 /* Silence04s.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837818CFE68F0087E654 /* Silence04s.caf */; };
 		AB4B837C18D2C5470087E654 /* new.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837B18D2B9840087E654 /* new.caf */; };
 		AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837D18D2C8BA0087E654 /* tock.caf */; };
+		AB507F42190F843A00C0FB32 /* EWAlarmScheduleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB507F41190F843A00C0FB32 /* EWAlarmScheduleView.xib */; };
 		AB6BE34F18D7C03A00444ABC /* EWRoundButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */; };
 		AB6BE35218D804C700444ABC /* EWMediaSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE35118D804C700444ABC /* EWMediaSlider.m */; };
 		AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB7243CD18F0B09800AE7041 /* Reveal.framework */; };
@@ -365,6 +366,7 @@
 		AB4B837818CFE68F0087E654 /* Silence04s.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Silence04s.caf; sourceTree = "<group>"; };
 		AB4B837B18D2B9840087E654 /* new.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = new.caf; sourceTree = "<group>"; };
 		AB4B837D18D2C8BA0087E654 /* tock.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = tock.caf; sourceTree = "<group>"; };
+		AB507F41190F843A00C0FB32 /* EWAlarmScheduleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWAlarmScheduleView.xib; path = Alarms/EWAlarmScheduleView.xib; sourceTree = "<group>"; };
 		AB6BE34D18D7C03A00444ABC /* EWRoundButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWRoundButton.h; path = "UI Components/EWRoundButton.h"; sourceTree = "<group>"; };
 		AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWRoundButton.m; path = "UI Components/EWRoundButton.m"; sourceTree = "<group>"; };
 		AB6BE35018D804C700444ABC /* EWMediaSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWMediaSlider.h; path = "UI Components/EWMediaSlider.h"; sourceTree = "<group>"; };
@@ -957,6 +959,7 @@
 		AB4B837A18D29DE30087E654 /* UI Components */ = {
 			isa = PBXGroup;
 			children = (
+				AB507F41190F843A00C0FB32 /* EWAlarmScheduleView.xib */,
 				AB6BE34D18D7C03A00444ABC /* EWRoundButton.h */,
 				AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */,
 				AB6BE35018D804C700444ABC /* EWMediaSlider.h */,
@@ -1171,6 +1174,7 @@
 				ABF3FB601908B72F0017D2EF /* 11.jpg in Resources */,
 				ABF3FB5F1908B72F0017D2EF /* 10.jpg in Resources */,
 				AB4B837918CFE68F0087E654 /* Silence04s.caf in Resources */,
+				AB507F42190F843A00C0FB32 /* EWAlarmScheduleView.xib in Resources */,
 				AB29C48118DE75BA00C0A141 /* EWAlarmsView.xib in Resources */,
 				AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */,
 				ABF192AC18C03D71006A4AA2 /* media.caf in Resources */,

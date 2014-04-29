@@ -9,9 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface EWCollectionPersonCell : UICollectionViewCell
-//@property (nonatomic, retain) UIImageView *profilePic;
+
 //@property (nonatomic, retain) UILabel *name;
-//@property (nonatomic, retain) UIImageView *selectionView;
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 @property (weak, nonatomic) IBOutlet UILabel *time;
 @property (weak, nonatomic) IBOutlet UIImageView *selectionView;
@@ -19,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *distance;
 @property (weak, nonatomic) IBOutlet UILabel *initial;
 @property (nonatomic) NSString *name;
+
 - (void)applyHexagonMask;
 
 @end

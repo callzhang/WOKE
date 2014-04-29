@@ -30,24 +30,32 @@
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        UIView *view =  [[[NSBundle mainBundle] loadNibNamed:@"EWAlarmPage" owner:self options:nil] firstObject];
-        
-        [self addSubview:view];
-        //Notifications
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kAlarmChangedNotification object:nil];
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskTimeChangedNotification object:nil];
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskStateChangedNotification object:nil];
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedPage:) name:kTaskChangedNotification object:nil];
+        [self initialize];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self initialize];
+    }
+    return self;
+}
+
+- (void)initialize{
+    self.backgroundColor = [UIColor clearColor];
+    if (self.alarmState.selected) {
+        [self.alarmState setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
+    }else{
+        [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
+    }
 }
 
 
 - (void)dealloc{
     @try {
-        [task removeObserver:self forKeyPath:@"state"];
-        [task removeObserver:self forKeyPath:@"medias"];
-        [task removeObserver:self forKeyPath:@"time"];
+        [self stopObserveTask];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kTaskDeleteNotification object:nil];
         NSLog(@"Alarm page deallocated, KVO & Observer removed");
     }
@@ -63,21 +71,31 @@
     [self.delegate scheduleAlarm];
 }
 
-- (IBAction)OnAlarmSwitchChanged:(UISwitch *)sender {
+- (IBAction)OnAlarmSwitchChanged:(UIButton *)sender {
     //change task not alarm
 //    EWAlarmItem *a = task.alarm;
 //    a.state = [NSNumber numberWithBool:sender.on];
     
-    task.state = (BOOL)sender.on;
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+    //reverse the state
+    sender.selected = !sender.selected;
+    if (sender.selected) {
+        [self.alarmState setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
+    }else{
+        [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
+    }
+    [self setNeedsDisplay];
+    
+    //set task state
+    task.state = sender.selected;
+    [[EWDataStore currentContext] saveOnSuccess:nil onFailure:^(NSError *error) {
         NSLog(@"Task state failed to save");
-        sender.on = !(sender.on);
+        sender.selected = !sender.selected;
         [self setNeedsDisplay];
     }];
     
     //broadcast
     [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:self userInfo:@{@"task": task}];
-    NSLog(@"Task on %@ changed to %@", task.time.weekday, (sender.on?@"ON":@"OFF"));
+    NSLog(@"Task on %@ changed to %@", task.time.weekday, (sender.selected?@"ON":@"OFF"));
 }
 
 - (IBAction)playMessage:(id)sender {
@@ -89,14 +107,18 @@
 
 - (void)setTask:(EWTaskItem *)t{
     //unsubscribe previous task if possible
-    if (![task isEqual:t]) {
-        @try {
-            [task removeObserver:self forKeyPath:@"state"];
-            [task removeObserver:self forKeyPath:@"medias"];
-            [task removeObserver:self forKeyPath:@"time"];
-        }
-        @catch (NSException *exception) {
-            NSLog(@"*** Alarm page unable to remove task observer: %@",exception);
+    if (task) {
+        if ([task.ewtaskitem_id isEqualToString:t.ewtaskitem_id]) {
+            //same task
+            return;
+        }else{
+            //different task
+            @try {
+                [self stopObserveTask];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"%@", exception.description);
+            }
         }
     }
     
@@ -105,9 +127,15 @@
     //setting the hours left
     task = t;
     alarm = task.alarm;
-    self.alarmState.on = t.state;
+    self.alarmState.selected = t.state;
+    if (self.alarmState.selected) {
+        [self.alarmState setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
+    }else{
+        [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
+    }
     self.timeText.text = [t.time date2timeShort];
     self.AM.text = [t.time date2am];
+    self.descriptionText.text = t.statement ? t.statement : alarm.alarmDescription;
     
     float h = ([t.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
 
@@ -119,13 +147,6 @@
         self.timeLeftText.text = [t.time weekday];
     }
     
-//
-//    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
-//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"task == %@", task];
-//    request.predicate = predicate;
-//    SMRequestOptions *options = [SMRequestOptions options];
-//    options.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
-//    [[[EWDataStore sharedInstance] currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:options error:NULL];
     NSInteger mCount = task.medias.count;
     
     if (mCount > 0) {
@@ -133,24 +154,23 @@
     }else{
         [self.messages setTitle:@"" forState:UIControlStateNormal];
     }
-    self.editBtn.backgroundColor = [UIColor clearColor];
-    self.dateText.text = [t.time date2dayString];
-    self.descriptionText.text = t.statement;
-    [self.descriptionText sizeToFit];
+    
+    
     
     
     //test
-    self.dateText.hidden = YES;
-    self.typeText.hidden = YES;
+    //self.dateText.hidden = YES;
+    //self.typeText.hidden = YES;
     
     //kvo <= KVO not working because it constantly updates the value
     [task addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:NULL];
     [task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:NULL];
     [task addObserver:self forKeyPath:@"time" options:NSKeyValueObservingOptionNew context:NULL];
+    [task addObserver:self forKeyPath:@"statement" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)setAlarm:(EWAlarmItem *)a{
-    self.alarmState.on = a.state;
+    self.alarmState.selected = a.state;
 }
 
 #pragma mark - NOTIFICATION
@@ -163,10 +183,7 @@
     if ([sender isKindOfClass:[EWTaskItem class]]) {
         EWTaskItem *t = (EWTaskItem *)sender;
         if ([t.ewtaskitem_id isEqualToString:task.ewtaskitem_id]) {
-            [task removeObserver:self forKeyPath:@"state"];
-            [task removeObserver:self forKeyPath:@"medias"];
-            [task removeObserver:self forKeyPath:@"time"];
-            NSLog(@"Removed KVO to task (%@)", task.ewtaskitem_id);
+            [self stopObserveTask];
         }
     }
 }
@@ -183,10 +200,14 @@
         //TODO: dispatch different tasks for each updates
         if ([keyPath isEqualToString:@"state"]) {
             
-            
-            self.alarmState.on = [(NSNumber *)change[NSKeyValueChangeNewKey] boolValue];
+            self.alarmState.selected = [(NSNumber *)change[NSKeyValueChangeNewKey] boolValue];
+            if (self.alarmState.selected) {
+                [self.alarmState setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
+            }else{
+                [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
+            }
             [self.alarmState setNeedsDisplay];
-            NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, self.alarmState.on?@"YES":@"NO");
+            NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, self.alarmState.selected?@"YES":@"NO");
             
             
         }else if ([keyPath isEqualToString:@"medias"]){
@@ -212,6 +233,14 @@
         [self setNeedsDisplay];
     }
     
+}
+
+- (void)stopObserveTask{
+    [task removeObserver:self forKeyPath:@"state"];
+    [task removeObserver:self forKeyPath:@"medias"];
+    [task removeObserver:self forKeyPath:@"time"];
+    [task removeObserver:self forKeyPath:@"statement"];
+    NSLog(@"Removed KVO to task (%@)", task.time.weekday);
 }
 
 @end

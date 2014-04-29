@@ -15,11 +15,11 @@
 @synthesize task, alarm;
 @synthesize myTime, myStatement, myMusic;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+
+- (id)initWithCoder:(NSCoder *)aDecoder{
+    self = [super initWithCoder:aDecoder];
     if (self) {
-        self.contentView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.3];
+        self.contentView.backgroundColor = [UIColor clearColor];
     }
     return self;
 }
@@ -41,23 +41,31 @@
     myStatement = self.task.statement;
     
     //view
-    self.time.text = [myTime date2String];
+    self.time.text = [myTime date2timeShort];
+    self.AM.text = [myTime date2am];
     self.weekday.text = [myTime weekday];
     NSArray *name = [myMusic componentsSeparatedByString:@"."];
     [self.music setTitle:name[0] forState:UIControlStateNormal];
     self.statement.text = myStatement;
     //NSString *alarmState = alarmOn ? @"ON":@"OFF";
     //[self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
-    self.alarmToggle.on = task.state;
+    
+    self.alarmToggle.selected = task.state;
+    if (self.alarmToggle.selected) {
+        [self.alarmToggle setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
+    }else{
+        [self.alarmToggle setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
+    }
+    
     
 }
 
-- (IBAction)toggleAlarm:(UISwitch *)sender {
-    BOOL alarmOn = sender.on ? YES:NO;
-    if (alarmOn) {
-        //sender.backgroundColor = [UIColor clearColor];
-    } else {
-        //sender.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:0.8];
+- (IBAction)toggleAlarm:(UIControl *)sender {
+    sender.selected = !sender.selected;
+    if (self.alarmToggle.selected) {
+        [self.alarmToggle setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
+    }else{
+        [self.alarmToggle setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
     }
 }
 
@@ -85,7 +93,8 @@
     
     myTime = [myTime timeByAddingMinutes:time2add];
     
-    self.time.text = [myTime date2String];
+    self.time.text = [myTime date2timeShort];
+    self.AM.text = [myTime date2am];
     sender.value = 0;//reset to 0
     NSLog(@"New value is: %ld, and new time is: %@", (long)time2add, myTime.date2String);
     [self setNeedsDisplay];

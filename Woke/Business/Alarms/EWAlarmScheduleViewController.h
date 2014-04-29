@@ -9,8 +9,10 @@
 #import <Foundation/Foundation.h>
 
 @interface EWAlarmScheduleViewController : EWViewController<UITableViewDelegate, UITableViewDataSource, UINavigationBarDelegate>{
-    UITableView *_tableView;
+    //UITableView *_tableView;
     NSArray *alarms;
     NSArray *tasks;
 }
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UINavigationBar *navBar;
 @end

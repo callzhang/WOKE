@@ -33,7 +33,6 @@
         [collectionView addSubview:self];
         collectionView.scrollEnabled=NO;
         
-        
         //alpha view
         _alphaView = [[UIView alloc] initWithFrame: self.bounds];
         _alphaView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];

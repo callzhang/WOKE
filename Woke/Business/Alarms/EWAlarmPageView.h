@@ -25,18 +25,16 @@
 
 @property (nonatomic, retain) EWTaskItem *task;
 @property (nonatomic, retain) EWAlarmItem *alarm;
-@property (strong, nonatomic) IBOutlet UILabel *typeText;
-@property (strong, nonatomic) IBOutlet UILabel *dateText;
 @property (strong, nonatomic) IBOutlet UILabel *timeText;
 @property (strong, nonatomic) IBOutlet UILabel *timeLeftText;
 @property (weak, nonatomic) IBOutlet UILabel *AM;
 @property (weak, nonatomic) IBOutlet UIButton *editBtn;
 @property (weak, nonatomic) IBOutlet UILabel *descriptionText;
 @property (weak, nonatomic) IBOutlet UIButton *messages;
-@property (weak, nonatomic) IBOutlet UISwitch *alarmState;
+@property (weak, nonatomic) IBOutlet UIButton *alarmState;
 
 - (IBAction)editAlarm:(id)sender;
-- (IBAction)OnAlarmSwitchChanged:(id)sender;
+- (IBAction)OnAlarmSwitchChanged:(UIButton *)sender;
 - (IBAction)playMessage:(id)sender;
 
 @end

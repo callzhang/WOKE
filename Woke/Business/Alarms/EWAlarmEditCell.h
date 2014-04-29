@@ -21,14 +21,15 @@
 //@property (nonatomic) BOOL alarmOn;
 @property (nonatomic) NSString *myMusic;
 //outlet
-@property (weak, nonatomic) IBOutlet UISwitch *alarmToggle;
+@property (weak, nonatomic) IBOutlet UIButton *alarmToggle;
 @property (weak, nonatomic) IBOutlet UILabel *weekday;
 @property (weak, nonatomic) IBOutlet UILabel *time;
 @property (weak, nonatomic) IBOutlet UITextField *statement;
 @property (weak, nonatomic) IBOutlet UIStepper *timeStepper;
 @property (weak, nonatomic) IBOutlet UIButton *music;
+@property (weak, nonatomic) IBOutlet UILabel *AM;
 //action
-- (IBAction)toggleAlarm:(UISwitch *)sender;
+- (IBAction)toggleAlarm:(UIControl *)sender;
 - (IBAction)changeMusic:(id)sender;
 - (IBAction)hideKeyboard:(UITextField *)sender;
 - (IBAction)changeTime:(UIStepper *)sender;

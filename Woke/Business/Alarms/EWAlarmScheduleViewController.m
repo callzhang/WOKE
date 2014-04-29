@@ -35,7 +35,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     CGRect tableFrame = self.view.frame;
     tableFrame.origin.y += MADEL_HEADER_HEIGHT;
     tableFrame.size.height -= MADEL_HEADER_HEIGHT;
-    _tableView = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStylePlain];
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.backgroundColor = [UIColor clearColor];
@@ -44,10 +43,15 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [self.view addSubview:_tableView];
     
     //header view
-    UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(20, 30, 18, 30)];
-    [backBtn setImage:[UIImage imageNamed:@"back_btn"] forState:UIControlStateNormal];
-    [backBtn addTarget:self action:@selector(OnDone) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:backBtn];
+//    UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(20, 30, 18, 30)];
+//    [backBtn setImage:[UIImage imageNamed:@"back_btn"] forState:UIControlStateNormal];
+//    [backBtn addTarget:self action:@selector(OnDone) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:backBtn];
+    
+    //UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
+    //UIBarButtonItem *cancelBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
+    self.navBar
+    
     
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
     [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
@@ -89,9 +93,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             });
         });
         
-        
-        
-        
     }
 
 }
@@ -116,9 +117,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             continue;
         }
         //state
-        if (cell.alarmToggle.on != cell.alarm.state) {
-            NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmToggle.on?@"ON":@"OFF");
-            cell.alarm.state = cell.alarmToggle.on?YES:NO;
+        if (cell.alarmToggle.selected != cell.alarm.state) {
+            NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
+            cell.alarm.state = cell.alarmToggle.selected?YES:NO;
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
         }
         //music
@@ -200,7 +201,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:alpha];
     
     EWAlarmEditCell *myCell = (EWAlarmEditCell *)cell;
-    if (myCell.alarmToggle.on) {
+    if (myCell.alarmToggle.selected) {
         //myCell.alarmToggle.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:1];
     }
 }
