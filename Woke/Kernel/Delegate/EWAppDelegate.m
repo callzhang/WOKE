@@ -67,7 +67,7 @@ UIViewController *rootViewController;
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    EWAlarmsViewController *controler = [[EWAlarmsViewController alloc] init];
+    EWAlarmsViewController *controler = [[EWAlarmsViewController alloc] initWithNibName:nil bundle:nil];
     self.window.rootViewController = controler;
     rootViewController = self.window.rootViewController;
     
@@ -160,8 +160,11 @@ UIViewController *rootViewController;
     if (backgroundTaskIdentifier != UIBackgroundTaskInvalid){
         //end background task
         [application endBackgroundTask:backgroundTaskIdentifier];
-        //stop timer
-        if ([myTimer isValid]) [myTimer invalidate];
+        
+    }
+    //stop timer
+    if ([myTimer isValid]){
+        [myTimer invalidate];
     }
     
     NSLog(@"Entered foreground and cleaned bgID and timer");

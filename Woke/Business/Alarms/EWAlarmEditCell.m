@@ -8,6 +8,7 @@
 
 #import "EWAlarmEditCell.h"
 #import "EWTaskItem.h"
+#import "EWAlarmManager.h"
 #import "EWAlarmItem.h"
 #import "NSDate+Extend.h"
 
@@ -56,8 +57,33 @@
     }else{
         [self.alarmToggle setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
     }
+}
+
+- (void)setAlarm:(EWAlarmItem *)a{
+    //data
+    task = [[EWAlarmManager sharedInstance] firstTaskForAlarm:a];
+    alarm = a;
+    myTime = alarm.time;
+    myMusic = alarm.tone;
+    myStatement = alarm.alarmDescription;
     
+    //view
+    self.time.text = [myTime date2timeShort];
+    self.AM.text = [myTime date2am];
+    self.weekday.text = [myTime weekday];
+    NSArray *name = [myMusic componentsSeparatedByString:@"."];
+    [self.music setTitle:name[0] forState:UIControlStateNormal];
+    self.statement.text = myStatement;
+    //NSString *alarmState = alarmOn ? @"ON":@"OFF";
+    //[self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
     
+    self.alarmToggle.selected = alarm.state;
+    if (self.alarmToggle.selected) {
+        [self.alarmToggle setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
+    }else{
+        [self.alarmToggle setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
+    }
+
 }
 
 - (IBAction)toggleAlarm:(UIControl *)sender {

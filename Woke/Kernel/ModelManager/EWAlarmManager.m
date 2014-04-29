@@ -125,6 +125,18 @@
     return nextA;
 }
 
+- (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm{
+    if (alarm.tasks.count == 0) {
+        return nil;
+    }else if (alarm.tasks.count == 1){
+        return alarm.tasks.anyObject;
+    }
+    NSMutableArray *tasks = [[alarm.tasks allObjects] mutableCopy];
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
+    [tasks sortUsingDescriptors:@[sort]];
+    return tasks[0];
+}
+
 #pragma mark - SCHEDULE
 - (NSArray *)scheduleNewAlarms{
     self.alarmNeedToSetup = YES;
@@ -234,7 +246,9 @@
         NSError *err;
         [[EWDataStore currentContext] saveAndWait:&err];
         if (err) {
-            [NSException raise:@"Error in saving Alarms" format:@"Error:%@", err.description];
+            //[NSException raise:@"Error in saving Alarms" format:@"Error:%@", err.description];
+            NSLog(@"Failed to save alarms: %@", err.description);
+            EWAlert(@"Failed to set up alarm, please reschedule");
         }
         
         //check
@@ -242,7 +256,7 @@
         NSInteger retry = 3;
         while (myAlarms.count != newAlarms.count && retry >0) {
             myAlarms = [EWAlarmManager myAlarms];
-            [NSThread sleepForTimeInterval:0.5];
+            [NSThread sleepForTimeInterval:0.1];
             retry--;
         }
         

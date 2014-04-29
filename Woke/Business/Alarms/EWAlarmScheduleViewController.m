@@ -39,7 +39,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     _tableView.delegate = self;
     _tableView.backgroundColor = [UIColor clearColor];
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 280, 0);
+    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 250, 0);
     [self.view addSubview:_tableView];
     
     //header view
@@ -48,8 +48,15 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 //    [backBtn addTarget:self action:@selector(OnDone) forControlEvents:UIControlEventTouchUpInside];
 //    [self.view addSubview:backBtn];
     
-    //UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
-    //UIBarButtonItem *cancelBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
+    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
+    UIBarButtonItem *cancelBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.navigationItem.title = @"Schedule Alarms";
+    self.navigationItem.leftBarButtonItem = doneBtn;
+    self.navigationItem.rightBarButtonItem = cancelBtn;
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithWhite:0 alpha:0.1];
+    
+    self.view.backgroundColor = [UIColor clearColor];
     
     
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
@@ -70,6 +77,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 #pragma mark - View life cycle
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    
+    [self setEdgesForExtendedLayout:UIRectEdgeAll];
     
     //schedule alarm and tasks
     //pop up alarmScheduleView
@@ -108,7 +117,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewWillDisappear:(BOOL)animated{
+- (void)save{
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     for (unsigned i=0; i<[_tableView numberOfRowsInSection:0]; i++) {
         EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
@@ -150,13 +159,12 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-    
-    [super viewWillDisappear:animated];
 }
 
 #pragma mark - UI events
 - (void)OnDone{
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+    [self save];
 }
 
 - (void)OnCancel{

@@ -10,7 +10,7 @@
 //#import "EWStore.h"
 //#define KEY_ID          @"alarm_ID"
 
-@class EWAlarmItem, EWPerson;
+@class EWAlarmItem, EWPerson, EWTaskItem;
 
 @interface EWAlarmManager : NSObject
 @property (nonatomic) BOOL alarmNeedToSetup;
@@ -28,6 +28,7 @@
 - (NSArray *)alarmsForUser:(EWPerson *)user;
 + (NSArray *)myAlarms;
 - (EWAlarmItem *)nextAlarm;
+- (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm;
 
 // change
 //- (void)setAlarm:(EWAlarmItem *)alarm;

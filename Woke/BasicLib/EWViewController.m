@@ -28,12 +28,6 @@
     [super viewDidLoad];
 
     //self.view.backgroundColor = kCustomWhite;
-
-#ifdef __IPHONE_7_0
-    if ([EWDeviceInfo isIOS7_Plus]) {
-        self.edgesForExtendedLayout = UIRectEdgeNone;
-    }
-#endif
     
 }
 

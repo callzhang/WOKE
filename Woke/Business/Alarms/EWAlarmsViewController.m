@@ -58,8 +58,8 @@
 @synthesize fetchController;
 
 
-- (id)init {
-    self = [super init];
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         
         //launch with local notif
@@ -415,7 +415,6 @@
         // Switch the indicator when more than 50% of the previous/next page is visible
         NSInteger page = [self currentPage];
         _pageView.currentPage = page;
-        NSLog(@"Current page is %d", page);
         [self reloadAlarmPage];
     }
 }

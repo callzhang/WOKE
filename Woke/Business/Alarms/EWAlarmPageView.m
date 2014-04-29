@@ -36,7 +36,7 @@
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder{
-    self = [super initWithCoder:aDecoder];ç
+    self = [super initWithCoder:aDecoder];
     if (self) {
         [self initialize];
     }
@@ -49,7 +49,7 @@
         [self.alarmState setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
     }else{
         [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
-    }ç
+    }
 }
 
 
@@ -66,7 +66,7 @@
 
 
 #pragma mark - UI actions
-- (IBAction)editAlarm:(id)sender {ç
+- (IBAction)editAlarm:(id)sender {
     NSLog(@"Edit task: %@", task.time);
     [self.delegate scheduleAlarm];
 }

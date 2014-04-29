@@ -92,8 +92,11 @@
 
 + (void)showLoginPanel{
     NSLog(@"Display login panel");
-    EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-    [rootViewController presentViewController:loginVC animated:YES completion:NULL];
+    EWLogInViewController *loginVC = [[EWLogInViewController alloc] initWithNibName:nil bundle:nil];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [rootViewController presentViewController:loginVC animated:YES completion:NULL];
+    });
+    
 }
 
 
@@ -257,6 +260,9 @@
         } onFailure:^(NSError *error) {
             //[NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
             EWAlert(@"Server error, please restart app");
+#ifdef DEV_TEST
+            [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+#endif
         }];
     }];
 
@@ -524,7 +530,9 @@
 
 + (void)getFacebookFriends{
     NSLog(@"Updating facebook friends");
+    //check facebook id exist
     if (!currentUser.facebook) {
+        NSLog(@"Current user doesn't have facebook ID, skip checking fb friends");
         return;
     }
     
@@ -541,11 +549,6 @@
         return;
     }
     
-    //check facebook id exist
-    if (!currentUser.facebook) {
-        NSLog(@"Current user doesn't have facebook ID, skip checking fb friends");
-        return;
-    }
     
     //get social graph of current user
     //if not, create one
@@ -650,9 +653,9 @@
             // We recommend you check our Handling Errors guide for more information
             // https://developers.facebook.com/docs/ios/errors/
         } else if (error.code == 5){
-            NSLog(@"Error (5): no internet");
-            [[[UIAlertView alloc] initWithTitle:@"Error" message:@"No internet connection." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-            
+            NSLog(@"Error %@", error.description);
+            alertTitle = @"Somethong went wrong";
+            alertText = @"Operation couldn't be finished. We appologize for this. It may caused by weak internet connection.";
         } else {
             //Get more error information from the error
             NSDictionary *errorInformation = [[[error.userInfo objectForKey:@"com.facebook.sdk:ParsedJSONResponseKey"] objectForKey:@"body"] objectForKey:@"error"];

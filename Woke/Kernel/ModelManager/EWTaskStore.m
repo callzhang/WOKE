@@ -256,30 +256,33 @@
         //save
         [[EWDataStore currentContext] saveAndWait:NULL];
         
-        //notification of new task (to interface)
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
-        });
+        
         
     }
     
     //check past tasks
-    [self checkPastTasks:tasks];
+    BOOL hasOutDated = [self checkPastTasks:tasks];
     
     //check data integrety
     if (tasks.count > 0) {
-        NSLog(@"After removing valid task and past task, there are still %d tasks left", tasks.count);
+        NSLog(@"*** After removing valid task and past task, there are still %d tasks left", tasks.count);
         for (EWTaskItem *t in tasks) {
             [self removeTask:t];
         }
     }
     
     //save
-    NSError *err;
-    [[EWDataStore currentContext] saveAndWait:&err];
-    if (err){
-        NSLog(@"Unable to save new tasks: %@", err.description);
+    if (hasOutDated || newTaskNotify) {
+        [[EWDataStore currentContext] saveOnSuccess:^{
+            //notification of new task (to interface)
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
+            });
+        } onFailure:^(NSError *error) {
+            NSLog(@"Unable to save new tasks: %@", error.description);
+        }];
     }
+    
     
     //last checked
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
@@ -289,14 +292,15 @@
 }
 
 
-- (void)checkPastTasks:(NSMutableArray *)tasks{
+- (BOOL)checkPastTasks:(NSMutableArray *)tasks{
     //nullify old task's relation to alarm
+    BOOL isOutDated = NO;
     NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingSeconds:-kMaxWakeTime]];
     NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
     for (EWTaskItem *t in outDatedTasks) {
         if (![t.owner.username isEqualToString:currentUser.username]) {
             NSLog(@"@@@ Passed in tasks are not for current user");
-            return;
+            return NO;
         }
         t.alarm = nil;
         t.owner = nil;
@@ -304,12 +308,16 @@
         [tasks removeObject:t];
         NSLog(@"Past task on %@ moved", [t.time date2dayString]);
         [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
+        isOutDated = YES;
     }
     
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"@@@ Failed to save past task chenges");
-    }];
+    if (isOutDated) {
+        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+            NSLog(@"@@@ Failed to save past task chenges");
+        }];
+    }
     
+    return isOutDated;
 }
 
 #pragma mark - NEW
