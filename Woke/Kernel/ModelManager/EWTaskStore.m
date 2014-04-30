@@ -210,6 +210,9 @@
     NSLog(@"Start check/scheduling tasks");
     isCheckingTask = YES;
     
+    //FIRST check past tasks
+    BOOL hasOutDatedTask = [self checkPastTasks:tasks];
+    
     //for each alarm, find matching task, or create new task
     BOOL newTaskNotify = NO;
     NSMutableArray *goodTasks = [NSMutableArray new];
@@ -260,19 +263,17 @@
         
     }
     
-    //check past tasks
-    BOOL hasOutDated = [self checkPastTasks:tasks];
     
     //check data integrety
     if (tasks.count > 0) {
-        NSLog(@"*** After removing valid task and past task, there are still %d tasks left", tasks.count);
+        NSLog(@"*** After removing valid task and past task, there are still %lu tasks left", (unsigned long)tasks.count);
         for (EWTaskItem *t in tasks) {
             [self removeTask:t];
         }
     }
     
     //save
-    if (hasOutDated || newTaskNotify) {
+    if (hasOutDatedTask || newTaskNotify) {
         [[EWDataStore currentContext] saveOnSuccess:^{
             //notification of new task (to interface)
             dispatch_async(dispatch_get_main_queue(), ^{
