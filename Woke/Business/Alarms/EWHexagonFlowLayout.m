@@ -34,7 +34,7 @@
     [super prepareLayout];
     
     _itemTotalCount = [self.collectionView numberOfItemsInSection:0];
-    if (_itemsPerRow == 0) _itemsPerRow = [self getLevel] * 2 - 1;
+    if (_itemsPerRow == 0) _itemsPerRow = [self getLevel:_itemTotalCount] * 2 - 1;
     //if (_itemsPerRow == 0) _itemsPerRow = 4;
     adjWidth = sqrtf(3)/2 * kCollectionViewCellHeight * CELL_SPACE_RATIO;
     _hexagonSize = CGSizeMake(kCollectionViewCellWidth * CELL_SPACE_RATIO, kCollectionViewCellHeight * CELL_SPACE_RATIO);
@@ -62,14 +62,14 @@
     center = CGPointMake(x, y);
 }
 
-- (NSInteger)getLevel{
+- (NSInteger)getLevel:(NSInteger)x{
     NSArray *levelTotal = kLevelTotal;
     NSInteger sum = 0;
     unsigned level;
     for (level = 0; level < levelTotal.count; level++) {
         NSInteger total = [(NSNumber *)levelTotal[level] integerValue];
         NSInteger total2 = [(NSNumber *)levelTotal[level + 1] integerValue];
-        if (total < _itemTotalCount && _itemTotalCount <= total2) {
+        if (total < x && x <= total2) {
             break;
         }
     }
@@ -79,17 +79,84 @@
 }
 
 - (UICollectionViewLayoutAttributes *)centerForCellAtIndexPath:(NSIndexPath *)indexPath{
-    
+    NSInteger col = 0;//x
+    NSInteger row = 0;//y
     UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-    NSInteger level = [self getLevel];
+    NSInteger level = [self getLevel: indexPath.row];
     NSArray *levelTotal = kLevelTotal;
-    NSInteger centerX = level;
-    NSInteger centerY = level;
-    NSInteger steps = _itemTotalCount % (NSInteger)levelTotal[level];
-    ????
+    NSInteger steps = indexPath.row % (NSInteger)levelTotal[level];
+    //see: http://www.redblobgames.com/grids/hexagons/
+    //“odd-r” horizontal layout
+    if (level == 1) {
+        row = level;
+        col = level;
+    }else{
+        //when level is >1, edge step = level-1
+        NSInteger edgeStep = level -1;
+        //starting on the right most cell, which is col = 2 * level, row = level
+        col = 2 * level-1;
+        row = level;
+        for (unsigned step = 1; step < steps; step++) {
+            //starting with 1, meaning second step
+            //direction number
+            NSInteger direction = floor(step / edgeStep);//the direction from last one to this one
+            switch (direction) {
+                case 0:{
+                    //south-west
+                    if (row%2 == 0) {
+                        //even row (Y)
+                        col --;
+                    }
+                    row ++;
+                }
+                    break;
+                    
+                case 1:{
+                    //west
+                    col --;
+                }
+                    break;
+                    
+                case 2:{
+                    //north-west
+                    if (row%2 == 0) {
+                        col--;
+                    }
+                    row--;
+                }
+                    break;
+                    
+                case 3:{
+                    //north-east
+                    if(row%2 != 0){
+                        col++;
+                    }
+                    row--;
+                }
+                    break;
+                case 4:{
+                    //east
+                    col++;
+                }
+                    break;
+                case 5:{
+                    //south east
+                    if (row%2!=0) {
+                        col++;
+                    }
+                    row++;
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+        //get col and row
+        
+    }
+    NSLog(@"%d item has (%d, %d)", )
     
-    
-    NSInteger col = indexPath.row % _itemsPerRow;
+    //col = indexPath.row % _itemsPerRow;
     CGFloat horiOffset = ((row % 2) != 0) ? 0 : adjWidth * 0.5f;
     CGFloat vertOffset = 0;
     
