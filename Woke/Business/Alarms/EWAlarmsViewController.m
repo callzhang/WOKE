@@ -43,6 +43,7 @@
     //NSMutableArray *allPeople;
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
+    NSTimer *recoilTimer;
 }
 
 @property (nonatomic, retain) NSFetchedResultsController *fetchController;
@@ -85,12 +86,31 @@
     [self.fetchController performFetch:NULL];
     [self reloadAlarmPage];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+    [self centerView];
+}
+
+- (void)centerView{
+    
+    [UIView animateWithDuration:0.5 animations:^{
+        float w = _collectionView.contentSize.width + _collectionView.contentInset.left + _collectionView.contentInset.right;
+        float h = _collectionView.contentSize.height + _collectionView.contentInset.top + _collectionView.contentInset.bottom;
+        
+        CGRect bounds = _collectionView.bounds;
+        bounds.origin.x = w/2 - _collectionView.contentInset.left - self.view.center.x;
+        bounds.origin.y = h/2 - _collectionView.contentInset.top - self.view.center.y;
+        _collectionView.bounds = bounds;
+    }];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initData];
     [self initView];
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self centerView];
 }
 
 - (void)initData {
@@ -154,17 +174,17 @@
     //collection view
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
-    _collectionView.contentInset = UIEdgeInsetsMake(200, 200, 200, 200);
+    _collectionView.contentInset = UIEdgeInsetsMake(200, 100, 200, 100);
     //[_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     _collectionView.backgroundColor = [UIColor clearColor];
-    _collectionView.tag = kHexagonViewIdentifier;
+    //UIImageView *bgImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Triangle_Tile"]];
+    _collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle_Tile"]];
     
     //paging
     _scrollView.delegate = self;
     _scrollView.pagingEnabled = YES;
-    _scrollView.tag = kAlarmPageViewIdentifier;
     _pageView.currentPage = 0;
     _pageView.hidden = YES;
     
@@ -404,23 +424,43 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
-    
-    // A possible optimization would be to unload the views+controllers which are no longer visible
+    if (sender.tag == kCollectionViewTag) {
+        float margin = 0.3;
+        float w = sender.contentSize.width + sender.contentInset.left + sender.contentInset.right;
+        float h = sender.contentSize.height + sender.contentInset.top + sender.contentInset.bottom;
+        float x = -(sender.bounds.origin.x + sender.contentInset.left);
+        float y = -(sender.bounds.origin.y + sender.contentInset.top);
+        float percentX = x/(w - self.view.frame.size.width);
+        float percentY = y/(h - self.view.frame.size.height);
+        
+        CGRect frame = self.background.frame;
+        float spanX = frame.size.width - self.view.frame.size.width;
+        float spanY = frame.size.height - self.view.frame.size.height;
+        
+        float x1 = percentX * spanX * (1-2*margin) - spanX * margin;
+        float y1 = percentY * spanY * (1-2*margin) - spanY * margin;
+        
+        frame.origin.x = x1;
+        frame.origin.y = y1;
+        self.background.frame = frame;
+        
+        if ([recoilTimer isValid]) {
+            [recoilTimer invalidate];
+        }
+        recoilTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
+    }
 }
 
 // At the end of scroll animation, reset the boolean used when scrolls originate from the UIPageControl
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if (scrollView.tag == kAlarmPageViewIdentifier) {
-        // load the visible page and the page on either side of it (to avoid flashes when the user starts scrolling)
-        // Switch the indicator when more than 50% of the previous/next page is visible
-        NSInteger page = [self currentPage];
-        _pageView.currentPage = page;
-        [self reloadAlarmPage];
+    if (scrollView.tag == kAlarmPageTag) {
+            // load the visible page and the page on either side of it (to avoid flashes when the user starts scrolling)
+            // Switch the indicator when more than 50% of the previous/next page is visible
+            NSInteger page = [self currentPage];
+            _pageView.currentPage = page;
+            [self reloadAlarmPage];
     }
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    //    CGFloat pageWidth = scrollView.frame.size.width;
+    
 }
 
 - (IBAction)changePage:(id)sender {
@@ -574,7 +614,7 @@
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
-
+    [recoilTimer invalidate];
 
     //根据tag值判断是否创建meun
     if([rootViewController.view viewWithTag:kMenuTag]){

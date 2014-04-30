@@ -54,4 +54,6 @@
 
 + (void)applyShadow:(UIView *)view;
 
++ (CGPoint)getCartesianFromPolarCoordinateOfR:(float)r degree:(float)d;
+
 @end

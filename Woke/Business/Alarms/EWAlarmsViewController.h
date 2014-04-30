@@ -13,11 +13,13 @@
 #define kCollectionViewCellAlert    1001
 #define kOptionsAlert               1002
 #define kMenuTag                    1003
+#define kAlarmPageTag               1004
+#define kCollectionViewTag          1005
 
 @import CoreData;
 
 @class EWPerson;
-@interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,NSFetchedResultsControllerDelegate>
+@interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate,NSFetchedResultsControllerDelegate>
 {
     NSMutableArray * _alarmPages; //alarm page container
     NSTimer *timer1;
@@ -34,6 +36,7 @@
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
+@property (weak, nonatomic) IBOutlet UIImageView *background;
 
 
 

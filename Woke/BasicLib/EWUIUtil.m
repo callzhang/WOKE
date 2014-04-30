@@ -124,5 +124,13 @@
     view.clipsToBounds = NO;
 }
 
++ (CGPoint)getCartesianFromPolarCoordinateOfR:(float)r degree:(float)d{
+    float degree_pi = d/180 * M_PI;
+    float x = r * cosf(degree_pi);
+    float y = r * sinf(degree_pi);
+    CGPoint p = CGPointMake(x, y);
+    return p;
+}
+
 
 @end

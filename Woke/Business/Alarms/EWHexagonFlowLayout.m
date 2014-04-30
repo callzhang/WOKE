@@ -2,8 +2,12 @@
 
 #import "EWHexagonFlowLayout.h"
 #import "EWUIUtil.h"
+#import "EWAppDelegate.h"
 
-
+#define kCoordinateSystemPolar           @"polar"
+#define kCoordinateSystemCartesian       @"cartesian"
+#define kLevelCount                      @[@1, @6, @12, @18, @24, @30, @36, @42, @48]
+#define kLevelTotal                     @[@1, @7, @19, @37]
 
 @interface EWHexagonFlowLayout ()
 {
@@ -11,6 +15,9 @@
     NSInteger _itemTotalCount;
     CGSize _hexagonSize;
     BOOL applyZoomEffect;
+    float adjWidth; //the true width of a hexagon, used to calculate coordinates
+    NSString *coordinateSystem;
+    CGPoint center;
 }
 
 @end
@@ -27,9 +34,12 @@
     [super prepareLayout];
     
     _itemTotalCount = [self.collectionView numberOfItemsInSection:0];
-    if (_itemsPerRow == 0) _itemsPerRow = (NSInteger)floorf(sqrt(_itemTotalCount));
+    if (_itemsPerRow == 0) _itemsPerRow = [self getLevel] * 2 - 1;
     //if (_itemsPerRow == 0) _itemsPerRow = 4;
+    adjWidth = sqrtf(3)/2 * kCollectionViewCellHeight * CELL_SPACE_RATIO;
     _hexagonSize = CGSizeMake(kCollectionViewCellWidth * CELL_SPACE_RATIO, kCollectionViewCellHeight * CELL_SPACE_RATIO);
+    coordinateSystem = kCoordinateSystemPolar;
+    [self getCollectionViewCenter];
     
     //precalculate the coordinates
     attributeArray = [[NSMutableArray alloc] initWithCapacity:_itemTotalCount];
@@ -41,16 +51,53 @@
     
 }
 
+- (void)getCollectionViewCenter{
+    UICollectionView *_collectionView = self.collectionView;
+    float w = _collectionView.contentSize.width + _collectionView.contentInset.left + _collectionView.contentInset.right;
+    float h = _collectionView.contentSize.height + _collectionView.contentInset.top + _collectionView.contentInset.bottom;
+    
+    float x = w/2 - _collectionView.contentInset.left - rootViewController.view.center.x;
+    float y = h/2 - _collectionView.contentInset.top - rootViewController.view.center.y;
+    
+    center = CGPointMake(x, y);
+}
+
+- (NSInteger)getLevel{
+    NSArray *levelTotal = kLevelTotal;
+    NSInteger sum = 0;
+    unsigned level;
+    for (level = 0; level < levelTotal.count; level++) {
+        NSInteger total = [(NSNumber *)levelTotal[level] integerValue];
+        NSInteger total2 = [(NSNumber *)levelTotal[level + 1] integerValue];
+        if (total < _itemTotalCount && _itemTotalCount <= total2) {
+            break;
+        }
+    }
+    
+    NSLog(@"Level: %d", level);
+    return level;
+}
+
 - (UICollectionViewLayoutAttributes *)centerForCellAtIndexPath:(NSIndexPath *)indexPath{
-    NSInteger row = (NSInteger)( floorf((indexPath.row / _itemsPerRow)) );
-    NSInteger col = indexPath.row % _itemsPerRow;
-    CGFloat horiOffset = ((row % 2) != 0) ? 0 : _hexagonSize.width * 0.5f;
-    CGFloat vertOffset = 0;
     
     UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+    NSInteger level = [self getLevel];
+    NSArray *levelTotal = kLevelTotal;
+    NSInteger centerX = level;
+    NSInteger centerY = level;
+    NSInteger steps = _itemTotalCount % (NSInteger)levelTotal[level];
+    ????
+    
+    
+    NSInteger col = indexPath.row % _itemsPerRow;
+    CGFloat horiOffset = ((row % 2) != 0) ? 0 : adjWidth * 0.5f;
+    CGFloat vertOffset = 0;
+    
+    
     attributes.size = CGSizeMake(kCollectionViewCellWidth, kCollectionViewCellHeight);
-    attributes.center = CGPointMake((col * _hexagonSize.width) + (0.5f * _hexagonSize.width) + horiOffset,
+    attributes.center = CGPointMake((col * adjWidth) + (0.5f * adjWidth) + horiOffset,
                                     row * 0.75f * _hexagonSize.height + 0.5f * _hexagonSize.height + vertOffset);
+    
     
     return attributes;
 }
@@ -129,6 +176,7 @@
     CGFloat contentWidth = _itemsPerRow * _hexagonSize.width;
     CGFloat contentHeight = ( (row * 0.75f) * _hexagonSize.height) + (0.5f + _hexagonSize.height);
     CGSize contentSize = CGSizeMake(contentWidth, contentHeight);
+    
     return contentSize;
 }
 

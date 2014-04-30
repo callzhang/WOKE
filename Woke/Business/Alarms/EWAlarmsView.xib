@@ -8,6 +8,7 @@
             <connections>
                 <outlet property="actionBtn" destination="XNr-6h-T9H" id="7AR-jH-OIP"/>
                 <outlet property="addBtn" destination="o2s-kb-Yuz" id="lFr-8y-Ldv"/>
+                <outlet property="background" destination="MQd-sS-vOE" id="xWT-Zi-JZB"/>
                 <outlet property="collectionView" destination="J19-yS-M7x" id="sJr-bL-L4H"/>
                 <outlet property="pageView" destination="dxw-Xf-eo8" id="ETF-aX-van"/>
                 <outlet property="scrollView" destination="nNj-2P-l6y" id="t2s-AI-Oky"/>
@@ -23,11 +24,14 @@
                     <rect key="frame" x="-80" y="-142" width="480" height="852"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" alwaysBounceHorizontal="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="J19-yS-M7x">
+                <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" tag="1005" contentMode="center" fixedFrame="YES" alwaysBounceVertical="YES" alwaysBounceHorizontal="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="J19-yS-M7x">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <collectionViewLayout key="collectionViewLayout" id="DxV-k5-PYC" customClass="EWHexagonFlowLayout"/>
                     <cells/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="cGx-Uv-05v"/>
+                    </connections>
                 </collectionView>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="AlarmViewBar" translatesAutoresizingMaskIntoConstraints="NO" id="ojt-NM-8tw">
                     <rect key="frame" x="0.0" y="468" width="320" height="100"/>
@@ -40,7 +44,7 @@
                         <action selector="changePage:" destination="-1" eventType="valueChanged" id="5JT-XS-3pY"/>
                     </connections>
                 </pageControl>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" directionalLockEnabled="YES" alwaysBounceHorizontal="YES" pagingEnabled="YES" showsVerticalScrollIndicator="NO" keyboardDismissMode="onDrag" translatesAutoresizingMaskIntoConstraints="NO" id="nNj-2P-l6y">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" tag="1004" contentMode="scaleToFill" fixedFrame="YES" directionalLockEnabled="YES" alwaysBounceHorizontal="YES" pagingEnabled="YES" showsVerticalScrollIndicator="NO" keyboardDismissMode="onDrag" translatesAutoresizingMaskIntoConstraints="NO" id="nNj-2P-l6y">
                     <rect key="frame" x="0.0" y="448" width="320" height="120"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </scrollView>
