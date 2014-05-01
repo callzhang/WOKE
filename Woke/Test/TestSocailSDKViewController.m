@@ -12,7 +12,7 @@
 #import "EWWeiboManager.h"
 #import "EWFacebookManager.h"
 
-#import "EWWeiboFriendListViewController.h"
+#import "EWWeiboFriendListViewController.h"		
 #import "EWFacebookFriendListViewController.h"
 
 @interface TestSocailSDKViewController ()

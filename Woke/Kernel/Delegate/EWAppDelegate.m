@@ -10,7 +10,6 @@
 
 //view controller
 #import "EWAlarmsViewController.h"
-#import "EWSocialViewController.h"
 #import "EWSettingsViewController.h"
 #import "EWWakeUpViewController.h"
 #import "EWAlarmManager.h"

@@ -28,20 +28,16 @@
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
 		56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CCB17FB056F008A7922 /* TestSocailSDKViewController.m */; };
 		56330CEF17FDEA57008A7922 /* EWFacebookManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CEC17FDEA57008A7922 /* EWFacebookManager.m */; };
-		56330CF517FDF2C2008A7922 /* EWFacebookFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CF417FDF2C2008A7922 /* EWFacebookFriendListViewController.m */; };
 		5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */; };
 		5642AF4E17ACCF90000C73E8 /* UIView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 5642AF4D17ACCF90000C73E8 /* UIView+Layout.m */; };
 		5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5642AF5017ACDA4C000C73E8 /* TestShakeViewController.m */; };
 		56D997F217B425D2003EDA53 /* NSString+Extend.m in Sources */ = {isa = PBXBuildFile; fileRef = 56D997F117B425D2003EDA53 /* NSString+Extend.m */; };
 		56D997F517B426C3003EDA53 /* NSDate+Extend.m in Sources */ = {isa = PBXBuildFile; fileRef = 56D997F417B426C3003EDA53 /* NSDate+Extend.m */; };
-		56E0C36217B2CB7200835A6B /* EWEditAlarmViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56E0C36117B2CB7100835A6B /* EWEditAlarmViewController.m */; };
 		56E0C36517B2CC6400835A6B /* EWViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56E0C36417B2CC6400835A6B /* EWViewController.m */; };
 		56E0C36F17B2CEC200835A6B /* EWShakeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56E0C36917B2CEC200835A6B /* EWShakeManager.m */; };
 		56E0C37017B2CEC200835A6B /* EWShakingDetectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 56E0C36B17B2CEC200835A6B /* EWShakingDetectorView.m */; };
 		56E0C37117B2CEC200835A6B /* EWUnlockManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56E0C36E17B2CEC200835A6B /* EWUnlockManager.m */; };
 		56F09E4617AAE0F800C5AD52 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56F09E4517AAE0F800C5AD52 /* TestViewController.m */; };
-		56FEA57F17A5763200FC2938 /* EWAlarmsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */; };
-		56FEA58017A5763200FC2938 /* EWSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA55B17A5763200FC2938 /* EWSettingsViewController.m */; };
 		56FEA58E17A5763200FC2938 /* EWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA57E17A5763200FC2938 /* EWAppDelegate.m */; };
 		56FEA59617A5766B00FC2938 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 56FEA59217A5766B00FC2938 /* InfoPlist.strings */; };
 		56FEA59717A5766B00FC2938 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA59417A5766B00FC2938 /* main.m */; };
@@ -56,24 +52,49 @@
 		9BBA5F9518EB3ED500C07809 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8F18EB3ED500C07809 /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F9718EB416700C07809 /* EWUtil.m */; };
 		9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BBA5F9918EF295200C07809 /* libz.dylib */; };
-		AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */; };
-		AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */; };
-		AB00B61E1835C49D00DDD54B /* EWWakeUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB00B61B1835C49D00DDD54B /* EWWakeUpViewController.m */; };
-		AB05BCA317F90313006579AC /* EWAlarmPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABCCE68B17F15D0D0078F8AA /* EWAlarmPage.xib */; };
-		AB0740131810FA3C00AAFC90 /* EWAlarmScheduleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0740121810FA3C00AAFC90 /* EWAlarmScheduleViewController.m */; };
-		AB07401818125B4D00AAFC90 /* EWGroupCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB07401718125B4D00AAFC90 /* EWGroupCell.xib */; };
-		AB07401E18125BA400AAFC90 /* EWGroupCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB07401D18125BA400AAFC90 /* EWGroupCell.m */; };
+		9BF297AF1912F713008C136E /* EWAlarmScheduleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2978F1912F713008C136E /* EWAlarmScheduleView.xib */; };
+		9BF297B01912F713008C136E /* EWAlarmScheduleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297911912F713008C136E /* EWAlarmScheduleViewController.m */; };
+		9BF297B11912F713008C136E /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297921912F713008C136E /* EWAlarmsView.xib */; };
+		9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297941912F713008C136E /* EWAlarmsViewController.m */; };
+		9BF297B31912F713008C136E /* EWBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297961912F713008C136E /* EWBlurView.m */; };
+		9BF297B41912F713008C136E /* EWFirstTimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297981912F713008C136E /* EWFirstTimeViewController.m */; };
+		9BF297B51912F713008C136E /* EWFirstTimeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297991912F713008C136E /* EWFirstTimeViewController.xib */; };
+		9BF297B61912F713008C136E /* EWLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2979B1912F713008C136E /* EWLogInViewController.m */; };
+		9BF297B71912F713008C136E /* EWLogInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2979C1912F713008C136E /* EWLogInViewController.xib */; };
+		9BF297B81912F713008C136E /* EWNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2979E1912F713008C136E /* EWNotificationViewController.m */; };
+		9BF297B91912F713008C136E /* EWNotificationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2979F1912F713008C136E /* EWNotificationViewController.xib */; };
+		9BF297BA1912F713008C136E /* EWPersonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297A11912F713008C136E /* EWPersonViewController.m */; };
+		9BF297BB1912F713008C136E /* EWPostWakeUpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297A21912F713008C136E /* EWPostWakeUpView.xib */; };
+		9BF297BC1912F713008C136E /* EWPostWakeUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297A41912F713008C136E /* EWPostWakeUpViewController.m */; };
+		9BF297BD1912F713008C136E /* EWRecordingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297A61912F713008C136E /* EWRecordingViewController.m */; };
+		9BF297BE1912F713008C136E /* EWRecordingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297A71912F713008C136E /* EWRecordingViewController.xib */; };
+		9BF297BF1912F713008C136E /* EWRingtoneSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297A91912F713008C136E /* EWRingtoneSelectionViewController.m */; };
+		9BF297C01912F713008C136E /* EWSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297AB1912F713008C136E /* EWSettingsViewController.m */; };
+		9BF297C11912F713008C136E /* EWWakeUpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297AC1912F713008C136E /* EWWakeUpView.xib */; };
+		9BF297C21912F713008C136E /* EWWakeUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297AE1912F713008C136E /* EWWakeUpViewController.m */; };
+		9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297C51912F71F008C136E /* EWAlarmEditCell.m */; };
+		9BF297E11912F720008C136E /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297C61912F71F008C136E /* EWAlarmEditCell.xib */; };
+		9BF297E21912F720008C136E /* EWAlarmPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297C71912F71F008C136E /* EWAlarmPage.xib */; };
+		9BF297E31912F720008C136E /* EWAlarmPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297C91912F71F008C136E /* EWAlarmPageView.m */; };
+		9BF297E41912F720008C136E /* EWCollectionPersonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297CB1912F71F008C136E /* EWCollectionPersonCell.m */; };
+		9BF297E51912F720008C136E /* EWCollectionPersonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297CC1912F71F008C136E /* EWCollectionPersonCell.xib */; };
+		9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297CE1912F71F008C136E /* EWHexagonFlowLayout.m */; };
+		9BF297E71912F720008C136E /* EWMediaSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D01912F71F008C136E /* EWMediaSlider.m */; };
+		9BF297E81912F720008C136E /* EWMediaViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D21912F71F008C136E /* EWMediaViewCell.m */; };
+		9BF297E91912F720008C136E /* EWMediaViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297D31912F71F008C136E /* EWMediaViewCell.xib */; };
+		9BF297EA1912F720008C136E /* EWPopupMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D51912F71F008C136E /* EWPopupMenu.m */; };
+		9BF297EB1912F720008C136E /* EWRoundButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D71912F71F008C136E /* EWRoundButton.m */; };
+		9BF297EC1912F720008C136E /* EWTaskHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D91912F71F008C136E /* EWTaskHistoryCell.m */; };
+		9BF297ED1912F720008C136E /* EWTaskHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297DA1912F71F008C136E /* EWTaskHistoryCell.xib */; };
+		9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297DC1912F71F008C136E /* EWTextFieldCell.m */; };
+		9BF297EF1912F720008C136E /* EWTextFieldCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297DD1912F720008C136E /* EWTextFieldCell.xib */; };
+		9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */; };
+		9BF2980B1912F7A0008C136E /* EWFacebookFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297F31912F7A0008C136E /* EWFacebookFriendListViewController.m */; };
+		9BF2980E1912F7A0008C136E /* EWWeiboFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */; };
 		AB07402018125DBE00AAFC90 /* tennisGroup.png in Resources */ = {isa = PBXBuildFile; fileRef = AB07401F18125DBE00AAFC90 /* tennisGroup.png */; };
 		AB07402218126EC200AAFC90 /* workGroup.png in Resources */ = {isa = PBXBuildFile; fileRef = AB07402118126EC200AAFC90 /* workGroup.png */; };
-		AB07BC0D17D6F7EA00E23F44 /* EWTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB07BC0C17D6F7EA00E23F44 /* EWTextFieldCell.m */; };
-		AB07BC0F17D6F7FF00E23F44 /* EWTextFieldCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB07BC0E17D6F7FF00E23F44 /* EWTextFieldCell.xib */; };
-		AB07BC1417D82A4600E23F44 /* EWWeekDayPickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB07BC1317D82A4600E23F44 /* EWWeekDayPickerTableViewController.m */; };
 		AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */; };
 		AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50918FE509C00CF5AB1 /* EWSocialGraphManager.m */; };
-		AB13C1CF1862D32400231159 /* EWPersonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB13C1CA1862D32400231159 /* EWPersonViewController.m */; };
-		AB13C1D01862D32400231159 /* EWPersonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB13C1CC1862D32400231159 /* EWPersonCell.m */; };
-		AB13C1D11862D32400231159 /* EWPersonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB13C1CD1862D32400231159 /* EWPersonCell.xib */; };
-		AB13C1D21862D32400231159 /* EWPersonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB13C1CE1862D32400231159 /* EWPersonView.xib */; };
 		AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C831861818B008C1F15 /* EWAlarmItem.m */; };
 		AB198C931861818B008C1F15 /* EWGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C851861818B008C1F15 /* EWGroup.m */; };
 		AB198C941861818B008C1F15 /* EWGroupTask.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C871861818B008C1F15 /* EWGroupTask.m */; };
@@ -81,15 +102,9 @@
 		AB198C961861818B008C1F15 /* EWMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8B1861818B008C1F15 /* EWMessage.m */; };
 		AB198C971861818B008C1F15 /* EWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8D1861818B008C1F15 /* EWPerson.m */; };
 		AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8F1861818B008C1F15 /* EWTaskItem.m */; };
-		AB19E9FB18698359000FBDD1 /* EWRecordingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB19E9F918698359000FBDD1 /* EWRecordingViewController.m */; };
-		AB19E9FC18698359000FBDD1 /* EWRecordingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB19E9FA18698359000FBDD1 /* EWRecordingViewController.xib */; };
 		AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1B1408187E4F8D009D1DB2 /* EWStatisticsManager.m */; };
 		AB1B140F187E661E009D1DB2 /* EWAchievement.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1B140E187E661E009D1DB2 /* EWAchievement.m */; };
 		AB1D2D0D1877A87200D2576F /* EWUserManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1D2D0C1877A87200D2576F /* EWUserManagement.m */; };
-		AB1EBE3318A74AD1003154DB /* EWTaskHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB1EBE3218A74AD1003154DB /* EWTaskHistoryCell.xib */; };
-		AB1EBE3618A74B41003154DB /* EWTaskHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */; };
-		AB1F3CFA18B7B5C500D3FB46 /* EWPostWakeUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1F3CF718B7B5C500D3FB46 /* EWPostWakeUpViewController.m */; };
-		AB1F3CFB18B7B5C500D3FB46 /* EWPostWakeUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB1F3CF918B7B5C500D3FB46 /* EWPostWakeUpViewController.xib */; };
 		AB207E5E182F4D9E0076D93F /* ImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB207E5D182F4D9E0076D93F /* ImageViewController.m */; };
 		AB207E69182FFFB60076D93F /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AB207E68182FFFB60076D93F /* MBProgressHUD.m */; };
 		AB245FA418CCD57E00551721 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA08C5918B6C39900E785ED /* MapKit.framework */; };
@@ -108,27 +123,16 @@
 		AB245FB318CCD99E00551721 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568CC789178DD2C900AB1579 /* Foundation.framework */; };
 		AB245FB618CCF86500551721 /* AWSSNS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */; };
 		AB245FB718CCF86500551721 /* AWSRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */; };
-		AB286A9618DA8BA8003131C8 /* EWWakeUpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */; };
-		AB29C48118DE75BA00C0A141 /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */; };
 		AB29C4CB18DEBCE700C0A141 /* UIViewController+Blur.m in Sources */ = {isa = PBXBuildFile; fileRef = AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */; };
-		AB29C4CE18DF7C8A00C0A141 /* EWHexagonFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AB29C4CD18DF7C8A00C0A141 /* EWHexagonFlowLayout.m */; };
 		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
-		AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */; };
-		AB2C18CD18737F670058BFAD /* EWAlarmEditCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */; };
 		AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */; };
 		AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB2DFBC718BA7CBE00534AF1 /* buzz.caf */; };
-		AB39BF0017D96143006C31C5 /* EWSocialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB39BEF517D96143006C31C5 /* EWSocialViewController.m */; };
 		AB3ACDC019037DDE0066CF3F /* EWNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */; };
 		AB3ACDC4190387C10066CF3F /* EWNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3ACDC3190387C10066CF3F /* EWNotification.m */; };
 		AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3B9E4417A765CE00C2AD93 /* AVManager.m */; };
-		AB49BC921854248E004A38DB /* EWLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB49BC901854248E004A38DB /* EWLogInViewController.m */; };
-		AB49BC931854248E004A38DB /* EWLogInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB49BC911854248E004A38DB /* EWLogInViewController.xib */; };
 		AB4B837918CFE68F0087E654 /* Silence04s.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837818CFE68F0087E654 /* Silence04s.caf */; };
 		AB4B837C18D2C5470087E654 /* new.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837B18D2B9840087E654 /* new.caf */; };
 		AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837D18D2C8BA0087E654 /* tock.caf */; };
-		AB507F42190F843A00C0FB32 /* EWAlarmScheduleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB507F41190F843A00C0FB32 /* EWAlarmScheduleView.xib */; };
-		AB6BE34F18D7C03A00444ABC /* EWRoundButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */; };
-		AB6BE35218D804C700444ABC /* EWMediaSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = AB6BE35118D804C700444ABC /* EWMediaSlider.m */; };
 		AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB7243CD18F0B09800AE7041 /* Reveal.framework */; };
 		AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78078E18393A66007C8BFD /* EWAlarmManager.m */; };
 		AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079218393A66007C8BFD /* EWGroupStore.m */; };
@@ -138,20 +142,14 @@
 		AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079A18393A66007C8BFD /* EWStatsManager.m */; };
 		AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079C18393A66007C8BFD /* EWDataStore.m */; };
 		AB7807A718393A66007C8BFD /* EWTaskStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079E18393A66007C8BFD /* EWTaskStore.m */; };
-		AB94332317C302C500ADC702 /* EWRingtoneSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB94332217C302C400ADC702 /* EWRingtoneSelectionViewController.m */; };
-		ABA728B51831F74900595CFD /* EWFirstTimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABA728B31831F74900595CFD /* EWFirstTimeViewController.m */; };
-		ABA728B61831F74900595CFD /* EWFirstTimeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */; };
 		ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */; };
 		ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ABBC47AA18530F35009A2E7D /* EarlyWorm.xcdatamodeld */; };
 		ABC8F96318E8890D0096C073 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC8F96218E8890D0096C073 /* MediaPlayer.framework */; };
 		ABC8F96618E92F180096C073 /* UIView+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = ABC8F96518E92F180096C073 /* UIView+HUD.m */; };
 		ABC8F96818E9378F0096C073 /* EWWeiboManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CEE17FDEA57008A7922 /* EWWeiboManager.m */; };
-		ABC8F96918E937B10096C073 /* EWWeiboFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CD117FDCBC5008A7922 /* EWWeiboFriendListViewController.m */; };
 		ABC8F96A18E937BA0096C073 /* EWDownloadMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */; };
-		ABCCE68E17F298290078F8AA /* EWAlarmPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABCCE68D17F298290078F8AA /* EWAlarmPageView.m */; };
 		ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAC185C054C008CD2B8 /* FTWCache.m */; };
 		ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */; };
-		ABDAF99018C31C010075505B /* EWCollectionPersonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */; };
 		ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABDE25EE18CF575D00DDBDB5 /* AudioToolbox.framework */; };
 		ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA95E17E027E70035DF4A /* vm1.m4a */; };
 		ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA95F17E027E70035DF4A /* vm2.m4a */; };
@@ -178,14 +176,12 @@
 		ABF3FB631908B72F0017D2EF /* 14.jpg in Resources */ = {isa = PBXBuildFile; fileRef = ABF3FB531908B72F0017D2EF /* 14.jpg */; };
 		ABF3FB641908B72F0017D2EF /* 15.jpg in Resources */ = {isa = PBXBuildFile; fileRef = ABF3FB541908B72F0017D2EF /* 15.jpg */; };
 		ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABF3FB6F190A05E80017D2EF /* SCSiriWaveformView.m */; };
-		ABF3FB73190B79D10017D2EF /* EWPopupMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = ABF3FB72190B79D10017D2EF /* EWPopupMenu.m */; };
 		ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2D9186E956900355781 /* Autumn Spring.caf */; };
 		ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DB186E957100355781 /* Daybreak.caf */; };
 		ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DC186E957100355781 /* Parisian Dream.caf */; };
 		ABFCB2E2186E957100355781 /* Tropical Delight.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DD186E957100355781 /* Tropical Delight.caf */; };
 		ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DE186E957100355781 /* Sunny Afternoon.caf */; };
 		ABFCB2E4186E957100355781 /* Drive.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCB2DF186E957100355781 /* Drive.caf */; };
-		ABFECBE219064F6400DD5BDC /* EWCollectionPersonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABFECBE119064F6400DD5BDC /* EWCollectionPersonCell.xib */; };
 		ABFECBF719075F4200DD5BDC /* bg.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABFECBF619075F4100DD5BDC /* bg.caf */; };
 /* End PBXBuildFile section */
 
@@ -203,14 +199,10 @@
 		5632E39217D1C5950079D81C /* EWDeviceInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWDeviceInfo.m; sourceTree = "<group>"; };
 		56330CCA17FB056F008A7922 /* TestSocailSDKViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestSocailSDKViewController.h; sourceTree = "<group>"; };
 		56330CCB17FB056F008A7922 /* TestSocailSDKViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestSocailSDKViewController.m; sourceTree = "<group>"; };
-		56330CD017FDCBC5008A7922 /* EWWeiboFriendListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWeiboFriendListViewController.h; sourceTree = "<group>"; };
-		56330CD117FDCBC5008A7922 /* EWWeiboFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeiboFriendListViewController.m; sourceTree = "<group>"; };
 		56330CEB17FDEA57008A7922 /* EWFacebookManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFacebookManager.h; sourceTree = "<group>"; };
 		56330CEC17FDEA57008A7922 /* EWFacebookManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFacebookManager.m; sourceTree = "<group>"; };
 		56330CED17FDEA57008A7922 /* EWWeiboManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWeiboManager.h; sourceTree = "<group>"; };
 		56330CEE17FDEA57008A7922 /* EWWeiboManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeiboManager.m; sourceTree = "<group>"; };
-		56330CF317FDF2C2008A7922 /* EWFacebookFriendListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFacebookFriendListViewController.h; sourceTree = "<group>"; };
-		56330CF417FDF2C2008A7922 /* EWFacebookFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFacebookFriendListViewController.m; sourceTree = "<group>"; };
 		5642AF4017ACCB6D000C73E8 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		5642AF4917ACCE48000C73E8 /* EWUIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWUIUtil.h; path = ../BasicLib/EWUIUtil.h; sourceTree = "<group>"; };
 		5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWUIUtil.m; path = ../BasicLib/EWUIUtil.m; sourceTree = "<group>"; };
@@ -226,8 +218,6 @@
 		56D997F117B425D2003EDA53 /* NSString+Extend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Extend.m"; sourceTree = "<group>"; };
 		56D997F317B426C3003EDA53 /* NSDate+Extend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+Extend.h"; sourceTree = "<group>"; };
 		56D997F417B426C3003EDA53 /* NSDate+Extend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Extend.m"; sourceTree = "<group>"; };
-		56E0C36017B2CB7100835A6B /* EWEditAlarmViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWEditAlarmViewController.h; sourceTree = "<group>"; };
-		56E0C36117B2CB7100835A6B /* EWEditAlarmViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWEditAlarmViewController.m; sourceTree = "<group>"; };
 		56E0C36317B2CC6400835A6B /* EWViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWViewController.h; sourceTree = "<group>"; };
 		56E0C36417B2CC6400835A6B /* EWViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWViewController.m; sourceTree = "<group>"; };
 		56E0C36817B2CEC200835A6B /* EWShakeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWShakeManager.h; sourceTree = "<group>"; };
@@ -238,10 +228,6 @@
 		56E0C36E17B2CEC200835A6B /* EWUnlockManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWUnlockManager.m; sourceTree = "<group>"; };
 		56F09E4417AAE0F800C5AD52 /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
 		56F09E4517AAE0F800C5AD52 /* TestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestViewController.m; sourceTree = "<group>"; };
-		56FEA55717A5763200FC2938 /* EWAlarmsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmsViewController.h; sourceTree = "<group>"; };
-		56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmsViewController.m; sourceTree = "<group>"; };
-		56FEA55A17A5763200FC2938 /* EWSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSettingsViewController.h; sourceTree = "<group>"; };
-		56FEA55B17A5763200FC2938 /* EWSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSettingsViewController.m; sourceTree = "<group>"; };
 		56FEA57917A5763200FC2938 /* EWDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDefines.h; path = ../Common/EWDefines.h; sourceTree = "<group>"; };
 		56FEA57D17A5763200FC2938 /* EWAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAppDelegate.h; sourceTree = "<group>"; };
 		56FEA57E17A5763200FC2938 /* EWAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAppDelegate.m; sourceTree = "<group>"; };
@@ -273,35 +259,78 @@
 		9BBA5F9618EB416700C07809 /* EWUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWUtil.h; sourceTree = "<group>"; };
 		9BBA5F9718EB416700C07809 /* EWUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWUtil.m; sourceTree = "<group>"; };
 		9BBA5F9918EF295200C07809 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		9BF2978F1912F713008C136E /* EWAlarmScheduleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmScheduleView.xib; sourceTree = "<group>"; };
+		9BF297901912F713008C136E /* EWAlarmScheduleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmScheduleViewController.h; sourceTree = "<group>"; };
+		9BF297911912F713008C136E /* EWAlarmScheduleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmScheduleViewController.m; sourceTree = "<group>"; };
+		9BF297921912F713008C136E /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
+		9BF297931912F713008C136E /* EWAlarmsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmsViewController.h; sourceTree = "<group>"; };
+		9BF297941912F713008C136E /* EWAlarmsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmsViewController.m; sourceTree = "<group>"; };
+		9BF297951912F713008C136E /* EWBlurView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWBlurView.h; sourceTree = "<group>"; };
+		9BF297961912F713008C136E /* EWBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWBlurView.m; sourceTree = "<group>"; };
+		9BF297971912F713008C136E /* EWFirstTimeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFirstTimeViewController.h; sourceTree = "<group>"; };
+		9BF297981912F713008C136E /* EWFirstTimeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFirstTimeViewController.m; sourceTree = "<group>"; };
+		9BF297991912F713008C136E /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWFirstTimeViewController.xib; sourceTree = "<group>"; };
+		9BF2979A1912F713008C136E /* EWLogInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWLogInViewController.h; sourceTree = "<group>"; };
+		9BF2979B1912F713008C136E /* EWLogInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWLogInViewController.m; sourceTree = "<group>"; };
+		9BF2979C1912F713008C136E /* EWLogInViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWLogInViewController.xib; sourceTree = "<group>"; };
+		9BF2979D1912F713008C136E /* EWNotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationViewController.h; sourceTree = "<group>"; };
+		9BF2979E1912F713008C136E /* EWNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWNotificationViewController.m; sourceTree = "<group>"; };
+		9BF2979F1912F713008C136E /* EWNotificationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWNotificationViewController.xib; sourceTree = "<group>"; };
+		9BF297A01912F713008C136E /* EWPersonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPersonViewController.h; sourceTree = "<group>"; };
+		9BF297A11912F713008C136E /* EWPersonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPersonViewController.m; sourceTree = "<group>"; };
+		9BF297A21912F713008C136E /* EWPostWakeUpView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPostWakeUpView.xib; sourceTree = "<group>"; };
+		9BF297A31912F713008C136E /* EWPostWakeUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPostWakeUpViewController.h; sourceTree = "<group>"; };
+		9BF297A41912F713008C136E /* EWPostWakeUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPostWakeUpViewController.m; sourceTree = "<group>"; };
+		9BF297A51912F713008C136E /* EWRecordingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWRecordingViewController.h; sourceTree = "<group>"; };
+		9BF297A61912F713008C136E /* EWRecordingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWRecordingViewController.m; sourceTree = "<group>"; };
+		9BF297A71912F713008C136E /* EWRecordingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWRecordingViewController.xib; sourceTree = "<group>"; };
+		9BF297A81912F713008C136E /* EWRingtoneSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWRingtoneSelectionViewController.h; sourceTree = "<group>"; };
+		9BF297A91912F713008C136E /* EWRingtoneSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWRingtoneSelectionViewController.m; sourceTree = "<group>"; };
+		9BF297AA1912F713008C136E /* EWSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSettingsViewController.h; sourceTree = "<group>"; };
+		9BF297AB1912F713008C136E /* EWSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSettingsViewController.m; sourceTree = "<group>"; };
+		9BF297AC1912F713008C136E /* EWWakeUpView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWWakeUpView.xib; sourceTree = "<group>"; };
+		9BF297AD1912F713008C136E /* EWWakeUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWakeUpViewController.h; sourceTree = "<group>"; };
+		9BF297AE1912F713008C136E /* EWWakeUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWakeUpViewController.m; sourceTree = "<group>"; };
+		9BF297C41912F71F008C136E /* EWAlarmEditCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmEditCell.h; sourceTree = "<group>"; };
+		9BF297C51912F71F008C136E /* EWAlarmEditCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmEditCell.m; sourceTree = "<group>"; };
+		9BF297C61912F71F008C136E /* EWAlarmEditCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmEditCell.xib; sourceTree = "<group>"; };
+		9BF297C71912F71F008C136E /* EWAlarmPage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmPage.xib; sourceTree = "<group>"; };
+		9BF297C81912F71F008C136E /* EWAlarmPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmPageView.h; sourceTree = "<group>"; };
+		9BF297C91912F71F008C136E /* EWAlarmPageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmPageView.m; sourceTree = "<group>"; };
+		9BF297CA1912F71F008C136E /* EWCollectionPersonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWCollectionPersonCell.h; sourceTree = "<group>"; };
+		9BF297CB1912F71F008C136E /* EWCollectionPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWCollectionPersonCell.m; sourceTree = "<group>"; };
+		9BF297CC1912F71F008C136E /* EWCollectionPersonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWCollectionPersonCell.xib; sourceTree = "<group>"; };
+		9BF297CD1912F71F008C136E /* EWHexagonFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWHexagonFlowLayout.h; sourceTree = "<group>"; };
+		9BF297CE1912F71F008C136E /* EWHexagonFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWHexagonFlowLayout.m; sourceTree = "<group>"; };
+		9BF297CF1912F71F008C136E /* EWMediaSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMediaSlider.h; sourceTree = "<group>"; };
+		9BF297D01912F71F008C136E /* EWMediaSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaSlider.m; sourceTree = "<group>"; };
+		9BF297D11912F71F008C136E /* EWMediaViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMediaViewCell.h; sourceTree = "<group>"; };
+		9BF297D21912F71F008C136E /* EWMediaViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaViewCell.m; sourceTree = "<group>"; };
+		9BF297D31912F71F008C136E /* EWMediaViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMediaViewCell.xib; sourceTree = "<group>"; };
+		9BF297D41912F71F008C136E /* EWPopupMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPopupMenu.h; sourceTree = "<group>"; };
+		9BF297D51912F71F008C136E /* EWPopupMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPopupMenu.m; sourceTree = "<group>"; };
+		9BF297D61912F71F008C136E /* EWRoundButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWRoundButton.h; sourceTree = "<group>"; };
+		9BF297D71912F71F008C136E /* EWRoundButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWRoundButton.m; sourceTree = "<group>"; };
+		9BF297D81912F71F008C136E /* EWTaskHistoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTaskHistoryCell.h; sourceTree = "<group>"; };
+		9BF297D91912F71F008C136E /* EWTaskHistoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTaskHistoryCell.m; sourceTree = "<group>"; };
+		9BF297DA1912F71F008C136E /* EWTaskHistoryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWTaskHistoryCell.xib; sourceTree = "<group>"; };
+		9BF297DB1912F71F008C136E /* EWTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTextFieldCell.h; sourceTree = "<group>"; };
+		9BF297DC1912F71F008C136E /* EWTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTextFieldCell.m; sourceTree = "<group>"; };
+		9BF297DD1912F720008C136E /* EWTextFieldCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWTextFieldCell.xib; sourceTree = "<group>"; };
+		9BF297DE1912F720008C136E /* EWWeekDayPickerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWeekDayPickerTableViewController.h; sourceTree = "<group>"; };
+		9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeekDayPickerTableViewController.m; sourceTree = "<group>"; };
+		9BF297F21912F7A0008C136E /* EWFacebookFriendListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFacebookFriendListViewController.h; sourceTree = "<group>"; };
+		9BF297F31912F7A0008C136E /* EWFacebookFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFacebookFriendListViewController.m; sourceTree = "<group>"; };
+		9BF297F71912F7A0008C136E /* EWWeiboFriendListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWeiboFriendListViewController.h; sourceTree = "<group>"; };
+		9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeiboFriendListViewController.m; sourceTree = "<group>"; };
 		9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSRuntime.framework; sourceTree = "<group>"; };
 		9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSSNS.framework; sourceTree = "<group>"; };
-		AB00B6171835C49D00DDD54B /* EWMediaViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWMediaViewCell.h; path = WakeUp/EWMediaViewCell.h; sourceTree = "<group>"; };
-		AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = EWMediaViewCell.m; path = WakeUp/EWMediaViewCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWMediaViewCell.xib; path = WakeUp/EWMediaViewCell.xib; sourceTree = "<group>"; };
-		AB00B61A1835C49D00DDD54B /* EWWakeUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWakeUpViewController.h; sourceTree = "<group>"; };
-		AB00B61B1835C49D00DDD54B /* EWWakeUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWakeUpViewController.m; sourceTree = "<group>"; };
-		AB0740111810FA3C00AAFC90 /* EWAlarmScheduleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmScheduleViewController.h; sourceTree = "<group>"; };
-		AB0740121810FA3C00AAFC90 /* EWAlarmScheduleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmScheduleViewController.m; sourceTree = "<group>"; };
-		AB07401718125B4D00AAFC90 /* EWGroupCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWGroupCell.xib; path = Groups/EWGroupCell.xib; sourceTree = "<group>"; };
-		AB07401C18125BA400AAFC90 /* EWGroupCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWGroupCell.h; path = Groups/EWGroupCell.h; sourceTree = "<group>"; };
-		AB07401D18125BA400AAFC90 /* EWGroupCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWGroupCell.m; path = Groups/EWGroupCell.m; sourceTree = "<group>"; };
 		AB07401F18125DBE00AAFC90 /* tennisGroup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tennisGroup.png; sourceTree = "<group>"; };
 		AB07402118126EC200AAFC90 /* workGroup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = workGroup.png; sourceTree = "<group>"; };
-		AB07BC0B17D6F7EA00E23F44 /* EWTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTextFieldCell.h; sourceTree = "<group>"; };
-		AB07BC0C17D6F7EA00E23F44 /* EWTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTextFieldCell.m; sourceTree = "<group>"; };
-		AB07BC0E17D6F7FF00E23F44 /* EWTextFieldCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWTextFieldCell.xib; sourceTree = "<group>"; };
-		AB07BC1217D82A4600E23F44 /* EWWeekDayPickerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWeekDayPickerTableViewController.h; sourceTree = "<group>"; };
-		AB07BC1317D82A4600E23F44 /* EWWeekDayPickerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeekDayPickerTableViewController.m; sourceTree = "<group>"; };
 		AB0DF50518FE504200CF5AB1 /* EWSocialGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialGraph.h; sourceTree = "<group>"; };
 		AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialGraph.m; sourceTree = "<group>"; };
 		AB0DF50818FE509C00CF5AB1 /* EWSocialGraphManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialGraphManager.h; sourceTree = "<group>"; };
 		AB0DF50918FE509C00CF5AB1 /* EWSocialGraphManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialGraphManager.m; sourceTree = "<group>"; };
-		AB13C1C91862D32400231159 /* EWPersonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPersonViewController.h; sourceTree = "<group>"; };
-		AB13C1CA1862D32400231159 /* EWPersonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPersonViewController.m; sourceTree = "<group>"; };
-		AB13C1CB1862D32400231159 /* EWPersonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWPersonCell.h; path = Social/Person/EWPersonCell.h; sourceTree = "<group>"; };
-		AB13C1CC1862D32400231159 /* EWPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWPersonCell.m; path = Social/Person/EWPersonCell.m; sourceTree = "<group>"; };
-		AB13C1CD1862D32400231159 /* EWPersonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWPersonCell.xib; path = Social/Person/EWPersonCell.xib; sourceTree = "<group>"; };
-		AB13C1CE1862D32400231159 /* EWPersonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPersonView.xib; sourceTree = "<group>"; };
 		AB15A43B186FE95B00C4547E /* EarlyWorm 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "EarlyWorm 2.xcdatamodel"; sourceTree = "<group>"; };
 		AB1951AB185AB2AD003C7EE0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		AB198C821861818B008C1F15 /* EWAlarmItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmItem.h; sourceTree = "<group>"; };
@@ -318,40 +347,22 @@
 		AB198C8D1861818B008C1F15 /* EWPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPerson.m; sourceTree = "<group>"; };
 		AB198C8E1861818B008C1F15 /* EWTaskItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTaskItem.h; sourceTree = "<group>"; };
 		AB198C8F1861818B008C1F15 /* EWTaskItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTaskItem.m; sourceTree = "<group>"; };
-		AB19E9F818698359000FBDD1 /* EWRecordingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWRecordingViewController.h; path = Recording/EWRecordingViewController.h; sourceTree = "<group>"; };
-		AB19E9F918698359000FBDD1 /* EWRecordingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWRecordingViewController.m; path = Recording/EWRecordingViewController.m; sourceTree = "<group>"; };
-		AB19E9FA18698359000FBDD1 /* EWRecordingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWRecordingViewController.xib; path = Recording/EWRecordingViewController.xib; sourceTree = "<group>"; };
 		AB1B1407187E4F8D009D1DB2 /* EWStatisticsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWStatisticsManager.h; path = Statistics/EWStatisticsManager.h; sourceTree = "<group>"; };
 		AB1B1408187E4F8D009D1DB2 /* EWStatisticsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWStatisticsManager.m; path = Statistics/EWStatisticsManager.m; sourceTree = "<group>"; };
 		AB1B140D187E661E009D1DB2 /* EWAchievement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAchievement.h; sourceTree = "<group>"; };
 		AB1B140E187E661E009D1DB2 /* EWAchievement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAchievement.m; sourceTree = "<group>"; };
 		AB1D2D0B1877A87200D2576F /* EWUserManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWUserManagement.h; path = UserManagement/EWUserManagement.h; sourceTree = "<group>"; };
 		AB1D2D0C1877A87200D2576F /* EWUserManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWUserManagement.m; path = UserManagement/EWUserManagement.m; sourceTree = "<group>"; };
-		AB1EBE3218A74AD1003154DB /* EWTaskHistoryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWTaskHistoryCell.xib; sourceTree = "<group>"; };
-		AB1EBE3418A74B41003154DB /* EWTaskHistoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTaskHistoryCell.h; sourceTree = "<group>"; };
-		AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTaskHistoryCell.m; sourceTree = "<group>"; };
-		AB1F3CF618B7B5C500D3FB46 /* EWPostWakeUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPostWakeUpViewController.h; sourceTree = "<group>"; };
-		AB1F3CF718B7B5C500D3FB46 /* EWPostWakeUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPostWakeUpViewController.m; sourceTree = "<group>"; };
-		AB1F3CF918B7B5C500D3FB46 /* EWPostWakeUpViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPostWakeUpViewController.xib; sourceTree = "<group>"; };
 		AB207E5C182F4D9E0076D93F /* ImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageViewController.h; path = ImageController/ImageViewController.h; sourceTree = "<group>"; };
 		AB207E5D182F4D9E0076D93F /* ImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImageViewController.m; path = ImageController/ImageViewController.m; sourceTree = "<group>"; };
 		AB207E67182FFFB60076D93F /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		AB207E68182FFFB60076D93F /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
-		AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWWakeUpView.xib; sourceTree = "<group>"; };
-		AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
 		AB29C4C918DEBCE700C0A141 /* UIViewController+Blur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Blur.h"; sourceTree = "<group>"; };
 		AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 1; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Blur.m"; sourceTree = "<group>"; tabWidth = 1; };
-		AB29C4CC18DF7C8A00C0A141 /* EWHexagonFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWHexagonFlowLayout.h; path = Alarms/EWHexagonFlowLayout.h; sourceTree = "<group>"; };
-		AB29C4CD18DF7C8A00C0A141 /* EWHexagonFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWHexagonFlowLayout.m; path = Alarms/EWHexagonFlowLayout.m; sourceTree = "<group>"; };
 		AB2C18C218733C7F0058BFAD /* image.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = image.xcassets; sourceTree = "<group>"; };
-		AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWAlarmEditCell.xib; path = Alarms/EWAlarmEditCell.xib; sourceTree = "<group>"; };
-		AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWAlarmEditCell.h; path = Alarms/EWAlarmEditCell.h; sourceTree = "<group>"; };
-		AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWAlarmEditCell.m; path = Alarms/EWAlarmEditCell.m; sourceTree = "<group>"; };
 		AB2D195018E26ED100FED6F0 /* EWWakeUpManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWakeUpManager.h; sourceTree = "<group>"; };
 		AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWakeUpManager.m; sourceTree = "<group>"; };
 		AB2DFBC718BA7CBE00534AF1 /* buzz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buzz.caf; sourceTree = "<group>"; };
-		AB39BEF417D96143006C31C5 /* EWSocialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialViewController.h; sourceTree = "<group>"; };
-		AB39BEF517D96143006C31C5 /* EWSocialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialViewController.m; sourceTree = "<group>"; };
 		AB3ACDBE19037DDE0066CF3F /* EWNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationManager.h; sourceTree = "<group>"; };
 		AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWNotificationManager.m; sourceTree = "<group>"; };
 		AB3ACDC2190387C10066CF3F /* EWNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotification.h; sourceTree = "<group>"; };
@@ -360,17 +371,9 @@
 		AB3B9E4417A765CE00C2AD93 /* AVManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AVManager.m; path = Woke/Kernel/Multimedia/AVManager.m; sourceTree = SOURCE_ROOT; };
 		AB49BC89185423E6004A38DB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		AB49BC8D18542402004A38DB /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
-		AB49BC8F1854248E004A38DB /* EWLogInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWLogInViewController.h; path = FirstTime/EWLogInViewController.h; sourceTree = "<group>"; };
-		AB49BC901854248E004A38DB /* EWLogInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWLogInViewController.m; path = FirstTime/EWLogInViewController.m; sourceTree = "<group>"; };
-		AB49BC911854248E004A38DB /* EWLogInViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWLogInViewController.xib; path = FirstTime/EWLogInViewController.xib; sourceTree = "<group>"; };
 		AB4B837818CFE68F0087E654 /* Silence04s.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Silence04s.caf; sourceTree = "<group>"; };
 		AB4B837B18D2B9840087E654 /* new.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = new.caf; sourceTree = "<group>"; };
 		AB4B837D18D2C8BA0087E654 /* tock.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = tock.caf; sourceTree = "<group>"; };
-		AB507F41190F843A00C0FB32 /* EWAlarmScheduleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWAlarmScheduleView.xib; path = Alarms/EWAlarmScheduleView.xib; sourceTree = "<group>"; };
-		AB6BE34D18D7C03A00444ABC /* EWRoundButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWRoundButton.h; path = "UI Components/EWRoundButton.h"; sourceTree = "<group>"; };
-		AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWRoundButton.m; path = "UI Components/EWRoundButton.m"; sourceTree = "<group>"; };
-		AB6BE35018D804C700444ABC /* EWMediaSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWMediaSlider.h; path = "UI Components/EWMediaSlider.h"; sourceTree = "<group>"; };
-		AB6BE35118D804C700444ABC /* EWMediaSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = EWMediaSlider.m; path = "UI Components/EWMediaSlider.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AB7243CB18F0B08100AE7041 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = Pods/TestFlightSDK/libTestFlight.a; sourceTree = "<group>"; };
 		AB7243CD18F0B09800AE7041 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reveal.framework; path = "Pods/Reveal-iOS-SDK/Reveal-Framework-1.0.3/Reveal.framework"; sourceTree = "<group>"; };
 		AB78078D18393A66007C8BFD /* EWAlarmManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmManager.h; sourceTree = "<group>"; };
@@ -389,26 +392,16 @@
 		AB78079C18393A66007C8BFD /* EWDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWDataStore.m; sourceTree = "<group>"; };
 		AB78079D18393A66007C8BFD /* EWTaskStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTaskStore.h; sourceTree = "<group>"; };
 		AB78079E18393A66007C8BFD /* EWTaskStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTaskStore.m; sourceTree = "<group>"; };
-		AB94332117C302C400ADC702 /* EWRingtoneSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWRingtoneSelectionViewController.h; sourceTree = "<group>"; };
-		AB94332217C302C400ADC702 /* EWRingtoneSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWRingtoneSelectionViewController.m; sourceTree = "<group>"; };
-		ABA728B21831F74900595CFD /* EWFirstTimeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWFirstTimeViewController.h; path = FirstTime/EWFirstTimeViewController.h; sourceTree = "<group>"; };
-		ABA728B31831F74900595CFD /* EWFirstTimeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWFirstTimeViewController.m; path = FirstTime/EWFirstTimeViewController.m; sourceTree = "<group>"; };
-		ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWFirstTimeViewController.xib; path = FirstTime/EWFirstTimeViewController.xib; sourceTree = "<group>"; };
 		ABAB2FC2183DEB310095A3A5 /* EWLocalNotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWLocalNotificationViewController.h; sourceTree = "<group>"; };
 		ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWLocalNotificationViewController.m; sourceTree = "<group>"; };
 		ABBC47AB18530F35009A2E7D /* EarlyWorm.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EarlyWorm.xcdatamodel; sourceTree = "<group>"; };
 		ABC8F96218E8890D0096C073 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		ABC8F96418E92F180096C073 /* UIView+HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+HUD.h"; sourceTree = "<group>"; };
 		ABC8F96518E92F180096C073 /* UIView+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+HUD.m"; sourceTree = "<group>"; };
-		ABCCE68B17F15D0D0078F8AA /* EWAlarmPage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EWAlarmPage.xib; sourceTree = "<group>"; };
-		ABCCE68C17F298290078F8AA /* EWAlarmPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmPageView.h; sourceTree = "<group>"; };
-		ABCCE68D17F298290078F8AA /* EWAlarmPageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmPageView.m; sourceTree = "<group>"; };
 		ABD34DAB185C054C008CD2B8 /* FTWCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTWCache.h; sourceTree = "<group>"; };
 		ABD34DAC185C054C008CD2B8 /* FTWCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTWCache.m; sourceTree = "<group>"; };
 		ABD34DAD185C054C008CD2B8 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
 		ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
-		ABDAF98E18C31C010075505B /* EWCollectionPersonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWCollectionPersonCell.h; path = Social/Person/EWCollectionPersonCell.h; sourceTree = "<group>"; };
-		ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWCollectionPersonCell.m; path = Social/Person/EWCollectionPersonCell.m; sourceTree = "<group>"; };
 		ABDD0BBA1852E354005EA59B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		ABDD0BBC1852E360005EA59B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		ABDD0BBE1852E36C005EA59B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -444,15 +437,12 @@
 		ABF3FB541908B72F0017D2EF /* 15.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 15.jpg; sourceTree = "<group>"; };
 		ABF3FB6E190A05E80017D2EF /* SCSiriWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSiriWaveformView.h; sourceTree = "<group>"; };
 		ABF3FB6F190A05E80017D2EF /* SCSiriWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSiriWaveformView.m; sourceTree = "<group>"; };
-		ABF3FB71190B79D10017D2EF /* EWPopupMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWPopupMenu.h; path = Alarms/EWPopupMenu.h; sourceTree = "<group>"; };
-		ABF3FB72190B79D10017D2EF /* EWPopupMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWPopupMenu.m; path = Alarms/EWPopupMenu.m; sourceTree = "<group>"; };
 		ABFCB2D9186E956900355781 /* Autumn Spring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Autumn Spring.caf"; sourceTree = "<group>"; };
 		ABFCB2DB186E957100355781 /* Daybreak.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Daybreak.caf; sourceTree = "<group>"; };
 		ABFCB2DC186E957100355781 /* Parisian Dream.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Parisian Dream.caf"; sourceTree = "<group>"; };
 		ABFCB2DD186E957100355781 /* Tropical Delight.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Tropical Delight.caf"; sourceTree = "<group>"; };
 		ABFCB2DE186E957100355781 /* Sunny Afternoon.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sunny Afternoon.caf"; sourceTree = "<group>"; };
 		ABFCB2DF186E957100355781 /* Drive.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Drive.caf; sourceTree = "<group>"; };
-		ABFECBE119064F6400DD5BDC /* EWCollectionPersonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWCollectionPersonCell.xib; path = "UI Components/EWCollectionPersonCell.xib"; sourceTree = "<group>"; };
 		ABFECBF619075F4100DD5BDC /* bg.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = bg.caf; sourceTree = "<group>"; };
 		ECF3A8B63334474C9C7D2A62 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F97D08D0DECC469FB88EFBA5 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
@@ -690,63 +680,42 @@
 		56FEA55517A5763200FC2938 /* Interface */ = {
 			isa = PBXGroup;
 			children = (
-				AB4B837A18D29DE30087E654 /* UI Components */,
-				AB3120AF187130380099738C /* Notification */,
-				AB19E9F718698316000FBDD1 /* Recording */,
-				ABA728B11831F71500595CFD /* Login */,
-				56FEA55617A5763200FC2938 /* Alarms */,
-				AB39BEEC17D96143006C31C5 /* Social */,
-				56FEA56217A5763200FC2938 /* WakeUp */,
-				56FEA55917A5763200FC2938 /* Settings */,
+				9BF2978F1912F713008C136E /* EWAlarmScheduleView.xib */,
+				9BF297901912F713008C136E /* EWAlarmScheduleViewController.h */,
+				9BF297911912F713008C136E /* EWAlarmScheduleViewController.m */,
+				9BF297921912F713008C136E /* EWAlarmsView.xib */,
+				9BF297931912F713008C136E /* EWAlarmsViewController.h */,
+				9BF297941912F713008C136E /* EWAlarmsViewController.m */,
+				9BF297951912F713008C136E /* EWBlurView.h */,
+				9BF297961912F713008C136E /* EWBlurView.m */,
+				9BF297971912F713008C136E /* EWFirstTimeViewController.h */,
+				9BF297981912F713008C136E /* EWFirstTimeViewController.m */,
+				9BF297991912F713008C136E /* EWFirstTimeViewController.xib */,
+				9BF2979A1912F713008C136E /* EWLogInViewController.h */,
+				9BF2979B1912F713008C136E /* EWLogInViewController.m */,
+				9BF2979C1912F713008C136E /* EWLogInViewController.xib */,
+				9BF2979D1912F713008C136E /* EWNotificationViewController.h */,
+				9BF2979E1912F713008C136E /* EWNotificationViewController.m */,
+				9BF2979F1912F713008C136E /* EWNotificationViewController.xib */,
+				9BF297A01912F713008C136E /* EWPersonViewController.h */,
+				9BF297A11912F713008C136E /* EWPersonViewController.m */,
+				9BF297A21912F713008C136E /* EWPostWakeUpView.xib */,
+				9BF297A31912F713008C136E /* EWPostWakeUpViewController.h */,
+				9BF297A41912F713008C136E /* EWPostWakeUpViewController.m */,
+				9BF297A51912F713008C136E /* EWRecordingViewController.h */,
+				9BF297A61912F713008C136E /* EWRecordingViewController.m */,
+				9BF297A71912F713008C136E /* EWRecordingViewController.xib */,
+				9BF297A81912F713008C136E /* EWRingtoneSelectionViewController.h */,
+				9BF297A91912F713008C136E /* EWRingtoneSelectionViewController.m */,
+				9BF297AA1912F713008C136E /* EWSettingsViewController.h */,
+				9BF297AB1912F713008C136E /* EWSettingsViewController.m */,
+				9BF297AC1912F713008C136E /* EWWakeUpView.xib */,
+				9BF297AD1912F713008C136E /* EWWakeUpViewController.h */,
+				9BF297AE1912F713008C136E /* EWWakeUpViewController.m */,
+				9BF297F11912F7A0008C136E /* Social */,
+				9BF297C31912F71F008C136E /* UI Components */,
 			);
-			name = Interface;
-			path = Business;
-			sourceTree = "<group>";
-		};
-		56FEA55617A5763200FC2938 /* Alarms */ = {
-			isa = PBXGroup;
-			children = (
-				56FEA55717A5763200FC2938 /* EWAlarmsViewController.h */,
-				56FEA55817A5763200FC2938 /* EWAlarmsViewController.m */,
-				AB29C48018DE75BA00C0A141 /* EWAlarmsView.xib */,
-				ABCCE68C17F298290078F8AA /* EWAlarmPageView.h */,
-				ABCCE68D17F298290078F8AA /* EWAlarmPageView.m */,
-				ABCCE68B17F15D0D0078F8AA /* EWAlarmPage.xib */,
-				56E0C36017B2CB7100835A6B /* EWEditAlarmViewController.h */,
-				56E0C36117B2CB7100835A6B /* EWEditAlarmViewController.m */,
-				AB07BC1217D82A4600E23F44 /* EWWeekDayPickerTableViewController.h */,
-				AB07BC1317D82A4600E23F44 /* EWWeekDayPickerTableViewController.m */,
-				AB07BC0B17D6F7EA00E23F44 /* EWTextFieldCell.h */,
-				AB07BC0C17D6F7EA00E23F44 /* EWTextFieldCell.m */,
-				AB07BC0E17D6F7FF00E23F44 /* EWTextFieldCell.xib */,
-				AB0740111810FA3C00AAFC90 /* EWAlarmScheduleViewController.h */,
-				AB0740121810FA3C00AAFC90 /* EWAlarmScheduleViewController.m */,
-			);
-			path = Alarms;
-			sourceTree = "<group>";
-		};
-		56FEA55917A5763200FC2938 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				56FEA55A17A5763200FC2938 /* EWSettingsViewController.h */,
-				56FEA55B17A5763200FC2938 /* EWSettingsViewController.m */,
-				AB94332117C302C400ADC702 /* EWRingtoneSelectionViewController.h */,
-				AB94332217C302C400ADC702 /* EWRingtoneSelectionViewController.m */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
-		56FEA56217A5763200FC2938 /* WakeUp */ = {
-			isa = PBXGroup;
-			children = (
-				AB00B61A1835C49D00DDD54B /* EWWakeUpViewController.h */,
-				AB00B61B1835C49D00DDD54B /* EWWakeUpViewController.m */,
-				AB1F3CF618B7B5C500D3FB46 /* EWPostWakeUpViewController.h */,
-				AB1F3CF718B7B5C500D3FB46 /* EWPostWakeUpViewController.m */,
-				AB1F3CF918B7B5C500D3FB46 /* EWPostWakeUpViewController.xib */,
-				AB286A9518DA8BA8003131C8 /* EWWakeUpView.xib */,
-			);
-			path = WakeUp;
+			path = Interface;
 			sourceTree = "<group>";
 		};
 		56FEA57417A5763200FC2938 /* Components */ = {
@@ -818,6 +787,52 @@
 			path = JSON;
 			sourceTree = "<group>";
 		};
+		9BF297C31912F71F008C136E /* UI Components */ = {
+			isa = PBXGroup;
+			children = (
+				9BF297C41912F71F008C136E /* EWAlarmEditCell.h */,
+				9BF297C51912F71F008C136E /* EWAlarmEditCell.m */,
+				9BF297C61912F71F008C136E /* EWAlarmEditCell.xib */,
+				9BF297C71912F71F008C136E /* EWAlarmPage.xib */,
+				9BF297C81912F71F008C136E /* EWAlarmPageView.h */,
+				9BF297C91912F71F008C136E /* EWAlarmPageView.m */,
+				9BF297CA1912F71F008C136E /* EWCollectionPersonCell.h */,
+				9BF297CB1912F71F008C136E /* EWCollectionPersonCell.m */,
+				9BF297CC1912F71F008C136E /* EWCollectionPersonCell.xib */,
+				9BF297CD1912F71F008C136E /* EWHexagonFlowLayout.h */,
+				9BF297CE1912F71F008C136E /* EWHexagonFlowLayout.m */,
+				9BF297CF1912F71F008C136E /* EWMediaSlider.h */,
+				9BF297D01912F71F008C136E /* EWMediaSlider.m */,
+				9BF297D11912F71F008C136E /* EWMediaViewCell.h */,
+				9BF297D21912F71F008C136E /* EWMediaViewCell.m */,
+				9BF297D31912F71F008C136E /* EWMediaViewCell.xib */,
+				9BF297D41912F71F008C136E /* EWPopupMenu.h */,
+				9BF297D51912F71F008C136E /* EWPopupMenu.m */,
+				9BF297D61912F71F008C136E /* EWRoundButton.h */,
+				9BF297D71912F71F008C136E /* EWRoundButton.m */,
+				9BF297D81912F71F008C136E /* EWTaskHistoryCell.h */,
+				9BF297D91912F71F008C136E /* EWTaskHistoryCell.m */,
+				9BF297DA1912F71F008C136E /* EWTaskHistoryCell.xib */,
+				9BF297DB1912F71F008C136E /* EWTextFieldCell.h */,
+				9BF297DC1912F71F008C136E /* EWTextFieldCell.m */,
+				9BF297DD1912F720008C136E /* EWTextFieldCell.xib */,
+				9BF297DE1912F720008C136E /* EWWeekDayPickerTableViewController.h */,
+				9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */,
+			);
+			path = "UI Components";
+			sourceTree = "<group>";
+		};
+		9BF297F11912F7A0008C136E /* Social */ = {
+			isa = PBXGroup;
+			children = (
+				9BF297F21912F7A0008C136E /* EWFacebookFriendListViewController.h */,
+				9BF297F31912F7A0008C136E /* EWFacebookFriendListViewController.m */,
+				9BF297F71912F7A0008C136E /* EWWeiboFriendListViewController.h */,
+				9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */,
+			);
+			path = Social;
+			sourceTree = "<group>";
+		};
 		9BF7A7BD18CA27EF002EA7AC /* AWS */ = {
 			isa = PBXGroup;
 			children = (
@@ -825,39 +840,6 @@
 				9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */,
 			);
 			name = AWS;
-			sourceTree = "<group>";
-		};
-		AB07401618125AE300AAFC90 /* Groups */ = {
-			isa = PBXGroup;
-			children = (
-				AB07401C18125BA400AAFC90 /* EWGroupCell.h */,
-				AB07401D18125BA400AAFC90 /* EWGroupCell.m */,
-				AB07401718125B4D00AAFC90 /* EWGroupCell.xib */,
-			);
-			name = Groups;
-			sourceTree = "<group>";
-		};
-		AB13C1C81862D32400231159 /* Person */ = {
-			isa = PBXGroup;
-			children = (
-				AB13C1C91862D32400231159 /* EWPersonViewController.h */,
-				AB13C1CA1862D32400231159 /* EWPersonViewController.m */,
-				AB13C1CE1862D32400231159 /* EWPersonView.xib */,
-				AB1EBE3418A74B41003154DB /* EWTaskHistoryCell.h */,
-				AB1EBE3518A74B41003154DB /* EWTaskHistoryCell.m */,
-				AB1EBE3218A74AD1003154DB /* EWTaskHistoryCell.xib */,
-			);
-			path = Person;
-			sourceTree = "<group>";
-		};
-		AB19E9F718698316000FBDD1 /* Recording */ = {
-			isa = PBXGroup;
-			children = (
-				AB19E9F818698359000FBDD1 /* EWRecordingViewController.h */,
-				AB19E9F918698359000FBDD1 /* EWRecordingViewController.m */,
-				AB19E9FA18698359000FBDD1 /* EWRecordingViewController.xib */,
-			);
-			name = Recording;
 			sourceTree = "<group>";
 		};
 		AB1B1406187E4F48009D1DB2 /* Statistics */ = {
@@ -894,28 +876,6 @@
 				AB207E68182FFFB60076D93F /* MBProgressHUD.m */,
 			);
 			path = MBProgressHUD;
-			sourceTree = "<group>";
-		};
-		AB3120AF187130380099738C /* Notification */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Notification;
-			sourceTree = "<group>";
-		};
-		AB39BEEC17D96143006C31C5 /* Social */ = {
-			isa = PBXGroup;
-			children = (
-				AB39BEF417D96143006C31C5 /* EWSocialViewController.h */,
-				AB39BEF517D96143006C31C5 /* EWSocialViewController.m */,
-				AB13C1C81862D32400231159 /* Person */,
-				AB07401618125AE300AAFC90 /* Groups */,
-				56330CD017FDCBC5008A7922 /* EWWeiboFriendListViewController.h */,
-				56330CD117FDCBC5008A7922 /* EWWeiboFriendListViewController.m */,
-				56330CF317FDF2C2008A7922 /* EWFacebookFriendListViewController.h */,
-				56330CF417FDF2C2008A7922 /* EWFacebookFriendListViewController.m */,
-			);
-			path = Social;
 			sourceTree = "<group>";
 		};
 		AB44569E17E6A5870077FE45 /* Voice Message */ = {
@@ -956,34 +916,6 @@
 			name = "Profile picture";
 			sourceTree = "<group>";
 		};
-		AB4B837A18D29DE30087E654 /* UI Components */ = {
-			isa = PBXGroup;
-			children = (
-				AB507F41190F843A00C0FB32 /* EWAlarmScheduleView.xib */,
-				AB6BE34D18D7C03A00444ABC /* EWRoundButton.h */,
-				AB6BE34E18D7C03A00444ABC /* EWRoundButton.m */,
-				AB6BE35018D804C700444ABC /* EWMediaSlider.h */,
-				AB6BE35118D804C700444ABC /* EWMediaSlider.m */,
-				AB00B6171835C49D00DDD54B /* EWMediaViewCell.h */,
-				AB00B6181835C49D00DDD54B /* EWMediaViewCell.m */,
-				AB00B6191835C49D00DDD54B /* EWMediaViewCell.xib */,
-				ABDAF98E18C31C010075505B /* EWCollectionPersonCell.h */,
-				ABDAF98F18C31C010075505B /* EWCollectionPersonCell.m */,
-				ABFECBE119064F6400DD5BDC /* EWCollectionPersonCell.xib */,
-				AB13C1CB1862D32400231159 /* EWPersonCell.h */,
-				AB13C1CC1862D32400231159 /* EWPersonCell.m */,
-				AB13C1CD1862D32400231159 /* EWPersonCell.xib */,
-				AB2C18CB18737F670058BFAD /* EWAlarmEditCell.h */,
-				AB2C18CC18737F670058BFAD /* EWAlarmEditCell.m */,
-				AB2C18C9187375360058BFAD /* EWAlarmEditCell.xib */,
-				AB29C4CC18DF7C8A00C0A141 /* EWHexagonFlowLayout.h */,
-				AB29C4CD18DF7C8A00C0A141 /* EWHexagonFlowLayout.m */,
-				ABF3FB71190B79D10017D2EF /* EWPopupMenu.h */,
-				ABF3FB72190B79D10017D2EF /* EWPopupMenu.m */,
-			);
-			name = "UI Components";
-			sourceTree = "<group>";
-		};
 		AB7807A8183A01F7007C8BFD /* Download */ = {
 			isa = PBXGroup;
 			children = (
@@ -1021,19 +953,6 @@
 				AB3B9E4417A765CE00C2AD93 /* AVManager.m */,
 			);
 			path = Multimedia;
-			sourceTree = "<group>";
-		};
-		ABA728B11831F71500595CFD /* Login */ = {
-			isa = PBXGroup;
-			children = (
-				AB49BC8F1854248E004A38DB /* EWLogInViewController.h */,
-				AB49BC901854248E004A38DB /* EWLogInViewController.m */,
-				AB49BC911854248E004A38DB /* EWLogInViewController.xib */,
-				ABA728B21831F74900595CFD /* EWFirstTimeViewController.h */,
-				ABA728B31831F74900595CFD /* EWFirstTimeViewController.m */,
-				ABA728B41831F74900595CFD /* EWFirstTimeViewController.xib */,
-			);
-			name = Login;
 			sourceTree = "<group>";
 		};
 		ABB98B5B17D01ADE005D8903 /* ModelManager */ = {
@@ -1154,61 +1073,59 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BF297E51912F720008C136E /* EWCollectionPersonCell.xib in Resources */,
 				56FEA59617A5766B00FC2938 /* InfoPlist.strings in Resources */,
 				561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */,
 				ABF3FB611908B72F0017D2EF /* 12.jpg in Resources */,
-				AB13C1D11862D32400231159 /* EWPersonCell.xib in Resources */,
-				AB13C1D21862D32400231159 /* EWPersonView.xib in Resources */,
-				AB1EBE3318A74AD1003154DB /* EWTaskHistoryCell.xib in Resources */,
+				9BF297B71912F713008C136E /* EWLogInViewController.xib in Resources */,
 				AB07402218126EC200AAFC90 /* workGroup.png in Resources */,
 				ABF3FB551908B72F0017D2EF /* 0.jpg in Resources */,
 				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
-				AB19E9FC18698359000FBDD1 /* EWRecordingViewController.xib in Resources */,
 				ABF3FB5B1908B72F0017D2EF /* 6.jpg in Resources */,
 				AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */,
-				ABFECBE219064F6400DD5BDC /* EWCollectionPersonCell.xib in Resources */,
 				ABF3FB621908B72F0017D2EF /* 13.jpg in Resources */,
+				9BF297BE1912F713008C136E /* EWRecordingViewController.xib in Resources */,
+				9BF297AF1912F713008C136E /* EWAlarmScheduleView.xib in Resources */,
 				ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */,
-				AB2C18CA187375360058BFAD /* EWAlarmEditCell.xib in Resources */,
-				ABA728B61831F74900595CFD /* EWFirstTimeViewController.xib in Resources */,
 				ABF3FB601908B72F0017D2EF /* 11.jpg in Resources */,
 				ABF3FB5F1908B72F0017D2EF /* 10.jpg in Resources */,
 				AB4B837918CFE68F0087E654 /* Silence04s.caf in Resources */,
-				AB507F42190F843A00C0FB32 /* EWAlarmScheduleView.xib in Resources */,
-				AB29C48118DE75BA00C0A141 /* EWAlarmsView.xib in Resources */,
-				AB00B61D1835C49D00DDD54B /* EWMediaViewCell.xib in Resources */,
 				ABF192AC18C03D71006A4AA2 /* media.caf in Resources */,
 				ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */,
 				ABF3FB571908B72F0017D2EF /* 2.jpg in Resources */,
-				AB1F3CFB18B7B5C500D3FB46 /* EWPostWakeUpViewController.xib in Resources */,
-				AB07BC0F17D6F7FF00E23F44 /* EWTextFieldCell.xib in Resources */,
+				9BF297E91912F720008C136E /* EWMediaViewCell.xib in Resources */,
 				ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */,
 				ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */,
+				9BF297ED1912F720008C136E /* EWTaskHistoryCell.xib in Resources */,
 				AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */,
 				ABFECBF719075F4200DD5BDC /* bg.caf in Resources */,
+				9BF297BB1912F713008C136E /* EWPostWakeUpView.xib in Resources */,
 				ABF3FB591908B72F0017D2EF /* 4.jpg in Resources */,
+				9BF297B51912F713008C136E /* EWFirstTimeViewController.xib in Resources */,
+				9BF297EF1912F720008C136E /* EWTextFieldCell.xib in Resources */,
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
+				9BF297B11912F713008C136E /* EWAlarmsView.xib in Resources */,
 				AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */,
-				AB286A9618DA8BA8003131C8 /* EWWakeUpView.xib in Resources */,
 				ABF3FB641908B72F0017D2EF /* 15.jpg in Resources */,
 				ABF3FB5D1908B72F0017D2EF /* 8.jpg in Resources */,
 				ABEEA96617E027E90035DF4A /* vm3.m4a in Resources */,
 				ABF3FB561908B72F0017D2EF /* 1.jpg in Resources */,
 				ABF3FB5C1908B72F0017D2EF /* 7.jpg in Resources */,
 				ABF3FB631908B72F0017D2EF /* 14.jpg in Resources */,
+				9BF297E11912F720008C136E /* EWAlarmEditCell.xib in Resources */,
 				ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */,
+				9BF297B91912F713008C136E /* EWNotificationViewController.xib in Resources */,
 				ABF3FB5A1908B72F0017D2EF /* 5.jpg in Resources */,
 				ABEEA96817E027E90035DF4A /* vm5.m4a in Resources */,
 				ABF3FB581908B72F0017D2EF /* 3.jpg in Resources */,
 				ABFCB2E2186E957100355781 /* Tropical Delight.caf in Resources */,
-				AB07401818125B4D00AAFC90 /* EWGroupCell.xib in Resources */,
 				ABEEA96917E027E90035DF4A /* vm6.m4a in Resources */,
 				AB4B837C18D2C5470087E654 /* new.caf in Resources */,
 				AB07402018125DBE00AAFC90 /* tennisGroup.png in Resources */,
+				9BF297C11912F713008C136E /* EWWakeUpView.xib in Resources */,
 				ABFCB2E4186E957100355781 /* Drive.caf in Resources */,
 				ABF3FB5E1908B72F0017D2EF /* 9.jpg in Resources */,
-				AB49BC931854248E004A38DB /* EWLogInViewController.xib in Resources */,
-				AB05BCA317F90313006579AC /* EWAlarmPage.xib in Resources */,
+				9BF297E21912F720008C136E /* EWAlarmPage.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1269,91 +1186,89 @@
 				ABC8F96A18E937BA0096C073 /* EWDownloadMgr.m in Sources */,
 				9BBA5F9118EB3ED500C07809 /* NSString+SBJSON.m in Sources */,
 				9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */,
+				9BF297E71912F720008C136E /* EWMediaSlider.m in Sources */,
 				9BBA5F9518EB3ED500C07809 /* SBJsonWriter.m in Sources */,
+				9BF297EB1912F720008C136E /* EWRoundButton.m in Sources */,
+				9BF297BF1912F713008C136E /* EWRingtoneSelectionViewController.m in Sources */,
 				9BBA5F9018EB3ED500C07809 /* NSObject+SBJSON.m in Sources */,
-				ABC8F96918E937B10096C073 /* EWWeiboFriendListViewController.m in Sources */,
 				9BBA5F9318EB3ED500C07809 /* SBJsonBase.m in Sources */,
+				9BF2980B1912F7A0008C136E /* EWFacebookFriendListViewController.m in Sources */,
 				ABC8F96818E9378F0096C073 /* EWWeiboManager.m in Sources */,
 				9BBA5F9418EB3ED500C07809 /* SBJsonParser.m in Sources */,
 				ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */,
-				ABDAF99018C31C010075505B /* EWCollectionPersonCell.m in Sources */,
-				56FEA57F17A5763200FC2938 /* EWAlarmsViewController.m in Sources */,
-				AB29C4CE18DF7C8A00C0A141 /* EWHexagonFlowLayout.m in Sources */,
-				56FEA58017A5763200FC2938 /* EWSettingsViewController.m in Sources */,
+				9BF297EA1912F720008C136E /* EWPopupMenu.m in Sources */,
 				AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */,
 				5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */,
 				5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */,
 				AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */,
+				9BF297B01912F713008C136E /* EWAlarmScheduleViewController.m in Sources */,
 				AB207E69182FFFB60076D93F /* MBProgressHUD.m in Sources */,
+				9BF297C21912F713008C136E /* EWWakeUpViewController.m in Sources */,
+				9BF297BA1912F713008C136E /* EWPersonViewController.m in Sources */,
 				5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */,
-				AB13C1D01862D32400231159 /* EWPersonCell.m in Sources */,
 				56FEA58E17A5763200FC2938 /* EWAppDelegate.m in Sources */,
 				AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */,
 				56FEA59717A5766B00FC2938 /* main.m in Sources */,
 				AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */,
 				5642AF4E17ACCF90000C73E8 /* UIView+Layout.m in Sources */,
-				ABF3FB73190B79D10017D2EF /* EWPopupMenu.m in Sources */,
-				AB6BE34F18D7C03A00444ABC /* EWRoundButton.m in Sources */,
-				AB49BC921854248E004A38DB /* EWLogInViewController.m in Sources */,
+				9BF297E31912F720008C136E /* EWAlarmPageView.m in Sources */,
 				ABF192AA18BF135C006A4AA2 /* UIAlertView+.m in Sources */,
 				56F09E4617AAE0F800C5AD52 /* TestViewController.m in Sources */,
 				AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */,
-				56E0C36217B2CB7200835A6B /* EWEditAlarmViewController.m in Sources */,
 				56E0C36517B2CC6400835A6B /* EWViewController.m in Sources */,
 				AB7807A218393A66007C8BFD /* EWImageStore.m in Sources */,
 				56E0C36F17B2CEC200835A6B /* EWShakeManager.m in Sources */,
 				AB1D2D0D1877A87200D2576F /* EWUserManagement.m in Sources */,
+				9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */,
 				AB198C961861818B008C1F15 /* EWMessage.m in Sources */,
 				AB198C941861818B008C1F15 /* EWGroupTask.m in Sources */,
 				56E0C37017B2CEC200835A6B /* EWShakingDetectorView.m in Sources */,
+				9BF297B31912F713008C136E /* EWBlurView.m in Sources */,
 				ABC8F96618E92F180096C073 /* UIView+HUD.m in Sources */,
 				56E0C37117B2CEC200835A6B /* EWUnlockManager.m in Sources */,
 				AB7807A718393A66007C8BFD /* EWTaskStore.m in Sources */,
-				ABCCE68E17F298290078F8AA /* EWAlarmPageView.m in Sources */,
 				56D997F217B425D2003EDA53 /* NSString+Extend.m in Sources */,
 				AB1B140F187E661E009D1DB2 /* EWAchievement.m in Sources */,
+				9BF297EC1912F720008C136E /* EWTaskHistoryCell.m in Sources */,
+				9BF297B61912F713008C136E /* EWLogInViewController.m in Sources */,
 				AB198C931861818B008C1F15 /* EWGroup.m in Sources */,
 				ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */,
 				56D997F517B426C3003EDA53 /* NSDate+Extend.m in Sources */,
+				9BF297BC1912F713008C136E /* EWPostWakeUpViewController.m in Sources */,
 				AB29C4CB18DEBCE700C0A141 /* UIViewController+Blur.m in Sources */,
-				AB1F3CFA18B7B5C500D3FB46 /* EWPostWakeUpViewController.m in Sources */,
 				AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */,
-				AB00B61C1835C49D00DDD54B /* EWMediaViewCell.m in Sources */,
+				9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */,
 				ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */,
-				AB94332317C302C500ADC702 /* EWRingtoneSelectionViewController.m in Sources */,
-				AB00B61E1835C49D00DDD54B /* EWWakeUpViewController.m in Sources */,
 				56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */,
-				AB6BE35218D804C700444ABC /* EWMediaSlider.m in Sources */,
 				9BBA5F9218EB3ED500C07809 /* SBJSON.m in Sources */,
+				9BF297B41912F713008C136E /* EWFirstTimeViewController.m in Sources */,
 				AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */,
+				9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */,
 				185B5274190D1D82006D6FB9 /* UIView+Sreenshot.m in Sources */,
 				AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */,
 				ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */,
+				9BF297BD1912F713008C136E /* EWRecordingViewController.m in Sources */,
 				AB207E5E182F4D9E0076D93F /* ImageViewController.m in Sources */,
-				56330CF517FDF2C2008A7922 /* EWFacebookFriendListViewController.m in Sources */,
 				9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */,
-				AB07BC0D17D6F7EA00E23F44 /* EWTextFieldCell.m in Sources */,
 				5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */,
-				AB07BC1417D82A4600E23F44 /* EWWeekDayPickerTableViewController.m in Sources */,
 				AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */,
-				AB07401E18125BA400AAFC90 /* EWGroupCell.m in Sources */,
-				AB2C18CD18737F670058BFAD /* EWAlarmEditCell.m in Sources */,
+				9BF297E41912F720008C136E /* EWCollectionPersonCell.m in Sources */,
 				AB198C951861818B008C1F15 /* EWMediaItem.m in Sources */,
-				AB13C1CF1862D32400231159 /* EWPersonViewController.m in Sources */,
 				AB3ACDC4190387C10066CF3F /* EWNotification.m in Sources */,
+				9BF297E81912F720008C136E /* EWMediaViewCell.m in Sources */,
+				9BF297B81912F713008C136E /* EWNotificationViewController.m in Sources */,
 				AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */,
-				AB1EBE3618A74B41003154DB /* EWTaskHistoryCell.m in Sources */,
 				9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */,
-				AB19E9FB18698359000FBDD1 /* EWRecordingViewController.m in Sources */,
 				AB198C971861818B008C1F15 /* EWPerson.m in Sources */,
 				AB7807A418393A66007C8BFD /* EWPersonStore.m in Sources */,
 				ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */,
-				AB0740131810FA3C00AAFC90 /* EWAlarmScheduleViewController.m in Sources */,
 				56330CEF17FDEA57008A7922 /* EWFacebookManager.m in Sources */,
-				AB39BF0017D96143006C31C5 /* EWSocialViewController.m in Sources */,
+				9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */,
+				9BF2980E1912F7A0008C136E /* EWWeiboFriendListViewController.m in Sources */,
+				9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */,
 				AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */,
+				9BF297C01912F713008C136E /* EWSettingsViewController.m in Sources */,
 				AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */,
-				ABA728B51831F74900595CFD /* EWFirstTimeViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
