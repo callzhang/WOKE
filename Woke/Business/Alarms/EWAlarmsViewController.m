@@ -91,15 +91,8 @@
 
 - (void)centerView{
     
-    [UIView animateWithDuration:0.5 animations:^{
-        float w = _collectionView.contentSize.width + _collectionView.contentInset.left + _collectionView.contentInset.right;
-        float h = _collectionView.contentSize.height + _collectionView.contentInset.top + _collectionView.contentInset.bottom;
-        
-        CGRect bounds = _collectionView.bounds;
-        bounds.origin.x = w/2 - _collectionView.contentInset.left - self.view.center.x;
-        bounds.origin.y = h/2 - _collectionView.contentInset.top - self.view.center.y;
-        _collectionView.bounds = bounds;
-    }];
+    [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
+
 }
 
 - (void)viewDidLoad {
@@ -174,7 +167,7 @@
     //collection view
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
-    _collectionView.contentInset = UIEdgeInsetsMake(200, 100, 200, 100);
+    //_collectionView.contentInset = UIEdgeInsetsMake(200, 100, 200, 100);
     //[_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
@@ -425,7 +418,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     if (sender.tag == kCollectionViewTag) {
-        float margin = 0.3;
+        float margin = 0.2;
         float w = sender.contentSize.width + sender.contentInset.left + sender.contentInset.right;
         float h = sender.contentSize.height + sender.contentInset.top + sender.contentInset.bottom;
         float x = -(sender.bounds.origin.x + sender.contentInset.left);
@@ -542,8 +535,7 @@
 - (void)scheduleAlarm{
     //pop up alarmScheduleView
     EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
-    [self presentViewControllerWithBlurBackground:nav];
+    [self presentViewControllerWithBlurBackground:controller];
     
 }
 

@@ -59,11 +59,11 @@
                         <action selector="scheduleInitialAlarms:" destination="-1" eventType="touchUpInside" id="IEa-cD-2wi"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XNr-6h-T9H">
-                    <rect key="frame" x="284" y="39" width="22" height="22"/>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XNr-6h-T9H">
+                    <rect key="frame" x="284" y="39" width="32" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <state key="normal">
+                    <state key="normal" image="Configure_Btn">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>
@@ -95,6 +95,7 @@
     <resources>
         <image name="AlarmViewBar" width="320" height="100"/>
         <image name="Bg" width="480" height="852"/>
+        <image name="Configure_Btn" width="32" height="32"/>
         <image name="addBtn" width="50" height="50"/>
     </resources>
 </document>

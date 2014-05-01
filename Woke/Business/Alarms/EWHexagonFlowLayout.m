@@ -4,22 +4,25 @@
 #import "EWUIUtil.h"
 #import "EWAppDelegate.h"
 
-#define kCoordinateSystemPolar           @"polar"
-#define kCoordinateSystemCartesian       @"cartesian"
-#define kLevelCount                      @[@1, @6, @12, @18, @24, @30, @36, @42, @48]
-#define kLevelTotal                     @[@0, @1, @7, @19, @37]
+#define kCoordinateSystemPolar              @"polar"
+#define kCoordinateSystemCartesian          @"cartesian"
+#define kLevelCount                         @[@1, @6, @12, @18, @24, @30, @36, @42, @48]
+#define kLevelTotal                         @[@0, @1, @7, @19, @37, @61, @91]
+#define kDynamic                            NO
+#define kZoomEffect                         NO
 
 @interface EWHexagonFlowLayout ()
 {
     NSInteger _itemsPerRow;
     NSInteger _itemTotalCount;
     CGSize _hexagonSize;
-    BOOL applyZoomEffect;
     float adjWidth; //the true width of a hexagon, used to calculate coordinates
-    NSString *coordinateSystem;
     CGPoint center;
+    CGFloat latestDeltaX;
+    CGFloat latestDeltaY;
 }
-
+@property (nonatomic, strong) UIDynamicAnimator *dynamicAnimator;
+@property (nonatomic, strong) NSMutableSet *visibleIndexPathsSet;
 @end
 
 @implementation EWHexagonFlowLayout
@@ -29,25 +32,100 @@
 
 #pragma mark - UICollectionViewLayout Subclass hooks
 
+
 - (void)prepareLayout
 {
     [super prepareLayout];
     
-    _itemTotalCount = [self.collectionView numberOfItemsInSection:0];
-    if (_itemsPerRow == 0) _itemsPerRow = [self getLevel:_itemTotalCount] * 2 - 1;
-    //if (_itemsPerRow == 0) _itemsPerRow = 4;
+    //cell size
     adjWidth = sqrtf(3)/2 * kCollectionViewCellHeight * CELL_SPACE_RATIO;
     _hexagonSize = CGSizeMake(kCollectionViewCellWidth * CELL_SPACE_RATIO, kCollectionViewCellHeight * CELL_SPACE_RATIO);
-    coordinateSystem = kCoordinateSystemPolar;
-    [self getCollectionViewCenter];
+    self.itemSize = CGSizeMake(_hexagonSize.width, _hexagonSize.height);
     
-    //precalculate the coordinates
-    attributeArray = [[NSMutableArray alloc] initWithCapacity:_itemTotalCount];
-    for (unsigned i=0; i<_itemTotalCount; i++) {
-        NSIndexPath *path = [NSIndexPath indexPathForRow:i inSection:0];
-        UICollectionViewLayoutAttributes *attribute = [self centerForCellAtIndexPath:path];
-        attributeArray[i] = attribute;
+    
+    //get itemPerRow
+    _itemTotalCount = [self.collectionView numberOfItemsInSection:0];
+    if (_itemsPerRow == 0) _itemsPerRow = [self getLevel:_itemTotalCount] * 2 - 1;
+    
+    //coordinate system, currently do not use polar system
+    //coordinateSystem = kCoordinateSystemPolar;
+    //[self getCollectionViewCenter];
+    
+    //pre-calculate the coordinates and save to attribute array
+    if (!attributeArray) {
+        attributeArray = [[NSMutableArray alloc] initWithCapacity:_itemTotalCount];
+        for (unsigned i=0; i<_itemTotalCount; i++) {
+            NSIndexPath *path = [NSIndexPath indexPathForRow:i inSection:0];
+            UICollectionViewLayoutAttributes *attribute = [self centerForCellAtIndexPath:path];
+            attributeArray[i] = attribute;
+        }
     }
+    
+    if (kDynamic) {
+        // ====== Dynamic Animator =======
+        
+        //init dynamic animator
+        if (!self.dynamicAnimator) {
+            self.dynamicAnimator = [[UIDynamicAnimator alloc] initWithCollectionViewLayout:self];
+        }
+        if (!self.visibleIndexPathsSet) {
+            self.visibleIndexPathsSet = [NSMutableSet set];
+        }
+        
+        // Need to expand our actual visible rect slightly to avoid flickering.
+        CGRect visibleRect = CGRectInset((CGRect){.origin = self.collectionView.bounds.origin, .size = self.collectionView.frame.size}, -100, -100);
+        
+        NSArray *itemsInVisibleRectArray = [self layoutAttributesForElementsInRect:visibleRect];
+        
+        NSSet *itemsIndexPathsInVisibleRectSet = [NSSet setWithArray:[itemsInVisibleRectArray valueForKey:@"indexPath"]];
+        
+        // Step 1: Remove any behaviours that are no longer visible.
+        NSArray *noLongerVisibleBehaviours = [self.dynamicAnimator.behaviors filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UIAttachmentBehavior *behaviour, NSDictionary *bindings) {
+            BOOL currentlyVisible = [itemsIndexPathsInVisibleRectSet member:[[[behaviour items] firstObject] indexPath]] != nil;
+            return !currentlyVisible;
+        }]];
+        
+        [noLongerVisibleBehaviours enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
+            [self.dynamicAnimator removeBehavior:obj];
+            [self.visibleIndexPathsSet removeObject:[[[obj items] firstObject] indexPath]];
+        }];
+        
+        // Step 2: Add any newly visible behaviours.
+        // A "newly visible" item is one that is in the itemsInVisibleRect(Set|Array) but not in the visibleIndexPathsSet
+        NSArray *newlyVisibleItems = [itemsInVisibleRectArray filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UICollectionViewLayoutAttributes *item, NSDictionary *bindings) {
+            BOOL currentlyVisible = [self.visibleIndexPathsSet member:item.indexPath] != nil;
+            return !currentlyVisible;
+        }]];
+        
+        
+        // Step 3. Modify center location
+        CGPoint touchLocation = [self.collectionView.panGestureRecognizer locationInView:self.collectionView];
+        
+        [newlyVisibleItems enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *item, NSUInteger idx, BOOL *stop) {
+            CGPoint centerOfCell = item.center;
+            UIAttachmentBehavior *springBehaviour = [[UIAttachmentBehavior alloc] initWithItem:item attachedToAnchor:centerOfCell];
+            
+            springBehaviour.length = 0.0f;
+            springBehaviour.damping = 0.8f;
+            springBehaviour.frequency = 1.0f;
+            
+            // If our touchLocation is not (0,0), we'll need to adjust our item's center "in flight"
+            if (!CGPointEqualToPoint(CGPointZero, touchLocation)) {
+                CGFloat yDistanceFromTouch = fabsf(touchLocation.y - springBehaviour.anchorPoint.y);
+                CGFloat xDistanceFromTouch = fabsf(touchLocation.x - springBehaviour.anchorPoint.x);
+                CGFloat scrollResistance = (yDistanceFromTouch + xDistanceFromTouch) / 1500.0f;
+                
+                
+                centerOfCell.y += latestDeltaY * scrollResistance;
+                centerOfCell.x += latestDeltaX * scrollResistance;
+                item.center = centerOfCell;
+            }
+            
+            [self.dynamicAnimator addBehavior:springBehaviour];
+            [self.visibleIndexPathsSet addObject:item.indexPath];
+        }];
+    }
+    
     
 }
 
@@ -160,13 +238,13 @@
     
     
     //col = indexPath.row % _itemsPerRow;
-    CGFloat horiOffset = ((row % 2) != 0) ? 0 : adjWidth * 0.5f;
+    CGFloat horiOffset = ((row % 2) == 0) ? 0 : adjWidth * 0.5f;
     CGFloat vertOffset = 0;
     
     
     attributes.size = CGSizeMake(kCollectionViewCellWidth, kCollectionViewCellHeight);
-    attributes.center = CGPointMake((col * adjWidth) + (0.5f * adjWidth) + horiOffset,
-                                    row * 0.75f * _hexagonSize.height + 0.5f * _hexagonSize.height + vertOffset);
+    attributes.center = CGPointMake((col * adjWidth) + horiOffset,
+                                    row * 0.75f * _hexagonSize.height + vertOffset);
     
     NSLog(@"%dth item has index of (%d, %d) and coordinate of (%f, %f)", x, col, row, attributes.center.x, attributes.center.y);
     
@@ -177,12 +255,10 @@
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
 {
     
-    //NSLog(@"Flow Layout delegate is asking for rect:(%.1f,%.1f,%.1f,%.1f)", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
-    
     //list of containing indexPath
     NSArray *attributes = [self getContainedRect:rect fromAttributesArray:attributeArray];
     
-    if (applyZoomEffect) {
+    if (kZoomEffect) {
         //apply zoom
         CGRect bounds = self.collectionView.bounds;
         //bounds.origin.x += self.collectionView.contentInset.left;
@@ -214,15 +290,16 @@
 }
 
 - (NSArray *)getContainedRect:(CGRect)rect fromAttributesArray:(NSArray *)attributesArray{
-    NSMutableArray *containedRects = [[NSMutableArray alloc] init];
+    rect = CGRectInset(rect, -100, -100);
+    NSMutableArray *containedAttibutes = [[NSMutableArray alloc] init];
     for (UICollectionViewLayoutAttributes *att in attributesArray) {
         CGRect frame = att.frame;
         BOOL contain = CGRectIntersectsRect(rect, frame);
         if (contain) {
-            [containedRects addObject:att];
+            [containedAttibutes addObject:att];
         }
     }
-    return containedRects;
+    return containedAttibutes;
 }
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -232,8 +309,32 @@
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
-    //NSLog(@"New bounds asked for updated layout: (%0f,%0f,%0f,%0f)", newBounds.origin.x, newBounds.origin.y, newBounds.size.width, newBounds.size.height);
-    return applyZoomEffect ? YES : NO;
+    if (kDynamic) {
+        CGFloat deltaX = newBounds.origin.x - self.collectionView.bounds.origin.x;
+        CGFloat deltaY = newBounds.origin.y - self.collectionView.bounds.origin.y;
+        latestDeltaX = deltaX;
+        latestDeltaY = deltaY;
+        
+        CGPoint touchLocation = [self.collectionView.panGestureRecognizer locationInView:self.collectionView];
+        
+        [self.dynamicAnimator.behaviors enumerateObjectsUsingBlock:^(UIAttachmentBehavior *springBehaviour, NSUInteger idx, BOOL *stop) {
+            CGFloat yDistanceFromTouch = fabsf(touchLocation.y - springBehaviour.anchorPoint.y);
+            CGFloat xDistanceFromTouch = fabsf(touchLocation.x - springBehaviour.anchorPoint.x);
+            CGFloat scrollResistance = (yDistanceFromTouch + xDistanceFromTouch) / 1500.0f;
+            
+            UICollectionViewLayoutAttributes *item = [springBehaviour.items firstObject];
+            CGPoint centerOfCell = item.center;
+            centerOfCell.y += deltaX * scrollResistance;
+            centerOfCell.x += deltaY * scrollResistance;
+            item.center = centerOfCell;
+            
+            [self.dynamicAnimator updateItemUsingCurrentState:item];
+        }];
+
+    }
+    
+    //return NO
+    return kZoomEffect ? YES : NO;
 }
 
 //- (void)invalidateLayoutWithContext:(UICollectionViewLayoutInvalidationContext *)context{
@@ -244,9 +345,9 @@
 {
     //NSInteger row = _itemsPerRow == 0?0:_itemTotalCount / _itemsPerRow;
 
-    CGFloat contentWidth = _itemsPerRow * _hexagonSize.width;
+    CGFloat contentWidth = (_itemsPerRow+1) * _hexagonSize.width;
     //CGFloat contentHeight = ( (row * 0.75f) * _hexagonSize.height) + (0.5f + _hexagonSize.height);
-    CGFloat contentHeight = _itemsPerRow * adjWidth;
+    CGFloat contentHeight = (_itemsPerRow+1) * adjWidth;
     CGSize contentSize = CGSizeMake(contentWidth, contentHeight);
     
     return contentSize;

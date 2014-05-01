@@ -39,7 +39,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     _tableView.delegate = self;
     _tableView.backgroundColor = [UIColor clearColor];
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 250, 0);
+    _tableView.contentInset = UIEdgeInsetsMake(45, 0, 200, 0);
     [self.view addSubview:_tableView];
     
     //header view
@@ -50,20 +50,20 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
     UIBarButtonItem *cancelBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    self.navigationItem.title = @"Schedule Alarms";
-    self.navigationItem.leftBarButtonItem = doneBtn;
-    self.navigationItem.rightBarButtonItem = cancelBtn;
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithWhite:0 alpha:0.1];
+    UIBarButtonItem *center = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
-    self.view.backgroundColor = [UIColor clearColor];
-    
+    [self.navigationBar setItems:@[doneBtn, center, cancelBtn] animated:YES];
+    [self.view sendSubviewToBack:_tableView];
     
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
     [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
     
     //data
     [self initData];
+}
+
+- (BOOL)prefersStatusBarHidden{
+    return YES;
 }
 
 - (void)initData{

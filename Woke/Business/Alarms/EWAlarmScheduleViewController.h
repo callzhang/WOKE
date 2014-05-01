@@ -14,4 +14,5 @@
     NSArray *tasks;
 }
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIToolbar *navigationBar;
 @end
