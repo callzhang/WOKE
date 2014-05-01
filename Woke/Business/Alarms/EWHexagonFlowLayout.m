@@ -7,7 +7,7 @@
 #define kCoordinateSystemPolar           @"polar"
 #define kCoordinateSystemCartesian       @"cartesian"
 #define kLevelCount                      @[@1, @6, @12, @18, @24, @30, @36, @42, @48]
-#define kLevelTotal                     @[@1, @7, @19, @37]
+#define kLevelTotal                     @[@0, @1, @7, @19, @37]
 
 @interface EWHexagonFlowLayout ()
 {
@@ -63,43 +63,46 @@
 }
 
 - (NSInteger)getLevel:(NSInteger)x{
+    //X is the number of the item, not the index, need to add 1 when passing by index
     NSArray *levelTotal = kLevelTotal;
-    NSInteger sum = 0;
     unsigned level;
-    for (level = 0; level < levelTotal.count; level++) {
-        NSInteger total = [(NSNumber *)levelTotal[level] integerValue];
-        NSInteger total2 = [(NSNumber *)levelTotal[level + 1] integerValue];
+    for (level = 1; level < levelTotal.count; level++) {
+        NSInteger total = [(NSNumber *)levelTotal[level-1] integerValue];
+        NSInteger total2 = [(NSNumber *)levelTotal[level] integerValue];
         if (total < x && x <= total2) {
             break;
         }
     }
-    
-    NSLog(@"Level: %d", level);
+    //NSLog(@"%dth item at level: %d", x, level);
     return level;
 }
 
 - (UICollectionViewLayoutAttributes *)centerForCellAtIndexPath:(NSIndexPath *)indexPath{
+    NSInteger x = indexPath.row;
     NSInteger col = 0;//x
     NSInteger row = 0;//y
     UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-    NSInteger level = [self getLevel: indexPath.row];
+    NSInteger level0 = [self getLevel: _itemTotalCount];
+    NSInteger level = [self getLevel:x +1];
     NSArray *levelTotal = kLevelTotal;
-    NSInteger steps = indexPath.row % (NSInteger)levelTotal[level];
+    
     //see: http://www.redblobgames.com/grids/hexagons/
     //“odd-r” horizontal layout
-    if (level == 1) {
-        row = level;
-        col = level;
+    if (x == 0) {
+        row = level0;
+        col = level0;
     }else{
         //when level is >1, edge step = level-1
         NSInteger edgeStep = level -1;
+        NSInteger steps = x - [(NSNumber *)levelTotal[level-1] integerValue];
         //starting on the right most cell, which is col = 2 * level, row = level
-        col = 2 * level-1;
-        row = level;
-        for (unsigned step = 1; step < steps; step++) {
+        col = level0 + level - 1;
+        row = level0;
+        //skip if steps == 0 => first item skipped
+        for (unsigned step = 1; step <= steps; step++) {
             //starting with 1, meaning second step
             //direction number
-            NSInteger direction = floor(step / edgeStep);//the direction from last one to this one
+            NSInteger direction = floor((step-1) / edgeStep);//the direction from last one to this one
             switch (direction) {
                 case 0:{
                     //south-west
@@ -154,7 +157,7 @@
         //get col and row
         
     }
-    NSLog(@"%d item has (%d, %d)", )
+    
     
     //col = indexPath.row % _itemsPerRow;
     CGFloat horiOffset = ((row % 2) != 0) ? 0 : adjWidth * 0.5f;
@@ -165,6 +168,7 @@
     attributes.center = CGPointMake((col * adjWidth) + (0.5f * adjWidth) + horiOffset,
                                     row * 0.75f * _hexagonSize.height + 0.5f * _hexagonSize.height + vertOffset);
     
+    NSLog(@"%dth item has index of (%d, %d) and coordinate of (%f, %f)", x, col, row, attributes.center.x, attributes.center.y);
     
     return attributes;
 }
@@ -238,10 +242,11 @@
 
 - (CGSize)collectionViewContentSize
 {
-    NSInteger row = _itemsPerRow == 0?0:_itemTotalCount / _itemsPerRow;
+    //NSInteger row = _itemsPerRow == 0?0:_itemTotalCount / _itemsPerRow;
 
     CGFloat contentWidth = _itemsPerRow * _hexagonSize.width;
-    CGFloat contentHeight = ( (row * 0.75f) * _hexagonSize.height) + (0.5f + _hexagonSize.height);
+    //CGFloat contentHeight = ( (row * 0.75f) * _hexagonSize.height) + (0.5f + _hexagonSize.height);
+    CGFloat contentHeight = _itemsPerRow * adjWidth;
     CGSize contentSize = CGSizeMake(contentWidth, contentHeight);
     
     return contentSize;
