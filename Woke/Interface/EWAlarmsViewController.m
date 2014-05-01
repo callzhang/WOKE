@@ -418,6 +418,12 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     if (sender.tag == kCollectionViewTag) {
+        
+        if([rootViewController.view viewWithTag:kMenuTag]){
+            //cancel if popout is present
+            return;
+        }
+        
         float margin = 0.2;
         float w = sender.contentSize.width + sender.contentInset.left + sender.contentInset.right;
         float h = sender.contentSize.height + sender.contentInset.top + sender.contentInset.bottom;
@@ -440,6 +446,8 @@
         if ([recoilTimer isValid]) {
             [recoilTimer invalidate];
         }
+        
+        [recoilTimer invalidate];
         recoilTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
     }
 }
@@ -606,7 +614,6 @@
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
-    [recoilTimer invalidate];
 
     //根据tag值判断是否创建meun
     if([rootViewController.view viewWithTag:kMenuTag]){
