@@ -176,7 +176,7 @@
     [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     _collectionView.backgroundColor = [UIColor clearColor];
     //UIImageView *bgImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Triangle_Tile"]];
-    _collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle_Tile"]];
+    _collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle Tile"]];
     
     //paging
     _scrollView.delegate = self;
@@ -587,7 +587,7 @@
     EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     
     [cell applyHexagonMask];
-    //[cell.loadingIndicator startAnimating];
+    [EWUIUtil applyShadow:cell];
     
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];

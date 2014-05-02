@@ -85,7 +85,7 @@
     //view.clipsToBounds = YES;
 }
 
-+ (UIBezierPath *)getHexagonPath{
++ (UIBezierPath *)getHexagonSoftPath{
     
     UIBezierPath* polygonPath = [UIBezierPath bezierPath];
     [polygonPath moveToPoint: CGPointMake(70.23, 17.06)];
@@ -106,6 +106,20 @@
     
     polygonPath.lineJoinStyle = kCGLineJoinRound;
     
+    
+    return polygonPath;
+}
+
++ (UIBezierPath *)getHexagonPath{
+    UIBezierPath* polygonPath = [UIBezierPath bezierPath];
+    [polygonPath moveToPoint: CGPointMake(40, -0)];
+    [polygonPath addLineToPoint: CGPointMake(5, 20)];
+    [polygonPath addLineToPoint: CGPointMake(5, 60)];
+    [polygonPath addLineToPoint: CGPointMake(40, 80)];
+    [polygonPath addLineToPoint: CGPointMake(75, 60)];
+    [polygonPath addLineToPoint: CGPointMake(75, 20)];
+    [polygonPath addLineToPoint: CGPointMake(40, -0)];
+    [polygonPath closePath];
     
     return polygonPath;
 }

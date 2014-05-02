@@ -134,7 +134,6 @@
              cell.distance.alpha = 1;
              cell.time.alpha = 1;
              cell.initial.alpha = 0;
-             [EWUIUtil applyShadow:cell];
              
              //location
              CGRect nrect1=[_profileButton frame];
