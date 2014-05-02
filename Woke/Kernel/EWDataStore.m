@@ -438,6 +438,10 @@ AmazonSNSClient *snsClient;
 //    if ([obj.managedObjectContext isEqual:[EWDataStore currentContext]]) {
 //        return obj;
 //    }
+    if (obj == nil) {
+        NSLog(@"Passed in nil managed object");
+        return nil;
+    }
     NSManagedObject * objForCurrentContext = [[EWDataStore sharedInstance].currentContext objectWithID:obj.objectID];
     NSAssert([[objForCurrentContext class] isEqual: [obj class]], @"Returned different class");
     return objForCurrentContext;

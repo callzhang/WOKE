@@ -141,8 +141,6 @@
 - (void)initData {
     //depend on whether passed in with task or person, the media will populaeed accordingly
     if (task) {
-        timer.text = [task.time date2timeShort];
-        self.AM.text = [task.time date2am];
         NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastmoddate" ascending:YES];
         medias = [[task.medias allObjects] mutableCopy];
         [medias sortUsingDescriptors:@[sort]];
@@ -164,6 +162,9 @@
 }
 
 - (void)initView {
+    
+    timer.text = [task.time date2timeShort];
+    self.AM.text = [task.time date2am];
     
     //table view
     tableView_.dataSource = self;
@@ -248,6 +249,8 @@
 
 -(void)presentPostWakeUpVC
 {
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
     //stop music
     [[AVManager sharedManager] stopAllPlaying];
     
@@ -263,13 +266,14 @@
         NSLog(@"Failed to save wakeup time for task");
     }];
     
-    //[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    //[self scrollViewDidScroll:self.tableView];//prevent header move
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self scrollViewDidScroll:self.tableView];//prevent header move
+    });
         
     EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:nil bundle:nil];
     postWakeUpVC.taskItem = task;
     
-    //[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     [self presentViewControllerWithBlurBackground:postWakeUpVC];
 }
 
@@ -330,7 +334,9 @@
         if ([[AVManager sharedManager].media isEqual:mi]) {
             //media is being played
             NSLog(@"Deleting current cell, play next");
-            [self playNextCell];
+            if ([tableView numberOfRowsInSection:0] > 1) {
+                [self playNextCell];
+            }
         }
         
         //remove from data source
@@ -339,26 +345,15 @@
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         
-        //remove from task relation
-        if (task) {
-            [task removeMediasObject:mi];
-            [EWMediaStore sharedInstance];
-            [[EWDataStore currentContext] saveOnSuccess:^{
-                [self initData];//refresh
-                [rootViewController.view showSuccessNotification:@"Deleted"];
-            } onFailure:^(NSError *error) {
-                [rootViewController.view showNotification:@"Failed to delete" WithStyle:hudStyleFailed];
-            }];
-        }else{
-            
-            mi.task = nil;
-            [[EWDataStore currentContext] saveOnSuccess:^{
-                [self initData];//refresh
-                [rootViewController.view showSuccessNotification:@"Deleted"];
-            } onFailure:^(NSError *error) {
-                [rootViewController.view showNotification:@"Failed" WithStyle:hudStyleFailed];
-            }];
-        }
+        //delete
+        [[EWMediaStore sharedInstance] deleteMedia:mi];
+        [[EWDataStore currentContext] saveOnSuccess:^{
+            [self initData];//refresh
+            [rootViewController.view showSuccessNotification:@"Deleted"];
+        } onFailure:^(NSError *error) {
+            [rootViewController.view showNotification:@"Failed to delete" WithStyle:hudStyleFailed];
+        }];
+        
         
         //update UI
         [self scrollViewDidScroll:self.tableView];
@@ -481,28 +476,21 @@
     
     NSInteger currentCellPlaying = [self seekCurrentCell];
 
-    EWMediaViewCell *cell;
+    __block EWMediaViewCell *cell;
     NSIndexPath *path;
-    currentCellPlaying++;
+    NSInteger nextCellIndex = currentCellPlaying + 1;
     
-    if (currentCellPlaying < medias.count){
+    if (nextCellIndex < medias.count){
         
         //get next cell
-        NSLog(@"Play next song (%ld)", (long)currentCellPlaying);
-        path = [NSIndexPath indexPathForRow:currentCellPlaying inSection:0];
-        cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
-        if (!cell) {
-            cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
-        }
+        NSLog(@"Play next song (%ld)", (long)nextCellIndex);
+        path = [NSIndexPath indexPathForRow:nextCellIndex inSection:0];
         
-        
-    }else if(currentCellPlaying >= medias.count){
+    }else if(nextCellIndex >= medias.count){
         if ((--loopCount)>0) {
             //play the first if loopCount > 0
-            NSLog(@"Looping, play (0)");
+            NSLog(@"Looping, %d loop left", loopCount);
             path = [NSIndexPath indexPathForRow:0 inSection:0];
-            cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
-            
             
         }else{
             NSLog(@"Loop finished, stop playing");
@@ -510,16 +498,26 @@
             cell = nil;
             [AVManager sharedManager].currentCell = nil;
             [AVManager sharedManager].media = nil;
-            next = NO;
+            path = nil;
+            return;
         }
         
     }else{
-        [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%lu)", (long)currentCellPlaying, (unsigned long)medias.count];
+        [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%lu)", (long)nextCellIndex, (unsigned long)medias.count];
     }
     
     //delay 3s
     NSLog(@"Delay 3s to play next cell");
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (!next || [AVManager sharedManager].player.playing) {
+            return;
+        }
+        //get cell
+        cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
+        if (!cell) {
+            NSLog(@"@@@ cell is not visible. %@", path);
+            cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
+        }
         if (cell) {
             [[AVManager sharedManager] playForCell:cell];
         }else{
@@ -529,7 +527,8 @@
     });
     
     //highlight
-    if (cell) {
+    if (path) {
+        cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
         [tableView_ selectRowAtIndexPath:path animated:YES scrollPosition:UITableViewScrollPositionMiddle];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [tableView_ deselectRowAtIndexPath:path animated:YES];

@@ -39,6 +39,9 @@
 //backend
 #import "StackMob.h"
 
+//definition
+#define kCenterViewDelay            10
+
 @interface EWAlarmsViewController (){
     //NSMutableArray *allPeople;
     NSMutableArray *cellChangeArray;
@@ -85,8 +88,9 @@
     [self initData];
     [self.fetchController performFetch:NULL];
     [self reloadAlarmPage];
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     [self centerView];
+    
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
 - (void)centerView{
@@ -176,7 +180,7 @@
     [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     _collectionView.backgroundColor = [UIColor clearColor];
     //UIImageView *bgImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Triangle_Tile"]];
-    _collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle Tile"]];
+    _collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle Tile Half"]];
     
     //paging
     _scrollView.delegate = self;
@@ -442,7 +446,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     if (sender.tag == kCollectionViewTag) {
 
-        
+        //update background paralex effects
         float margin = 0.2;
         float w = sender.contentSize.width + sender.contentInset.left + sender.contentInset.right;
         float h = sender.contentSize.height + sender.contentInset.top + sender.contentInset.bottom;
@@ -462,12 +466,9 @@
         frame.origin.y = y1;
         self.background.frame = frame;
         
-        if ([recoilTimer isValid]) {
-            [recoilTimer invalidate];
-        }
-        
+        //center collectionview
         [recoilTimer invalidate];
-        recoilTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
+        recoilTimer = [NSTimer scheduledTimerWithTimeInterval:kCenterViewDelay target:self selector:@selector(centerView) userInfo:nil repeats:NO];
     }
 }
 
@@ -586,8 +587,8 @@
     
     EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     
-    [cell applyHexagonMask];
-    [EWUIUtil applyShadow:cell];
+    //[cell applyHexagonMask];
+    //[EWUIUtil applyShadow:cell];
     
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];

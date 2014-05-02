@@ -78,7 +78,17 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [self initViews];
-    [self initData];
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self initData];
+        [collectionView reloadData];
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    });
 }
 
 #pragma mark -
@@ -247,6 +257,7 @@
 {
 
     [rootViewController dismissViewControllerAnimated:YES completion:^{
+        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
         [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
     }];
 }

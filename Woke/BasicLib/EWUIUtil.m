@@ -85,6 +85,15 @@
     //view.clipsToBounds = YES;
 }
 
++ (void)applyHexagonSoftMaskForView:(UIView *)view{
+    CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
+    UIBezierPath *hexagonPath = [EWUIUtil getHexagonSoftPath];
+    hexagonMask.path = hexagonPath.CGPath;
+    view.layer.mask  = hexagonMask;
+    view.layer.masksToBounds = YES;
+    //view.clipsToBounds = YES;
+}
+
 + (UIBezierPath *)getHexagonSoftPath{
     
     UIBezierPath* polygonPath = [UIBezierPath bezierPath];

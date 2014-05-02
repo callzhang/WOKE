@@ -272,6 +272,10 @@
 
 #pragma mark - UI event
 - (IBAction)sliderChanged:(UISlider *)sender {
+    if (![sender isEqual:progressBar]) {
+        NSLog(@"Sender is not current slider in AVManager, skip");
+        return;
+    }
     // Fast skip the music when user scroll the UISlider
     [player stop];
     [player setCurrentTime:progressBar.value];
@@ -314,7 +318,7 @@
             NSLog(@"Unable to start record");
         };
         if (![recorder record]){
-            NSLog(@"Error: %@ [%ld])" , [err localizedDescription], err.code);
+            NSLog(@"Error: %@ [%ld])" , [err localizedDescription], (long)err.code);
             NSLog(@"Unable to record");
             return nil;
         }
@@ -334,13 +338,12 @@
         progressBar.maximumValue = player.duration;
     }
     //timer stop first
-	if (updateTimer)
-		[updateTimer invalidate];
+    [updateTimer invalidate];
     //set up timer
 	if (p.playing){
 		//[lvlMeter_in setPlayer:p];
         //add new target
-        [progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
+        //[progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
 		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTime:) userInfo:p repeats:YES];
         
         //unhide
@@ -403,7 +406,7 @@
     if (!progressBar.isTouchInside) {
         player.volume = 1.0;
         progressBar.value = player.currentTime;
-        currentTime.text = [NSString stringWithFormat:@"%02ld\"", (long)player.currentTime % 60, nil];
+        //currentTime.text = [NSString stringWithFormat:@"%02ld\"", (long)player.currentTime % 60, nil];
     }
 }
 
@@ -426,13 +429,13 @@
 #pragma mark - AVAudioPlayer delegate method
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)p successfully:(BOOL)flag {
     NSString *success = flag?@"Success":@"Failed";
-    NSLog(@"Player finished %@ (%@)", p.url, success);
+    NSLog(@"Player finished (%@)", success);
     p.delegate = nil;
     p = nil;
-    [progressBar removeTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
+    //[progressBar removeTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
     [updateTimer invalidate];
     self.player.currentTime = 0.0;
-    //progressBar.value = 0.0;
+    progressBar.value = 0.0;
     //NSLog(@"Playback fnished");
     [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
 }
@@ -455,6 +458,8 @@
     //[qPlayer pause];
     [avplayer pause];
     [updateTimer invalidate];
+    //remove target action
+    
 }
 
 - (void)audioPlayerBeginInterruption:(AVAudioPlayer *)p{

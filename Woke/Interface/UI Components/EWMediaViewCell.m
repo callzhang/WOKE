@@ -52,7 +52,6 @@
     }
     //play this cell
     [AVManager.sharedManager playForCell:self];
-    [self.mediaBar play];
     
 }
 
@@ -83,7 +82,7 @@
 
 
 - (IBAction)profile:(id)sender{
-    EWPersonViewController *profileVC = [[EWPersonViewController alloc] initWithPerson:[EWDataStore user]];
+    EWPersonViewController *profileVC = [[EWPersonViewController alloc] initWithPerson:media.author];
     [self.controller presentViewControllerWithBlurBackground:profileVC];
     
 //    if([self.superview isKindOfClass:[UITableView class]]){
@@ -95,6 +94,7 @@
 //    }
 
 }
+
 
 //- (void)updateCell:(NSNotification *)notification{
 //    NSString *path = notification.userInfo[kAudioPlayerNextPath];

@@ -38,9 +38,9 @@
     
     //move to the cell first
     CGRect frame = cell.frame;
-    frame = CGRectInset(cell.frame, -50, -150);
+    frame = CGRectInset(cell.frame, -50, -80);
     CGRect intersection = CGRectIntersection(frame, collectionView.bounds);
-    float delay = 0.5;
+    float delay = 0.3;
     if (CGSizeEqualToSize(intersection.size, frame.size)) {
         //no need to move
         delay = 0;
