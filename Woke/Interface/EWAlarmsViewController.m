@@ -90,7 +90,10 @@
 }
 
 - (void)centerView{
-    
+    if([rootViewController.view viewWithTag:kMenuTag]){
+        //cancel if popout is present
+        return;
+    }
     [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
 
 }
@@ -193,6 +196,9 @@
     
     //load page
     [self reloadAlarmPage];
+    
+    //update background
+    [self scrollViewDidScroll:_collectionView];
 }
 
 
@@ -418,11 +424,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     if (sender.tag == kCollectionViewTag) {
-        
-        if([rootViewController.view viewWithTag:kMenuTag]){
-            //cancel if popout is present
-            return;
-        }
+
         
         float margin = 0.2;
         float w = sender.contentSize.width + sender.contentInset.left + sender.contentInset.right;

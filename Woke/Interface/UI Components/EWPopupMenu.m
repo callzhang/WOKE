@@ -27,18 +27,32 @@
     cell = c;
     collectionView = (UIScrollView *)cell.superview;
     self = [super initWithFrame: collectionView.bounds];
-    if(self){
-        
-        //add self
-        [collectionView addSubview:self];
-        collectionView.scrollEnabled=NO;
-        
-        
-        //move to the cell first
-        CGRect frame = CGRectInset(cell.frame, -50, -75);
+    if (!self) {
+        return nil;
+    }
+    
+    //add self
+    [collectionView addSubview:self];
+    collectionView.scrollEnabled=NO;
+    
+    
+    //move to the cell first
+    CGRect frame = cell.frame;
+    frame = CGRectInset(cell.frame, -50, -150);
+    CGRect intersection = CGRectIntersection(frame, collectionView.bounds);
+    float delay = 0.5;
+    if (CGSizeEqualToSize(intersection.size, frame.size)) {
+        //no need to move
+        delay = 0;
+    }else{
         [collectionView scrollRectToVisible:frame animated:YES];
+    }
+    //delay if scrollview moves
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        //[collectionView.delegate scrollViewDidScroll:collectionView];
         
         //alpha view
+        self.frame = collectionView.bounds;
         _alphaView = [[UIView alloc] initWithFrame: self.bounds];
         _alphaView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
         _alphaView.alpha = 0;
@@ -50,14 +64,6 @@
         cellFrame.origin.y = cellFrame.origin.y - collectionView.bounds.origin.y;
         cellCenter.x = cellFrame.origin.x + cellFrame.size.width/2;
         cellCenter.y = cellFrame.origin.y + cellFrame.size.height/2;
-        
-        
-        //move distance
-//        CGPoint collectionViewCenter = _personcellview.center;
-//        CGPoint viewCenter = collectionView.center;
-//        CGRect newBounds = collectionView.bounds;
-//        newBounds.origin.x += (collectionViewCenter.x - viewCenter.x);
-//        newBounds.origin.y += (collectionViewCenter.y - viewCenter.y);
         
         //create buttons
         _profileButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, kCallOutBtnSize, kCallOutBtnSize)];
@@ -113,67 +119,59 @@
         [collectionView bringSubviewToFront:cell];
         
         
-        //animation
-        //[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [UIView transitionWithView:cell
-                              duration:0.4
-                               options:(UIViewAnimationOptionTransitionFlipFromLeft | UIViewAnimationOptionAllowAnimatedContent)
-                            animations:
-             ^{
-                 //CGAffineTransform flip = CGAffineTransformMakeRotation(M_PI);
-                 CGAffineTransform scale = CGAffineTransformMakeScale(1.25, 1.25);
-                 //cell.white.alpha = 0.8;
-                 //CGAffineTransform trans = CGAffineTransformConcat(flip, scale);
-                 cell.transform = scale;
-                 
-                 cell.white.alpha = 0.8;
-                 cell.distance.alpha = 1;
-                 cell.time.alpha = 1;
-                 cell.initial.alpha = 0;
-                 [EWUIUtil applyShadow:cell];
-                 
-                 //location
-                 CGRect nrect1=[_profileButton frame];
-                 CGRect nrect2=[_buzzButton frame];
-                 CGRect nrect3=[_voiceButton frame];
-                 CGRect nrect4=[_closeButton frame];
-                 CGRect nameRect = name.frame;
-                 
-                 nrect1.origin.x -= kCollectionViewCellWidth / 2 + 15;
-                 nrect1.origin.y -= kCollectionViewCellHeight / 2 + 15;
-                 nrect2.origin.y -= kCollectionViewCellHeight / 2 + 40;
-                 nrect3.origin.x += kCollectionViewCellWidth / 2 + 15;
-                 nrect3.origin.y -= kCollectionViewCellHeight / 2 + 15;
-                 nameRect.origin.y += kCollectionViewCellHeight / 2 + 20;
-                 nrect4.origin.y = nameRect.origin.y;
-                 
-                 _alphaView.alpha = 1;
-                 _profileButton.alpha=1;
-                 _buzzButton.alpha=1;
-                 _voiceButton.alpha=1;
-                 _closeButton.alpha=1;
-                 name.alpha = 1;
-                 [EWUIUtil applyShadow:name];
-                 
-                 [_profileButton setFrame:nrect1];
-                 [_buzzButton setFrame:nrect2];
-                 [_voiceButton setFrame:nrect3];
-                 [_closeButton setFrame:nrect4];
-                 name.frame = nameRect;
-                 
-             } completion:^(BOOL finished){
-                 
-             }];
-        });
-        
-        
-        
-        
-        collectionView.scrollEnabled = NO;
-    }
-    //[UIView commitAnimations];
+        [UIView transitionWithView:cell
+                          duration:0.4
+                           options:(UIViewAnimationOptionTransitionFlipFromLeft | UIViewAnimationOptionAllowAnimatedContent)
+                        animations:
+         ^{
+             //CGAffineTransform flip = CGAffineTransformMakeRotation(M_PI);
+             CGAffineTransform scale = CGAffineTransformMakeScale(1.25, 1.25);
+             //cell.white.alpha = 0.8;
+             //CGAffineTransform trans = CGAffineTransformConcat(flip, scale);
+             cell.transform = scale;
+             
+             cell.white.alpha = 0.8;
+             cell.distance.alpha = 1;
+             cell.time.alpha = 1;
+             cell.initial.alpha = 0;
+             [EWUIUtil applyShadow:cell];
+             
+             //location
+             CGRect nrect1=[_profileButton frame];
+             CGRect nrect2=[_buzzButton frame];
+             CGRect nrect3=[_voiceButton frame];
+             CGRect nrect4=[_closeButton frame];
+             CGRect nameRect = name.frame;
+             
+             nrect1.origin.x -= kCollectionViewCellWidth / 2 + 15;
+             nrect1.origin.y -= kCollectionViewCellHeight / 2 + 15;
+             nrect2.origin.y -= kCollectionViewCellHeight / 2 + 40;
+             nrect3.origin.x += kCollectionViewCellWidth / 2 + 15;
+             nrect3.origin.y -= kCollectionViewCellHeight / 2 + 15;
+             nameRect.origin.y += kCollectionViewCellHeight / 2 + 20;
+             nrect4.origin.y = nameRect.origin.y;
+             
+             _alphaView.alpha = 1;
+             _profileButton.alpha=1;
+             _buzzButton.alpha=1;
+             _voiceButton.alpha=1;
+             _closeButton.alpha=1;
+             name.alpha = 1;
+             [EWUIUtil applyShadow:name];
+             
+             [_profileButton setFrame:nrect1];
+             [_buzzButton setFrame:nrect2];
+             [_voiceButton setFrame:nrect3];
+             [_closeButton setFrame:nrect4];
+             name.frame = nameRect;
+             
+         } completion:^(BOOL finished){
+             
+         }];
+    });
     
+    collectionView.scrollEnabled = NO;
+
     return self;
 }
 

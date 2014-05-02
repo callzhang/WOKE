@@ -38,7 +38,7 @@
     [super prepareLayout];
     
     //cell size
-    adjWidth = sqrtf(3)/2 * kCollectionViewCellHeight * CELL_SPACE_RATIO;
+    adjWidth = 140;
     _hexagonSize = CGSizeMake(kCollectionViewCellWidth * CELL_SPACE_RATIO, kCollectionViewCellHeight * CELL_SPACE_RATIO);
     self.itemSize = CGSizeMake(_hexagonSize.width, _hexagonSize.height);
     
