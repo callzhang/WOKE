@@ -8,6 +8,7 @@
             <connections>
                 <outlet property="actionBtn" destination="XNr-6h-T9H" id="7AR-jH-OIP"/>
                 <outlet property="addBtn" destination="o2s-kb-Yuz" id="lFr-8y-Ldv"/>
+                <outlet property="alarmloadingIndicator" destination="5xJ-P3-L3R" id="EWi-WU-zJH"/>
                 <outlet property="background" destination="MQd-sS-vOE" id="xWT-Zi-JZB"/>
                 <outlet property="collectionView" destination="J19-yS-M7x" id="sJr-bL-L4H"/>
                 <outlet property="pageView" destination="dxw-Xf-eo8" id="ETF-aX-van"/>
@@ -86,6 +87,10 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </button>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="5xJ-P3-L3R">
+                    <rect key="frame" x="142" y="501" width="37" height="37"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </activityIndicatorView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>

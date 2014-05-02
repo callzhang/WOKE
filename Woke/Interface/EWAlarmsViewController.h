@@ -37,6 +37,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
 @property (weak, nonatomic) IBOutlet UIImageView *background;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *alarmloadingIndicator;
 
 
 

@@ -189,11 +189,6 @@
     blurBar.barStyle = UIBarStyleBlack;
     [self.view insertSubview:blurBar aboveSubview:_collectionView];
     
-    
-    //add button
-    self.addBtn.hidden = (tasks.count == 0) ? NO:YES;
-    self.addBtn.backgroundColor = [UIColor clearColor];
-    
     //load page
     [self reloadAlarmPage];
     
@@ -247,9 +242,12 @@
 #pragma mark - ScrollView
 - (void)reloadAlarmPage {
     
-    
     if (alarms.count == 0 || tasks.count == 0) {
+        //empty task and alarm, stop
+        
         self.addBtn.hidden = NO;
+        self.addBtn.backgroundColor = [UIColor clearColor];
+        [self.alarmloadingIndicator stopAnimating];
         //remove all page
         for (EWAlarmPageView *view in _scrollView.subviews) {
             if ([view isKindOfClass:[EWAlarmPageView class]]) {
@@ -260,8 +258,28 @@
         [_alarmPages removeAllObjects];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
         _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
+        
         return;
+        
+        
+    }else if(alarms.count<7 || tasks.count < 7* nWeeksToScheduleTask){
+        //task or alarm incomplete, schedule
+        
+        self.addBtn.hidden = YES;
+        [self.alarmloadingIndicator startAnimating];
+        [[EWAlarmManager sharedInstance] scheduleAlarm];
+        [[EWTaskStore sharedInstance] scheduleTasks];
+        
+        return;
+    }else{
+        //start loading alarm
+        
+        self.addBtn.hidden = YES;
+        [self.alarmloadingIndicator stopAnimating];
     }
+    
+    
+    
     
     _pageView.numberOfPages = tasks.count;
     //determine if scroll need flash
@@ -271,7 +289,6 @@
         flash = YES;
     }
     
-    self.addBtn.hidden = YES;
     [self loadScrollViewWithPage:[self currentPage] - 1];
     [self loadScrollViewWithPage:[self currentPage]];
     [self loadScrollViewWithPage:[self currentPage] + 1];

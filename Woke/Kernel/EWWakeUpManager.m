@@ -195,12 +195,14 @@
     NSLog(@"Start handle timer event");
     //next ABSOLUTE (not VALID) task
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
-    if (task.state == NO) {
-        NSLog(@"Task is OFF, skip today's alarm");
-        return;
-    }
+    
     if (!task) {
         NSLog(@"%s No task found for next task, abord", __func__);
+        return;
+    }
+    
+    if (task.state == NO) {
+        NSLog(@"Task is OFF, skip today's alarm");
         return;
     }
     
@@ -237,6 +239,11 @@
         [task addMediasObject:media];
         [[EWDataStore currentContext] saveAndWait:NULL];
     }
+    
+    //save
+    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+        NSLog(@"Failed to save new media to task.");
+    }];
     
     //cancel local alarm
     [[EWTaskStore sharedInstance] cancelNotificationForTask:task];

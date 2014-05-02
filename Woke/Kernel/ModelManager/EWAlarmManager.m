@@ -176,7 +176,7 @@
         //see if that day has alarm already
         if (![newAlarms[i] isEqual:@NO]){
             //remove duplicacy
-            NSLog(@"@@@ Duplicated alarm on %@ found. Deleted!", a.time.weekday);
+            NSLog(@"@@@ Duplicated alarm found. Deleted! %@", a.time.date2detailDateString);
             [self removeAlarm:a];
             hasChange = YES;
             continue;

@@ -277,6 +277,7 @@
         [[EWDataStore currentContext] saveOnSuccess:^{
             //notification of new task (to interface)
             dispatch_async(dispatch_get_main_queue(), ^{
+                NSLog(@"Task updated, sending kTaskNewNotification");
                 [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
             });
         } onFailure:^(NSError *error) {
@@ -465,12 +466,13 @@
 }
 
 - (void)alarmRemoved:(NSNotification *)notif{
-    NSLog(@"Delete task due to alarm deleted");
     //NSArray *tasks = notif.userInfo[@"tasks"];
     NSArray *alarms = notif.userInfo[@"alarms"];
     
     for (EWAlarmItem *a in alarms) {
         for (EWTaskItem *t in a.tasks) {
+            
+            NSLog(@"Delete task on %@ due to alarm deleted", t.time.weekday);
             [[EWDataStore currentContext] deleteObject:t];
         }
         
