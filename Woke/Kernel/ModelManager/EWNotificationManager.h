@@ -32,4 +32,6 @@
  */
 + (void)clickedNotification:(EWNotification *)notification;
 
+//New
++ (EWNotification *)newNotification;
 @end

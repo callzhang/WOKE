@@ -33,7 +33,7 @@
     
     //add self
     [collectionView addSubview:self];
-    collectionView.scrollEnabled=NO;
+    collectionView.scrollEnabled = NO;
     
     
     //move to the cell first
@@ -54,8 +54,9 @@
         //alpha view
         self.frame = collectionView.bounds;
         _alphaView = [[UIView alloc] initWithFrame: self.bounds];
-        _alphaView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+        _alphaView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.7];
         _alphaView.alpha = 0;
+        //[(UIToolbar *)_alphaView setBarStyle:UIBarStyleBlack];
         [self addSubview:_alphaView];
         
         //cell
@@ -94,7 +95,6 @@
         name = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kCollectionViewCellWidth, 30)];
         name.center = cellCenter;
         name.text = cell.name;
-        NSLog(@"%@", name.text);
         [self addSubview:name];
         name.adjustsFontSizeToFitWidth = YES;
         name.textColor = [UIColor whiteColor];
@@ -168,8 +168,6 @@
              
          }];
     });
-    
-    collectionView.scrollEnabled = NO;
 
     return self;
 }

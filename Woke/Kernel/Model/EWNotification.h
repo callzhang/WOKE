@@ -24,5 +24,6 @@
 @property (nonatomic, retain) NSString * userInfoString;
 @property (nonatomic, retain) EWPerson *owner;
 @property (nonatomic, retain) NSString * sender;
+@property (nonatomic) int64_t importance;
 
 @end

@@ -23,6 +23,7 @@
 @dynamic userInfoString;
 @dynamic owner;
 @dynamic sender;
+@dynamic importance;
 
 - (NSDictionary *)userInfo{
     if (self.userInfoString) {

@@ -466,14 +466,18 @@
 }
 
 - (void)alarmRemoved:(NSNotification *)notif{
-    //NSArray *tasks = notif.userInfo[@"tasks"];
-    NSArray *alarms = notif.userInfo[@"alarms"];
+    NSArray *alarms;
+    if (![notif.object isKindOfClass:[NSArray class]]) {
+        alarms = @[notif.userInfo];
+    }else{
+        alarms = (NSArray *)notif.object;
+    }
     
     for (EWAlarmItem *a in alarms) {
         for (EWTaskItem *t in a.tasks) {
             
             NSLog(@"Delete task on %@ due to alarm deleted", t.time.weekday);
-            [[EWDataStore currentContext] deleteObject:t];
+            [self removeTask:t];
         }
         
     }
@@ -502,7 +506,7 @@
     } onFailure:^(NSError *error) {
         [NSException raise:@"Task deletion error" format:@"Reason: %@", error.description];
     }];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:self userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:task userInfo:@{kPushTaskKey: task}];
 }
 
 - (void)deleteAllTasks{

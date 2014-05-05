@@ -40,8 +40,8 @@
 }
 
 - (void)applyHexagonMask{
-    //[EWUIUtil applyHexagonMaskForView:self.contentView];
-    [EWUIUtil applyHexagonSoftMaskForView:self.contentView];
+    [EWUIUtil applyHexagonMaskForView:self.contentView];
+    //[EWUIUtil applyHexagonSoftMaskForView:self.contentView];
 }
 
 

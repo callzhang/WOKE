@@ -35,6 +35,7 @@
 #import "EWCollectionPersonCell.h"
 #import "EWSettingsViewController.h"
 #import "EWRecordingViewController.h"
+#import "EWNotificationViewController.h"
 
 //backend
 #import "StackMob.h"
@@ -371,6 +372,11 @@
     
 }
 
+- (IBAction)showNotification:(id)sender {
+    EWNotificationViewController *controller = [[EWNotificationViewController alloc] initWithNibName:nil bundle:nil];
+    [self presentViewControllerWithBlurBackground:controller];
+}
+
 
 - (IBAction)scheduleInitialAlarms:(id)sender {
     [self scheduleAlarm];
@@ -460,7 +466,7 @@
         float spanY = frame.size.height - self.view.frame.size.height;
         
         float x1 = percentX * spanX * (1-2*margin) - spanX * margin;
-        float y1 = percentY * spanY * (1-2*margin) - spanY * margin;
+        float y1 = percentY * spanY * (1-4*margin) - spanY * margin;
         
         frame.origin.x = x1;
         frame.origin.y = y1;

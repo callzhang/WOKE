@@ -28,6 +28,8 @@
 #import "EWTaskItem.h"
 #import "EWUserManagement.h"
 #import "EWSocialGraphManager.h"
+#import "EWNotification.h"
+#import "EWNotificationManager.h"
 
 @interface TestViewController ()
 
@@ -70,7 +72,8 @@
                @"Test buzz",
                @"Test Alarm Timer",
                @"Add some media",
-               @"Update facebook friends"];
+               @"Update facebook friends",
+               @"Notification Center"];
     
     subTitles = @[@"Pop up the WakeUp View with all medias of mine",
                   @"Test shake",
@@ -80,7 +83,8 @@
                   @"Send self a buzz",
                   @"Test alarm timer event. Cloase app after this!",
                   @"Add some medias to next task, takes 20s.",
-                  @"Test for facebook friends list and store"];
+                  @"Test for facebook friends list and store",
+                  @"Create some notifications"];
 }
 
 - (void)initView {
@@ -180,8 +184,8 @@
                 [rootViewController presentViewControllerWithBlurBackground:controller];
             }];
             
-        }
             break;
+        }
         case 1: {
             
             TestShakeViewController *controller = [[TestShakeViewController alloc] init];
@@ -192,24 +196,25 @@
                 
             }];
             
-        }
             break;
+        }
         case 2:{
             TestSocailSDKViewController *controller = [[TestSocailSDKViewController alloc] init];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
             controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
             [self presentViewController:navigationController animated:YES completion:^{
             }];
-
-        }
+            
             break;
+        }
         case 3:{
+            
             EWLocalNotificationViewController *controller = [[EWLocalNotificationViewController alloc] init];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
             controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
             [self presentViewController:navigationController animated:YES completion:NULL];
-        }
             break;
+        }
         case 4:{
             [EWPersonStore.sharedInstance purgeUserData];
             [self dismissViewControllerAnimated:YES completion:NULL];
@@ -224,36 +229,37 @@
             }];
             [self presentViewController:controller animated:YES completion:NULL];
              */
-        }
             break;
+        }
             
         case 5:{
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             //send to self a push
-            
             //Delay execution of my block for 10 seconds.
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 [EWServer buzz:@[currentUser]];
             });
             
             //dismiss self to present popup view
             [self dismissViewControllerAnimated:YES completion:NULL];
-        }
             break;
+        }
             
         case 6:{
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             //alarm timer in 10s
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [EWWakeUpManager handleAlarmTimerEvent];
             });
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
             [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
                 [rootViewController.view showSuccessNotification:@"Exit app now!"];
             }];
-        }
             break;
+        }
         
         case 7:{
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            
             EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:[EWDataStore user]];
             NSInteger m = 6 - task.medias.count;
             for (unsigned i=0; i< m; i++) {
@@ -279,24 +285,68 @@
             
             
             EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:[EWDataStore objectForCurrentContext:task]];
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
             [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
-                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                
                 [rootViewController presentViewControllerWithBlurBackground:controller];
             }];
-        }
             break;
+        }
             
         case 8:{
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
             graph.facebookUpdated = nil;
             [EWUserManagement getFacebookFriends];
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+            break;
         }
             
-            break;
             
+        case 9:{
+            
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            //create notifications
+            EWNotification *notice_friending = [EWNotificationManager newNotification];
+            EWNotification *notice_friended = [EWNotificationManager newNotification];
+            EWNotification *notice_newMedia = [EWNotificationManager newNotification];
+            EWNotification *notice_system = [EWNotificationManager newNotification];
+            //1
+            notice_friending.type = kNotificationTypeFriendRequest;
+            notice_friending.owner = currentUser;
+            NSArray *people = [[EWPersonStore sharedInstance] everyone];
+            NSUInteger k = arc4random_uniform(people.count);
+            EWPerson *user = people[k];
+            notice_friending.sender = user.username;
+            //2
+            notice_friended.type = kNotificationTypeFriendAccepted;
+            notice_friended.owner = currentUser;
+            k = arc4random_uniform(people.count);
+            EWPerson *user2 = people[k];
+            notice_friended.sender = user2.username;
+            //3
+            notice_newMedia.type = kNotificationTypeNextTaskHasMedia;
+            notice_friended.owner = currentUser;
+            k = arc4random_uniform(people.count);
+            EWPerson *user3 = people[k];
+            notice_newMedia.sender = user3.username;
+            //4
+            notice_system.type = kNotificationTypeNotice;
+            notice_friended.owner = currentUser;
+            NSDictionary *dic = @{@"title": @"Test system notice", @"content": @"This is a test notice. An alert show pop up if you tap me.", @"link": @"WokeAlarm.com"};
+            notice_system.userInfo = dic;
+            //save
+            [[EWDataStore currentContext] saveOnSuccess:^{
+                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+            } onFailure:^(NSError *error) {
+                NSLog(@"Error in creating notification: %@", error.description);
+            }];
+        }
         default:
             break;
     }
+    
     
 }
 

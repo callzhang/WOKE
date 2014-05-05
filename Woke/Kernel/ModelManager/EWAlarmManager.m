@@ -152,7 +152,8 @@
     
     //check if need to check
     if (alarms.count==0) {
-        if ([EWTaskStore myTasks].count == 0) {
+        if ([EWTaskStore myTasks].count == 0 && !self.alarmNeedToSetup) {
+            //initial state task==0, need another indicator to break the lock
             NSLog(@"Skip check alarm due to 0 tasks exists");
             return nil;
         }
@@ -270,7 +271,7 @@
 
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"alarm": alarm}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:@{@"alarm": alarm}];
     [[EWDataStore currentContext] deleteObject:alarm];
     for (EWTaskItem *t in alarm.tasks) {
         [[EWDataStore currentContext] deleteObject:t];
@@ -286,7 +287,7 @@
     NSArray *alarms = [self alarmsForUser:[EWDataStore user]];
     
     //notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:@{@"alarm":alarms}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarms userInfo:@{@"alarms": alarms}];
     
     //delete
     for (EWAlarmItem *alarm in alarms) {

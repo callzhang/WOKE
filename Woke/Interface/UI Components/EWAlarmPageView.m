@@ -66,7 +66,7 @@
 
 #pragma mark - UI actions
 - (IBAction)editAlarm:(id)sender {
-    NSLog(@"Edit task: %@", task.time);
+    NSLog(@"Edit task: %@", task.time.date2detailDateString);
     [self.delegate scheduleAlarm];
 }
 
@@ -179,12 +179,12 @@
     if (!sender) {
         sender = notification.userInfo[kPushTaskKey];
     }
-    if ([sender isKindOfClass:[EWTaskItem class]]) {
-        EWTaskItem *t = (EWTaskItem *)sender;
-        if ([t.ewtaskitem_id isEqualToString:task.ewtaskitem_id]) {
-            [self stopObserveTask];
-        }
+    NSAssert([sender isKindOfClass:[EWTaskItem class]], @"Target is not task item, check code!");
+    EWTaskItem *t = (EWTaskItem *)sender;
+    if ([t.ewtaskitem_id isEqualToString:task.ewtaskitem_id]) {
+        [self stopObserveTask];
     }
+    
 }
 
 #pragma mark - KVO
@@ -198,8 +198,12 @@
     if ([object isKindOfClass:[EWTaskItem class]]) {
         //TODO: dispatch different tasks for each updates
         if ([keyPath isEqualToString:@"state"]) {
-            
-            self.alarmState.selected = [(NSNumber *)change[NSKeyValueChangeNewKey] boolValue];
+            NSNumber *newState = change[NSKeyValueChangeNewKey];
+            if ([newState isKindOfClass:[NSNull class]]) {
+                NSLog(@"@@@ Something was not setting up right! The task removal notification is not dispatched to alarm page view");
+                [self stopObserveTask];
+            }
+            self.alarmState.selected = [newState boolValue];
             if (self.alarmState.selected) {
                 [self.alarmState setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
             }else{
@@ -235,11 +239,17 @@
 }
 
 - (void)stopObserveTask{
-    [task removeObserver:self forKeyPath:@"state"];
-    [task removeObserver:self forKeyPath:@"medias"];
-    [task removeObserver:self forKeyPath:@"time"];
-    [task removeObserver:self forKeyPath:@"statement"];
-    NSLog(@"Removed KVO to task (%@)", task.time.weekday);
+    @try {
+        [task removeObserver:self forKeyPath:@"state"];
+        [task removeObserver:self forKeyPath:@"medias"];
+        [task removeObserver:self forKeyPath:@"time"];
+        [task removeObserver:self forKeyPath:@"statement"];
+        NSLog(@"Removed KVO to task (%@)", task.time.weekday);
+    }
+    @catch (NSException *__unused exception) {
+        
+    }
+    
 }
 
 @end

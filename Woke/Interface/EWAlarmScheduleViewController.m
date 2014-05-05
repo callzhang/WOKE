@@ -32,12 +32,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)viewDidLoad{
     //tableview
-    CGRect tableFrame = self.view.frame;
-    tableFrame.origin.y += MADEL_HEADER_HEIGHT;
-    tableFrame.size.height -= MADEL_HEADER_HEIGHT;
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [UIColor clearColor];
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.contentInset = UIEdgeInsetsMake(45, 0, 200, 0);
     [self.view addSubview:_tableView];

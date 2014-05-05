@@ -17,11 +17,11 @@
 #import "EWPersonViewController.h"
 #import "EWAppDelegate.h"
 
-#define kNextTaskHasMediaAlert      1001
-#define kFriendRequestAlert         1002
-#define kFriendAcceptedAlert        1003
-#define kTimerEventAlert            1004
-#define kSystemNoticeAlert          1005
+#define kNextTaskHasMediaAlert      1011
+#define kFriendRequestAlert         1012
+#define kFriendAcceptedAlert        1013
+#define kTimerEventAlert            1014
+#define kSystemNoticeAlert          1015
 
 @interface EWNotificationManager()
 @property (nonatomic, weak) EWPerson *person;
@@ -42,7 +42,7 @@
 }
 
 + (NSArray *)myNotifications{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"completed == nil"];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"completed == nil && owner == %@", currentUser];
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWNotification"];
     NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"lastmoddate" ascending:NO];
     NSSortDescriptor *sortImportance = [NSSortDescriptor sortDescriptorWithKey:@"importance" ascending:NO];
@@ -50,6 +50,14 @@
     request.sortDescriptors = @[sortImportance, sortDate];
     NSArray *notifications = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
     return notifications;
+}
+
++ (EWNotification *)newNotification{
+    EWNotification *notice = [NSEntityDescription insertNewObjectForEntityForName:@"EWNotification" inManagedObjectContext:[EWDataStore currentContext]];
+    [notice assignObjectId];
+    notice.sender = currentUser.username;
+    notice.importance = 0;
+    return notice;
 }
 
 
@@ -95,7 +103,10 @@
         
     } else if ([notification.type isEqualToString:kNotificationTypeNotice]) {
         
-        //TODO
+        //UserInfo
+        //->Title
+        //->Content
+        //->Link
         
     }
 }
