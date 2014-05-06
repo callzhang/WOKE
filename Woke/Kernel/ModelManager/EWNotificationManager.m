@@ -16,6 +16,7 @@
 #import "EWTaskStore.h"
 #import "EWPersonViewController.h"
 #import "EWAppDelegate.h"
+#import "EWWakeUpManager.h"
 
 #define kNextTaskHasMediaAlert      1011
 #define kFriendRequestAlert         1012
@@ -73,7 +74,7 @@
         
     } else if ([notification.type isEqualToString:kNotificationTypeFriendRequest]) {
         
-        NSString *personID = userInfo[@"requesterID"];
+        NSString *personID = notification.sender;
         EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:personID];
         [EWNotificationManager sharedInstance].person = person;
         
@@ -87,7 +88,7 @@
         
     } else if ([notification.type isEqualToString:kNotificationTypeFriendAccepted]) {
         
-        NSString *personID = userInfo[@"personID"];
+        NSString *personID = notification.sender;
         EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:personID];
         
         //alert
@@ -99,7 +100,13 @@
         
     } else if ([notification.type isEqualToString:kNotificationTypeTimer]) {
         
-        //do nothing when received
+        NSString *taskID = userInfo[kPushTaskKey];
+        if (!taskID) return;
+        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        if ([[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime && [task.time isEarlierThan:[NSDate date]]) {
+            
+            [EWWakeUpManager handleAlarmTimerEvent];
+        }
         
     } else if ([notification.type isEqualToString:kNotificationTypeNotice]) {
         
@@ -160,9 +167,10 @@
                 break;
             
             case 1:{//view profile
-                EWPersonViewController *controller = [[EWPersonViewController alloc] init];
-                controller.person = self.person;
-                [rootViewController presentViewControllerWithBlurBackground:controller];
+                [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
+                    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:self.person];
+                    [rootViewController presentViewControllerWithBlurBackground:controller];
+                }];
             }
                 break;
                 

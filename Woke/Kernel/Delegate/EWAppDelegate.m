@@ -124,8 +124,8 @@ UIViewController *rootViewController;
     [self backgroundTaskKeepAlive];
     
     // keep active
-    if ([myTimer isValid]) [myTimer invalidate];
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerCheckInterval target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
+//    if ([myTimer isValid]) [myTimer invalidate];
+//    myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerCheckInterval target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
 
     
 #endif
