@@ -15,6 +15,7 @@
 #import "NSDate+Extend.h"
 #import "UIViewController+Blur.h"
 #import "EWServer.h"
+#import "NGAParallaxMotion.h"
 
 // Manager
 #import "EWAlarmManager.h"
@@ -47,6 +48,7 @@
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
     NSTimer *recoilTimer;
+    UICollectionViewCell *cell0;
 }
 
 @property (nonatomic, retain) NSFetchedResultsController *fetchController;
@@ -188,7 +190,7 @@
     _pageView.currentPage = 0;
     _pageView.hidden = YES;
     
-    //add blur
+    //add blur bar
     UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
     blurBar.barStyle = UIBarStyleBlack;
     [self.view insertSubview:blurBar aboveSubview:_collectionView];
@@ -196,8 +198,12 @@
     //load page
     [self reloadAlarmPage];
     
-    //update background
-    [self scrollViewDidScroll:_collectionView];
+    //parallax
+    self.background.parallaxIntensity = -50;
+    self.collectionView.parallaxIntensity = 10;
+    
+    //indicator center
+    self.youIndicator.layer.anchorPoint = CGPointMake(0.5, 0.5);
 }
 
 
@@ -399,7 +405,9 @@
 #endif
 }
 
-
+- (IBAction)youBtn:(id)sender {
+    [self centerView];
+}
 
 
 
@@ -446,29 +454,82 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     if (sender.tag == kCollectionViewTag) {
 
-        //update background paralex effects
-        float margin = 0.2;
-        float w = sender.contentSize.width + sender.contentInset.left + sender.contentInset.right;
-        float h = sender.contentSize.height + sender.contentInset.top + sender.contentInset.bottom;
-        float x = -(sender.bounds.origin.x + sender.contentInset.left);
-        float y = -(sender.bounds.origin.y + sender.contentInset.top);
-        float percentX = x/(w - self.view.frame.size.width);
-        float percentY = y/(h - self.view.frame.size.height);
+//        //update background paralex effects
+//        float margin = 0.2;
+//        float w = sender.contentSize.width + sender.contentInset.left + sender.contentInset.right;
+//        float h = sender.contentSize.height + sender.contentInset.top + sender.contentInset.bottom;
+//        float x = -(sender.bounds.origin.x + sender.contentInset.left);
+//        float y = -(sender.bounds.origin.y + sender.contentInset.top);
+//        float percentX = x/(w - self.view.frame.size.width);
+//        float percentY = y/(h - self.view.frame.size.height);
+//        
+//        CGRect frame = self.background.frame;
+//        float spanX = frame.size.width - self.view.frame.size.width;
+//        float spanY = frame.size.height - self.view.frame.size.height;
+//        
+//        float x1 = percentX * spanX * (1-2*margin) - spanX * margin;
+//        float y1 = percentY * spanY * (1-2*margin) - spanY * margin;
+//        
+//        frame.origin.x = x1;
+//        frame.origin.y = y1;
+//        self.background.frame = frame;
         
-        CGRect frame = self.background.frame;
-        float spanX = frame.size.width - self.view.frame.size.width;
-        float spanY = frame.size.height - self.view.frame.size.height;
+        //indicator
+        static float const maxX = 120;
+        static float const maxY = 190;
         
-        float x1 = percentX * spanX * (1-2*margin) - spanX * margin;
-        float y1 = percentY * spanY * (1-2*margin) - spanY * margin;
+        CGPoint frameCenter = _collectionView.center;
+        if (!cell0) {
+            cell0 = [self collectionView:_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
+        }
+        CGPoint center = [_collectionView convertPoint:cell0.center toView:self.view];
         
-        frame.origin.x = x1;
-        frame.origin.y = y1;
-        self.background.frame = frame;
+        float X = center.x - frameCenter.x;
+        float Y = center.y - frameCenter.y;
+        if (fabsf(X)<160 && fabsf(Y)<250) {
+            //in the screen
+            if (!self.youIndicator.hidden) {
+                [UIView animateWithDuration:0.3 animations:^{
+                    self.youIndicator.alpha = 0;
+                } completion:^(BOOL finished) {
+                    self.youIndicator.hidden = YES;
+                }];
+            }
+        }else{
+            //out of screen
+            float x1 = X;
+            float y1 = Y;
+            if (X > maxX) {
+                x1 = maxX;
+            }else if (X < -maxX){
+                x1 = -maxX;
+            }
+            if (Y > maxY) {
+                y1 = maxY;
+            } else if(Y<-maxY) {
+                y1 = -maxY;
+            }
+            float degree = atan2f(Y, X) + M_PI_4 + M_PI_2;
+            
+            if (self.youIndicator.hidden) {
+                self.youIndicator.hidden = NO;
+                [UIView transitionWithView:self.youIndicator duration:0.3 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                    self.youIndicator.transform = CGAffineTransformMakeTranslation(x1, y1);
+                    self.youBtn.transform = CGAffineTransformMakeRotation(degree);
+                    self.youIndicator.alpha = 1;
+                } completion:^(BOOL finished) {
+                    //
+                }];
+            }else{
+                self.youIndicator.transform = CGAffineTransformMakeTranslation(x1, y1);
+                self.youBtn.transform = CGAffineTransformMakeRotation(degree);
+            }
+        }
+                                       
         
         //center collectionview
-        [recoilTimer invalidate];
-        recoilTimer = [NSTimer scheduledTimerWithTimeInterval:kCenterViewDelay target:self selector:@selector(centerView) userInfo:nil repeats:NO];
+        //[recoilTimer invalidate];
+        //recoilTimer = [NSTimer scheduledTimerWithTimeInterval:kCenterViewDelay target:self selector:@selector(centerView) userInfo:nil repeats:NO];
     }
 }
 
@@ -796,6 +857,7 @@
     
     return shouldReload;
 }
+
 
 @end
 

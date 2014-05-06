@@ -43,6 +43,7 @@
 		56FEA59717A5766B00FC2938 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA59417A5766B00FC2938 /* main.m */; };
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
+		9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */; };
 		9B8D3EE418EF3DA2009B8D6C /* libWeiboSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B8D3EE318EF3DA2009B8D6C /* libWeiboSDK.a */; };
 		9BBA5F9018EB3ED500C07809 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8518EB3ED500C07809 /* NSObject+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9BBA5F9118EB3ED500C07809 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8718EB3ED500C07809 /* NSString+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -91,8 +92,6 @@
 		9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */; };
 		9BF2980B1912F7A0008C136E /* EWFacebookFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297F31912F7A0008C136E /* EWFacebookFriendListViewController.m */; };
 		9BF2980E1912F7A0008C136E /* EWWeiboFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */; };
-		AB07402018125DBE00AAFC90 /* tennisGroup.png in Resources */ = {isa = PBXBuildFile; fileRef = AB07401F18125DBE00AAFC90 /* tennisGroup.png */; };
-		AB07402218126EC200AAFC90 /* workGroup.png in Resources */ = {isa = PBXBuildFile; fileRef = AB07402118126EC200AAFC90 /* workGroup.png */; };
 		AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */; };
 		AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50918FE509C00CF5AB1 /* EWSocialGraphManager.m */; };
 		AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C831861818B008C1F15 /* EWAlarmItem.m */; };
@@ -241,6 +240,8 @@
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
 		9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadMgr.h; path = Download/EWDownloadMgr.h; sourceTree = "<group>"; };
 		9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadMgr.m; path = Download/EWDownloadMgr.m; sourceTree = "<group>"; };
+		9B8A6A9D191887F400591E8A /* NGAParallaxMotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGAParallaxMotion.h; sourceTree = "<group>"; };
+		9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NGAParallaxMotion.m; sourceTree = "<group>"; };
 		9B8D3EE318EF3DA2009B8D6C /* libWeiboSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libWeiboSDK.a; path = Pods/Weibo/libWeiboSDK/libWeiboSDK.a; sourceTree = "<group>"; };
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9BBA5F8318EB3ED500C07809 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
@@ -325,8 +326,6 @@
 		9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeiboFriendListViewController.m; sourceTree = "<group>"; };
 		9BF7A7B918CA27D7002EA7AC /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSRuntime.framework; sourceTree = "<group>"; };
 		9BF7A7BB18CA27E5002EA7AC /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSSNS.framework; sourceTree = "<group>"; };
-		AB07401F18125DBE00AAFC90 /* tennisGroup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tennisGroup.png; sourceTree = "<group>"; };
-		AB07402118126EC200AAFC90 /* workGroup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = workGroup.png; sourceTree = "<group>"; };
 		AB0DF50518FE504200CF5AB1 /* EWSocialGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialGraph.h; sourceTree = "<group>"; };
 		AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialGraph.m; sourceTree = "<group>"; };
 		AB0DF50818FE509C00CF5AB1 /* EWSocialGraphManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialGraphManager.h; sourceTree = "<group>"; };
@@ -721,6 +720,7 @@
 		56FEA57417A5763200FC2938 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				9B8A6A9C191887F400591E8A /* NGAParallaxMotion */,
 				ABF3FB6D190A05E80017D2EF /* SCSiriWaveformView */,
 				9BBA5F8218EB3ED500C07809 /* JSON */,
 				ABD34DAA185C054C008CD2B8 /* FTWCache */,
@@ -765,6 +765,15 @@
 				56FEA57E17A5763200FC2938 /* EWAppDelegate.m */,
 			);
 			path = Delegate;
+			sourceTree = "<group>";
+		};
+		9B8A6A9C191887F400591E8A /* NGAParallaxMotion */ = {
+			isa = PBXGroup;
+			children = (
+				9B8A6A9D191887F400591E8A /* NGAParallaxMotion.h */,
+				9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */,
+			);
+			path = NGAParallaxMotion;
 			sourceTree = "<group>";
 		};
 		9BBA5F8218EB3ED500C07809 /* JSON */ = {
@@ -910,8 +919,6 @@
 				ABF3FB521908B72F0017D2EF /* 13.jpg */,
 				ABF3FB531908B72F0017D2EF /* 14.jpg */,
 				ABF3FB541908B72F0017D2EF /* 15.jpg */,
-				AB07401F18125DBE00AAFC90 /* tennisGroup.png */,
-				AB07402118126EC200AAFC90 /* workGroup.png */,
 			);
 			name = "Profile picture";
 			sourceTree = "<group>";
@@ -1078,7 +1085,6 @@
 				561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */,
 				ABF3FB611908B72F0017D2EF /* 12.jpg in Resources */,
 				9BF297B71912F713008C136E /* EWLogInViewController.xib in Resources */,
-				AB07402218126EC200AAFC90 /* workGroup.png in Resources */,
 				ABF3FB551908B72F0017D2EF /* 0.jpg in Resources */,
 				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
 				ABF3FB5B1908B72F0017D2EF /* 6.jpg in Resources */,
@@ -1121,7 +1127,6 @@
 				ABFCB2E2186E957100355781 /* Tropical Delight.caf in Resources */,
 				ABEEA96917E027E90035DF4A /* vm6.m4a in Resources */,
 				AB4B837C18D2C5470087E654 /* new.caf in Resources */,
-				AB07402018125DBE00AAFC90 /* tennisGroup.png in Resources */,
 				9BF297C11912F713008C136E /* EWWakeUpView.xib in Resources */,
 				ABFCB2E4186E957100355781 /* Drive.caf in Resources */,
 				ABF3FB5E1908B72F0017D2EF /* 9.jpg in Resources */,
@@ -1269,6 +1274,7 @@
 				AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */,
 				9BF297C01912F713008C136E /* EWSettingsViewController.m in Sources */,
 				AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */,
+				9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1394,7 +1400,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "0F831D19-4220-4E3C-B983-2B66824827BB";
+				PROVISIONING_PROFILE = "3CB95FF7-3C90-4D50-8C37-87B0F6397529";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1435,7 +1441,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "3D373CB9-9370-4D61-8DCD-90084FD950CF";
+				PROVISIONING_PROFILE = "4C564D28-D32E-4D9B-A0D5-261DB8E5878D";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};

@@ -38,6 +38,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
 @property (weak, nonatomic) IBOutlet UIImageView *background;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *alarmloadingIndicator;
+@property (weak, nonatomic) IBOutlet UIView *youIndicator;
+@property (weak, nonatomic) IBOutlet UILabel *you;
+@property (weak, nonatomic) IBOutlet UIButton *youBtn;
+
 
 
 
@@ -49,6 +53,6 @@
 - (IBAction)scheduleInitialAlarms:(id)sender;
 //- (IBAction)profile:(id)sender;
 - (IBAction)mainActions:(id)sender;
-
+- (IBAction)youBtn:(id)sender;
 
 @end
