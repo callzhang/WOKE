@@ -51,7 +51,6 @@
 // Scroll view move the page defined by page view
 - (IBAction)changePage:(id)sender;
 - (IBAction)scheduleInitialAlarms:(id)sender;
-//- (IBAction)profile:(id)sender;
 - (IBAction)mainActions:(id)sender;
 - (IBAction)youBtn:(id)sender;
 

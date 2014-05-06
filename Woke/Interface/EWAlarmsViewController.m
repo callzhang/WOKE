@@ -36,6 +36,7 @@
 #import "EWCollectionPersonCell.h"
 #import "EWSettingsViewController.h"
 #import "EWRecordingViewController.h"
+#import "EWNotificationViewController.h"
 
 //backend
 #import "StackMob.h"
@@ -375,6 +376,11 @@
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
+}
+
+- (IBAction)showNotification:(id)sender {
+    EWNotificationViewController *controller = [[EWNotificationViewController alloc] initWithNibName:nil bundle:nil];
+    [self presentViewControllerWithBlurBackground:controller];
 }
 
 

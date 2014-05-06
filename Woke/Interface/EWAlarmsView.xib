@@ -89,6 +89,9 @@
                             <integer key="value" value="5"/>
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="showNotification:" destination="-1" eventType="touchUpInside" id="OSc-J1-0dS"/>
+                    </connections>
                 </button>
                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" id="5xJ-P3-L3R">
                     <rect key="frame" x="142" y="501" width="37" height="37"/>

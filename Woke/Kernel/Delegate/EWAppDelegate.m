@@ -129,11 +129,11 @@ UIViewController *rootViewController;
 #ifdef BACKGROUND_TEST
     
     //开启一个后台任务
-//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-//        
-//        NSLog(@"The first BG task will end (%ld)", count);
-//        
-//    }];
+    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+        
+        NSLog(@"The first BG task will end (%ld)", count);
+        
+    }];
     
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];
@@ -176,6 +176,8 @@ UIViewController *rootViewController;
     [FBAppCall handleDidBecomeActive];
     //audio session
     [[AVManager sharedManager] registerAudioSession];
+    
+    count = 0;
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -239,23 +241,23 @@ UIViewController *rootViewController;
 
 
 - (void) keepAlive:(NSTimer *)paramSender{
-    NSLog(@"===========================>> Check Alarm Timer <<=============================");
+    NSLog(@"===========================>> Keep Alive <<=============================");
     //NSLog(@"%s Time left (before) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
     
     
     //start avplayer
     [[AVManager sharedManager] playSilentSound];
     
-    //UIApplication *application = [UIApplication sharedApplication];
+    UIApplication *application = [UIApplication sharedApplication];
     
     //结束旧的后台任务
-    //[application endBackgroundTask:backgroundTaskIdentifier];
+    [application endBackgroundTask:backgroundTaskIdentifier];
     
     //开启一个新的后台
-//    NSInteger ct = count++;
-//    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-//        NSLog(@"BG task will end (%ld)", (long)ct);
-//    }];
+    NSInteger ct = count++;
+    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+        NSLog(@"BG task will end (%ld)", (long)ct);
+    }];
     
 #ifdef BACKGROUND_TEST
     [UIApplication sharedApplication].applicationIconBadgeNumber = count;
