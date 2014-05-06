@@ -66,29 +66,7 @@
 - (NSArray *)getTasksByPerson:(EWPerson *)p{
     EWPerson *person = [EWDataStore objectForCurrentContext:p];
     NSMutableArray *tasks = [[person.tasks allObjects] mutableCopy];
-    BOOL fetch = YES;
-    
-    //if self OR person is up to date, skip fetch
-    if ([person.objectID isEqual:currentUser.objectID] || ![person.lastmoddate isOutDated]) {
-        //plus the task count is 7n
-        if (tasks.count == 7 * nWeeksToScheduleTask) {
-            //skip fetch
-            fetch = NO;
-        }
-    }
-    
-    //fetch
-    if (fetch) {
-        //this usually not happen
-        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
-        NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"owner == %@", person];
-        //NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time >= %@", [NSDate date]];
-        //request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
-        request.predicate = predicate1;
-        
-        tasks = [[[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL] mutableCopy];
-        //Cannot retrieve referenceObject from an objectID that was not created by this store
-    }
+    [tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time >= %@", [NSDate date]]];
     
     if ([person.username isEqualToString:currentUser.username]) {
         //check past task, move it to pastTasks and remove it from the array
@@ -106,6 +84,7 @@
     
     //sort
     return [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
+    
 }
 
 + (NSArray *)myTasks{
@@ -128,9 +107,8 @@
         person.pastTasks = [NSSet setWithArray:tasks];
     }
     //sort
-    tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
+    return [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
     
-    return tasks;
 }
 
 //next valid task

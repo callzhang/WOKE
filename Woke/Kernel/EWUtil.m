@@ -33,8 +33,8 @@
     NSMutableDictionary *dic = [NSMutableDictionary new];
     NSInteger hour = floor(number);
     NSInteger minute = (number - hour)*100;
-    dic[@"hour"] = [NSNumber numberWithInt:hour];
-    dic[@"minute"] = [NSNumber numberWithInt: minute];
+    dic[@"hour"] = [NSNumber numberWithInteger:hour];
+    dic[@"minute"] = [NSNumber numberWithInteger: minute];
     return dic;
 }
 
@@ -45,4 +45,14 @@
     return number;
 }
 
+
++ (BOOL) isMultitaskingSupported {
+    
+    BOOL result = NO;
+    
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]){
+        result = [[UIDevice currentDevice] isMultitaskingSupported];
+    }
+    return result;
+}
 @end

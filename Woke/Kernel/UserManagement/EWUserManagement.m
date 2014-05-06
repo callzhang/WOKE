@@ -680,6 +680,35 @@
 
 }
 
+//This function has not been used, future change need to be made to LogInVC so that UserManager controls the logic and LogInVC do the UI work.
++ (void)facebookSessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error{
+    switch (state) {
+        case FBSessionStateOpen:
+            //TODO: Login
+            break;
+            
+        case FBSessionStateOpenTokenExtended:
+            //TODO: Login
+            break;
+            
+        case FBSessionStateClosed:
+            [FBSession.activeSession closeAndClearTokenInformation];
+            //[self updateView];
+            break;
+        case FBSessionStateClosedLoginFailed:
+            [FBSession.activeSession closeAndClearTokenInformation];
+            NSLog(@"*** FB login failed. Session closed");
+            break;
+        default:
+            break;
+    }
+    
+    if (error) {
+        
+        [EWUserManagement handleFacebookException:error];
+    }
+}
+
 
 #pragma mark - Weibo SDK
 

@@ -99,15 +99,7 @@ UIViewController *rootViewController;
 }
 
 
-- (void)applicationWillResignActive:(UIApplication *)application {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-    
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-}
-
-
-
+#pragma mark - BACKGROUND TASK
 //=================>> Point to enter background <<===================
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
@@ -129,11 +121,7 @@ UIViewController *rootViewController;
 #ifdef BACKGROUND_TEST
     
     //开启一个后台任务
-    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        
-        NSLog(@"The first BG task will end (%ld)", count);
-        
-    }];
+    [self backgroundTaskKeepAlive];
     
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];
@@ -142,19 +130,70 @@ UIViewController *rootViewController;
     
 #endif
     
-    //remove avplayer
-    //[[AVManager sharedManager] stopAvplayer];
-    
-    //NSLog(@"Scheduled background with time left: %f", application.backgroundTimeRemaining);
-    
     application.applicationIconBadgeNumber = 0;
 }
 
+
+- (void)backgroundTaskKeepAlive{
+    UIApplication *application = [UIApplication sharedApplication];
+    
+    //start silent sound
+    [[AVManager sharedManager] playSilentSound];
+    
+    //结束旧的后台任务
+    [application endBackgroundTask:backgroundTaskIdentifier];
+    
+    //开启一个新的后台
+    count++;
+    backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        [self backgroundTaskKeepAlive];
+        NSLog(@"The backgound task is renewed at (%ld)" , count);
+        
+    }];
+}
+
+
+//Depreciated: this method has been replaced by alarmTimerCheck method in wakeUpManager
+- (void) keepAlive:(NSTimer *)paramSender{
+    NSLog(@"===========================>> Keep Alive <<=============================");
+    //check time left
+    NSInteger tLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
+    NSLog(@"%s Time left (after) %@ (%ld)", __func__, tLeft>1000?@"999s":[NSString stringWithFormat:@"%ld",(long)tLeft] , count++);
+    
+    
+#ifdef BACKGROUND_TEST
+    [UIApplication sharedApplication].applicationIconBadgeNumber = count;
+#endif
+    
+    
+    //check time
+    if (!currentUser) return;
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
+    if (task.state == NO) return;
+    
+    //alarm time up
+    NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
+    
+    if (timeLeft < kAlarmTimerCheckInterval && timeLeft > 0) {
+        NSLog(@"alarmTimerCheck: About to init alart timer in %fs",timeLeft);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [EWWakeUpManager handleAlarmTimerEvent];
+        });
+    }
+    
+}
+
+#pragma mark - APP LIFE CYCLE
+- (void)applicationWillResignActive:(UIApplication *)application {
+    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
+    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+}
+
+
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-    
-    //[[UIApplication sharedApplication] clearKeepAliveTimeout];
-    
     
     if (backgroundTaskIdentifier != UIBackgroundTaskInvalid){
         //end background task
@@ -166,11 +205,13 @@ UIViewController *rootViewController;
         [myTimer invalidate];
     }
     
+    //audio session
+    [[AVManager sharedManager] registerActiveAudioSession];
+    
     NSLog(@"Entered foreground and cleaned bgID and timer");
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    //[FBSession.activeSession handleDidBecomeActive];
     // Handle the user leaving the app while the Facebook login dialog is being shown
     // For example: when the user presses the iOS "home" button while the login dialog is active
     [FBAppCall handleDidBecomeActive];
@@ -240,58 +281,6 @@ UIViewController *rootViewController;
 }
 
 
-- (void) keepAlive:(NSTimer *)paramSender{
-    NSLog(@"===========================>> Keep Alive <<=============================");
-    //NSLog(@"%s Time left (before) %f (%ld)", __func__, [UIApplication sharedApplication].backgroundTimeRemaining , count++);
-    
-    
-    //start avplayer
-    [[AVManager sharedManager] playSilentSound];
-    
-    UIApplication *application = [UIApplication sharedApplication];
-    
-    //结束旧的后台任务
-    [application endBackgroundTask:backgroundTaskIdentifier];
-    
-    //开启一个新的后台
-    NSInteger ct = count++;
-    backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-        NSLog(@"BG task will end (%ld)", (long)ct);
-    }];
-    
-#ifdef BACKGROUND_TEST
-    [UIApplication sharedApplication].applicationIconBadgeNumber = count;
-#endif
-
-    
-    //check time
-    if (!currentUser) return;
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
-    if (task.state == NO) return;
-    
-    //alarm time up
-    NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
-    
-    if (timeLeft < kAlarmTimerCheckInterval && timeLeft > 0) {
-        NSLog(@"KeepAlive: About to init alart timer in %fs",timeLeft);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [EWWakeUpManager handleAlarmTimerEvent];
-        });
-    }
-    NSInteger tLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
-    NSLog(@"%s Time left (after) %@ (%ld)", __func__, tLeft>1000?@"999s":[NSString stringWithFormat:@"%ld",(long)tLeft] , count++);
-
-}
-
-- (BOOL) isMultitaskingSupported {
-    
-    BOOL result = NO;
-    
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]){
-        result = [[UIDevice currentDevice] isMultitaskingSupported];
-    }
-    return result;
-}
 
 #pragma mark - Push Notification registration
 //Presist the device token

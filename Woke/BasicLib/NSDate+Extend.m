@@ -192,11 +192,11 @@
     NSInteger hours = floorf(left/3600);
     NSString *string;
     if (hours != 0) {
-        string = [NSString stringWithFormat:@"%d hours", hours];
+        string = [NSString stringWithFormat:@"%ld hours", (long)hours];
     }else if (minutes != 0){
-        string = [NSString stringWithFormat:@"%d min", minutes];
+        string = [NSString stringWithFormat:@"%ld min", (long)minutes];
     }else{
-        string = [NSString stringWithFormat:@"%d sec", seconds];
+        string = [NSString stringWithFormat:@"%ld sec", (long)seconds];
     }
     return string;
 }

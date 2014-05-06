@@ -67,5 +67,17 @@
  */
 + (void)presentWakeUpView;
 + (void)presentWakeUpViewWithTask:(EWTaskItem *)task;
+
+/**
+ Release the reference to wakeupVC
+ Post notification: kWokeNotification
+ */
 + (void)woke;
+
+/**
+ Timely alarm timer check task
+ Will schedule an alarm if the time left is within the service update interval
+ Call handle alarm timer method when time is up
+ */
++ (void) alarmTimerCheck;
 @end

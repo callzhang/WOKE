@@ -32,7 +32,7 @@
 /**
  Cache user's data
  */
-+ (void)cacheUserData;
+//+ (void)cacheUserData;
 
 //Log out
 + (void)logout;

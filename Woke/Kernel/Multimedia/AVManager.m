@@ -402,7 +402,7 @@
 
 -(void)updateCurrentTime:(NSTimer *)timer{
     AVAudioPlayer *p = (AVAudioPlayer *)timer.userInfo;
-    NSAssert([p isEqual:player], @"Player passed in is not correct");
+    if(![p isEqual:player]) NSLog(@"***Player passed in is not correct");
     if (!progressBar.isTouchInside) {
         player.volume = 1.0;
         progressBar.value = player.currentTime;
@@ -412,7 +412,7 @@
 
 -(void)updateCurrentTimeForRecorder:(NSTimer *)timer{
     AVAudioRecorder *r = (AVAudioRecorder *)timer.userInfo;
-    NSAssert([r isEqual:recorder], @"Recorder passed in is not correct");
+    if(![r isEqual:recorder]) NSLog(@"***Recorder passed in is not correct");
     if (!progressBar.isTouchInside) {
         progressBar.value = recorder.currentTime;
         currentTime.text = [NSString stringWithFormat:@"%02ld\"", (long)recorder.currentTime % 60, nil];

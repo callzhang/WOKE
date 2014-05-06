@@ -315,19 +315,19 @@
             notice_friending.type = kNotificationTypeFriendRequest;
             notice_friending.owner = currentUser;
             NSArray *people = [[EWPersonStore sharedInstance] everyone];
-            NSUInteger k = arc4random_uniform(people.count);
+            NSInteger k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user = people[k];
             notice_friending.sender = user.username;
             //2
             notice_friended.type = kNotificationTypeFriendAccepted;
             notice_friended.owner = currentUser;
-            k = arc4random_uniform(people.count);
+            k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user2 = people[k];
             notice_friended.sender = user2.username;
             //3
             notice_newMedia.type = kNotificationTypeNextTaskHasMedia;
             notice_friended.owner = currentUser;
-            k = arc4random_uniform(people.count);
+            k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user3 = people[k];
             notice_newMedia.sender = user3.username;
             //4

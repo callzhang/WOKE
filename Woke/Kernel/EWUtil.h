@@ -20,4 +20,5 @@
  */
 + (NSDictionary *)timeFromNumber:(double)number;
 + (double)numberFromTime:(NSDictionary *)dic;
++ (BOOL) isMultitaskingSupported;
 @end

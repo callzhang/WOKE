@@ -17,6 +17,7 @@
 #import "EWMediaStore.h"
 #import "EWMediaItem.h"
 #import "NSString+MD5.h"
+#import "EWWakeUpManager.h"
 
 //Util
 #import "FTWCache.h"
@@ -358,6 +359,10 @@ AmazonSNSClient *snsClient;
         //check task
         NSLog(@"Start recurring task schedule");
         [[EWTaskStore sharedInstance] scheduleTasks];
+        
+        //check alarm timer
+        NSLog(@"Start recurring alarm timer check");
+        [EWWakeUpManager alarmTimerCheck];
     });
     
 }
@@ -443,7 +448,6 @@ AmazonSNSClient *snsClient;
         return nil;
     }
     NSManagedObject * objForCurrentContext = [[EWDataStore sharedInstance].currentContext objectWithID:obj.objectID];
-    NSAssert([[objForCurrentContext class] isEqual: [obj class]], @"Returned different class");
     return objForCurrentContext;
 }
 
