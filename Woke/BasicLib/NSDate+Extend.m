@@ -182,4 +182,23 @@
     return deltaComps;
 }
 
+- (NSString *)timeLeft{
+    NSInteger left = [self timeIntervalSinceNow];
+    if (left<0) {
+        return @"";
+    }
+    NSInteger seconds = left % 60;
+    NSInteger minutes = floorf(left/60);
+    NSInteger hours = floorf(left/3600);
+    NSString *string;
+    if (hours != 0) {
+        string = [NSString stringWithFormat:@"%d hours", hours];
+    }else if (minutes != 0){
+        string = [NSString stringWithFormat:@"%d min", minutes];
+    }else{
+        string = [NSString stringWithFormat:@"%d sec", seconds];
+    }
+    return string;
+}
+
 @end

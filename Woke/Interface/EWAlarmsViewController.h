@@ -53,5 +53,6 @@
 - (IBAction)scheduleInitialAlarms:(id)sender;
 - (IBAction)mainActions:(id)sender;
 - (IBAction)youBtn:(id)sender;
+- (IBAction)showNotification:(id)sender;
 
 @end

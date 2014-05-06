@@ -97,4 +97,9 @@
 - (NSString *)date2MMDD;
 
 - (NSDateComponents *)dateComponents;
+
+/**
+ Time left to next alarm
+ */
+- (NSString *)timeLeft;
 @end

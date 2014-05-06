@@ -42,13 +42,13 @@
 #import "StackMob.h"
 
 //definition
-#define kCenterViewDelay            10
+#define kIndicatorHideTimer            2
 
 @interface EWAlarmsViewController (){
     //NSMutableArray *allPeople;
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
-    NSTimer *recoilTimer;
+    NSTimer *indicatorHideTimer;
     UICollectionViewCell *cell0;
 }
 
@@ -495,11 +495,7 @@
         if (fabsf(X)<160 && fabsf(Y)<250) {
             //in the screen
             if (!self.youIndicator.hidden) {
-                [UIView animateWithDuration:0.3 animations:^{
-                    self.youIndicator.alpha = 0;
-                } completion:^(BOOL finished) {
-                    self.youIndicator.hidden = YES;
-                }];
+                [self hideIndicator];
             }
         }else{
             //out of screen
@@ -534,9 +530,17 @@
                                        
         
         //center collectionview
-        //[recoilTimer invalidate];
-        //recoilTimer = [NSTimer scheduledTimerWithTimeInterval:kCenterViewDelay target:self selector:@selector(centerView) userInfo:nil repeats:NO];
+        [indicatorHideTimer invalidate];
+        indicatorHideTimer = [NSTimer scheduledTimerWithTimeInterval:kIndicatorHideTimer target:self selector:@selector(hideIndicator) userInfo:nil repeats:NO];
     }
+}
+
+- (void)hideIndicator{
+    [UIView animateWithDuration:0.3 animations:^{
+        self.youIndicator.alpha = 0;
+    } completion:^(BOOL finished) {
+        self.youIndicator.hidden = YES;
+    }];
 }
 
 // At the end of scroll animation, reset the boolean used when scrolls originate from the UIPageControl
@@ -664,35 +668,74 @@
         cell.initial.text = @"YOU";
     }
     cell.initial.alpha = 1;
-    cell.profilePic.image = [UIImage imageNamed:@"profile"];
+    //cell.profilePic.image = [UIImage imageNamed:@"profile"];
     cell.name = person.name;
     
+    //profile
     dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
         //Data
-        
         UIImage *profile = person.profilePic;
+        
+        
         if (profile) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                cell.white.alpha = 1;
-                [UIView animateWithDuration:0.2 animations:^{
-                    cell.white.alpha = 0;
-                }];
                 
                 //UI
-                cell.profilePic.image = profile;
+                [UIView animateWithDuration:0.4 animations:^{
+                    cell.profilePic.image = profile;
+                }];
                 
                 //text
                 if (![person.username isEqualToString: currentUser.username]) {
                     cell.initial.alpha = 0;
                 }
                 
-                //[cell.loadingIndicator stopAnimating];
-                [cell setNeedsDisplay];
-                
             });
         }
         
     });
+    
+    //time
+    if (![person.username isEqualToString: currentUser.username]) {
+        dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+            EWTaskItem *nextValidTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
+            NSString *timeLeft = [nextValidTask.time timeLeft];
+            if (timeLeft) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    cell.time.text = timeLeft;
+                    [UIView animateWithDuration:0.4 animations:^{
+                        cell.time.alpha = 1;
+                    }];
+                });
+            }
+        });
+    }
+    
+    //location
+    if (person.lastLocation && currentUser.lastLocation) {
+        dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+            SMGeoPoint *location0;
+            id locData = currentUser.lastLocation;
+            if ([locData isKindOfClass:[NSDictionary class]]) {
+                location0 = (SMGeoPoint *)locData;
+            }else{
+                location0 =  [NSKeyedUnarchiver unarchiveObjectWithData:locData];
+            }
+            SMGeoPoint *location1;
+            id locData1 = person.lastLocation;
+            if ([locData1 isKindOfClass:[NSDictionary class]]) {
+                location1 = (SMGeoPoint *)locData1;
+            }else{
+                location1 =  [NSKeyedUnarchiver unarchiveObjectWithData:locData1];
+            }
+            CLLocation *l0 = [[CLLocation alloc] initWithLatitude:[location0.latitude doubleValue] longitude:[location0.longitude doubleValue]];
+            CLLocation *l1 = [[CLLocation alloc] initWithLatitude:[location1.latitude doubleValue] longitude:[location1.longitude doubleValue]];
+            CLLocationDistance distance = [l0 distanceFromLocation:l1];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                cell.distance.text = [NSString stringWithFormat:@"%.1lf miles", distance];
+            });
+        });
+    }
     
     return cell;
 }
