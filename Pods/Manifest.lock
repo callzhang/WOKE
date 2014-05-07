@@ -14,7 +14,7 @@ PODS:
   - ASIHTTPRequest/S3 (1.8.2):
     - ASIHTTPRequest/Core
   - Facebook-iOS-SDK (3.13.1)
-  - GPUImage (0.1.4)
+  - NSLogger (1.2)
   - Reachability (3.1.1)
   - Reveal-iOS-SDK (1.0.3)
   - StackMob (2.2.0):
@@ -25,7 +25,7 @@ PODS:
 DEPENDENCIES:
   - ASIHTTPRequest
   - Facebook-iOS-SDK
-  - GPUImage
+  - NSLogger
   - Reveal-iOS-SDK
   - StackMob
   - TestFlightSDK
@@ -35,7 +35,7 @@ SPEC CHECKSUMS:
   AFNetworking: 761a418233d280c1e0580bcb76ff9cb4c3073d17
   ASIHTTPRequest: 0b05282cf3c422c3474eff98c5bb8c1192b91b86
   Facebook-iOS-SDK: 47ae9e54684c84f93d75d4e6ab47cd031abdf406
-  GPUImage: f9b32e12350792a630e596ffc7b050bea3662670
+  NSLogger: 9607fdeafd0b09922c69615f99f127de45971b8f
   Reachability: be4883bb93f31e38266ae3365e5600a317aae735
   Reveal-iOS-SDK: 8e6a6f22a9520437e4a180fe1d4e99f43b75430e
   StackMob: d824b7837fe14776cac7c0602cfa7bb1fe20984a
