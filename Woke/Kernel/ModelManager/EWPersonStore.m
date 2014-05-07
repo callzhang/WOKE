@@ -123,6 +123,13 @@ EWPerson *currentUser;
     
 }
 
+- (EWPerson *)anyone{
+    NSArray *everyone = [self everyone];
+    NSInteger i = arc4random_uniform((uint16_t)everyone.count);
+    EWPerson *one = everyone[i];
+    return one;
+}
+
 - (void)checkRelations{
     //friends
     for (EWPerson *friend in currentUser.friends) {

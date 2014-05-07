@@ -41,6 +41,7 @@
 @property (nonatomic, retain) NSSet *groups;
 @property (nonatomic, retain) NSSet *groupsManaging;
 @property (nonatomic, retain) NSSet *groupTasks;
+@property (nonatomic, retain) NSSet *notifications;
 @property (nonatomic, retain) NSSet *medias;
 @property (nonatomic, retain) NSSet *pastTasks;
 @property (nonatomic, retain) NSSet *receivedMessages;
@@ -91,6 +92,11 @@
 - (void)removeGroupsObject:(EWGroup *)value;
 - (void)addGroups:(NSSet *)values;
 - (void)removeGroups:(NSSet *)values;
+
+- (void)addNotificationsObject:(EWGroup *)value;
+- (void)removeNotificationsObject:(EWGroup *)value;
+- (void)addNotifications:(NSSet *)values;
+- (void)removeNotifications:(NSSet *)values;
 
 - (void)addGroupsManagingObject:(EWGroup *)value;
 - (void)removeGroupsManagingObject:(EWGroup *)value;

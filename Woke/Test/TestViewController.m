@@ -326,15 +326,16 @@
             notice_friended.sender = user2.username;
             //3
             notice_newMedia.type = kNotificationTypeNextTaskHasMedia;
-            notice_friended.owner = currentUser;
+            notice_newMedia.owner = currentUser;
             k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user3 = people[k];
             notice_newMedia.sender = user3.username;
             //4
             notice_system.type = kNotificationTypeNotice;
-            notice_friended.owner = currentUser;
+            notice_system.owner = currentUser;
             NSDictionary *dic = @{@"title": @"Test system notice", @"content": @"This is a test notice. An alert show pop up if you tap me.", @"link": @"WokeAlarm.com"};
             notice_system.userInfo = dic;
+            notice_system.sender = nil;
             //save
             [[EWDataStore currentContext] saveOnSuccess:^{
                 [MBProgressHUD hideAllHUDsForView:self.view animated:YES];

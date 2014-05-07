@@ -200,8 +200,8 @@
     [self reloadAlarmPage];
     
     //parallax
-    self.background.parallaxIntensity = -50;
-    self.collectionView.parallaxIntensity = 10;
+    self.background.parallaxIntensity = -100;
+    self.collectionView.parallaxIntensity = 20;
     
     //indicator center
     self.youIndicator.layer.anchorPoint = CGPointMake(0.5, 0.5);
@@ -681,7 +681,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 cell.profilePic.image = profile;
                 //UI
-                cell.alpha = 0.2;
+                cell.alpha = 0.0;
                 [UIView animateWithDuration:0.4 animations:^{
                     cell.alpha = 1;
                 }];

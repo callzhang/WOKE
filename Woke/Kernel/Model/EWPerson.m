@@ -56,7 +56,7 @@
 @dynamic tasks;
 @dynamic tasksHelped;
 @dynamic pastTasks;
-
+@dynamic notifications;
 
 #pragma mark - User Management
 - (id)initNewUserInContext:(NSManagedObjectContext *)context {

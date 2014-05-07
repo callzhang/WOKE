@@ -25,6 +25,7 @@ extern EWPerson *currentUser;
  Possible people that are relevant
  */
 - (NSArray *)everyone;
+- (EWPerson *)anyone;
 - (void)purgeUserData;
 - (void)checkRelations;
 @end

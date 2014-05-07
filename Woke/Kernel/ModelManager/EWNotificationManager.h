@@ -7,6 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+
+#define kNotificationCompleted      @"notification_completed"
+
+
 @class EWNotification;
 
 @interface EWNotificationManager : NSObject <UIAlertViewDelegate>
@@ -14,7 +18,7 @@
 + (EWNotificationManager *)sharedInstance;
 
 + (NSArray *)myNotifications;
-
++ (NSArray *)allNotifications;
 /**
  When new notification received, handle it
  1. Decide weather to alert user
@@ -34,4 +38,7 @@
 
 //New
 + (EWNotification *)newNotification;
+
+//delete
++ (void)deleteNotification:(EWNotification *)notice;
 @end
