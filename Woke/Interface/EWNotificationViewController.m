@@ -168,14 +168,15 @@
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        EWNotification *notice = notifications[indexPath.row];
-        [EWNotificationManager deleteNotification:notice];
         
-        //[self.tableView beginUpdates];
+        EWNotification *notice = notifications[indexPath.row];
         [notifications removeObject:notice];
-        [self refresh];
-        //[self.tableView endUpdates];
+        //remove from view with animation
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        
+        [EWNotificationManager deleteNotification:notice];
     }
 }
 
