@@ -103,11 +103,11 @@
         NSString *taskID = userInfo[kPushTaskKey];
         if (!taskID) return;
         EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        [EWNotificationManager sharedInstance].task = task;
         if ([[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime && [task.time isEarlierThan:[NSDate date]]) {
             
             [EWWakeUpManager handleAlarmTimerEvent];
         }
-        
     } else if ([notification.type isEqualToString:kNotificationTypeNotice]) {
         
         //UserInfo

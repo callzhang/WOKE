@@ -489,12 +489,12 @@
             cell0 = [self collectionView:_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
         }
         CGPoint center = [_collectionView convertPoint:cell0.center toView:self.view];
-        
         float X = center.x - frameCenter.x;
         float Y = center.y - frameCenter.y;
+        
         if (fabsf(X)<160 && fabsf(Y)<250) {
             //in the screen
-            if (!self.youIndicator.hidden) {
+            if (self.youIndicator.alpha == 1) {
                 [self hideIndicator];
             }
         }else{
@@ -658,11 +658,12 @@
     
     EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     
-    //[cell applyHexagonMask];
-    //[EWUIUtil applyShadow:cell];
-    
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
+    
+    BOOL isMe = NO;
+    if ([person.username isEqualToString: currentUser.username]) isMe = YES;
+
     cell.initial.text = [person.name initial];
     if ([person.username isEqualToString: currentUser.username]) {
         cell.initial.text = @"YOU";
@@ -672,35 +673,33 @@
     cell.name = person.name;
     
     //profile
-    dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         //Data
         UIImage *profile = person.profilePic;
         
-        
         if (profile) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                
+                cell.profilePic.image = profile;
                 //UI
+                cell.alpha = 0.2;
                 [UIView animateWithDuration:0.4 animations:^{
-                    cell.profilePic.image = profile;
+                    cell.alpha = 1;
                 }];
                 
                 //text
-                if (![person.username isEqualToString: currentUser.username]) {
-                    cell.initial.alpha = 0;
-                }
-                
+                if (!isMe) cell.initial.alpha = 0;
             });
         }
-        
     });
     
     //time
-    if (![person.username isEqualToString: currentUser.username]) {
-        dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+    cell.time.text = @"";
+    cell.time.alpha = 0;
+    if (!isMe) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             EWTaskItem *nextValidTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
-            NSString *timeLeft = [nextValidTask.time timeLeft];
-            if (timeLeft) {
+            if (nextValidTask) {
+                NSString *timeLeft = [nextValidTask.time timeLeft];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     cell.time.text = timeLeft;
                     [UIView animateWithDuration:0.4 animations:^{
@@ -712,8 +711,10 @@
     }
     
     //location
-    if (person.lastLocation && currentUser.lastLocation) {
-        dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
+    cell.distance.text = @"";
+    cell.distance.alpha = 0;
+    if (!isMe && person.lastLocation && currentUser.lastLocation) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             SMGeoPoint *location0;
             id locData = currentUser.lastLocation;
             if ([locData isKindOfClass:[NSDictionary class]]) {
@@ -730,9 +731,12 @@
             }
             CLLocation *l0 = [[CLLocation alloc] initWithLatitude:[location0.latitude doubleValue] longitude:[location0.longitude doubleValue]];
             CLLocation *l1 = [[CLLocation alloc] initWithLatitude:[location1.latitude doubleValue] longitude:[location1.longitude doubleValue]];
-            CLLocationDistance distance = [l0 distanceFromLocation:l1];
+            CLLocationDistance distance = [l0 distanceFromLocation:l1]/1000;
             dispatch_async(dispatch_get_main_queue(), ^{
-                cell.distance.text = [NSString stringWithFormat:@"%.1lf miles", distance];
+                cell.distance.text = [NSString stringWithFormat:@"%.1lf km", distance];
+                [UIView animateWithDuration:0.4 animations:^{
+                    cell.distance.alpha = 1;
+                }];
             });
         });
     }

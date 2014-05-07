@@ -246,7 +246,7 @@
     attributes.center = CGPointMake((col * adjWidth) + horiOffset,
                                     row * 0.75f * _hexagonSize.height + vertOffset);
     
-    NSLog(@"%dth item has index of (%d, %d) and coordinate of (%f, %f)", x, col, row, attributes.center.x, attributes.center.y);
+    //NSLog(@"%dth item has index of (%d, %d) and coordinate of (%f, %f)", x, col, row, attributes.center.x, attributes.center.y);
     
     return attributes;
 }

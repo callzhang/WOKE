@@ -199,7 +199,7 @@
                     animations:
      ^{
          cell.white.alpha = 0;
-         cell.distance.alpha = 0;
+         //cell.distance.alpha = 0;
          //cell.time.alpha = 0;
          if ([cell.initial.text isEqualToString:@"YOU"]) {
              cell.initial.alpha = 1;
