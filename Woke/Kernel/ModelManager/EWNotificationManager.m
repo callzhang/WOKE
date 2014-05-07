@@ -229,7 +229,10 @@
 
 - (void)finishedNotification:(EWNotification *)notice{
     //archieve
-    notice.completed = [NSDate date];
+    if (!notice.completed) {
+        
+        notice.completed = [NSDate date];
+    }
     if ([notice.type isEqualToString:kNotificationTypeTimer]) {
         //delete
         [EWNotificationManager deleteNotification:notice];
