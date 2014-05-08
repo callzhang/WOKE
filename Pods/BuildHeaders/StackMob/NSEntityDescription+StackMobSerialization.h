@@ -1,1 +1,0 @@
-../../StackMob/CoreData/Classes/NSEntityDescription+StackMobSerialization.h

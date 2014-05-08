@@ -1,1 +1,0 @@
-../../StackMob/Utility/Base64EncodedStringFromData.h

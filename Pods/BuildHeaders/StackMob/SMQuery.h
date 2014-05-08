@@ -1,1 +1,0 @@
-../../StackMob/Classes/SMQuery.h

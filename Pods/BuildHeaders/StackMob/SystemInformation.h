@@ -1,1 +1,0 @@
-../../StackMob/Utility/SystemInformation.h
