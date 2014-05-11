@@ -22,7 +22,7 @@
 #import "UIViewController+Blur.h"
 #import "EWDataStore.h"
 #import "UIView+HUD.h"
-
+#import "CoreData+MagicalRecord.h"
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 

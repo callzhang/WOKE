@@ -7,11 +7,10 @@
 //
 
 #import "EWDataStore.h"
+#import <Parse/Parse.h>
 #import "EWUserManagement.h"
 #import "EWPersonStore.h"
 #import "EWDownloadManager.h"
-
-//Model Manager
 #import "EWAlarmManager.h"
 #import "EWTaskStore.h"
 #import "EWMediaStore.h"
@@ -21,12 +20,9 @@
 
 //Util
 #import "FTWCache.h"
-#import "SMBinaryDataConversion.h"
 
 //Global variable
 //NSManagedObjectContext *context;
-SMClient *client;
-SMPushClient *pushClient;
 AmazonSNSClient *snsClient;
 //NSDate *lastChecked;
 
@@ -57,64 +53,18 @@ AmazonSNSClient *snsClient;
         snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
         snsClient.endpoint = [AmazonEndpoints snsEndpoint:US_WEST_2];
         
-        //stackMob
-        SM_CACHE_ENABLED = YES;//enable cache
-        //SM_CORE_DATA_DEBUG = YES; //enable core data debug
-        client = [[SMClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment];
-        client.userSchema = @"EWPerson";
-        client.userPrimaryKeyField = @"username";
+        //Parse
+        [Parse setApplicationId:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
+                      clientKey:@"9yfUenOzHJYOTVLIFfiPCt8QOo5Ca8fhU8Yqw9yb"];
+        //[PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
         
         //core data
-        self.coreDataStore = [client coreDataStoreWithManagedObjectModel:self.model];
+        [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
+        currentContext = [NSManagedObjectContext MR_defaultContext];
         
         //cache policy
-        self.coreDataStore.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
-        __block SMCoreDataStore *blockCoreDataStore = self.coreDataStore;
-        self.coreDataStore.defaultSMMergePolicy = SMMergePolicyLastModifiedWins;
-        [client.networkMonitor setNetworkStatusChangeBlock:^(SMNetworkStatus status) {
-            if (status == SMNetworkStatusReachable) {
-                if (currentUser) {
-                    NSLog(@"Connected to server, and user fetched, strat syncing");
-                    [blockCoreDataStore syncWithServer];
-                }else{
-                    NSLog(@"User login process haven't finished, delay snycing");
-                }
-                
-            }
-            else {
-                NSLog(@"Disconnected from server, enter cache only mode");
-                [blockCoreDataStore setFetchPolicy:SMFetchPolicyCacheOnly];
-            }
-        }];
-        
-        [self.coreDataStore setSyncCompletionCallback:^(NSArray *objects){
-            NSLog(@"Syncing is complete, item synced: %@. Change the datastore policy to fetch from the network", objects);
-            
-            
-            //Change fetch policy
-            [blockCoreDataStore setFetchPolicy:SMFetchPolicyTryCacheElseNetwork];
-            
-            
-            // Notify other views that they should reload their data from the network
-            if (objects.count) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:kFinishedSync object:nil];//TODO
-            }
-            
-        }];
-        
+        //network chenge policy
         //refesh failure behavior
-        __block SMUserSession *currentSession = client.session;
-        [client setTokenRefreshFailureBlock:^(NSError *error, SMFailureBlock originalFailureBlock) {
-            NSLog(@"Automatic refresh token has failed");
-            // Reset local session info
-            [currentSession clearSessionInfo];
-            
-            // Show custom login screen
-            //[blockSelf showLoginScreen];
-            
-            // Optionally call original failure block
-            originalFailureBlock(error);
-        }];
 
         //watch for login event
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginDataCheck) name:kPersonLoggedIn object:Nil];
@@ -139,25 +89,18 @@ AmazonSNSClient *snsClient;
 - (void)save{
 
     //save on current thread
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"Failed to save on app enter ");
-    }];
+    [[EWDataStore currentContext] save:nil];
     
     //save on designated thread
-    dispatch_async(coredata_queue, ^{
-        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-            NSLog(@"Failed to save on dedicated queue");
-        }];
-    });
+
 }
 
 - (NSManagedObjectContext *)currentContext{
-    NSManagedObjectContext *c = [[SMClient defaultClient].coreDataStore contextForCurrentThread];
-    
-    //[context observeContext:c];
-    //No need to observe because both context are child-context of SM private context
-    
-    return c;
+    if ([NSThread isMainThread]) {
+        return currentContext;
+    }
+    [NSException raise:@"Core Data context is not allowed to run off the main thread" format:@"Check you code!"];
+    return nil;
 }
 
 - (NSDate *)lastChecked{
@@ -180,8 +123,8 @@ AmazonSNSClient *snsClient;
     NSLog(@"========> %s <=========", __func__);
     
     //change fetch policy
-    NSLog(@"0. Start sync with server");
-    [self.coreDataStore syncWithServer];
+    //NSLog(@"0. Start sync with server");
+    //[self.coreDataStore syncWithServer];
     
     //refresh current user
     NSLog(@"1. Register AWS push key");
@@ -191,10 +134,10 @@ AmazonSNSClient *snsClient;
     [self checkAlarmData];
     
     //updating facebook friends
-    dispatch_async(dispatch_get_main_queue(), ^{
+    //dispatch_async(dispatch_get_main_queue(), ^{
         NSLog(@"5. Updating facebook friends");
         [EWUserManagement getFacebookFriends];
-    });
+    //});
     
     
     //update data with timely updates
@@ -212,22 +155,22 @@ AmazonSNSClient *snsClient;
     
     
     //check alarm
-    dispatch_async(dispatch_queue, ^{
+    //dispatch_async(dispatch_queue, ^{
         NSLog(@"2. Check alarm");
         [[EWAlarmManager sharedInstance] scheduleAlarm];
-    });
+    //});
     
     //check task
-    dispatch_async(dispatch_queue, ^{
+    //dispatch_async(dispatch_queue, ^{
         NSLog(@"3. Check task");
         [EWTaskStore.sharedInstance scheduleTasks];
-    });
+    //});
     
     //check local notif
-    dispatch_async(dispatch_queue, ^{
+    //dispatch_async(dispatch_queue, ^{
         NSLog(@"4. Start check local notification");
         [EWTaskStore.sharedInstance checkScheduledNotifications];
-    });
+    //});
     
 }
 
@@ -245,7 +188,7 @@ AmazonSNSClient *snsClient;
         return data;
     }
     //s3 file
-    if ([SMBinaryDataConversion stringContainsURL:key]) {
+    if ([key hasPrefix:@"http"]) {
         //read from url
         NSURL *audioURL = [NSURL URLWithString:key];
         NSString *keyHash = [audioURL.absoluteString MD5Hash];
@@ -345,8 +288,6 @@ AmazonSNSClient *snsClient;
     NSLog(@"%s: Start sync service", __func__);
     
     dispatch_async(dispatch_queue, ^{
-        //sync server
-        [self.coreDataStore syncWithServer];
         
         //lsat seen
         NSLog(@"Start last seen recurring task");
@@ -368,18 +309,6 @@ AmazonSNSClient *snsClient;
 }
 
 #pragma mark - Utilities
-+ (SMRequestOptions*)optionFetchCacheElseNetwork{
-    SMRequestOptions *options = [SMRequestOptions options];
-    options.fetchPolicy = SMFetchPolicyTryCacheElseNetwork;
-    return options;
-}
-
-+ (SMRequestOptions *)optionFetchNetworkElseCache{
-    SMRequestOptions *options = [SMRequestOptions options];
-    options.fetchPolicy = SMFetchPolicyTryNetworkElseCache;
-    return options;
-}
-
 + (NSManagedObjectContext *)currentContext{
     return [SMClient defaultClient].coreDataStore.contextForCurrentThread;
 }

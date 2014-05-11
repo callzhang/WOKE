@@ -11,10 +11,9 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "StackMob.h"
-#import "SMPushClient.h"
 #import <AWSRuntime/AWSRuntime.h>
 #import <AWSSNS/AWSSNS.h>
+#import <Parse/Parse.h>
 
 /**
  *Shortcut for context for Main thread
