@@ -7,12 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "StackMob.h"
 #import <FacebookSDK/FacebookSDK.h>
-
+#import <Parse/Parse.h>
 
 @interface EWUserManagement : NSObject
-//+ (EWUserManagement *)sharedInstance;
++ (EWUserManagement *)sharedInstance;
 
 /**
  Main point of login
@@ -27,7 +26,12 @@
 /**
  Login with local plist or ADID
  */
-+ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
+//+ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
+
+/**
+ Log in with temporary parse user
+ */
++ (void)loginWithTempUser:(void (^)(void))block;
 
 /**
  Cache user's data

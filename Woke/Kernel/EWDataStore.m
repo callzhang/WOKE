@@ -26,11 +26,14 @@
 AmazonSNSClient *snsClient;
 //NSDate *lastChecked;
 
-@implementation EWDataStore
+@implementation EWDataStore{
+    NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
+}
 @synthesize model;
 @synthesize currentContext;
 @synthesize dispatch_queue, coredata_queue;
 @synthesize lastChecked;
+
 
 + (EWDataStore *)sharedInstance{
     
@@ -60,7 +63,10 @@ AmazonSNSClient *snsClient;
         
         //core data
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
-        currentContext = [NSManagedObjectContext MR_defaultContext];
+        context = [NSManagedObjectContext MR_defaultContext];
+        
+        //facebook
+        [PFFacebookUtils initializeFacebook];
         
         //cache policy
         //network chenge policy
@@ -127,17 +133,24 @@ AmazonSNSClient *snsClient;
     //[self.coreDataStore syncWithServer];
     
     //refresh current user
-    NSLog(@"1. Register AWS push key");
-    [EWUserManagement registerAPNS];
+    dispatch_async(self.dispatch_queue, ^{
+        NSLog(@"1. Register AWS push key");
+        [EWUserManagement registerAPNS];
+    });
     
     //check alarm, task, and local notif
-    [self checkAlarmData];
+    NSLog(@"2. Check alarm");
+    [[EWAlarmManager sharedInstance] scheduleAlarm];
+    
+    NSLog(@"3. Check task");
+    [EWTaskStore.sharedInstance scheduleTasks];
+    
     
     //updating facebook friends
-    //dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(self.dispatch_queue, ^{
         NSLog(@"5. Updating facebook friends");
         [EWUserManagement getFacebookFriends];
-    //});
+    });
     
     
     //update data with timely updates
@@ -182,11 +195,6 @@ AmazonSNSClient *snsClient;
     
     NSData *data = nil;
     
-    //local file
-    if ([[NSURL URLWithString:key] isFileURL] || ![key hasPrefix:@"http"]) {
-        data = [NSData dataWithContentsOfFile:key];
-        return data;
-    }
     //s3 file
     if ([key hasPrefix:@"http"]) {
         //read from url
@@ -203,19 +211,26 @@ AmazonSNSClient *snsClient;
             [FTWCache setObject:data forKey:keyHash];
         }
         
+    }else if ([[NSURL URLWithString:key] isFileURL]){
+        //local file
+        NSLog(@"string is a local file: %@", key);
+        @try {
+            data = [NSData dataWithContentsOfFile:key];
+        }
+        @catch (NSException *exception) {
+            //pass by file name only, for main bundle resources
+            NSArray *array = [key componentsSeparatedByString:@"."];
+            NSAssert(array.count != 2, @"Please provide a file name with extension");
+            NSString *filePath = [[NSBundle mainBundle] pathForResource:array[0] ofType:array[1]];
+            data = [NSData dataWithContentsOfFile:filePath];
+        }
+        
     }else if(key.length > 500){
         //string contains data
-        data = [SMBinaryDataConversion dataForString:key];
+        data = [key dataUsingEncoding:NSUTF8StringEncoding];
         //TODO: save again.
         NSLog(@"Return the audio key as the data itself, please check!");
         
-    }else if(![key hasPrefix:@"http"]){
-        //local data
-        NSLog(@"string is a local file: %@", key);
-        NSArray *array = [key componentsSeparatedByString:@"."];
-        if (array.count != 2) [NSException raise:@"Unexpected file format" format:@"Please provide a who file name with extension"];
-        NSString *filePath = [[NSBundle mainBundle] pathForResource:array[0] ofType:array[1]];
-        data = [NSData dataWithContentsOfFile:filePath];
     }
     
     return data;
@@ -310,7 +325,11 @@ AmazonSNSClient *snsClient;
 
 #pragma mark - Utilities
 + (NSManagedObjectContext *)currentContext{
-    return [SMClient defaultClient].coreDataStore.contextForCurrentThread;
+    if ([NSThread isMainThread]) {
+        return [NSManagedObjectContext MR_defaultContext];
+    }
+    [NSException raise:@"Accessing context off the main thread" format:@"It is not supported"];
+    return nil;
 }
 
 
@@ -380,13 +399,22 @@ AmazonSNSClient *snsClient;
     return objForCurrentContext;
 }
 
-+ (EWPerson *)user{
-    if ([NSThread isMainThread]) {
-        return currentUser;
-    }else{
-        //NSLog(@"**** Get current user on background thread ****");
-        return (EWPerson *)[[EWDataStore currentContext] objectWithID:currentUser.objectID];
-    }
-    return nil;
+@end
+
+
+
+#pragma mark - Core Data ManagedObject extension
+@implementation NSManagedObject (PFObject)
+- (void)updateValueFromParseObject:(PFObject *)object{
+    //
 }
 @end
+
+#pragma mark - Parse Object extension
+@implementation PFObject (NSManagedObject)
+- (void)updateValueFromManagedObject:(NSManagedObject *)managedObject{
+    //
+}
+@end
+
+

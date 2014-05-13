@@ -15,21 +15,12 @@
 #import <AWSSNS/AWSSNS.h>
 #import <Parse/Parse.h>
 
-/**
- *Shortcut for context for Main thread
- */
-//extern NSManagedObjectContext *context;
-extern SMClient *client;
-extern SMPushClient *pushClient;
 extern AmazonSNSClient *snsClient;
-//extern NSDate *lastChecked;
 
 @class EWPerson;
-@interface EWDataStore : NSObject
 
-@property (nonatomic, retain) NSManagedObjectContext *context;
+@interface EWDataStore : NSObject
 @property (nonatomic, retain) NSManagedObjectModel *model;
-@property (nonatomic, retain) SMCoreDataStore *coreDataStore;
 @property (nonatomic, retain) dispatch_queue_t dispatch_queue;//Task dispatch queue runs in serial
 @property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in serial
 @property (nonatomic, retain) NSTimer *serverUpdateTimer;
@@ -37,10 +28,6 @@ extern AmazonSNSClient *snsClient;
  *The date that last sync with server
  */
 @property (nonatomic, retain) NSDate *lastChecked;
-/**
- This is considered thread safe way to call context for current thread
- */
-@property (nonatomic, retain) NSManagedObjectContext *currentContext;
 
 
 + (EWDataStore *)sharedInstance;
@@ -48,7 +35,7 @@ extern AmazonSNSClient *snsClient;
 //- (void)registerPushNotification;
 - (void)checkAlarmData;
 
-//data
+#pragma mark - data
 /**
  get Amazon S3 storage data with key from StackMob backend
  */
@@ -75,24 +62,23 @@ extern AmazonSNSClient *snsClient;
  */
 - (void)registerServerUpdateService;
 
-//CoreData
-+ (SMRequestOptions *)optionFetchCacheElseNetwork;
-+ (SMRequestOptions *)optionFetchNetworkElseCache;
+#pragma mark - CoreData
 + (NSManagedObjectContext *)currentContext;
 + (id)objectForCurrentContext:(NSManagedObject *)obj;
-/**
- *Using block to save ManagedObject in designated background thread serial queue.
- *When change occured in given context
- */
-//+ (void)saveDataInBackgroundInBlock:(void(^)(NSManagedObjectContext *currentContext))saveBlock completion:(void(^)(void))completion;
 
-/**
- * User obj's id to fetch from server on another thread
- */
-//+ (NSManagedObject *)refreshObjectWithServer:(NSManagedObject *)obj;
+//Core Data and PFObject translation
+#pragma mark - Core Data and PFObject translation
++ (NSManagedObject *)getManagedObjectFromParseObject:(PFObject *)object;
++ (PFObject *)getParseObjectFromManagedObject:(NSManagedObject *)managedObject;
 
-/**
- * The thread safe way to get current user
- */
-+ (EWPerson *)user;
+@end
+
+#pragma mark - Core Data ManagedObject extension
+@interface NSManagedObject (PFObject)
+- (void)updateValueFromParseObject:(PFObject *)object;
+@end
+
+#pragma mark - Parse Object extension
+@interface PFObject (NSManagedObject)
+- (void)updateValueFromManagedObject:(NSManagedObject *)managedObject;
 @end

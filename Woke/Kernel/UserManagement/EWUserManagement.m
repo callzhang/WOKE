@@ -8,7 +8,6 @@
 
 #import "EWUserManagement.h"
 #import "EWDataStore.h"
-#import "SMPushClient.h"
 #import "EWAppDelegate.h"
 #import "EWDownloadManager.h"
 @import CoreLocation;
@@ -35,37 +34,30 @@
 
 @implementation EWUserManagement
 
-
-//+ (EWUserManagement *)sharedInstance{
-//    static EWUserManagement *userManager = nil;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        userManager = [[EWUserManagement alloc] init];
-//    });
-//    return userManager;
-//}
-
-- (id)init{
-    [NSException raise:@"Should not init this class" format:@"Check your code!"];
-    return nil;
++ (EWUserManagement *)sharedInstance{
+    static EWUserManagement *userManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        userManager = [[EWUserManagement alloc] init];
+    });
+    return userManager;
 }
 
 + (void)login{
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-    //get logged in user
-    if ([client isLoggedIn]) {
+    
+    if ([PFUser currentUser]) {
         //user already logged in
         //fetch user in coredata cache(offline) with related objects
-        [client getLoggedInUserOnSuccess:^(NSDictionary *result) {
             
-            NSLog(@"[a]Get SM logged in user: %@", result[@"username"]);
-            [EWUserManagement loginWithCachedDataStore:result[@"username"] withCompletionBlock:^{}];
+        NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
+        [EWUserManagement loginWithCachedDataStore:[PFUser currentUser].username withCompletionBlock:^{}];
             
             
         } onFailure:^(NSError *error) { //failed to get logged in user
             NSLog(@"%s: ======= Failed to get logged in user from SM Cache ======= %@", __func__, error);
             [EWUserManagement showLoginPanel];
-        }];
+        
         
         
     }else{
@@ -77,16 +69,6 @@
     //watch for login event
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
 //login event handled by DataStore
-}
-
-+ (NSArray *)facebookPermissions{
-    NSArray *permissions = @[@"basic_info",
-                             @"user_location",
-                             @"user_birthday",
-                             @"email",
-                             @"user_photos",
-                             @"user_friends"];
-    return permissions;
 }
 
 
@@ -107,90 +89,55 @@
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     hud.labelText = @"Loading";
+
     //fetch
-    NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", username];
-    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];//no use for SM
-    userFetch.returnsObjectsAsFaults = NO;
+    EWPerson *person = [EWPerson MR_findFirstByAttribute:@"username" withValue:username];
+    if (!user) {
+        //Core data user not exist, need to create it from parseUser
+        person = [EWPerson createEntity];
+    }
+    //update person
+    [person updateWithParseObject:[PFUser currentUser]];
+    //save currentUser
+    currentUser = person;
     
-    //cache only
-    __block SMRequestOptions *options = [EWDataStore optionFetchCacheElseNetwork];
     
-    //fetch
-    [[EWDataStore currentContext] executeFetchRequest:userFetch returnManagedObjectIDs:NO successCallbackQueue:nil failureCallbackQueue:nil options:[EWDataStore optionFetchCacheElseNetwork] onSuccess:^(NSArray *results) {
-        
-        if (results.count == 0) {
-            
-            NSLog(@"No local user for %@, fetch from server", username);
-            options = [EWDataStore optionFetchNetworkElseCache];
-            NSArray *newResult = [[EWDataStore currentContext] executeFetchRequestAndWait:userFetch returnManagedObjectIDs:NO options:options error:NULL];
-            currentUser = newResult[0];
-            
+    //background refresh
+    if (completionBlock) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //[context refreshObject:currentUser mergeChanges:YES];
+            //[EWDataStore refreshObjectWithServer:currentUser];
             //completion block
+            NSLog(@"[d] Run completion block.");
             completionBlock();
-        }else{
-            //contineue user log in tasks
-            NSLog(@"[b] User %@ data has fetched from cache as {CurrentUser}", username);
-            
-            //set current user
-            currentUser = results[0];
-            
-            //background refresh
-            if (completionBlock) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    //[context refreshObject:currentUser mergeChanges:YES];
-                    //[EWDataStore refreshObjectWithServer:currentUser];
-                    //completion block
-                    NSLog(@"[d] Run completion block.");
-                    completionBlock();
-                });
-            }
-            
-            
+        });
+    }
+
+        
+    //Broadcast user login event
+    NSLog(@"[c] Broadcast Person login notification");
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:currentUser userInfo:@{kUserLoggedInUserKey:currentUser}];
+
+}
+
++ (void)loginWithTempUser:(void (^)(void))block{
+    [PFAnonymousUtils logInWithBlock:^(PFUser *user, NSError *error) {
+        //get anonymous user, create core data user
+        EWPerson *person = [EWPerson createEntity];
+        [person updateValueFromParseObject:user];
+        currentUser = person;
+        
+        //callback
+        if (block) {
+            block();
         }
         
-        //Broadcast user login event
-        NSLog(@"[c] Broadcast Person login notification");
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-        
-        //login to fb
-        //TODO
-        
-        //HUD
-        //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
-        
-    } onFailure:^(NSError *error) { //fail to fetch user
-        NSLog(@"Failed to fetch logged in user in cache: %@", error.description);
-        // Reset local session info
-        [client.session clearSessionInfo];
-        // fetch remote
-        options = [EWDataStore optionFetchNetworkElseCache];
-        [[EWDataStore currentContext] executeFetchRequest:userFetch
-                                   returnManagedObjectIDs:NO successCallbackQueue:nil
-                                     failureCallbackQueue:nil options:options
-                                                onSuccess:^(NSArray *results) {
-            
-            //assign current user
-            if (results.count == 1) {
-                currentUser = results[0];
-                //completion block
-                completionBlock();
-                //Broadcast user login event
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-            }else{
-                [EWUserManagement loginWithDeviceIDWithCompletionBlock:completionBlock];
-            }
-            
-        } onFailure:^(NSError *error) {
-            
-            //login with device id
-            [EWUserManagement loginWithDeviceIDWithCompletionBlock:completionBlock];
-        }];
-        
+        //broadcast
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:currentUser userInfo:@{kUserLoggedInUserKey:currentUser}];
     }];
 }
 
-//log in using local machine info
+//Depreciated: log in using local machine info
 + (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block{
     //log out fb first
     [FBSession.activeSession closeAndClearTokenInformation];
@@ -260,9 +207,7 @@
         } onFailure:^(NSError *error) {
             //[NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
             EWAlert(@"Server error, please restart app");
-#ifdef DEV_TEST
             [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-#endif
         }];
     }];
 
@@ -408,6 +353,24 @@
 
 
 #pragma mark - FACEBOOK
++ (void)loginParseWithFacebookWithCompletion:(void (^)(void))block{
+    
+    BOOL islinkedWithFb = [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
+    NSAssert(!islinkedWithFb, @"current parse user is linked with facebook, check the logic!");
+    [PFFacebookUtils linkUser:[PFUser currentUser] permissions:[EWUserManagement facebookPermissions] block:^(BOOL succeeded, NSError *error) {
+        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
+            //update with facebook info
+            [EWUserManagement updateUserWithFBData:fb_user];
+            
+        }else{
+            //handle error
+            NSLog(@"Failed to link user with facebook: %@", error.description);
+        }
+    }];
+    
+}
+
+
 + (void)loginUsingFacebookWithCompletion:(void (^)(void))block{
     
     [EWUserManagement openFacebookSessionWithCompletion:^{
@@ -481,10 +444,7 @@
     if(!currentUser){
         NSLog(@"======= Something wrong, currentUser is nil ========");
     }
-    
-    //get current user
-    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
-    currentUser = person;
+    EWPerson *person = currentUser;
     
     //email
     if (!person.email) person.email = user[@"email"];
@@ -501,7 +461,7 @@
     //gender
     person.gender = user[@"gender"];
     //city
-    if (!person.city) person.city = user.location[@"name"];
+    person.city = user.location[@"name"];
     //preference
     if(!person.preference){
         //new user
@@ -518,14 +478,12 @@
         AFImageRequestOperation *operation;
         operation = [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image) {
             currentUser.profilePic = image;
-            [currentUser.managedObjectContext saveOnSuccess:NULL onFailure:^(NSError *error) {
-                NSLog(@"%s: failed to save profile pic when requesting from facebook", __func__);
-            }];
+            [[EWDataStore currentContext] saveToPersistentStoreAndWait];
         }];
         [operation start];
     }
     
-
+    
 }
 
 + (void)getFacebookFriends{
@@ -628,6 +586,16 @@
      }];
 }
 
++ (NSArray *)facebookPermissions{
+    NSArray *permissions = @[@"basic_info",
+                             @"user_location",
+                             @"user_birthday",
+                             @"email",
+                             @"user_photos",
+                             @"user_friends"];
+    return permissions;
+}
+
 
 + (void)handleFacebookException:(NSError *)error{
     NSString *alertText;
@@ -680,34 +648,7 @@
 
 }
 
-//This function has not been used, future change need to be made to LogInVC so that UserManager controls the logic and LogInVC do the UI work.
-+ (void)facebookSessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error{
-    switch (state) {
-        case FBSessionStateOpen:
-            //TODO: Login
-            break;
-            
-        case FBSessionStateOpenTokenExtended:
-            //TODO: Login
-            break;
-            
-        case FBSessionStateClosed:
-            [FBSession.activeSession closeAndClearTokenInformation];
-            //[self updateView];
-            break;
-        case FBSessionStateClosedLoginFailed:
-            [FBSession.activeSession closeAndClearTokenInformation];
-            NSLog(@"*** FB login failed. Session closed");
-            break;
-        default:
-            break;
-    }
-    
-    if (error) {
-        
-        [EWUserManagement handleFacebookException:error];
-    }
-}
+
 
 
 #pragma mark - Weibo SDK
