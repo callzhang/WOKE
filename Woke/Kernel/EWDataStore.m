@@ -22,18 +22,15 @@
 #import "FTWCache.h"
 
 //Global variable
-//NSManagedObjectContext *context;
-AmazonSNSClient *snsClient;
 //NSDate *lastChecked;
 
 @implementation EWDataStore{
     NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
 }
 @synthesize model;
-@synthesize currentContext;
 @synthesize dispatch_queue, coredata_queue;
 @synthesize lastChecked;
-
+@synthesize snsClient;
 
 + (EWDataStore *)sharedInstance{
     
@@ -133,7 +130,7 @@ AmazonSNSClient *snsClient;
     //[self.coreDataStore syncWithServer];
     
     //refresh current user
-    dispatch_async(self.dispatch_queue, ^{
+    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
         NSLog(@"1. Register AWS push key");
         [EWUserManagement registerAPNS];
     });
@@ -147,14 +144,14 @@ AmazonSNSClient *snsClient;
     
     
     //updating facebook friends
-    dispatch_async(self.dispatch_queue, ^{
+    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
         NSLog(@"5. Updating facebook friends");
         [EWUserManagement getFacebookFriends];
     });
     
     
     //update data with timely updates
-    [[EWDataStore sharedInstance] registerServerUpdateService];
+    [EWDataStore registerServerUpdateService];
     
 }
 
@@ -401,7 +398,7 @@ AmazonSNSClient *snsClient;
         NSLog(@"Passed in nil managed object");
         return nil;
     }
-    NSManagedObject * objForCurrentContext = [[EWDataStore sharedInstance].currentContext objectWithID:obj.objectID];
+    NSManagedObject * objForCurrentContext = [[EWDataStore currentContext] objectWithID:obj.objectID];
     return objForCurrentContext;
 }
 
@@ -411,31 +408,110 @@ AmazonSNSClient *snsClient;
 
 #pragma mark - Core Data ManagedObject extension
 @implementation NSManagedObject (PFObject)
-- (void)updateValueFromParseObject:(PFObject *)object{
+- (void)updateValueFromParseObject:(PFObject *)parseObject{
+    
+    //value
     NSMutableDictionary *mutableAttributeValues = [self.entity.attributesByName mutableCopy];
-    [mutableAttributeValues removeObjectForKey:kPFIncrementalStoreResourceIdentifierAttributeName];
-    [mutableAttributeValues removeObjectForKey:kPFIncrementalStoreLastModifiedAttributeName];
-    for (NSString *attributeName in mutableAttributeValues) {
+    //add or delete some attributes here
+    [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
         @try {
-            id parseValue = [parseObject objectForKey:attributeName];
+            id parseValue = [parseObject objectForKey:key];
             if ([parseValue isKindOfClass:[PFFile class]]) {
-                [self setPFFile:parseValue forKey:attributeName];
+                [self setPFFile:parseValue forKey:key];
             } else {
-                [self setValue:parseValue forKey:attributeName];
+                [self setValue:parseValue forKey:key];
             }
             
         }
         @catch (NSException *exception) {
-            NSLog(@"Exception when assign property [%@] from ParseObject: %@", attributeName, parseObject);
+            NSLog(@"Exception when assign property [%@] from ParseObject: %@", key, parseObject);
         }
-    }
+    }];
+    
+    //realtion
+    NSMutableDictionary *relations = [self.entity.relationshipsByName mutableCopy];
+    //add or delete some relations here
+    [relations enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
+        @try {
+            if ([obj isToMany]) {
+                //Fetch PFRelation
+                PFRelation *toManyRelation = [parseObject valueForKey:key];
+                NSArray *relatedObjects = [[toManyRelation query] findObjects];
+                NSMutableSet *relatedMOs = [NSMutableSet set];
+                //TODO:background context
+                for (PFObject *object in relatedObjects) {
+                    //find corresponding MO
+                    NSManagedObjectContext *relatedManagedObject = [[obj.class findAllWithPredicate:[NSPredicate predicateWithFormat:@"objectId == ", object.objectId]] lastObject];
+                    [relatedMOs addObject:relatedManagedObject];
+                }
+                [self setValue:relatedMOs forKey:key];
+            }else{
+                [self setValue:[parseObject valueForKey:key] forKey:key];
+            }
+        }
+        @catch (NSException *exception) {
+            NSLog(@"Failed to assign value of key: %@ from Parse Object %@ to ManagedObject %@", key, parseObject, self);
+        }
+    }];
+    
+    [self.managedObjectContext save:nil];
 }
+
+- (void)setPFFile:(PFFile *)file forKey:(NSString *)attributeName{
+    NSData *data = [file getData];
+    [self setValue:data forKey:attributeName];
+    NSLog(@"Assign data for key: %@ on %@", attributeName, self.class);
+}
+
 @end
 
 #pragma mark - Parse Object extension
 @implementation PFObject (NSManagedObject)
 - (void)updateValueFromManagedObject:(NSManagedObject *)managedObject{
-    //
+    //value
+    NSMutableDictionary *mutableAttributeValues = [managedObject.entity.attributesByName mutableCopy];
+    [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
+        id value = [managedObject valueForKey:key];
+        if (value) {
+            [self setObject:value forKey:key];
+        } else {
+            [self removeObjectForKey:key];
+        }
+    }];
+    
+    //relation
+    NSMutableDictionary *mutableRelationships = [managedObject.entity.relationshipsByName mutableCopy];
+    [mutableRelationships enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
+        id relation = [managedObject valueForKey:key];
+        if (relation){
+            if ([obj isToMany]) {
+                NSSet *relatedMOs = [managedObject valueForKey:key];
+                PFRelation *relatedParseObjects = [self relationForKey:key];
+                for (NSManagedObject *relatedManagedObject in relatedMOs) {
+                    NSString *parseID = [relatedManagedObject valueForKey:kParseObjectID];
+                    if (parseID) {
+                        PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:relatedManagedObject.entity.name objectId:parseID];
+                        [relatedParseObjects addObject:relatedParseObject];
+                        
+                    } else {
+                        //need async block to set the parse relation
+                    }
+                }
+            } else {
+                NSManagedObject *relatedManagedObject = [managedObject valueForKey:key];
+                NSString *parseID = [relatedManagedObject valueForKey:kParseObjectID];
+                if (!parseID) {
+                    PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:managedObject.entity.name objectId:parseID];
+                    [self setObject:relatedParseObject forKey:key];
+                }else{
+                    //need async block to set the parse relation
+                }
+            }
+        }
+        
+    }];
+    
+    [self saveEventually];
 }
 @end
 

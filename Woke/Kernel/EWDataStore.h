@@ -12,14 +12,18 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "AWSRuntime.h"
-#import <AWSSNS/AWSSNS.h>
 #import <Parse/Parse.h>
-
-extern AmazonSNSClient *snsClient;
+#import "AWSSNS.h"
 
 @class EWPerson;
 
+//attribute stored on ManagedObject to identify corresponding PFObject on server
+#define kParseObjectID          @"objectId"
+//Attribute stored on PFObject to identify corresponding ManagedObject on SQLite
+#define kManagedObjectID        @"objectID"
+
 @interface EWDataStore : NSObject
+@property (nonatomic, retain) AmazonSNSClient *snsClient;
 @property (nonatomic, retain) NSManagedObjectModel *model;
 @property (nonatomic, retain) dispatch_queue_t dispatch_queue;//Task dispatch queue runs in serial
 @property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in serial
