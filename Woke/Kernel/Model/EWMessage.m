@@ -13,16 +13,6 @@
 
 @implementation EWMessage
 
-@dynamic createddate;
-@dynamic ewmessage_id;
-@dynamic lastmoddate;
-@dynamic media;
-@dynamic text;
-@dynamic time;
-@dynamic groupTask;
-@dynamic recipient;
-@dynamic sender;
-@dynamic task;
 
 - (id)init
 {

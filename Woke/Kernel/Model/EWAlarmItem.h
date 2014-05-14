@@ -8,27 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "_EWAlarmItem.h"
+
 @class EWTaskItem;
 
-@interface EWAlarmItem : NSManagedObject {}
-@property (nonatomic, retain) NSString * alarmDescription;
-@property (nonatomic, retain) NSDate * createddate;
-@property (nonatomic, retain) NSString * ewalarmitem_id;
-@property (nonatomic, retain) NSNumber * important;
-@property (nonatomic, retain) NSDate * lastmoddate;
+@interface EWAlarmItem : _EWAlarmItem
+@property (nonatomic) BOOL important;
 @property (nonatomic) BOOL state;
-@property (nonatomic, retain) NSDate * time;
-@property (nonatomic, retain) NSString * todo;
-@property (nonatomic, retain) NSString * tone;
-@property (nonatomic, retain) EWPerson *owner;
-@property (nonatomic, retain) NSSet *tasks;
-@end
- 
-@interface EWAlarmItem (CoreDataGeneratedAccessors)
-
-- (void)addTasksObject:(EWTaskItem *)value;
-- (void)removeTasksObject:(EWTaskItem *)value;
-- (void)addTasks:(NSSet *)values;
-- (void)removeTasks:(NSSet *)values;
-
 @end

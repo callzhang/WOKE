@@ -37,6 +37,10 @@
  */
 - (NSString *)date2numberDateString;
 /**
+ return YYYYMMddHHmmssSSSS
+ */
+- (NSString *)date2numberLongString;
+/**
  Compares two dates
  */
 - (BOOL)isEarlierThan:(NSDate *)date;

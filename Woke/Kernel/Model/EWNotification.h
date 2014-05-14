@@ -8,22 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "_EWNotification.h"
 
 @class EWPerson;
 
 @interface EWNotification : NSManagedObject
 
-@property (nonatomic, retain) NSString * body;
-@property (nonatomic, retain) NSDate * completed;
-@property (nonatomic, retain) NSDate *createddate;
-@property (nonatomic, retain) NSString * ewnotification_id;
-@property (nonatomic, retain) NSDate * lastmoddate;
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * type;
-@property (nonatomic, retain) NSDictionary *userInfo;
-@property (nonatomic, retain) NSString * userInfoString;
-@property (nonatomic, retain) EWPerson *owner;
-@property (nonatomic, retain) NSString * sender;
 @property (nonatomic) int64_t importance;
+@property (nonatomic, retain) NSDictionary *lastLocation;
+@property (nonatomic, retain) NSDictionary *userInfo;
 
 @end

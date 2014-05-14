@@ -12,14 +12,6 @@
 
 @implementation EWAchievement
 
-@dynamic name;
-@dynamic ewachievement_id;
-@dynamic image_key;
-@dynamic explaination;
-@dynamic time;
-@dynamic type;
-@dynamic owner;
-
 @synthesize image;
 
 

@@ -17,17 +17,8 @@
 
 @implementation EWAlarmItem
 
-@dynamic alarmDescription;
-@dynamic state;
-@dynamic owner;
-@dynamic tasks;
-@dynamic tone;
 @dynamic important;
-@dynamic todo;
-@dynamic ewalarmitem_id;
-@dynamic time;
-@dynamic createddate;
-@dynamic lastmoddate;
+@dynamic state;
 
 
 @end

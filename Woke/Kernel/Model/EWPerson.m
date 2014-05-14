@@ -88,15 +88,9 @@
     
     NSData *picData = UIImagePNGRepresentation(pic);
     //update cache
-    [[EWDataStore sharedInstance] updateCacheForKey:self.profilePicKey.MD5Hash withData:picData];
+    [[EWDataStore sharedInstance] updateCacheForKey:self.profilePicKey withData:picData];
     
-    //update server
-    self.profilePicKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"profilePic.png" contentType:@"image/png"];
-    
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"Profile not saved");
-    }];
-    
+    [[EWDataStore currentContext] saveToPersistentStoreAndWait];
 }
 
 - (UIImage *)bgImage{

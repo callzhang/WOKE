@@ -92,30 +92,30 @@ AmazonSNSClient *snsClient;
     return model;
 }
 
-- (void)save{
++ (void)save{
 
     //save on current thread
-    [[EWDataStore currentContext] save:nil];
+    [[EWDataStore currentContext] saveToPersistentStoreAndWait];
     
     //save on designated thread
 
 }
 
-- (NSManagedObjectContext *)currentContext{
++ (NSManagedObjectContext *)currentContext{
     if ([NSThread isMainThread]) {
-        return currentContext;
+        return [EWDataStore currentContext];
     }
     [NSException raise:@"Core Data context is not allowed to run off the main thread" format:@"Check you code!"];
     return nil;
 }
 
-- (NSDate *)lastChecked{
++ (NSDate *)lastChecked{
     NSUserDefaults *defalts = [NSUserDefaults standardUserDefaults];
     NSDate *timeStamp = [defalts objectForKey:kLastChecked];
     return timeStamp;
 }
 
-- (void)setLastChecked:(NSDate *)time{
++ (void)setLastChecked:(NSDate *)time{
     if (time) {
         NSUserDefaults *defalts = [NSUserDefaults standardUserDefaults];
         [defalts setObject:time forKey:kLastChecked];
@@ -125,7 +125,7 @@ AmazonSNSClient *snsClient;
 
 
 #pragma mark - Login Check
-- (void)loginDataCheck{
++ (void)loginDataCheck{
     NSLog(@"========> %s <=========", __func__);
     
     //change fetch policy
@@ -159,7 +159,7 @@ AmazonSNSClient *snsClient;
 }
 
 
-- (void)checkAlarmData{
++ (void)checkAlarmData{
     NSInteger nAlarm = [[EWAlarmManager sharedInstance] alarmsForUser:currentUser].count;
     NSInteger nTask = [EWTaskStore myTasks].count;
     if (nTask == 0 && nAlarm == 0) {
@@ -188,7 +188,7 @@ AmazonSNSClient *snsClient;
 }
 
 #pragma mark - DATA from Amazon S3
-- (NSData *)getRemoteDataWithKey:(NSString *)key{
++ (NSData *)getRemoteDataWithKey:(NSString *)key{
     if (!key) {
         return nil;
     }
@@ -238,7 +238,7 @@ AmazonSNSClient *snsClient;
 
 #pragma mark - local cache
 
-- (NSString *)localPathForKey:(NSString *)key{
++ (NSString *)localPathForKey:(NSString *)key{
     if (key.length > 500) {
         NSLog(@"*** Something wrong with url, the url contains data");
         return nil;
@@ -256,16 +256,22 @@ AmazonSNSClient *snsClient;
     return path;
 }
 
-- (void)updateCacheForKey:(NSString *)key withData:(NSData *)data{
++ (void)updateCacheForKey:(NSString *)key withData:(NSData *)data{
+    if (!key) {
+        key = [[NSDate date] date2numberLongString]];
+        NSLog(@"Assigned new key %@", key);
+    }
+    
     if (key.length == 15) {
         [NSException raise:@"Passed in MD5 value" format:@"Please provide original url string"];
     }
+    
     NSString *hashKey = [key MD5Hash];
     [FTWCache setObject:data forKey:hashKey];
     
 }
 
-- (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key{
++ (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key{
     if (!key) {
         return nil;
     }
@@ -280,7 +286,7 @@ AmazonSNSClient *snsClient;
     return nil;
 }
 
-- (void)deleteCacheForKey:(NSString *)key{
++ (void)deleteCacheForKey:(NSString *)key{
     if (!key) return;
     NSString *path = [self localPathForKey:key];
     if (path){
@@ -293,12 +299,12 @@ AmazonSNSClient *snsClient;
 }
 
 #pragma mark - Timely sync
-- (void)registerServerUpdateService{
++ (void)registerServerUpdateService{
     self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:serverUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:nil repeats:0];
     [self serverUpdate:nil];
 }
      
-- (void)serverUpdate:(NSTimer *)timer{
++ (void)serverUpdate:(NSTimer *)timer{
     //services that need to run periodically
     NSLog(@"%s: Start sync service", __func__);
     
@@ -406,7 +412,23 @@ AmazonSNSClient *snsClient;
 #pragma mark - Core Data ManagedObject extension
 @implementation NSManagedObject (PFObject)
 - (void)updateValueFromParseObject:(PFObject *)object{
-    //
+    NSMutableDictionary *mutableAttributeValues = [self.entity.attributesByName mutableCopy];
+    [mutableAttributeValues removeObjectForKey:kPFIncrementalStoreResourceIdentifierAttributeName];
+    [mutableAttributeValues removeObjectForKey:kPFIncrementalStoreLastModifiedAttributeName];
+    for (NSString *attributeName in mutableAttributeValues) {
+        @try {
+            id parseValue = [parseObject objectForKey:attributeName];
+            if ([parseValue isKindOfClass:[PFFile class]]) {
+                [self setPFFile:parseValue forKey:attributeName];
+            } else {
+                [self setValue:parseValue forKey:attributeName];
+            }
+            
+        }
+        @catch (NSException *exception) {
+            NSLog(@"Exception when assign property [%@] from ParseObject: %@", attributeName, parseObject);
+        }
+    }
 }
 @end
 

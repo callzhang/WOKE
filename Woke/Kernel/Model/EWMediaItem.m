@@ -17,27 +17,11 @@
 
 @implementation EWMediaItem
 
-@dynamic created;
-@dynamic buzzKey;
 @synthesize image;
-@dynamic imageKey;
-@dynamic videoKey;
 @synthesize audio;
-@dynamic audioKey;
-@dynamic fixedDate;
-@dynamic message;
 @synthesize thumbnail;
-@dynamic title;
-@dynamic author;
 @dynamic priority;
-@dynamic task;
-@dynamic groupTask;
-@dynamic createddate;
-@dynamic lastmoddate;
-@dynamic ewmediaitem_id;
-@dynamic type;
 @dynamic played;
-@dynamic receiver;
 
 - (id)init
 {
@@ -72,9 +56,7 @@
     //update server
     self.imageKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"media.png" contentType:@"image/png"];
     
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"Image not saved");
-    }];
+    [[EWDataStore currentContext] save];
 }
 
 #pragma mark - AUDIO
