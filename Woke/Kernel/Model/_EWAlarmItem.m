@@ -4,11 +4,11 @@
 #import "_EWAlarmItem.h"
 
 const struct EWAlarmItemAttributes EWAlarmItemAttributes = {
-	.alarmDescription = @"alarmDescription",
 	.createdAt = @"createdAt",
 	.important = @"important",
 	.objectId = @"objectId",
 	.state = @"state",
+	.statement = @"statement",
 	.time = @"time",
 	.todo = @"todo",
 	.tone = @"tone",
@@ -62,13 +62,6 @@ const struct EWAlarmItemFetchedProperties EWAlarmItemFetchedProperties = {
 
 	return keyPaths;
 }
-
-
-
-
-@dynamic alarmDescription;
-
-
 
 
 
@@ -134,6 +127,13 @@ const struct EWAlarmItemFetchedProperties EWAlarmItemFetchedProperties = {
 - (void)setPrimitiveStateValue:(BOOL)value_ {
 	[self setPrimitiveState:[NSNumber numberWithBool:value_]];
 }
+
+
+
+
+
+@dynamic statement;
+
 
 
 

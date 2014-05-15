@@ -12,7 +12,7 @@ extern const struct EWNotificationAttributes {
 	__unsafe_unretained NSString *sender;
 	__unsafe_unretained NSString *type;
 	__unsafe_unretained NSString *updatedAt;
-	__unsafe_unretained NSString *userInfoString;
+	__unsafe_unretained NSString *userInfo;
 } EWNotificationAttributes;
 
 extern const struct EWNotificationRelationships {
@@ -31,7 +31,7 @@ extern const struct EWNotificationFetchedProperties {
 
 
 
-
+@class NSObject;
 
 @interface EWNotificationID : NSManagedObjectID {}
 @end
@@ -120,11 +120,11 @@ extern const struct EWNotificationFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* userInfoString;
+@property (nonatomic, strong) id userInfo;
 
 
 
-//- (BOOL)validateUserInfoString:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateUserInfo:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -192,8 +192,8 @@ extern const struct EWNotificationFetchedProperties {
 
 
 
-- (NSString*)primitiveUserInfoString;
-- (void)setPrimitiveUserInfoString:(NSString*)value;
+- (id)primitiveUserInfo;
+- (void)setPrimitiveUserInfo:(id)value;
 
 
 

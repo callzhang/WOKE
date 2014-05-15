@@ -4,9 +4,9 @@
 #import "_EWAchievement.h"
 
 const struct EWAchievementAttributes EWAchievementAttributes = {
+	.body = @"body",
 	.createdAt = @"createdAt",
-	.explaination = @"explaination",
-	.image_key = @"image_key",
+	.imageKey = @"imageKey",
 	.name = @"name",
 	.objectId = @"objectId",
 	.time = @"time",
@@ -54,6 +54,13 @@ const struct EWAchievementFetchedProperties EWAchievementFetchedProperties = {
 
 
 
+@dynamic body;
+
+
+
+
+
+
 @dynamic createdAt;
 
 
@@ -61,14 +68,7 @@ const struct EWAchievementFetchedProperties EWAchievementFetchedProperties = {
 
 
 
-@dynamic explaination;
-
-
-
-
-
-
-@dynamic image_key;
+@dynamic imageKey;
 
 
 

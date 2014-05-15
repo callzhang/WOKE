@@ -11,7 +11,7 @@ const struct EWNotificationAttributes EWNotificationAttributes = {
 	.sender = @"sender",
 	.type = @"type",
 	.updatedAt = @"updatedAt",
-	.userInfoString = @"userInfoString",
+	.userInfo = @"userInfo",
 };
 
 const struct EWNotificationRelationships EWNotificationRelationships = {
@@ -127,7 +127,7 @@ const struct EWNotificationFetchedProperties EWNotificationFetchedProperties = {
 
 
 
-@dynamic userInfoString;
+@dynamic userInfo;
 
 
 

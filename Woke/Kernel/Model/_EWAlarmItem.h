@@ -5,11 +5,11 @@
 
 
 extern const struct EWAlarmItemAttributes {
-	__unsafe_unretained NSString *alarmDescription;
 	__unsafe_unretained NSString *createdAt;
 	__unsafe_unretained NSString *important;
 	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *state;
+	__unsafe_unretained NSString *statement;
 	__unsafe_unretained NSString *time;
 	__unsafe_unretained NSString *todo;
 	__unsafe_unretained NSString *tone;
@@ -45,16 +45,6 @@ extern const struct EWAlarmItemFetchedProperties {
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
 - (EWAlarmItemID*)objectID;
-
-
-
-
-
-@property (nonatomic, strong) NSString* alarmDescription;
-
-
-
-//- (BOOL)validateAlarmDescription:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -103,6 +93,16 @@ extern const struct EWAlarmItemFetchedProperties {
 - (void)setStateValue:(BOOL)value_;
 
 //- (BOOL)validateState:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
+@property (nonatomic, strong) NSString* statement;
+
+
+
+//- (BOOL)validateStatement:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -177,12 +177,6 @@ extern const struct EWAlarmItemFetchedProperties {
 @interface _EWAlarmItem (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString*)primitiveAlarmDescription;
-- (void)setPrimitiveAlarmDescription:(NSString*)value;
-
-
-
-
 - (NSDate*)primitiveCreatedAt;
 - (void)setPrimitiveCreatedAt:(NSDate*)value;
 
@@ -209,6 +203,12 @@ extern const struct EWAlarmItemFetchedProperties {
 
 - (BOOL)primitiveStateValue;
 - (void)setPrimitiveStateValue:(BOOL)value_;
+
+
+
+
+- (NSString*)primitiveStatement;
+- (void)setPrimitiveStatement:(NSString*)value;
 
 
 

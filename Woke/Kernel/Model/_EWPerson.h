@@ -16,7 +16,7 @@ extern const struct EWPersonAttributes {
 	__unsafe_unretained NSString *lastLocation;
 	__unsafe_unretained NSString *name;
 	__unsafe_unretained NSString *objectId;
-	__unsafe_unretained NSString *preferenceString;
+	__unsafe_unretained NSString *preference;
 	__unsafe_unretained NSString *profilePicKey;
 	__unsafe_unretained NSString *region;
 	__unsafe_unretained NSString *statement;
@@ -73,7 +73,7 @@ extern const struct EWPersonFetchedProperties {
 @class NSObject;
 
 
-
+@class NSObject;
 
 
 
@@ -204,11 +204,11 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* preferenceString;
+@property (nonatomic, strong) id preference;
 
 
 
-//- (BOOL)validatePreferenceString:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validatePreference:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -525,8 +525,8 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSString*)primitivePreferenceString;
-- (void)setPrimitivePreferenceString:(NSString*)value;
+- (id)primitivePreference;
+- (void)setPrimitivePreference:(id)value;
 
 
 

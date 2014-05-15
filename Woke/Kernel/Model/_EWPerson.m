@@ -15,7 +15,7 @@ const struct EWPersonAttributes EWPersonAttributes = {
 	.lastLocation = @"lastLocation",
 	.name = @"name",
 	.objectId = @"objectId",
-	.preferenceString = @"preferenceString",
+	.preference = @"preference",
 	.profilePicKey = @"profilePicKey",
 	.region = @"region",
 	.statement = @"statement",
@@ -155,7 +155,7 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 
 
-@dynamic preferenceString;
+@dynamic preference;
 
 
 

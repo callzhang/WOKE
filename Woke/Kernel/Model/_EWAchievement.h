@@ -5,9 +5,9 @@
 
 
 extern const struct EWAchievementAttributes {
+	__unsafe_unretained NSString *body;
 	__unsafe_unretained NSString *createdAt;
-	__unsafe_unretained NSString *explaination;
-	__unsafe_unretained NSString *image_key;
+	__unsafe_unretained NSString *imageKey;
 	__unsafe_unretained NSString *name;
 	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *time;
@@ -46,7 +46,17 @@ extern const struct EWAchievementFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* createdAt;
+@property (nonatomic, strong) NSString* body;
+
+
+
+//- (BOOL)validateBody:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
+@property (nonatomic, strong) NSDate* createdAt;
 
 
 
@@ -56,21 +66,11 @@ extern const struct EWAchievementFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* explaination;
+@property (nonatomic, strong) NSString* imageKey;
 
 
 
-//- (BOOL)validateExplaination:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSString* image_key;
-
-
-
-//- (BOOL)validateImage_key:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateImageKey:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -143,20 +143,20 @@ extern const struct EWAchievementFetchedProperties {
 @interface _EWAchievement (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSString*)value;
+- (NSString*)primitiveBody;
+- (void)setPrimitiveBody:(NSString*)value;
 
 
 
 
-- (NSString*)primitiveExplaination;
-- (void)setPrimitiveExplaination:(NSString*)value;
+- (NSDate*)primitiveCreatedAt;
+- (void)setPrimitiveCreatedAt:(NSDate*)value;
 
 
 
 
-- (NSString*)primitiveImage_key;
-- (void)setPrimitiveImage_key:(NSString*)value;
+- (NSString*)primitiveImageKey;
+- (void)setPrimitiveImageKey:(NSString*)value;
 
 
 
