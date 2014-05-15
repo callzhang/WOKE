@@ -21,6 +21,10 @@
 #define kParseObjectID          @"objectId"
 //Attribute stored on PFObject to identify corresponding ManagedObject on SQLite
 #define kManagedObjectID        @"objectID"
+//Parse update queue
+#define kParseQueueInsert       @"parse_queue_insert"
+#define kParseQueueUpdate       @"parse_queue_update"
+#define kParseQueueDelete       @"parse_queue_delete"
 
 @interface EWDataStore : NSObject
 @property (nonatomic, retain) AmazonSNSClient *snsClient;
@@ -75,11 +79,52 @@
 + (NSManagedObject *)getManagedObjectFromParseObject:(PFObject *)object;
 + (PFObject *)getParseObjectFromManagedObject:(NSManagedObject *)managedObject;
 
+#pragma mark - Parse Server methods
+/**
+ The main method of server update/insert/delete.
+ And save ManagedObject.
+ @discussion Use this method to update server and save. Replace this method with any ManagedObjectContext save method. Concurrency is NOT supported. Please call it on main thread.
+ */
++ (void)updateToServerAndSave;
+
+/**
+ Refresh ManagedObject value from server
+ */
++ (void)refreshManagedObject:(NSManagedObject *)managedObject;
+
+/**
+ Update or Insert PFObject according to given ManagedObject
+ */
++ (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject;
+
+/**
+ Delete PFObject according to given ManagedObject
+ */
++ (void)deleteParseObjectWithManagedObject:(NSManagedObject *)managedObject;
+
+/**
+ Perform save callback for managedObject
+ */
++ (void)performSaveCallbacksWithParseObject:(PFObject *)parseObject andManagedObjectID:(NSManagedObjectID *)managedObjectID;
+/**
+ Access Global Save Callback dictionary and add blcok with key of ManagedObjectID
+ */
++ (void)addSaveCallback:(PFObjectResultBlock)callback forManagedObjectID:(NSManagedObjectID *)objectID;
 @end
+
+
 
 #pragma mark - Core Data ManagedObject extension
 @interface NSManagedObject (PFObject)
 - (void)updateValueFromParseObject:(PFObject *)object;
+/**
+ Save ManagedObjectID into update queue in userDefaults
+ */
+- (void)updateEventually;
+/**
+ Save ManagedObjectID into delete queue in userDefaults
+ */
+- (void)deleteEventually;
 @end
 
 #pragma mark - Parse Object extension

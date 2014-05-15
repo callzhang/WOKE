@@ -24,13 +24,18 @@
 //Global variable
 //NSDate *lastChecked;
 
-@implementation EWDataStore{
-    NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
-}
+@interface EWDataStore()
+@property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
+@property NSMutableDictionary *parseSaveCallbacks;
+@end
+
+@implementation EWDataStore
+@synthesize context;
 @synthesize model;
 @synthesize dispatch_queue, coredata_queue;
 @synthesize lastChecked;
 @synthesize snsClient;
+@synthesize parseSaveCallbacks;
 
 + (EWDataStore *)sharedInstance{
     
@@ -60,7 +65,7 @@
         
         //core data
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
-        context = [NSManagedObjectContext MR_defaultContext];
+        context = [NSManagedObjectContext defaultContext];
         
         //facebook
         [PFFacebookUtils initializeFacebook];
@@ -402,6 +407,148 @@
     return objForCurrentContext;
 }
 
+
+
+#pragma mark - Parse Server methods
++(void)updateToServerAndSave{
+    
+    //get a list of ManagedObject to insert/Update/Delete
+    NSMutableArray *insertedManagedObjects = [MagicalRecord defaultContext].insertedObejcts;
+    NSMutableArray *updatedManagedObjects = [MagicalRecord defaultContext].updatedObejcts;
+    NSMutableArray *deletedManagedObjects = [MagicalRecord defaultContext].deletedObejcts;
+    
+    //perform network calls
+    for (NSManagedObject *managedObject in insertedManagedObjects) {
+        [EWDataStore updateParseObjectFromManagedObject:managedObject];
+    }
+    
+    for (NSManagedObject *managedObject in updatedManagedObjects) {
+        [EWDataStore updateParseObjectFromManagedObject:managedObject];
+    }
+    
+    for (NSManagedObject *managedObject in deletedManagedObjects) {
+        [EWDataStore deleteParseObjectWithManagedObject:managedObject];
+    }
+    
+    //save core data
+    [MagicalRecord saveToPersistentStoreAndWait];
+}
+
++ (void)refreshManagedObject:(NSManagedObject *)managedObject{
+    NSString *parseObjectId = managedObject.objectId;
+    PFObject *object;
+    if (!parseObjectId) {
+        NSLog(@"@@@ Updating a managedObject without a parseID, insert first");
+        [EWDataStore updateParseObjectFromManagedObject:managedObject];
+    }else{
+        [[PFQuery queryWithClassName:managedObject.entity.name] getObjectInBackgroundWithId:parseObjectId block:^(PFObject *object, NSError *error) {
+            [managedObject updateValueFromParseObject:object];
+        }];
+        [MagicalRecord saveToPersistentStoreAndWait];
+    }
+    
+    
+}
+
++ (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject{
+    NSString *parseObjectId = managedObject.objectId;
+    PFObject *object;
+    if (parseObjectId) {
+        //update
+        object = [[PFQuery queryWithClassName:managedObject.entity.name] getObjectWithId:parseObjectId];
+        if (!object) {
+            [managedObject updateEventually];
+            return;
+        }
+    } else {
+        //insert
+        object = [PFObject objectWithClassName:managedObject.entity.name];
+    }
+    
+    //set Parse value and store callback block
+    [object updateValueFromManagedObject:managedObject];
+    //save
+    [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(@"Saved to server: %@", managedObject.entity.name);
+            //assign connection between MO and PO
+            managedObject.objectId = object.objectId;
+            [EWDataStore performSaveCallbackForManagedObjectID: managedObject.objectID];
+            [[EWDataStore currentContext] save:nil];
+        } else {
+            NSLog(@"Failed to save server object");
+            [managedObject updateEventually];
+        }
+    }];
+    
+    //save
+    //[MagicalRecord saveToPersistentStoreAndWait];
+}
+
++ (void)deleteParseObjectWithManagedObject:(NSManagedObject *)managedObject{
+    PFQuery *query = [PFQuery queryWithClassName:managedObject.entity.name];
+    NSString *parseID = [managedObject valueForKey:kParseObjectID];
+    if (parseID) {
+        [query getObjectInBackgroundWithId:parseID block:^(PFObject *object, NSError *error) {
+            if (error) {
+                NSLog(@"Failed to delete Parse Object %@ (%@)", managedObject, parseID);
+            }else{
+                //delete async
+                [object deleteEventually];
+                
+                //delete MO
+                [[MagicalRecord defaultContext] deleteObject:managedObject];
+            }
+        }];
+    }else{
+        //delete MO directly
+        [[MagicalRecord defaultContext] deleteObject:managedObject];
+    }
+    
+}
+
+
+- (NSMutableDictionary *)parseSaveCallbacks{
+    if (!parseSaveCallbacks) {
+        parseSaveCallbacks = [NSMutableDictionary dictionary];
+    }
+    return parseSaveCallbacks;
+}
+
+
++ (void)performSaveCallbacksWithParseObject:(PFObject *)parseObject andManagedObjectID:(NSManagedObjectID *)managedObjectID {
+    NSArray *saveCallbacks = [[[EWDataStore sharedInstance] parseSaveCallbacks] objectForKey:managedObjectID];
+    if (saveCallbacks != nil) {
+        for (PFObjectResultBlock callback in saveCallbacks) {
+            callback(parseObject, nil);
+        }
+        [[self parseSaveCallbacks] removeObjectForKey:managedObjectID];
+    }
+}
+
+
++ (void)addSaveCallback:(PFObjectResultBlock)callback forManagedObjectID:(NSManagedObjectID *)objectID{
+    //get global save callback
+    NSMutableDictionary *saveCallbacks = [EWDataStore sharedInstance].parseSaveCallbacks;
+    NSMutableArray *callbacks = [saveCallbacks objectForKey:objectID]?:[NSMutableArray array];
+    [callbacks addObject:callbacks];
+    //save
+    [saveCallbacks setObject:callbacks forKey:objectID];
+}
+
+
+/**
+ Exeute the save callback blocks for ManagedObjectID with returning PFObject
+ */
++ (void)performSaveCallbacksWithParseObject:(PFObject *)parseObject andManagedObjectID:(NSManagedObjectID *)managedObjectID{
+    NSArray *saveCallbacks = [[[EWDataStore sharedInstance] parseSaveCallbacks] objectForKey:managedObjectID];
+    if (saveCallbacks) {
+        for (PFObjectResultBlock callback in saveCallbacks) {
+            callback(parseObject, nil);
+        }
+        [[self parseSaveCallbacks] removeObjectForKey:managedObjectID];
+    }
+}
 @end
 
 
@@ -430,13 +577,24 @@
     
     //realtion
     NSMutableDictionary *relations = [self.entity.relationshipsByName mutableCopy];
-    //add or delete some relations here
     [relations enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
         @try {
             if ([obj isToMany]) {
                 //Fetch PFRelation
                 PFRelation *toManyRelation = [parseObject valueForKey:key];
                 NSArray *relatedObjects = [[toManyRelation query] findObjects];
+                
+                //delete related MO if not on server relation async
+                [[toManyRelation query] findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    NSMutableArray *relatedManagedObjects = [[self valueForKey:key] allObjects];
+                    [relatedManagedObjects filterUsingPredicate:[NSPredicate predicateWithFormat:@"%@ NOT IN %@", [objects valueForKey:kParseObjectID]]];
+                    [self willChangeValueForKey:key];
+                    [self setValue:[relatedObjects copy] forKey:key];
+                    [self didChangeValueForKey:key];
+                    
+                    [MagicalRecord saveToPersistentStoreAndWait];
+                }];
+                
                 NSMutableSet *relatedMOs = [NSMutableSet set];
                 //TODO:background context
                 for (PFObject *object in relatedObjects) {
@@ -463,6 +621,41 @@
     NSLog(@"Assign data for key: %@ on %@", attributeName, self.class);
 }
 
+
+- (void)updateEventually{
+    BOOL hasParseObjectLinked = self.objectId?YES:NO;
+    if (hasParseObjectLinked) {
+        NSMutableArray *updateQueue = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kParseQueueUpdate];
+        if (!updateQueue) {
+            updateQueue = [NSMutableArray array];
+        }
+        [updateQueue addObject:self.objectID];
+        [[NSUserDefaults standardUserDefaults] setObject:updateQueue forKey:kParseQueueUpdate];
+    }else{
+        NSMutableArray *insertQueue = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kParseQueueInsert];
+        if (!insertQueue) {
+            insertQueue = [NSMutableArray array];
+        }
+        [insertQueue addObject:self.objectID];
+        [[NSUserDefaults standardUserDefaults] setObject:insertQueue forKey:kParseQueueInsert];
+    }
+    
+}
+
+- (void)deleteEventually{
+    BOOL hasParseObjectLinked = self.objectId?YES:NO;
+    if (hasParseObjectLinked) {
+        NSMutableArray *deleteQueue = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kParseQueueDelete];
+        if (!deleteQueue) {
+            deleteQueue = [NSMutableArray array];
+        }
+        [deleteQueue addObject:self.objectID];
+        [[NSUserDefaults standardUserDefaults] setObject:deleteQueue forKey:kParseQueueDelete];
+    }else{
+        NSLog(@"@@@ You are trying to delete an ManagedObject that doesn't have a corresponding Server Object.");
+    }
+}
+
 @end
 
 #pragma mark - Parse Object extension
@@ -482,36 +675,78 @@
     //relation
     NSMutableDictionary *mutableRelationships = [managedObject.entity.relationshipsByName mutableCopy];
     [mutableRelationships enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
-        id relation = [managedObject valueForKey:key];
-        if (relation){
+        id relationship = [managedObject valueForKey:key];
+        if (relationship){
             if ([obj isToMany]) {
+                //To-Many relation
+                //Parse relation
+                PFRelation *parseRelation = [self relationForKey:key];
+                //Find related PO to delete async
+                [[parseRelation query] findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    NSMutableArray *relatedParseObjects = [objects mutableCopy];
+                    if (relatedParseObjects.count) {
+                        NSArray *relatedParseObjectsToDelete = [relatedParseObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"objectId NOT IN %@", [relatedManagedObject valueForKey:@"objectId"]]];
+                        for (PFObject *PO in relatedParseObjectsToDelete) {
+                            [parseRelation removeObject:PO];
+                        }
+                    }
+                }];
+                
+                //related managedObject that needs to add
                 NSSet *relatedMOs = [managedObject valueForKey:key];
-                PFRelation *relatedParseObjects = [self relationForKey:key];
                 for (NSManagedObject *relatedManagedObject in relatedMOs) {
                     NSString *parseID = [relatedManagedObject valueForKey:kParseObjectID];
                     if (parseID) {
+                        //the pfobject already exists, need to inspect PFRelation to determin add or remove
                         PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:relatedManagedObject.entity.name objectId:parseID];
-                        [relatedParseObjects addObject:relatedParseObject];
+                        //[relatedParseObject fetchIfNeeded];
+                        [parseRelation addObject:relatedParseObject];
                         
                     } else {
-                        //need async block to set the parse relation
+                        __block PFObject *blockObject = self;
+                        __block PFRelation *blockParseRelation = parseRelation;
+                        //set up a saving block
+                        PFObjectResultBlock connectRelationship = ^(PFObject *object, NSError *error) {
+                            //the relation can only be additive, which is not a problem for new relation
+                            [blockParseRelation addObject:object];
+                            [blockObject saveInBackground];
+                        };
+                        //save saving block in global saving dictionary
+                        if (saveCallbacks) {
+                            if (![*saveCallbacks objectForKey:relatedManagedObject.objectID]) {
+                                [*saveCallbacks setObject:[NSMutableArray array]
+                                                   forKey:relatedManagedObject.objectID];
+                            }
+                            [[*saveCallbacks objectForKey:relatedManagedObject.objectID] addObject:connectRelationship];
+                        }
+
+                        
                     }
                 }
             } else {
+                //TO-One relation
                 NSManagedObject *relatedManagedObject = [managedObject valueForKey:key];
                 NSString *parseID = [relatedManagedObject valueForKey:kParseObjectID];
                 if (!parseID) {
                     PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:managedObject.entity.name objectId:parseID];
                     [self setObject:relatedParseObject forKey:key];
                 }else{
-                    //need async block to set the parse relation
+                    //MO doesn't have parse id, save to parse
+                    __block PFObject *blockObject = self;
+                    //set up a saving block
+                    PFObjectResultBlock connectRelationship = ^(PFObject *object, NSError *error) {
+                        [blockObject setObject:object forKey:relation.name];
+                        [blockObject saveEventually];//relationship can be saved regardless of network condition.
+                    };
+                    //add to global save callback distionary
+                    [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:managedObject.objectID];
                 }
             }
         }
         
     }];
-    
-    [self saveEventually];
+    //Only save when network is available so that MO can link with PO
+    //[self saveEventually];
 }
 @end
 
