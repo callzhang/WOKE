@@ -18,6 +18,7 @@
  */
 + (void)login;
 + (void)showLoginPanel;
++ (EWPerson *)currentUser;
 /**
  Login with username for cached coredata info
  */

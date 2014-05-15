@@ -262,9 +262,7 @@
     if ([task.time isEarlierThan:time]) {
         task.completed = time;
     }
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"Failed to save wakeup time for task");
-    }];
+    [EWDataStore save];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self scrollViewDidScroll:self.tableView];//prevent header move
@@ -305,7 +303,7 @@
     }
     
     //date
-    cell.date.text = [mi.createddate date2String];
+    cell.date.text = [mi.createdAt date2String];
     
     //set image
     cell.profilePic.image = mi.author.profilePic;
@@ -347,12 +345,7 @@
         
         //delete
         [[EWMediaStore sharedInstance] deleteMedia:mi];
-        [[EWDataStore currentContext] saveOnSuccess:^{
-            [self initData];//refresh
-            [rootViewController.view showSuccessNotification:@"Deleted"];
-        } onFailure:^(NSError *error) {
-            [rootViewController.view showNotification:@"Failed to delete" WithStyle:hudStyleFailed];
-        }];
+        [EWDataStore save];
         
         
         //update UI

@@ -14,7 +14,6 @@
 #import "EWAlarmItem.h"
 #import "EWAlarmManager.h"
 #import "NSDate+Extend.h"
-#import "StackMob.h"
 #import "EWDataStore.h"
 
 @interface EWTaskStore(){
@@ -66,7 +65,7 @@
 - (NSArray *)getTasksByPerson:(EWPerson *)p{
     EWPerson *person = [EWDataStore objectForCurrentContext:p];
     NSMutableArray *tasks = [[person.tasks allObjects] mutableCopy];
-    [tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time >= %@", [NSDate date]]];
+    [tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time >= %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]]];
     
     if ([person.username isEqualToString:currentUser.username]) {
         //check past task, move it to pastTasks and remove it from the array
@@ -88,7 +87,7 @@
 }
 
 + (NSArray *)myTasks{
-    return [[EWTaskStore sharedInstance] getTasksByPerson:[EWDataStore user]];
+    return [[EWTaskStore sharedInstance] getTasksByPerson:currentUser];
 }
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
@@ -98,11 +97,11 @@
     }else{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWTaskItem"];
         NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"pastOwner == %@", currentUser];
-        NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time < %@", [NSDate date]];
+        NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
         NSPredicate *predicate3 = [NSPredicate predicateWithFormat:@"state == %@", @YES];
         request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2, predicate3]];
         //request.sortDescriptors = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
-        tasks = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
+        tasks = [EWTaskItem executeFetchRequest:request];
         //save to person
         person.pastTasks = [NSSet setWithArray:tasks];
     }
@@ -136,7 +135,6 @@
         }
     }
     return nil;
-
 }
 
 //next task
@@ -231,17 +229,7 @@
             }
         }
     }
-    if (newTaskNotify) {
-        NSLog(@"Save new tasks and broadcast notification");
-        
-        //save
-        [[EWDataStore currentContext] saveAndWait:NULL];
-        
-        
-        
-    }
-    
-    
+   
     //check data integrety
     if (tasks.count > 0) {
         NSLog(@"*** After removing valid task and past task, there are still %lu tasks left", (unsigned long)tasks.count);
@@ -252,17 +240,11 @@
     
     //save
     if (hasOutDatedTask || newTaskNotify) {
-        [[EWDataStore currentContext] saveOnSuccess:^{
-            //notification of new task (to interface)
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSLog(@"Task updated, sending kTaskNewNotification");
-                [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
-            });
-        } onFailure:^(NSError *error) {
-            NSLog(@"Unable to save new tasks: %@", error.description);
-        }];
+        
+        [EWDataStore updateToServerAndSave];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
+        
     }
-    
     
     //last checked
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
@@ -286,15 +268,13 @@
         t.owner = nil;
         t.pastOwner = [EWDataStore user];
         [tasks removeObject:t];
-        NSLog(@"Past task on %@ moved", [t.time date2dayString]);
+        NSLog(@"====== Task on %@ moved to past ======", [t.time date2dayString]);
         [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
         isOutDated = YES;
     }
     
     if (isOutDated) {
-        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-            NSLog(@"@@@ Failed to save past task chenges");
-        }];
+        [EWDataStore updateToServerAndSave];
     }
     
     return isOutDated;
@@ -303,19 +283,12 @@
 #pragma mark - NEW
 - (EWTaskItem *)newTask{
     
-    EWTaskItem *t = [NSEntityDescription insertNewObjectForEntityForName:@"EWTaskItem" inManagedObjectContext:[EWDataStore currentContext]];
-    //assign id
-    [t assignObjectId];
+    EWTaskItem *t = [EWTaskItem createEntity];
     //relation
     t.owner = [EWDataStore user];
     //others
     t.added = [NSDate date];
     
-    //save is committed at [scheduleTask]
-    //save
-//    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-//        [NSException raise:@"Failed in creating task" format:@"error: %@",error.description];
-//    }];
     NSLog(@"Created new Task");
     return t;
 }
@@ -415,12 +388,6 @@
     EWAlarmItem *a = notif.userInfo[@"alarm"];
     EWAlarmItem *alarm = (EWAlarmItem *)[EWDataStore objectForCurrentContext:a];
     
-    if (!alarm.tasks.count){
-        NSLog(@"alarm's task not fetched, refresh it from server");
-        //[a.managedObjectContext refreshObject:a mergeChanges:YES];
-        //[EWDataStore refreshObjectWithServer:a];
-    }
-    
     for (EWTaskItem *t in alarm.tasks) {
         [self cancelNotificationForTask:t];
         [self scheduleNotificationForTask:t];
@@ -459,10 +426,7 @@
         }
         
     }
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        //[NSException raise:@"Error in deleting task after alarm deleted" format:@"Error: %@", error.description];
-        NSLog(@"Task removal save failed");
-    }];
+    [EWDataStore updateToServerAndSave];
 }
 
 /* add task by alarm, this function is replaced by scheduleTask
@@ -514,9 +478,7 @@
 - (void)scheduleNotificationForTask:(EWTaskItem *)task{
     //check state
     if (task.state == NO) {
-        //NSLog(@"Skip checking task (%@) with state: OFF", task.time.weekday);
         [self cancelNotificationForTask:task];
-        
         return;
     }
     
@@ -526,7 +488,7 @@
     //check missing
     for (unsigned i=0; i<nLocalNotifPerTask; i++) {
         //get time
-        NSDate *time_i = [task.time timeByAddingSeconds: i * 30];
+        NSDate *time_i = [task.time timeByAddingSeconds: i * 60];
         BOOL foundMatchingLocalNotif = NO;
         for (UILocalNotification *notification in notifications) {
             if ([time_i isEqualToDate:notification.fireDate]) {
@@ -552,24 +514,25 @@
             
             localNotif.alertAction = LOCALSTR(@"Get up!");//TODO
             localNotif.soundName = alarm.tone;
-            localNotif.applicationIconBadgeNumber = 1;
+            localNotif.applicationIconBadgeNumber = i+1;
             
             //======= user information passed to app delegate =======
             localNotif.userInfo = @{kPushTaskKey: task.ewtaskitem_id};
-            //======================================================
+            //=======================================================
             
-            if (nWeeksToScheduleTask == 1) {
-                localNotif.repeatInterval = NSWeekCalendarUnit; //TODO: if last one
+            if (i == nWeeksToScheduleTask - 1) {
+                //if this is the last one, schedule to be repeat
+                localNotif.repeatInterval = NSWeekCalendarUnit;
             }
             
             [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
-            NSLog(@"Local Notification scheduled at %@", localNotif.fireDate);
+            NSLog(@"Local Notif scheduled at %@", localNotif.fireDate.date2detailDateString);
         }
     }
     
     //delete remaining
     if (notifications.count > 0) {
-        NSLog(@"Remaining tasks (%lu) deleted", (unsigned long)notifications.count);
+        NSLog(@"Unmatched tasks deleted (%@) ", task.time.date2detailDateString);
         for (UILocalNotification *ln in notifications) {
             [[UIApplication sharedApplication] cancelLocalNotification:ln];
         }

@@ -81,7 +81,14 @@
     
 }
 
-
+//Current User
++ (EWPerson *)currentUser{
+    if ([NSThread isMainThread]) {
+        return currentUser;
+    }else{
+        return [EWDataStore objectForCurrentContext:currentUser];
+    }
+}
 
 
 //login with local user default info

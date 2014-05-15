@@ -110,17 +110,33 @@
  Access Global Save Callback dictionary and add blcok with key of ManagedObjectID
  */
 + (void)addSaveCallback:(PFObjectResultBlock)callback forManagedObjectID:(NSManagedObjectID *)objectID;
+
+/**
+ Find or create ManagedObject corresponding to server object
+ */
++ (NSManagedObject *)findOrCreateManagedObjectWithEntityName:(NSString *)name withParseObject:(PFObject *)object;
+
 @end
 
 
 
 #pragma mark - Core Data ManagedObject extension
 @interface NSManagedObject (PFObject)
-- (void)updateValueFromParseObject:(PFObject *)object;
+/**
+ Updated ManagedObject from correspoinding Server Object
+ 1) First copy the value from server object
+ 2) Iterate through the relations described by entityDescription
+    -> Delete obsolete related object.
+    ->For each end point in relationship, To-Many or To-One, find or create MO and assign value to that relationship.
+ */
+- (void)updateValueAndRelationFromParseObject:(PFObject *)object;
+- (void)assignValueFromParseObject:(PFObject *)object;
+
 /**
  Save ManagedObjectID into update queue in userDefaults
  */
 - (void)updateEventually;
+
 /**
  Save ManagedObjectID into delete queue in userDefaults
  */
