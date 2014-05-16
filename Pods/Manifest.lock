@@ -18,51 +18,6 @@ PODS:
   - AFNetworking/UIKit (2.2.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - AWSiOSSDK (1.7.1):
-    - AWSiOSSDK/AutoScaling
-    - AWSiOSSDK/CloudWatch
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/EC2
-    - AWSiOSSDK/ElasticLoadBalancing
-    - AWSiOSSDK/Runtime
-    - AWSiOSSDK/S3
-    - AWSiOSSDK/SES
-    - AWSiOSSDK/SimpleDB
-    - AWSiOSSDK/SNS
-    - AWSiOSSDK/SQS
-    - AWSiOSSDK/STS
-  - AWSiOSSDK/AutoScaling (1.7.1):
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/CloudWatch (1.7.1):
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/DynamoDB (1.7.1):
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/EC2 (1.7.1):
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/ElasticLoadBalancing (1.7.1):
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/Runtime (1.7.1)
-  - AWSiOSSDK/S3 (1.7.1):
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/SES (1.7.1):
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/SimpleDB (1.7.1):
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/SNS (1.7.1):
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/SQS (1.7.1):
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/Runtime
-  - AWSiOSSDK/STS (1.7.1):
-    - AWSiOSSDK/DynamoDB
-    - AWSiOSSDK/Runtime
   - Facebook-iOS-SDK (3.13.1)
   - MagicalRecord (2.2):
     - MagicalRecord/Core
@@ -75,7 +30,6 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
-  - AWSiOSSDK
   - Facebook-iOS-SDK
   - MagicalRecord
   - NSLogger
@@ -85,7 +39,6 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: ae513199cca79e9d7af2708ccabe2ed075550c42
-  AWSiOSSDK: dcf83bfeea698f5c750bb1814a5081d46ffa512f
   Facebook-iOS-SDK: 47ae9e54684c84f93d75d4e6ab47cd031abdf406
   MagicalRecord: 95d49d74ef752cd52f6ad87bcb474817fc3978cf
   NSLogger: 9607fdeafd0b09922c69615f99f127de45971b8f

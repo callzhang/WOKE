@@ -15,6 +15,7 @@
 #import "EWAlarmManager.h"
 #import "NSDate+Extend.h"
 #import "EWDataStore.h"
+#import "EWDefines.h"
 
 @interface EWTaskStore(){
     BOOL isCheckingTask;
@@ -70,16 +71,16 @@
     if ([person.username isEqualToString:currentUser.username]) {
         //check past task, move it to pastTasks and remove it from the array
         [self checkPastTasks:tasks];
-        
-        //check
-        if (tasks.count != 7) {
-            NSLog(@"Only %lu tasks found", (unsigned long)tasks.count);
-            //[self scheduleTasks];
-            if (tasks.count == 0) {
-                return nil;
-            }
-        }
     }
+    
+    //update if necessary
+    if (tasks.count != 7 * nWeeksToScheduleTask) {
+        NSLog(@"Only %lu tasks found, check from server", (unsigned long)tasks.count);
+        [EWDataStore refreshManagedObject:p];
+        
+    }
+    
+    
     
     //sort
     return [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];

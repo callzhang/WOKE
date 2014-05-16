@@ -32,6 +32,10 @@
 @property (nonatomic, retain) dispatch_queue_t dispatch_queue;//Task dispatch queue runs in serial
 @property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in serial
 @property (nonatomic, retain) NSTimer *serverUpdateTimer;
+@property (nonatomic, retain) NSSet *updateQueue;
+@property (nonatomic, retain) NSSet *insertQueue;
+@property (nonatomic, retain) NSSet *deleteQueue;
+
 /**
  *The date that last sync with server
  */
@@ -68,7 +72,7 @@
 /**
  * Register the server update process, which will run periodically to sync with server data
  */
-+ (void)registerServerUpdateService;
+- (void)registerServerUpdateService;
 
 #pragma mark - CoreData
 + (NSManagedObjectContext *)currentContext;
@@ -88,10 +92,11 @@
 + (void)updateToServerAndSave;
 
 /**
- Refresh ManagedObject value from server
+ Refresh ManagedObject value from server.
+ @discussion If the ParseID is not found on this ManagedObject, an insert action will performed.
  */
-+ (void)refreshManagedObject:(NSManagedObject *)managedObject;
-
++ (void)refreshManagedObject:(NSManagedObject *)managedObject withCompletion:(void (^)(void))block;
++ (void)refreshManagedObjectAndWait:(NSManagedObject *)managedObject;
 /**
  Update or Insert PFObject according to given ManagedObject
  */
@@ -127,9 +132,13 @@
  1) First copy the value from server object
  2) Iterate through the relations described by entityDescription
     -> Delete obsolete related object.
-    ->For each end point in relationship, To-Many or To-One, find or create MO and assign value to that relationship.
+    -> For each end point in relationship, To-Many or To-One, find or create MO and assign value to that relationship.
  */
 - (void)updateValueAndRelationFromParseObject:(PFObject *)object;
+
+/**
+ Assign only attribute values (not relation) to the ManagedObject from the Parse Object
+ */
 - (void)assignValueFromParseObject:(PFObject *)object;
 
 /**

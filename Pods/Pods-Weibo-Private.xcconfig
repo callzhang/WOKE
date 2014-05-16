@@ -1,6 +1,6 @@
 #include "Pods-Weibo.xcconfig"
 GCC_PREPROCESSOR_DEFINITIONS = COCOAPODS=1
-HEADER_SEARCH_PATHS = "${PODS_ROOT}/BuildHeaders" "${PODS_ROOT}/BuildHeaders/Weibo" "${PODS_ROOT}/Headers" "${PODS_ROOT}/Headers/AFNetworking" "${PODS_ROOT}/Headers/AWSiOSSDK" "${PODS_ROOT}/Headers/AWSiOSSDK/AutoScaling" "${PODS_ROOT}/Headers/AWSiOSSDK/CloudWatch" "${PODS_ROOT}/Headers/AWSiOSSDK/DynamoDB" "${PODS_ROOT}/Headers/AWSiOSSDK/EC2" "${PODS_ROOT}/Headers/AWSiOSSDK/ElasticLoadBalancing" "${PODS_ROOT}/Headers/AWSiOSSDK/S3" "${PODS_ROOT}/Headers/AWSiOSSDK/SES" "${PODS_ROOT}/Headers/AWSiOSSDK/SNS" "${PODS_ROOT}/Headers/AWSiOSSDK/SQS" "${PODS_ROOT}/Headers/AWSiOSSDK/STS" "${PODS_ROOT}/Headers/AWSiOSSDK/SimpleDB" "${PODS_ROOT}/Headers/Facebook-iOS-SDK" "${PODS_ROOT}/Headers/Facebook-iOS-SDK/FacebookSDK" "${PODS_ROOT}/Headers/MagicalRecord" "${PODS_ROOT}/Headers/NSLogger" "${PODS_ROOT}/Headers/Parse" "${PODS_ROOT}/Headers/Reveal-iOS-SDK" "${PODS_ROOT}/Headers/ThirdParty/JSON" "${PODS_ROOT}/Headers/Weibo"
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/BuildHeaders" "${PODS_ROOT}/BuildHeaders/Weibo" "${PODS_ROOT}/Headers" "${PODS_ROOT}/Headers/AFNetworking" "${PODS_ROOT}/Headers/Facebook-iOS-SDK" "${PODS_ROOT}/Headers/Facebook-iOS-SDK/FacebookSDK" "${PODS_ROOT}/Headers/MagicalRecord" "${PODS_ROOT}/Headers/NSLogger" "${PODS_ROOT}/Headers/Parse" "${PODS_ROOT}/Headers/Reveal-iOS-SDK" "${PODS_ROOT}/Headers/Weibo"
 LIBRARY_SEARCH_PATHS = ${PODS_WEIBO_LIBRARY_SEARCH_PATHS}
 OTHER_LDFLAGS = -ObjC ${PODS_WEIBO_OTHER_LDFLAGS}
 PODS_ROOT = ${SRCROOT}
