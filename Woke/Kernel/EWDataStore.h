@@ -99,6 +99,11 @@
 + (void)refreshManagedObjectAndWait:(NSManagedObject *)managedObject;
 /**
  Update or Insert PFObject according to given ManagedObject
+ 1. First decide create or find parse object, handle error if necessary
+ 2. Update PO value and relation with given MO. (-updateValueFromManagedObject:)
+ 3. Save PO in background. Save MO to exit method.
+ 4. When saved, assign parseID to MO
+ 5. Perform save callback for this MO
  */
 + (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject;
 
@@ -128,11 +133,12 @@
 #pragma mark - Core Data ManagedObject extension
 @interface NSManagedObject (PFObject)
 /**
- Updated ManagedObject from correspoinding Server Object
- 1) First copy the value from server object
+ Update ManagedObject from correspoinding Server Object
+ 1) First assign the attribute value from server object
  2) Iterate through the relations described by entityDescription
     -> Delete obsolete related object.
     -> For each end point in relationship, To-Many or To-One, find or create MO and assign value to that relationship.
+ @discussion The attributes and relationship are updated in sync.
  */
 - (void)updateValueAndRelationFromParseObject:(PFObject *)object;
 
@@ -154,5 +160,13 @@
 
 #pragma mark - Parse Object extension
 @interface PFObject (NSManagedObject)
+/**
+ Update parse value and relation to server object. Create if no ParseID on ManagedObject.
+ 1) First assign the attribute value from ManagedObject
+ 2) Iterate through the relations described by entityDescription
+ -> Delete obsolete related object async
+ -> For each end point in relationship, To-Many or To-One, find corresponding PO and assign value to that relationship. If parseID not exist on that MO, it creates a save callback block, indicating that there is a 'need' to establish relation to that PO once it is created on server.
+ @discussion The attributes are updated in sync, the relationship is updated async for new andn deleted related objects.
+ */
 - (void)updateValueFromManagedObject:(NSManagedObject *)managedObject;
 @end
