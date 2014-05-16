@@ -286,7 +286,7 @@
 
 #pragma mark - Timely sync
 - (void)registerServerUpdateService{
-    self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:serverUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:nil repeats:0];
+    self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:kServerUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:nil repeats:0];
     [self serverUpdate:nil];
 }
      

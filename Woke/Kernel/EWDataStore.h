@@ -17,6 +17,9 @@
 
 @class EWPerson;
 
+//Server update time
+#define kServerUpdateInterval            1800 //30 min
+
 //attribute stored on ManagedObject to identify corresponding PFObject on server
 #define kParseObjectID          @"objectId"
 //Attribute stored on PFObject to identify corresponding ManagedObject on SQLite

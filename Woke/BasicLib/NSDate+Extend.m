@@ -132,7 +132,7 @@
 - (BOOL)isOutDated{
     if (self == nil) return YES;
     NSInteger timeElapsed = [[NSDate date] timeIntervalSinceReferenceDate]-[self timeIntervalSinceReferenceDate];
-    BOOL outdated = timeElapsed > serverUpdateInterval;
+    BOOL outdated = timeElapsed > kServerUpdateInterval;
     return outdated;
 }
 

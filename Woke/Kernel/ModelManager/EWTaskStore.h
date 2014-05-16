@@ -10,9 +10,12 @@
 
 @class EWPerson, EWTaskItem, EWAlarmItem;
 
+#define kTaskUpdateInterval         3600 * 24
+
 @interface EWTaskStore : NSObject <NSKeyedArchiverDelegate>
 //@property (nonatomic) NSManagedObjectContext *context;
 
+#pragma mark - Search Task
 /**
  Contains all tasks scheduled as alarm for current user
  */
@@ -50,40 +53,49 @@
 - (NSArray *)pastTasksByPerson:(EWPerson *)person;
 - (EWTaskItem *)getTaskByID:(NSString *)taskID;
 
-//Schedule
+#pragma mark - Schedule
 /**
  This method schedules tasks. It goes from last task time to the possible future tasks defined by Alarms and nWeeksToScheduleTask, to create tasks needed.
  
  When new tasks created, notification of kTaskNewNotification is sent and causes main alarmVC to refresh its task page view
- 
- 
  */
 - (NSArray *)scheduleTasks;
 
-//KVO
+#pragma mark - KVO
 - (void)updateTaskState:(NSNotification *)notif;
 - (void)updateTaskTime:(NSNotification *)notif;
 - (void)updateNotifTone:(NSNotification *)notif;
 - (void)updateTaskMedia:(NSNotification *)notif;
 - (void)alarmRemoved:(NSNotification *)notif;
 
-//delete (delete only happens at change alarm, never delete all tasks)
+#pragma mark - delete 
+//(delete only happens at change alarm, never delete all tasks)
 - (void)removeTask:(EWTaskItem *)task;
 - (void)deleteAllTasks;//debug only
 
-//local Notification
+#pragma mark - local Notification
+/**
+ Schedule local notifications for task
+ 1. Find all scheduled notif
+ 2. Find all time-matched notif
+ 3. Delete those not matched
+ */
 - (void)scheduleNotificationForTask:(EWTaskItem *)task;
 - (void)cancelNotificationForTask:(EWTaskItem *)task;
 - (NSArray *)localNotificationForTask:(EWTaskItem *)task;
+/**
+ Check all scheduled Notification
+ 1. Get all scheduled local notification
+ 2. Add new notif if not scheduled by time-matching
+ 3. Delete unmatched local notif
+ */
+- (void)checkScheduledNotifications;
+/**
+ Fire a instant alarm for task
+ */
 - (void)fireAlarmForTask:(EWTaskItem *)task;
 
-//check
-- (void)checkScheduledNotifications;
+#pragma mark - check
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task;
-
-/**
-Checks the tasks relation from EWPerson. If task is in the past, this method moves it to Person.pastTasks relation, and schedule new task.
-*/
-//- (BOOL)checkTasks;
 
 @end
