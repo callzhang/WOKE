@@ -15,11 +15,11 @@
 #import "EWTaskItem.h"
 #import "EWTaskStore.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+//#import "EWPersonStore.h"
+#import "EWUserManagement.h"
 //AppDelegate
 #import "EWAppDelegate.h"
 //backend
-#import "StackMob.h"
 //VC
 #import "EWAlarmScheduleViewController.h"
 
@@ -43,52 +43,23 @@
 //add new alarm, save, add to current user, save user
 - (EWAlarmItem *)newAlarm{
     NSLog(@"Create new Alarm");
-    EWAlarmItem *a = [NSEntityDescription insertNewObjectForEntityForName:@"EWAlarmItem" inManagedObjectContext:[EWDataStore currentContext]];
-    //assign id
-    [a assignObjectId];
     
     //add relation
-    a.owner = [EWDataStore user]; //also sets the reverse
+    EWAlarmItem *a = [EWAlarmItem createEntity];
+    a.owner = [EWUserManagement currentUser]; //also sets the reverse
     a.state = YES;
-    a.tone = currentUser.preference[@"DefaultTone"];
+    a.tone = [EWUserManagement currentUser].preference[@"DefaultTone"];
     
-    //save
-//    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-//        NSError *err;
-//        [[EWDataStore currentContext] saveAndWait:&err];
-//        if (err) {
-//            NSLog(@"Save alarm failed: %@", err.description);
-//        }
-//    }];
-    
-    //notification
-    //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmNewNotification object:self userInfo:@{@"alarm": a}];
-    
+   
     return a;
 }
 
 #pragma mark - SEARCH
 - (NSArray *)alarmsForUser:(EWPerson *)user{
-    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWAlarmItem"];
-    request.predicate = [NSPredicate predicateWithFormat:@"owner == %@", [EWDataStore user]];
-    request.relationshipKeyPathsForPrefetching = @[@"tasks"];
-    NSError *err;
-    SMRequestOptions *options;
-    if ([user.username isEqualToString:currentUser.username]) {
-        options = [EWDataStore optionFetchCacheElseNetwork];
-    }else{
-        options = [EWDataStore optionFetchNetworkElseCache];
-    }
-    NSArray *alarms = [[EWDataStore currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:options error:&err];
-    if (err) {
-        NSLog(@"*** Failed to fetch alarm for user %@", user.name);
-    }
-    
-    //check
-    if (!alarms) {
-        NSLog(@"*** Didn't get alarms, please check code!");
-    }
-    
+    EWPerson *person = [EWDataStore objectForCurrentContext:user];
+    NSMutableArray *alarms = [[person.alarms allObjects] mutableCopy];
+    [alarms filteredArrayUsingPredicate:[NSPredicate
+                                         predicateWithFormat:@"owner == %@", person.username]];
     
     //sort
     NSArray *sortedAlarms = [alarms sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
@@ -107,13 +78,12 @@
 }
 
 + (NSArray *)myAlarms{
-    
-    return [[EWAlarmManager sharedInstance] alarmsForUser:[EWDataStore user]];
+    return [[EWAlarmManager sharedInstance] alarmsForUser:[EWUserManagement currentUser]];
 }
 
 - (EWAlarmItem *)nextAlarm{
     EWAlarmItem *nextA;
-    NSArray *alarms = [self alarmsForUser:[EWDataStore user]];
+    NSArray *alarms = [self alarmsForUser:[EWUserManagement currentUser]];
     //determine if the day need to be next week
     NSInteger dow = [[NSDate date] weekdayNumber];
     EWAlarmItem *a = alarms[dow];
@@ -148,7 +118,7 @@
     BOOL hasChange = NO;
     
     //get alarms
-    NSMutableArray *alarms = [[self alarmsForUser:currentUser] mutableCopy];
+    NSMutableArray *alarms = [[self alarmsForUser:[EWUserManagement currentUser]] mutableCopy];
     
     //check if need to check
     if (alarms.count==0) {
@@ -186,7 +156,8 @@
         //check tone
         if (!a.tone) {
             NSLog(@"Tone not set");
-            a.tone = currentUser.preference[@"DefaultTone"];
+            EWPerson *p = [EWUserManagement currentUser];
+            a.tone = p.preference[@"DefaultTone"];
         }
         
         //fill that day to the new alarm array
@@ -229,7 +200,7 @@
             //set alarm time
             a.time = time;
             a.state = YES;
-            a.tone = currentUser.preference[@"DefaultTone"];
+            a.tone = [EWUserManagement currentUser].preference[@"DefaultTone"];
             //add to temp array
             newAlarms[i] = a;
             hasChange = YES;
@@ -242,15 +213,16 @@
     if (hasChange) {
         //notification
         NSLog(@"Saving new alarms");
+        [EWDataStore save];
         
         //save all changes
-        NSError *err;
-        [[EWDataStore currentContext] saveAndWait:&err];
-        if (err) {
-            //[NSException raise:@"Error in saving Alarms" format:@"Error:%@", err.description];
-            NSLog(@"Failed to save alarms: %@", err.description);
-            EWAlert(@"Failed to set up alarm, please reschedule");
-        }
+        //NSError *err;
+        //[[EWDataStore currentContext] saveAndWait:&err];
+        //if (err) {
+        //    //[NSException raise:@"Error in saving Alarms" format:@"Error:%@", err.description];
+        //    NSLog(@"Failed to save alarms: %@", err.description);
+        //    EWAlert(@"Failed to set up alarm, please reschedule");
+        //}
         
         //check
         NSArray *myAlarms = [EWAlarmManager myAlarms];
@@ -271,20 +243,22 @@
 
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:@{@"alarm": alarm}];
+
     [[EWDataStore currentContext] deleteObject:alarm];
     for (EWTaskItem *t in alarm.tasks) {
         [[EWDataStore currentContext] deleteObject:t];
     }
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        NSLog(@"Alarm deleted");
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Error in deleting Alarm" format:@"Alarm:%@", alarm];
-    }];
+    [EWDataStore save];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:@{@"alarm": alarm}];
+    //[[EWDataStore currentContext] saveOnSuccess:^{
+    //    NSLog(@"Alarm deleted");
+    //} onFailure:^(NSError *error) {
+    //    [NSException raise:@"Error in deleting Alarm" format:@"Alarm:%@", alarm];
+    //}];
 }
 
 - (void)deleteAllAlarms{
-    NSArray *alarms = [self alarmsForUser:[EWDataStore user]];
+    NSArray *alarms = [self alarmsForUser:[EWUserManagement currentUser]];
     
     //notification
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarms userInfo:@{@"alarms": alarms}];
@@ -295,8 +269,9 @@
     }
     
     //save
-    NSError *err;
-    [[EWDataStore currentContext] saveAndWait:&err];
+    [EWDataStore save];
+    //NSError *err;
+    //[[EWDataStore currentContext] saveAndWait:&err];
 }
 
 #pragma mark - CHECK
