@@ -25,6 +25,7 @@ PODS:
   - NSLogger (1.2)
   - Parse (1.2.19):
     - Facebook-iOS-SDK (~> 3.11)
+  - Reachability (3.1.1)
   - Reveal-iOS-SDK (1.0.3)
   - Weibo (2.4.2)
 
@@ -34,6 +35,7 @@ DEPENDENCIES:
   - MagicalRecord
   - NSLogger
   - Parse
+  - Reachability
   - Reveal-iOS-SDK
   - Weibo
 
@@ -43,6 +45,7 @@ SPEC CHECKSUMS:
   MagicalRecord: 95d49d74ef752cd52f6ad87bcb474817fc3978cf
   NSLogger: 9607fdeafd0b09922c69615f99f127de45971b8f
   Parse: 3739f0b211c49115bad96d6b0969b804d4da2f24
+  Reachability: be4883bb93f31e38266ae3365e5600a317aae735
   Reveal-iOS-SDK: 8e6a6f22a9520437e4a180fe1d4e99f43b75430e
   Weibo: 6a997663c8022500eb30ee93d42c67f85149e372
 
