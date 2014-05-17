@@ -60,7 +60,6 @@
 //Global parameters
 #define nWeeksToScheduleTask            1
 #define nLocalNotifPerTask              5
-#define serverUpdateInterval            1800 //30 min
 #define kAlarmTimerCheckInterval        150 //10 min
 #define alarmInterval                   600 //10 min
 #define kMaxWakeTime                    3600 // 60min
