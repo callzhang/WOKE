@@ -14,6 +14,10 @@
 #import "EWDataStore.h"
 
 @implementation EWMediaItem
+@dynamic played;
+@dynamic priority;
+@dynamic image;
+@dynamic thumbnail;
 
 //@synthesize thumbnail;
 

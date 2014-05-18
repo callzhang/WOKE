@@ -469,38 +469,6 @@
 }
 
 
-+ (void)refreshManagedObject:(NSManagedObject *)managedObject withCompletion:(void (^)(void))block{
-    NSString *parseObjectId = [managedObject valueForKey:kParseObjectID];
-    if (!parseObjectId) {
-        NSLog(@"@@@ Updating a managedObject without a parseID, insert first");
-        [EWDataStore updateParseObjectFromManagedObject:managedObject];
-        if (block) {
-            block();
-        }
-    }else{
-        [[PFQuery queryWithClassName:managedObject.entity.name] getObjectInBackgroundWithId:parseObjectId block:^(PFObject *object, NSError *error) {
-            [managedObject updateValueAndRelationFromParseObject:object];
-            [[NSManagedObjectContext defaultContext] saveToPersistentStoreAndWait];
-            if (block) {
-                block();
-            }
-        }];
-    }
-}
-
-+ (void)refreshManagedObjectAndWait:(NSManagedObject *)managedObject{
-    NSString *parseObjectId = [managedObject valueForKey:kParseObjectID];
-    if (!parseObjectId) {
-        NSLog(@"@@@ Updating a managedObject without a parseID, insert first");
-        [EWDataStore updateParseObjectFromManagedObject:managedObject];
-    }else{
-        PFObject *object = [[PFQuery queryWithClassName:managedObject.entity.name] getObjectWithId:parseObjectId];
-        [managedObject updateValueAndRelationFromParseObject:object];
-    }
-    
-    [[NSManagedObjectContext defaultContext] saveToPersistentStoreAndWait];
-}
-
 
 + (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject{
     NSString *parseObjectId = [managedObject valueForKey:kParseObjectID];
@@ -629,7 +597,7 @@
 
 - (void)updateModifiedDate:(NSNotification *)notification{
     NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
-    NSLog(@"Observed %d ManagedObject changed", updatedObjects.count);
+    NSLog(@"Observed %lu ManagedObject changed", (unsigned long)updatedObjects.count);
     for (NSManagedObject *mo in updatedObjects) {
         [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
     }
@@ -669,29 +637,29 @@
             NSArray *relatedParseObjects = [[toManyRelation query] findObjects:&err];
             //TODO: handle error
             if ([err code] == kPFErrorObjectNotFound) {
-                NSLog(@"Uh oh, we couldn't find the object!");
-                // Now also check for connection errors:
+                NSLog(@"*** Uh oh, we couldn't find the object!");
+                return;
             } else if ([err code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
+                [self updateEventually];
             } else if (err) {
                 NSLog(@"Error: %@", [err userInfo][@"error"]);
+                return;
             }
             
             //delete related MO if not on server relation async
             NSMutableArray *relatedManagedObjects = [[[self valueForKey:key] allObjects] mutableCopy];
-            NSArray *managedObjectToDelete = [relatedManagedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%@ NOT IN %@", [relatedParseObjects valueForKey:kParseObjectID]]];
-            for (NSManagedObject *mo in managedObjectToDelete) {
-                [[NSManagedObjectContext defaultContext] deleteObject:mo];
-            }
+            NSArray *managedObjectToDelete = [relatedManagedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"objectId NOT IN %@", [relatedParseObjects valueForKey:kParseObjectID]]];
+            [relatedManagedObjects removeObjectsInArray:managedObjectToDelete];
+
             
-            NSMutableSet *relatedMOs = [NSMutableSet set];
             //TODO:background context
             for (PFObject *object in relatedParseObjects) {
                 //find corresponding MO
                 NSManagedObject *relatedManagedObject = [EWDataStore findOrCreateManagedObjectWithEntityName:obj.entity.name withParseObject:object];
-                [relatedMOs addObject:relatedManagedObject];
+                [relatedManagedObjects addObject:relatedManagedObject];
             }
-            [self setValue:relatedMOs forKey:key];
+            [self setValue:relatedManagedObjects forKey:key];
             
             //save
             [self.managedObjectContext save:nil];
@@ -717,6 +685,40 @@
     }];
     
     [self.managedObjectContext save:nil];
+}
+
+
+
+- (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
+    NSString *parseObjectId = [self valueForKey:kParseObjectID];
+    if (!parseObjectId) {
+        NSLog(@"@@@ Updating a managedObject without a parseID, insert first");
+        [EWDataStore updateParseObjectFromManagedObject:self];
+        if (block) {
+            block();
+        }
+    }else{
+        [[PFQuery queryWithClassName:self.entity.name] getObjectInBackgroundWithId:parseObjectId block:^(PFObject *object, NSError *error) {
+            [self updateValueAndRelationFromParseObject:object];
+            [[NSManagedObjectContext defaultContext] saveToPersistentStoreAndWait];
+            if (block) {
+                block();
+            }
+        }];
+    }
+}
+
+- (void)refresh{
+    NSString *parseObjectId = [self valueForKey:kParseObjectID];
+    if (!parseObjectId) {
+        NSLog(@"@@@ Updating a managedObject without a parseID, insert first");
+        [EWDataStore updateParseObjectFromManagedObject:self];
+    }else{
+        PFObject *object = [[PFQuery queryWithClassName:self.entity.name] getObjectWithId:parseObjectId];
+        [self updateValueAndRelationFromParseObject:object];
+    }
+    
+    [[NSManagedObjectContext defaultContext] saveToPersistentStoreAndWait];
 }
      
 - (void)assignValueFromParseObject:(PFObject *)object{

@@ -46,7 +46,7 @@
     
     //add relation
     EWAlarmItem *a = [EWAlarmItem createEntity];
-    a.owner = [EWUserManagement currentUser]; //also sets the reverse
+    a.owner = [EWUserManagement currentUser];
     a.state = YES;
     a.tone = [EWUserManagement currentUser].preference[@"DefaultTone"];
     
@@ -136,8 +136,8 @@
         
         //check time
         if (!a.time) {
-            [self removeAlarm:a];
             NSLog(@"Something wrong with alarm. Deleted. %@",[a.time date2detailDateString]);
+            [self removeAlarm:a];
             continue;
         }
         
@@ -162,24 +162,22 @@
         
         //fill that day to the new alarm array
         newAlarms[i] = a;
-        
     }
     
     //remove excess
+    [alarms removeObjectsInArray:newAlarms];
     for (EWAlarmItem *a in alarms) {
-        if (![newAlarms containsObject:a]) {
-            NSLog(@"Corruped alarm found and deleted: %@", [a.time date2detailDateString]);
-            [self removeAlarm:a];
-            hasChange = YES;
-        }
+        NSLog(@"Corruped alarm found and deleted: %@", [a.time date2detailDateString]);
+        [self removeAlarm:a];
+        hasChange = YES;
     }
     
     //start add alarm if blank
     for (NSInteger i=0; i<newAlarms.count; i++) {
-        if ([newAlarms[i] isKindOfClass:[EWAlarmItem class]]) {
+        if (![newAlarms[i] isEqual:@NO]) {
             //skip if alarm exists
             continue;
-        }else if ([newAlarms[i] isEqual:@NO]){
+        }else{
             NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
             EWAlarmItem *a = [self newAlarm];
             //set time
@@ -204,8 +202,6 @@
             //add to temp array
             newAlarms[i] = a;
             hasChange = YES;
-        }else{
-            [NSException raise:@"Unknown state" format:@"Check weekday: %ld", (long)i];
         }
     }
     
@@ -214,24 +210,16 @@
         //notification
         NSLog(@"Saving new alarms");
         [EWDataStore save];
-        
-        //save all changes
-        //NSError *err;
-        //[[EWDataStore currentContext] saveAndWait:&err];
-        //if (err) {
-        //    //[NSException raise:@"Error in saving Alarms" format:@"Error:%@", err.description];
-        //    NSLog(@"Failed to save alarms: %@", err.description);
-        //    EWAlert(@"Failed to set up alarm, please reschedule");
-        //}
-        
-        //check
-        NSArray *myAlarms = [EWAlarmManager myAlarms];
-        NSInteger retry = 3;
-        while (myAlarms.count != newAlarms.count && retry >0) {
-            myAlarms = [EWAlarmManager myAlarms];
-            [NSThread sleepForTimeInterval:0.1];
-            retry--;
-        }
+//        
+//        
+//        //check
+//        NSArray *myAlarms = [EWAlarmManager myAlarms];
+//        NSInteger retry = 3;
+//        while (myAlarms.count != newAlarms.count && retry >0) {
+//            myAlarms = [EWAlarmManager myAlarms];
+//            [NSThread sleepForTimeInterval:0.1];
+//            retry--;
+//        }
         
         //notification
         [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmChangedNotification object:self userInfo:nil];
@@ -250,11 +238,7 @@
     }
     [EWDataStore save];
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:@{@"alarm": alarm}];
-    //[[EWDataStore currentContext] saveOnSuccess:^{
-    //    NSLog(@"Alarm deleted");
-    //} onFailure:^(NSError *error) {
-    //    [NSException raise:@"Error in deleting Alarm" format:@"Alarm:%@", alarm];
-    //}];
+
 }
 
 - (void)deleteAllAlarms{
@@ -270,56 +254,10 @@
     
     //save
     [EWDataStore save];
-    //NSError *err;
-    //[[EWDataStore currentContext] saveAndWait:&err];
 }
 
-#pragma mark - CHECK
-//- (BOOL)checkAlarms{
-//    //YES means alarms are good
-//    NSArray *alarms = [self alarmsForUser:currentUser];
-//    
-//    if (alarms.count == 0) {
-//        //need set up later
-//        if ([EWTaskStore myTasks].count == 0) {
-//            return YES;
-//        }
-//        return NO;
-//    }else if (alarms.count == 7){
-//        //need to check into alarms to prevent data corrupt
-//        BOOL dataCorrupted = NO;
-//        
-//        for (EWAlarmItem *a in alarms) {
-//            if (!a.time) {
-//                dataCorrupted = YES;
-//                [self removeAlarm:a];
-//                NSLog(@"Something wrong with alarm. Need to reschedule alarm.\n%@",a);
-//                break;
-//            }
-//            if (!a.tone) {
-//                NSLog(@"Tone not set");
-//                a.tone = currentUser.preference[@"DefaultTone"];
-//            }
-//        }
-//        
-//        if (dataCorrupted) {
-//            return NO;
-//        }else{
-//            return YES;
-//        }
-//        
-//        
-//    }else{
-//        //something wrong
-//        NSLog(@"Something wrong with alarms (%lu), need to schedule alarm", (unsigned long)alarms.count);
-//        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-//        //delete all alarms
-//        //[self deleteAllAlarms];
-//        return NO;
-//    }
-//}
 
-#pragma mark - Utility
+#pragma mark - Get/Set alarm to UserDefaults
 - (NSDictionary *)getSavedAlarmTime:(EWAlarmItem *)alarm{
     NSArray *alarmTimes = [self getSavedAlarmTimes];
     NSInteger wkd = [alarm.time weekdayNumber];

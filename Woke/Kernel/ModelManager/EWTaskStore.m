@@ -13,9 +13,7 @@
 #import "EWTaskItem.h"
 #import "EWAlarmItem.h"
 #import "EWAlarmManager.h"
-#import "NSDate+Extend.h"
 #import "EWDataStore.h"
-#import "EWDefines.h"
 #import "EWUserManagement.h"
 
 @interface EWTaskStore(){
@@ -76,8 +74,7 @@
     
     //update if necessary
     if (tasks.count != 7 * nWeeksToScheduleTask) {
-        NSLog(@"Only %lu tasks found, check from server", (unsigned long)tasks.count);
-        [EWDataStore refreshManagedObjectAndWait:p];
+        [p refresh];
         tasks = [[p.tasks allObjects] mutableCopy];
     }
     
@@ -92,17 +89,17 @@
 }
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
-    //because the pastTask is not a static relationship, i.e. the set of past tasks need to be updated timely, we try to pull data from Query first and save them to
+    //because the pastTask is not a static relationship, i.e. the set of past tasks need to be updated timely, we try to pull data from Query first and save them to person
     
     NSMutableArray *tasks;
 
     //get from local cache if self or time elapsed since last update is shorter than predefined interval
-    if ([person.username isEqualToString:currentUser.username] || -[person.updatedAt timeIntervalSinceNow] < kTaskUpdateInterval) {
+    BOOL isSelf = [person.username isEqualToString:currentUser.username];
+    BOOL isUpToDate = -[person.updatedAt timeIntervalSinceNow] < kTaskUpdateInterval;
+    if ((isSelf || isUpToDate) && person.pastTasks.count > 0 ) {
         tasks = [[person.pastTasks allObjects] mutableCopy];
         [tasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
     }else{
-        //sort
-        [tasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
         //get from server
         PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
         [query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
@@ -112,10 +109,9 @@
         query.limit = 10;
         tasks = [[query findObjects] mutableCopy];
         //assign back to person.tasks
-        person.tasks = nil;
         for (PFObject *task in tasks) {
             EWTaskItem *taskMO = (EWTaskItem *)[EWDataStore findOrCreateManagedObjectWithEntityName:@"EWTaskItem" withParseObject:task];
-            [person addTasksObject:taskMO];
+            [person addPastTasksObject:taskMO];
         }
         [EWDataStore save];
     }

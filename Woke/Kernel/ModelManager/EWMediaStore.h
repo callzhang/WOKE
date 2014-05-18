@@ -35,10 +35,8 @@
  */
 - (NSArray *)mediaCreatedByPerson:(EWPerson *)person;
 
-/**
- Get media item by id
- */
-- (EWMediaItem *)getMediaByID:(NSString *)mediaID;
+
+//- (EWMediaItem *)getMediaByID:(NSString *)mediaID;
 /**
  Fetch media by receiver
  */

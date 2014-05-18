@@ -11,7 +11,6 @@
 #import "EWTaskItem.h"
 #import "EWTaskStore.h"
 #import "EWAlarmItem.h"
-#import "NSDate+Extend.h"
 
 @implementation EWStatsManager
 
@@ -27,14 +26,15 @@
 
 
 -(NSDictionary *)statsForPerson:(EWPerson *)person{
-    NSDictionary *stats = [[NSDictionary alloc] init];
+    NSMutableDictionary *stats = [[NSMutableDictionary alloc] init];
+    [person refresh];
     NSArray *pTasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
     NSInteger nTask = pTasks.count;
     if (nTask == 0) {
         return nil;
     }
     NSInteger totalWakeUpTime = 0;
-    NSInteger success = 0;
+    double success = 0;
     NSInteger totalWakeUpLength = 0;
     for (EWTaskItem *task in pTasks) {
         NSInteger wakeupTime;
@@ -45,11 +45,11 @@
         }
         totalWakeUpLength += wakeupTime;
         totalWakeUpTime += [task.time timeIntervalSinceReferenceDate];
-        success += task.completed?1:0;
+        success += task.completed?1.0:0;
     }
-    [stats setValue:[NSNumber numberWithInteger:totalWakeUpLength/nTask] forKey:@"AverageWakeUpLength"];
-    [stats setValue:[NSDate dateWithTimeIntervalSinceReferenceDate:totalWakeUpTime/nTask] forKey:@"AverageWakeUpTime"];
-    [stats setValue:[NSNumber numberWithInteger:success/nTask] forKey:@"SuccessRate"];
+    stats[kAverageWakeUpLength] = [NSNumber numberWithInteger:totalWakeUpLength/nTask];
+    stats[kAverageWakeUpTime] = [NSDate dateWithTimeIntervalSinceReferenceDate:totalWakeUpTime/nTask];
+    stats[kSuccessRate] = [NSNumber numberWithDouble:success/(double)nTask];
     
     return stats;
 }

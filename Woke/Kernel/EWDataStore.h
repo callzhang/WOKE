@@ -97,12 +97,6 @@
 + (void)updateToServerAndSave;
 
 /**
- Refresh ManagedObject value from server.
- @discussion If the ParseID is not found on this ManagedObject, an insert action will performed.
- */
-+ (void)refreshManagedObject:(NSManagedObject *)managedObject withCompletion:(void (^)(void))block;
-+ (void)refreshManagedObjectAndWait:(NSManagedObject *)managedObject;
-/**
  Update or Insert PFObject according to given ManagedObject
  1. First decide create or find parse object, handle error if necessary
  2. Update PO value and relation with given MO. (-updateValueFromManagedObject:)
@@ -111,6 +105,12 @@
  5. Perform save callback for this MO
  */
 + (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject;
+
+/**
+ Find or delete ManagedObject by Entity and by Server Object
+ @discussion This method only updates attributes of MO, not relationship. So it is only used to refresh value of specific MO
+ */
++ (NSManagedObject *)findOrCreateManagedObjectWithEntityName:(NSString *)name withParseObject:(PFObject *)object;
 
 /**
  Delete PFObject according to given ManagedObject
@@ -139,13 +139,26 @@
 @interface NSManagedObject (PFObject)
 /**
  Update ManagedObject from correspoinding Server Object
- 1) First assign the attribute value from server object
- 2) Iterate through the relations described by entityDescription
-    -> Delete obsolete related object.
-    -> For each end point in relationship, To-Many or To-One, find or create MO and assign value to that relationship.
+ 
+ *1) First assign the attribute value from server object
+ 
+ *2) Iterate through the relations described by entityDescription
+ **   -> Delete obsolete related object.
+ **   -> For each end point in relationship, To-Many or To-One, find or create MO and assign value to that relationship.
  @discussion The attributes and relationship are updated in sync.
  */
 - (void)updateValueAndRelationFromParseObject:(PFObject *)object;
+
+/**
+ Refresh ManagedObject value from server in background
+ @discussion If the ParseID is not found on this ManagedObject, an insert action will performed.
+ */
+- (void)refreshInBackgroundWithCompletion:(void (^)(void))block;
+/**
+ Refresh ManagedObject value from server in the current thread
+ @discussion If the ParseID is not found on this ManagedObject, an insert action will performed.
+ */
+- (void)refresh;
 
 /**
  Assign only attribute values (not relation) to the ManagedObject from the Parse Object

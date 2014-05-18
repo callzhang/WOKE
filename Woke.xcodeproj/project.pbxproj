@@ -141,8 +141,6 @@
 		AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB4B837D18D2C8BA0087E654 /* tock.caf */; };
 		AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB7243CD18F0B09800AE7041 /* Reveal.framework */; };
 		AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78078E18393A66007C8BFD /* EWAlarmManager.m */; };
-		AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079218393A66007C8BFD /* EWGroupStore.m */; };
-		AB7807A218393A66007C8BFD /* EWImageStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079418393A66007C8BFD /* EWImageStore.m */; };
 		AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079618393A66007C8BFD /* EWMediaStore.m */; };
 		AB7807A418393A66007C8BFD /* EWPersonStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079818393A66007C8BFD /* EWPersonStore.m */; };
 		AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079A18393A66007C8BFD /* EWStatsManager.m */; };
@@ -400,10 +398,6 @@
 		AB7243CD18F0B09800AE7041 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reveal.framework; path = "Pods/Reveal-iOS-SDK/Reveal-Framework-1.0.3/Reveal.framework"; sourceTree = "<group>"; };
 		AB78078D18393A66007C8BFD /* EWAlarmManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmManager.h; sourceTree = "<group>"; };
 		AB78078E18393A66007C8BFD /* EWAlarmManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmManager.m; sourceTree = "<group>"; };
-		AB78079118393A66007C8BFD /* EWGroupStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWGroupStore.h; sourceTree = "<group>"; };
-		AB78079218393A66007C8BFD /* EWGroupStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWGroupStore.m; sourceTree = "<group>"; };
-		AB78079318393A66007C8BFD /* EWImageStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWImageStore.h; sourceTree = "<group>"; };
-		AB78079418393A66007C8BFD /* EWImageStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWImageStore.m; sourceTree = "<group>"; };
 		AB78079518393A66007C8BFD /* EWMediaStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMediaStore.h; sourceTree = "<group>"; };
 		AB78079618393A66007C8BFD /* EWMediaStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWMediaStore.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AB78079718393A66007C8BFD /* EWPersonStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPersonStore.h; sourceTree = "<group>"; };
@@ -1003,10 +997,6 @@
 				AB78079818393A66007C8BFD /* EWPersonStore.m */,
 				AB78079518393A66007C8BFD /* EWMediaStore.h */,
 				AB78079618393A66007C8BFD /* EWMediaStore.m */,
-				AB78079118393A66007C8BFD /* EWGroupStore.h */,
-				AB78079218393A66007C8BFD /* EWGroupStore.m */,
-				AB78079318393A66007C8BFD /* EWImageStore.h */,
-				AB78079418393A66007C8BFD /* EWImageStore.m */,
 				AB78079918393A66007C8BFD /* EWStatsManager.h */,
 				AB78079A18393A66007C8BFD /* EWStatsManager.m */,
 				AB0DF50818FE509C00CF5AB1 /* EWSocialGraphManager.h */,
@@ -1251,9 +1241,7 @@
 				9BF297E31912F720008C136E /* EWAlarmPageView.m in Sources */,
 				ABF192AA18BF135C006A4AA2 /* UIAlertView+.m in Sources */,
 				56F09E4617AAE0F800C5AD52 /* TestViewController.m in Sources */,
-				AB7807A118393A66007C8BFD /* EWGroupStore.m in Sources */,
 				56E0C36517B2CC6400835A6B /* EWViewController.m in Sources */,
-				AB7807A218393A66007C8BFD /* EWImageStore.m in Sources */,
 				56E0C36F17B2CEC200835A6B /* EWShakeManager.m in Sources */,
 				AB1D2D0D1877A87200D2576F /* EWUserManagement.m in Sources */,
 				9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */,

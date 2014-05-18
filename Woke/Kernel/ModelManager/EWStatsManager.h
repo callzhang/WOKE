@@ -7,6 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+//Keys
+#define kAverageWakeUpLength            @"AverageWakeUpLength"
+#define kAverageWakeUpTime              @"AverageWakeUpTime"
+#define kSuccessRate                    @"SuccessRate"
+
 @class EWPerson, EWTaskItem, EWTaskStore, EWPersonStore;
 
 @interface EWStatsManager : NSObject

@@ -9,17 +9,8 @@
 #import "EWMessage.h"
 #import "EWGroup.h"
 #import "EWPerson.h"
-#import "StackMob.h"
 
 @implementation EWMessage
 
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        [self setValue:[self assignObjectId] forKey:[self primaryKeyField]];
-    }
-    return self;
-}
 @end
