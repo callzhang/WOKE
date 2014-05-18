@@ -101,6 +101,8 @@
 		9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */; };
 		9BF2980B1912F7A0008C136E /* EWFacebookFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297F31912F7A0008C136E /* EWFacebookFriendListViewController.m */; };
 		9BF2980E1912F7A0008C136E /* EWWeiboFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */; };
+		9BF5F77519291E150074BF97 /* AWSRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F77319291E150074BF97 /* AWSRuntime.framework */; };
+		9BF5F77619291E150074BF97 /* AWSSNS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F77419291E150074BF97 /* AWSSNS.framework */; };
 		AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */; };
 		AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50918FE509C00CF5AB1 /* EWSocialGraphManager.m */; };
 		AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C831861818B008C1F15 /* EWAlarmItem.m */; };
@@ -348,6 +350,8 @@
 		9BF297F31912F7A0008C136E /* EWFacebookFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFacebookFriendListViewController.m; sourceTree = "<group>"; };
 		9BF297F71912F7A0008C136E /* EWWeiboFriendListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWeiboFriendListViewController.h; sourceTree = "<group>"; };
 		9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeiboFriendListViewController.m; sourceTree = "<group>"; };
+		9BF5F77319291E150074BF97 /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AWSRuntime.framework; path = Components/AWSRuntime.framework; sourceTree = "<group>"; };
+		9BF5F77419291E150074BF97 /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AWSSNS.framework; path = Components/AWSSNS.framework; sourceTree = "<group>"; };
 		AB0DF50518FE504200CF5AB1 /* EWSocialGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialGraph.h; sourceTree = "<group>"; };
 		AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialGraph.m; sourceTree = "<group>"; };
 		AB0DF50818FE509C00CF5AB1 /* EWSocialGraphManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialGraphManager.h; sourceTree = "<group>"; };
@@ -472,12 +476,14 @@
 				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
 				AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */,
+				9BF5F77519291E150074BF97 /* AWSRuntime.framework in Frameworks */,
 				AB245FB218CCD99500551721 /* CoreData.framework in Frameworks */,
 				AB245FAE18CCD70000551721 /* Social.framework in Frameworks */,
 				AB245FAD18CCD67200551721 /* CFNetwork.framework in Frameworks */,
 				AB245FA818CCD59F00551721 /* QuartzCore.framework in Frameworks */,
 				AB245FA718CCD59700551721 /* CoreGraphics.framework in Frameworks */,
 				AB245FA518CCD58800551721 /* MobileCoreServices.framework in Frameworks */,
+				9BF5F77619291E150074BF97 /* AWSSNS.framework in Frameworks */,
 				AB245FA418CCD57E00551721 /* MapKit.framework in Frameworks */,
 				AB245FAF18CCD70C00551721 /* CoreLocation.framework in Frameworks */,
 				AB245FAA18CCD5BB00551721 /* Accounts.framework in Frameworks */,
@@ -613,6 +619,8 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9BF5F77319291E150074BF97 /* AWSRuntime.framework */,
+				9BF5F77419291E150074BF97 /* AWSSNS.framework */,
 				9BBA5F9918EF295200C07809 /* libz.dylib */,
 				AB7243CD18F0B09800AE7041 /* Reveal.framework */,
 				ABC8F96218E8890D0096C073 /* MediaPlayer.framework */,
@@ -1405,6 +1413,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/",
 					"$(inherited)",
+					"$(PROJECT_DIR)/Components",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1442,6 +1451,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/",
 					"$(inherited)",
+					"$(PROJECT_DIR)/Components",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";

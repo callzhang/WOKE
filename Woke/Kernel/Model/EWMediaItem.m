@@ -18,6 +18,13 @@
 @dynamic priority;
 @dynamic image;
 @dynamic thumbnail;
+@synthesize audioKey;
+
+- (NSString *)audioKey{
+    NSString *path = [NSTemporaryDirectory() stringByAppendingString:@"audioTempFile"];
+    [self.audio writeToFile:path atomically:YES];
+    return path;
+}
 
 //@synthesize thumbnail;
 

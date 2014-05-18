@@ -288,11 +288,11 @@
 
 #pragma mark - location
 + (void)registerLocation{
-    if (![[EWDataStore user].lastSeenDate isOutDated]) {
+    if (![[EWUserManagement currentUser].lastSeenDate isOutDated]) {
         return;
     }
     [SMGeoPoint getGeoPointForCurrentLocationOnSuccess:^(SMGeoPoint *geoPoint) {
-        EWPerson *user = [EWDataStore user];
+        EWPerson *user = [EWUserManagement currentUser];
         user.lastLocation = [NSKeyedArchiver archivedDataWithRootObject:geoPoint];//geoPoint;//
         NSLog(@"Get user location with lat: %@, lon: %@", geoPoint.latitude, geoPoint.longitude);
         

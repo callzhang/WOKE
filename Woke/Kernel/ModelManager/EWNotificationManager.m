@@ -61,8 +61,7 @@
 
 + (EWNotification *)newNotification{
     EWNotification *notice = [NSEntityDescription insertNewObjectForEntityForName:@"EWNotification" inManagedObjectContext:[EWDataStore currentContext]];
-    [notice assignObjectId];
-    notice.sender = currentUser.username;
+    notice.sender = currentUser;
     notice.importance = 0;
     return notice;
 }
@@ -160,7 +159,7 @@
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWNotification"];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ewnotification_id == %@", notificationID];
     request.predicate = predicate;
-    NSArray *array = [[EWDataStore currentContext] executeFetchRequestAndWait:request error:NULL];
+    NSArray *array = [[EWDataStore currentContext] executeFetchRequest:request error:NULL];
     if (array.count != 1) {
         NSLog(@"Failed to get notification");
     }

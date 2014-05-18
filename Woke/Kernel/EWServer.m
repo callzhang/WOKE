@@ -76,7 +76,7 @@
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     request.predicate = locationPredicate;
     NSError *err;
-    NSArray *personAround = [[EWDataStore currentContext] executeFetchRequestAndWait:request returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:&err];
+    NSArray *personAround = [[EWDataStore currentContext] executeFetchRequest:request returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:&err];
     return personAround;
 }
 
@@ -121,7 +121,7 @@
         //add waker
         [task addWakerObject:person];
         //add sound
-        NSString *sound = [EWDataStore user].preference[@"buzzSound"];
+        NSString *sound = [EWUserManagement currentUser].preference[@"buzzSound"];
         buzz.buzzKey = sound ? sound : @"default";
         buzz.receiver = person;//send to media pool
         

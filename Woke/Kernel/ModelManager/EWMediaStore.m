@@ -78,7 +78,7 @@
 //    NSArray *medias = [[EWDataStore currentContext] executeFetchRequest:request error:&err];
     NSArray *medias = [person.medias allObjects];
     if (medias.count == 0) {
-        [EWDataStore refreshManagedObjectAndWait:person];
+        [person refresh];
         medias = [person.medias allObjects];
     }
     return medias;

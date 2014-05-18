@@ -19,6 +19,7 @@
 #import "EWDownloadManager.h"
 #import "EWNotificationManager.h"
 #import "EWPerson.h"
+#import "EWUserManagement.h"
 //UI
 #import "EWWakeUpViewController.h"
 
@@ -76,7 +77,7 @@
         NSString *buzzSound = buzzSoundName?sounds[buzzSoundName]:@"buzz.caf";
         
 #ifdef DEV_TEST
-        EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByID:personID];
+        EWPerson *sender = [EWUserManagement currentUser];
         //alert
         [[[UIAlertView alloc] initWithTitle:@"Buzz 来啦" message:[NSString stringWithFormat:@"Got a buzz from %@. This message will not display in release.", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         
@@ -106,7 +107,7 @@
             notif.soundName = buzzSound;
             //message
             notif.alertBody = [NSString stringWithFormat:@"Buzz from %@", media.author.name];
-            notif.userInfo = @{kPushTaskKey: task.ewtaskitem_id, kPushMediaKey: mediaID};
+            notif.userInfo = @{kPushTaskKey: task.objectId, kPushMediaKey: mediaID};
             //schedule
             [[UIApplication sharedApplication] scheduleLocalNotification:notif];
             
@@ -119,7 +120,7 @@
             [EWWakeUpManager presentWakeUpViewWithTask:task];
             
             //broadcast event so that wakeup VC can play it
-            [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: task.ewtaskitem_id}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
         }
         
 
@@ -130,7 +131,7 @@
         
 
         //download media
-        NSLog(@"Download media: %@", media.ewmediaitem_id);
+        NSLog(@"Download media: %@", media.objectId);
         [[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded in test mode
         
         //determin action based on task timing
@@ -145,7 +146,7 @@
             [EWWakeUpManager presentWakeUpViewWithTask:task];
             
             //broadcast so wakeupVC can react to it
-            [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: task.ewtaskitem_id}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: task.objectId}];
             
             
             
@@ -157,9 +158,7 @@
                 //need to move to media pool
                 media.task = nil;
                 media.receiver = currentUser;
-                [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                    NSLog(@"Unable to save: %@", error.description);
-                }];
+                [EWDataStore save];
             }
         }
         
@@ -210,14 +209,14 @@
     NSInteger nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
     NSInteger nVoiceNeeded = kMaxVoicePerTask - nVoice;
     
-    NSArray *mediaAssets = [[EWDataStore user].mediaAssets allObjects];
+    NSArray *mediaAssets = [[EWUserManagement currentUser].mediaAssets allObjects];
     for (EWMediaItem *media in mediaAssets) {
         if (!media.fixedDate || [media.fixedDate isEarlierThan:[NSDate date]]) {
             
             //find media to add
             [task addMediasObject: media];
             //remove media from mediaAssets
-            [[EWDataStore user] removeMediaAssetsObject:media];
+            [[EWUserManagement currentUser] removeMediaAssetsObject:media];
             
             
             if ([media.type isEqualToString: kMediaTypeVoice]) {

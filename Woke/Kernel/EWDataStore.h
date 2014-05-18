@@ -11,9 +11,9 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "AWSRuntime.h"
+#import <AWSRuntime/AWSRuntime.h>
 #import <Parse/Parse.h>
-#import "AWSSNS.h"
+#import <AWSSNS/AWSSNS.h>
 
 @class EWPerson;
 

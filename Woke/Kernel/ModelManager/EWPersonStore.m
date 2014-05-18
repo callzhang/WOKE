@@ -50,65 +50,50 @@ EWPerson *currentUser;
 }
 
 #pragma mark - CREATE USER
--(EWPerson *)createPersonWIthUsername:(NSString *)username{
-    //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
-    EWPerson *newUser = [[EWPerson alloc] initNewUserInContext:[EWDataStore currentContext]];
-    [newUser setValue:username forKey:[newUser primaryKeyField]];
-    
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        NSLog(@"User %@ created!", username);
-    } onFailure:^(NSError *error){
-        [NSException raise:@"Unable to create user" format:@"Reason: %@", error.description];
-    }];
-
-    return newUser;
-}
+//-(EWPerson *)createPersonWIthUsername:(NSString *)username{
+//    //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
+//    EWPerson *newUser = [[EWPerson alloc] initNewUserInContext:[EWDataStore currentContext]];
+//    
+//    [[EWDataStore currentContext] saveOnSuccess:^{
+//        NSLog(@"User %@ created!", username);
+//    } onFailure:^(NSError *error){
+//        [NSException raise:@"Unable to create user" format:@"Reason: %@", error.description];
+//    }];
+//
+//    return newUser;
+//}
 
 -(EWPerson *)getPersonByID:(NSString *)ID{
+    //ID is username
     if(!ID) return nil;
-    
+    EWPerson *person;
     NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
     userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", ID];
-    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];//doesn't work for SM
+    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];
     userFetch.returnsObjectsAsFaults = NO;
     NSError *err;
-    NSArray *result = [[EWDataStore currentContext] executeFetchRequestAndWait:userFetch error:&err];
-    if ([result count] > 1) {
-        // There should only be one result
-        [NSException raise:@"Failed to fetch user" format:@"%lu user fetched. Check username:%@", (unsigned long)result.count, ID];
-    }else if (result.count == 0){
-        result = [[EWDataStore currentContext] executeFetchRequestAndWait:userFetch returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:NULL];
-        if (result.count != 1) {
-            EWAlert(@"Failed to fetch user. Please try again.");
-        }else{
-            NSLog(@"Fetched remote user: %@", ID);
-        }
+    NSArray *result = [[EWDataStore currentContext] executeFetchRequest:userFetch error:&err];
+    
+    if (result.count == 0){
+        //create one
+        PFQuery *q = [PFUser query];
+        [q whereKey:@"username" equalTo:ID];
+        PFUser *user = [q findObjects][0];
+        person = (EWPerson *)[EWDataStore findOrCreateManagedObjectWithEntityName:@"EWPerson" withParseObject:user];
+        NSLog(@"User %@ data has CREATED", person.name);
+    }else{
+        person = (EWPerson *)result[0];
+        NSLog(@"User %@ data has fetched", person.name);
     }
     
-    EWPerson *user = (EWPerson *)result[0];
-    NSLog(@"User %@ data has fetched", user.name);
-    if ([user isFault]) {
-        //[NSException raise:@"user fatched is fault" format:@"check your code"];
-        NSLog(@"user is faulted, try to get faults filled");
-        [[EWDataStore currentContext] refreshObject:currentUser mergeChanges:YES];
-        NSLog(@"There are %lu alarms and %lu tasks", (unsigned long)user.alarms.count, (unsigned long)user.tasks.count);
-    }
-    return user;
+
+    return person;
 }
 
 - (NSArray *)everyone{
-    NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    userFetch.fetchLimit = 50;
-    //option
-    SMRequestOptions *options;
-    if (![timeEveryoneChecked isOutDated] && timeEveryoneChecked != nil) {
-        options = [EWDataStore optionFetchCacheElseNetwork];
-    }else{
-        options = [EWDataStore optionFetchNetworkElseCache];
-        timeEveryoneChecked = [NSDate date];
-    }
+
     //fetch
-    NSArray *allPerson = [[EWDataStore currentContext] executeFetchRequestAndWait:userFetch returnManagedObjectIDs:NO options:options error:NULL];
+    NSArray *allPerson = [EWPerson findAll];
     //NSLog(@"Get a list of people: %@", [allPerson valueForKey:@"name"]);
 //    //check
 //    for (EWPerson *person in allPerson) {
@@ -137,7 +122,7 @@ EWPerson *currentUser;
     
     //media
     for (EWMediaItem *media in currentUser.medias) {
-        NSLog(@"You are the author of media %@", media.title);
+        NSLog(@"You are the author of media %@", media);
     }
 }
 
@@ -155,22 +140,20 @@ EWPerson *currentUser;
     //check
     [EWTaskStore.sharedInstance checkScheduledNotifications];
     
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        //person
-        //currentUser = nil;
-        
-        //cache clear
-        //[[EWDataStore sharedInstance].coreDataStore resetCache];
-        
-        //alert
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
-        //logout
-        [EWUserManagement logout];
-        
-    } onFailure:^(NSError *error) {
-        [NSException raise:@"Error in save after clean" format:@"Reason: %@", error.description];
-    }];
+    [EWDataStore save];
+    //person
+    //currentUser = nil;
+    
+    //cache clear
+    //[[EWDataStore sharedInstance].coreDataStore resetCache];
+    
+    //alert
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+    //logout
+    [EWUserManagement logout];
+    
+
 }
 
 #pragma mark - Notification

@@ -19,6 +19,7 @@
 @property (nonatomic) BOOL played;
 @property (nonatomic) NSInteger priority;
 @property (nonatomic, retain) UIImage *thumbnail;
+@property (nonatomic, retain) NSString *audioKey;
 
 -(UIImage *)setThumbnailDataFromImage:(UIImage *)image;
 

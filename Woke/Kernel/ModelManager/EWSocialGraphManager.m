@@ -26,7 +26,11 @@
 }
 
 + (EWSocialGraph *)mySocialGraph{
-    EWSocialGraph *sg = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWUserManagement currentUser]];
+    EWPerson *me = [EWUserManagement currentUser];
+    EWSocialGraph *sg = me.socialGraph;
+    if (!sg) {
+        sg = [[EWSocialGraphManager sharedInstance] createSocialGraphForPerson:me];
+    }
     return sg;
 }
 

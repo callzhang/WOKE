@@ -25,7 +25,6 @@
 #import "EWPersonStore.h"
 
 //backend
-#import "StackMob.h"
 #import "EWDataStore.h"
 #import "EWServer.h"
 
