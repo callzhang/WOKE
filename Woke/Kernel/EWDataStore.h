@@ -24,6 +24,8 @@
 #define kParseObjectID          @"objectId"
 //Attribute stored on PFObject to identify corresponding ManagedObject on SQLite
 #define kManagedObjectID        @"objectID"
+//Attribute to store update date
+#define kUpdatedDateKey         @"updatedAt"
 //Parse update queue
 #define kParseQueueInsert       @"parse_queue_insert"
 #define kParseQueueUpdate       @"parse_queue_update"

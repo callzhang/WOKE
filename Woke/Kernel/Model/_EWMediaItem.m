@@ -4,19 +4,20 @@
 #import "_EWMediaItem.h"
 
 const struct EWMediaItemAttributes EWMediaItemAttributes = {
-	.audioKey = @"audioKey",
+	.audio = @"audio",
 	.buzzKey = @"buzzKey",
 	.createdAt = @"createdAt",
-	.fixedDate = @"fixedDate",
-	.imageKey = @"imageKey",
+	.image = @"image",
 	.message = @"message",
 	.objectId = @"objectId",
 	.played = @"played",
 	.priority = @"priority",
 	.readTime = @"readTime",
+	.targetDate = @"targetDate",
+	.thumbnail = @"thumbnail",
 	.type = @"type",
 	.updatedAt = @"updatedAt",
-	.videoKey = @"videoKey",
+	.video = @"video",
 };
 
 const struct EWMediaItemRelationships EWMediaItemRelationships = {
@@ -72,7 +73,7 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 
 
-@dynamic audioKey;
+@dynamic audio;
 
 
 
@@ -93,14 +94,7 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 
 
-@dynamic fixedDate;
-
-
-
-
-
-
-@dynamic imageKey;
+@dynamic image;
 
 
 
@@ -180,6 +174,20 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 
 
+@dynamic targetDate;
+
+
+
+
+
+
+@dynamic thumbnail;
+
+
+
+
+
+
 @dynamic type;
 
 
@@ -194,7 +202,7 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 
 
-@dynamic videoKey;
+@dynamic video;
 
 
 

@@ -6,7 +6,7 @@
 const struct EWAchievementAttributes EWAchievementAttributes = {
 	.body = @"body",
 	.createdAt = @"createdAt",
-	.imageKey = @"imageKey",
+	.image = @"image",
 	.name = @"name",
 	.objectId = @"objectId",
 	.time = @"time",
@@ -68,7 +68,7 @@ const struct EWAchievementFetchedProperties EWAchievementFetchedProperties = {
 
 
 
-@dynamic imageKey;
+@dynamic image;
 
 
 

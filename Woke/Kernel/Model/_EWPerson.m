@@ -5,7 +5,7 @@
 
 const struct EWPersonAttributes EWPersonAttributes = {
 	.aws_id = @"aws_id",
-	.bgImageKey = @"bgImageKey",
+	.bgImage = @"bgImage",
 	.birthday = @"birthday",
 	.city = @"city",
 	.createdAt = @"createdAt",
@@ -16,7 +16,7 @@ const struct EWPersonAttributes EWPersonAttributes = {
 	.name = @"name",
 	.objectId = @"objectId",
 	.preference = @"preference",
-	.profilePicKey = @"profilePicKey",
+	.profilePic = @"profilePic",
 	.region = @"region",
 	.statement = @"statement",
 	.updatedAt = @"updatedAt",
@@ -85,7 +85,7 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 
 
-@dynamic bgImageKey;
+@dynamic bgImage;
 
 
 
@@ -162,7 +162,7 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 
 
-@dynamic profilePicKey;
+@dynamic profilePic;
 
 
 

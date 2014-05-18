@@ -11,9 +11,9 @@
 
 @implementation EWNotification
 
-@dynamic userInfo;
-@dynamic lastLocation;
-@dynamic importance;
+//@dynamic userInfo;
+//@dynamic lastLocation;
+//@dynamic importance;
 
 //- (NSDictionary *)userInfo{
 //    if (self.userInfoString) {

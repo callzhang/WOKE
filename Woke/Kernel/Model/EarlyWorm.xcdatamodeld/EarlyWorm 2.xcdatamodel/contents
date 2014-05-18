@@ -3,7 +3,7 @@
     <entity name="EWAchievement" representedClassName="EWAchievement" syncable="YES">
         <attribute name="body" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="imageKey" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="objectId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
@@ -49,19 +49,20 @@
         <relationship name="participents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="groupTasks" inverseEntity="EWPerson" syncable="YES"/>
     </entity>
     <entity name="EWMediaItem" representedClassName="EWMediaItem" syncable="YES">
-        <attribute name="audioKey" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="audio" optional="YES" attributeType="Binary" storedInTruthFile="YES" syncable="YES"/>
         <attribute name="buzzKey" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="fixedDate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="imageKey" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="Transformable" storedInTruthFile="YES" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="objectId" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="played" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="priority" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="readTime" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="targetDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="thumbnail" optional="YES" transient="YES" attributeType="Transformable" storedInTruthFile="YES" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="videoKey" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="video" optional="YES" attributeType="Binary" storedInTruthFile="YES" syncable="YES"/>
         <relationship name="author" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="medias" inverseEntity="EWPerson" syncable="YES"/>
         <relationship name="groupTask" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWGroupTask" inverseName="medias" inverseEntity="EWGroupTask" syncable="YES"/>
         <relationship name="receiver" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="mediaAssets" inverseEntity="EWPerson" syncable="YES"/>
@@ -69,7 +70,7 @@
     </entity>
     <entity name="EWMessage" representedClassName="EWMessage" syncable="YES">
         <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="media" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="media" optional="YES" attributeType="Binary" storedInTruthFile="YES" syncable="YES"/>
         <attribute name="objectId" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
@@ -92,7 +93,7 @@
     </entity>
     <entity name="EWPerson" representedClassName="EWPerson" syncable="YES">
         <attribute name="aws_id" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="bgImageKey" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="bgImage" optional="YES" attributeType="Transformable" storedInTruthFile="YES" syncable="YES"/>
         <attribute name="birthday" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
@@ -103,7 +104,7 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="objectId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="preference" optional="YES" attributeType="Transformable" syncable="YES"/>
-        <attribute name="profilePicKey" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="profilePic" optional="YES" attributeType="Transformable" storedInTruthFile="YES" syncable="YES"/>
         <attribute name="region" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
@@ -154,15 +155,15 @@
         <relationship name="waker" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="tasksHelped" inverseEntity="EWPerson" syncable="YES"/>
     </entity>
     <elements>
-        <element name="EWAchievement" positionX="0" positionY="0" width="128" height="178"/>
+        <element name="EWAchievement" positionX="0" positionY="0" width="128" height="180"/>
         <element name="EWAlarmItem" positionX="0" positionY="0" width="128" height="208"/>
         <element name="EWGroup" positionX="0" positionY="0" width="128" height="193"/>
-        <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="298"/>
+        <element name="EWGroupTask" positionX="9" positionY="99" width="128" height="195"/>
+        <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="313"/>
         <element name="EWMessage" positionX="0" positionY="0" width="128" height="193"/>
         <element name="EWNotification" positionX="9" positionY="153" width="128" height="178"/>
-        <element name="EWPerson" positionX="0" positionY="0" width="128" height="538"/>
+        <element name="EWPerson" positionX="0" positionY="0" width="128" height="540"/>
         <element name="EWSocialGraph" positionX="9" positionY="153" width="128" height="193"/>
         <element name="EWTaskItem" positionX="0" positionY="0" width="128" height="253"/>
-        <element name="EWGroupTask" positionX="9" positionY="99" width="128" height="195"/>
     </elements>
 </model>

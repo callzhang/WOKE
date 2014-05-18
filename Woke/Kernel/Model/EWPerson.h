@@ -8,12 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import <MapKit/MapKit.h>
+@import CoreLocation;
 #import "_EWPerson.h"
 @interface EWPerson : _EWPerson
-@property (nonatomic, retain) NSDictionary* lastLocation;
-
-//local properties
+@property (nonatomic) CLLocation* lastLocation;
 @property (nonatomic) UIImage *profilePic;
 @property (nonatomic) UIImage *bgImage;
 

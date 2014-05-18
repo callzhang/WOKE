@@ -7,7 +7,7 @@
 extern const struct EWAchievementAttributes {
 	__unsafe_unretained NSString *body;
 	__unsafe_unretained NSString *createdAt;
-	__unsafe_unretained NSString *imageKey;
+	__unsafe_unretained NSString *image;
 	__unsafe_unretained NSString *name;
 	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *time;
@@ -26,7 +26,7 @@ extern const struct EWAchievementFetchedProperties {
 
 
 
-
+@class NSObject;
 
 
 
@@ -66,11 +66,11 @@ extern const struct EWAchievementFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* imageKey;
+@property (nonatomic, strong) id image;
 
 
 
-//- (BOOL)validateImageKey:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateImage:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -155,8 +155,8 @@ extern const struct EWAchievementFetchedProperties {
 
 
 
-- (NSString*)primitiveImageKey;
-- (void)setPrimitiveImageKey:(NSString*)value;
+- (id)primitiveImage;
+- (void)setPrimitiveImage:(id)value;
 
 
 

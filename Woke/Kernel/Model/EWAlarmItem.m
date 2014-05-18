@@ -7,18 +7,11 @@
 //
 
 #import "EWAlarmItem.h"
-#import "EWAlarmManager.h"
-#import "EWPerson.h"
-#import "EWTaskItem.h"
-#import "EWTaskStore.h"
-
-#import "NSDate+Extend.h"
-#import "StackMob.h"
 
 @implementation EWAlarmItem
 
-@dynamic important;
-@dynamic state;
+//@dynamic important;
+//@dynamic state;
 
 
 @end

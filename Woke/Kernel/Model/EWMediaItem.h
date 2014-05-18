@@ -15,7 +15,6 @@
 
 @class EWGroupTask, EWPerson, EWTaskItem;
 @interface EWMediaItem : _EWMediaItem
-@property (nonatomic, retain) NSData *audio;
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic) BOOL played;
 @property (nonatomic) NSInteger priority;

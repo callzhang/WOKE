@@ -11,9 +11,6 @@
 
 @implementation EWSocialGraph
 
-@synthesize facebookFriends;
-@synthesize weiboFriends;
-
 
 
 //#pragma mark - facebookFriends

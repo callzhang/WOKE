@@ -21,8 +21,8 @@
 //Util
 #import "FTWCache.h"
 
-//Global variable
-//NSDate *lastChecked;
+#pragma mark - 
+#define kServerTransformTypes                @{@"CLLotation": @"PFGeoPoint"};
 
 @interface EWDataStore()
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
@@ -67,6 +67,7 @@
         //core data
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
         context = [NSManagedObjectContext defaultContext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:nil];
         
         //facebook
         [PFFacebookUtils initializeFacebook];
@@ -626,6 +627,14 @@
     return managedObject;
 }
 
+- (void)updateModifiedDate:(NSNotification *)notification{
+    NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
+    NSLog(@"Observed %d ManagedObject changed", updatedObjects.count);
+    for (NSManagedObject *mo in updatedObjects) {
+        [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
+    }
+}
+
 @end
 
 
@@ -634,23 +643,8 @@
 @implementation NSManagedObject (PFObject)
 - (void)updateValueAndRelationFromParseObject:(PFObject *)parseObject{
     
-    //value
-    NSMutableDictionary *mutableAttributeValues = [self.entity.attributesByName mutableCopy];
-    //add or delete some attributes here
-    [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
-        @try {
-            id parseValue = [parseObject objectForKey:key];
-            if ([parseValue isKindOfClass:[PFFile class]]) {
-                [self setPFFile:parseValue forPropertyDescription:obj];
-            } else {
-                [self setValue:parseValue forKey:key];
-            }
-            
-        }
-        @catch (NSException *exception) {
-            NSLog(@"Exception when assign property [%@] from ParseObject: %@", key, parseObject);
-        }
-    }];
+    //attributes
+    [self assignValueFromParseObject:parseObject];
     
     //realtion
     NSMutableDictionary *relations = [self.entity.relationshipsByName mutableCopy];
@@ -734,7 +728,14 @@
             id parseValue = [object objectForKey:key];
             if ([parseValue isKindOfClass:[PFFile class]]) {
                 [self setPFFile:parseValue forPropertyDescription:obj];
-            } else {
+                
+                
+            }else if ([parseValue isKindOfClass:[PFGeoPoint class]]){
+                PFGeoPoint *point = (PFGeoPoint *)parseValue;
+                CLLocation *location = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
+                [self setValue:location forKeyPath:key];
+            }
+            else {
                 [self setValue:parseValue forKey:key];
             }
             
@@ -802,15 +803,33 @@
 #pragma mark - Parse Object extension
 @implementation PFObject (NSManagedObject)
 - (void)updateValueFromManagedObject:(NSManagedObject *)managedObject{
+    if ([[managedObject valueForKeyPath:kUpdatedDateKey] timeIntervalSinceDate:self.updatedAt] <= 0]) {
+        NSLog(@"The last modified dates are the same, parse object will not update to server");
+        return;
+    }
     //value
     NSMutableDictionary *mutableAttributeValues = [managedObject.entity.attributesByName mutableCopy];
     [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
         id value = [managedObject valueForKey:key];
-        if (value) {
-            [self setObject:value forKey:key];
-        } else {
-            [self removeObjectForKey:key];
-        }
+            if ([value isKindOfClass:[NSData class]]) {
+                //data
+                PFFile *dataFile = [PFFile fileWithData:value];
+                [dataFile saveInBackground];
+                [self setObject:dataFile forKey:key];
+            }else if ([value isKindOfClass:[UIImage class]]){
+                //image
+                PFFile *dataFile = [PFFile fileWithData:[UIImage UIImagePNGRepresentation((UIImage *)value)]];
+                [dataFile saveInBackground];
+                [self setObject:dataFile forKey:key];
+            }else if ([value isKindOfClass:[CLLocation class]]){
+                //location
+                PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
+                [self setObject:point forKey:key];
+            }else {
+                //other supported value
+                [self setObject:value forKey:key];
+            }
+        
     }];
     
     //relation

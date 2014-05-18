@@ -12,60 +12,47 @@
 #import "EWTaskItem.h"
 
 #import "EWDataStore.h"
-#import "StackMob.h"
-#import "NSString+MD5.h"
 
 @implementation EWMediaItem
 
-@synthesize image;
-@synthesize audio;
-@synthesize thumbnail;
-@dynamic priority;
-@dynamic played;
+//@synthesize thumbnail;
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        [self setValue:[self assignObjectId] forKey:[self primaryKeyField]];
-    }
-    return self;
-}
+//- (id)init
+//{
+//    self = [super init];
+//    if (self) {
+//        [self setValue:[self assignObjectId] forKey:[self primaryKeyField]];
+//    }
+//    return self;
+//}
 
-- (UIImage *)image{
-    if (!self.imageKey || [self.imageKey isEqualToString:@""]) {
-        return nil;
-    }
-    
-    if (!image) {
-        image = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.audioKey]];
-    }
-    
-    return image;
-}
+//- (UIImage *)image{
+//    if (!self.imageKey || [self.imageKey isEqualToString:@""]) {
+//        return nil;
+//    }
+//    
+//    if (!image) {
+//        image = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.audioKey]];
+//    }
+//    
+//    return image;
+//}
+//
+//- (void)setImage:(UIImage *)img{ 
+//    
+//    //update memory
+//    image = img;
+//    
+//    NSData *picData = UIImagePNGRepresentation(img);
+//    //update cache
+//    [[EWDataStore sharedInstance] updateCacheForKey:self.imageKey withData:picData];
+//    
+//    //update server
+//    self.imageKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"media.png" contentType:@"image/png"];
+//    
+//    [[EWDataStore currentContext] save];
+//}
 
-- (void)setImage:(UIImage *)img{ 
-    
-    //update memory
-    image = img;
-    
-    NSData *picData = UIImagePNGRepresentation(img);
-    //update cache
-    [[EWDataStore sharedInstance] updateCacheForKey:self.imageKey withData:picData];
-    
-    //update server
-    self.imageKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"media.png" contentType:@"image/png"];
-    
-    [[EWDataStore currentContext] save];
-}
-
-#pragma mark - AUDIO
-- (NSData *)audio{
-    if(!audio){
-        audio = [[EWDataStore sharedInstance] getRemoteDataWithKey:self.audioKey];
-    }
-    return audio;
-}
 
 
 - (UIImage *)thumbnail{
@@ -120,16 +107,16 @@
 }
 
 
-#pragma mark - Data
-- (void)prepareAudio{
-    if (!self.audio) {
-        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
-        dispatch_async(queue, ^{
-            NSLog(@"Downloading audio from internet: %@", self.audio);
-        });
-    }
-    
-}
+//#pragma mark - Data
+//- (void)prepareAudio{
+//    if (!self.audio) {
+//        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+//        dispatch_async(queue, ^{
+//            NSLog(@"Downloading audio from internet: %@", self.audio);
+//        });
+//    }
+//    
+//}
 
 
 

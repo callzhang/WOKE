@@ -5,19 +5,20 @@
 
 
 extern const struct EWMediaItemAttributes {
-	__unsafe_unretained NSString *audioKey;
+	__unsafe_unretained NSString *audio;
 	__unsafe_unretained NSString *buzzKey;
 	__unsafe_unretained NSString *createdAt;
-	__unsafe_unretained NSString *fixedDate;
-	__unsafe_unretained NSString *imageKey;
+	__unsafe_unretained NSString *image;
 	__unsafe_unretained NSString *message;
 	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *played;
 	__unsafe_unretained NSString *priority;
 	__unsafe_unretained NSString *readTime;
+	__unsafe_unretained NSString *targetDate;
+	__unsafe_unretained NSString *thumbnail;
 	__unsafe_unretained NSString *type;
 	__unsafe_unretained NSString *updatedAt;
-	__unsafe_unretained NSString *videoKey;
+	__unsafe_unretained NSString *video;
 } EWMediaItemAttributes;
 
 extern const struct EWMediaItemRelationships {
@@ -38,13 +39,14 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
+@class NSObject;
 
 
 
 
 
 
-
+@class NSObject;
 
 
 
@@ -62,11 +64,11 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* audioKey;
+@property (nonatomic, strong) NSData* audio;
 
 
 
-//- (BOOL)validateAudioKey:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateAudio:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -92,21 +94,11 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDate* fixedDate;
+@property (nonatomic, strong) id image;
 
 
 
-//- (BOOL)validateFixedDate:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSString* imageKey;
-
-
-
-//- (BOOL)validateImageKey:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateImage:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -170,6 +162,26 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
+@property (nonatomic, strong) NSDate* targetDate;
+
+
+
+//- (BOOL)validateTargetDate:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
+@property (nonatomic, strong) id thumbnail;
+
+
+
+//- (BOOL)validateThumbnail:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
 @property (nonatomic, strong) NSString* type;
 
 
@@ -190,11 +202,11 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* videoKey;
+@property (nonatomic, strong) NSData* video;
 
 
 
-//- (BOOL)validateVideoKey:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateVideo:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -238,8 +250,8 @@ extern const struct EWMediaItemFetchedProperties {
 @interface _EWMediaItem (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString*)primitiveAudioKey;
-- (void)setPrimitiveAudioKey:(NSString*)value;
+- (NSData*)primitiveAudio;
+- (void)setPrimitiveAudio:(NSData*)value;
 
 
 
@@ -256,14 +268,8 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-- (NSDate*)primitiveFixedDate;
-- (void)setPrimitiveFixedDate:(NSDate*)value;
-
-
-
-
-- (NSString*)primitiveImageKey;
-- (void)setPrimitiveImageKey:(NSString*)value;
+- (id)primitiveImage;
+- (void)setPrimitiveImage:(id)value;
 
 
 
@@ -304,6 +310,18 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
+- (NSDate*)primitiveTargetDate;
+- (void)setPrimitiveTargetDate:(NSDate*)value;
+
+
+
+
+- (id)primitiveThumbnail;
+- (void)setPrimitiveThumbnail:(id)value;
+
+
+
+
 - (NSString*)primitiveType;
 - (void)setPrimitiveType:(NSString*)value;
 
@@ -316,8 +334,8 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-- (NSString*)primitiveVideoKey;
-- (void)setPrimitiveVideoKey:(NSString*)value;
+- (NSData*)primitiveVideo;
+- (void)setPrimitiveVideo:(NSData*)value;
 
 
 

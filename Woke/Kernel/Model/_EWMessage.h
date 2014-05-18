@@ -58,7 +58,7 @@ extern const struct EWMessageFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* media;
+@property (nonatomic, strong) NSData* media;
 
 
 
@@ -152,8 +152,8 @@ extern const struct EWMessageFetchedProperties {
 
 
 
-- (NSString*)primitiveMedia;
-- (void)setPrimitiveMedia:(NSString*)value;
+- (NSData*)primitiveMedia;
+- (void)setPrimitiveMedia:(NSData*)value;
 
 
 

@@ -6,7 +6,7 @@
 
 extern const struct EWPersonAttributes {
 	__unsafe_unretained NSString *aws_id;
-	__unsafe_unretained NSString *bgImageKey;
+	__unsafe_unretained NSString *bgImage;
 	__unsafe_unretained NSString *birthday;
 	__unsafe_unretained NSString *city;
 	__unsafe_unretained NSString *createdAt;
@@ -17,7 +17,7 @@ extern const struct EWPersonAttributes {
 	__unsafe_unretained NSString *name;
 	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *preference;
-	__unsafe_unretained NSString *profilePicKey;
+	__unsafe_unretained NSString *profilePic;
 	__unsafe_unretained NSString *region;
 	__unsafe_unretained NSString *statement;
 	__unsafe_unretained NSString *updatedAt;
@@ -63,7 +63,7 @@ extern const struct EWPersonFetchedProperties {
 @class EWTaskItem;
 
 
-
+@class NSObject;
 
 
 
@@ -74,7 +74,7 @@ extern const struct EWPersonFetchedProperties {
 
 
 @class NSObject;
-
+@class NSObject;
 
 
 
@@ -104,11 +104,11 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* bgImageKey;
+@property (nonatomic, strong) id bgImage;
 
 
 
-//- (BOOL)validateBgImageKey:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateBgImage:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -214,11 +214,11 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* profilePicKey;
+@property (nonatomic, strong) id profilePic;
 
 
 
-//- (BOOL)validateProfilePicKey:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateProfilePic:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -465,8 +465,8 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSString*)primitiveBgImageKey;
-- (void)setPrimitiveBgImageKey:(NSString*)value;
+- (id)primitiveBgImage;
+- (void)setPrimitiveBgImage:(id)value;
 
 
 
@@ -531,8 +531,8 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSString*)primitiveProfilePicKey;
-- (void)setPrimitiveProfilePicKey:(NSString*)value;
+- (id)primitiveProfilePic;
+- (void)setPrimitiveProfilePic:(id)value;
 
 
 
