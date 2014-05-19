@@ -19,7 +19,7 @@ extern EWPerson *currentUser;
 //@property (retain, nonatomic) EWPerson *currentUser;
 
 + (EWPersonStore *)sharedInstance;
-- (EWPerson *)createPersonWIthUsername:(NSString *)username;
+- (EWPerson *)createPersonWIthParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByID:(NSString *)ID;
 /**
  Possible people that are relevant

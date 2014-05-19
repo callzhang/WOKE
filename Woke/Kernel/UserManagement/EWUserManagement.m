@@ -1,4 +1,4 @@
-//
+	//
 //  EWUserManagement.m
 //  EarlyWorm
 //
@@ -116,8 +116,8 @@
 + (void)loginWithTempUser:(void (^)(void))block{
     [PFAnonymousUtils logInWithBlock:^(PFUser *user, NSError *error) {
         //get anonymous user, create core data user
-        EWPerson *person = [EWPerson createEntity];
-        [person updateValueAndRelationFromParseObject:user];
+        EWPerson *person = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
+        [EWDataStore save];
         currentUser = person;
         
         //callback
@@ -130,81 +130,62 @@
     }];
 }
 
-////Depreciated: log in using local machine info
-//+ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block{
-//    //log out fb first
-//    [FBSession.activeSession closeAndClearTokenInformation];
-//    //get user default
-//    NSString *ADID = [[NSUserDefaults standardUserDefaults] objectForKey:kADIDKey];
-//    if (!ADID) {
-//        ADID = [EWUtil ADID];
-//        [[NSUserDefaults standardUserDefaults] setObject:ADID forKey:kADIDKey];
-//        [[NSUserDefaults standardUserDefaults] synchronize];
-//        NSLog(@"Stored new ADID: %@", ADID);
-//    }
-//    //get ADID
-//    NSArray *adidArray = [ADID componentsSeparatedByString:@"-"];
-//    //username
-//    NSString *username = adidArray.firstObject;
-//    //password
-//    NSString *password = adidArray.lastObject;
-//    
-//    //try to log in
-//    [client loginWithUsername:username password:password onSuccess:^(NSDictionary *result) {
-//        currentUser = [[EWPersonStore sharedInstance] getPersonByID:username];
-//        
-//        //callback
-//        block();
-//        
-//        //broadcast
-//        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-//        
-//    } onFailure:^(NSError *error) {
-//        NSLog(@"Unable to login with username: %@. Error: %@", username, error.description);
-//        //if not logged in, register one
-//        EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:[EWDataStore currentContext]];
-//        [newMe setUsername:username];
-//        [newMe setPassword:password];
-//        newMe.name = [NSString stringWithFormat:@"User_%@", username];
-//        NSString *profilePicFile = [NSString stringWithFormat:@"%d.jpg", arc4random_uniform(16)];
-//        newMe.profilePic = [UIImage imageNamed:profilePicFile];
-//        currentUser = newMe;
-//        
-//        //persist password to user defaults locally
-//        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//        [defaults setObject:password forKey:@"password"];
-//        
-//        //save new user
-//        [[EWDataStore currentContext] saveOnSuccess:^{
-//            NSLog(@"New user %@ created", newMe.username);
-//            
-//            //login
-//            [client loginWithUsername:currentUser.username password:password onSuccess:^(NSDictionary *result){
-//                //callback
-//                block();
-//                
-//                //broadcast
-//                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-//                
-//                //HUD
-//                //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
-//            } onFailure:^(NSError *error) {
-//                //[NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
-//                if (error.code == -105) {
-//                    //network error
-//                    EWAlert(@"No network connection. Unable to register new user to server");
-//                }else{
-//                    NSLog(@"Server error, please try again later. %@", error.description);
-//                }
-//            }];
-//        } onFailure:^(NSError *error) {
-//            //[NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
-//            EWAlert(@"Server error, please restart app");
-//            [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-//        }];
-//    }];
-//
-//}
+//Depreciated: log in using local machine info
++ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block{
+    //log out fb first
+    [FBSession.activeSession closeAndClearTokenInformation];
+    //get user default
+    NSString *ADID = [[NSUserDefaults standardUserDefaults] objectForKey:kADIDKey];
+    if (!ADID) {
+        ADID = [EWUtil ADID];
+        [[NSUserDefaults standardUserDefaults] setObject:ADID forKey:kADIDKey];
+        NSLog(@"Stored new ADID: %@", ADID);
+    }
+    //get ADID
+    NSArray *adidArray = [ADID componentsSeparatedByString:@"-"];
+    //username
+    NSString *username = adidArray.firstObject;
+    //password
+    NSString *password = adidArray.lastObject;
+    
+    //try to log in
+    [PFUser logInWithUsernameInBackground:username password:password block:^(PFUser *user, NSError *error) {
+                                       
+        if (user) {
+            EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+            [person updateValueAndRelationFromParseObject:user];
+            currentUser = person;
+            
+        }else{
+            NSLog(@"Failed to login: %@", error.description);
+            //create new user
+            PFUser *user = [PFUser user];
+            user.username = username;
+            user.password = password;
+            error = nil;
+            [user signUp:&error];
+            if (!error) {
+                //create person
+                EWPerson *person = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
+                currentUser = person;
+                [EWDataStore save];
+            }else{
+                NSLog(@"Failed to sign up new user: %@", error.description);
+                EWAlert(@"Server not available, please try again.");
+            }
+            
+        }
+        
+        //broadcast
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+        //callback
+        if (block) {
+            block();
+        }
+        
+    }];
+
+}
 
 + (void)logout{
     //log out SM

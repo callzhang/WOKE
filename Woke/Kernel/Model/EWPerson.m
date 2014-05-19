@@ -57,7 +57,7 @@
 //    //update cache
 //    [[EWDataStore sharedInstance] updateCacheForKey:self.profilePicKey withData:picData];
 //    
-//    [[EWDataStore currentContext] saveToPersistentStoreAndWait];
+//    [[EWDataStore currentContext] MR_saveToPersistentStoreAndWait];
 //}
 //
 //- (UIImage *)bgImage{

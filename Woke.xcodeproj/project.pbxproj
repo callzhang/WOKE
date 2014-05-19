@@ -90,8 +90,6 @@
 		9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297DC1912F71F008C136E /* EWTextFieldCell.m */; };
 		9BF297EF1912F720008C136E /* EWTextFieldCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297DD1912F720008C136E /* EWTextFieldCell.xib */; };
 		9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */; };
-		9BF5F77519291E150074BF97 /* AWSRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F77319291E150074BF97 /* AWSRuntime.framework */; };
-		9BF5F77619291E150074BF97 /* AWSSNS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F77419291E150074BF97 /* AWSSNS.framework */; };
 		9BF5F778192973050074BF97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F777192973050074BF97 /* StoreKit.framework */; };
 		9BF5F77A192973A10074BF97 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F779192973A10074BF97 /* Parse.framework */; };
 		AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */; };
@@ -438,12 +436,10 @@
 				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
 				AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */,
-				9BF5F77519291E150074BF97 /* AWSRuntime.framework in Frameworks */,
 				AB245FB218CCD99500551721 /* CoreData.framework in Frameworks */,
 				AB245FAE18CCD70000551721 /* Social.framework in Frameworks */,
 				AB245FAD18CCD67200551721 /* CFNetwork.framework in Frameworks */,
 				AB245FA518CCD58800551721 /* MobileCoreServices.framework in Frameworks */,
-				9BF5F77619291E150074BF97 /* AWSSNS.framework in Frameworks */,
 				AB245FA418CCD57E00551721 /* MapKit.framework in Frameworks */,
 				AB245FAF18CCD70C00551721 /* CoreLocation.framework in Frameworks */,
 				AB245FAA18CCD5BB00551721 /* Accounts.framework in Frameworks */,

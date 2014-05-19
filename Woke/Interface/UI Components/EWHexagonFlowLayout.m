@@ -29,9 +29,29 @@
 @synthesize itemsPerRow = _itemsPerRow;
 @synthesize itemTotalCount = _itemTotalCount;
 @synthesize hexagonSize = _hexagonSize;
+@synthesize attributeArray;
 
 #pragma mark - UICollectionViewLayout Subclass hooks
 
+- (NSArray *)attributeArray{
+    //pre-calculate the coordinates and save to attribute array
+    if (!attributeArray || attributeArray.count != _itemsPerRow) {
+        
+        NSMutableArray *newAttributeArray = [[NSMutableArray alloc] initWithCapacity:_itemTotalCount];
+        
+        for (unsigned i=0; i<_itemTotalCount; i++) {
+            NSIndexPath *path = [NSIndexPath indexPathForRow:i inSection:0];
+            UICollectionViewLayoutAttributes *attribute = [self centerForCellAtIndexPath:path];
+            newAttributeArray[i] = attribute;
+        }
+        
+        attributeArray = [newAttributeArray copy];
+        
+        NSLog(@"CollectionView layout updated!");
+    }
+    
+    return attributeArray;
+}
 
 - (void)prepareLayout
 {
@@ -50,16 +70,6 @@
     //coordinate system, currently do not use polar system
     //coordinateSystem = kCoordinateSystemPolar;
     //[self getCollectionViewCenter];
-    
-    //pre-calculate the coordinates and save to attribute array
-    if (!attributeArray) {
-        attributeArray = [[NSMutableArray alloc] initWithCapacity:_itemTotalCount];
-        for (unsigned i=0; i<_itemTotalCount; i++) {
-            NSIndexPath *path = [NSIndexPath indexPathForRow:i inSection:0];
-            UICollectionViewLayoutAttributes *attribute = [self centerForCellAtIndexPath:path];
-            attributeArray[i] = attribute;
-        }
-    }
     
     if (kDynamic) {
         // ====== Dynamic Animator =======
@@ -128,6 +138,7 @@
     
     
 }
+
 
 - (void)getCollectionViewCenter{
     UICollectionView *_collectionView = self.collectionView;
@@ -304,7 +315,9 @@
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return attributeArray[indexPath.row];
+    NSArray *attributes =  self.attributeArray;
+    UICollectionViewLayoutAttributes *attribute = attributes[indexPath.row];
+    return attribute;
 }
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds

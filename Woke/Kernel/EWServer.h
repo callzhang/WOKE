@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "EWPerson.h"
-#import <AWSRuntime/AWSRuntime.h>
-#import <AWSSNS/AWSSNS.h>
+//#import <AWSRuntime/AWSRuntime.h>
+//#import <AWSSNS/AWSSNS.h>
 
 
 @interface EWServer : NSObject

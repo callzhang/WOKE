@@ -50,11 +50,13 @@ EWPerson *currentUser;
 }
 
 #pragma mark - CREATE USER
--(EWPerson *)createPersonWIthUsername:(NSString *)username{
-    //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
-    EWPerson *newUser = [EWPerson createEntity];
-    newUser.username = username;
-    [EWDataStore updateParseObjectFromManagedObject:newUser];
+-(EWPerson *)createPersonWIthParseObject:(PFUser *)user{
+    EWPerson *newUser = (EWPerson *)[user managedObject];
+    newUser.username = user.username;
+    newUser.profilePic = [UIImage imageNamed:@"profile"];
+    newUser.name = @"New User";
+    
+    //[EWDataStore updateParseObjectFromManagedObject:newUser];
     
     [EWDataStore save];
 
@@ -77,7 +79,7 @@ EWPerson *currentUser;
         PFQuery *q = [PFUser query];
         [q whereKey:@"username" equalTo:ID];
         PFUser *user = [q findObjects][0];
-        person = (EWPerson *)[user managedObject];
+        person = (EWPerson *)[self createPersonWIthParseObject:user];
         NSLog(@"User %@ data has CREATED", person.name);
     }else{
         person = (EWPerson *)result[0];

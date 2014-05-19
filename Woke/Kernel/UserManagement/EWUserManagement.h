@@ -28,12 +28,12 @@
 /**
  Login with local plist or ADID
  */
-//+ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
++ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block;
 
 /**
  Log in with temporary parse user
  */
-+ (void)loginWithTempUser:(void (^)(void))block;
+//+ (void)loginWithTempUser:(void (^)(void))block;
 
 /**
  Cache user's data

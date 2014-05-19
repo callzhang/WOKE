@@ -11,9 +11,9 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import <AWSRuntime/AWSRuntime.h>
+//#import <AWSRuntime/AWSRuntime.h>
 #import <Parse/Parse.h>
-#import <AWSSNS/AWSSNS.h>
+//#import <AWSSNS/AWSSNS.h>
 
 @class EWPerson;
 
@@ -32,7 +32,7 @@
 #define kParseQueueDelete       @"parse_queue_delete"
 
 @interface EWDataStore : NSObject
-@property (nonatomic, retain) AmazonSNSClient *snsClient;
+//@property (nonatomic, retain) AmazonSNSClient *snsClient;
 @property (nonatomic, retain) NSManagedObjectModel *model;
 @property (nonatomic, retain) dispatch_queue_t dispatch_queue;//Task dispatch queue runs in serial
 @property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in serial
@@ -188,4 +188,10 @@
  The ManagedObject will only update attributes but not relations
  */
 - (NSManagedObject *)managedObject;
+
+- (NSString *)localClassName;
+@end
+
+@interface NSEntityDescription (Parse)
+- (NSString *)serverClassName;
 @end
