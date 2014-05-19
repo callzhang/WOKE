@@ -17,7 +17,7 @@
 @dynamic played;
 @dynamic priority;
 @dynamic image;
-@dynamic thumbnail;
+@synthesize thumbnail;
 @synthesize audioKey;
 
 - (NSString *)audioKey{

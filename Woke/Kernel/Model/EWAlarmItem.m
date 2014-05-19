@@ -10,8 +10,8 @@
 
 @implementation EWAlarmItem
 
-//@dynamic important;
-//@dynamic state;
+@dynamic important;
+@dynamic state;
 
 
 @end

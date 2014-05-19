@@ -22,6 +22,7 @@
 //#import "TestFlight+ManualSessions.h"
 #import "AVManager.h"
 #import "UIViewController+Blur.h"
+#import <Parse/Parse.h>
 
 //model
 #import "EWTaskItem.h"
@@ -59,6 +60,22 @@ UIViewController *rootViewController;
     //[TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     //[TestFlight manuallyStartSession];
     
+    //Parse
+    [Parse setApplicationId:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
+                  clientKey:@"9yfUenOzHJYOTVLIFfiPCt8QOo5Ca8fhU8Yqw9yb"];
+    //Analytics
+    if (application.applicationState != UIApplicationStateBackground) {
+        // Track an app open here if we launch with a push, unless
+        // "content_available" was used to trigger a background push (introduced
+        // in iOS 7). In that case, we skip tracking here to avoid double
+        // counting the app-open.
+        BOOL preBackgroundPush = ![application respondsToSelector:@selector(backgroundRefreshStatus)];
+        BOOL oldPushHandlerOnly = ![self respondsToSelector:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)];
+        BOOL noPushPayload = ![launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        if (preBackgroundPush || oldPushHandlerOnly || noPushPayload) {
+            [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+        }
+    }
     
     
     //background fetch
@@ -108,7 +125,7 @@ UIViewController *rootViewController;
 
     
     //save core data
-    [[EWDataStore sharedInstance] save];
+    [EWDataStore save];
     
     //detect multithreading
     BOOL result = NO;
@@ -261,7 +278,7 @@ UIViewController *rootViewController;
         [[EWDataStore currentContext] refreshObject:task mergeChanges:YES];
         
         //check
-        if ([[EWDataStore sharedInstance].lastChecked isEarlierThan:task.lastmoddate]) {
+        if ([[EWDataStore sharedInstance].lastChecked isEarlierThan:task.updatedAt]) {
             NSLog(@"Find task on %@ has possible updates", task.time.weekday);
             [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
             
@@ -285,126 +302,11 @@ UIViewController *rootViewController;
 #pragma mark - Push Notification registration
 //Presist the device token
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
-    NSString *token = [[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
-    token = [[token componentsSeparatedByString:@" "] componentsJoinedByString:@""];//become a string
     
-    // Persist token
-    /*
-     userDefaults{
-        kPushTokenDicKey: {
-            username: token,
-            ...
-        }
-        kAWSEndPointDicKey: {
-            username: ARN,
-            ...
-        }
-        ...
-     }
-     */
-    NSString *username = currentUser.username;
-    if(!username) [NSException raise:@"User didn't log in" format:@"Check your login sequense"];
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSMutableDictionary *tokenByUserDic = [NSMutableDictionary dictionaryWithDictionary:[defaults objectForKey:kPushTokenDicKey]];
-    //determin if user exsits
-    NSString *token_old = [tokenByUserDic objectForKey:username];
-    if (!token_old || ![token_old isEqualToString:token]) {
-        //new token
-        [tokenByUserDic setObject:token forKey:username];
-        //save
-        [defaults setObject:tokenByUserDic forKey:kPushTokenDicKey];
-        [defaults synchronize];
-    }
+    //Register Push on Server
+    [EWUserManagement registerPushNotificationWithToken:deviceToken];
     
-    //Register Push on StackMob
-    [EWUserManagement registerPushNotification];
-    NSLog(@"Registered device token: %@", token);
-    
-    
-    //AWS
-    NSMutableDictionary *arnByUserDic = [[defaults objectForKey:kAWSEndPointDicKey] mutableCopy];
-    //NSMutableDictionary *topicByUserDic = [[defaults objectForKey:kAWSTopicDicKey] mutableCopy];
-    NSString *endPoint = arnByUserDic[username];
-    //NSString *topicArn = topicByUserDic[username];
-    if (!endPoint/* || !topicArn*/) {
-        //create endPint (user)
-        SNSCreatePlatformEndpointRequest *request = [[SNSCreatePlatformEndpointRequest alloc] init];
-        request.token = token;
-        request.customUserData = currentUser.username;
-        request.platformApplicationArn = AWS_SNS_APP_ARN;
-        SNSCreatePlatformEndpointResponse *response;
-        NSString *endPointARN;
-        
-        @try {
-            response = [snsClient createPlatformEndpoint:request];
-        }
-        @catch (NSException *exception) {
-            
-            if ([exception isKindOfClass:[SNSInvalidParameterException class]]) {
-                //SNSInvalidParameterException *aws_e = (SNSInvalidParameterException *)exception;
-                NSString *des = exception.description;
-                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"arn:aws.*?\\s"
-                                                                                       options:NSRegularExpressionCaseInsensitive
-                                                                                         error:NULL];
-                NSRange result = [regex rangeOfFirstMatchInString:des options:0 range:NSMakeRange(0, [des length])];
-                NSString *endPointNew = [des substringWithRange:result];
-                //register the endpoint arn to user
-                if (result.length > 0) {
-                    endPointNew = [endPointNew stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSLog(@"Intercepted endpointArn: %@", endPointNew);
-                    currentUser.aws_id = endPointNew;
-                    
-                    //update endPoint user info
-                    SNSSetEndpointAttributesRequest *request = [[SNSSetEndpointAttributesRequest alloc] init];
-                    request.endpointArn = endPointNew;
-                    [request setAttributesValue:username forKey:@"CustomUserData"];
-                    [snsClient setEndpointAttributes:request];
-                    
-                    [request setAttributesValue:@"ture" forKey:@"Enabled"];
-                    @try {
-                        [snsClient setEndpointAttributes:request];
-                        NSLog(@"EndPoint updated");
-                    }
-                    @catch (NSException *exception) {
-                        NSLog(@"Failed to update ARNs field");
-                    }
-                    
-                    
-                    //save to local
-                    arnByUserDic[username] = endPointARN;
-                    [defaults setObject:arnByUserDic forKey:kAWSEndPointDicKey];
-                    
-                }
-            }else{
-                NSLog(@"%@", exception);
-                return;
-            }
-        }
-        @finally {
-            
-            if (response) {
-                endPointARN = response.endpointArn;
-                currentUser.aws_id = endPointARN;
-                NSLog(@"Created endpoint on AWS: %@", endPointARN);
-                
-                //save defaults
-                [arnByUserDic setObject:endPointARN forKey:username];
-                [defaults setObject:arnByUserDic forKey:kAWSEndPointDicKey];
-                [defaults synchronize];
-            }
-            
-            //sync
-            [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                NSLog(@"Failed to save current user");
-            }];
-        }
-        
-
-        
-    }else{
-        //found endPoint saved at local
-        NSLog(@"found endPoint: %@ for user: %@", endPoint, username);
-    }
+ 
 }
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
@@ -468,6 +370,13 @@ UIViewController *rootViewController;
 
 //Receive remote notification in background or in foreground
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+    
+    if (application.applicationState == UIApplicationStateInactive) {
+        // The application was just brought from the background to the foreground,
+        // so we consider the app as having been "opened by a push notification."
+        [PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
+    }
+    
     if (!currentUser) {
         return;
     }

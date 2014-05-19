@@ -86,11 +86,7 @@
     
     //set task state
     task.state = sender.selected;
-    [[EWDataStore currentContext] saveOnSuccess:nil onFailure:^(NSError *error) {
-        NSLog(@"Task state failed to save");
-        sender.selected = !sender.selected;
-        [self setNeedsDisplay];
-    }];
+    [EWDataStore save];
     
     //broadcast
     [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:self userInfo:@{@"task": task}];
@@ -107,7 +103,7 @@
 - (void)setTask:(EWTaskItem *)t{
     //unsubscribe previous task if possible
     if (task) {
-        if ([task.ewtaskitem_id isEqualToString:t.ewtaskitem_id]) {
+        if ([task.objectId isEqualToString:t.objectId]) {
             //same task
             return;
         }else{
@@ -134,7 +130,7 @@
     }
     self.timeText.text = [t.time date2timeShort];
     self.AM.text = [t.time date2am];
-    self.descriptionText.text = t.statement ? t.statement : alarm.alarmDescription;
+    self.descriptionText.text = t.statement ?: alarm.statement;
     
     float h = ([t.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
 
@@ -181,7 +177,7 @@
     }
     NSAssert([sender isKindOfClass:[EWTaskItem class]], @"Target is not task item, check code!");
     EWTaskItem *t = (EWTaskItem *)sender;
-    if ([t.ewtaskitem_id isEqualToString:task.ewtaskitem_id]) {
+    if ([t.objectId isEqualToString:task.objectId]) {
         [self stopObserveTask];
     }
     

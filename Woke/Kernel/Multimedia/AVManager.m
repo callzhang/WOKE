@@ -13,7 +13,6 @@
 #import "EWTaskStore.h"
 #import <AVFoundation/AVAudioPlayer.h>
 #import "EWDataStore.h"
-#import "TestFlight.h"
 #import "EWMediaSlider.h"
 #import "EWDownloadManager.h"
 #import "EWMediaStore.h"
@@ -183,9 +182,6 @@
     media = [EWDataStore objectForCurrentContext:mi];
     if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
         
-        if (media.audioKey.length > 500) {
-            media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
-        }
         [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];
         
         //lock screen
@@ -206,7 +202,7 @@
     
 }
 
-//main play function
+//Depreciated: play from url
 - (void)playSoundFromURL:(NSURL *)url{
     if (!url) {
         NSLog(@"Url is empty, skip playing");
@@ -216,7 +212,7 @@
     
     //data
     NSError *err;
-    NSString *path = [[EWDataStore alloc] localPathForKey:url.absoluteString];
+    NSString *path = [EWDataStore localPathForKey:url.absoluteString];
     //play
     if (path) {
         player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:&err];
@@ -594,7 +590,7 @@ void RouteChangeListener(	void *inClientData,
             //local file
             soundUrl = path;
         }else{
-            NSString *cachePath = [[EWDataStore sharedInstance] localPathForKey:path.absoluteString];
+            NSString *cachePath = [EWDataStore localPathForKey:path.absoluteString];
             if (cachePath) {
                 soundUrl = [NSURL fileURLWithPath:cachePath];
             }else{

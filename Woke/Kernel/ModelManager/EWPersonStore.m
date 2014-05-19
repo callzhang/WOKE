@@ -50,18 +50,16 @@ EWPerson *currentUser;
 }
 
 #pragma mark - CREATE USER
-//-(EWPerson *)createPersonWIthUsername:(NSString *)username{
-//    //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
-//    EWPerson *newUser = [[EWPerson alloc] initNewUserInContext:[EWDataStore currentContext]];
-//    
-//    [[EWDataStore currentContext] saveOnSuccess:^{
-//        NSLog(@"User %@ created!", username);
-//    } onFailure:^(NSError *error){
-//        [NSException raise:@"Unable to create user" format:@"Reason: %@", error.description];
-//    }];
-//
-//    return newUser;
-//}
+-(EWPerson *)createPersonWIthUsername:(NSString *)username{
+    //NSManagedObjectContext *context = [[[SMClient defaultClient] coreDataStore] contextForCurrentThread];
+    EWPerson *newUser = [EWPerson createEntity];
+    newUser.username = username;
+    [EWDataStore updateParseObjectFromManagedObject:newUser];
+    
+    [EWDataStore save];
+
+    return newUser;
+}
 
 -(EWPerson *)getPersonByID:(NSString *)ID{
     //ID is username
@@ -79,7 +77,7 @@ EWPerson *currentUser;
         PFQuery *q = [PFUser query];
         [q whereKey:@"username" equalTo:ID];
         PFUser *user = [q findObjects][0];
-        person = (EWPerson *)[EWDataStore findOrCreateManagedObjectWithEntityName:@"EWPerson" withParseObject:user];
+        person = (EWPerson *)[user managedObject];
         NSLog(@"User %@ data has CREATED", person.name);
     }else{
         person = (EWPerson *)result[0];

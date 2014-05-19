@@ -110,7 +110,7 @@
         tasks = [[query findObjects] mutableCopy];
         //assign back to person.tasks
         for (PFObject *task in tasks) {
-            EWTaskItem *taskMO = (EWTaskItem *)[EWDataStore findOrCreateManagedObjectWithEntityName:@"EWTaskItem" withParseObject:task];
+            EWTaskItem *taskMO = (EWTaskItem *)[task managedObject];
             [person addPastTasksObject:taskMO];
         }
         [EWDataStore save];

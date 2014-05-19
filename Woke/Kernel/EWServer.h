@@ -13,8 +13,9 @@
 
 
 @interface EWServer : NSObject
-+ (NSArray *)getPersonAlarmAtTime:(NSDate *)time location:(SMGeoPoint *)geoPoint;
-+ (void)getPersonAlarmAtTime:(NSDate *)time location:(SMGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock;
+
++ (NSArray *)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint;
++ (void)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock;
 /**
  Send buzz
  */
@@ -28,6 +29,8 @@
  */
 + (void)pushMedia:(EWMediaItem *)media ForUser:(EWPerson *)person;
 
+#pragma mark - Push methods
++ (void)broadcastMessage:(NSString *)msg onSuccess:(void (^)(void))block onFailure:(void (^)(void))failureBlock;
 
 
 /**
@@ -42,8 +45,21 @@
         Blcok called when failure
  
  */
-+ (void)AWSPush:(NSDictionary *)pushDic toUsers:(NSArray *)users onSuccess:(void (^)(SNSPublishResponse *response))successBlock onFailure:(void (^)(NSException *exception))failureBlock;
+//+ (void)AWSPush:(NSDictionary *)pushDic toUsers:(NSArray *)users onSuccess:(void (^)(SNSPublishResponse *response))successBlock onFailure:(void (^)(NSException *exception))failureBlock;
 
 
+/**
+ Async method to call AWS publish with block handler
+ @param pushDic
+ the push payload
+ @param users
+ the EWPerson array
+ @param successBlock
+ block called when success
+ @param failureBlock
+ Blcok called when failure
+ 
+ */
++ (void)parsePush:(NSDictionary *)pushPayload toUsers:(NSArray *)users completion:(PFBooleanResultBlock)block;
 
 @end

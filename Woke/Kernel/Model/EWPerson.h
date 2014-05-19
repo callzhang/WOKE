@@ -8,13 +8,15 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-@import CoreLocation;
 #import "_EWPerson.h"
+
+@import CoreLocation;
+
 @interface EWPerson : _EWPerson
 @property (nonatomic) CLLocation* lastLocation;
 @property (nonatomic) UIImage *profilePic;
 @property (nonatomic) UIImage *bgImage;
 
-- (id)initNewUserInContext:(NSManagedObjectContext *)context;
+//- (id)initNewUserInContext:(NSManagedObjectContext *)context;
 
 @end

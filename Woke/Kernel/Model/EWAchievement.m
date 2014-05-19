@@ -12,8 +12,7 @@
 
 @implementation EWAchievement
 
-//@synthesize image;
-
+@dynamic image;
 
 //- (UIImage *)image{
 //    if (!image) {

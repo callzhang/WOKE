@@ -23,11 +23,9 @@
 
 //Util
 #import "EWUtil.h"
-#import "AFImageRequestOperation.h"
+#import "UIImageView+AFNetworking.h"
 
 //social network
-#import "EWWeiboManager.h"
-#import "EWFacebookManager.h"
 #import "EWSocialGraph.h"
 #import "EWSocialGraphManager.h"
 
@@ -52,11 +50,6 @@
             
         NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
         [EWUserManagement loginWithCachedDataStore:[PFUser currentUser].username withCompletionBlock:^{}];
-            
-            
-        } onFailure:^(NSError *error) { //failed to get logged in user
-            NSLog(@"%s: ======= Failed to get logged in user from SM Cache ======= %@", __func__, error);
-            [EWUserManagement showLoginPanel];
         
         
         
@@ -97,30 +90,23 @@
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     hud.labelText = @"Loading";
 
-    //fetch
-    EWPerson *person = [EWPerson MR_findFirstByAttribute:@"username" withValue:username];
-    if (!user) {
-        //Core data user not exist, need to create it from parseUser
-        person = [EWPerson createEntity];
-    }
+    //fetch or create
+    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:username];
+    
     //update person
-    [person updateWithParseObject:[PFUser currentUser]];
+    [person refresh];
+    
     //save currentUser
     currentUser = person;
     
     
     //background refresh
     if (completionBlock) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            //[context refreshObject:currentUser mergeChanges:YES];
-            //[EWDataStore refreshObjectWithServer:currentUser];
-            //completion block
-            NSLog(@"[d] Run completion block.");
-            completionBlock();
-        });
+        NSLog(@"[d] Run completion block.");
+        completionBlock();
     }
 
-        
+    
     //Broadcast user login event
     NSLog(@"[c] Broadcast Person login notification");
     [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:currentUser userInfo:@{kUserLoggedInUserKey:currentUser}];
@@ -131,7 +117,7 @@
     [PFAnonymousUtils logInWithBlock:^(PFUser *user, NSError *error) {
         //get anonymous user, create core data user
         EWPerson *person = [EWPerson createEntity];
-        [person updateValueFromParseObject:user];
+        [person updateValueAndRelationFromParseObject:user];
         currentUser = person;
         
         //callback
@@ -144,99 +130,96 @@
     }];
 }
 
-//Depreciated: log in using local machine info
-+ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block{
-    //log out fb first
-    [FBSession.activeSession closeAndClearTokenInformation];
-    //get user default
-    NSString *ADID = [[NSUserDefaults standardUserDefaults] objectForKey:kADIDKey];
-    if (!ADID) {
-        ADID = [EWUtil ADID];
-        [[NSUserDefaults standardUserDefaults] setObject:ADID forKey:kADIDKey];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        NSLog(@"Stored new ADID: %@", ADID);
-    }
-    //get ADID
-    NSArray *adidArray = [ADID componentsSeparatedByString:@"-"];
-    //username
-    NSString *username = adidArray.firstObject;
-    //password
-    NSString *password = adidArray.lastObject;
-    
-    //try to log in
-    [client loginWithUsername:username password:password onSuccess:^(NSDictionary *result) {
-        currentUser = [[EWPersonStore sharedInstance] getPersonByID:username];
-        
-        //callback
-        block();
-        
-        //broadcast
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-        
-    } onFailure:^(NSError *error) {
-        NSLog(@"Unable to login with username: %@. Error: %@", username, error.description);
-        //if not logged in, register one
-        EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:[EWDataStore currentContext]];
-        [newMe setUsername:username];
-        [newMe setPassword:password];
-        newMe.name = [NSString stringWithFormat:@"User_%@", username];
-        NSString *profilePicFile = [NSString stringWithFormat:@"%d.jpg", arc4random_uniform(16)];
-        newMe.profilePic = [UIImage imageNamed:profilePicFile];
-        currentUser = newMe;
-        
-        //persist password to user defaults locally
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setObject:password forKey:@"password"];
-        
-        //save new user
-        [[EWDataStore currentContext] saveOnSuccess:^{
-            NSLog(@"New user %@ created", newMe.username);
-            
-            //login
-            [client loginWithUsername:currentUser.username password:password onSuccess:^(NSDictionary *result){
-                //callback
-                block();
-                
-                //broadcast
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-                
-                //HUD
-                //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
-            } onFailure:^(NSError *error) {
-                //[NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
-                if (error.code == -105) {
-                    //network error
-                    EWAlert(@"No network connection. Unable to register new user to server");
-                }else{
-                    NSLog(@"Server error, please try again later. %@", error.description);
-                }
-            }];
-        } onFailure:^(NSError *error) {
-            //[NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
-            EWAlert(@"Server error, please restart app");
-            [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-        }];
-    }];
-
-}
+////Depreciated: log in using local machine info
+//+ (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block{
+//    //log out fb first
+//    [FBSession.activeSession closeAndClearTokenInformation];
+//    //get user default
+//    NSString *ADID = [[NSUserDefaults standardUserDefaults] objectForKey:kADIDKey];
+//    if (!ADID) {
+//        ADID = [EWUtil ADID];
+//        [[NSUserDefaults standardUserDefaults] setObject:ADID forKey:kADIDKey];
+//        [[NSUserDefaults standardUserDefaults] synchronize];
+//        NSLog(@"Stored new ADID: %@", ADID);
+//    }
+//    //get ADID
+//    NSArray *adidArray = [ADID componentsSeparatedByString:@"-"];
+//    //username
+//    NSString *username = adidArray.firstObject;
+//    //password
+//    NSString *password = adidArray.lastObject;
+//    
+//    //try to log in
+//    [client loginWithUsername:username password:password onSuccess:^(NSDictionary *result) {
+//        currentUser = [[EWPersonStore sharedInstance] getPersonByID:username];
+//        
+//        //callback
+//        block();
+//        
+//        //broadcast
+//        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+//        
+//    } onFailure:^(NSError *error) {
+//        NSLog(@"Unable to login with username: %@. Error: %@", username, error.description);
+//        //if not logged in, register one
+//        EWPerson *newMe = [[EWPerson alloc] initNewUserInContext:[EWDataStore currentContext]];
+//        [newMe setUsername:username];
+//        [newMe setPassword:password];
+//        newMe.name = [NSString stringWithFormat:@"User_%@", username];
+//        NSString *profilePicFile = [NSString stringWithFormat:@"%d.jpg", arc4random_uniform(16)];
+//        newMe.profilePic = [UIImage imageNamed:profilePicFile];
+//        currentUser = newMe;
+//        
+//        //persist password to user defaults locally
+//        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//        [defaults setObject:password forKey:@"password"];
+//        
+//        //save new user
+//        [[EWDataStore currentContext] saveOnSuccess:^{
+//            NSLog(@"New user %@ created", newMe.username);
+//            
+//            //login
+//            [client loginWithUsername:currentUser.username password:password onSuccess:^(NSDictionary *result){
+//                //callback
+//                block();
+//                
+//                //broadcast
+//                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
+//                
+//                //HUD
+//                //[MBProgressHUD hideAllHUDsForView:rootview animated:YES];
+//            } onFailure:^(NSError *error) {
+//                //[NSException raise:@"Unable to create temporary user" format:@"error: %@", error.description];
+//                if (error.code == -105) {
+//                    //network error
+//                    EWAlert(@"No network connection. Unable to register new user to server");
+//                }else{
+//                    NSLog(@"Server error, please try again later. %@", error.description);
+//                }
+//            }];
+//        } onFailure:^(NSError *error) {
+//            //[NSException raise:@"Unable to create new user" format:@"Reason %@", error.description];
+//            EWAlert(@"Server error, please restart app");
+//            [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+//        }];
+//    }];
+//
+//}
 
 + (void)logout{
     //log out SM
-    if ([client isLoggedIn]) {
-        [client logoutOnSuccess:^(NSDictionary *result) {
-            NSLog(@"Successfully logged out");
-            //log out fb
-            [FBSession.activeSession closeAndClearTokenInformation];
-            //log in with device id
-            //[self loginWithDeviceIDWithCompletionBlock:NULL];
-            
-            //login view
-            EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-            [rootViewController presentViewController:loginVC animated:YES completion:NULL];
-        }
-         onFailure:^(NSError *error) {
-             EWAlert(@"Unable to logout, please try again.");
-         }];
+    if ([PFUser currentUser]) {
+        [PFUser logOut];
+        NSLog(@"Successfully logged out");
+        //log out fb
+        [FBSession.activeSession closeAndClearTokenInformation];
+        //log in with device id
+        //[self loginWithDeviceIDWithCompletionBlock:NULL];
+        
+        //login view
+        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+        [rootViewController presentViewController:loginVC animated:YES completion:NULL];
+        
     }else{
         //log out fb
         [FBSession.activeSession closeAndClearTokenInformation];
@@ -253,8 +236,8 @@
 
 + (void)handleNewUser{
     
-    NSDictionary *msg = @{@"alert": [NSString stringWithFormat:@"Welcome %@ joining Woke!", currentUser.name]};
-    [pushClient broadcastMessage:msg onSuccess:^{
+    NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", currentUser.name];
+    [EWServer broadcastMessage:msg onSuccess:^{
         NSLog(@"Welcome new user %@. Push sent!", currentUser.name);
     }onFailure:NULL];
     
@@ -285,21 +268,32 @@
 #endif
 }
 
++ (void)registerPushNotificationWithToken:(NSData *)deviceToken{
+    
+    //Parse: Store the deviceToken in the current Installation and save it to Parse.
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+    [currentInstallation saveInBackground];
+    
+
+    
+}
+
+
 
 #pragma mark - location
 + (void)registerLocation{
-    if (![[EWUserManagement currentUser].lastSeenDate isOutDated]) {
-        return;
-    }
-    [SMGeoPoint getGeoPointForCurrentLocationOnSuccess:^(SMGeoPoint *geoPoint) {
+
+    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+        
         EWPerson *user = [EWUserManagement currentUser];
-        user.lastLocation = [NSKeyedArchiver archivedDataWithRootObject:geoPoint];//geoPoint;//
-        NSLog(@"Get user location with lat: %@, lon: %@", geoPoint.latitude, geoPoint.longitude);
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+        user.lastLocation = location;
+        NSLog(@"Get user location with lat: %f, lon: %f", geoPoint.latitude, geoPoint.longitude);
         
         //reverse search address
         CLGeocoder *geoloc = [[CLGeocoder alloc] init];
-        CLLocation *clloc = [[CLLocation alloc] initWithLatitude:[geoPoint.latitude doubleValue] longitude:[geoPoint.longitude doubleValue]];
-        [geoloc reverseGeocodeLocation:clloc completionHandler:^(NSArray *placemarks, NSError *error) {
+        [geoloc reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
             //NSLog(@"Found placemarks: %@, error", placemarks);
             if (error == nil && [placemarks count] > 0) {
                 CLPlacemark *placemark = [placemarks lastObject];
@@ -309,15 +303,11 @@
             } else {
                 NSLog(@"%@", error.debugDescription);
             }
-            //[context refreshObject:currentUser mergeChanges:YES];
-            [[EWDataStore sharedInstance].coreDataStore syncWithServer];
+            [EWDataStore save];
 
         }];
         
         
-    } onFailure:^(NSError *error) {
-        NSLog(@"===== Unable to location curent user =====");
-        //TODO
     }];
 }
 
@@ -325,37 +315,9 @@
 + (void)updateLastSeen{
     
     if (currentUser) {
-        currentUser.lastSeenDate = [NSDate date];
-        [[EWDataStore currentContext] saveOnSuccess:^{
-            NSLog(@"Updated last seen date");
-        } onFailure:^(NSError *error) {
-            NSLog(@"Failed to update last seen date");
-        }];
+        currentUser.updatedAt = [NSDate date];
+        [EWDataStore save];
     }
-}
-
-
-+ (void)registerPushNotification{
-    //register notification, need both token and user ready
-    NSString *username = currentUser.username;
-    if (!username) {
-        NSLog(@"@@@@@ Tried to register push on StackMob but username is missing. Check you code! @@@@@");
-        return;
-    }
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSDictionary *tokenByUserArray = [defaults objectForKey:kPushTokenDicKey];
-    NSString *token = [tokenByUserArray objectForKey:username];
-    if(!tokenByUserArray || !token){
-        [NSException raise:@"Unable to find local token" format:@"Please check code"];
-    }
-    [pushClient registerDeviceToken:token withUser:username onSuccess:^{
-        NSLog(@"APP registered push token and assigned to StackMob server");
-    } onFailure:^(NSError *error) {
-        //[NSException raise:@"Failed to regiester push token with StackMob" format:@"%@", error.description];
-        NSLog(@"Failed to register push on StackMob: %@", error.description);
-    }];
-    return;
-    
 }
 
 
@@ -363,95 +325,96 @@
 + (void)loginParseWithFacebookWithCompletion:(void (^)(void))block{
     
     BOOL islinkedWithFb = [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
-    NSAssert(!islinkedWithFb, @"current parse user is linked with facebook, check the logic!");
+    NSParameterAssert(!islinkedWithFb);
     [PFFacebookUtils linkUser:[PFUser currentUser] permissions:[EWUserManagement facebookPermissions] block:^(BOOL succeeded, NSError *error) {
-        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
+        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
             //update with facebook info
-            [EWUserManagement updateUserWithFBData:fb_user];
+            [EWUserManagement updateUserWithFBData:data];
+            if ([PFUser currentUser].isNew) {
+                [EWUserManagement handleNewUser];
+            }
             
-        }else{
-            //handle error
-            NSLog(@"Failed to link user with facebook: %@", error.description);
-        }
+        }];
     }];
     
 }
 
 
-+ (void)loginUsingFacebookWithCompletion:(void (^)(void))block{
-    
-    [EWUserManagement openFacebookSessionWithCompletion:^{
-        [[FBRequest requestForMe] startWithCompletionHandler:
-         ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
-             if (!error) {
-                 __block EWPerson *oldUser = currentUser;
-                 __block BOOL newUser;
-                 
-                 //test if facebook user exists
-                 [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken onSuccess:^(NSDictionary *result) {
-                     newUser = NO;
-                 } onFailure:^(NSError *error) {
-                     newUser = YES;
-                 }];
-                 
-                 //login
-                 [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:fb_user.username onSuccess:^(NSDictionary *result) {
-                     NSLog(@"Logged in facebook for:%@", fb_user.name);
-                     
-                     //fetch coredata person for fb_user
-                     [EWUserManagement loginWithCachedDataStore:fb_user.username withCompletionBlock:^{
-                         //update fb info
-                         [EWUserManagement updateUserWithFBData:fb_user];
-                         
-                         //welcome new user
-                         if (newUser) {
-                             [EWUserManagement handleNewUser];
-                             
-                         }else{
-                             NSLog(@"User %@ logged in from facebook", fb_user.name);
-                         }
-                         
-                         //save
-                         [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                             NSLog(@"Unable to save user");
-                         }];
-                         
-                         //completion
-                         dispatch_async(dispatch_get_main_queue(), ^{
-                             block();
-                             
-                         });
-                         
-                         
-                     }];
-                     
-                     //void old user AWS token
-                     oldUser.aws_id = @"";
-                     
-                     
-                 }onFailure:^(NSError *error) {
-                     NSLog(@"Error: %@", error);
-                 }];
-             } else {
-                 // Handle error accordingly
-                 [EWUserManagement handleFacebookException:error];
-             }
-             
-             
-             
-         }];
-    }];
-    
-}
+//+ (void)loginUsingFacebookWithCompletion:(void (^)(void))block{
+//    
+//    [EWUserManagement openFacebookSessionWithCompletion:^{
+//        [[FBRequest requestForMe] startWithCompletionHandler:
+//         ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
+//             if (!error) {
+//                 __block EWPerson *oldUser = currentUser;
+//                 __block BOOL newUser;
+//                 
+//                 //test if facebook user exists
+//                 [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken onSuccess:^(NSDictionary *result) {
+//                     newUser = NO;
+//                 } onFailure:^(NSError *error) {
+//                     newUser = YES;
+//                 }];
+//                 
+//                 //login
+//                 [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:fb_user.username onSuccess:^(NSDictionary *result) {
+//                     NSLog(@"Logged in facebook for:%@", fb_user.name);
+//                     
+//                     //fetch coredata person for fb_user
+//                     [EWUserManagement loginWithCachedDataStore:fb_user.username withCompletionBlock:^{
+//                         //update fb info
+//                         [EWUserManagement updateUserWithFBData:fb_user];
+//                         
+//                         //welcome new user
+//                         if (newUser) {
+//                             [EWUserManagement handleNewUser];
+//                             
+//                         }else{
+//                             NSLog(@"User %@ logged in from facebook", fb_user.name);
+//                         }
+//                         
+//                         //save
+//                         [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+//                             NSLog(@"Unable to save user");
+//                         }];
+//                         
+//                         //completion
+//                         dispatch_async(dispatch_get_main_queue(), ^{
+//                             block();
+//                             
+//                         });
+//                         
+//                         
+//                     }];
+//                     
+//                     //void old user AWS token
+//                     oldUser.aws_id = @"";
+//                     
+//                     
+//                 }onFailure:^(NSError *error) {
+//                     NSLog(@"Error: %@", error);
+//                 }];
+//             } else {
+//                 // Handle error accordingly
+//                 [EWUserManagement handleFacebookException:error];
+//             }
+//             
+//             
+//             
+//         }];
+//    }];
+//    
+//}
 
 
 //after fb login, fetch user managed object
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     //get currentUser first
-    if(!currentUser){
+    
+    EWPerson *person = [EWUserManagement currentUser];
+    if(!person){
         NSLog(@"======= Something wrong, currentUser is nil ========");
     }
-    EWPerson *person = currentUser;
     
     //email
     if (!person.email) person.email = user[@"email"];
@@ -475,19 +438,18 @@
         person.preference = userDefaults;
     }
     //download profile picture if needed
-    if (!currentUser.profilePicKey) {
+    if (!person.profilePic) {
         //profile pic, async download, need to assign img to person before leave
         NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
-        //[self.profileView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"profile.png"]];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+            UIImage *img = [UIImage imageWithData:data];
+            
+            [person.managedObjectContext performBlock:^{
+                person.profilePic = img;
+            }];
+        });
         
-        //[self.profileView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]] placeholderImage:[UIImage imageNamed:@"profile.png"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {//
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]];
-        AFImageRequestOperation *operation;
-        operation = [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image) {
-            currentUser.profilePic = image;
-            [[EWDataStore currentContext] saveToPersistentStoreAndWait];
-        }];
-        [operation start];
     }
     
     
@@ -561,9 +523,7 @@
                 graph.facebookUpdated = [NSDate date];
                 
                 //save
-                [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                    NSLog(@"*** failed to save new facebook friends");
-                }];
+                [EWDataStore save];
             }
             
         } else {
@@ -659,28 +619,28 @@
 
 
 #pragma mark - Weibo SDK
-
-+ (void)registerWeibo{
-    // Weibo SDK
-    //EWWeiboManager *weiboMgr = [EWWeiboManager sharedInstance];
-    //[weiboMgr registerApp];
-}
-
-+ (void)didReceiveWeiboRequest:(WBBaseRequest *)request {
-    EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
-    [weiboManager didReceiveWeiboRequest:request];
-}
-
-+ (void)didReceiveWeiboResponse:(WBBaseResponse *)response {
-    EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
-    [weiboManager didReceiveWeiboResponse:response];
-}
-
-+  (void)didReceiveWeiboSDKResponse:(id)JsonObject err:(NSError *)error {
-    EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
-    [weiboManager didReceiveWeiboSDKResponse:JsonObject err:error];
-}
-
+//
+//+ (void)registerWeibo{
+//    // Weibo SDK
+//    //EWWeiboManager *weiboMgr = [EWWeiboManager sharedInstance];
+//    //[weiboMgr registerApp];
+//}
+//
+//+ (void)didReceiveWeiboRequest:(WBBaseRequest *)request {
+//    EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
+//    [weiboManager didReceiveWeiboRequest:request];
+//}
+//
+//+ (void)didReceiveWeiboResponse:(WBBaseResponse *)response {
+//    EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
+//    [weiboManager didReceiveWeiboResponse:response];
+//}
+//
+//+  (void)didReceiveWeiboSDKResponse:(id)JsonObject err:(NSError *)error {
+//    EWWeiboManager *weiboManager = [EWWeiboManager sharedInstance];
+//    [weiboManager didReceiveWeiboSDKResponse:JsonObject err:error];
+//}
+//
 
 
 

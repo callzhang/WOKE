@@ -173,9 +173,7 @@
         if (!recordData) {
             return;
         }
-        NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [[NSDate date] date2numberDateString]];
-        
-        NSString *recordDataString = [SMBinaryDataConversion stringForBinaryData:recordData name:	fileName contentType:@"audio/aac"];
+        //NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [[NSDate date] date2numberDateString]];
         
         //save data to task
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -188,24 +186,15 @@
             //Add to media queue instead of task
             media.receiver = receiver;
             
-            media.audioKey = recordDataString;
-            media.createddate = [NSDate date];
+            media.audio = recordData;
+            media.createdAt = [NSDate date];
             
             
             //save
-            [[EWDataStore currentContext] saveOnSuccess:^{
-                [[EWDataStore currentContext] refreshObject:media mergeChanges:YES];
-                NSInteger n = 10;
-                while (media.audioKey.length > 500 && n > 0) {
-                    media = [[EWMediaStore sharedInstance] getMediaByID:media.ewmediaitem_id];
-                    n--;
-                    NSLog(@"Retry %ld", (long)n);
-                }
-                //send push notification
-                [EWServer pushMedia:media ForUser:receiver];
-            } onFailure:^(NSError *error) {
-                NSLog(@"*** Save media error audio data");
-            }];
+            [EWDataStore save];
+            
+            //send push notification
+            [EWServer pushMedia:media ForUser:receiver];
             
         }
         

@@ -7,7 +7,6 @@
 //
 
 #import "EWDataStore.h"
-#import <Parse/Parse.h>
 #import "EWUserManagement.h"
 #import "EWPersonStore.h"
 #import "EWDownloadManager.h"
@@ -17,6 +16,8 @@
 #import "EWMediaItem.h"
 #import "NSString+MD5.h"
 #import "EWWakeUpManager.h"
+#import "CoreData+MagicalRecord.h"
+#define MR_SHORTHAND
 
 //Util
 #import "FTWCache.h"
@@ -59,14 +60,11 @@
         //snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
         //snsClient.endpoint = [AmazonEndpoints snsEndpoint:US_WEST_2];
         
-        //Parse
-        [Parse setApplicationId:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
-                      clientKey:@"9yfUenOzHJYOTVLIFfiPCt8QOo5Ca8fhU8Yqw9yb"];
-        //[PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+        
         
         //core data
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
-        context = [NSManagedObjectContext defaultContext];
+        context = [NSManagedObjectContext MR_contextForCurrentThread];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:nil];
         
         //facebook
@@ -113,7 +111,7 @@
 }
 
 #pragma mark - Login Check
-+ (void)loginDataCheck{
+- (void)loginDataCheck{
     NSLog(@"========> %s <=========", __func__);
     
     //change fetch policy
@@ -141,7 +139,7 @@
     });
     
     //update data with timely updates
-    [EWDataStore registerServerUpdateService];
+    [self registerServerUpdateService];
     
 }
 
@@ -394,13 +392,7 @@
 }
 
 + (NSManagedObjectContext *)currentContext{
-    if ([NSThread isMainThread]) {
-        return [NSManagedObjectContext defaultContext];
-    }
-    else{
-        NSLog(@"!!! Accessing context off the main thread");
-        return [NSManagedObjectContext contextForCurrentThread];
-    }
+    return [NSManagedObjectContext MR_contextForCurrentThread];
     return nil;
 }
 
@@ -581,20 +573,6 @@
     }
 }
 
-+ (NSManagedObject *)getManagedObjectFromParseObject:(PFObject *)object{
-    abort();
-}
-
-+ (NSManagedObject *)findOrCreateManagedObjectWithEntityName:(NSString *)name withParseObject:(PFObject *)object{
-    NSManagedObject *managedObject = [[NSClassFromString(name) findAllWithPredicate:[NSPredicate predicateWithFormat:@"objectId == ", object.objectId]] lastObject];
-    if (!managedObject) {
-        //if managedObject not exist, create it locally
-        managedObject = [NSEntityDescription insertNewObjectForEntityForName:name inManagedObjectContext:[EWDataStore currentContext]];
-        [managedObject assignValueFromParseObject:object];
-    }
-    return managedObject;
-}
-
 - (void)updateModifiedDate:(NSNotification *)notification{
     NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
     NSLog(@"Observed %lu ManagedObject changed", (unsigned long)updatedObjects.count);
@@ -649,14 +627,14 @@
             
             //delete related MO if not on server relation async
             NSMutableArray *relatedManagedObjects = [[[self valueForKey:key] allObjects] mutableCopy];
-            NSArray *managedObjectToDelete = [relatedManagedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"objectId NOT IN %@", [relatedParseObjects valueForKey:kParseObjectID]]];
+            NSArray *managedObjectToDelete = [relatedManagedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K NOT IN %@", kParseObjectID, [relatedParseObjects valueForKey:kParseObjectID]]];
             [relatedManagedObjects removeObjectsInArray:managedObjectToDelete];
 
             
             //TODO:background context
             for (PFObject *object in relatedParseObjects) {
                 //find corresponding MO
-                NSManagedObject *relatedManagedObject = [EWDataStore findOrCreateManagedObjectWithEntityName:obj.entity.name withParseObject:object];
+                NSManagedObject *relatedManagedObject = [object managedObject];
                 [relatedManagedObjects addObject:relatedManagedObject];
             }
             [self setValue:relatedManagedObjects forKey:key];
@@ -676,7 +654,7 @@
             }
             if (relatedParseObject) {
                 //find corresponding MO
-                NSManagedObject *relatedManagedObject = [EWDataStore findOrCreateManagedObjectWithEntityName:obj.entity.name withParseObject:relatedParseObject];
+                NSManagedObject *relatedManagedObject = [relatedParseObject managedObject];
                 [self setValue:relatedManagedObject forKey:key];
             }else{
                 [self setValue:nil forKey:key];
@@ -687,7 +665,19 @@
     [self.managedObjectContext save:nil];
 }
 
-
+- (PFObject *)parseObject{
+    NSString *parseID = [self valueForKey:kParseObjectID];
+    if (parseID) {
+        PFQuery *query = [PFQuery queryWithClassName:self.entity.name];
+        [query whereKey:kParseObjectID equalTo:parseID];
+        PFObject *object = [query getFirstObject];
+        return object;
+    }else{
+        return nil;
+    }
+    
+    
+}
 
 - (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
@@ -805,7 +795,7 @@
 #pragma mark - Parse Object extension
 @implementation PFObject (NSManagedObject)
 - (void)updateValueFromManagedObject:(NSManagedObject *)managedObject{
-    if ([[managedObject valueForKeyPath:kUpdatedDateKey] timeIntervalSinceDate:self.updatedAt] <= 0]) {
+    if ([[managedObject valueForKeyPath:kUpdatedDateKey] timeIntervalSinceDate:self.updatedAt] <= 0) {
         NSLog(@"The last modified dates are the same, parse object will not update to server");
         return;
     }
@@ -820,7 +810,7 @@
                 [self setObject:dataFile forKey:key];
             }else if ([value isKindOfClass:[UIImage class]]){
                 //image
-                PFFile *dataFile = [PFFile fileWithData:[UIImage UIImagePNGRepresentation((UIImage *)value)]];
+                PFFile *dataFile = [PFFile fileWithData:UIImagePNGRepresentation((UIImage *)value)];
                 [dataFile saveInBackground];
                 [self setObject:dataFile forKey:key];
             }else if ([value isKindOfClass:[CLLocation class]]){
@@ -904,6 +894,21 @@
     }];
     //Only save when network is available so that MO can link with PO
     //[self saveEventually];
+}
+
+- (NSManagedObject *)managedObject{
+    [self fetchIfNeeded];
+    //NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:self.parseClassName];
+    NSManagedObject *managedObject = [NSClassFromString(self.parseClassName) findFirstByAttribute:kParseObjectID withValue:self.objectId];
+    
+    if (!managedObject) {
+        //if managedObject not exist, create it locally
+        managedObject = [NSClassFromString(self.parseClassName) createEntity];
+    }
+    
+    [managedObject assignValueFromParseObject:self];
+    
+    return managedObject;
 }
 @end
 

@@ -19,7 +19,7 @@
 @import CoreData;
 
 @class EWPerson;
-@interface EWAlarmsViewController : EWViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate,NSFetchedResultsControllerDelegate>
+@interface EWAlarmsViewController : UIViewController <UIScrollViewDelegate, EWAlarmItemEditProtocal,  UIAlertViewDelegate, UIActionSheetDelegate, UICollectionViewDataSource, UICollectionViewDelegate,NSFetchedResultsControllerDelegate>
 {
     NSMutableArray * _alarmPages; //alarm page container
     NSTimer *timer1;

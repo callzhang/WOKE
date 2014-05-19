@@ -10,9 +10,10 @@
 #import "EWAlarmItem.h"
 #import "EWMediaItem.h"
 #import "EWPerson.h"
-#import "StackMob.h"
+
 
 @implementation EWTaskItem
+@dynamic state;
 
 #pragma mark - Preference
 //- (NSDictionary *)buzzers{

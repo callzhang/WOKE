@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ImageViewController : EWViewController 
+@interface ImageViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (strong, nonatomic) UIImage *image;

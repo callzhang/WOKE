@@ -20,7 +20,6 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 #import "EWLogInViewController.h"
-#import "StackMob.h"
 #import "EWTaskStore.h"
 #import "EWWakeUpManager.h"
 #import "EWMediaStore.h"
@@ -199,11 +198,11 @@
             break;
         }
         case 2:{
-            TestSocailSDKViewController *controller = [[TestSocailSDKViewController alloc] init];
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-            controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
-            [self presentViewController:navigationController animated:YES completion:^{
-            }];
+//            TestSocailSDKViewController *controller = [[TestSocailSDKViewController alloc] init];
+//            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+//            controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
+//            [self presentViewController:navigationController animated:YES completion:^{
+//            }];
             
             break;
         }
@@ -268,17 +267,13 @@
                     //buzz
                     EWMediaItem *media = [[EWMediaStore sharedInstance] createBuzzMedia];
                     [task addMediasObject:media];
-                    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                        NSLog(@"Failed to save buzz: %@", error.description);
-                    }];
+                    [EWDataStore save];
                 }else{
                     //voice
                     EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
                     //[task addMediasObject:media];
                     media.task = task;
-                    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                        NSLog(@"Failed to save task for pseudo media: %@", error);
-                    }];
+                    [EWDataStore save];
                 }
                 
             }
@@ -337,12 +332,10 @@
             notice_system.userInfo = dic;
             notice_system.sender = nil;
             //save
-            [[EWDataStore currentContext] saveOnSuccess:^{
-                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
-            } onFailure:^(NSError *error) {
-                NSLog(@"Error in creating notification: %@", error.description);
-            }];
+            [EWDataStore save];
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+            [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+            
         }
         default:
             break;

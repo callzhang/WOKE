@@ -70,6 +70,17 @@
 }
 
 #pragma mark - SEARCH
+- (EWMediaItem *)getMediaByID:(NSString *)mediaID{
+    EWMediaItem *media = [EWMediaItem findFirstByAttribute:kParseObjectID withValue:mediaID];
+    if (!media) {
+        //get from server
+        PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
+        [query whereKey:kParseObjectID equalTo:media];
+        PFObject *object = [query getFirstObject];
+        media = (EWMediaItem *)[object managedObject];
+    }
+    return media;
+}
 - (NSArray *)mediaCreatedByPerson:(EWPerson *)person{
 //    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
 //    request.predicate = [NSPredicate predicateWithFormat:@"author == %@", person];

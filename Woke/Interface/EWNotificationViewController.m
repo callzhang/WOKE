@@ -150,7 +150,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     EWNotification *notice = notifications[indexPath.row];
-    [EWNotificationManager handleNotification:notice.ewnotification_id];
+    [EWNotificationManager handleNotification:notice.objectId];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{

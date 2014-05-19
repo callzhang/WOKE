@@ -39,7 +39,7 @@
 #import "EWNotificationViewController.h"
 
 //backend
-#import "StackMob.h"
+
 
 //definition
 #define kIndicatorHideTimer            2
@@ -101,7 +101,10 @@
         //cancel if popout is present
         return;
     }
-    [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
+    if ([self.fetchController.sections[0] numberOfObjects]>0) {
+        [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
+    }
+    
 
 }
 
@@ -135,19 +138,10 @@
         }
         
         //fetch everyone
-        SMGeoPoint *location;
-        id locData = currentUser.lastLocation;
-        if ([locData isKindOfClass:[NSDictionary class]]) {
-            location = (SMGeoPoint *)locData;
-        }else{
-            
-            location =  [NSKeyedUnarchiver unarchiveObjectWithData:locData];
-            //currentUser.lastLocation = location;
-            //[[EWDataStore currentContext] saveOnSuccess:NULL onFailure:NULL];
-            //NSLog(@"Unarchived location: %@", location);
-        }
+        CLLocation *location = currentUser.lastLocation;
+        PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:location];
         
-        [EWServer getPersonAlarmAtTime:[NSDate date] location:location completion:^(NSArray *results) {
+        [EWServer getPersonAlarmAtTime:[NSDate date] location:point completion:^(NSArray *results) {
             //assign result
             NSMutableArray *newPeople = [NSMutableArray new];
             for (EWPerson *p in results) {
@@ -216,7 +210,6 @@
     }
     
     //predicate
-    //'to-many key not allowed here'
     //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
     //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
     
@@ -224,7 +217,7 @@
     
     
     //sort
-    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastSeenDate" ascending:NO];
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO];
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
@@ -715,23 +708,10 @@
     cell.distance.alpha = 0;
     if (!isMe && person.lastLocation && currentUser.lastLocation) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            SMGeoPoint *location0;
-            id locData = currentUser.lastLocation;
-            if ([locData isKindOfClass:[NSDictionary class]]) {
-                location0 = (SMGeoPoint *)locData;
-            }else{
-                location0 =  [NSKeyedUnarchiver unarchiveObjectWithData:locData];
-            }
-            SMGeoPoint *location1;
-            id locData1 = person.lastLocation;
-            if ([locData1 isKindOfClass:[NSDictionary class]]) {
-                location1 = (SMGeoPoint *)locData1;
-            }else{
-                location1 =  [NSKeyedUnarchiver unarchiveObjectWithData:locData1];
-            }
-            CLLocation *l0 = [[CLLocation alloc] initWithLatitude:[location0.latitude doubleValue] longitude:[location0.longitude doubleValue]];
-            CLLocation *l1 = [[CLLocation alloc] initWithLatitude:[location1.latitude doubleValue] longitude:[location1.longitude doubleValue]];
-            CLLocationDistance distance = [l0 distanceFromLocation:l1]/1000;
+            CLLocation *loc0 = currentUser.lastLocation;
+            CLLocation *loc1 = person.lastLocation;
+
+            CLLocationDistance distance = [loc0 distanceFromLocation:loc1]/1000;
             dispatch_async(dispatch_get_main_queue(), ^{
                 cell.distance.text = [NSString stringWithFormat:@"%.1lf km", distance];
                 [UIView animateWithDuration:0.4 animations:^{

@@ -9,7 +9,7 @@
 
 #import "EWFirstTimeViewController.h"
 #import "EWDataStore.h"
-#import "StackMob.h"
+
 
 @interface EWFirstTimeViewController ()
 

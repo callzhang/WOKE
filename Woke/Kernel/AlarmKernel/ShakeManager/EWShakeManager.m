@@ -29,8 +29,8 @@
     }
     [_shakingDetectorView becomeFirstResponder];
 
-    UIView *currentView = SAFE_DELEGATE_RETURN(_delegate, @selector(currentView), currentView);
-    [currentView addSubview:_shakingDetectorView];
+    //UIView *currentView = SAFE_DELEGATE_RETURN(_delegate, @selector(currentView), currentView);
+    [_delegate.currentView addSubview:_shakingDetectorView];
 }
 
 - (void)unregister {

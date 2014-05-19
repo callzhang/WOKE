@@ -26,8 +26,6 @@
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
-		56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CCB17FB056F008A7922 /* TestSocailSDKViewController.m */; };
-		56330CEF17FDEA57008A7922 /* EWFacebookManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CEC17FDEA57008A7922 /* EWFacebookManager.m */; };
 		5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */; };
 		5642AF4E17ACCF90000C73E8 /* UIView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 5642AF4D17ACCF90000C73E8 /* UIView+Layout.m */; };
 		5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5642AF5017ACDA4C000C73E8 /* TestShakeViewController.m */; };
@@ -44,12 +42,6 @@
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
 		9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */; };
-		9BBA5F9018EB3ED500C07809 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8518EB3ED500C07809 /* NSObject+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		9BBA5F9118EB3ED500C07809 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8718EB3ED500C07809 /* NSString+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		9BBA5F9218EB3ED500C07809 /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8918EB3ED500C07809 /* SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		9BBA5F9318EB3ED500C07809 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8B18EB3ED500C07809 /* SBJsonBase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		9BBA5F9418EB3ED500C07809 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8D18EB3ED500C07809 /* SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		9BBA5F9518EB3ED500C07809 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F8F18EB3ED500C07809 /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F9718EB416700C07809 /* EWUtil.m */; };
 		9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BBA5F9918EF295200C07809 /* libz.dylib */; };
 		9BF07AB7192324F800DED2E1 /* _EWAchievement.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AA4192324F800DED2E1 /* _EWAchievement.m */; };
@@ -66,7 +58,6 @@
 		9BF297B01912F713008C136E /* EWAlarmScheduleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297911912F713008C136E /* EWAlarmScheduleViewController.m */; };
 		9BF297B11912F713008C136E /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297921912F713008C136E /* EWAlarmsView.xib */; };
 		9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297941912F713008C136E /* EWAlarmsViewController.m */; };
-		9BF297B31912F713008C136E /* EWBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297961912F713008C136E /* EWBlurView.m */; };
 		9BF297B41912F713008C136E /* EWFirstTimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297981912F713008C136E /* EWFirstTimeViewController.m */; };
 		9BF297B51912F713008C136E /* EWFirstTimeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297991912F713008C136E /* EWFirstTimeViewController.xib */; };
 		9BF297B61912F713008C136E /* EWLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2979B1912F713008C136E /* EWLogInViewController.m */; };
@@ -99,17 +90,15 @@
 		9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297DC1912F71F008C136E /* EWTextFieldCell.m */; };
 		9BF297EF1912F720008C136E /* EWTextFieldCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297DD1912F720008C136E /* EWTextFieldCell.xib */; };
 		9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */; };
-		9BF2980B1912F7A0008C136E /* EWFacebookFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297F31912F7A0008C136E /* EWFacebookFriendListViewController.m */; };
-		9BF2980E1912F7A0008C136E /* EWWeiboFriendListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */; };
 		9BF5F77519291E150074BF97 /* AWSRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F77319291E150074BF97 /* AWSRuntime.framework */; };
 		9BF5F77619291E150074BF97 /* AWSSNS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F77419291E150074BF97 /* AWSSNS.framework */; };
+		9BF5F778192973050074BF97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F777192973050074BF97 /* StoreKit.framework */; };
+		9BF5F77A192973A10074BF97 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BF5F779192973A10074BF97 /* Parse.framework */; };
 		AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */; };
 		AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50918FE509C00CF5AB1 /* EWSocialGraphManager.m */; };
 		AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C831861818B008C1F15 /* EWAlarmItem.m */; };
-		AB198C931861818B008C1F15 /* EWGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C851861818B008C1F15 /* EWGroup.m */; };
 		AB198C941861818B008C1F15 /* EWGroupTask.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C871861818B008C1F15 /* EWGroupTask.m */; };
 		AB198C951861818B008C1F15 /* EWMediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C891861818B008C1F15 /* EWMediaItem.m */; };
-		AB198C961861818B008C1F15 /* EWMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8B1861818B008C1F15 /* EWMessage.m */; };
 		AB198C971861818B008C1F15 /* EWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8D1861818B008C1F15 /* EWPerson.m */; };
 		AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8F1861818B008C1F15 /* EWTaskItem.m */; };
 		AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1B1408187E4F8D009D1DB2 /* EWStatisticsManager.m */; };
@@ -152,8 +141,6 @@
 		ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ABBC47AA18530F35009A2E7D /* EarlyWorm.xcdatamodeld */; };
 		ABC8F96318E8890D0096C073 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC8F96218E8890D0096C073 /* MediaPlayer.framework */; };
 		ABC8F96618E92F180096C073 /* UIView+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = ABC8F96518E92F180096C073 /* UIView+HUD.m */; };
-		ABC8F96818E9378F0096C073 /* EWWeiboManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 56330CEE17FDEA57008A7922 /* EWWeiboManager.m */; };
-		ABC8F96A18E937BA0096C073 /* EWDownloadMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */; };
 		ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAC185C054C008CD2B8 /* FTWCache.m */; };
 		ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */; };
 		ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABDE25EE18CF575D00DDBDB5 /* AudioToolbox.framework */; };
@@ -203,12 +190,6 @@
 		5632E38E17D1BF1A0079D81C /* EWFoundation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFoundation.m; sourceTree = "<group>"; };
 		5632E39117D1C5950079D81C /* EWDeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWDeviceInfo.h; sourceTree = "<group>"; };
 		5632E39217D1C5950079D81C /* EWDeviceInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWDeviceInfo.m; sourceTree = "<group>"; };
-		56330CCA17FB056F008A7922 /* TestSocailSDKViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestSocailSDKViewController.h; sourceTree = "<group>"; };
-		56330CCB17FB056F008A7922 /* TestSocailSDKViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestSocailSDKViewController.m; sourceTree = "<group>"; };
-		56330CEB17FDEA57008A7922 /* EWFacebookManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFacebookManager.h; sourceTree = "<group>"; };
-		56330CEC17FDEA57008A7922 /* EWFacebookManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFacebookManager.m; sourceTree = "<group>"; };
-		56330CED17FDEA57008A7922 /* EWWeiboManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWeiboManager.h; sourceTree = "<group>"; };
-		56330CEE17FDEA57008A7922 /* EWWeiboManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeiboManager.m; sourceTree = "<group>"; };
 		5642AF4017ACCB6D000C73E8 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		5642AF4917ACCE48000C73E8 /* EWUIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWUIUtil.h; path = ../BasicLib/EWUIUtil.h; sourceTree = "<group>"; };
 		5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWUIUtil.m; path = ../BasicLib/EWUIUtil.m; sourceTree = "<group>"; };
@@ -245,24 +226,9 @@
 		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWServer.m; sourceTree = "<group>"; };
 		9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadManager.h; path = Download/EWDownloadManager.h; sourceTree = "<group>"; };
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
-		9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadMgr.h; path = Download/EWDownloadMgr.h; sourceTree = "<group>"; };
-		9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadMgr.m; path = Download/EWDownloadMgr.m; sourceTree = "<group>"; };
 		9B8A6A9D191887F400591E8A /* NGAParallaxMotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGAParallaxMotion.h; sourceTree = "<group>"; };
 		9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NGAParallaxMotion.m; sourceTree = "<group>"; };
 		9BA08C5918B6C39900E785ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
-		9BBA5F8318EB3ED500C07809 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
-		9BBA5F8418EB3ED500C07809 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
-		9BBA5F8518EB3ED500C07809 /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
-		9BBA5F8618EB3ED500C07809 /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SBJSON.h"; sourceTree = "<group>"; };
-		9BBA5F8718EB3ED500C07809 /* NSString+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SBJSON.m"; sourceTree = "<group>"; };
-		9BBA5F8818EB3ED500C07809 /* SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJSON.h; sourceTree = "<group>"; };
-		9BBA5F8918EB3ED500C07809 /* SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJSON.m; sourceTree = "<group>"; };
-		9BBA5F8A18EB3ED500C07809 /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonBase.h; sourceTree = "<group>"; };
-		9BBA5F8B18EB3ED500C07809 /* SBJsonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonBase.m; sourceTree = "<group>"; };
-		9BBA5F8C18EB3ED500C07809 /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
-		9BBA5F8D18EB3ED500C07809 /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonParser.m; sourceTree = "<group>"; };
-		9BBA5F8E18EB3ED500C07809 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
-		9BBA5F8F18EB3ED500C07809 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		9BBA5F9618EB416700C07809 /* EWUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWUtil.h; sourceTree = "<group>"; };
 		9BBA5F9718EB416700C07809 /* EWUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWUtil.m; sourceTree = "<group>"; };
 		9BBA5F9918EF295200C07809 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -292,8 +258,6 @@
 		9BF297921912F713008C136E /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
 		9BF297931912F713008C136E /* EWAlarmsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmsViewController.h; sourceTree = "<group>"; };
 		9BF297941912F713008C136E /* EWAlarmsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmsViewController.m; sourceTree = "<group>"; };
-		9BF297951912F713008C136E /* EWBlurView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWBlurView.h; sourceTree = "<group>"; };
-		9BF297961912F713008C136E /* EWBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWBlurView.m; sourceTree = "<group>"; };
 		9BF297971912F713008C136E /* EWFirstTimeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFirstTimeViewController.h; sourceTree = "<group>"; };
 		9BF297981912F713008C136E /* EWFirstTimeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFirstTimeViewController.m; sourceTree = "<group>"; };
 		9BF297991912F713008C136E /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWFirstTimeViewController.xib; sourceTree = "<group>"; };
@@ -346,12 +310,10 @@
 		9BF297DD1912F720008C136E /* EWTextFieldCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWTextFieldCell.xib; sourceTree = "<group>"; };
 		9BF297DE1912F720008C136E /* EWWeekDayPickerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWeekDayPickerTableViewController.h; sourceTree = "<group>"; };
 		9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeekDayPickerTableViewController.m; sourceTree = "<group>"; };
-		9BF297F21912F7A0008C136E /* EWFacebookFriendListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFacebookFriendListViewController.h; sourceTree = "<group>"; };
-		9BF297F31912F7A0008C136E /* EWFacebookFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFacebookFriendListViewController.m; sourceTree = "<group>"; };
-		9BF297F71912F7A0008C136E /* EWWeiboFriendListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWeiboFriendListViewController.h; sourceTree = "<group>"; };
-		9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWeiboFriendListViewController.m; sourceTree = "<group>"; };
 		9BF5F77319291E150074BF97 /* AWSRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AWSRuntime.framework; path = Components/AWSRuntime.framework; sourceTree = "<group>"; };
 		9BF5F77419291E150074BF97 /* AWSSNS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AWSSNS.framework; path = Components/AWSSNS.framework; sourceTree = "<group>"; };
+		9BF5F777192973050074BF97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		9BF5F779192973A10074BF97 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parse.framework; path = Pods/Parse/Parse.framework; sourceTree = "<group>"; };
 		AB0DF50518FE504200CF5AB1 /* EWSocialGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialGraph.h; sourceTree = "<group>"; };
 		AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSocialGraph.m; sourceTree = "<group>"; };
 		AB0DF50818FE509C00CF5AB1 /* EWSocialGraphManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSocialGraphManager.h; sourceTree = "<group>"; };
@@ -360,14 +322,10 @@
 		AB1951AB185AB2AD003C7EE0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		AB198C821861818B008C1F15 /* EWAlarmItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmItem.h; sourceTree = "<group>"; };
 		AB198C831861818B008C1F15 /* EWAlarmItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarmItem.m; sourceTree = "<group>"; };
-		AB198C841861818B008C1F15 /* EWGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWGroup.h; sourceTree = "<group>"; };
-		AB198C851861818B008C1F15 /* EWGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWGroup.m; sourceTree = "<group>"; };
-		AB198C861861818B008C1F15 /* EWGroupTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWGroupTask.h; sourceTree = "<group>"; };
+		AB198C861861818B008C1F15 /* EWGroupTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EWGroupTask.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AB198C871861818B008C1F15 /* EWGroupTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWGroupTask.m; sourceTree = "<group>"; };
 		AB198C881861818B008C1F15 /* EWMediaItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EWMediaItem.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AB198C891861818B008C1F15 /* EWMediaItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaItem.m; sourceTree = "<group>"; };
-		AB198C8A1861818B008C1F15 /* EWMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMessage.h; sourceTree = "<group>"; };
-		AB198C8B1861818B008C1F15 /* EWMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMessage.m; sourceTree = "<group>"; };
 		AB198C8C1861818B008C1F15 /* EWPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPerson.h; sourceTree = "<group>"; };
 		AB198C8D1861818B008C1F15 /* EWPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPerson.m; sourceTree = "<group>"; };
 		AB198C8E1861818B008C1F15 /* EWTaskItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTaskItem.h; sourceTree = "<group>"; };
@@ -389,10 +347,10 @@
 		AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWWakeUpManager.m; sourceTree = "<group>"; };
 		AB2DFBC718BA7CBE00534AF1 /* buzz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buzz.caf; sourceTree = "<group>"; };
 		AB3ACDBE19037DDE0066CF3F /* EWNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationManager.h; sourceTree = "<group>"; };
-		AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWNotificationManager.m; sourceTree = "<group>"; };
+		AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWNotificationManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AB3ACDC2190387C10066CF3F /* EWNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotification.h; sourceTree = "<group>"; };
 		AB3ACDC3190387C10066CF3F /* EWNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWNotification.m; sourceTree = "<group>"; };
-		AB3B9E4317A765CE00C2AD93 /* AVManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVManager.h; sourceTree = "<group>"; };
+		AB3B9E4317A765CE00C2AD93 /* AVManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AVManager.h; path = Multimedia/AVManager.h; sourceTree = "<group>"; };
 		AB3B9E4417A765CE00C2AD93 /* AVManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AVManager.m; path = Woke/Kernel/Multimedia/AVManager.m; sourceTree = SOURCE_ROOT; };
 		AB49BC89185423E6004A38DB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		AB49BC8D18542402004A38DB /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
@@ -473,6 +431,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BF5F778192973050074BF97 /* StoreKit.framework in Frameworks */,
+				AB245FB118CCD79D00551721 /* Security.framework in Frameworks */,
+				AB245FA818CCD59F00551721 /* QuartzCore.framework in Frameworks */,
+				AB245FA718CCD59700551721 /* CoreGraphics.framework in Frameworks */,
 				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
 				AB7243CE18F0B09800AE7041 /* Reveal.framework in Frameworks */,
@@ -480,16 +442,14 @@
 				AB245FB218CCD99500551721 /* CoreData.framework in Frameworks */,
 				AB245FAE18CCD70000551721 /* Social.framework in Frameworks */,
 				AB245FAD18CCD67200551721 /* CFNetwork.framework in Frameworks */,
-				AB245FA818CCD59F00551721 /* QuartzCore.framework in Frameworks */,
-				AB245FA718CCD59700551721 /* CoreGraphics.framework in Frameworks */,
 				AB245FA518CCD58800551721 /* MobileCoreServices.framework in Frameworks */,
 				9BF5F77619291E150074BF97 /* AWSSNS.framework in Frameworks */,
 				AB245FA418CCD57E00551721 /* MapKit.framework in Frameworks */,
 				AB245FAF18CCD70C00551721 /* CoreLocation.framework in Frameworks */,
 				AB245FAA18CCD5BB00551721 /* Accounts.framework in Frameworks */,
+				9BF5F77A192973A10074BF97 /* Parse.framework in Frameworks */,
 				AB245FB018CCD75400551721 /* SystemConfiguration.framework in Frameworks */,
 				ABC8F96318E8890D0096C073 /* MediaPlayer.framework in Frameworks */,
-				AB245FB118CCD79D00551721 /* Security.framework in Frameworks */,
 				AB245FB318CCD99E00551721 /* Foundation.framework in Frameworks */,
 				AB245FA618CCD58F00551721 /* UIKit.framework in Frameworks */,
 				9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */,
@@ -500,17 +460,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		56330CEA17FDEA57008A7922 /* SocialKernel */ = {
-			isa = PBXGroup;
-			children = (
-				56330CEB17FDEA57008A7922 /* EWFacebookManager.h */,
-				56330CEC17FDEA57008A7922 /* EWFacebookManager.m */,
-				56330CED17FDEA57008A7922 /* EWWeiboManager.h */,
-				56330CEE17FDEA57008A7922 /* EWWeiboManager.m */,
-			);
-			path = SocialKernel;
-			sourceTree = "<group>";
-		};
 		5642AF4817ACCE27000C73E8 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -565,14 +514,10 @@
 				AB198C8D1861818B008C1F15 /* EWPerson.m */,
 				AB198C8E1861818B008C1F15 /* EWTaskItem.h */,
 				AB198C8F1861818B008C1F15 /* EWTaskItem.m */,
-				AB198C841861818B008C1F15 /* EWGroup.h */,
-				AB198C851861818B008C1F15 /* EWGroup.m */,
 				AB198C861861818B008C1F15 /* EWGroupTask.h */,
 				AB198C871861818B008C1F15 /* EWGroupTask.m */,
 				AB198C881861818B008C1F15 /* EWMediaItem.h */,
 				AB198C891861818B008C1F15 /* EWMediaItem.m */,
-				AB198C8A1861818B008C1F15 /* EWMessage.h */,
-				AB198C8B1861818B008C1F15 /* EWMessage.m */,
 				ABBC47AA18530F35009A2E7D /* EarlyWorm.xcdatamodeld */,
 				9BF07AA3192324F800DED2E1 /* _EWAchievement.h */,
 				9BF07AA4192324F800DED2E1 /* _EWAchievement.m */,
@@ -619,6 +564,8 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9BF5F779192973A10074BF97 /* Parse.framework */,
+				9BF5F777192973050074BF97 /* StoreKit.framework */,
 				9BF5F77319291E150074BF97 /* AWSRuntime.framework */,
 				9BF5F77419291E150074BF97 /* AWSSNS.framework */,
 				9BBA5F9918EF295200C07809 /* libz.dylib */,
@@ -709,8 +656,6 @@
 				ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */,
 				5642AF4F17ACDA4C000C73E8 /* TestShakeViewController.h */,
 				5642AF5017ACDA4C000C73E8 /* TestShakeViewController.m */,
-				56330CCA17FB056F008A7922 /* TestSocailSDKViewController.h */,
-				56330CCB17FB056F008A7922 /* TestSocailSDKViewController.m */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -724,8 +669,6 @@
 				9BF297921912F713008C136E /* EWAlarmsView.xib */,
 				9BF297931912F713008C136E /* EWAlarmsViewController.h */,
 				9BF297941912F713008C136E /* EWAlarmsViewController.m */,
-				9BF297951912F713008C136E /* EWBlurView.h */,
-				9BF297961912F713008C136E /* EWBlurView.m */,
 				9BF297971912F713008C136E /* EWFirstTimeViewController.h */,
 				9BF297981912F713008C136E /* EWFirstTimeViewController.m */,
 				9BF297991912F713008C136E /* EWFirstTimeViewController.xib */,
@@ -750,7 +693,6 @@
 				9BF297AC1912F713008C136E /* EWWakeUpView.xib */,
 				9BF297AD1912F713008C136E /* EWWakeUpViewController.h */,
 				9BF297AE1912F713008C136E /* EWWakeUpViewController.m */,
-				9BF297F11912F7A0008C136E /* Social */,
 				9BF297C31912F71F008C136E /* UI Components */,
 			);
 			path = Interface;
@@ -761,7 +703,6 @@
 			children = (
 				9B8A6A9C191887F400591E8A /* NGAParallaxMotion */,
 				ABF3FB6D190A05E80017D2EF /* SCSiriWaveformView */,
-				9BBA5F8218EB3ED500C07809 /* JSON */,
 				ABD34DAA185C054C008CD2B8 /* FTWCache */,
 				AB207E6A182FFFC40076D93F /* MBProgressHUD */,
 			);
@@ -781,18 +722,20 @@
 				9B2DEEF618B811EC0046EB80 /* EWServer.m */,
 				AB78079B18393A66007C8BFD /* EWDataStore.h */,
 				AB78079C18393A66007C8BFD /* EWDataStore.m */,
+				AB1D2D0B1877A87200D2576F /* EWUserManagement.h */,
+				AB1D2D0C1877A87200D2576F /* EWUserManagement.m */,
+				9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */,
+				9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */,
+				AB3B9E4317A765CE00C2AD93 /* AVManager.h */,
+				AB3B9E4417A765CE00C2AD93 /* AVManager.m */,
+				AB2D195018E26ED100FED6F0 /* EWWakeUpManager.h */,
+				AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */,
 				AB1B1406187E4F48009D1DB2 /* Statistics */,
-				AB1D2D0A1877A85000D2576F /* UserManagement */,
-				AB7807A8183A01F7007C8BFD /* Download */,
 				AB207E5B182F4D690076D93F /* ImageController */,
 				ABB98B5B17D01ADE005D8903 /* ModelManager */,
-				AB94332B17C886CA00ADC702 /* Multimedia */,
 				5671FDC817C126AC00794E0A /* Model */,
 				56FEA57C17A5763200FC2938 /* Delegate */,
 				56E0C36617B2CEC200835A6B /* AlarmKernel */,
-				56330CEA17FDEA57008A7922 /* SocialKernel */,
-				AB2D195018E26ED100FED6F0 /* EWWakeUpManager.h */,
-				AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */,
 			);
 			path = Kernel;
 			sourceTree = "<group>";
@@ -813,26 +756,6 @@
 				9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */,
 			);
 			path = NGAParallaxMotion;
-			sourceTree = "<group>";
-		};
-		9BBA5F8218EB3ED500C07809 /* JSON */ = {
-			isa = PBXGroup;
-			children = (
-				9BBA5F8318EB3ED500C07809 /* JSON.h */,
-				9BBA5F8418EB3ED500C07809 /* NSObject+SBJSON.h */,
-				9BBA5F8518EB3ED500C07809 /* NSObject+SBJSON.m */,
-				9BBA5F8618EB3ED500C07809 /* NSString+SBJSON.h */,
-				9BBA5F8718EB3ED500C07809 /* NSString+SBJSON.m */,
-				9BBA5F8818EB3ED500C07809 /* SBJSON.h */,
-				9BBA5F8918EB3ED500C07809 /* SBJSON.m */,
-				9BBA5F8A18EB3ED500C07809 /* SBJsonBase.h */,
-				9BBA5F8B18EB3ED500C07809 /* SBJsonBase.m */,
-				9BBA5F8C18EB3ED500C07809 /* SBJsonParser.h */,
-				9BBA5F8D18EB3ED500C07809 /* SBJsonParser.m */,
-				9BBA5F8E18EB3ED500C07809 /* SBJsonWriter.h */,
-				9BBA5F8F18EB3ED500C07809 /* SBJsonWriter.m */,
-			);
-			path = JSON;
 			sourceTree = "<group>";
 		};
 		9BF297C31912F71F008C136E /* UI Components */ = {
@@ -870,17 +793,6 @@
 			path = "UI Components";
 			sourceTree = "<group>";
 		};
-		9BF297F11912F7A0008C136E /* Social */ = {
-			isa = PBXGroup;
-			children = (
-				9BF297F21912F7A0008C136E /* EWFacebookFriendListViewController.h */,
-				9BF297F31912F7A0008C136E /* EWFacebookFriendListViewController.m */,
-				9BF297F71912F7A0008C136E /* EWWeiboFriendListViewController.h */,
-				9BF297F81912F7A0008C136E /* EWWeiboFriendListViewController.m */,
-			);
-			path = Social;
-			sourceTree = "<group>";
-		};
 		AB1B1406187E4F48009D1DB2 /* Statistics */ = {
 			isa = PBXGroup;
 			children = (
@@ -888,15 +800,6 @@
 				AB1B1408187E4F8D009D1DB2 /* EWStatisticsManager.m */,
 			);
 			name = Statistics;
-			sourceTree = "<group>";
-		};
-		AB1D2D0A1877A85000D2576F /* UserManagement */ = {
-			isa = PBXGroup;
-			children = (
-				AB1D2D0B1877A87200D2576F /* EWUserManagement.h */,
-				AB1D2D0C1877A87200D2576F /* EWUserManagement.m */,
-			);
-			name = UserManagement;
 			sourceTree = "<group>";
 		};
 		AB207E5B182F4D690076D93F /* ImageController */ = {
@@ -953,17 +856,6 @@
 			name = "Profile picture";
 			sourceTree = "<group>";
 		};
-		AB7807A8183A01F7007C8BFD /* Download */ = {
-			isa = PBXGroup;
-			children = (
-				9B73830B18BE494B00E7FFC3 /* EWDownloadMgr.h */,
-				9B73830C18BE494B00E7FFC3 /* EWDownloadMgr.m */,
-				9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */,
-				9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */,
-			);
-			name = Download;
-			sourceTree = "<group>";
-		};
 		AB94330417C3013F00ADC702 /* Ringtone */ = {
 			isa = PBXGroup;
 			children = (
@@ -981,15 +873,6 @@
 				ABFCB2D9186E956900355781 /* Autumn Spring.caf */,
 			);
 			name = Ringtone;
-			sourceTree = "<group>";
-		};
-		AB94332B17C886CA00ADC702 /* Multimedia */ = {
-			isa = PBXGroup;
-			children = (
-				AB3B9E4317A765CE00C2AD93 /* AVManager.h */,
-				AB3B9E4417A765CE00C2AD93 /* AVManager.m */,
-			);
-			path = Multimedia;
 			sourceTree = "<group>";
 		};
 		ABB98B5B17D01ADE005D8903 /* ModelManager */ = {
@@ -1214,19 +1097,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB3ACDC019037DDE0066CF3F /* EWNotificationManager.m in Sources */,
-				ABC8F96A18E937BA0096C073 /* EWDownloadMgr.m in Sources */,
-				9BBA5F9118EB3ED500C07809 /* NSString+SBJSON.m in Sources */,
 				9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */,
 				9BF297E71912F720008C136E /* EWMediaSlider.m in Sources */,
-				9BBA5F9518EB3ED500C07809 /* SBJsonWriter.m in Sources */,
 				9BF297EB1912F720008C136E /* EWRoundButton.m in Sources */,
 				9BF297BF1912F713008C136E /* EWRingtoneSelectionViewController.m in Sources */,
-				9BBA5F9018EB3ED500C07809 /* NSObject+SBJSON.m in Sources */,
 				9BF07ABC192324F800DED2E1 /* _EWMessage.m in Sources */,
-				9BBA5F9318EB3ED500C07809 /* SBJsonBase.m in Sources */,
-				9BF2980B1912F7A0008C136E /* EWFacebookFriendListViewController.m in Sources */,
-				ABC8F96818E9378F0096C073 /* EWWeiboManager.m in Sources */,
-				9BBA5F9418EB3ED500C07809 /* SBJsonParser.m in Sources */,
 				ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */,
 				9BF297EA1912F720008C136E /* EWPopupMenu.m in Sources */,
 				AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */,
@@ -1253,10 +1128,8 @@
 				56E0C36F17B2CEC200835A6B /* EWShakeManager.m in Sources */,
 				AB1D2D0D1877A87200D2576F /* EWUserManagement.m in Sources */,
 				9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */,
-				AB198C961861818B008C1F15 /* EWMessage.m in Sources */,
 				AB198C941861818B008C1F15 /* EWGroupTask.m in Sources */,
 				56E0C37017B2CEC200835A6B /* EWShakingDetectorView.m in Sources */,
-				9BF297B31912F713008C136E /* EWBlurView.m in Sources */,
 				ABC8F96618E92F180096C073 /* UIView+HUD.m in Sources */,
 				9BF07AC0192324F800DED2E1 /* _EWTaskItem.m in Sources */,
 				56E0C37117B2CEC200835A6B /* EWUnlockManager.m in Sources */,
@@ -1265,7 +1138,6 @@
 				AB1B140F187E661E009D1DB2 /* EWAchievement.m in Sources */,
 				9BF297EC1912F720008C136E /* EWTaskHistoryCell.m in Sources */,
 				9BF297B61912F713008C136E /* EWLogInViewController.m in Sources */,
-				AB198C931861818B008C1F15 /* EWGroup.m in Sources */,
 				ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */,
 				56D997F517B426C3003EDA53 /* NSDate+Extend.m in Sources */,
 				9BF07ABE192324F800DED2E1 /* _EWPerson.m in Sources */,
@@ -1275,8 +1147,6 @@
 				AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */,
 				9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */,
 				ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */,
-				56330CCC17FB056F008A7922 /* TestSocailSDKViewController.m in Sources */,
-				9BBA5F9218EB3ED500C07809 /* SBJSON.m in Sources */,
 				9BF297B41912F713008C136E /* EWFirstTimeViewController.m in Sources */,
 				AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */,
 				9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */,
@@ -1299,10 +1169,8 @@
 				AB198C971861818B008C1F15 /* EWPerson.m in Sources */,
 				AB7807A418393A66007C8BFD /* EWPersonStore.m in Sources */,
 				ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */,
-				56330CEF17FDEA57008A7922 /* EWFacebookManager.m in Sources */,
 				9BF07ABA192324F800DED2E1 /* _EWGroupTask.m in Sources */,
 				9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */,
-				9BF2980E1912F7A0008C136E /* EWWeiboFriendListViewController.m in Sources */,
 				9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */,
 				AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */,
 				9BF297C01912F713008C136E /* EWSettingsViewController.m in Sources */,
@@ -1414,6 +1282,7 @@
 					"$(SRCROOT)/",
 					"$(inherited)",
 					"$(PROJECT_DIR)/Components",
+					"$(PROJECT_DIR)/Pods/Parse",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1428,6 +1297,7 @@
 				OTHER_LDFLAGS = (
 					"-\"lxml2\"",
 					"-ObjC",
+					"-all_load",
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1452,6 +1322,7 @@
 					"$(SRCROOT)/",
 					"$(inherited)",
 					"$(PROJECT_DIR)/Components",
+					"$(PROJECT_DIR)/Pods/Parse",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1465,6 +1336,7 @@
 				OTHER_LDFLAGS = (
 					"-\"lxml2\"",
 					"-ObjC",
+					"-all_load",
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";

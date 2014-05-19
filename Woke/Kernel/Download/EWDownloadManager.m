@@ -58,7 +58,7 @@
     if ([Url isFileURL] || ![Url.absoluteString hasPrefix:@"http"]) {
         NSLog(@"Url is local file");
         return;
-    }else if ([[EWDataStore sharedInstance] localPathForKey:Url.absoluteString]){
+    }else if ([EWDataStore localPathForKey:Url.absoluteString]){
         //NSLog(@"Url already cached");
         return;
     }
@@ -89,7 +89,7 @@
     if ([downloadQueue objectForKey:path]) {
         return;
         
-    }else if([[EWDataStore sharedInstance] localPathForKey:path]){
+    }else if([EWDataStore localPathForKey:path]){
         //already cached
         NSLog(@"Media already cached");
         return;
@@ -153,7 +153,7 @@
     NSString *str = request.URL.absoluteString;
     
     //save
-    [[EWDataStore sharedInstance] updateCacheForKey:str withData:data];
+    [EWDataStore updateCacheForKey:str withData:data];
     NSLog(@"Saved FTW cache for %@", str);
     
     //completion task

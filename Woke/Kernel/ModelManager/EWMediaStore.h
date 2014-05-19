@@ -30,6 +30,7 @@
 - (void)deleteAllMedias;
 
 //search
+- (EWMediaItem *)getMediaByID:(NSString *)mediaID;
 /**
  Fetch media by author
  */

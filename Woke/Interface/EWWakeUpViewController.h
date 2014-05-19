@@ -9,8 +9,8 @@
 #import <UIKit/UIKit.h>
 @class EWPerson, EWMediaItem, EWTaskItem;
 
-@interface EWWakeUpViewController : EWViewController <UIPopoverControllerDelegate, UITableViewDelegate, UITableViewDataSource>
-@property (weak, nonatomic) IBOutlet UILabel *title;
+@interface EWWakeUpViewController : UIViewController <UIPopoverControllerDelegate, UITableViewDelegate, UITableViewDataSource>
+//@property (weak, nonatomic) IBOutlet UILabel *title;
 @property (weak, nonatomic) IBOutlet UILabel *timer;
 @property (weak, nonatomic) IBOutlet UILabel *AM;
 @property (weak, nonatomic) IBOutlet UIView *header;

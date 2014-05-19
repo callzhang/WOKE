@@ -90,7 +90,7 @@
 #pragma mark - Login & Logout
 - (void)loginUser {
     [self.indicator startAnimating];
-    [EWUserManagement loginUsingFacebookWithCompletion:^{
+    [EWUserManagement loginParseWithFacebookWithCompletion:^{
         //update UI
         //[self updateView];//notification used
         

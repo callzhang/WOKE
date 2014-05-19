@@ -7,7 +7,7 @@
 //
 
 #import "EWPersonViewController.h"
-#import "StackMob.h"
+
 // Util
 #import "EWUIUtil.h"
 #import "UIViewController+Blur.h"
@@ -169,7 +169,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 - (IBAction)login:(id)sender {
     EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-    [loginVC loginInBackground];
+    [loginVC connect:nil];
 }
 
 - (IBAction)tabTapped:(UISegmentedControl *)sender {
@@ -224,17 +224,10 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         switch (buttonIndex) {
             case 0:
             {
-                //OK
-                MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                //friend
                 [currentUser addFriendsObject:person];
-                [[EWDataStore currentContext] saveOnSuccess:^{
-                    hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-                    hud.mode = MBProgressHUDModeCustomView;
-                    hud.labelText = @"Added";
-                    [hud hide:YES afterDelay:1.5];
-                } onFailure:^(NSError *error) {
-                    [NSException raise:@"Error saving friendship" format:@"Reason: %@", error.description];
-                }];
+                [EWDataStore save];
+                [self.view showSuccessNotification:@"Added"];
             }
                 break;
                 
@@ -242,17 +235,12 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
                 break;
         }
     }else if ([alertView.title isEqualToString:@"Unfriend"]){
+        //unfriend
         if (buttonIndex == 0) {
-            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            [currentUser removeFriendedObject:person];
-            [[EWDataStore currentContext] saveOnSuccess:^{
-                hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-                hud.mode = MBProgressHUDModeCustomView;
-                hud.labelText = @"Unfriended";
-                [hud hide:YES afterDelay:1.5];
-            } onFailure:^(NSError *error) {
-                [NSException raise:@"Error saving friendship" format:@"Reason: %@", error.description];
-            }];
+            [currentUser removeFriendsObject:person];
+            [EWDataStore save];
+            [self.view showSuccessNotification:@"Unfriended"];
+            
         }
     }
 }
@@ -397,16 +385,9 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         if (person != currentUser) {
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             [currentUser addFriendsObject:person];
-            [[EWDataStore currentContext] saveOnSuccess:^{
-                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-                hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-                hud.mode = MBProgressHUDModeCustomView;
-                hud.labelText = @"Added";
-                [hud hide:YES afterDelay:1.5];
-            } onFailure:^(NSError *error) {
-                EWAlert(@"Failed to add friend, please try again later");
-            }];
+            [EWDataStore save];
+            [self.view showSuccessNotification:@"Added"];
+            
         }
     }else if (buttonIndex == 1) {
         //send voice greeting

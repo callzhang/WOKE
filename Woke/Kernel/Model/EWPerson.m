@@ -15,12 +15,15 @@
 #import "EWMessage.h"
 #import "EWUtil.h"
 #import "NSDate+Extend.h"
-#import "StackMob.h"
+
 #import "EWDataStore.h"
 #import "NSString+MD5.h"
 #import "EWDownloadManager.h"
 
 @implementation EWPerson
+@dynamic lastLocation;
+@dynamic profilePic;
+@dynamic bgImage;
 
 //#pragma mark - User Management
 //- (id)initNewUserInContext:(NSManagedObjectContext *)context {

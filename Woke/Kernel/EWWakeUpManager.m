@@ -211,7 +211,7 @@
     
     NSArray *mediaAssets = [[EWUserManagement currentUser].mediaAssets allObjects];
     for (EWMediaItem *media in mediaAssets) {
-        if (!media.fixedDate || [media.fixedDate isEarlierThan:[NSDate date]]) {
+        if (!media.targetDate || [media.targetDate isEarlierThan:[NSDate date]]) {
             
             //find media to add
             [task addMediasObject: media];
@@ -236,13 +236,11 @@
         //need to create some voice
         EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
         [task addMediasObject:media];
-        [[EWDataStore currentContext] saveAndWait:NULL];
+        //[EWDataStore save];
     }
     
     //save
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"Failed to save new media to task.");
-    }];
+    [EWDataStore save];
     
     //cancel local alarm
     [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
@@ -257,7 +255,7 @@
     });
     
     //post notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.ewtaskitem_id}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
     
     //download
     [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:NULL];
@@ -307,9 +305,7 @@
                 EWAlert(@"Someone has sent a voice greeting to you. You will hear it on your next wake up.");
                 if (media.task) {
                     media.task = nil;
-                    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-                        NSLog(@"Couldn't move the media to next");
-                    }];
+                    [EWDataStore save];
 
                 }
                 

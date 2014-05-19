@@ -10,6 +10,9 @@
 #import "EWPerson.h"
 
 @implementation EWNotification
+@dynamic userInfo;
+@dynamic lastLocation;
+@dynamic importance;
 
 //@dynamic userInfo;
 //@dynamic lastLocation;

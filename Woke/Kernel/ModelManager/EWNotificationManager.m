@@ -52,7 +52,7 @@
 + (NSArray *)allNotifications{
     NSArray *notifications = [currentUser.notifications allObjects];
     
-    NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"lastmoddate" ascending:NO];
+    NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO];
     NSSortDescriptor *sortImportance = [NSSortDescriptor sortDescriptorWithKey:@"importance" ascending:NO];
     notifications = [notifications sortedArrayUsingDescriptors:@[sortImportance, sortDate]];
     
@@ -61,7 +61,7 @@
 
 + (EWNotification *)newNotification{
     EWNotification *notice = [NSEntityDescription insertNewObjectForEntityForName:@"EWNotification" inManagedObjectContext:[EWDataStore currentContext]];
-    notice.sender = currentUser;
+    notice.owner = currentUser;
     notice.importance = 0;
     return notice;
 }
@@ -236,9 +236,8 @@
         //delete
         [EWNotificationManager deleteNotification:notice];
     }
-    [[EWDataStore currentContext] saveOnSuccess:^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCompleted object:notice];
-    }onFailure:NULL];
+    [EWDataStore save];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCompleted object:notice];
     
     self.notification = nil;
     self.person = nil;
@@ -247,7 +246,7 @@
 + (void)deleteNotification:(EWNotification *)notice{
     EWNotification *notification = [EWDataStore objectForCurrentContext:notice];
     [[EWDataStore currentContext] deleteObject:notification];
-    [[EWDataStore currentContext] saveAndWait:NULL];
+    [EWDataStore save];
     NSLog(@"Notification of type %@ deleted", notification.type);
     
 }

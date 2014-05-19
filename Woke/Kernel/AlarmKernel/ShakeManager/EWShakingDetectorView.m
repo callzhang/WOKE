@@ -24,7 +24,7 @@
         // 具体执行代码
         [_delegate shakingDetectorShaked:self];
         
-        SAFE_DELEGATE_VOID(_delegate, @selector(shakingDetectorShaked:), shakingDetectorShaked:self);
+        //SAFE_DELEGATE_VOID(_delegate, @selector(shakingDetectorShaked:), shakingDetectorShaked:self);
     }
     
     if ([super respondsToSelector:@selector(motionEnded:withEvent:)]) {

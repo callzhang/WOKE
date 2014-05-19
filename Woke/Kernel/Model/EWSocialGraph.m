@@ -10,6 +10,9 @@
 
 
 @implementation EWSocialGraph
+@dynamic facebookFriends;
+@dynamic weiboFriends;
+
 
 
 

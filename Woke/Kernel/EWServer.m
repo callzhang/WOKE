@@ -42,47 +42,25 @@
 
 
 #pragma mark - Main Server method
-+ (NSArray *)getPersonAlarmAtTime:(NSDate *)time location:(SMGeoPoint *)geoPoint{
++ (NSArray *)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint{
     NSLog(@"%s", __func__);
     
-//    NSString *userId = currentUser.username;
-//    NSInteger timeSince1970 = (NSInteger)[time timeIntervalSince1970];
-//    NSString *timeStr = [NSString stringWithFormat:@"%ld", (long)timeSince1970];
-//    NSString *lat = [geoPoint.latitude stringValue];
-//    NSString *lon = [geoPoint.longitude stringValue];
-//    NSString *geoStr = [NSString stringWithFormat:@"%@,%@", lat, lon];
-//    
-//    
-//    SMCustomCodeRequest *request = [[SMCustomCodeRequest alloc]
-//                                    initGetRequestWithMethod:@"get_person_waking_up"];
-//    
-//    [request addQueryStringParameterWhere:@"personId" equals:userId];
-//    [request addQueryStringParameterWhere:@"time" equals:timeStr];
-//    [request addQueryStringParameterWhere:@"location" equals:geoStr];
-//    
-//    [[[SMClient defaultClient] dataStore]
-//     performCustomCodeRequest:request
-//     onSuccess:successBlock
-//     onFailure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id responseBody){
-//         [NSException raise:@"Server custom code error" format:@"Reason: %@", error.description];
-//         //retry...
-//         
-//     }];
+    PFQuery *geoQuery = [PFQuery queryWithClassName:@"EWPerson"];
+    [geoQuery whereKey:@"lastLocation" nearGeoPoint:geoPoint withinKilometers:100];
+    NSArray *parsePeople = [geoQuery findObjects];
+    NSMutableArray *people = [NSMutableArray new];
     
-    SMPredicate *locationPredicate =[SMPredicate predicateWhere:@"last_location" isWithin:10 kilometersOfGeoPoint:geoPoint];
-    //NSPredicate *timePredicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[time, [time timeByAddingMinutes:60]]];
-    //NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[locationPredicate, timePredicate]];
+    for (PFObject *object in parsePeople) {
+        NSManagedObject *person = [object managedObject];
+        [people addObject:person];
+    }
     
-    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    request.predicate = locationPredicate;
-    NSError *err;
-    NSArray *personAround = [[EWDataStore currentContext] executeFetchRequest:request returnManagedObjectIDs:NO options:[EWDataStore optionFetchNetworkElseCache] error:&err];
-    return personAround;
+    return people;
 }
 
 
 //Get person with task time and with location in async mode and a completion block
-+ (void)getPersonAlarmAtTime:(NSDate *)time location:(SMGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock{
++ (void)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock{
     __block NSArray *result;
     dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
         result = [EWServer getPersonAlarmAtTime:time location:geoPoint];
@@ -91,10 +69,6 @@
             for (EWPerson *p in result) {
                 EWPerson *p_ = [EWDataStore objectForCurrentContext:p];
                 [mainResult addObject:p_];
-            }
-            
-            if (mainResult.count == 0) {
-                mainResult = [@[currentUser] mutableCopy];
             }
             
             //call back
@@ -113,30 +87,29 @@
     
     
     
+    
     for (EWPerson *person in users) {
         //get next task
         EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
         //create buzz
         EWMediaItem *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
         //add waker
-        [task addWakerObject:person];
+        buzz.receiver = person;
         //add sound
-        NSString *sound = [EWUserManagement currentUser].preference[@"buzzSound"];
-        buzz.buzzKey = sound ? sound : @"default";
-        buzz.receiver = person;//send to media pool
+        NSString *sound = currentUser.preference[@"buzzSound"]?:@"default";
+        buzz.buzzKey = sound;
         
         //push payload
         NSDictionary *pushMessage;
         
         
         if ([[NSDate date] isEarlierThan:task.time]) {
-            
+            //before wake up
             //silent push
-            pushMessage = @{@"aps": @{@"badge": @1,
-                                      @"alert": @"Someone has sent you an buzz",
-                                      @"content-available": @1,
-                                      },
-                            kPushMediaKey: buzz.ewmediaitem_id,
+            pushMessage = @{@"alert": @"Someone has sent you an buzz",
+                            @"content-available": @1,
+                            @"badge": @"Increment",
+                            kPushMediaKey: buzz.objectId,
                             kPushTypeKey: kPushTypeBuzzKey};
 
             
@@ -148,122 +121,119 @@
             NSDictionary *sounds = buzzSounds;
             NSString *buzzSound = sounds[buzzType];
             
-            pushMessage = @{@"aps": @{@"alert": [NSString stringWithFormat:@"New buzz from %@", currentUser.name],
-                                                    @"badge": @1,
-                                                    @"sound": buzzSound,
-                                                    @"content-available": @1,
-                                                    },
-                                          kPushMediaKey: buzz.ewmediaitem_id,
-                                          kPushTypeKey: kPushTypeBuzzKey};
+            pushMessage = @{@"alert": @"Someone has sent you an buzz",
+                            @"content-available": @1,
+                            @"badge": @"Increment",
+                            @"sound": buzzSound,
+                            kPushMediaKey: buzz.objectId,
+                            kPushTypeKey: kPushTypeBuzzKey};
 
         }else{
             
             //tomorrow's task
             //silent push
-            pushMessage = @{@"aps": @{@"badge": @1,
-                                      @"alert": @"Someone has sent you an buzz",
-                                      @"content-available": @1,
-                                      },
-                            kPushMediaKey: buzz.ewmediaitem_id,
+            pushMessage = @{@"alert": @"Someone has sent you an buzz",
+                            @"content-available": @1,
+                            @"badge": @"Increment",
+                            kPushMediaKey: buzz.objectId,
                             kPushTypeKey: kPushTypeBuzzKey};
         }
         
+        //send
+        [EWServer parsePush:pushMessage toUsers:@[person] completion:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                NSLog(@"Buzz sent to %@", person.name);
+            }else{
+                NSLog(@"Failed to send push: %@", error.description);
+            }
+        }];
         
         
         //send
-        [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
-            NSLog(@"Buzz sent via AWS: %@", response.messageId);
-            [rootViewController.view showSuccessNotification:@"Sent"];
-        } onFailure:^(NSException *exception) {
-            NSLog(@"Failed to send Buzz: %@", exception.description);
-            [rootViewController.view showFailureNotification:@"Failed"];
-        }];
+//        [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
+//            NSLog(@"Buzz sent via AWS: %@", response.messageId);
+//            [rootViewController.view showSuccessNotification:@"Sent"];
+//        } onFailure:^(NSException *exception) {
+//            NSLog(@"Failed to send Buzz: %@", exception.description);
+//            [rootViewController.view showFailureNotification:@"Failed"];
+//        }];
     }
     
-    //save
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"*** Save buzz to task failed, retry...");
-        [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:NULL];
-    }];
-    
-        
-    
-    /*
-    [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
-        NSLog(@"Buzz successfully sent to %@", userIDs);
-    } onFailure:^(NSError *error) {
-        NSString *str = [NSString stringWithFormat:@"Failed to send buzz. Reason:%@", error.localizedDescription];
-        EWAlert(str);
-    }];
-     */
+    //save media and update to server
+    [EWDataStore save];
     
 }
 
 #pragma mark - Send Voice tone
-+ (void)pushMedia:(EWMediaItem *)m ForUser:(EWPerson *)person{
++ (void)pushMedia:(EWMediaItem *)media ForUser:(EWPerson *)person{
     
-    EWMediaItem *media = [EWDataStore objectForCurrentContext:m];
-    NSString *mediaId = media.ewmediaitem_id;
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:person];
+    NSString *mediaId = media.objectId;
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
     
     NSDictionary *pushMessage;
-    
-    //validate task
-    if (task.completed || task.state == NO) {
-        //something wrong, next task
-        task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
-    }
     
     //form push payload
     if ([[NSDate date] isEarlierThan:task.time]) {
         //early, silent message
-        pushMessage = @{@"aps": @{@"badge": @1,
-                                  @"alert": @"Someone has sent you an voice greeting",
-                                  @"content-available": @1
-                                  },
-                        kPushTypeKey: kPushMediaKey,
+        pushMessage = @{@"badge": @"Increment",
+                        @"alert": @"Someone has sent you an voice greeting",
+                        @"content-available": @1,
+                        kPushTypeKey: kPushTypeMediaKey,
                         kPushPersonKey: currentUser.username,
                         kPushMediaKey: mediaId};
 
     }else if([[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
         //struggle state
-        pushMessage = @{@"aps": @{@"badge": @1,
-                                  @"sound": @"media.caf",
-                                  @"content-available": @1
-                                  },
-                        kPushTypeKey: kPushMediaKey,
+        pushMessage = @{@"badge": @"Increment",
+                        @"sound": @"media.caf",
+                        @"alert": @"Someone has sent you an voice greeting",
+                        @"content-available": @1,
+                        kPushTypeKey: kPushTypeMediaKey,
                         kPushPersonKey: currentUser.username,
                         kPushMediaKey: mediaId};
         
     }else{
         //send silent push for next task
         
-        pushMessage = @{@"aps": @{@"badge": @1,
-                                  @"alert": @"Someone has sent you an voice greeting",
-                                  @"content-available": @1
-                                  },
-                        kPushTypeKey: kPushMediaKey,
+        pushMessage = @{@"badge": @"Increment",
+                        @"alert": @"Someone has sent you an voice greeting",
+                        @"content-available": @1,
+                        kPushTypeKey: kPushTypeMediaKey,
                         kPushPersonKey: currentUser.username,
                         kPushMediaKey: mediaId};
     }
+    
+    //push
+    [EWServer parsePush:pushMessage toUsers:@[person] completion:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            [rootViewController.view showSuccessNotification:@"Sent"];
+        }else{
+            NSLog(@"Send push message about media %@ failed. Reason:%@", mediaId, error.description);
+            [rootViewController.view showFailureNotification:@"Failed"];
+        }
+    }];
+    
+    //save
+    [EWDataStore save];
+    
 
     //push
-    [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
-        NSLog(@"Push media successfully sent to %@, message ID: %@", person.name, response.messageId);
-        
-        [rootViewController.view showSuccessNotification:@"Sent"];
-        
-        
-    } onFailure:^(NSException *exception) {
-        NSLog(@"Send push message about media %@ failed. Reason:%@", mediaId, exception.description);
-        EWAlert(@"Server is unavailable, please try again.");
-    }];
-    
-    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-        NSLog(@"save voice media failed. Retry... Reason:%@", error.description);
-        [[EWDataStore currentContext] saveAndWait:NULL];
-    }];
-    
+//    [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
+//        NSLog(@"Push media successfully sent to %@, message ID: %@", person.name, response.messageId);
+//        
+//        [rootViewController.view showSuccessNotification:@"Sent"];
+//        
+//        
+//    } onFailure:^(NSException *exception) {
+//        NSLog(@"Send push message about media %@ failed. Reason:%@", mediaId, exception.description);
+//        EWAlert(@"Server is unavailable, please try again.");
+//    }];
+//    
+//    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
+//        NSLog(@"save voice media failed. Retry... Reason:%@", error.description);
+//        [[EWDataStore currentContext] saveAndWait:NULL];
+//    }];
+//    
         /*
     [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
         NSLog(@"Push media successfully sent to %@", userIDs);
@@ -311,39 +281,74 @@
 
 
 #pragma mark - AWS method
+//
+//+ (void)AWSPush:(NSDictionary *)pushDic toUsers:(NSArray *)users onSuccess:(void (^)(SNSPublishResponse *))successBlock onFailure:(void (^)(NSException *))failureBlock{
+//    NSString *pushStr = [EWUIUtil toString:pushDic];
+//    pushStr = [pushStr stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+//    pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"You got a new push from AWS\"}", pushStr];
+//    SNSPublishRequest *request = [[SNSPublishRequest alloc] init];
+//    request.message = pushStr;
+//    request.messageStructure = @"json";
+//    
+//    for (EWPerson *target in users) {
+//        if (!target.aws_id) {
+//            NSString *str = [NSString stringWithFormat:@"User (%@) doesn't have a valid push key to receive push", target.name];
+//            EWAlert(str);
+//            continue;
+//        }
+//        request.targetArn = target.aws_id;
+//
+//        //NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            @try {
+//                SNSPublishResponse *response = [snsClient publish:request];
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    successBlock(response);
+//                });
+//            }
+//            @catch (NSException *exception) {
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    failureBlock(exception);
+//                });
+//            }
+//        });
+//    }
+//
+//}
 
-+ (void)AWSPush:(NSDictionary *)pushDic toUsers:(NSArray *)users onSuccess:(void (^)(SNSPublishResponse *))successBlock onFailure:(void (^)(NSException *))failureBlock{
-    NSString *pushStr = [EWUIUtil toString:pushDic];
-    pushStr = [pushStr stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-    pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"You got a new push from AWS\"}", pushStr];
-    SNSPublishRequest *request = [[SNSPublishRequest alloc] init];
-    request.message = pushStr;
-    request.messageStructure = @"json";
+
++ (void)broadcastMessage:msg onSuccess:(void (^)(void))block onFailure:(void (^)(void))failureBlock{
     
-    for (EWPerson *target in users) {
-        if (!target.aws_id) {
-            NSString *str = [NSString stringWithFormat:@"User (%@) doesn't have a valid push key to receive push", target.name];
-            EWAlert(str);
-            continue;
+    NSDictionary *payload = @{@"alert": msg};
+    
+    PFQuery *pushQuery = [PFInstallation query];
+    [pushQuery whereKeyExists:@"username"];
+    PFPush *push = [PFPush new];
+    [push setQuery:pushQuery];
+    [push setData:payload];
+    block = block?:NULL;
+    [push sendPushInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded && block) {
+            block();
+        }else if (failureBlock){
+            NSLog(@"Failed to broadcast push message: %@", error.description);
+            failureBlock();
         }
-        request.targetArn = target.aws_id;
+    }];
+}
 
-        //NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            @try {
-                SNSPublishResponse *response = [snsClient publish:request];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    successBlock(response);
-                });
-            }
-            @catch (NSException *exception) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    failureBlock(exception);
-                });
-            }
-        });
-    }
 
+#pragma mark - Parse Push
++ (void)parsePush:(NSDictionary *)pushPayload toUsers:(NSArray *)users completion:(PFBooleanResultBlock)block{
+    
+    NSArray *parseIDs = [users valueForKey:kParseObjectID];
+    PFQuery *pushQuery = [PFInstallation query];
+    [pushQuery whereKey:kParseObjectID containedIn:parseIDs];
+    PFPush *push = [PFPush new];
+    [push setQuery:pushQuery];
+    [push setData:pushPayload];
+    block = block?:NULL;
+    [push sendPushInBackgroundWithBlock:block];
 }
 
 @end

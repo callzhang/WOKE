@@ -65,7 +65,7 @@
     alarm = a;
     myTime = alarm.time;
     myMusic = alarm.tone;
-    myStatement = alarm.alarmDescription;
+    myStatement = alarm.statement;
     
     //view
     self.time.text = [myTime date2timeShort];

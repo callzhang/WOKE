@@ -13,6 +13,7 @@
 @interface EWUserManagement : NSObject
 + (EWUserManagement *)sharedInstance;
 
+#pragma mark - Login/Logout
 /**
  Main point of login
  */
@@ -46,28 +47,36 @@
 + (void)handleNewUser;
 
 
-
-//logged in tasks
+#pragma mark - logged in tasks
+/**
+ Initiate the Push Notification registration to APNS
+ */
 + (void)registerAPNS;
+/**
+ Handle the returned token for registered device. Register the push service to 3rd party server.
+ */
++ (void)registerPushNotificationWithToken:(NSData *)deviceToken;
+
 + (void)registerLocation;
-+ (void)registerPushNotification;
+
 + (void)updateLastSeen;
 
-//facebook
+#pragma mark - facebook
 //high level stuff
-+ (void)loginUsingFacebookWithCompletion:(void (^)(void))block;
++ (void)loginParseWithFacebookWithCompletion:(void (^)(void))block;
+//+ (void)loginUsingFacebookWithCompletion:(void (^)(void))block;
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
 + (void)getFacebookFriends;
 //low level request
 + (NSArray *)facebookPermissions;
 + (void)openFacebookSessionWithCompletion:(void (^)(void))block;
 + (void)handleFacebookException:(NSError *)exception;
-+ (void)facebookSessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error;
+//+ (void)facebookSessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error;
 
 
 
-//weibo
-+ (void)registerWeibo;
+#pragma mark - weibo
+//+ (void)registerWeibo;
 
 
 

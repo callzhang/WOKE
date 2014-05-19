@@ -83,10 +83,6 @@
 + (NSManagedObjectContext *)currentContext;
 + (id)objectForCurrentContext:(NSManagedObject *)obj;
 
-//Core Data and PFObject translation
-#pragma mark - Core Data and PFObject translation
-+ (NSManagedObject *)getManagedObjectFromParseObject:(PFObject *)object;
-+ (PFObject *)getParseObjectFromManagedObject:(NSManagedObject *)managedObject;
 
 #pragma mark - Parse Server methods
 /**
@@ -110,7 +106,7 @@
  Find or delete ManagedObject by Entity and by Server Object
  @discussion This method only updates attributes of MO, not relationship. So it is only used to refresh value of specific MO
  */
-+ (NSManagedObject *)findOrCreateManagedObjectWithEntityName:(NSString *)name withParseObject:(PFObject *)object;
+//+ (NSManagedObject *)findOrCreateManagedObjectWithParseObjectID:(NSString *)objectId;
 
 /**
  Delete PFObject according to given ManagedObject
@@ -125,11 +121,6 @@
  Access Global Save Callback dictionary and add blcok with key of ManagedObjectID
  */
 + (void)addSaveCallback:(PFObjectResultBlock)callback forManagedObjectID:(NSManagedObjectID *)objectID;
-
-/**
- Find or create ManagedObject corresponding to server object
- */
-+ (NSManagedObject *)findOrCreateManagedObjectWithEntityName:(NSString *)name withParseObject:(PFObject *)object;
 
 @end
 
@@ -148,6 +139,11 @@
  @discussion The attributes and relationship are updated in sync.
  */
 - (void)updateValueAndRelationFromParseObject:(PFObject *)object;
+
+/**
+ Get conterparty Parse Object
+ */
+- (PFObject *)parseObject;
 
 /**
  Refresh ManagedObject value from server in background
@@ -187,4 +183,9 @@
  @discussion The attributes are updated in sync, the relationship is updated async for new andn deleted related objects.
  */
 - (void)updateValueFromManagedObject:(NSManagedObject *)managedObject;
+
+/**
+ The ManagedObject will only update attributes but not relations
+ */
+- (NSManagedObject *)managedObject;
 @end

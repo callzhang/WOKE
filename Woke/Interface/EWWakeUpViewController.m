@@ -45,7 +45,7 @@
 
 @implementation EWWakeUpViewController
 @synthesize tableView = tableView_;
-@synthesize title, timer, header;
+@synthesize timer, header;
 @synthesize shakeManager = _shakeManager;
 @synthesize person, task;
 
@@ -141,7 +141,7 @@
 - (void)initData {
     //depend on whether passed in with task or person, the media will populaeed accordingly
     if (task) {
-        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"lastmoddate" ascending:YES];
+        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:YES];
         medias = [[task.medias allObjects] mutableCopy];
         [medias sortUsingDescriptors:@[sort]];
         [tableView_ reloadData];
@@ -430,7 +430,7 @@
     }
     if ([AVManager sharedManager].player.playing) {
         //AVManager has current cell means it is paused
-        NSLog(@"AVManager is playing media %d", currentPlayingCellIndex);
+        NSLog(@"AVManager is playing media %ld", (long)currentPlayingCellIndex);
         return;
     }
     
@@ -482,7 +482,7 @@
     }else if(nextCellIndex >= medias.count){
         if ((--loopCount)>0) {
             //play the first if loopCount > 0
-            NSLog(@"Looping, %d loop left", loopCount);
+            NSLog(@"Looping, %ld loop left", (long)loopCount);
             path = [NSIndexPath indexPathForRow:0 inSection:0];
             
         }else{

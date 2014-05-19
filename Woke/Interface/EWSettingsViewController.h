@@ -16,7 +16,7 @@ typedef enum {
     settingGroupAbout
 } settingGroupList;
 
-@interface EWSettingsViewController : EWViewController <EWRingtoneSelectionDelegate, UIAlertViewDelegate> {
+@interface EWSettingsViewController : UIViewController <EWRingtoneSelectionDelegate, UIAlertViewDelegate> {
     UITableView *_tableView;
     settingGroupList settingGroup;
     NSString *cellIdentifier;

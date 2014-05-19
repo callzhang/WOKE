@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TestShakeViewController : EWViewController
+@interface TestShakeViewController : UIViewController
 
 @end

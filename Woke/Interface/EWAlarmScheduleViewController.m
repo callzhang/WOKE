@@ -21,7 +21,6 @@
 
 //backend
 #import "EWDataStore.h"
-#import "StackMob.h"
 
 
 static NSString *cellIdentifier = @"scheduleAlarmCell";
@@ -146,11 +145,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             
         }
         //save
-        [[EWDataStore currentContext] saveOnSuccess:^{
-            //
-        } onFailure:^(NSError *error) {
-            NSLog(@"Alarms failed to save");
-        }];
+        [EWDataStore save];
     }
     
     
