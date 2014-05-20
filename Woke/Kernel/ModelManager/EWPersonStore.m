@@ -55,6 +55,7 @@ EWPerson *currentUser;
     newUser.username = user.username;
     newUser.profilePic = [UIImage imageNamed:@"profile"];
     newUser.name = @"New User";
+    newUser.preference = kUserDefaults;
     
     //[EWDataStore updateParseObjectFromManagedObject:newUser];
     

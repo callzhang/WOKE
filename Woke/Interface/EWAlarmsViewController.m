@@ -666,24 +666,17 @@
     cell.name = person.name;
     
     //profile
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        //Data
-        UIImage *profile = person.profilePic;
-        
-        if (profile) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                cell.profilePic.image = profile;
-                //UI
-                cell.alpha = 0.0;
-                [UIView animateWithDuration:0.4 animations:^{
-                    cell.alpha = 1;
-                }];
-                
-                //text
-                if (!isMe) cell.initial.alpha = 0;
-            });
-        }
-    });
+    UIImage *profile = person.profilePic;
+    cell.profilePic.image = profile;
+    //UI
+    cell.alpha = 0.0;
+    [UIView animateWithDuration:0.4 animations:^{
+        cell.alpha = 1;
+    }];
+    
+    //text
+    if (!isMe) cell.initial.alpha = 0;
+    
     
     //time
     cell.time.text = @"";

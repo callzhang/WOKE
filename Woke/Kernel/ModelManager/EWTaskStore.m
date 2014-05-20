@@ -104,7 +104,7 @@
         PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
         [query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
         [query whereKey:@"state" equalTo:@YES];
-        [query whereKey:@"owner" equalTo:person];
+        [query whereKey:@"owner" equalTo:[person parseObject]];
         [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]];
         query.limit = 10;
         tasks = [[query findObjects] mutableCopy];
