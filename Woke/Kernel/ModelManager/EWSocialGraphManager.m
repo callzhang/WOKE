@@ -53,7 +53,7 @@
 
 
 - (EWSocialGraph *)createSocialGraphForPerson:(EWPerson *)person{
-    EWSocialGraph *sg = [NSEntityDescription insertNewObjectForEntityForName:@"EWSocialGraph" inManagedObjectContext:[EWDataStore currentContext]];
+    EWSocialGraph *sg = [EWSocialGraph createEntity];
 
     //data
     sg.owner = person;

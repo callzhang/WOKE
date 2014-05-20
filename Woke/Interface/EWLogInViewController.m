@@ -92,10 +92,10 @@
     [self.indicator startAnimating];
     [EWUserManagement loginParseWithFacebookWithCompletion:^{
         //update UI
-        //[self updateView];//notification used
+        [self updateView];//notification also used
         
         //stop indicator
-        //[self.indicator stopAnimating];//notifiaction used
+        [self.indicator stopAnimating];//notifiaction also used
         
         //leaving
         [self dismissViewControllerAnimated:YES completion:NULL];

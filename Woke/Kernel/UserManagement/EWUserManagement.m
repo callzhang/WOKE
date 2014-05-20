@@ -46,12 +46,21 @@
     
     if ([PFUser currentUser]) {
         //user already logged in
-        //fetch user in coredata cache(offline) with related objects
-            
-        NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
-        [EWUserManagement loginWithCachedDataStore:[PFUser currentUser].username withCompletionBlock:^{}];
-        
-        
+        //test facebook login credential
+        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+            if (!error) {
+                //fetch user in coredata cache(offline) with related objects
+                NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
+                [EWUserManagement loginWithCachedDataStore:[PFUser currentUser].username withCompletionBlock:^{}];
+            }else if([error.userInfo[FBErrorParsedJSONResponseKey][@"body"][@"error"][@"type"] isEqualToString:@"OAuthException"]) {
+                // Since the request failed, we can check if it was due to an invalid session
+                EWAlert(@"The facebook session was expired");
+                [EWUserManagement showLoginPanel];
+            }else{
+                EWAlert(error.description);
+                [EWUserManagement showLoginPanel];
+            }
+        }];
         
     }else{
         //log in using local machine info
@@ -198,15 +207,13 @@
         //[self loginWithDeviceIDWithCompletionBlock:NULL];
         
         //login view
-        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-        [rootViewController presentViewController:loginVC animated:YES completion:NULL];
+        [EWUserManagement showLoginPanel];
         
     }else{
         //log out fb
         [FBSession.activeSession closeAndClearTokenInformation];
         //login view
-        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-        [rootViewController presentViewController:loginVC animated:YES completion:NULL];
+        [EWUserManagement showLoginPanel];
     };
     
     
@@ -304,25 +311,69 @@
 
 #pragma mark - FACEBOOK
 + (void)loginParseWithFacebookWithCompletion:(void (^)(void))block{
+    NSParameterAssert(![PFUser currentUser]);
     
-    BOOL islinkedWithFb = [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
-    NSParameterAssert(!islinkedWithFb);
-    [PFFacebookUtils linkUser:[PFUser currentUser] permissions:[EWUserManagement facebookPermissions] block:^(BOOL succeeded, NSError *error) {
+    //login with facebook
+    [PFFacebookUtils logInWithPermissions:[EWUserManagement facebookPermissions] block:^(PFUser *user, NSError *error) {
+        if (error) {
+            NSLog(@"Failed to link user: %@", error.description);
+            return;
+        }
+        
+        //get user, create core data user
+        EWPerson *person = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
+        currentUser = person;
+        
+        //update current user with fb info
         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
+            if (error) {
+                NSLog(@"Failed to load facebook data: %@", error.description);
+                return;
+            }
             //update with facebook info
             [EWUserManagement updateUserWithFBData:data];
             if ([PFUser currentUser].isNew) {
                 [EWUserManagement handleNewUser];
             }
+            if (block) {
+                block();
+            }
+            //broadcast
+            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:currentUser userInfo:@{kUserLoggedInUserKey:currentUser}];
             
         }];
     }];
-    
 }
 
 
++ (void)linkWithFacebook{
+    NSParameterAssert([PFUser currentUser]);
+    BOOL islinkedWithFb = [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
+    if (islinkedWithFb) {
+        [PFFacebookUtils unlinkUser:[PFUser currentUser]];
+    }
+    [PFFacebookUtils linkUser:[PFUser currentUser] permissions:[EWUserManagement facebookPermissions] block:^(BOOL succeeded, NSError *error) {
+        if (error) {
+            NSLog(@"Failed to get facebook info: %@", error.description);
+            return ;
+        }
+        //get fb info
+        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
+            if (error) {
+                NSLog(@"Failed to load facebook data: %@", error.description);
+                return;
+            }
+            //update to current user
+            [EWUserManagement updateUserWithFBData:data];
+            
+            //alert
+            EWAlert(@"Facebook account linked!");
+        }];
+    }];
+}
+
 //+ (void)loginUsingFacebookWithCompletion:(void (^)(void))block{
-//    
+//
 //    [EWUserManagement openFacebookSessionWithCompletion:^{
 //        [[FBRequest requestForMe] startWithCompletionHandler:
 //         ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
@@ -391,11 +442,8 @@
 //after fb login, fetch user managed object
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     //get currentUser first
-    
     EWPerson *person = [EWUserManagement currentUser];
-    if(!person){
-        NSLog(@"======= Something wrong, currentUser is nil ========");
-    }
+    NSParameterAssert(person);
     
     //email
     if (!person.email) person.email = user[@"email"];
@@ -428,6 +476,7 @@
             
             [person.managedObjectContext performBlock:^{
                 person.profilePic = img;
+                [EWDataStore save];
             }];
         });
         
@@ -460,7 +509,7 @@
     
     //get social graph of current user
     //if not, create one
-    EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
+    EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWUserManagement currentUser]];
     //skip if checked within a week
     if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
         NSLog(@"Facebook friends check skipped.");

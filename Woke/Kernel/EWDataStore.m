@@ -479,7 +479,7 @@
                 NSLog(@"Uh oh, we couldn't find the object!");
                 // Now also check for connection errors:
                 //delete ParseID from MO
-                [managedObject setValue:nil forKey:kParseObjectID];
+                [managedObject setValue:[NSNull null] forKey:kParseObjectID];
             } else if ([err code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
                 [managedObject updateEventually];
@@ -579,10 +579,11 @@
 
 - (void)updateModifiedDate:(NSNotification *)notification{
     NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
-    NSLog(@"Observed %lu ManagedObject changed", (unsigned long)updatedObjects.count);
+    
     for (NSManagedObject *mo in updatedObjects) {
         if ([[mo valueForKey:kUpdatedDateKey] timeIntervalSinceNow] < -1) {
             //update time
+            NSLog(@"Observed %lu ManagedObject changed", (unsigned long)updatedObjects.count);
             [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
         }
     }
@@ -841,7 +842,7 @@
                 //location
                 PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
                 [self setObject:point forKey:key];
-            }else {
+            }else if(value){
                 //other supported value
                 [self setObject:value forKey:key];
             }
