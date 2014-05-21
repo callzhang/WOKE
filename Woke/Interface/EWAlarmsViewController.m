@@ -667,18 +667,16 @@
     
     //profile
     UIImage *profile = person.profilePic;
+    cell.profilePic.image = profile;
+    //UI
+    cell.alpha = 0.0;
+    [UIView animateWithDuration:0.4 animations:^{
+        cell.alpha = 1;
+    }];
     
-    if (profile) {
-        cell.profilePic.image = profile;
-        //UI
-        cell.alpha = 0.0;
-        [UIView animateWithDuration:0.4 animations:^{
-            cell.alpha = 1;
-        }];
-        
-        //text
-        if (!isMe) cell.initial.alpha = 0;
-    }
+    //text
+    if (!isMe) cell.initial.alpha = 0;
+    
     
     //time
     cell.time.text = @"";

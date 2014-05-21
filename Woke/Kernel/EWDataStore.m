@@ -408,29 +408,53 @@
 
 - (NSSet *)updateQueue{
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
-    return [NSSet setWithArray:array];
+    NSMutableSet *set = [NSMutableSet new];
+    for (NSURL *url in array) {
+        [set addObject:[[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url]];
+    }
+    return [set copy];
 }
 
 - (void)setUpdateQueue:(NSSet *)queue{
-    [[NSUserDefaults standardUserDefaults] setValue:[queue allObjects] forKey:kParseQueueUpdate];
+    NSMutableArray *array = [NSMutableArray new];
+    for (NSManagedObject *mo in queue) {
+        [array addObject:mo.objectID.URIRepresentation];
+    }
+    [[NSUserDefaults standardUserDefaults] setValue:array forKey:kParseQueueUpdate];
 }
 
 - (NSSet *)insertQueue{
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueInsert];
-    return [NSSet setWithArray:array];
+    NSMutableSet *set = [NSMutableSet new];
+    for (NSURL *url in array) {
+        [set addObject:[[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url]];
+    }
+    return [set copy];
 }
 
 - (void)setInsertQueue:(NSSet *)queue{
-    [[NSUserDefaults standardUserDefaults] setObject:[queue allObjects] forKey:kParseQueueInsert];
+    NSMutableArray *array = [NSMutableArray new];
+    for (NSManagedObject *mo in queue) {
+        [array addObject:mo.objectID.URIRepresentation];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:array forKey:kParseQueueInsert];
 }
 
 - (NSSet *)deleteQueue{
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete];
-    return [NSSet setWithArray:array];
+    NSMutableSet *set = [NSMutableSet new];
+    for (NSURL *url in array) {
+        [set addObject:[[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url]];
+    }
+    return [set copy];
 }
 
 - (void)setDeleteQueue:(NSSet *)queue{
-    [[NSUserDefaults standardUserDefaults] setObject:[queue allObjects] forKey:kParseQueueDelete];
+    NSMutableArray *array = [NSMutableArray new];
+    for (NSManagedObject *mo in queue) {
+        [array addObject:mo.objectID.URIRepresentation];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:array forKey:kParseQueueDelete];
 }
 
 #pragma mark - Parse Server methods
@@ -497,6 +521,7 @@
     
     //set Parse value and store callback block
     [object updateValueFromManagedObject:managedObject];
+    
     //save
     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
@@ -506,7 +531,7 @@
             [EWDataStore performSaveCallbacksWithParseObject:object andManagedObjectID:managedObject.objectID];
             [[EWDataStore currentContext] save:nil];
         } else {
-            NSLog(@"Failed to save server object");
+            NSLog(@"Failed to save server object: %@", error.description);
             [managedObject updateEventually];
         }
     }];
@@ -560,7 +585,7 @@
     //get global save callback
     NSMutableDictionary *saveCallbacks = [EWDataStore sharedInstance].parseSaveCallbacks;
     NSMutableArray *callbacks = [saveCallbacks objectForKey:objectID]?:[NSMutableArray array];
-    [callbacks addObject:callbacks];
+    [callbacks addObject:callback];
     //save
     [saveCallbacks setObject:callbacks forKey:objectID];
 }
@@ -571,7 +596,8 @@
     NSArray *saveCallbacks = [[[EWDataStore sharedInstance] parseSaveCallbacks] objectForKey:managedObjectID];
     if (saveCallbacks) {
         for (PFObjectResultBlock callback in saveCallbacks) {
-            callback(parseObject, nil);
+            NSError *err;
+            callback(parseObject, err);
         }
         [[EWDataStore sharedInstance].parseSaveCallbacks removeObjectForKey:managedObjectID];
     }
@@ -787,18 +813,20 @@
 - (void)updateEventually{
     BOOL hasParseObjectLinked = !![self valueForKey:kParseObjectID];
     if (hasParseObjectLinked) {
+        //update
         NSMutableSet *updateQueue = [[EWDataStore sharedInstance].updateQueue mutableCopy];
         if (!updateQueue) {
             updateQueue = [NSMutableSet set];
         }
-        [updateQueue addObject:self.objectID];
+        [updateQueue addObject:self];
         [EWDataStore sharedInstance].updateQueue = updateQueue;
     }else{
+        //insert
         NSMutableSet *insertQueue = [[EWDataStore sharedInstance].insertQueue mutableCopy];
         if (!insertQueue) {
             insertQueue = [NSMutableSet set];
         }
-        [insertQueue addObject:self.objectID];
+        [insertQueue addObject:self];
         [EWDataStore sharedInstance].insertQueue = insertQueue;
     }
     
@@ -811,7 +839,7 @@
         if (!deleteQueue) {
             deleteQueue = [NSMutableSet set];
         }
-        [deleteQueue addObject:self.objectID];
+        [deleteQueue addObject:self];
         [EWDataStore sharedInstance].deleteQueue = deleteQueue;
     }else{
         NSLog(@"@@@ You are trying to delete an ManagedObject that doesn't have a corresponding Server Object.");
@@ -845,7 +873,7 @@
 //        return;
 //    }
     //value
-    NSParameterAssert([self.objectId isEqualToString:[managedObject valueForKey:kParseObjectID]]);
+    //NSParameterAssert([self.objectId isEqualToString:[managedObject valueForKey:kParseObjectID]]);
     
     NSMutableDictionary *mutableAttributeValues = [managedObject.entity.attributesByName mutableCopy];
     [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
