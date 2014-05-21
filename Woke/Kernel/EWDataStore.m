@@ -885,7 +885,7 @@
                 [self setObject:dataFile forKey:key];
             }else if ([value isKindOfClass:[UIImage class]]){
                 //image
-                PFFile *dataFile = [PFFile fileWithData:UIImagePNGRepresentation((UIImage *)value)];
+                PFFile *dataFile = [PFFile fileWithName:@"Image.png" data:UIImagePNGRepresentation((UIImage *)value)];
                 [dataFile saveInBackground];
                 [self setObject:dataFile forKey:key];
             }else if ([value isKindOfClass:[CLLocation class]]){
@@ -937,7 +937,12 @@
                         PFObjectResultBlock connectRelationship = ^(PFObject *object, NSError *error) {
                             //the relation can only be additive, which is not a problem for new relation
                             [blockParseRelation addObject:object];
-                            [blockObject saveInBackground];
+                            [blockObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                                if (error) {
+                                    NSLog(@"Failed to save: %@", error.description);
+                                    [blockObject saveEventually];
+                                }
+                            }];
                         };
                         
                         //add to global save callback distionary
@@ -960,7 +965,13 @@
                     //set up a saving block
                     PFObjectResultBlock connectRelationship = ^(PFObject *object, NSError *error) {
                         [blockObject setObject:object forKey:key];
-                        [blockObject saveEventually];//relationship can be saved regardless of network condition.
+                        [blockObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                            //relationship can be saved regardless of network condition.
+                            if (error) {
+                                NSLog(@"Failed to save: %@", error.description);
+                                [blockObject saveEventually];
+                            }
+                        }];
                     };
                     //add to global save callback distionary
                     [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:managedObject.objectID];

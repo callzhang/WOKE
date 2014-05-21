@@ -467,20 +467,17 @@
         person.preference = kUserDefaults;
     }
     //download profile picture if needed
-    if (!person.profilePic) {
-        //profile pic, async download, need to assign img to person before leave
-        NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
-            UIImage *img = [UIImage imageWithData:data];
-            
-            [person.managedObjectContext performBlock:^{
-                person.profilePic = img;
-                [EWDataStore save];
-            }];
-        });
+    //profile pic, async download, need to assign img to person before leave
+    NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+        UIImage *img = [UIImage imageWithData:data];
         
-    }
+        [person.managedObjectContext performBlock:^{
+            person.profilePic = img;
+            [EWDataStore save];
+        }];
+    });
     
     
 }
