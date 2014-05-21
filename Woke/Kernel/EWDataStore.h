@@ -170,6 +170,8 @@
  Save ManagedObjectID into delete queue in userDefaults
  */
 - (void)deleteEventually;
+
+- (NSString *)getPropertyClassByName:(NSString *)name;
 @end
 
 #pragma mark - Parse Object extension

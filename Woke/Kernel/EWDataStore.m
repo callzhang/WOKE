@@ -437,9 +437,9 @@
 +(void)updateToServerAndSave{
     
     //get a list of ManagedObject to insert/Update/Delete
-    NSMutableArray *insertedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].insertedObjects mutableCopy];
-    NSMutableArray *updatedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].updatedObjects mutableCopy];
-    NSMutableArray *deletedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].deletedObjects mutableCopy];
+    NSMutableSet *insertedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].insertedObjects mutableCopy];
+    NSMutableSet *updatedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].updatedObjects mutableCopy];
+    NSMutableSet *deletedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].deletedObjects mutableCopy];
     
     //add queue
     [insertedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.insertQueue.allObjects];
@@ -589,12 +589,15 @@
     }
 }
 
+
 @end
 
 
 
 #pragma mark - Core Data ManagedObject extension
 @implementation NSManagedObject (PFObject)
+#import <objc/runtime.h>
+
 - (void)updateValueAndRelationFromParseObject:(PFObject *)parseObject{
     
     //attributes
@@ -718,7 +721,7 @@
         NSLog(@"@@@ Updating a managedObject without a parseID, insert first");
         [EWDataStore updateParseObjectFromManagedObject:self];
     }else{
-        PFObject *object = [[PFQuery queryWithClassName:self.entity.serverClassName] getObjectWithId:parseObjectId];
+        PFObject *object = [self parseObject];
         [self updateValueAndRelationFromParseObject:object];
     }
     
@@ -731,10 +734,6 @@
     }else{
         [self setValue:object.objectId forKey:kParseObjectID];
     }
-    
-    [self setValue:object.createdAt forKey:@"createdAt"];
-    [self setValue:object.updatedAt forKey:@"updatedAt"];
-    
     //value
     NSMutableDictionary *mutableAttributeValues = [self.entity.attributesByName mutableCopy];
     //add or delete some attributes here
@@ -759,22 +758,28 @@
             NSLog(@"Exception when assign property [%@] from ParseObject: %@", key, object);
         }
     }];
+    
+    [self setValue:object.updatedAt forKey:@"updatedAt"];
 }
 
 
 - (void)setPFFile:(PFFile *)file forPropertyDescription:(NSAttributeDescription *)attributeDescription{
-    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-        if ([attributeDescription.attributeValueClassName isEqualToString:@"UIImage"]) {
-            UIImage *img = [UIImage imageWithData:data];
-            [self setValue:img forKey:attributeDescription.name];
-        }
-        else{
-            [self setValue:data forKey:attributeDescription.name];
-        }
-        //TODO: audio and audioKey
-        
-        NSLog(@"Assign data for key: %@ on %@", attributeDescription.name, self.class);
-    }];
+    NSError *err;
+    NSData *data = [file getData:&err];
+    if (err) {
+        NSLog(@"@@@ Failed to download PFFile: %@", err.description);
+        return;
+    }
+    NSString *className = [self getPropertyClassByName:attributeDescription.name];
+    if ([className isEqualToString:@"UIImage"]) {
+        UIImage *img = [UIImage imageWithData:data];
+        [self setValue:img forKey:attributeDescription.name];
+    }
+    else{
+        [self setValue:data forKey:attributeDescription.name];
+    }
+    
+    NSLog(@"Assign data for key: %@ on %@", attributeDescription.name, self.class);
     
 }
 
@@ -813,17 +818,34 @@
     }
 }
 
+
+
+#pragma mark - Helper methods
+- (NSString *)getPropertyClassByName:(NSString *)name{
+    objc_property_t property = class_getProperty([self class], [name UTF8String]);
+    const char * type = property_getAttributes(property);
+    NSString * typeString = [NSString stringWithUTF8String:type];
+    NSArray * attributes = [typeString componentsSeparatedByString:@","];
+    NSString * typeAttribute = [attributes objectAtIndex:0];
+    if ([typeAttribute hasPrefix:@"T@"]) {
+        NSString * typeClassName = [typeAttribute substringWithRange:NSMakeRange(3, [typeAttribute length]-4)];  //turns @"NSDate" into NSDate
+        return typeClassName;
+    }
+    return @"";
+}
+
 @end
 
 #pragma mark - Parse Object extension
 @implementation PFObject (NSManagedObject)
 - (void)updateValueFromManagedObject:(NSManagedObject *)managedObject{
-    if ([[managedObject valueForKeyPath:kUpdatedDateKey] timeIntervalSinceDate:self.updatedAt] <= 0) {
-        NSLog(@"The last modified dates are the same, parse object will not update to server");
-        return;
-    }
+//    NSDate *updateAt = [managedObject valueForKeyPath:kUpdatedDateKey];
+//    if (updateAt && [updateAt timeIntervalSinceDate:self.updatedAt] <= 0) {
+//        NSLog(@"The last modified dates are the same, parse object will not update to server");
+//        return;
+//    }
     //value
-    self.objectId = [managedObject valueForKey:kParseObjectID];
+    NSParameterAssert([self.objectId isEqualToString:[managedObject valueForKey:kParseObjectID]]);
     
     NSMutableDictionary *mutableAttributeValues = [managedObject.entity.attributesByName mutableCopy];
     [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {

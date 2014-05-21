@@ -464,7 +464,7 @@
     //preference
     if(!person.preference){
         //new user
-        person.preference = userDefaults;
+        person.preference = kUserDefaults;
     }
     //download profile picture if needed
     if (!person.profilePic) {
