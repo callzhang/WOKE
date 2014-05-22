@@ -30,6 +30,9 @@
 #import "EWSocialGraphManager.h"
 
 
+#define defaultUsername                 @"New User"
+
+
 @implementation EWUserManagement
 
 + (EWUserManagement *)sharedInstance{
@@ -69,8 +72,8 @@
     
     
     //watch for login event
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
-//login event handled by DataStore
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginEventHandler) name:kPersonLoggedIn object:Nil];
+
 }
 
 
@@ -232,40 +235,21 @@
 }
 
 
-#pragma mark - userLoginEventHandler
-//handled by DataStore
+//#pragma mark - userLoginEventHandler
+////handled by DataStore
 //- (void)userLoginEventHandler{
-//    NSLog(@"=== [%s] Logged in, performing login tasks.", __func__);
-//    [EWUserManagement registerAPNS];
+//    NSLog(@"=== [%s] Logged in, performing login tasks.===", __func__);
+//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+//    if (![currentInstallation[@"username"] isEqualToString: currentUser.username]){
+//        currentInstallation[@"username"] = currentUser.username;
+//        [currentInstallation saveInBackground];
+//    };
+//    
 //    [EWUserManagement registerLocation];
 //    [EWUserManagement updateLastSeen];
 //    [EWUserManagement getFacebookFriends];
-//
+//    
 //}
-
-#pragma mark - PUSH
-
-+ (void)registerAPNS{
-    //push
-#if TARGET_IPHONE_SIMULATOR
-    //Code specific to simulator
-#else
-    //pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
-    //register everytime in case for events like phone replacement
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeNewsstandContentAvailability | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
-#endif
-}
-
-+ (void)registerPushNotificationWithToken:(NSData *)deviceToken{
-    
-    //Parse: Store the deviceToken in the current Installation and save it to Parse.
-    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    [currentInstallation setDeviceTokenFromData:deviceToken];
-    [currentInstallation saveInBackground];
-    
-
-    
-}
 
 
 
@@ -445,6 +429,10 @@
     EWPerson *person = [EWUserManagement currentUser];
     NSParameterAssert(person);
     
+    //name
+    if ([person.name isEqualToString:defaultUsername]) {
+        person.name = user.username;
+    }
     //email
     if (!person.email) person.email = user[@"email"];
     //name
@@ -478,8 +466,6 @@
             [EWDataStore save];
         }];
     });
-    
-    
 }
 
 + (void)getFacebookFriends{

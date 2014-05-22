@@ -13,8 +13,8 @@
 #define iPhone5 ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO)
 #define iOS7 ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0)
 
-#define kAppName            @"EarlyWorm"
-#define kAppVersion         @"0.5.0"
+#define kAppName            @"Woke"
+#define kAppVersion         @"0.6.0"
 
 #define UserInfo           @"userInfo"
 
@@ -26,16 +26,12 @@
 #define MADEL_HEADER_HEIGHT             70.0;
 
 // Keys
-#define kStackMobKeyDevelopment         @"4757c535-5583-46f9-8a55-3b8276d96f06"
-#define kStackMobKeyDevelopmentPrivate  @"63be438d-9a8a-428c-9d64-e1df9844da7d"
-#define kStackMobKeyProduction          @""
+#define kParseKeyDevelopment            @"4757c535-5583-46f9-8a55-3b8276d96f06"
+#define kParseKeyProduction             @""
 #define AWS_ACCESS_KEY_ID               @"AKIAIB2BXKRPL3FCWJYA"
 #define AWS_SECRET_KEY                  @"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"
 #define AWS_SNS_APP_ARN                 @"arn:aws:sns:us-west-2:260520558889:app/APNS_SANDBOX/Woke_Dev"
 #define TESTFLIGHT_ACCESS_KEY           @"e1ffe70a-26bf-4db0-91c8-eb2d1d362cb3"
-
-#define AWS_SNS_EndPoint_test_id_1      @"2:260520558889:endpoint/APNS_SANDBOX/Woke_Dev/3b46d55e-0da2-397c-8116-603a9acf02be"
-
 
 // 开关宏
 /*

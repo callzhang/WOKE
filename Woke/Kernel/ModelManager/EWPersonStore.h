@@ -17,6 +17,7 @@ extern EWPerson *currentUser;
 @interface EWPersonStore : NSObject
 
 //@property (retain, nonatomic) EWPerson *currentUser;
+@property (nonatomic, strong) NSArray *everyone;
 
 + (EWPersonStore *)sharedInstance;
 - (EWPerson *)createPersonWIthParseObject:(PFUser *)user;
@@ -24,7 +25,7 @@ extern EWPerson *currentUser;
 /**
  Possible people that are relevant
  */
-- (NSArray *)everyone;
+//- (NSArray *)everyone;
 - (EWPerson *)anyone;
 - (void)purgeUserData;
 - (void)checkRelations;

@@ -5,7 +5,7 @@
 //  Created by Lei on 8/29/13.
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
-#define MR_SHORTHAND
+
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
 #import "EWPersonStore.h"
@@ -16,8 +16,10 @@
 #import "EWMediaItem.h"
 #import "NSString+MD5.h"
 #import "EWWakeUpManager.h"
-#import "CoreData+MagicalRecord.h"
 
+#define MR_LOGGING_ENABLED 0
+#define MR_SHORTHAND
+#import "CoreData+MagicalRecord.h"
 
 //Util
 #import "FTWCache.h"
@@ -64,6 +66,7 @@
         
         
         //core data
+        //[MagicalRecord setLoggingMask:MagicalRecordLoggingMaskError];
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
         context = [NSManagedObjectContext MR_contextForCurrentThread];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:nil];
@@ -113,17 +116,20 @@
 
 #pragma mark - Login Check
 - (void)loginDataCheck{
-    NSLog(@"========> %s <=========", __func__);
+    NSLog(@"=== [%s] Logged in, performing login tasks.===", __func__);
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    if (![currentInstallation[@"username"] isEqualToString: currentUser.username]){
+        currentInstallation[@"username"] = currentUser.username;
+        [currentInstallation saveInBackground];
+    };
     
     //change fetch policy
     //NSLog(@"0. Start sync with server");
     //[self.coreDataStore syncWithServer];
     
     //refresh current user
-    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-        NSLog(@"1. Register AWS push key");
-        [EWUserManagement registerAPNS];
-    });
+    NSLog(@"1. Register AWS push key");
+    [EWDataStore registerAPNS];
     
     //check alarm, task, and local notif
     NSLog(@"2. Check alarm");
@@ -132,12 +138,12 @@
     NSLog(@"3. Check task");
     [[EWTaskStore sharedInstance] scheduleTasks];
     
+    NSLog(@"4. Check local notification");
+    [EWTaskStore.sharedInstance checkScheduledNotifications];
     
     //updating facebook friends
-    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-        NSLog(@"5. Updating facebook friends");
-        [EWUserManagement getFacebookFriends];
-    });
+    NSLog(@"5. Updating facebook friends");
+    [EWUserManagement getFacebookFriends];
     
     //update data with timely updates
     [self registerServerUpdateService];
@@ -145,31 +151,27 @@
 }
 
 
-+ (void)checkAlarmData{
-    NSInteger nAlarm = [[EWAlarmManager sharedInstance] alarmsForUser:currentUser].count;
-    NSInteger nTask = [EWTaskStore myTasks].count;
-    if (nTask == 0 && nAlarm == 0) {
-        return;
-    }
+#pragma mark - PUSH
+
++ (void)registerAPNS{
+    //push
+#if TARGET_IPHONE_SIMULATOR
+    //Code specific to simulator
+#else
+    //pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
+    //register everytime in case for events like phone replacement
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeNewsstandContentAvailability | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
+#endif
+}
+
++ (void)registerPushNotificationWithToken:(NSData *)deviceToken{
+    
+    //Parse: Store the deviceToken in the current Installation and save it to Parse.
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+    [currentInstallation saveInBackground];
     
     
-    //check alarm
-    //dispatch_async(dispatch_queue, ^{
-        NSLog(@"2. Check alarm");
-        [[EWAlarmManager sharedInstance] scheduleAlarm];
-    //});
-    
-    //check task
-    //dispatch_async(dispatch_queue, ^{
-        NSLog(@"3. Check task");
-        [EWTaskStore.sharedInstance scheduleTasks];
-    //});
-    
-    //check local notif
-    //dispatch_async(dispatch_queue, ^{
-        NSLog(@"4. Start check local notification");
-        [EWTaskStore.sharedInstance checkScheduledNotifications];
-    //});
     
 }
 
@@ -294,7 +296,7 @@
     //services that need to run periodically
     NSLog(@"%s: Start sync service", __func__);
     
-    dispatch_async(dispatch_queue, ^{
+    //dispatch_async(dispatch_queue, ^{
         
         //lsat seen
         NSLog(@"Start last seen recurring task");
@@ -311,7 +313,7 @@
         //check alarm timer
         NSLog(@"Start recurring alarm timer check");
         [EWWakeUpManager alarmTimerCheck];
-    });
+    //});
     
 }
 
@@ -379,8 +381,14 @@
         return nil;
     }
     __block NSManagedObjectID *objectID;
-    [obj.managedObjectContext performBlock:^{
+    [obj.managedObjectContext performBlockAndWait:^{
         objectID = obj.objectID;
+        if (!objectID) {
+            //need to save
+            NSError *err;
+            [obj.managedObjectContext obtainPermanentIDsForObjects:@[obj] error:&err];
+            objectID = obj.objectID;
+        }
     }];
     NSManagedObject * objForCurrentContext = [[EWDataStore currentContext] objectWithID:objectID];
     return objForCurrentContext;
@@ -398,7 +406,6 @@
 
 + (NSManagedObjectContext *)currentContext{
     return [NSManagedObjectContext MR_contextForCurrentThread];
-    return nil;
 }
 
 
@@ -413,7 +420,8 @@
 - (NSSet *)updateQueue{
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
     NSMutableSet *set = [NSMutableSet new];
-    for (NSURL *url in array) {
+    for (NSString *str in array) {
+        NSURL *url = [NSURL URLWithString:str];
         [set addObject:[[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url]];
     }
     return [set copy];
@@ -422,7 +430,9 @@
 - (void)setUpdateQueue:(NSSet *)queue{
     NSMutableArray *array = [NSMutableArray new];
     for (NSManagedObject *mo in queue) {
-        [array addObject:mo.objectID.URIRepresentation];
+        NSManagedObjectID *objectID = mo.objectID;
+        NSString *str = objectID.URIRepresentation.absoluteString;
+        [array addObject:str];
     }
     [[NSUserDefaults standardUserDefaults] setValue:array forKey:kParseQueueUpdate];
 }
@@ -430,7 +440,8 @@
 - (NSSet *)insertQueue{
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueInsert];
     NSMutableSet *set = [NSMutableSet new];
-    for (NSURL *url in array) {
+    for (NSString *str in array) {
+        NSURL *url = [NSURL URLWithString:str];
         [set addObject:[[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url]];
     }
     return [set copy];
@@ -439,7 +450,9 @@
 - (void)setInsertQueue:(NSSet *)queue{
     NSMutableArray *array = [NSMutableArray new];
     for (NSManagedObject *mo in queue) {
-        [array addObject:mo.objectID.URIRepresentation];
+        NSManagedObjectID *objectID = mo.objectID;
+        NSString *str = objectID.URIRepresentation.absoluteString;
+        [array addObject:str];
     }
     [[NSUserDefaults standardUserDefaults] setObject:array forKey:kParseQueueInsert];
 }
@@ -447,7 +460,8 @@
 - (NSSet *)deleteQueue{
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete];
     NSMutableSet *set = [NSMutableSet new];
-    for (NSURL *url in array) {
+    for (NSString *str in array) {
+        NSURL *url = [NSURL URLWithString:str];
         [set addObject:[[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url]];
     }
     return [set copy];
@@ -456,7 +470,9 @@
 - (void)setDeleteQueue:(NSSet *)queue{
     NSMutableArray *array = [NSMutableArray new];
     for (NSManagedObject *mo in queue) {
-        [array addObject:mo.objectID.URIRepresentation];
+        NSManagedObjectID *objectID = mo.objectID;
+        NSString *str = objectID.URIRepresentation.absoluteString;
+        [array addObject:str];
     }
     [[NSUserDefaults standardUserDefaults] setObject:array forKey:kParseQueueDelete];
 }
@@ -527,33 +543,38 @@
     [object updateValueFromManagedObject:managedObject];
     
     //save
-    [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            NSLog(@"Saved to server: %@", managedObject.entity.serverClassName);
+    NSError *error;
+    [object save:&error];
+    __block NSManagedObject *blockMO = managedObject;
+    //[object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            NSLog(@"Saved to server: %@", blockMO.entity.serverClassName);
             //assign connection between MO and PO
-            [managedObject setValue:object.objectId forKey:kParseObjectID];
-            [EWDataStore performSaveCallbacksWithParseObject:object andManagedObjectID:managedObject.objectID];
+            [blockMO setValue:object.objectId forKey:kParseObjectID];
+            [EWDataStore performSaveCallbacksWithParseObject:object andManagedObjectID:blockMO.objectID];
             [[EWDataStore currentContext] save:nil];
         } else {
             NSLog(@"Failed to save server object: %@", error.description);
             [managedObject updateEventually];
         }
-    }];
+    //}];
+    
+    
     
     //save
     [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
     
     //remove from queue
-    NSMutableArray *updateQueue = EWDataStore.sharedInstance.updateQueue.allObjects.mutableCopy;
+    NSMutableSet *updateQueue = EWDataStore.sharedInstance.updateQueue.mutableCopy;
     if ([updateQueue containsObject:managedObject.objectID]) {
         [updateQueue removeObject:managedObject.objectID];
+        [EWDataStore sharedInstance].updateQueue = updateQueue;
     }
-    NSMutableArray *insertQueue = [EWDataStore sharedInstance].insertQueue.allObjects.mutableCopy;
+    NSMutableSet *insertQueue = [EWDataStore sharedInstance].insertQueue.mutableCopy;
     if ([insertQueue containsObject:managedObject.objectID]) {
         [insertQueue removeObject:managedObject.objectID];
+        [EWDataStore sharedInstance].insertQueue = insertQueue;
     }
-    [EWDataStore sharedInstance].updateQueue = [NSSet setWithArray:updateQueue];
-    [EWDataStore sharedInstance].insertQueue = [NSSet setWithArray:insertQueue];
 }
 
 + (void)deleteParseObjectWithManagedObject:(NSManagedObject *)managedObject{
@@ -577,11 +598,11 @@
     }
     
     //remove from queue
-    NSMutableArray *deleteQueue = [EWDataStore sharedInstance].deleteQueue.allObjects.mutableCopy;
+    NSMutableSet *deleteQueue = [EWDataStore sharedInstance].deleteQueue.allObjects.mutableCopy;
     if ([deleteQueue containsObject:managedObject.objectID]) {
         [deleteQueue removeObject:managedObject.objectID];
+        [EWDataStore sharedInstance].deleteQueue = deleteQueue;
     }
-    [EWDataStore sharedInstance].deleteQueue = [NSSet setWithArray:deleteQueue];
 }
 
 
@@ -789,7 +810,7 @@
         }
     }];
     
-    [self setValue:object.updatedAt forKey:@"updatedAt"];
+    [self setValue:object.updatedAt forKey:kUpdatedDateKey];
 }
 
 
@@ -950,7 +971,7 @@
                         };
                         
                         //add to global save callback distionary
-                        [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:managedObject.objectID];
+                        [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:relatedManagedObject.objectID];
 
                         
                     }
@@ -978,7 +999,7 @@
                         }];
                     };
                     //add to global save callback distionary
-                    [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:managedObject.objectID];
+                    [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:relatedManagedObject.objectID];
                 }
             }
         }

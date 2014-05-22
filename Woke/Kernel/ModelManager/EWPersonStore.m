@@ -19,6 +19,8 @@
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
 
+#define everyoneCheckTimeOut        600
+
 EWPerson *currentUser;
 
 @interface EWPersonStore(){
@@ -28,8 +30,7 @@ EWPerson *currentUser;
 @end
 
 @implementation EWPersonStore
-//@synthesize model, context;
-//@synthesize currentUser;
+@synthesize everyone;
 
 +(EWPersonStore *)sharedInstance{
 //    BOOL mainThread = [NSThread isMainThread];
@@ -92,7 +93,9 @@ EWPerson *currentUser;
 }
 
 - (NSArray *)everyone{
-
+    if (everyone && [[NSDate date] timeIntervalSinceDate:timeEveryoneChecked] < everyoneCheckTimeOut) {
+        return everyone;
+    }
     //fetch
     PFQuery *query = [PFUser query];
     NSArray *allUser = [query findObjects];
@@ -101,14 +104,17 @@ EWPerson *currentUser;
         [allPerson addObject:user.managedObject];
     }
     //return
-    return allPerson;
+    everyone = [allPerson copy];
+    timeEveryoneChecked = [NSDate date];
     
+    
+    return everyone;
 }
 
 - (EWPerson *)anyone{
-    NSArray *everyone = [self everyone];
-    NSInteger i = arc4random_uniform((uint16_t)everyone.count);
-    EWPerson *one = everyone[i];
+    
+    NSInteger i = arc4random_uniform((uint16_t)self.everyone.count);
+    EWPerson *one = self.everyone[i];
     return one;
 }
 

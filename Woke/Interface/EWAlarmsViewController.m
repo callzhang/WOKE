@@ -1,4 +1,4 @@
-//
+	//
 //  EWAlarmsViewController.m.m
 //  EarlyWorm
 //
@@ -138,6 +138,15 @@
         }
         
         //fetch everyone
+        people = [[EWPersonStore sharedInstance] everyone];
+        id <NSFetchedResultsSectionInfo> sectionInfo = self.fetchController.sections[0];
+        NSUInteger n = [sectionInfo numberOfObjects];
+        if (people.count > n) {
+            NSLog(@"Updated user list to %d", people.count);
+            [self.fetchController performFetch:NULL];
+        }
+        
+        /*
         CLLocation *location = currentUser.lastLocation;
         PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:location];
         
@@ -157,7 +166,7 @@
             if (!success) {
                 NSLog(@"Fetch failed");
             }
-        }];
+        }];*/
         
     }else{
         alarms = nil;
@@ -213,7 +222,7 @@
     //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
     //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"username IN %@", people];
+    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"username IN %@", people];
     
     
     //sort
@@ -221,7 +230,7 @@
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    request.predicate = predicate;
+    //request.predicate = predicate;
     request.sortDescriptors = @[sort];
     
     //controller

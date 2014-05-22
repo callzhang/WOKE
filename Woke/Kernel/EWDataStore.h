@@ -50,7 +50,18 @@
 + (EWDataStore *)sharedInstance;
 + (void)save;
 //- (void)registerPushNotification;
-+ (void)checkAlarmData;
+//+ (void)checkAlarmData;
+
+#pragma mark - Push notification
+/**
+ Initiate the Push Notification registration to APNS
+ */
++ (void)registerAPNS;
+/**
+ Handle the returned token for registered device. Register the push service to 3rd party server.
+ */
++ (void)registerPushNotificationWithToken:(NSData *)deviceToken;
+
 
 #pragma mark - data
 /**

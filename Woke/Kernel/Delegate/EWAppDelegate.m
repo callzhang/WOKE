@@ -261,10 +261,12 @@ UIViewController *rootViewController;
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
     
-    //return [FBSession.activeSession handleOpenURL:url];
-    return [FBAppCall handleOpenURL:url
+    BOOL handled_1 = [FBSession.activeSession handleOpenURL:url];
+    BOOL handled_2 =  [FBAppCall handleOpenURL:url
                   sourceApplication:sourceApplication
                         withSession:[PFFacebookUtils session]];
+    
+    return handled_1 && handled_2;
 }
 
 
@@ -309,7 +311,7 @@ UIViewController *rootViewController;
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
     
     //Register Push on Server
-    [EWUserManagement registerPushNotificationWithToken:deviceToken];
+    [EWDataStore registerPushNotificationWithToken:deviceToken];
     
  
 }
