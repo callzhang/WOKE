@@ -94,15 +94,12 @@ EWPerson *currentUser;
 - (NSArray *)everyone{
 
     //fetch
-    NSArray *allPerson = [EWPerson findAll];
-    //NSLog(@"Get a list of people: %@", [allPerson valueForKey:@"name"]);
-//    //check
-//    for (EWPerson *person in allPerson) {
-//        if ([person isFault]) {
-//            NSLog(@"Person %@ is faulted, fetching from server", person.name);
-//            [[EWDataStore currentContext] refreshObject:person mergeChanges:YES];
-//        }
-//    }
+    PFQuery *query = [PFUser query];
+    NSArray *allUser = [query findObjects];
+    NSMutableArray *allPerson = [NSMutableArray new];
+    for (PFUser *user in allUser) {
+        [allPerson addObject:user.managedObject];
+    }
     //return
     return allPerson;
     

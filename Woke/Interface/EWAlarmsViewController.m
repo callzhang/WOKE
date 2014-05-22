@@ -213,7 +213,7 @@
     //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
     //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
     
-    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"username IN %@", people];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"username IN %@", people];
     
     
     //sort
@@ -221,7 +221,7 @@
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    //request.predicate = predicate;
+    request.predicate = predicate;
     request.sortDescriptors = @[sort];
     
     //controller

@@ -63,7 +63,9 @@
 + (void)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock{
     __block NSArray *result;
     dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
-        result = [EWServer getPersonAlarmAtTime:time location:geoPoint];
+        //get people from server
+        //result = [EWServer getPersonAlarmAtTime:time location:geoPoint];
+        result = [[EWPersonStore sharedInstance] everyone];
         dispatch_async(dispatch_get_main_queue(), ^{
             NSMutableArray *mainResult = [NSMutableArray new];
             for (EWPerson *p in result) {

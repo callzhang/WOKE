@@ -378,7 +378,11 @@
         NSLog(@"Passed in nil");
         return nil;
     }
-    NSManagedObject * objForCurrentContext = [[EWDataStore currentContext] objectWithID:obj.objectID];
+    __block NSManagedObjectID *objectID;
+    [obj.managedObjectContext performBlock:^{
+        objectID = obj.objectID;
+    }];
+    NSManagedObject * objForCurrentContext = [[EWDataStore currentContext] objectWithID:objectID];
     return objForCurrentContext;
 }
 
