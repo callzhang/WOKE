@@ -104,12 +104,17 @@
 + (void)updateToServerAndSave;
 
 /**
- Update or Insert PFObject according to given ManagedObject
- 1. First decide create or find parse object, handle error if necessary
- 2. Update PO value and relation with given MO. (-updateValueFromManagedObject:)
- 3. Save PO in background. Save MO to exit method.
- 4. When saved, assign parseID to MO
- 5. Perform save callback for this MO
+ *Update or Insert PFObject according to given ManagedObject
+ *
+ *1. First decide create or find parse object, handle error if necessary
+ *
+ *2. Update PO value and relation with given MO. (-updateValueFromManagedObject:)
+ *
+ *3. Save PO in background. Save MO to exit method.
+ *
+ *4. When saved, assign parseID to MO
+ *
+ *5. Perform save callback block for this PO
  */
 + (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject;
 

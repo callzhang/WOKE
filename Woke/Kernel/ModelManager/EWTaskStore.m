@@ -73,7 +73,7 @@
     }
     
     //update if necessary
-    if (tasks.count != 7 * nWeeksToScheduleTask) {
+    if (tasks.count != 7 * nWeeksToScheduleTask && [p.updatedAt timeElapsed] > kServerUpdateInterval) {
         [p refresh];
         tasks = [[p.tasks allObjects] mutableCopy];
     }

@@ -94,9 +94,6 @@
         //update UI
         [self updateView];//notification also used
         
-        //stop indicator
-        [self.indicator stopAnimating];//notifiaction also used
-        
         //leaving
         [self dismissViewControllerAnimated:YES completion:NULL];
     }];

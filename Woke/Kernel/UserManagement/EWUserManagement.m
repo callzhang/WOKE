@@ -466,6 +466,7 @@
             [EWDataStore save];
         }];
     });
+    [EWDataStore save];
 }
 
 + (void)getFacebookFriends{
@@ -478,6 +479,7 @@
     
     FBSessionState state = [FBSession activeSession].state;
     if (state != FBSessionStateOpen && state != FBSessionStateOpenTokenExtended) {
+        
         //session not open, need to open
         NSLog(@"facebook session state: %d", state);
         [EWUserManagement openFacebookSessionWithCompletion:^{
@@ -487,22 +489,21 @@
         }];
         
         return;
+    }else{
+        
+        //get social graph of current user
+        //if not, create one
+        EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWUserManagement currentUser]];
+        //skip if checked within a week
+        if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
+            NSLog(@"Facebook friends check skipped.");
+            return;
+        }
+        
+        //get the data
+        __block NSMutableDictionary *friends = [NSMutableDictionary new];
+        [EWUserManagement getFacebookFriendsWithPath:@"/me/friends" withReturnData:friends];
     }
-    
-    
-    //get social graph of current user
-    //if not, create one
-    EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWUserManagement currentUser]];
-    //skip if checked within a week
-    if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
-        NSLog(@"Facebook friends check skipped.");
-        return;
-    }
-    
-    //get the data
-    __block NSMutableDictionary *friends = [NSMutableDictionary new];
-    [EWUserManagement getFacebookFriendsWithPath:@"/me/friends" withReturnData:friends];
-    
 
 }
 

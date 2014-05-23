@@ -208,4 +208,10 @@
     return string;
 }
 
+- (double)timeElapsed{
+    double t = [self timeIntervalSinceNow];
+    return -t;
+    
+}
+
 @end
