@@ -650,7 +650,9 @@
 #import <objc/runtime.h>
 
 - (void)updateValueAndRelationFromParseObject:(PFObject *)parseObject{
-    
+    if (!parseObject) {
+        return;
+    }
     //attributes
     [self assignValueFromParseObject:parseObject];
     
