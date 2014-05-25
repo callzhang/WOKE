@@ -10,6 +10,8 @@
 #import "EWDataStore.h"
 #import "EWPerson.h"
 
+#define kDefaultUsername                 @"New User"
+
 extern EWPerson *currentUser;
 
 @class EWMediaStore, EWPerson;

@@ -19,7 +19,7 @@
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
 
-#define everyoneCheckTimeOut        600
+#define everyoneCheckTimeOut            600
 
 EWPerson *currentUser;
 
@@ -55,7 +55,7 @@ EWPerson *currentUser;
     EWPerson *newUser = (EWPerson *)[user managedObject];
     newUser.username = user.username;
     newUser.profilePic = [UIImage imageNamed:@"profile"];
-    newUser.name = @"New User";
+    newUser.name = kDefaultUsername;
     newUser.preference = kUserDefaults;
     
     //[EWDataStore updateParseObjectFromManagedObject:newUser];

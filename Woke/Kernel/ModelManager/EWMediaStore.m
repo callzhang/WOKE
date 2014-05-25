@@ -66,6 +66,7 @@
     EWMediaItem *media = [self createMedia];
     media.type = kMediaTypeBuzz;
     media.buzzKey = [currentUser.preference objectForKey:@"buzzSound"];
+    [media refresh];//get object id
     return media;
 }
 

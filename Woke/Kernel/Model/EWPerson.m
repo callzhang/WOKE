@@ -24,6 +24,7 @@
 @dynamic lastLocation;
 @dynamic profilePic;
 @dynamic bgImage;
+@dynamic preference;
 
 //#pragma mark - User Management
 //- (id)initNewUserInContext:(NSManagedObjectContext *)context {

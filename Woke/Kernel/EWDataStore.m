@@ -25,8 +25,8 @@
 #import "FTWCache.h"
 
 #pragma mark - 
-#define kServerTransformTypes               @{@"CLLotation": @"PFGeoPoint"}
-#define kServerTransformClasses             @{@"EWPerson": @"_User"}
+#define kServerTransformTypes               @{@"CLLotation": @"PFGeoPoint"} //
+#define kServerTransformClasses             @{@"EWPerson": @"_User"} //serverClassName / localClassNmae
 
 @interface EWDataStore()
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
@@ -554,35 +554,36 @@
     //=============================================================
     
     //save
-    __block NSManagedObject *blockMO = mo;
-    [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (!error) {
-            NSLog(@"Parse Object saved to server: %@", blockMO.entity.serverClassName);
-            //assign connection between MO and PO
-            [blockMO setValue:object.objectId forKey:kParseObjectID];
-            [EWDataStore performSaveCallbacksWithParseObject:object andManagedObjectID:blockMO.objectID];
-            [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
-        } else {
-            NSLog(@"Failed to save server object: %@", error.description);
-            [blockMO updateEventually];
+    //__block NSManagedObject *blockMO = mo;
+    //[object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    NSError *error;
+    [object save:&error];
+    if (!error) {
+        NSLog(@"Parse Object saved to server: %@", mo.entity.serverClassName);
+        //assign connection between MO and PO
+        [mo setValue:object.objectId forKey:kParseObjectID];
+        [EWDataStore performSaveCallbacksWithParseObject:object andManagedObjectID:mo.objectID];
+        [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
+        
+        //remove from queue
+        NSMutableSet *updateQueue = EWDataStore.sharedInstance.updateQueue.mutableCopy;
+        if ([updateQueue containsObject:mo.objectID]) {
+            [updateQueue removeObject:mo.objectID];
+            [EWDataStore sharedInstance].updateQueue = updateQueue;
         }
-    }];
-    
-    
-    //save
-    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
-    
-    //remove from queue
-    NSMutableSet *updateQueue = EWDataStore.sharedInstance.updateQueue.mutableCopy;
-    if ([updateQueue containsObject:mo.objectID]) {
-        [updateQueue removeObject:mo.objectID];
-        [EWDataStore sharedInstance].updateQueue = updateQueue;
+        NSMutableSet *insertQueue = [EWDataStore sharedInstance].insertQueue.mutableCopy;
+        if ([insertQueue containsObject:mo.objectID]) {
+            [insertQueue removeObject:mo.objectID];
+            [EWDataStore sharedInstance].insertQueue = insertQueue;
+        }
+    } else {
+        NSLog(@"Failed to save server object: %@", error.description);
+        [mo updateEventually];
     }
-    NSMutableSet *insertQueue = [EWDataStore sharedInstance].insertQueue.mutableCopy;
-    if ([insertQueue containsObject:mo.objectID]) {
-        [insertQueue removeObject:mo.objectID];
-        [EWDataStore sharedInstance].insertQueue = insertQueue;
-    }
+    //}];
+    
+    
+
 }
 
 + (void)deleteParseObjectWithManagedObject:(NSManagedObject *)managedObject{
@@ -592,18 +593,19 @@
     if (parseID) {
         [query getObjectInBackgroundWithId:parseID block:^(PFObject *object, NSError *error) {
             if (error) {
-                NSLog(@"Failed to delete Parse Object %@ (%@)", managedObject, parseID);
+                NSLog(@"Failed to delete Parse Object %@ (%@)", mo, parseID);
+                [mo deleteEventually];
             }else{
                 //delete async
                 [object deleteEventually];
                 
                 //delete MO
-                [[NSManagedObjectContext defaultContext] deleteObject:managedObject];
+                [[NSManagedObjectContext defaultContext] deleteObject:mo];
             }
         }];
     }else{
         //delete MO directly
-        [[NSManagedObjectContext defaultContext] deleteObject:managedObject];
+        [[NSManagedObjectContext defaultContext] deleteObject:mo];
     }
     
     //remove from queue
@@ -788,7 +790,7 @@
         [self updateValueAndRelationFromParseObject:object];
     }
     
-    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
 }
      
 - (void)assignValueFromParseObject:(PFObject *)object{
@@ -907,9 +909,17 @@
 - (void)updateValueFromManagedObject:(NSManagedObject *)managedObject{
     NSManagedObject *mo = [EWDataStore objectForCurrentContext:managedObject];
     NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
-    if (updateAt && [updateAt timeIntervalSinceDate:self.updatedAt] <= 0) {
-        NSLog(@"The last modified dates are the same, parse object will not update to server");
-        return;
+    if (updateAt){
+        if ([updateAt timeIntervalSinceDate:self.updatedAt] < 0) {
+            NSParameterAssert([mo valueForKey:kParseObjectID]);
+            [mo refresh];
+            return;
+
+        } //else if([updateAt timeIntervalSinceDate:self.updatedAt] == 0) {
+            //NSLog(@"The last modified dates are the same, parse object will not update to server");
+            //return;
+        //}
+        //continue if MO updatedAt is later or equal to parse updatedAt
     }
     //value
     //NSParameterAssert([self.objectId isEqualToString:[managedObject valueForKey:kParseObjectID]]);
@@ -917,24 +927,24 @@
     NSMutableDictionary *mutableAttributeValues = [mo.entity.attributesByName mutableCopy];
     [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
         id value = [mo valueForKey:key];
-            if ([value isKindOfClass:[NSData class]]) {
-                //data
-                PFFile *dataFile = [PFFile fileWithData:value];
-                [dataFile saveInBackground];
-                [self setObject:dataFile forKey:key];
-            }else if ([value isKindOfClass:[UIImage class]]){
-                //image
-                PFFile *dataFile = [PFFile fileWithName:@"Image.png" data:UIImagePNGRepresentation((UIImage *)value)];
-                [dataFile saveInBackground];
-                [self setObject:dataFile forKey:key];
-            }else if ([value isKindOfClass:[CLLocation class]]){
-                //location
-                PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
-                [self setObject:point forKey:key];
-            }else if(value){
-                //other supported value
-                [self setObject:value forKey:key];
-            }
+        if ([value isKindOfClass:[NSData class]]) {
+            //data
+            PFFile *dataFile = [PFFile fileWithData:value];
+            [dataFile saveInBackground];
+            [self setObject:dataFile forKey:key];
+        }else if ([value isKindOfClass:[UIImage class]]){
+            //image
+            PFFile *dataFile = [PFFile fileWithName:@"Image.png" data:UIImagePNGRepresentation((UIImage *)value)];
+            [dataFile saveInBackground];//TODO: handle file upload exception
+            [self setObject:dataFile forKey:key];
+        }else if ([value isKindOfClass:[CLLocation class]]){
+            //location
+            PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
+            [self setObject:point forKey:key];
+        }else if(value){
+            //other supported value: audio/video
+            [self setObject:value forKey:key];
+        }
         
     }];
     
@@ -954,6 +964,10 @@
                         NSArray *relatedParseObjectsToDelete = [relatedParseObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"objectId NOT IN %@", [relatedManagedObject valueForKey:@"objectId"]]];
                         for (PFObject *PO in relatedParseObjectsToDelete) {
                             [parseRelation removeObject:PO];
+                        }
+                        //save
+                        if (relatedParseObjectsToDelete.count) {
+                            [self saveEventually];
                         }
                     }
                 }];

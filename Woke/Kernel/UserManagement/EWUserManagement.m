@@ -30,7 +30,7 @@
 #import "EWSocialGraphManager.h"
 
 
-#define defaultUsername                 @"New User"
+
 
 
 @implementation EWUserManagement
@@ -430,13 +430,12 @@
     NSParameterAssert(person);
     
     //name
-    if ([person.name isEqualToString:defaultUsername]) {
-        person.name = user.username;
+    if ([person.name isEqualToString:kDefaultUsername]) {
+        person.name = user.name;
     }
     //email
     if (!person.email) person.email = user[@"email"];
-    //name
-    if(!person.name) person.name = user.name;
+    
     //birthday format: "01/21/1984";
     if (!person.birthday) {
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
