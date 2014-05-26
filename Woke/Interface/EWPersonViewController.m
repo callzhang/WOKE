@@ -123,6 +123,9 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         [tabView setTitle:[stats wakabilityStr] forSegmentAtIndex:1];
         [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.achievements.count] forSegmentAtIndex:2];
         tabView.selectedSegmentIndex = 1;//initial tab
+        CGRect frame = tabView.frame;
+        frame.size.width = 44;
+        tabView.frame = frame;
         
         //statement
         EWTaskItem *t = tasks.firstObject;

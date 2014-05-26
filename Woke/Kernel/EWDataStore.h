@@ -213,3 +213,7 @@
 @interface NSEntityDescription (Parse)
 - (NSString *)serverClassName;
 @end
+
+@interface NSString (Parse)
+- (NSString *)serverType;
+@end

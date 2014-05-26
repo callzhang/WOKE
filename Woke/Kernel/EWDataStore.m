@@ -25,8 +25,8 @@
 #import "FTWCache.h"
 
 #pragma mark - 
-#define kServerTransformTypes               @{@"CLLotation": @"PFGeoPoint"} //
-#define kServerTransformClasses             @{@"EWPerson": @"_User"} //serverClassName / localClassNmae
+#define kServerTransformTypes               @{@"CLLotation": @"PFGeoPoint"} //localType: serverType
+#define kServerTransformClasses             @{@"EWPerson": @"_User"} //localClass: serverClass
 
 @interface EWDataStore()
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
@@ -480,6 +480,9 @@
 #pragma mark - Parse Server methods
 +(void)updateToServerAndSave{
     
+    //save core data
+    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
+    
     //get a list of ManagedObject to insert/Update/Delete
     NSMutableSet *insertedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].insertedObjects mutableCopy];
     NSMutableSet *updatedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].updatedObjects mutableCopy];
@@ -504,8 +507,7 @@
         [EWDataStore deleteParseObjectWithManagedObject:managedObject];
     }
     
-    //save core data
-    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+    
 }
 
 
@@ -647,7 +649,7 @@
         if (interval < -1) {
             //update time
             NSLog(@"Observed %lu ManagedObject changed", (unsigned long)updatedObjects.count);
-            //[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
+            [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
         }
     }
 }
@@ -799,7 +801,7 @@
     }else{
         [self setValue:object.objectId forKey:kParseObjectID];
     }
-    //value
+    //attributes
     NSMutableDictionary *mutableAttributeValues = [self.entity.attributesByName mutableCopy];
     //add or delete some attributes here
     [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
@@ -808,14 +810,26 @@
             if ([parseValue isKindOfClass:[PFFile class]]) {
                 [self setPFFile:parseValue forPropertyDescription:obj];
                 
-                
             }else if ([parseValue isKindOfClass:[PFGeoPoint class]]){
                 PFGeoPoint *point = (PFGeoPoint *)parseValue;
                 CLLocation *location = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
                 [self setValue:location forKeyPath:key];
-            }
-            else if(parseValue){
-                [self setValue:parseValue forKey:key];
+                
+            }else if(parseValue){
+                if ([key serverType]){
+                    //need to deal with local type
+                    if ([parseValue isKindOfClass:[PFGeoPoint class]]) {
+                        PFGeoPoint *point = (PFGeoPoint *)parseValue;
+                        CLLocation *loc = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
+                        [self setValue:loc forKey:key];
+                    }else{
+                        [NSException raise:@"Server class not handled" format:@"Check your code!"];
+                    }
+                }else{
+                    [self setValue:parseValue forKey:key];
+                }
+                
+                
             }
             
         }
@@ -848,7 +862,6 @@
     NSLog(@"Assign data for key: %@ on %@", attributeDescription.name, self.class);
     
 }
-
 
 - (void)updateEventually{
     BOOL hasParseObjectLinked = !![self valueForKey:kParseObjectID];
@@ -912,6 +925,7 @@
     if (updateAt){
         if ([updateAt timeIntervalSinceDate:self.updatedAt] < 0) {
             NSParameterAssert([mo valueForKey:kParseObjectID]);
+            NSLog(@"@@@ Trying to update MO %@, but PO is newer, refresh MO!", mo.entity.name);
             [mo refresh];
             return;
 
@@ -921,21 +935,19 @@
         //}
         //continue if MO updatedAt is later or equal to parse updatedAt
     }
-    //value
-    //NSParameterAssert([self.objectId isEqualToString:[managedObject valueForKey:kParseObjectID]]);
-    
     NSMutableDictionary *mutableAttributeValues = [mo.entity.attributesByName mutableCopy];
     [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
         id value = [mo valueForKey:key];
+        //there could have some optimization that checks if value equals to PFFile value, and thus save some network calls. But in order to compare there will be another network call to fetch, the the comparison is redundant.
         if ([value isKindOfClass:[NSData class]]) {
             //data
             PFFile *dataFile = [PFFile fileWithData:value];
-            [dataFile saveInBackground];
+            //[dataFile saveInBackground];
             [self setObject:dataFile forKey:key];
         }else if ([value isKindOfClass:[UIImage class]]){
             //image
             PFFile *dataFile = [PFFile fileWithName:@"Image.png" data:UIImagePNGRepresentation((UIImage *)value)];
-            [dataFile saveInBackground];//TODO: handle file upload exception
+            //[dataFile saveInBackground];//TODO: handle file upload exception
             [self setObject:dataFile forKey:key];
         }else if ([value isKindOfClass:[CLLocation class]]){
             //location
@@ -1070,3 +1082,12 @@
 
 @end
 
+@implementation NSString (Parse)
+
+- (NSString *)serverType{
+    NSDictionary *typeDic = kServerTransformTypes;
+    NSString *serverType = typeDic[self];
+    return serverType;
+}
+
+@end

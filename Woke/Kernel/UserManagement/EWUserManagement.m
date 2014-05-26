@@ -156,7 +156,7 @@
     //get ADID
     NSArray *adidArray = [ADID componentsSeparatedByString:@"-"];
     //username
-    NSString *username = adidArray.firstObject;
+    NSString *username = [NSString stringWithFormat:@"EW%@", adidArray.firstObject];
     //password
     NSString *password = adidArray.lastObject;
     
@@ -181,19 +181,22 @@
                 EWPerson *person = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
                 currentUser = person;
                 [EWDataStore save];
+                
+                //broadcast
+                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:currentUser userInfo:@{kUserLoggedInUserKey:currentUser}];
+                //callback
+                if (block) {
+                    block();
+                }
             }else{
                 NSLog(@"Failed to sign up new user: %@", error.description);
                 EWAlert(@"Server not available, please try again.");
+                [EWUserManagement showLoginPanel];
             }
             
         }
         
-        //broadcast
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:self userInfo:@{kUserLoggedInUserKey:currentUser}];
-        //callback
-        if (block) {
-            block();
-        }
+        
         
     }];
 
@@ -305,7 +308,11 @@
         }
         
         //get user, create core data user
-        EWPerson *person = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
+        EWPerson *person = [EWPerson findFirstByAttribute:kParseObjectID withValue:user.objectId];
+        if (!person) {
+            person  = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
+        }
+        
         currentUser = person;
         
         //update current user with fb info
