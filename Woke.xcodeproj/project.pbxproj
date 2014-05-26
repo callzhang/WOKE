@@ -136,6 +136,7 @@
 		AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079C18393A66007C8BFD /* EWDataStore.m */; };
 		AB7807A718393A66007C8BFD /* EWTaskStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079E18393A66007C8BFD /* EWTaskStore.m */; };
 		ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */; };
+		ABB8C3061932C630001F7832 /* EWPersonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABB8C3051932C630001F7832 /* EWPersonView.xib */; };
 		ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ABBC47AA18530F35009A2E7D /* EarlyWorm.xcdatamodeld */; };
 		ABC8F96318E8890D0096C073 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC8F96218E8890D0096C073 /* MediaPlayer.framework */; };
 		ABC8F96618E92F180096C073 /* UIView+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = ABC8F96518E92F180096C073 /* UIView+HUD.m */; };
@@ -370,6 +371,7 @@
 		AB78079E18393A66007C8BFD /* EWTaskStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWTaskStore.m; sourceTree = "<group>"; };
 		ABAB2FC2183DEB310095A3A5 /* EWLocalNotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWLocalNotificationViewController.h; sourceTree = "<group>"; };
 		ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWLocalNotificationViewController.m; sourceTree = "<group>"; };
+		ABB8C3051932C630001F7832 /* EWPersonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPersonView.xib; sourceTree = "<group>"; };
 		ABBC47AB18530F35009A2E7D /* EarlyWorm.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EarlyWorm.xcdatamodel; sourceTree = "<group>"; };
 		ABC8F96218E8890D0096C073 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		ABC8F96418E92F180096C073 /* UIView+HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+HUD.h"; sourceTree = "<group>"; };
@@ -676,6 +678,7 @@
 				9BF2979F1912F713008C136E /* EWNotificationViewController.xib */,
 				9BF297A01912F713008C136E /* EWPersonViewController.h */,
 				9BF297A11912F713008C136E /* EWPersonViewController.m */,
+				ABB8C3051932C630001F7832 /* EWPersonView.xib */,
 				9BF297A21912F713008C136E /* EWPostWakeUpView.xib */,
 				9BF297A31912F713008C136E /* EWPostWakeUpViewController.h */,
 				9BF297A41912F713008C136E /* EWPostWakeUpViewController.m */,
@@ -1032,6 +1035,7 @@
 				ABFCB2E2186E957100355781 /* Tropical Delight.caf in Resources */,
 				ABEEA96917E027E90035DF4A /* vm6.m4a in Resources */,
 				AB4B837C18D2C5470087E654 /* new.caf in Resources */,
+				ABB8C3061932C630001F7832 /* EWPersonView.xib in Resources */,
 				9BF297C11912F713008C136E /* EWWakeUpView.xib in Resources */,
 				ABFCB2E4186E957100355781 /* Drive.caf in Resources */,
 				ABF3FB5E1908B72F0017D2EF /* 9.jpg in Resources */,
