@@ -50,7 +50,7 @@
 }
 
 + (NSArray *)allNotifications{
-    NSArray *notifications = [currentUser.notifications allObjects];
+    NSArray *notifications = [me.notifications allObjects];
     
     NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO];
     NSSortDescriptor *sortImportance = [NSSortDescriptor sortDescriptorWithKey:@"importance" ascending:NO];
@@ -61,7 +61,7 @@
 
 + (EWNotification *)newNotification{
     EWNotification *notice = [NSEntityDescription insertNewObjectForEntityForName:@"EWNotification" inManagedObjectContext:[EWDataStore currentContext]];
-    notice.owner = currentUser;
+    notice.owner = me;
     notice.importance = 0;
     return notice;
 }
@@ -183,8 +183,8 @@
                 break;
                 
             case 1:{ //accepted
-                [currentUser addFriendsObject:self.person];
-                [self.person addFriendsObject:currentUser];
+                [me addFriendsObject:self.person];
+                [self.person addFriendsObject:me];
                 [self finishedNotification:self.notification];
                 break;
             }

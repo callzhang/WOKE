@@ -21,7 +21,7 @@
 
 #define everyoneCheckTimeOut            600
 
-EWPerson *currentUser;
+EWPerson *me;
 
 @interface EWPersonStore(){
     NSDate *timeEveryoneChecked;
@@ -120,12 +120,12 @@ EWPerson *currentUser;
 
 - (void)checkRelations{
     //friends
-    for (EWPerson *friend in currentUser.friends) {
+    for (EWPerson *friend in me.friends) {
         NSLog(@"You have friend %@", friend.name);
     }
     
     //media
-    for (EWMediaItem *media in currentUser.medias) {
+    for (EWMediaItem *media in me.medias) {
         NSLog(@"You are the author of media %@", media);
     }
 }
@@ -133,7 +133,7 @@ EWPerson *currentUser;
 //Danger Zone
 - (void)purgeUserData{
     NSLog(@"Cleaning all cache and server data");
-    //[context deleteObject:currentUser];
+    //[context deleteObject:me];
     //[context saveAndWait:NULL];
     //Alarm
     [EWAlarmManager.sharedInstance deleteAllAlarms];
@@ -146,7 +146,7 @@ EWPerson *currentUser;
     
     [EWDataStore save];
     //person
-    //currentUser = nil;
+    //me = nil;
     
     //cache clear
     //[[EWDataStore sharedInstance].coreDataStore resetCache];
@@ -163,11 +163,11 @@ EWPerson *currentUser;
 #pragma mark - Notification
 - (void)userLoggedIn:(NSNotification *)notif{
     EWPerson *me = notif.userInfo[kUserLoggedInUserKey];
-    currentUser = me;
+    me = me;
 }
 
 - (void)userLoggedOut:(NSNotification *)notif{
-    currentUser = nil;
+    me = nil;
 }
 
 @end

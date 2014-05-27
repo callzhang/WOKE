@@ -27,6 +27,8 @@
 //@synthesize context;
 
 + (EWAlarmManager *)sharedInstance {
+    //make sure core data stuff is always on main thread
+    NSParameterAssert([NSThread isMainThread]);
     static EWAlarmManager *manager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -46,9 +48,9 @@
     
     //add relation
     EWAlarmItem *a = [EWAlarmItem createEntity];
-    a.owner = [EWUserManagement currentUser];
+    a.owner = [EWUserManagement me];
     a.state = YES;
-    a.tone = [EWUserManagement currentUser].preference[@"DefaultTone"];
+    a.tone = [EWUserManagement me].preference[@"DefaultTone"];
     
     //[EWDataStore save];
     return a;
@@ -79,12 +81,12 @@
 }
 
 + (NSArray *)myAlarms{
-    return [[EWAlarmManager sharedInstance] alarmsForUser:[EWUserManagement currentUser]];
+    return [[EWAlarmManager sharedInstance] alarmsForUser:[EWUserManagement me]];
 }
 
 - (EWAlarmItem *)nextAlarm{
     EWAlarmItem *nextA;
-    NSArray *alarms = [self alarmsForUser:[EWUserManagement currentUser]];
+    NSArray *alarms = [self alarmsForUser:[EWUserManagement me]];
     //determine if the day need to be next week
     NSInteger dow = [[NSDate date] weekdayNumber];
     EWAlarmItem *a = alarms[dow];
@@ -119,7 +121,7 @@
     BOOL hasChange = NO;
     
     //get alarms
-    NSMutableArray *alarms = [[self alarmsForUser:[EWUserManagement currentUser]] mutableCopy];
+    NSMutableArray *alarms = [[self alarmsForUser:[EWUserManagement me]] mutableCopy];
     
     //check if need to check
     if (alarms.count==0) {
@@ -157,7 +159,7 @@
         //check tone
         if (!a.tone) {
             NSLog(@"Tone not set");
-            EWPerson *p = [EWUserManagement currentUser];
+            EWPerson *p = [EWUserManagement me];
             a.tone = p.preference[@"DefaultTone"];
         }
         
@@ -244,7 +246,7 @@
 }
 
 - (void)deleteAllAlarms{
-    NSArray *alarms = [self alarmsForUser:[EWUserManagement currentUser]];
+    NSArray *alarms = [self alarmsForUser:[EWUserManagement me]];
     
     //notification
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarms userInfo:@{@"alarms": alarms}];

@@ -30,14 +30,14 @@
 
 
 - (NSArray *)allMedias{
-    return [self mediasForPerson:[EWUserManagement currentUser]];
+    return [self mediasForPerson:[EWUserManagement me]];
 }
 
 
 #pragma mark - create media
 - (EWMediaItem *)createMedia{
     EWMediaItem *m = [EWMediaItem createEntity];
-    EWPerson *user = [EWUserManagement currentUser];
+    EWPerson *user = [EWUserManagement me];
     m.author = user;
     return m;
 }
@@ -65,7 +65,7 @@
 - (EWMediaItem *)createBuzzMedia{
     EWMediaItem *media = [self createMedia];
     media.type = kMediaTypeBuzz;
-    media.buzzKey = [currentUser.preference objectForKey:@"buzzSound"];
+    media.buzzKey = [me.preference objectForKey:@"buzzSound"];
     [media refresh];//get object id
     return media;
 }
@@ -117,7 +117,7 @@
 - (void)deleteAllMedias{
 #ifdef DEV_TEST
     NSLog(@"*** Delete all medias");
-    EWPerson *me = currentUser;
+    EWPerson *me = me;
     NSArray *medias = [self mediaCreatedByPerson:me];
     for (EWMediaItem *m in medias) {
         [[EWDataStore currentContext] deleteObject:m];

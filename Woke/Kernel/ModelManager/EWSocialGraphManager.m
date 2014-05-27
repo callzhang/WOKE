@@ -26,7 +26,7 @@
 }
 
 + (EWSocialGraph *)mySocialGraph{
-    EWPerson *me = [EWUserManagement currentUser];
+    EWPerson *me = [EWUserManagement me];
     EWSocialGraph *sg = me.socialGraph;
     if (!sg) {
         sg = [[EWSocialGraphManager sharedInstance] createSocialGraphForPerson:me];
@@ -39,7 +39,7 @@
         return person.socialGraph;
     }
     
-    if ([person.username isEqualToString:currentUser.username]) {
+    if ([person.username isEqualToString:me.username]) {
         //need to create one for self
         EWSocialGraph *graph = [self createSocialGraphForPerson:person];
         return graph;

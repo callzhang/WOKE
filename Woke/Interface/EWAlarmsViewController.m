@@ -122,7 +122,7 @@
 - (void)initData {
     
     //init alarm page container
-    if (currentUser) {
+    if (me) {
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskStore myTasks];
         if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
@@ -147,7 +147,7 @@
         }
         
         /*
-        CLLocation *location = currentUser.lastLocation;
+        CLLocation *location = me.lastLocation;
         PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:location];
         
         [EWServer getPersonAlarmAtTime:[NSDate date] location:point completion:^(NSArray *results) {
@@ -158,7 +158,7 @@
             }
             people = newPeople;
             [[NSUserDefaults standardUserDefaults] setObject:people forKey:@"peopleList"];
-            if (people.count == 0 && currentUser) {
+            if (people.count == 0 && me) {
                 NSLog(@"*** no result from around me fetch, please check!");
             }
             //reflesh
@@ -219,7 +219,7 @@
     }
     
     //predicate
-    //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:currentUser.lastLocation];
+    //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:me.lastLocation];
     //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
     
     //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"username IN %@", people];
@@ -391,14 +391,14 @@
 }
 
 - (IBAction)profile:(id)sender {
-    //    if (!currentUser.facebook) {
+    //    if (!me.facebook) {
     //        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     //        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
     //        [loginVC loginInBackground];
     //
     //    }else{
     EWPersonViewController *controller = [[EWPersonViewController alloc] init];
-    controller.person = currentUser;
+    controller.person = me;
     [self presentViewController:controller animated:YES completion:NULL];
     //    }
     
@@ -427,9 +427,9 @@
 //        if ([keyPath isEqualToString:@"profilePicKey"]) {
 //            NSLog(@"Observed profile pic changed for user: %@", [(EWPerson *)object name]);
 //            //update cell
-//            NSInteger i = [allPeople indexOfObject:currentUser];
+//            NSInteger i = [allPeople indexOfObject:me];
 //            EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-//            cell.profilePic.image = currentUser.profilePic;
+//            cell.profilePic.image = me.profilePic;
 //
 //        }else if ([keyPath isEqualToString:@"tasks"]){
 //            NSLog(@"KVO observed tasks changed");
@@ -664,10 +664,10 @@
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
     
     BOOL isMe = NO;
-    if ([person.username isEqualToString: currentUser.username]) isMe = YES;
+    if ([person.username isEqualToString: me.username]) isMe = YES;
 
     cell.initial.text = [person.name initial];
-    if ([person.username isEqualToString: currentUser.username]) {
+    if ([person.username isEqualToString: me.username]) {
         cell.initial.text = @"YOU";
     }
     cell.initial.alpha = 1;
@@ -691,36 +691,36 @@
     cell.time.text = @"";
     cell.time.alpha = 0;
     if (!isMe) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            EWTaskItem *nextValidTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
-            if (nextValidTask) {
-                NSString *timeLeft = [nextValidTask.time timeLeft];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    cell.time.text = timeLeft;
-                    [UIView animateWithDuration:0.4 animations:^{
-                        cell.time.alpha = 1;
-                    }];
-                });
-            }
-        });
+        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        EWTaskItem *nextValidTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
+        if (nextValidTask) {
+            NSString *timeLeft = [nextValidTask.time timeLeft];
+            //dispatch_async(dispatch_get_main_queue(), ^{
+            cell.time.text = timeLeft;
+            [UIView animateWithDuration:0.4 animations:^{
+                cell.time.alpha = 1;
+            }];
+            //});
+        }
+        //});
     }
     
     //location
     cell.distance.text = @"";
     cell.distance.alpha = 0;
-    if (!isMe && person.lastLocation && currentUser.lastLocation) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            CLLocation *loc0 = currentUser.lastLocation;
-            CLLocation *loc1 = person.lastLocation;
-
-            CLLocationDistance distance = [loc0 distanceFromLocation:loc1]/1000;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                cell.distance.text = [NSString stringWithFormat:@"%.1lf km", distance];
-                [UIView animateWithDuration:0.4 animations:^{
-                    cell.distance.alpha = 1;
-                }];
-            });
-        });
+    if (!isMe && person.lastLocation && me.lastLocation) {
+        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        CLLocation *loc0 = me.lastLocation;
+        CLLocation *loc1 = person.lastLocation;
+        
+        CLLocationDistance distance = [loc0 distanceFromLocation:loc1]/1000;
+        //dispatch_async(dispatch_get_main_queue(), ^{
+        cell.distance.text = [NSString stringWithFormat:@"%.1lf km", distance];
+        [UIView animateWithDuration:0.4 animations:^{
+            cell.distance.alpha = 1;
+        }];
+        //});
+        //});
     }
     
     return cell;

@@ -118,8 +118,8 @@
 - (void)loginDataCheck{
     NSLog(@"=== [%s] Logged in, performing login tasks.===", __func__);
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    if (![currentInstallation[@"username"] isEqualToString: currentUser.username]){
-        currentInstallation[@"username"] = currentUser.username;
+    if (![currentInstallation[@"username"] isEqualToString: me.username]){
+        currentInstallation[@"username"] = me.username;
         [currentInstallation saveInBackground];
     };
     
@@ -545,7 +545,7 @@
         
         //skip if updating other PFUser
         if ([managedObject.entity.serverClassName isEqualToString:@"_User"]) {
-            if (![object.objectId isEqualToString:[EWUserManagement currentUser].objectId]) {
+            if (![object.objectId isEqualToString:[EWUserManagement me].objectId]) {
                 NSLog(@"Skip updating other PFUser: %@", [object valueForKey:@"name"]);
                 return;
             }

@@ -173,14 +173,14 @@
         if (!recordData) {
             return;
         }
-        //NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", currentUser.username, [[NSDate date] date2numberDateString]];
+        //NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", me.username, [[NSDate date] date2numberDateString]];
         
         //save data to task
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         
         for (EWPerson *receiver in personSet) {
             __block EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
-            media.author = currentUser;
+            media.author = me;
             media.message = self.message.text;
             
             //Add to media queue instead of task

@@ -87,11 +87,11 @@
 }
 
 //Current User
-+ (EWPerson *)currentUser{
++ (EWPerson *)me{
     if ([NSThread isMainThread]) {
-        return currentUser;
+        return me;
     }else{
-        return [EWDataStore objectForCurrentContext:currentUser];
+        return [EWDataStore objectForCurrentContext:me];
     }
 }
 
@@ -108,8 +108,8 @@
     //update person
     [person refresh];
     
-    //save currentUser
-    currentUser = person;
+    //save me
+    me = person;
     
     
     //background refresh
@@ -121,7 +121,7 @@
     
     //Broadcast user login event
     NSLog(@"[c] Broadcast Person login notification");
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:currentUser userInfo:@{kUserLoggedInUserKey:currentUser}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
 
 }
 
@@ -130,7 +130,7 @@
         //get anonymous user, create core data user
         EWPerson *person = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
         [EWDataStore save];
-        currentUser = person;
+        me = person;
         
         //callback
         if (block) {
@@ -138,7 +138,7 @@
         }
         
         //broadcast
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:currentUser userInfo:@{kUserLoggedInUserKey:currentUser}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
     }];
 }
 
@@ -166,7 +166,7 @@
         if (user) {
             EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
             [person updateValueAndRelationFromParseObject:user];
-            currentUser = person;
+            me = person;
             
         }else{
             NSLog(@"Failed to login: %@", error.description);
@@ -179,11 +179,11 @@
             if (!error) {
                 //create person
                 EWPerson *person = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
-                currentUser = person;
+                me = person;
                 [EWDataStore save];
                 
                 //broadcast
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:currentUser userInfo:@{kUserLoggedInUserKey:currentUser}];
+                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
                 //callback
                 if (block) {
                     block();
@@ -230,9 +230,9 @@
 
 + (void)handleNewUser{
     
-    NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", currentUser.name];
+    NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", me.name];
     [EWServer broadcastMessage:msg onSuccess:^{
-        NSLog(@"Welcome new user %@. Push sent!", currentUser.name);
+        NSLog(@"Welcome new user %@. Push sent!", me.name);
     }onFailure:NULL];
     
 }
@@ -243,8 +243,8 @@
 //- (void)userLoginEventHandler{
 //    NSLog(@"=== [%s] Logged in, performing login tasks.===", __func__);
 //    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-//    if (![currentInstallation[@"username"] isEqualToString: currentUser.username]){
-//        currentInstallation[@"username"] = currentUser.username;
+//    if (![currentInstallation[@"username"] isEqualToString: me.username]){
+//        currentInstallation[@"username"] = me.username;
 //        [currentInstallation saveInBackground];
 //    };
 //    
@@ -261,7 +261,7 @@
 
     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         
-        EWPerson *user = [EWUserManagement currentUser];
+        EWPerson *user = [EWUserManagement me];
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         user.lastLocation = location;
         NSLog(@"Get user location with lat: %f, lon: %f", geoPoint.latitude, geoPoint.longitude);
@@ -289,8 +289,8 @@
 #pragma mark - Last seen
 + (void)updateLastSeen{
     
-    if (currentUser) {
-        currentUser.updatedAt = [NSDate date];
+    if (me) {
+        me.updatedAt = [NSDate date];
         [EWDataStore save];
     }
 }
@@ -313,7 +313,7 @@
             person  = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
         }
         
-        currentUser = person;
+        me = person;
         
         //update current user with fb info
         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
@@ -330,7 +330,7 @@
                 block();
             }
             //broadcast
-            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:currentUser userInfo:@{kUserLoggedInUserKey:currentUser}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
             
         }];
     }];
@@ -369,7 +369,7 @@
 //        [[FBRequest requestForMe] startWithCompletionHandler:
 //         ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
 //             if (!error) {
-//                 __block EWPerson *oldUser = currentUser;
+//                 __block EWPerson *oldUser = me;
 //                 __block BOOL newUser;
 //                 
 //                 //test if facebook user exists
@@ -432,8 +432,8 @@
 
 //after fb login, fetch user managed object
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
-    //get currentUser first
-    EWPerson *person = [EWUserManagement currentUser];
+    //get me first
+    EWPerson *person = [EWUserManagement me];
     NSParameterAssert(person);
     
     //name
@@ -478,7 +478,7 @@
 + (void)getFacebookFriends{
     NSLog(@"Updating facebook friends");
     //check facebook id exist
-    if (!currentUser.facebook) {
+    if (!me.facebook) {
         NSLog(@"Current user doesn't have facebook ID, skip checking fb friends");
         return;
     }
@@ -499,7 +499,7 @@
         
         //get social graph of current user
         //if not, create one
-        EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWUserManagement currentUser]];
+        EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWUserManagement me]];
         //skip if checked within a week
         if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
             NSLog(@"Facebook friends check skipped.");
@@ -538,7 +538,7 @@
                 [self getFacebookFriendsWithPath:nextPage withReturnData:friendsHolder];
             }else{
                 NSLog(@"Finished loading friends from facebook, transfer to social graph.");
-                EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
+                EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:me];
                 graph.facebookFriends = [friendsHolder copy];
                 graph.facebookUpdated = [NSDate date];
                 

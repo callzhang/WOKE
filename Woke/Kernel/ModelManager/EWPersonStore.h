@@ -12,13 +12,13 @@
 
 #define kDefaultUsername                 @"New User"
 
-extern EWPerson *currentUser;
+extern EWPerson *me;
 
 @class EWMediaStore, EWPerson;
 
 @interface EWPersonStore : NSObject
 
-//@property (retain, nonatomic) EWPerson *currentUser;
+//@property (retain, nonatomic) EWPerson *me;
 @property (nonatomic, strong) NSArray *everyone;
 
 + (EWPersonStore *)sharedInstance;

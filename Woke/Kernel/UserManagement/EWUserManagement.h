@@ -19,7 +19,7 @@
  */
 + (void)login;
 + (void)showLoginPanel;
-+ (EWPerson *)currentUser;
++ (EWPerson *)me;
 /**
  Login with username for cached coredata info
  */

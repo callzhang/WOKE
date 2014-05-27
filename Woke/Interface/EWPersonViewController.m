@@ -79,7 +79,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 
 - (void)initView {
-    if (person == currentUser && !person.facebook) {
+    if (person == me && !person.facebook) {
         self.loginBtn.hidden = NO;
     }else{
         self.loginBtn.hidden = YES;
@@ -228,7 +228,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
             case 0:
             {
                 //friend
-                [currentUser addFriendsObject:person];
+                [me addFriendsObject:person];
                 [EWDataStore save];
                 [self.view showSuccessNotification:@"Added"];
             }
@@ -240,7 +240,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     }else if ([alertView.title isEqualToString:@"Unfriend"]){
         //unfriend
         if (buttonIndex == 0) {
-            [currentUser removeFriendsObject:person];
+            [me removeFriendsObject:person];
             [EWDataStore save];
             [self.view showSuccessNotification:@"Unfriended"];
             
@@ -344,7 +344,7 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     if (section != 0) return 0;
     if (tabView.selectedSegmentIndex == 0) {
         //friends
-        return person.friends.count;//currentUser.achievements.count;
+        return person.friends.count;//me.achievements.count;
     }else if(tabView.selectedSegmentIndex == 2){
         //achievements
         return person.achievements.count;
@@ -385,9 +385,9 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 0) {
         //add friend
-        if (person != currentUser) {
+        if (person != me) {
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            [currentUser addFriendsObject:person];
+            [me addFriendsObject:person];
             [EWDataStore save];
             [self.view showSuccessNotification:@"Added"];
             

@@ -55,7 +55,7 @@
 
 - (void)initData {
     //profile
-    preference = [currentUser.preference mutableCopy];
+    preference = [me.preference mutableCopy];
     
 }
 
@@ -108,7 +108,7 @@
 - (void)ViewController:(EWRingtoneSelectionViewController *)controller didFinishSelectRingtone:(NSString *)tone{
     //set ringtone
     preference[@"tone"] = tone;
-    currentUser.preference = preference;
+    me.preference = preference;
     [EWDataStore save];
 }
 
@@ -208,38 +208,38 @@
             switch (indexPath.row){
                 case 0: {
                     cell.textLabel.text = LOCALSTR(@"Name");
-                    cell.detailTextLabel.text = currentUser.name;
+                    cell.detailTextLabel.text = me.name;
                 }
                     break;
                 case 1: {
                     cell.textLabel.text = LOCALSTR(@"Profile Picture");
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                    cell.imageView.image = currentUser.profilePic;
+                    cell.imageView.image = me.profilePic;
                 }
                     break;
                 case 2: {
                     cell.textLabel.text = LOCALSTR(@"ID");
-                    cell.detailTextLabel.text = currentUser.username;
+                    cell.detailTextLabel.text = me.username;
                 }
                     break;
                 case 3: {
                     cell.textLabel.text = LOCALSTR(@"Facebook ID");
-                    cell.detailTextLabel.text = currentUser.facebook;
+                    cell.detailTextLabel.text = me.facebook;
                 }
                     break;
                 case 4:{
                     cell.textLabel.text = LOCALSTR(@"Weibo ID");
-                    cell.detailTextLabel.text = currentUser.weibo;
+                    cell.detailTextLabel.text = me.weibo;
                 }
                     break;
                 case 5:{
                     cell.textLabel.text = LOCALSTR(@"City");
-                    cell.detailTextLabel.text = currentUser.city;
+                    cell.detailTextLabel.text = me.city;
                 }
                     break;
                 case 6: {
                     cell.textLabel.text = LOCALSTR(@"Region");
-                    cell.detailTextLabel.text = currentUser.region;
+                    cell.detailTextLabel.text = me.region;
                 }
                     break;
                 case 7:{
@@ -357,7 +357,7 @@
 }
 
 - (void)OnBedTimeNotificationSwitchChanged:(UISwitch *)sender{
-    NSMutableDictionary *pref = [currentUser.preference mutableCopy];
+    NSMutableDictionary *pref = [me.preference mutableCopy];
     [pref setObject:@(sender.on) forKey:@"BedTimeNotification"];
     self.preference = [pref copy];
     

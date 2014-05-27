@@ -57,7 +57,7 @@
 
     
     EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:currentUser];
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
 
     if (!personID) {
         personID = media.author.username;
@@ -77,7 +77,7 @@
         NSString *buzzSound = buzzSoundName?sounds[buzzSoundName]:@"buzz.caf";
         
 #ifdef DEV_TEST
-        EWPerson *sender = [EWUserManagement currentUser];
+        EWPerson *sender = [EWUserManagement me];
         //alert
         [[[UIAlertView alloc] initWithTitle:@"Buzz 来啦" message:[NSString stringWithFormat:@"Got a buzz from %@. This message will not display in release.", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         
@@ -157,7 +157,7 @@
             if (media.task) {
                 //need to move to media pool
                 media.task = nil;
-                media.receiver = currentUser;
+                media.receiver = me;
                 [EWDataStore save];
             }
         }
@@ -193,7 +193,7 @@
 + (void)handleAlarmTimerEvent{
     NSLog(@"Start handle timer event");
     //next ABSOLUTE (not VALID) task
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
     
     if (!task) {
         NSLog(@"%s No task found for next task, abord", __func__);
@@ -209,14 +209,14 @@
     NSInteger nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
     NSInteger nVoiceNeeded = kMaxVoicePerTask - nVoice;
     
-    NSArray *mediaAssets = [[EWUserManagement currentUser].mediaAssets allObjects];
+    NSArray *mediaAssets = [[EWUserManagement me].mediaAssets allObjects];
     for (EWMediaItem *media in mediaAssets) {
         if (!media.targetDate || [media.targetDate isEarlierThan:[NSDate date]]) {
             
             //find media to add
             [task addMediasObject: media];
             //remove media from mediaAssets
-            [[EWUserManagement currentUser] removeMediaAssetsObject:media];
+            [[EWUserManagement me] removeMediaAssetsObject:media];
             
             
             if ([media.type isEqualToString: kMediaTypeVoice]) {
@@ -337,7 +337,7 @@
 
 + (void)presentWakeUpView{
     //get absolute next task
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
     //present
     [EWWakeUpManager presentWakeUpViewWithTask:task];
 }
@@ -390,8 +390,8 @@
     NSLog(@"===========================>> Check Alarm Timer <<=============================");
     
     //check time
-    if (!currentUser) return;
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
+    if (!me) return;
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
     if (task.state == NO) return;
     
     //alarm time up

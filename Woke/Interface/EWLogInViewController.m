@@ -49,9 +49,9 @@
     
     [self.indicator stopAnimating];
     
-    if (currentUser) {
-        self.name.text = currentUser.name;
-        self.profileView.image = currentUser.profilePic;
+    if (me) {
+        self.name.text = me.name;
+        self.profileView.image = me.profilePic;
     }
 
 }
@@ -68,7 +68,7 @@
 }
 
 - (IBAction)check:(id)sender {
-    NSLog(@"Current user: %@", currentUser);
+    NSLog(@"Current user: %@", me);
 }
 
 

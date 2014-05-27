@@ -184,8 +184,8 @@ UIViewController *rootViewController;
     
     
     //check time
-    if (!currentUser) return;
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:currentUser];
+    if (!me) return;
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
     if (task.state == NO) return;
     
     //alarm time up
@@ -279,7 +279,7 @@ UIViewController *rootViewController;
     //[[AVManager sharedManager] registerAudioSession];
     [[AVManager sharedManager] playSystemSound:nil];
     
-    for (EWTaskItem *task in currentUser.tasks) {
+    for (EWTaskItem *task in me.tasks) {
         
         //refresh
         [[EWDataStore currentContext] refreshObject:task mergeChanges:YES];
@@ -334,7 +334,7 @@ UIViewController *rootViewController;
                               cancelButtonTitle:@"OK"
                               otherButtonTitles:nil];
         
-        [[AVManager sharedManager] playSoundFromFile:currentUser.preference[@"DefaultTone"]];
+        [[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
         [alert show];
     } else {
         //could be a state that user select a local notif in notification center while app is running
@@ -354,7 +354,7 @@ UIViewController *rootViewController;
                 //Unidentified issue
                 
 #ifdef DEV_TEST
-                task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:currentUser];
+                task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
                 
 #endif
             }else{
@@ -384,7 +384,7 @@ UIViewController *rootViewController;
         [PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
     }
     
-    if (!currentUser) {
+    if (!me) {
         return;
     }
     

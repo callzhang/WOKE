@@ -83,18 +83,14 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         
         
-        dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-            alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];//initial alarm
-            tasks = [[EWTaskStore sharedInstance] scheduleTasks];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-                
-                //view
-                [_tableView reloadData];
-            });
-        });
+        alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];//initial alarm
+        tasks = [[EWTaskStore sharedInstance] scheduleTasks];
+        
+        
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        
+        //view
+        [_tableView reloadData];
         
     }
 

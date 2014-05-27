@@ -179,7 +179,7 @@
         case 0: {
             [self dismissViewControllerAnimated:YES completion:^{
                 EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-                controller.person = currentUser;
+                controller.person = me;
                 [rootViewController presentViewControllerWithBlurBackground:controller];
             }];
             
@@ -236,7 +236,7 @@
             //send to self a push
             //Delay execution of my block for 10 seconds.
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [EWServer buzz:@[currentUser]];
+                [EWServer buzz:@[me]];
             });
             
             //dismiss self to present popup view
@@ -259,7 +259,7 @@
         
         case 7:{
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:[EWUserManagement currentUser]];
+            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:[EWUserManagement me]];
             NSInteger m = 6 - task.medias.count;
             for (unsigned i=0; i< m; i++) {
                 NSInteger x = arc4random_uniform(2);
@@ -290,7 +290,7 @@
             
         case 8:{
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:currentUser];
+            EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:me];
             graph.facebookUpdated = nil;
             [EWUserManagement getFacebookFriends];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
@@ -308,26 +308,26 @@
             EWNotification *notice_system = [EWNotificationManager newNotification];
             //1
             notice_friending.type = kNotificationTypeFriendRequest;
-            notice_friending.owner = currentUser;
+            notice_friending.owner = me;
             NSArray *people = [[EWPersonStore sharedInstance] everyone];
             NSInteger k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user = people[k];
             notice_friending.sender = user.username;
             //2
             notice_friended.type = kNotificationTypeFriendAccepted;
-            notice_friended.owner = currentUser;
+            notice_friended.owner = me;
             k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user2 = people[k];
             notice_friended.sender = user2.username;
             //3
             notice_newMedia.type = kNotificationTypeNextTaskHasMedia;
-            notice_newMedia.owner = currentUser;
+            notice_newMedia.owner = me;
             k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user3 = people[k];
             notice_newMedia.sender = user3.username;
             //4
             notice_system.type = kNotificationTypeNotice;
-            notice_system.owner = currentUser;
+            notice_system.owner = me;
             NSDictionary *dic = @{@"title": @"Test system notice", @"content": @"This is a test notice. An alert show pop up if you tap me.", @"link": @"WokeAlarm.com"};
             notice_system.userInfo = dic;
             notice_system.sender = nil;

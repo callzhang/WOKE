@@ -98,7 +98,7 @@
         //add waker
         buzz.receiver = person;
         //add sound
-        NSString *sound = currentUser.preference[@"buzzSound"]?:@"default";
+        NSString *sound = me.preference[@"buzzSound"]?:@"default";
         buzz.buzzKey = sound;
         
         //push payload
@@ -181,7 +181,7 @@
                         @"alert": @"Someone has sent you an voice greeting",
                         @"content-available": @1,
                         kPushTypeKey: kPushTypeMediaKey,
-                        kPushPersonKey: currentUser.username,
+                        kPushPersonKey: me.username,
                         kPushMediaKey: mediaId};
 
     }else if([[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
@@ -191,7 +191,7 @@
                         @"alert": @"Someone has sent you an voice greeting",
                         @"content-available": @1,
                         kPushTypeKey: kPushTypeMediaKey,
-                        kPushPersonKey: currentUser.username,
+                        kPushPersonKey: me.username,
                         kPushMediaKey: mediaId};
         
     }else{
@@ -201,7 +201,7 @@
                         @"alert": @"Someone has sent you an voice greeting",
                         @"content-available": @1,
                         kPushTypeKey: kPushTypeMediaKey,
-                        kPushPersonKey: currentUser.username,
+                        kPushPersonKey: me.username,
                         kPushMediaKey: mediaId};
     }
     
@@ -300,7 +300,7 @@
 //        }
 //        request.targetArn = target.aws_id;
 //
-//        //NSLog(@"Push content: %@ \nTarget:%@", pushStr, currentUser.name);
+//        //NSLog(@"Push content: %@ \nTarget:%@", pushStr, me.name);
 //        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 //            @try {
 //                SNSPublishResponse *response = [snsClient publish:request];
