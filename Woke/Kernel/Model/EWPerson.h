@@ -17,6 +17,8 @@
 @property (nonatomic, strong) UIImage *profilePic;
 @property (nonatomic, strong) UIImage *bgImage;
 @property (nonatomic, strong) NSDictionary *preference;
+
+- (BOOL)isMe;
 /*
 @property (nonatomic, strong) NSString* aws_id;
 @property (nonatomic, strong) NSDate* birthday;

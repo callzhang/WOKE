@@ -195,7 +195,7 @@
         //TODO: dispatch different tasks for each updates
         if ([keyPath isEqualToString:@"state"]) {
             NSNumber *newState = change[NSKeyValueChangeNewKey];
-            if ([newState isKindOfClass:[NSNull class]]) {
+            if (!newState || [newState isKindOfClass:[NSNull class]] || newState == NULL) {
                 NSLog(@"@@@ Something was not setting up right! The task removal notification is not dispatched to alarm page view");
                 [self stopObserveTask];
             }

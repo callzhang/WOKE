@@ -7,18 +7,19 @@
 //
 
 #import "EWPerson.h"
-#import "EWAlarmItem.h"
-#import "EWGroup.h"
-#import "EWTaskStore.h"
-#import "EWTaskItem.h"
-#import "EWMediaItem.h"
-#import "EWMessage.h"
-#import "EWUtil.h"
-#import "NSDate+Extend.h"
-
-#import "EWDataStore.h"
-#import "NSString+MD5.h"
-#import "EWDownloadManager.h"
+#import "EWUserManagement.h"
+//#import "EWAlarmItem.h"
+//#import "EWGroup.h"
+//#import "EWTaskStore.h"
+//#import "EWTaskItem.h"
+//#import "EWMediaItem.h"
+//#import "EWMessage.h"
+//#import "EWUtil.h"
+//#import "NSDate+Extend.h"
+//
+//#import "EWDataStore.h"
+//#import "NSString+MD5.h"
+//#import "EWDownloadManager.h"
 
 @implementation EWPerson
 @dynamic lastLocation;
@@ -111,7 +112,14 @@
 
 
 
-
+#pragma mark - Helper methods
+- (BOOL)isMe{
+    BOOL me = NO;
+    if ([EWUserManagement currentUser]) {
+        me = [self.username isEqualToString:[EWUserManagement currentUser].username];
+    }
+    return me;
+}
 
 
 @end

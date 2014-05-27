@@ -229,7 +229,6 @@
                 EWTaskItem *t = [self newTask];
                 t.time = time;
                 t.alarm = a;
-                t.owner = a.owner;
                 t.state = a.state;
                 [goodTasks addObject:t];
                 //localNotif
@@ -252,7 +251,10 @@
     if (hasOutDatedTask || newTaskNotify) {
         
         [EWDataStore save];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
+        });
+        
         
     }
     
@@ -298,6 +300,7 @@
     t.owner = [EWUserManagement currentUser];
     //others
     t.added = [NSDate date];
+    //[EWDataStore save];
     
     NSLog(@"Created new Task");
     return t;

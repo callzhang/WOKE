@@ -35,7 +35,7 @@
 
 - (NSArray *)attributeArray{
     //pre-calculate the coordinates and save to attribute array
-    if (!attributeArray || attributeArray.count != _itemsPerRow) {
+    if (!attributeArray || attributeArray.count != _itemTotalCount) {
         
         NSMutableArray *newAttributeArray = [[NSMutableArray alloc] initWithCapacity:_itemTotalCount];
         

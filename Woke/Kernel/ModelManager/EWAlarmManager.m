@@ -50,7 +50,7 @@
     a.state = YES;
     a.tone = [EWUserManagement currentUser].preference[@"DefaultTone"];
     
-   
+    //[EWDataStore save];
     return a;
 }
 
@@ -58,8 +58,9 @@
 - (NSArray *)alarmsForUser:(EWPerson *)user{
     EWPerson *person = [EWDataStore objectForCurrentContext:user];
     NSMutableArray *alarms = [[person.alarms allObjects] mutableCopy];
-    [alarms filteredArrayUsingPredicate:[NSPredicate
-                                         predicateWithFormat:@"owner == %@", person.username]];
+    if (alarms.count != 7 && person.isMe) {
+        //[person refresh];
+    }
     
     //sort
     NSArray *sortedAlarms = [alarms sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
@@ -197,8 +198,6 @@
             time = [cal dateFromComponents:comp];//set time
             //set alarm time
             a.time = time;
-            a.state = YES;
-            a.tone = [EWUserManagement currentUser].preference[@"DefaultTone"];
             //add to temp array
             newAlarms[i] = a;
             hasChange = YES;
@@ -222,7 +221,10 @@
 //        }
         
         //notification
-        [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmChangedNotification object:self userInfo:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmChangedNotification object:self userInfo:nil];
+        });
+        
     }
     
     self.alarmNeedToSetup = NO;

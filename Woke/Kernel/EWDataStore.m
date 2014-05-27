@@ -372,14 +372,17 @@
 //}
 
 + (NSManagedObject *)objectForCurrentContext:(NSManagedObject *)obj{
-    //not thread save
-    if ([obj.managedObjectContext isEqual:[EWDataStore currentContext]]) {
-        return obj;
-    }
+    
     if (obj == nil) {
         NSLog(@"Passed in nil");
         return nil;
     }
+    
+    //check thread save
+    if ([obj.managedObjectContext isEqual:[EWDataStore currentContext]]) {
+        return obj;
+    }
+    //get objectID
     __block NSManagedObjectID *objectID;
     [obj.managedObjectContext performBlockAndWait:^{
         objectID = obj.objectID;
@@ -397,10 +400,14 @@
 
 + (void)save{
     
-    //save on current thread
-    [EWDataStore updateToServerAndSave];
     
-    //save on designated thread
+    //save core data
+    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
+    
+    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+        //save parse objects on background
+        [EWDataStore updateToServerAndSave];
+    });
     
 }
 
@@ -480,9 +487,6 @@
 #pragma mark - Parse Server methods
 +(void)updateToServerAndSave{
     
-    //save core data
-    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
-    
     //get a list of ManagedObject to insert/Update/Delete
     NSMutableSet *insertedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].insertedObjects mutableCopy];
     NSMutableSet *updatedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].updatedObjects mutableCopy];
@@ -549,6 +553,7 @@
     } else {
         //insert
         object = [PFObject objectWithClassName:mo.entity.serverClassName];
+        [object save];//need to save before working on PFRelation
     }
     
     //==========set Parse value and store callback block===========
@@ -704,9 +709,9 @@
             }
             
             //delete related MO if not on server relation async
-            NSMutableArray *relatedManagedObjects = [[[self valueForKey:key] allObjects] mutableCopy];
-            NSArray *managedObjectToDelete = [relatedManagedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"%K NOT IN %@", kParseObjectID, [relatedParseObjects valueForKey:kParseObjectID]]];
-            [relatedManagedObjects removeObjectsInArray:managedObjectToDelete];
+            NSMutableSet *relatedManagedObjects = [self mutableSetValueForKey:key];
+            NSSet *managedObjectToDelete = [relatedManagedObjects filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [relatedParseObjects valueForKey:kParseObjectID]]];
+            [relatedManagedObjects minusSet:managedObjectToDelete];
 
             
             //TODO:background context
@@ -718,7 +723,7 @@
             [self setValue:relatedManagedObjects forKey:key];
             
             //save
-            [self.managedObjectContext save:nil];
+            [self.managedObjectContext saveToPersistentStoreAndWait];
             
             
         }else{
