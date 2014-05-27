@@ -289,7 +289,7 @@
     }
     
     if (isOutDated) {
-        [EWDataStore updateToServerAndSave];
+        [EWDataStore save];
     }
     
     return isOutDated;
@@ -436,7 +436,7 @@
         }
         
     }
-    [EWDataStore updateToServerAndSave];
+    [EWDataStore save];
 }
 
 /* add task by alarm, this function is replaced by scheduleTask

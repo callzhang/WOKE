@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #define MR_SHORTHAND
+#define MR_LOGGING_ENABLED 0
 #import "CoreData+MagicalRecord.h"
 #import "EWDefines.h"
 #import "UIView+Layout.h"

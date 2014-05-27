@@ -49,21 +49,29 @@
     
     if ([PFUser currentUser]) {
         //user already logged in
-        //test facebook login credential
-        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-            if (!error) {
-                //fetch user in coredata cache(offline) with related objects
-                NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
-                [EWUserManagement loginWithCachedDataStore:[PFUser currentUser].username withCompletionBlock:^{}];
-            }else if([error.userInfo[FBErrorParsedJSONResponseKey][@"body"][@"error"][@"type"] isEqualToString:@"OAuthException"]) {
-                // Since the request failed, we can check if it was due to an invalid session
-                EWAlert(@"The facebook session was expired");
-                [EWUserManagement showLoginPanel];
-            }else{
-                EWAlert(error.description);
-                [EWUserManagement showLoginPanel];
-            }
-        }];
+        [EWUserManagement loginWithCachedDataStore:[PFUser currentUser].username withCompletionBlock:^{}];
+        
+        //see if user is linked with fb
+        if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
+            [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                if (!error) {
+                    //fetch user in coredata cache(offline) with related objects
+                    NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
+                    
+                }else if([error.userInfo[FBErrorParsedJSONResponseKey][@"body"][@"error"][@"type"] isEqualToString:@"OAuthException"]) {
+                    // Since the request failed, we can check if it was due to an invalid session
+                    EWAlert(@"The facebook session was expired");
+                    //[EWUserManagement showLoginPanel];
+                    
+                }else{
+                    EWAlert(@"Failed to login Facebook");
+                    NSLog(@"Failed to login facebook, error: %@", error.description);
+                    //[EWUserManagement showLoginPanel];
+                    
+                }
+            }];
+        }
+        
         
     }else{
         //log in using local machine info

@@ -101,7 +101,7 @@
  And save ManagedObject.
  @discussion Use this method to update server and save. Replace this method with any ManagedObjectContext save method. Concurrency is NOT supported. Please call it on main thread.
  */
-+ (void)updateToServerAndSave;
++ (void)updateToServer;
 
 /**
  *Update or Insert PFObject according to given ManagedObject

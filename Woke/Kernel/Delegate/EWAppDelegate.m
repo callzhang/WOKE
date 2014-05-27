@@ -7,7 +7,7 @@
 //
 
 #import "EWAppDelegate.h"
-#define MR_SHORTHAND
+//#define MR_SHORTHAND
 //view controller
 #import "EWAlarmsViewController.h"
 #import "EWSettingsViewController.h"

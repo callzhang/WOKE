@@ -20,6 +20,7 @@
 #define MR_LOGGING_ENABLED 0
 #define MR_SHORTHAND
 #import "CoreData+MagicalRecord.h"
+#import <MagicalRecord/CoreData+MagicalRecord.h>
 
 //Util
 #import "FTWCache.h"
@@ -31,6 +32,7 @@
 @interface EWDataStore()
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
 @property (nonatomic) NSMutableDictionary *parseSaveCallbacks;
+@property (nonatomic) NSTimer *saveToServerDelayTimer;
 @end
 
 @implementation EWDataStore
@@ -399,16 +401,9 @@
 
 
 + (void)save{
+    [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
     
-    
-    //save core data
-    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
-    
-    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-        //save parse objects on background
-        [EWDataStore updateToServerAndSave];
-    });
-    
+    [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
 }
 
 + (NSManagedObjectContext *)currentContext{
@@ -485,7 +480,10 @@
 }
 
 #pragma mark - Parse Server methods
-+(void)updateToServerAndSave{
++(void)updateToServer{
+    //make sure it is called on main thread
+    NSParameterAssert([NSThread isMainThread]);
+    
     
     //get a list of ManagedObject to insert/Update/Delete
     NSMutableSet *insertedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].insertedObjects mutableCopy];
@@ -497,21 +495,28 @@
     [updatedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.updateQueue.allObjects];
     [deletedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.deleteQueue.allObjects];
     
+    
+    //save core data
+    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
 
-    //perform network calls
-    for (NSManagedObject *managedObject in insertedManagedObjects) {
-        [EWDataStore updateParseObjectFromManagedObject:managedObject];
-    }
-    
-    for (NSManagedObject *managedObject in updatedManagedObjects) {
-        [EWDataStore updateParseObjectFromManagedObject:managedObject];
-    }
-    
-    for (NSManagedObject *managedObject in deletedManagedObjects) {
-        [EWDataStore deleteParseObjectWithManagedObject:managedObject];
-    }
-    
-    
+    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+        //perform network calls
+        NSLog(@"Start updating to server. There are %lu inserts, %lu updates, and %lu deletes", (unsigned long)insertedManagedObjects.count, (unsigned long)updatedManagedObjects.count, (unsigned long)deletedManagedObjects.count);
+        for (NSManagedObject *managedObject in insertedManagedObjects) {
+            NSLog(@"Inserting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
+            [EWDataStore updateParseObjectFromManagedObject:managedObject];
+        }
+        
+        for (NSManagedObject *managedObject in updatedManagedObjects) {
+            NSLog(@"Updating PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
+            [EWDataStore updateParseObjectFromManagedObject:managedObject];
+        }
+        
+        for (NSManagedObject *managedObject in deletedManagedObjects) {
+            NSLog(@"Deleting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
+            [EWDataStore deleteParseObjectWithManagedObject:managedObject];
+        }
+    });
 }
 
 
@@ -788,16 +793,27 @@
 }
 
 - (void)refresh{
-    NSString *parseObjectId = [self valueForKey:kParseObjectID];
-    if (!parseObjectId) {
-        NSLog(@"@@@ Updating a managedObject without a parseID, insert first");
-        [EWDataStore updateParseObjectFromManagedObject:self];
-    }else{
-        PFObject *object = [self parseObject];
-        [self updateValueAndRelationFromParseObject:object];
-    }
     
-    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
+    NSManagedObjectID *objectID = self.objectID;
+    
+    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+        NSManagedObject *currentMO = [[NSManagedObjectContext contextForCurrentThread] objectWithID:objectID];
+        NSString *parseObjectId = [currentMO valueForKey:kParseObjectID];
+        if (!parseObjectId) {
+            NSLog(@"@@@ Updating a managedObject %@ without a parseID, insert first", currentMO.entity.name);
+            [EWDataStore updateParseObjectFromManagedObject:currentMO];
+        }else{
+            PFObject *object = [self parseObject];
+            [currentMO updateValueAndRelationFromParseObject:object];
+        }
+        
+        //back
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSManagedObjectContext contextForCurrentThread] refreshObject:self mergeChanges:YES];
+            NSLog(@"MO %@ refreshed", self.entity.name);
+        });
+    });
+    
 }
      
 - (void)assignValueFromParseObject:(PFObject *)object{
@@ -1055,7 +1071,7 @@
 }
 
 - (NSManagedObject *)managedObject{
-    [self fetchIfNeeded];
+    //[self fetchIfNeeded];
     NSManagedObject *managedObject = [NSClassFromString(self.localClassName) MR_findFirstByAttribute:kParseObjectID withValue:self.objectId];
     
     if (!managedObject) {
