@@ -496,8 +496,7 @@
     [deletedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.deleteQueue.allObjects];
     
     
-    //save core data
-    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
+    
 
     dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
         //perform network calls
@@ -516,6 +515,11 @@
             NSLog(@"Deleting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
             [EWDataStore deleteParseObjectWithManagedObject:managedObject];
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //save core data
+            [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
+        });
     });
 }
 
@@ -530,6 +534,7 @@
         //update
         NSError *err;
         object = [[PFQuery queryWithClassName:mo.entity.serverClassName] getObjectWithId:parseObjectId error:&err];
+        //object = [PFObject objectWithoutDataWithClassName:mo.entity.serverClassName objectId:parseObjectId];
         if (!object) {
             //TODO: handle error
             if ([err code] == kPFErrorObjectNotFound) {
@@ -547,8 +552,8 @@
             
             return;
         }
-        
         //skip if updating other PFUser
+        //TODO: Set ACL for PFUser to enable public writability
         if ([managedObject.entity.serverClassName isEqualToString:@"_User"]) {
             if (![object.objectId isEqualToString:[EWUserManagement me].objectId]) {
                 NSLog(@"Skip updating other PFUser: %@", [object valueForKey:@"name"]);
@@ -612,12 +617,12 @@
                 [object deleteEventually];
                 
                 //delete MO
-                [[NSManagedObjectContext defaultContext] deleteObject:mo];
+                [[NSManagedObjectContext contextForCurrentThread] deleteObject:mo];
             }
         }];
     }else{
         //delete MO directly
-        [[NSManagedObjectContext defaultContext] deleteObject:mo];
+        [[NSManagedObjectContext contextForCurrentThread] deleteObject:mo];
     }
     
     //remove from queue
@@ -654,11 +659,11 @@
 - (void)updateModifiedDate:(NSNotification *)notification{
     NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
     
+    NSLog(@"Observed %lu ManagedObject changed, updating 'UpdatedAt'.", (unsigned long)updatedObjects.count);
     for (NSManagedObject *mo in updatedObjects) {
         double interval = [[mo valueForKey:kUpdatedDateKey] timeIntervalSinceNow];
         if (interval < -1) {
             //update time
-            NSLog(@"Observed %lu ManagedObject changed", (unsigned long)updatedObjects.count);
             [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
         }
     }
@@ -829,7 +834,7 @@
     //add or delete some attributes here
     [managedObjectAttributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
         if (![allKeys containsObject:key]) {
-            NSLog(@"Key %@ does not exist on PO %@", key, object.parseClassName);
+            //NSLog(@"Key %@ does not exist on PO %@", key, object.parseClassName);
             return;//skip if not exist
         }
         id parseValue = [object objectForKey:key];
@@ -893,7 +898,7 @@
             updateQueue = [NSMutableSet set];
         }
         [updateQueue addObject:self];
-        [EWDataStore sharedInstance].updateQueue = updateQueue;
+        [EWDataStore sharedInstance].updateQueue = [updateQueue copy];
     }else{
         //insert
         NSMutableSet *insertQueue = [[EWDataStore sharedInstance].insertQueue mutableCopy];
@@ -901,7 +906,7 @@
             insertQueue = [NSMutableSet set];
         }
         [insertQueue addObject:self];
-        [EWDataStore sharedInstance].insertQueue = insertQueue;
+        [EWDataStore sharedInstance].insertQueue = [insertQueue copy];
     }
     
 }
@@ -914,7 +919,7 @@
             deleteQueue = [NSMutableSet set];
         }
         [deleteQueue addObject:self];
-        [EWDataStore sharedInstance].deleteQueue = deleteQueue;
+        [EWDataStore sharedInstance].deleteQueue = [deleteQueue copy];
     }else{
         NSLog(@"@@@ You are trying to delete an ManagedObject that doesn't have a corresponding Server Object.");
     }
@@ -984,8 +989,8 @@
     //relation
     NSMutableDictionary *mutableRelationships = [mo.entity.relationshipsByName mutableCopy];
     [mutableRelationships enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
-        NSSet *relatedManagedObject = [mo valueForKey:key];
-        if (relatedManagedObject){
+        id relatedManagedObjects = [mo valueForKey:key];
+        if (relatedManagedObjects){
             if ([obj isToMany]) {
                 //To-Many relation
                 //Parse relation
@@ -994,7 +999,7 @@
                 [[parseRelation query] findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                     NSMutableArray *relatedParseObjects = [objects mutableCopy];
                     if (relatedParseObjects.count) {
-                        NSArray *relatedParseObjectsToDelete = [relatedParseObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"objectId NOT IN %@", [relatedManagedObject valueForKey:@"objectId"]]];
+                        NSArray *relatedParseObjectsToDelete = [relatedParseObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT objectId IN %@", [relatedManagedObjects valueForKey:@"objectId"]]];
                         for (PFObject *PO in relatedParseObjectsToDelete) {
                             [parseRelation removeObject:PO];
                         }
@@ -1006,13 +1011,12 @@
                 }];
                 
                 //related managedObject that needs to add
-                NSSet *relatedMOs = [mo valueForKey:key];
-                for (NSManagedObject *relatedManagedObject in relatedMOs) {
+                for (NSManagedObject *relatedManagedObject in relatedManagedObjects) {
                     NSString *parseID = [relatedManagedObject valueForKey:kParseObjectID];
                     if (parseID) {
                         //the pfobject already exists, need to inspect PFRelation to determin add or remove
                         
-                        PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:obj.entity.serverClassName objectId:parseID];
+                        PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:relatedManagedObject.entity.serverClassName objectId:parseID];
                         //[relatedParseObject fetchIfNeeded];
                         [parseRelation addObject:relatedParseObject];
                         
