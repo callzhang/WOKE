@@ -793,7 +793,7 @@
 }
 
 - (void)refresh{
-    
+    NSParameterAssert([NSThread isMainThread]);
     NSManagedObjectID *objectID = self.objectID;
     
     dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
@@ -817,45 +817,45 @@
 }
      
 - (void)assignValueFromParseObject:(PFObject *)object{
+    [object fetchIfNeeded];
     if ([self valueForKey:kParseObjectID]) {
         NSParameterAssert([[self valueForKey:kParseObjectID] isEqualToString:object.objectId]);
     }else{
         [self setValue:object.objectId forKey:kParseObjectID];
     }
     //attributes
-    NSMutableDictionary *mutableAttributeValues = [self.entity.attributesByName mutableCopy];
+    NSDictionary *managedObjectAttributes = self.entity.attributesByName;
+    NSArray *allKeys = object.allKeys;
     //add or delete some attributes here
-    [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
-        @try {
-            id parseValue = [object objectForKey:key];
-            if ([parseValue isKindOfClass:[PFFile class]]) {
-                [self setPFFile:parseValue forPropertyDescription:obj];
-                
-            }else if ([parseValue isKindOfClass:[PFGeoPoint class]]){
-                PFGeoPoint *point = (PFGeoPoint *)parseValue;
-                CLLocation *location = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
-                [self setValue:location forKeyPath:key];
-                
-            }else if(parseValue){
-                if ([key serverType]){
-                    //need to deal with local type
-                    if ([parseValue isKindOfClass:[PFGeoPoint class]]) {
-                        PFGeoPoint *point = (PFGeoPoint *)parseValue;
-                        CLLocation *loc = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
-                        [self setValue:loc forKey:key];
-                    }else{
-                        [NSException raise:@"Server class not handled" format:@"Check your code!"];
-                    }
+    [managedObjectAttributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
+        if (![allKeys containsObject:key]) {
+            NSLog(@"Key %@ does not exist on PO %@", key, object.parseClassName);
+            return;//skip if not exist
+        }
+        id parseValue = [object objectForKey:key];
+        if ([parseValue isKindOfClass:[PFFile class]]) {
+            [self setPFFile:parseValue forPropertyDescription:obj];
+            
+        }else if ([parseValue isKindOfClass:[PFGeoPoint class]]){
+            PFGeoPoint *point = (PFGeoPoint *)parseValue;
+            CLLocation *location = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
+            [self setValue:location forKeyPath:key];
+            
+        }else if(parseValue){
+            if ([key serverType]){
+                //need to deal with local type
+                if ([parseValue isKindOfClass:[PFGeoPoint class]]) {
+                    PFGeoPoint *point = (PFGeoPoint *)parseValue;
+                    CLLocation *loc = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
+                    [self setValue:loc forKey:key];
                 }else{
-                    [self setValue:parseValue forKey:key];
+                    [NSException raise:@"Server class not handled" format:@"Check your code!"];
                 }
-                
-                
+            }else{
+                [self setValue:parseValue forKey:key];
             }
             
-        }
-        @catch (NSException *exception) {
-            NSLog(@"Exception when assign property [%@] from ParseObject: %@", key, object);
+            
         }
     }];
     
@@ -942,20 +942,20 @@
 @implementation PFObject (NSManagedObject)
 - (void)updateValueFromManagedObject:(NSManagedObject *)managedObject{
     NSManagedObject *mo = [EWDataStore objectForCurrentContext:managedObject];
-    NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
-    if (updateAt){
-        if ([updateAt timeIntervalSinceDate:self.updatedAt] < 0) {
-            NSParameterAssert([mo valueForKey:kParseObjectID]);
-            NSLog(@"@@@ Trying to update MO %@, but PO is newer, refresh MO!", mo.entity.name);
-            [mo refresh];
-            return;
-
-        } //else if([updateAt timeIntervalSinceDate:self.updatedAt] == 0) {
-            //NSLog(@"The last modified dates are the same, parse object will not update to server");
-            //return;
-        //}
-        //continue if MO updatedAt is later or equal to parse updatedAt
-    }
+//    NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
+//    if (updateAt){
+//        if ([updateAt timeIntervalSinceDate:self.updatedAt] < 0) {
+//            NSParameterAssert([mo valueForKey:kParseObjectID]);
+//            NSLog(@"@@@ Trying to update MO %@, but PO is newer, refresh MO!", mo.entity.name);
+//            [mo refresh];
+//            return;
+//            
+//        } //else if([updateAt timeIntervalSinceDate:self.updatedAt] == 0) {
+//        //NSLog(@"The last modified dates are the same, parse object will not update to server");
+//        //return;
+//        //}
+//        //continue if MO updatedAt is later or equal to parse updatedAt
+//    }
     NSMutableDictionary *mutableAttributeValues = [mo.entity.attributesByName mutableCopy];
     [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
         id value = [mo valueForKey:key];
@@ -1024,6 +1024,7 @@
                             //the relation can only be additive, which is not a problem for new relation
                             [blockParseRelation addObject:object];
                             [blockObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                                NSLog(@"Relation %@ -> %@ established", blockObject.parseClassName, object.parseClassName);
                                 if (error) {
                                     NSLog(@"Failed to save: %@", error.description);
                                     [blockObject saveEventually];
