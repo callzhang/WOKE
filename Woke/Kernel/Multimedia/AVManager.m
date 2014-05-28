@@ -482,10 +482,13 @@
 }
 
 - (void)playSilentSound{
+#if TARGET_IPHONE_SIMULATOR
+    
+#else
     NSLog(@"AVPlayer is about to play silent sound");
     NSURL *path = [[NSBundle mainBundle] URLForResource:@"bg" withExtension:@"caf"];
     [self playAvplayerWithURL:path];
-    //avplayer.volume = 0.01;
+#endif
 }
 
 - (void)stopAvplayer{

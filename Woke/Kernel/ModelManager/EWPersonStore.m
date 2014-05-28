@@ -155,7 +155,7 @@ EWPerson *me;
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alert show];
     //logout
-    [EWUserManagement logout];
+    //[EWUserManagement logout];
     
 
 }
