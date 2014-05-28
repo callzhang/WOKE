@@ -76,7 +76,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
         
         //Task: only new task will update the view, other changes is observed in alarmPageView
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
         
         //initial value
         people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"];
@@ -88,6 +88,7 @@
 }
 
 - (void)refreshView{
+    [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
     [self initData];
     [self.fetchController performFetch:NULL];
     [self reloadAlarmPage];
@@ -123,6 +124,7 @@
     
     //init alarm page container
     if (me) {
+        
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskStore myTasks];
         if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
@@ -420,26 +422,25 @@
 
 
 #pragma mark - KVO & Notification
-//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-//
-//    if ([object isKindOfClass:[EWPerson class]]) {
-//
-//        if ([keyPath isEqualToString:@"profilePicKey"]) {
-//            NSLog(@"Observed profile pic changed for user: %@", [(EWPerson *)object name]);
-//            //update cell
-//            NSInteger i = [allPeople indexOfObject:me];
-//            EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-//            cell.profilePic.image = me.profilePic;
-//
-//        }else if ([keyPath isEqualToString:@"tasks"]){
-//            NSLog(@"KVO observed tasks changed");
-//        }else if ([keyPath isEqualToString:@"alarms"]){
-//            NSLog(@"KVO observed alarms changed");
-//        }else{
-//            NSLog(@"KVO observed change %@", change);
-//        }
-//    }
-//}
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+
+    if ([object isKindOfClass:[EWPerson class]]) {
+
+        if ([keyPath isEqualToString:@"tasks"]){
+            if (me.tasks && (me.tasks.count != tasks.count)) {
+                NSLog(@"KVO observed tasks changed");
+                tasks = [EWTaskStore myTasks];
+                alarms = [EWAlarmManager myAlarms];
+                [self reloadAlarmPage];
+            }
+            
+        }else if ([keyPath isEqualToString:@"alarms"]){
+            NSLog(@"KVO observed alarms changed");
+        }else{
+            NSLog(@"KVO observed %@ changed %@", keyPath, change);
+        }
+    }
+}
 
 //- (void)updateProfilePic:(NSNotification *)notif{
 //    EWPerson *person = (EWPerson *)([notif.object isKindOfClass:[EWPerson class]]?notif.object:notif.userInfo[@"person"]);

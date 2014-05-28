@@ -56,7 +56,7 @@
             [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                 if (!error) {
                     //fetch user in coredata cache(offline) with related objects
-                    NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
+                    NSLog(@"[b] Logged in to facebook");
                     
                 }else if([error.userInfo[FBErrorParsedJSONResponseKey][@"body"][@"error"][@"type"] isEqualToString:@"OAuthException"]) {
                     // Since the request failed, we can check if it was due to an invalid session
@@ -112,6 +112,11 @@
 
     //fetch or create
     EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:username];
+    if (!person) {
+        [EWUserManagement showLoginPanel];
+        return;
+    }
+    NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
     
     //update person
     [person refresh];
@@ -119,13 +124,11 @@
     //save me
     me = person;
     
-    
     //background refresh
     if (completionBlock) {
         NSLog(@"[d] Run completion block.");
         completionBlock();
     }
-
     
     //Broadcast user login event
     NSLog(@"[c] Broadcast Person login notification");
@@ -316,12 +319,21 @@
         }
         
         //get user, create core data user
-        EWPerson *person = [EWPerson findFirstByAttribute:kParseObjectID withValue:user.objectId];
+        EWPerson *person = (EWPerson *)[user managedObject];
         if (!person) {
             person  = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
         }
         
+        //update
+        [person refresh];
         me = person;
+        
+        if (block) {
+            block();
+        }
+        
+        //broadcast
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
         
         //update current user with fb info
         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
@@ -334,11 +346,6 @@
             if ([PFUser currentUser].isNew) {
                 [EWUserManagement handleNewUser];
             }
-            if (block) {
-                block();
-            }
-            //broadcast
-            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
             
         }];
     }];

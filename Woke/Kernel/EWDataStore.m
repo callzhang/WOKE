@@ -501,8 +501,6 @@
     [updatedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.updateQueue.allObjects];
     [deletedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.deleteQueue.allObjects];
     
-    
-    
 
     dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
         //perform network calls
@@ -761,7 +759,7 @@
         }
     }];
     
-    [self.managedObjectContext save:nil];
+    [self.managedObjectContext saveToPersistentStoreAndWait];
 }
 
 - (PFObject *)parseObject{
@@ -814,7 +812,7 @@
             NSLog(@"@@@ Updating a managedObject %@ without a parseID, insert first", currentMO.entity.name);
             [EWDataStore updateParseObjectFromManagedObject:currentMO];
         }else{
-            PFObject *object = [self parseObject];
+            PFObject *object = [currentMO parseObject];
             [currentMO updateValueAndRelationFromParseObject:object];
         }
         
@@ -872,6 +870,7 @@
     
     //TODO: used the right update time
     [self setValue:[NSDate date] forKey:kUpdatedDateKey];
+    [[EWDataStore currentContext] saveToPersistentStoreAndWait];
 }
 
 
@@ -1011,7 +1010,7 @@
                         }
                         //save
                         if (relatedParseObjectsToDelete.count) {
-                            [self saveEventually];
+                            [self saveInBackground];
                         }
                     }
                 }];
@@ -1037,7 +1036,12 @@
                                 NSLog(@"Relation %@ -> %@ established", blockObject.parseClassName, object.parseClassName);
                                 if (error) {
                                     NSLog(@"Failed to save: %@", error.description);
-                                    [blockObject saveEventually];
+                                    @try {
+                                        [blockObject saveEventually];
+                                    }
+                                    @catch (NSException *exception) {
+                                        [mo updateEventually];
+                                    }
                                 }
                             }];
                         };
@@ -1066,7 +1070,13 @@
                             //relationship can be saved regardless of network condition.
                             if (error) {
                                 NSLog(@"Failed to save: %@", error.description);
-                                [blockObject saveEventually];
+                                @try {
+                                    [blockObject saveEventually];
+                                }
+                                @catch (NSException *exception) {
+                                    [mo updateEventually];
+                                }
+                                
                             }
                         }];
                     };
@@ -1088,7 +1098,7 @@
     if (!managedObject) {
         //if managedObject not exist, create it locally
         managedObject = [NSClassFromString(self.localClassName) MR_createEntity];
-        NSLog(@"Nabaged Object created: %@", self.parseClassName);
+        NSLog(@"Nabaged Object created: %@", self.localClassName);
     }
     
     [managedObject assignValueFromParseObject:self];

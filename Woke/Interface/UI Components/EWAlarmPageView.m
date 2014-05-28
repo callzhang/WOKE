@@ -194,19 +194,15 @@
     if ([object isKindOfClass:[EWTaskItem class]]) {
         //TODO: dispatch different tasks for each updates
         if ([keyPath isEqualToString:@"state"]) {
-            NSNumber *newState = change[NSKeyValueChangeNewKey];
-            if (!newState || [newState isKindOfClass:[NSNull class]] || newState == NULL) {
-                NSLog(@"@@@ Something was not setting up right! The task removal notification is not dispatched to alarm page view");
-                [self stopObserveTask];
-            }
-            self.alarmState.selected = [newState boolValue];
+
+            self.alarmState.selected = task.state;
             if (self.alarmState.selected) {
                 [self.alarmState setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
             }else{
                 [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
             }
             [self.alarmState setNeedsDisplay];
-            NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, self.alarmState.selected?@"YES":@"NO");
+            NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, task.state?@"YES":@"NO");
             
             
         }else if ([keyPath isEqualToString:@"medias"]){
@@ -223,6 +219,9 @@
             
             self.timeText.text = [task.time date2timeShort];
             self.AM.text = [task.time date2am];
+        }else if ([keyPath isEqualToString:@"statement"]){
+        
+            self.descriptionText.text = task.statement;
             
         }else{
             
