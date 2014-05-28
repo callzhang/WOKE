@@ -424,7 +424,9 @@
     NSMutableSet *set = [NSMutableSet new];
     for (NSString *str in array) {
         NSURL *url = [NSURL URLWithString:str];
-        [set addObject:[[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url]];
+        NSManagedObjectID *ID = [[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
+        NSManagedObject *MO = [[EWDataStore currentContext] objectWithID:ID];
+        [set addObject:MO];
     }
     return [set copy];
 }
@@ -444,7 +446,9 @@
     NSMutableSet *set = [NSMutableSet new];
     for (NSString *str in array) {
         NSURL *url = [NSURL URLWithString:str];
-        [set addObject:[[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url]];
+        NSManagedObjectID *ID = [[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
+        NSManagedObject *MO = [[EWDataStore currentContext] objectWithID:ID];
+        [set addObject:MO];
     }
     return [set copy];
 }
@@ -464,7 +468,9 @@
     NSMutableSet *set = [NSMutableSet new];
     for (NSString *str in array) {
         NSURL *url = [NSURL URLWithString:str];
-        [set addObject:[[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url]];
+        NSManagedObjectID *ID = [[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
+        NSManagedObject *MO = [[EWDataStore currentContext] objectWithID:ID];
+        [set addObject:MO];
     }
     return [set copy];
 }
