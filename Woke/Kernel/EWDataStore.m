@@ -547,7 +547,11 @@
                 NSLog(@"Uh oh, we couldn't find the object!");
                 // Now also check for connection errors:
                 //delete ParseID from MO
-                [mo setValue:[NSNull null] forKey:kParseObjectID];
+                NSManagedObjectID *ID = mo.objectID;
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                    NSManagedObject *localMO = [localContext objectWithID:ID];
+                    [localContext deleteObject:localMO];
+                }];
             } else if ([err code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
                 [mo updateEventually];
