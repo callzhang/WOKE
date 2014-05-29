@@ -80,7 +80,11 @@ EWPerson *me;
         //create one
         PFQuery *q = [PFUser query];
         [q whereKey:@"username" equalTo:ID];
-        PFUser *user = [q findObjects][0];
+        NSArray *users = [q findObjects];
+        if (users.count == 0) {
+            return nil;
+        }
+        PFUser *user = users[0];
         person = (EWPerson *)[self createPersonWIthParseObject:user];
         NSLog(@"User %@ data has CREATED", person.name);
     }else{

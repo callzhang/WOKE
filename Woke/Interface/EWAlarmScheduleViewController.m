@@ -112,7 +112,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     for (unsigned i=0; i<[_tableView numberOfRowsInSection:0]; i++) {
         EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-        if (!cell) {
+        if (!cell || !cell.alarm || !cell.task) {
             continue;
         }
         //state
