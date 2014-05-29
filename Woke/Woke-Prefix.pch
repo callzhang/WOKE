@@ -15,7 +15,7 @@
 #import "UIView+Layout.h"
 #import "NSString+Extend.h"
 #import "NSDate+Extend.h"
-
+#import "SFObservers.h"
 #import "MBProgressHUD.h"
 #import "UIViewController+Blur.h"
 #import "EWDataStore.h"

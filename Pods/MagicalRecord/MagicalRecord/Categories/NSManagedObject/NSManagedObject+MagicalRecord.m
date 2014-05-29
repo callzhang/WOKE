@@ -11,22 +11,6 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 @implementation NSManagedObject (MagicalRecord)
 
-+ (NSString *) MR_entityName;
-{
-    NSString *entityName;
-
-    if ([self respondsToSelector:@selector(entityName)])
-    {
-        entityName = [self performSelector:@selector(entityName)];
-    }
-
-    if ([entityName length] == 0) {
-        entityName = NSStringFromClass(self);
-    }
-
-    return entityName;
-}
-
 + (void) MR_setDefaultBatchSize:(NSUInteger)newBatchSize
 {
 	@synchronized(self)
@@ -99,6 +83,21 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 #endif
 
++ (NSString *) MR_bestGuessAtAnEntityName
+{
+    if ([self respondsToSelector:@selector(entityName)])
+    {
+        return [self performSelector:@selector(entityName)];
+    }
+    return NSStringFromClass(self);
+}
+
++ (NSEntityDescription *) MR_entityDescriptionInContext:(NSManagedObjectContext *)context
+{
+    NSString *entityName = [self MR_bestGuessAtAnEntityName];
+    return [NSEntityDescription entityForName:entityName inManagedObjectContext:context];
+}
+
 + (NSEntityDescription *) MR_entityDescription
 {
 #pragma clang diagnostic push
@@ -107,29 +106,15 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 #pragma clang diagnostic pop
 }
 
-+ (NSEntityDescription *) MR_entityDescriptionInContext:(NSManagedObjectContext *)context
-{
-    NSString *entityName = [self MR_entityName];
-    return [NSEntityDescription entityForName:entityName inManagedObjectContext:context];
-}
-
 + (NSArray *) MR_propertiesNamed:(NSArray *)properties
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    return [self MR_propertiesNamed:properties inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
-#pragma clang diagnostic pop
-}
-
-+ (NSArray *) MR_propertiesNamed:(NSArray *)properties inContext:(NSManagedObjectContext *)context
-{
-	NSEntityDescription *description = [self MR_entityDescriptionInContext:context];
+	NSEntityDescription *description = [self MR_entityDescription];
 	NSMutableArray *propertiesWanted = [NSMutableArray array];
-
+	
 	if (properties)
 	{
 		NSDictionary *propDict = [description propertiesByName];
-
+		
 		for (NSString *propertyName in properties)
 		{
 			NSPropertyDescription *property = [propDict objectForKey:propertyName];
@@ -308,7 +293,6 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 @end
 
-#pragma mark - Deprecated Methods — DO NOT USE
 @implementation NSManagedObject (MagicalRecordDeprecated)
 
 + (instancetype) MR_createInContext:(NSManagedObjectContext *)context

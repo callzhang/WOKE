@@ -17,6 +17,7 @@
 #import "NSString+MD5.h"
 #import "EWWakeUpManager.h"
 
+//#define MR_LOGGING_ENABLED 1
 #import <MagicalRecord/CoreData+MagicalRecord.h>
 
 //Util
@@ -67,7 +68,7 @@
         //core data
         //[MagicalRecord setLoggingMask:MagicalRecordLoggingMaskError];
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
-        context = [NSManagedObjectContext MR_contextForCurrentThread];
+        context = [NSManagedObjectContext defaultContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:nil];
         
         //facebook
@@ -404,7 +405,7 @@
 }
 
 + (NSManagedObjectContext *)currentContext{
-    return [NSManagedObjectContext MR_contextForCurrentThread];
+    return [NSManagedObjectContext context];
 }
 
 
@@ -489,19 +490,20 @@
     
     
     //get a list of ManagedObject to insert/Update/Delete
-    NSMutableSet *insertedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].insertedObjects mutableCopy];
-    NSMutableSet *updatedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].updatedObjects mutableCopy];
-    NSMutableSet *deletedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].deletedObjects mutableCopy];
+    NSMutableSet *insertedManagedObjects = [[NSManagedObjectContext defaultContext].insertedObjects mutableCopy];
+    NSMutableSet *updatedManagedObjects = [[NSManagedObjectContext defaultContext].updatedObjects mutableCopy];
+    NSMutableSet *deletedManagedObjects = [[NSManagedObjectContext defaultContext].deletedObjects mutableCopy];
     
     //add queue
     [insertedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.insertQueue.allObjects];
     [updatedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.updateQueue.allObjects];
     [deletedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.deleteQueue.allObjects];
     
+    NSLog(@"Start updating to server. There are %lu inserts, %lu updates, and %lu deletes", (unsigned long)insertedManagedObjects.count, (unsigned long)updatedManagedObjects.count, (unsigned long)deletedManagedObjects.count);
 
     dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
         //perform network calls
-        NSLog(@"Start updating to server. There are %lu inserts, %lu updates, and %lu deletes", (unsigned long)insertedManagedObjects.count, (unsigned long)updatedManagedObjects.count, (unsigned long)deletedManagedObjects.count);
+        
         for (NSManagedObject *managedObject in insertedManagedObjects) {
             NSLog(@"Inserting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
             [EWDataStore updateParseObjectFromManagedObject:managedObject];

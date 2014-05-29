@@ -161,8 +161,11 @@ EWPerson *me;
 
 #pragma mark - Notification
 - (void)userLoggedIn:(NSNotification *)notif{
-    EWPerson *me = notif.userInfo[kUserLoggedInUserKey];
-    me = me;
+    EWPerson *user = notif.userInfo[kUserLoggedInUserKey];
+    if (![me isEqual:user]) {
+        me = user;
+    }
+    
 }
 
 - (void)userLoggedOut:(NSNotification *)notif{

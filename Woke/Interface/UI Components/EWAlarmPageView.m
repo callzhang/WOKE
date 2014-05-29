@@ -103,16 +103,12 @@
 - (void)setTask:(EWTaskItem *)t{
     //unsubscribe previous task if possible
     if (task) {
-        if ([task.objectId isEqualToString:t.objectId]) {
-            //same task
-            return;
-        }else{
-            //different task
+        if (![task.objectId isEqualToString:t.objectId]) {
             [self stopObserveTask];
         }
     }
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleTaskDeletion:) name:kTaskDeleteNotification object:nil];
+    //Observer dealloc is handled by SFObservers
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleTaskDeletion:) name:kTaskDeleteNotification object:nil];
     
     //setting the hours left
     task = t;
@@ -230,16 +226,20 @@
 
 - (void)stopObserveTask{
     
-    NSDictionary *observants = [task observationInfo];
-    NSArray *observers = observants[@"state"];
     
-    if ([observers containsObject:self]){
+    
+    @try {
         [task removeObserver:self forKeyPath:@"state"];
         [task removeObserver:self forKeyPath:@"medias"];
         [task removeObserver:self forKeyPath:@"time"];
         [task removeObserver:self forKeyPath:@"statement"];
         NSLog(@"Removed KVO to task (%@)", task.time.weekday);
     }
+    @catch (NSException *exception) {
+        id observants = [task observationInfo];
+        NSLog(@"Failed to remove observer %@ with observation info: %@",self , observants);
+    }
+    
     
     
 }

@@ -6,19 +6,10 @@
 
 #import <CoreData/CoreData.h>
 #import "MagicalRecord.h"
-#import "MagicalRecordDeprecated.h"
 
 #define kMagicalRecordDefaultBatchSize 20
 
 @interface NSManagedObject (MagicalRecord)
-
-/**
- *  If the NSManagedObject subclass calling this method has implemented the `entityName` method, then the return value of that will be used.
- *  If `entityName` is not implemented, then the name of the class is returned.
- *
- *  @return String based name for the entity
- */
-+ (NSString *) MR_entityName;
 
 + (NSUInteger) MR_defaultBatchSize;
 + (void) MR_setDefaultBatchSize:(NSUInteger)newBatchSize;
@@ -37,7 +28,6 @@
 + (NSEntityDescription *) MR_entityDescription;
 + (NSEntityDescription *) MR_entityDescriptionInContext:(NSManagedObjectContext *)context;
 + (NSArray *) MR_propertiesNamed:(NSArray *)properties;
-+ (NSArray *) MR_propertiesNamed:(NSArray *)properties inContext:(NSManagedObjectContext *)context;
 
 + (instancetype) MR_createEntity;
 + (instancetype) MR_createEntityInContext:(NSManagedObjectContext *)context;
@@ -59,19 +49,17 @@
 
 @end
 
-@protocol MagicalRecord_MOGenerator <NSObject>
+@interface NSManagedObject (MagicalRecordDeprecated)
 
-@optional
-+ (NSString *)entityName;
-- (instancetype) entityInManagedObjectContext:(NSManagedObjectContext *)object;
-- (instancetype) insertInManagedObjectContext:(NSManagedObjectContext *)object;
++ (instancetype) MR_createInContext:(NSManagedObjectContext *)context __attribute__((deprecated("Please use +MR_createEntityInContext: instead.")));
+- (BOOL) MR_deleteInContext:(NSManagedObjectContext *)context __attribute__((deprecated("Please use -MR_deleteEntityInContext: instead.")));
 
 @end
 
-#pragma mark - Deprecated Methods — DO NOT USE
-@interface NSManagedObject (MagicalRecordDeprecated)
+@protocol MagicalRecord_MOGenerator <NSObject>
 
-+ (instancetype) MR_createInContext:(NSManagedObjectContext *)context MR_DEPRECATED_WILL_BE_REMOVED_IN_PLEASE_USE("4.0", "MR_createEntityInContext:");
-- (BOOL) MR_deleteInContext:(NSManagedObjectContext *)context MR_DEPRECATED_WILL_BE_REMOVED_IN_PLEASE_USE("4.0", "MR_deleteEntityInContext:");
+@optional
+- (instancetype) entityInManagedObjectContext:(NSManagedObjectContext *)object;
+- (instancetype) insertInManagedObjectContext:(NSManagedObjectContext *)object;
 
 @end
