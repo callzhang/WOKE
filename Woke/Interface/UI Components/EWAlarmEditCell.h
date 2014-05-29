@@ -12,8 +12,8 @@
 
 @interface EWAlarmEditCell : UITableViewCell<EWRingtoneSelectionDelegate>
 //container
-@property (nonatomic, weak) EWTaskItem *task;
-@property (nonatomic, weak) EWAlarmItem *alarm;
+@property (nonatomic) EWTaskItem *task;
+@property (nonatomic) EWAlarmItem *alarm;
 @property (nonatomic, weak) UIViewController *presentingViewController;
 //data
 @property (nonatomic) NSDate *myTime;
