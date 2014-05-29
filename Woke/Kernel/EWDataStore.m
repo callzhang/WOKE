@@ -18,8 +18,6 @@
 #import "EWWakeUpManager.h"
 
 #define MR_LOGGING_ENABLED 0
-#define MR_SHORTHAND
-#import "CoreData+MagicalRecord.h"
 #import <MagicalRecord/CoreData+MagicalRecord.h>
 
 //Util
@@ -70,7 +68,7 @@
         //core data
         //[MagicalRecord setLoggingMask:MagicalRecordLoggingMaskError];
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
-        context = [NSManagedObjectContext MR_contextForCurrentThread];
+        context = [NSManagedObjectContext MR_defaultContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:nil];
         
         //facebook
@@ -486,10 +484,11 @@
 }
 
 #pragma mark - Parse Server methods
+#pragma mark -
 +(void)updateToServer{
     //make sure it is called on main thread
     NSParameterAssert([NSThread isMainThread]);
-    
+
     
     //get a list of ManagedObject to insert/Update/Delete
     NSMutableSet *insertedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].insertedObjects mutableCopy];
@@ -501,10 +500,14 @@
     [updatedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.updateQueue.allObjects];
     [deletedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.deleteQueue.allObjects];
     
+    NSLog(@"Start updating to server. There are %lu inserts, %lu updates, and %lu deletes", (unsigned long)insertedManagedObjects.count, (unsigned long)updatedManagedObjects.count, (unsigned long)deletedManagedObjects.count);
+    
+    //save core data
+    [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
 
     dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
         //perform network calls
-        NSLog(@"Start updating to server. There are %lu inserts, %lu updates, and %lu deletes", (unsigned long)insertedManagedObjects.count, (unsigned long)updatedManagedObjects.count, (unsigned long)deletedManagedObjects.count);
+        
         for (NSManagedObject *managedObject in insertedManagedObjects) {
             NSLog(@"Inserting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
             [EWDataStore updateParseObjectFromManagedObject:managedObject];
@@ -517,16 +520,13 @@
         
         for (NSManagedObject *managedObject in deletedManagedObjects) {
             NSLog(@"Deleting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
+#warning This method need to be changed as the MO will not exist at this point. Possible change would be 1) change the parameter to server class and objectId, and update the delete queue to a Set of Dictionary with Key of objectId and value of server class
             [EWDataStore deleteParseObjectWithManagedObject:managedObject];
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            //save core data
-            [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
-        });
     });
 }
-
+#pragma mark -
 
 
 + (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject{
@@ -545,7 +545,11 @@
                 NSLog(@"Uh oh, we couldn't find the object!");
                 // Now also check for connection errors:
                 //delete ParseID from MO
-                [mo setValue:[NSNull null] forKey:kParseObjectID];
+                NSManagedObjectID *ID = mo.objectID;
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                    NSManagedObject *localMO = [localContext objectWithID:ID];
+                    [localContext deleteObject:localMO];
+                }];
             } else if ([err code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
                 [mo updateEventually];
@@ -663,7 +667,7 @@
 - (void)updateModifiedDate:(NSNotification *)notification{
     NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
     
-    NSLog(@"Observed %lu ManagedObject changed, updating 'UpdatedAt'.", (unsigned long)updatedObjects.count);
+    //NSLog(@"Observed %lu ManagedObject changed, updating 'UpdatedAt'.", (unsigned long)updatedObjects.count);
     for (NSManagedObject *mo in updatedObjects) {
         double interval = [[mo valueForKey:kUpdatedDateKey] timeIntervalSinceNow];
         if (interval < -1) {
@@ -1029,11 +1033,12 @@
                         __block PFObject *blockObject = self;
                         __block PFRelation *blockParseRelation = parseRelation;
                         //set up a saving block
+                        NSLog(@"Relation %@ -> %@ save block setup", blockObject.parseClassName, relatedManagedObject.entity.serverClassName);
                         PFObjectResultBlock connectRelationship = ^(PFObject *object, NSError *error) {
                             //the relation can only be additive, which is not a problem for new relation
                             [blockParseRelation addObject:object];
                             [blockObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                NSLog(@"Relation %@ -> %@ established", blockObject.parseClassName, object.parseClassName);
+                                NSLog(@"Relation %@ -> %@ (%@) established", blockObject.parseClassName, object.parseClassName, object.objectId);
                                 if (error) {
                                     NSLog(@"Failed to save: %@", error.description);
                                     @try {
