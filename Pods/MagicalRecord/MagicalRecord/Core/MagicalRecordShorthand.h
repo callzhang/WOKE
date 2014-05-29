@@ -76,9 +76,9 @@
 + (NSArray *) propertiesNamed:(NSArray *)properties;
 + (instancetype) createEntity;
 + (instancetype) createEntityInContext:(NSManagedObjectContext *)context;
-+ (instancetype) createInContext:(NSManagedObjectContext *)context __attribute__((deprecated("Please use +createEntityInContext: instead.")));
++ (instancetype) createInContext:(NSManagedObjectContext *)context MR_DEPRECATED_WILL_BE_REMOVED_IN_PLEASE_USE("4.0", "createEntityInContext:");
 - (BOOL) deleteEntity;
-- (BOOL) deleteInContext:(NSManagedObjectContext *)context __attribute__((deprecated("Please use -deleteEntityInContext: instead.")));
+- (BOOL) deleteInContext:(NSManagedObjectContext *)context MR_DEPRECATED_WILL_BE_REMOVED_IN_PLEASE_USE("4.0", "deleteEntityInContext:");
 - (BOOL) deleteEntityInContext:(NSManagedObjectContext *)context;
 + (BOOL) deleteAllMatchingPredicate:(NSPredicate *)predicate;
 + (BOOL) deleteAllMatchingPredicate:(NSPredicate *)predicate inContext:(NSManagedObjectContext *)context;
@@ -135,7 +135,7 @@
 - (void) saveToPersistentStoreWithCompletion:(MRSaveCompletionHandler)completion;
 - (void) saveOnlySelfAndWait;
 - (void) saveToPersistentStoreAndWait;
-- (void) saveWithOptions:(MRSaveContextOptions)mask completion:(MRSaveCompletionHandler)completion;
+- (void) saveWithOptions:(MRSaveOptions)mask completion:(MRSaveCompletionHandler)completion;
 - (void) save MR_DEPRECATED_WILL_BE_REMOVED_IN_3_0;
 - (void) saveWithErrorCallback:(void(^)(NSError *error))errorCallback MR_DEPRECATED_WILL_BE_REMOVED_IN_3_0;
 - (void) saveInBackgroundCompletion:(void (^)(void))completion MR_DEPRECATED_WILL_BE_REMOVED_IN_3_0;

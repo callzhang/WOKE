@@ -858,6 +858,15 @@ SOME STATES DO NOT ALLOW THE LIMITATION OR EXCLUSION OF LIABILITY FOR INCIDENTAL
  *
  */
 
+## TestFlightSDK
+
+All text and design is copyright © 2010-2014 TestFlight App, Inc.
+
+All rights reserved.
+
+https://testflightapp.com/tos/
+
+
 ## Weibo
 
 

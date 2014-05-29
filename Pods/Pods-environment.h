@@ -60,6 +60,12 @@
 #define COCOAPODS_VERSION_MINOR_MagicalRecord 3
 #define COCOAPODS_VERSION_PATCH_MagicalRecord 0
 
+// MagicalRecord/Core
+#define COCOAPODS_POD_AVAILABLE_MagicalRecord_Core
+#define COCOAPODS_VERSION_MAJOR_MagicalRecord_Core 2
+#define COCOAPODS_VERSION_MINOR_MagicalRecord_Core 3
+#define COCOAPODS_VERSION_PATCH_MagicalRecord_Core 0
+
 // NSLogger
 #define COCOAPODS_POD_AVAILABLE_NSLogger
 #define COCOAPODS_VERSION_MAJOR_NSLogger 1
@@ -89,6 +95,12 @@
 #define COCOAPODS_VERSION_MAJOR_SFObservers 1
 #define COCOAPODS_VERSION_MINOR_SFObservers 0
 #define COCOAPODS_VERSION_PATCH_SFObservers 0
+
+// TestFlightSDK
+#define COCOAPODS_POD_AVAILABLE_TestFlightSDK
+#define COCOAPODS_VERSION_MAJOR_TestFlightSDK 3
+#define COCOAPODS_VERSION_MINOR_TestFlightSDK 0
+#define COCOAPODS_VERSION_PATCH_TestFlightSDK 2
 
 // Weibo
 #define COCOAPODS_POD_AVAILABLE_Weibo

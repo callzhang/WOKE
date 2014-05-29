@@ -19,40 +19,44 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - Facebook-iOS-SDK (3.13.1)
-  - MagicalRecord (2.3.0-beta.1)
+  - MagicalRecord (2.3.0-beta.2):
+    - MagicalRecord/Core
+  - MagicalRecord/Core (2.3.0-beta.2)
   - NSLogger (1.2)
   - Parse (1.2.19):
     - Facebook-iOS-SDK (~> 3.11)
   - Reachability (3.1.1)
   - Reveal-iOS-SDK (1.0.3)
   - SFObservers (1.0)
+  - TestFlightSDK (3.0.2)
   - Weibo (2.4.2)
 
 DEPENDENCIES:
   - AFNetworking
   - Facebook-iOS-SDK
-  - MagicalRecord (from `https://github.com/magicalpanda/MagicalRecord`, tag `2.3.0-beta.2`)
+  - MagicalRecord (from `https://github.com/magicalpanda/MagicalRecord`)
   - NSLogger
   - Parse
   - Reachability
   - Reveal-iOS-SDK
   - SFObservers
+  - TestFlightSDK
   - Weibo
 
 EXTERNAL SOURCES:
   MagicalRecord:
     :git: https://github.com/magicalpanda/MagicalRecord
-    :tag: 2.3.0-beta.2
 
 SPEC CHECKSUMS:
   AFNetworking: 47947303319594706f48a55185ea95a95159ab94
   Facebook-iOS-SDK: bc0d0bdf14f64cb7f4d49f8f17d445f49c40d342
-  MagicalRecord: 1ae96754b1c1bc1cf551e3fdc7ea00d11039e139
+  MagicalRecord: b7d8943e180dbd5c1dd48a807885e0059ce0bc82
   NSLogger: c4df4b0208d724f244c05f1966b7402f14d7bf55
   Parse: ffebaecaddd32cb52671010f81567c298ff93d04
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   Reveal-iOS-SDK: 5f69f357d5a18a2f13db71730bc6b7973a21cf3e
   SFObservers: b0cfcdeb0dc055545c7e4c792e3563f9929addd0
+  TestFlightSDK: 0c24c533748d0d84bfe7a3cb6036fa79124d84ee
   Weibo: 8ac9c24884290718ca62da62301165d209f7336c
 
 COCOAPODS: 0.33.1
