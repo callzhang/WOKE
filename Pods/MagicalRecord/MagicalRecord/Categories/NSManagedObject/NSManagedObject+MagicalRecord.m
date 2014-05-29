@@ -4,6 +4,7 @@
 //
 
 #import "CoreData+MagicalRecord.h"
+#import "MagicalRecordLogging.h"
 
 static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
@@ -43,7 +44,10 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 + (NSArray *) MR_executeFetchRequest:(NSFetchRequest *)request
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 	return [self MR_executeFetchRequest:request inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+#pragma clang diagnostic pop
 }
 
 + (id) MR_executeFetchRequestAndReturnFirstObject:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context
@@ -55,12 +59,15 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 	{
 		return nil;
 	}
-	return [results objectAtIndex:0];
+	return [results firstObject];
 }
 
 + (id) MR_executeFetchRequestAndReturnFirstObject:(NSFetchRequest *)request
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 	return [self MR_executeFetchRequestAndReturnFirstObject:request inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+#pragma clang diagnostic pop
 }
 
 #if TARGET_OS_IPHONE
@@ -76,28 +83,27 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 #endif
 
-+ (NSString *) MR_entityName
++ (NSString *) MR_bestGuessAtAnEntityName
 {
+    if ([self respondsToSelector:@selector(entityName)])
+    {
+        return [self performSelector:@selector(entityName)];
+    }
     return NSStringFromClass(self);
 }
 
 + (NSEntityDescription *) MR_entityDescriptionInContext:(NSManagedObjectContext *)context
 {
-    if ([self respondsToSelector:@selector(entityInManagedObjectContext:)]) 
-    {
-        NSEntityDescription *entity = [self performSelector:@selector(entityInManagedObjectContext:) withObject:context];
-        return entity;
-    }
-    else
-    {
-        NSString *entityName = [self MR_entityName];
-        return [NSEntityDescription entityForName:entityName inManagedObjectContext:context];
-    }
+    NSString *entityName = [self MR_bestGuessAtAnEntityName];
+    return [NSEntityDescription entityForName:entityName inManagedObjectContext:context];
 }
 
 + (NSEntityDescription *) MR_entityDescription
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 	return [self MR_entityDescriptionInContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+#pragma clang diagnostic pop
 }
 
 + (NSArray *) MR_propertiesNamed:(NSArray *)properties
@@ -118,7 +124,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 			}
 			else
 			{
-				MRLog(@"Property '%@' not found in %lx properties for %@", propertyName, (unsigned long)[propDict count], NSStringFromClass(self));
+				MRLogWarn(@"Property '%@' not found in %lx properties for %@", propertyName, (unsigned long)[propDict count], NSStringFromClass(self));
 			}
 		}
 	}
@@ -150,35 +156,59 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 #pragma mark -
 
-+ (id) MR_createInContext:(NSManagedObjectContext *)context
++ (id) MR_createEntityInContext:(NSManagedObjectContext *)context
 {
-    if ([self respondsToSelector:@selector(insertInManagedObjectContext:)]) 
+    if ([self respondsToSelector:@selector(insertInManagedObjectContext:)] && context != nil)
     {
         id entity = [self performSelector:@selector(insertInManagedObjectContext:) withObject:context];
         return entity;
     }
     else
     {
-        return [NSEntityDescription insertNewObjectForEntityForName:[self MR_entityName] inManagedObjectContext:context];
+        NSEntityDescription *entity = nil;
+        if (context == nil)
+        {
+            entity = [self MR_entityDescription];
+        }
+        else
+        {
+            entity  = [self MR_entityDescriptionInContext:context];
+        }
+        
+        if (entity == nil)
+        {
+            return nil;
+        }
+        
+        return [[self alloc] initWithEntity:entity insertIntoManagedObjectContext:context];
     }
 }
 
 + (id) MR_createEntity
-{	
-	NSManagedObject *newEntity = [self MR_createInContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+	NSManagedObject *newEntity = [self MR_createEntityInContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+#pragma clang diagnostic pop
 
 	return newEntity;
 }
 
-- (BOOL) MR_deleteInContext:(NSManagedObjectContext *)context
+- (BOOL) MR_deleteEntityInContext:(NSManagedObjectContext *)context
 {
-	[context deleteObject:self];
-	return YES;
+    NSError *error = nil;
+    NSManagedObject *inContext = [context existingObjectWithID:[self objectID] error:&error];
+
+    [MagicalRecord handleErrors:error];
+
+    [context deleteObject:inContext];
+    
+    return YES;
 }
 
 - (BOOL) MR_deleteEntity
 {
-	[self MR_deleteInContext:[self managedObjectContext]];
+	[self MR_deleteEntityInContext:[self managedObjectContext]];
 	return YES;
 }
 
@@ -200,28 +230,52 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 + (BOOL) MR_deleteAllMatchingPredicate:(NSPredicate *)predicate
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     return [self MR_deleteAllMatchingPredicate:predicate inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+#pragma clang diagnostic pop
 }
 
 + (BOOL) MR_truncateAllInContext:(NSManagedObjectContext *)context
 {
-    NSArray *allEntities = [self MR_findAllInContext:context];
-    for (NSManagedObject *obj in allEntities)
+    NSFetchRequest *request = [self MR_requestAllInContext:context];
+    [request setReturnsObjectsAsFaults:YES];
+    [request setIncludesPropertyValues:NO];
+
+    NSArray *objectsToDelete = [self MR_executeFetchRequest:request inContext:context];
+    for (NSManagedObject *objectToDelete in objectsToDelete)
     {
-        [obj MR_deleteInContext:context];
+        [objectToDelete MR_deleteEntityInContext:context];
     }
     return YES;
 }
 
 + (BOOL) MR_truncateAll
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [self MR_truncateAllInContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+#pragma clang diagnostic pop
+
     return YES;
 }
 
 - (id) MR_inContext:(NSManagedObjectContext *)otherContext
 {
     NSError *error = nil;
+    
+    if ([[self objectID] isTemporaryID])
+    {
+        BOOL success = [[self managedObjectContext] obtainPermanentIDsForObjects:@[self] error:&error];
+        if (!success)
+        {
+            [MagicalRecord handleErrors:error];
+            return nil;
+        }
+    }
+    
+    error = nil;
+    
     NSManagedObject *inContext = [otherContext existingObjectWithID:[self objectID] error:&error];
     [MagicalRecord handleErrors:error];
     
@@ -231,7 +285,24 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 - (id) MR_inThreadContext
 {
     NSManagedObject *weakSelf = self;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     return [weakSelf MR_inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+#pragma clang diagnostic pop
+}
+
+@end
+
+@implementation NSManagedObject (MagicalRecordDeprecated)
+
++ (instancetype) MR_createInContext:(NSManagedObjectContext *)context
+{
+    return [self MR_createEntityInContext:context];
+}
+
+- (BOOL) MR_deleteInContext:(NSManagedObjectContext *)context
+{
+    return [self MR_deleteEntityInContext:context];
 }
 
 @end

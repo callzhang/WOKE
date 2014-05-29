@@ -17,9 +17,6 @@
 #import "NSString+MD5.h"
 #import "EWWakeUpManager.h"
 
-#define MR_LOGGING_ENABLED 0
-#define MR_SHORTHAND
-#import "CoreData+MagicalRecord.h"
 #import <MagicalRecord/CoreData+MagicalRecord.h>
 
 //Util

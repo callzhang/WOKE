@@ -136,22 +136,7 @@
 
 }
 
-+ (void)loginWithTempUser:(void (^)(void))block{
-    [PFAnonymousUtils logInWithBlock:^(PFUser *user, NSError *error) {
-        //get anonymous user, create core data user
-        EWPerson *person = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
-        [EWDataStore save];
-        me = person;
-        
-        //callback
-        if (block) {
-            block();
-        }
-        
-        //broadcast
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
-    }];
-}
+
 
 //Depreciated: log in using local machine info
 + (void)loginWithDeviceIDWithCompletionBlock:(void (^)(void))block{
@@ -180,7 +165,7 @@
             me = person;
             
         }else{
-            NSLog(@"Failed to login: %@", error.description);
+            NSLog(@"Create new user: %@", error.description);
             //create new user
             PFUser *user = [PFUser user];
             user.username = username;

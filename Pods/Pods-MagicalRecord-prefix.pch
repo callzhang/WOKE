@@ -1,8 +1,9 @@
 #ifdef __OBJC__
 #import <UIKit/UIKit.h>
 #endif
-#define MR_ENABLE_ACTIVE_RECORD_LOGGING 0
-#define MR_SHORTHAND
+
 #import "Pods-environment.h"
-#import <CoreData/CoreData.h>
+#ifdef __OBJC__
+#define MR_SHORTHAND
 #import "CoreData+MagicalRecord.h"
+#endif

@@ -108,12 +108,7 @@
             return;
         }else{
             //different task
-            @try {
-                [self stopObserveTask];
-            }
-            @catch (NSException *exception) {
-                NSLog(@"%@", exception.description);
-            }
+            [self stopObserveTask];
         }
     }
     
@@ -234,14 +229,18 @@
 }
 
 - (void)stopObserveTask{
-    NSArray *observants = [task observationInfo];
-    if ([observants containsObject:self]) {
+    
+    NSDictionary *observants = [task observationInfo];
+    NSArray *observers = observants[@"state"];
+    
+    if ([observers containsObject:self]){
         [task removeObserver:self forKeyPath:@"state"];
         [task removeObserver:self forKeyPath:@"medias"];
         [task removeObserver:self forKeyPath:@"time"];
         [task removeObserver:self forKeyPath:@"statement"];
         NSLog(@"Removed KVO to task (%@)", task.time.weekday);
     }
+    
     
 }
 

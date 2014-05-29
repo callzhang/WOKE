@@ -16,8 +16,8 @@
 
 + (NSArray *) MR_executeFetchRequest:(NSFetchRequest *)request;
 + (NSArray *) MR_executeFetchRequest:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context;
-+ (id) MR_executeFetchRequestAndReturnFirstObject:(NSFetchRequest *)request;
-+ (id) MR_executeFetchRequestAndReturnFirstObject:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context;
++ (instancetype) MR_executeFetchRequestAndReturnFirstObject:(NSFetchRequest *)request;
++ (instancetype) MR_executeFetchRequestAndReturnFirstObject:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context;
 
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 
@@ -29,10 +29,11 @@
 + (NSEntityDescription *) MR_entityDescriptionInContext:(NSManagedObjectContext *)context;
 + (NSArray *) MR_propertiesNamed:(NSArray *)properties;
 
-+ (id) MR_createEntity;
-+ (id) MR_createInContext:(NSManagedObjectContext *)context;
++ (instancetype) MR_createEntity;
++ (instancetype) MR_createEntityInContext:(NSManagedObjectContext *)context;
+
 - (BOOL) MR_deleteEntity;
-- (BOOL) MR_deleteInContext:(NSManagedObjectContext *)context;
+- (BOOL) MR_deleteEntityInContext:(NSManagedObjectContext *)context;
 
 + (BOOL) MR_deleteAllMatchingPredicate:(NSPredicate *)predicate;
 + (BOOL) MR_deleteAllMatchingPredicate:(NSPredicate *)predicate inContext:(NSManagedObjectContext *)context;
@@ -43,8 +44,22 @@
 + (NSArray *) MR_ascendingSortDescriptors:(NSArray *)attributesToSortBy;
 + (NSArray *) MR_descendingSortDescriptors:(NSArray *)attributesToSortBy;
 
-- (id) MR_inContext:(NSManagedObjectContext *)otherContext;
-- (id) MR_inThreadContext;
+- (instancetype) MR_inContext:(NSManagedObjectContext *)otherContext;
+- (instancetype) MR_inThreadContext;
 
 @end
 
+@interface NSManagedObject (MagicalRecordDeprecated)
+
++ (instancetype) MR_createInContext:(NSManagedObjectContext *)context __attribute__((deprecated("Please use +MR_createEntityInContext: instead.")));
+- (BOOL) MR_deleteInContext:(NSManagedObjectContext *)context __attribute__((deprecated("Please use -MR_deleteEntityInContext: instead.")));
+
+@end
+
+@protocol MagicalRecord_MOGenerator <NSObject>
+
+@optional
+- (instancetype) entityInManagedObjectContext:(NSManagedObjectContext *)object;
+- (instancetype) insertInManagedObjectContext:(NSManagedObjectContext *)object;
+
+@end

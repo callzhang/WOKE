@@ -54,7 +54,7 @@ EWPerson *me;
 -(EWPerson *)createPersonWIthParseObject:(PFUser *)user{
     EWPerson *newUser = (EWPerson *)[user managedObject];
     newUser.username = user.username;
-    newUser.profilePic = [UIImage imageNamed:@"profile"];
+    newUser.profilePic = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];
     newUser.name = kDefaultUsername;
     newUser.preference = kUserDefaults;
     
@@ -77,15 +77,10 @@ EWPerson *me;
     NSArray *result = [[EWDataStore currentContext] executeFetchRequest:userFetch error:&err];
     
     if (result.count == 0){
-        //create one
-        PFQuery *q = [PFUser query];
-        [q whereKey:@"username" equalTo:ID];
-        NSArray *users = [q findObjects];
-        if (users.count == 0) {
-            return nil;
-        }
-        PFUser *user = users[0];
-        person = (EWPerson *)[self createPersonWIthParseObject:user];
+        //First find user on server
+        PFUser *user = [PFUser currentUser];
+        NSParameterAssert([user.username isEqualToString:ID]);
+        person = (EWPerson *)[user managedObject];
         NSLog(@"User %@ data has CREATED", person.name);
     }else{
         person = (EWPerson *)result[0];

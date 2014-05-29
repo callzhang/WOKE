@@ -6,6 +6,7 @@
 //
 
 #import "CoreData+MagicalRecord.h"
+#import "MagicalRecordLogging.h"
 #import <objc/runtime.h>
 
 static NSManagedObjectContext *rootSavingContext = nil;
@@ -30,6 +31,10 @@ static NSString * const kMagicalRecordNSManagedObjectContextWorkingName = @"kNSM
 {
     [self MR_setDefaultContext:nil];
     [self MR_setRootSavingContext:nil];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [self MR_clearNonMainThreadContextsCache];
+#pragma clang diagnostic pop
 }
 
 - (NSString *) MR_description;
@@ -106,7 +111,7 @@ static NSString * const kMagicalRecordNSManagedObjectContextWorkingName = @"kNSM
                                                                            [[NSManagedObjectContext MR_defaultContext] MR_observeiCloudChangesInCoordinator:coordinator];
                                                                        }];        
     }
-    MRLog(@"Set Default Context: %@", defaultManagedObjectContext_);
+    MRLogInfo(@"Set Default Context: %@", defaultManagedObjectContext_);
 }
 
 + (void)rootContextChanged:(NSNotification *)notification {
@@ -137,7 +142,7 @@ static NSString * const kMagicalRecordNSManagedObjectContextWorkingName = @"kNSM
     [context MR_obtainPermanentIDsBeforeSaving];
     [rootSavingContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
     [rootSavingContext MR_setWorkingName:@"BACKGROUND SAVING (ROOT)"];
-    MRLog(@"Set Root Saving Context: %@", rootSavingContext);
+    MRLogInfo(@"Set Root Saving Context: %@", rootSavingContext);
 }
 
 + (void) MR_initializeDefaultContextWithCoordinator:(NSPersistentStoreCoordinator *)coordinator;
@@ -187,7 +192,7 @@ static NSString * const kMagicalRecordNSManagedObjectContextWorkingName = @"kNSM
 + (NSManagedObjectContext *) MR_newMainQueueContext;
 {
     NSManagedObjectContext *context = [[self alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-    MRLog(@"Created Main Queue Context: %@", context);
+    MRLogInfo(@"Created Main Queue Context: %@", context);
     return context;    
 }
 
@@ -201,7 +206,7 @@ static NSString * const kMagicalRecordNSManagedObjectContextWorkingName = @"kNSM
             [context setPersistentStoreCoordinator:coordinator];
         }];
         
-        MRLog(@"-> Created Context %@", [context MR_workingName]);
+        MRLogVerbose(@"-> Created Context %@", [context MR_workingName]);
     }
     return context;
 }
@@ -223,7 +228,7 @@ static NSString * const kMagicalRecordNSManagedObjectContextWorkingName = @"kNSM
 
     if ([insertedObjects count])
     {
-        MRLog(@"Context %@ is about to save. Obtaining permanent IDs for new %lu inserted objects", [context MR_workingName], (unsigned long)[insertedObjects count]);
+        MRLogVerbose(@"Context %@ is about to save. Obtaining permanent IDs for new %lu inserted objects", [context MR_workingName], (unsigned long)[insertedObjects count]);
         NSError *error = nil;
         BOOL success = [context obtainPermanentIDsForObjects:[insertedObjects allObjects] error:&error];
         if (!success)
@@ -241,12 +246,19 @@ static NSString * const kMagicalRecordNSManagedObjectContextWorkingName = @"kNSM
 - (NSString *) MR_workingName;
 {
     NSString *workingName = [[self userInfo] objectForKey:kMagicalRecordNSManagedObjectContextWorkingName];
-    if (nil == workingName)
+    if ([workingName length] == 0)
     {
         workingName = @"UNNAMED";
     }
     return workingName;
 }
 
+- (void) MR_deleteObjects:(id <NSFastEnumeration>)managedObjects
+{
+    for (NSManagedObject *managedObject in managedObjects)
+    {
+        [self deleteObject:managedObject];
+    }
+}
 
 @end
