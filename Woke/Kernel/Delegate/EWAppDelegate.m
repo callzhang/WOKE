@@ -8,6 +8,7 @@
 
 #import "EWAppDelegate.h"
 //#define MR_SHORTHAND
+#define MR_LOGGING_ENABLED 0
 //view controller
 #import "EWAlarmsViewController.h"
 #import "EWSettingsViewController.h"
