@@ -20,6 +20,7 @@
 //@synthesize context;
 
 +(EWMediaStore *)sharedInstance{
+    NSParameterAssert([NSThread isMainThread]);
     static EWMediaStore *sharedStore_ = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -117,7 +118,6 @@
 - (void)deleteAllMedias{
 #ifdef DEV_TEST
     NSLog(@"*** Delete all medias");
-    EWPerson *me = me;
     NSArray *medias = [self mediaCreatedByPerson:me];
     for (EWMediaItem *m in medias) {
         [[EWDataStore currentContext] deleteObject:m];

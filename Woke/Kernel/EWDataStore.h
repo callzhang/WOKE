@@ -125,9 +125,9 @@
 //+ (NSManagedObject *)findOrCreateManagedObjectWithParseObjectID:(NSString *)objectId;
 
 /**
- Delete PFObject according to given ManagedObject
+ Delete PFObject in server
  */
-+ (void)deleteParseObjectWithManagedObject:(NSManagedObject *)managedObject;
++ (void)deleteParseObject:(PFObject *)parseObject;
 
 /**
  Perform save callback for managedObject

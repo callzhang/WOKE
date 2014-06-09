@@ -55,7 +55,7 @@
 - (void)dealloc{
     @try {
         [self stopObserveTask];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kTaskDeleteNotification object:nil];
+        //[[NSNotificationCenter defaultCenter] removeObserver:self name:kTaskDeleteNotification object:nil];
         NSLog(@"Alarm page deallocated, KVO & Observer removed");
     }
     @catch (NSException *exception) {
