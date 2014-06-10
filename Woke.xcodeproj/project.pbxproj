@@ -234,6 +234,7 @@
 		9B290A5D1947AFA80077C4BA /* FTASyncParent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASyncParent.m; sourceTree = "<group>"; };
 		9B290A621947AFD60077C4BA /* NPReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPReachability.h; sourceTree = "<group>"; };
 		9B290A631947AFD60077C4BA /* NPReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NPReachability.m; sourceTree = "<group>"; };
+		9B290A651947B03D0077C4BA /* ParseKeys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParseKeys.h; sourceTree = "<group>"; };
 		9B2DEEF518B811EC0046EB80 /* EWServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWServer.h; sourceTree = "<group>"; };
 		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWServer.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadManager.h; path = Download/EWDownloadManager.h; sourceTree = "<group>"; };
@@ -766,6 +767,7 @@
 		9B290A561947AFA80077C4BA /* FTASync */ = {
 			isa = PBXGroup;
 			children = (
+				9B290A651947B03D0077C4BA /* ParseKeys.h */,
 				9B290A571947AFA80077C4BA /* FTAParseSync.h */,
 				9B290A581947AFA80077C4BA /* FTAParseSync.m */,
 				9B290A591947AFA80077C4BA /* FTASync.h */,
