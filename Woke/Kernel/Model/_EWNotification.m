@@ -5,12 +5,9 @@
 
 const struct EWNotificationAttributes EWNotificationAttributes = {
 	.completed = @"completed",
-	.createdAt = @"createdAt",
 	.importance = @"importance",
-	.objectId = @"objectId",
 	.sender = @"sender",
 	.type = @"type",
-	.updatedAt = @"updatedAt",
 	.userInfo = @"userInfo",
 };
 
@@ -66,13 +63,6 @@ const struct EWNotificationFetchedProperties EWNotificationFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
 @dynamic importance;
 
 
@@ -99,13 +89,6 @@ const struct EWNotificationFetchedProperties EWNotificationFetchedProperties = {
 
 
 
-@dynamic objectId;
-
-
-
-
-
-
 @dynamic sender;
 
 
@@ -114,13 +97,6 @@ const struct EWNotificationFetchedProperties EWNotificationFetchedProperties = {
 
 
 @dynamic type;
-
-
-
-
-
-
-@dynamic updatedAt;
 
 
 

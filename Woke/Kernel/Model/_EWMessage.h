@@ -2,15 +2,12 @@
 // Make changes to EWMessage.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "FTASyncParent.h"
 
 extern const struct EWMessageAttributes {
-	__unsafe_unretained NSString *createdAt;
 	__unsafe_unretained NSString *media;
-	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *text;
 	__unsafe_unretained NSString *time;
-	__unsafe_unretained NSString *updatedAt;
 } EWMessageAttributes;
 
 extern const struct EWMessageRelationships {
@@ -32,27 +29,14 @@ extern const struct EWMessageFetchedProperties {
 
 
 
-
-
-
 @interface EWMessageID : NSManagedObjectID {}
 @end
 
-@interface _EWMessage : NSManagedObject {}
+@interface _EWMessage : FTASyncParent {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
 - (EWMessageID*)objectID;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* createdAt;
-
-
-
-//- (BOOL)validateCreatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -63,16 +47,6 @@ extern const struct EWMessageFetchedProperties {
 
 
 //- (BOOL)validateMedia:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSString* objectId;
-
-
-
-//- (BOOL)validateObjectId:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -93,16 +67,6 @@ extern const struct EWMessageFetchedProperties {
 
 
 //- (BOOL)validateTime:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* updatedAt;
-
-
-
-//- (BOOL)validateUpdatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -146,20 +110,8 @@ extern const struct EWMessageFetchedProperties {
 @interface _EWMessage (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSDate*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSDate*)value;
-
-
-
-
 - (NSData*)primitiveMedia;
 - (void)setPrimitiveMedia:(NSData*)value;
-
-
-
-
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
 
 
 
@@ -172,12 +124,6 @@ extern const struct EWMessageFetchedProperties {
 
 - (NSDate*)primitiveTime;
 - (void)setPrimitiveTime:(NSDate*)value;
-
-
-
-
-- (NSDate*)primitiveUpdatedAt;
-- (void)setPrimitiveUpdatedAt:(NSDate*)value;
 
 
 

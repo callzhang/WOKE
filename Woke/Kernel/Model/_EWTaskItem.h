@@ -2,17 +2,14 @@
 // Make changes to EWTaskItem.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "FTASyncParent.h"
 
 extern const struct EWTaskItemAttributes {
 	__unsafe_unretained NSString *added;
 	__unsafe_unretained NSString *completed;
-	__unsafe_unretained NSString *createdAt;
-	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *state;
 	__unsafe_unretained NSString *statement;
 	__unsafe_unretained NSString *time;
-	__unsafe_unretained NSString *updatedAt;
 } EWTaskItemAttributes;
 
 extern const struct EWTaskItemRelationships {
@@ -40,13 +37,10 @@ extern const struct EWTaskItemFetchedProperties {
 
 
 
-
-
-
 @interface EWTaskItemID : NSManagedObjectID {}
 @end
 
-@interface _EWTaskItem : NSManagedObject {}
+@interface _EWTaskItem : FTASyncParent {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
@@ -71,26 +65,6 @@ extern const struct EWTaskItemFetchedProperties {
 
 
 //- (BOOL)validateCompleted:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* createdAt;
-
-
-
-//- (BOOL)validateCreatedAt:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSString* objectId;
-
-
-
-//- (BOOL)validateObjectId:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -125,16 +99,6 @@ extern const struct EWTaskItemFetchedProperties {
 
 
 //- (BOOL)validateTime:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* updatedAt;
-
-
-
-//- (BOOL)validateUpdatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -219,18 +183,6 @@ extern const struct EWTaskItemFetchedProperties {
 
 
 
-- (NSDate*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSDate*)value;
-
-
-
-
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
-
-
-
-
 - (NSNumber*)primitiveState;
 - (void)setPrimitiveState:(NSNumber*)value;
 
@@ -248,12 +200,6 @@ extern const struct EWTaskItemFetchedProperties {
 
 - (NSDate*)primitiveTime;
 - (void)setPrimitiveTime:(NSDate*)value;
-
-
-
-
-- (NSDate*)primitiveUpdatedAt;
-- (void)setPrimitiveUpdatedAt:(NSDate*)value;
 
 
 

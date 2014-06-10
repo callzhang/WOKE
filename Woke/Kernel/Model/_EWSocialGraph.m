@@ -4,12 +4,9 @@
 #import "_EWSocialGraph.h"
 
 const struct EWSocialGraphAttributes EWSocialGraphAttributes = {
-	.createdAt = @"createdAt",
 	.facebookFriends = @"facebookFriends",
 	.facebookToken = @"facebookToken",
 	.facebookUpdated = @"facebookUpdated",
-	.objectId = @"objectId",
-	.updatedAt = @"updatedAt",
 	.weiboFriends = @"weiboFriends",
 	.weiboToken = @"weiboToken",
 	.weiboUpdated = @"weiboUpdated",
@@ -55,13 +52,6 @@ const struct EWSocialGraphFetchedProperties EWSocialGraphFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
 @dynamic facebookFriends;
 
 
@@ -77,20 +67,6 @@ const struct EWSocialGraphFetchedProperties EWSocialGraphFetchedProperties = {
 
 
 @dynamic facebookUpdated;
-
-
-
-
-
-
-@dynamic objectId;
-
-
-
-
-
-
-@dynamic updatedAt;
 
 
 

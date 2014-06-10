@@ -39,6 +39,10 @@
 		56FEA58E17A5763200FC2938 /* EWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA57E17A5763200FC2938 /* EWAppDelegate.m */; };
 		56FEA59617A5766B00FC2938 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 56FEA59217A5766B00FC2938 /* InfoPlist.strings */; };
 		56FEA59717A5766B00FC2938 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA59417A5766B00FC2938 /* main.m */; };
+		9B290A5E1947AFA80077C4BA /* FTAParseSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B290A581947AFA80077C4BA /* FTAParseSync.m */; };
+		9B290A5F1947AFA80077C4BA /* FTASyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B290A5B1947AFA80077C4BA /* FTASyncHandler.m */; };
+		9B290A601947AFA80077C4BA /* FTASyncParent.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B290A5D1947AFA80077C4BA /* FTASyncParent.m */; };
+		9B290A641947AFD60077C4BA /* NPReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B290A631947AFD60077C4BA /* NPReachability.m */; };
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
 		9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */; };
@@ -221,6 +225,15 @@
 		56FEA59017A5766B00FC2938 /* Woke-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Woke-Prefix.pch"; sourceTree = "<group>"; };
 		56FEA59317A5766B00FC2938 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		56FEA59417A5766B00FC2938 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9B290A571947AFA80077C4BA /* FTAParseSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAParseSync.h; sourceTree = "<group>"; };
+		9B290A581947AFA80077C4BA /* FTAParseSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAParseSync.m; sourceTree = "<group>"; };
+		9B290A591947AFA80077C4BA /* FTASync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASync.h; sourceTree = "<group>"; };
+		9B290A5A1947AFA80077C4BA /* FTASyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASyncHandler.h; sourceTree = "<group>"; };
+		9B290A5B1947AFA80077C4BA /* FTASyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASyncHandler.m; sourceTree = "<group>"; };
+		9B290A5C1947AFA80077C4BA /* FTASyncParent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASyncParent.h; sourceTree = "<group>"; };
+		9B290A5D1947AFA80077C4BA /* FTASyncParent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASyncParent.m; sourceTree = "<group>"; };
+		9B290A621947AFD60077C4BA /* NPReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPReachability.h; sourceTree = "<group>"; };
+		9B290A631947AFD60077C4BA /* NPReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NPReachability.m; sourceTree = "<group>"; };
 		9B2DEEF518B811EC0046EB80 /* EWServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWServer.h; sourceTree = "<group>"; };
 		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWServer.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadManager.h; path = Download/EWDownloadManager.h; sourceTree = "<group>"; };
@@ -700,6 +713,8 @@
 		56FEA57417A5763200FC2938 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				9B290A611947AFD60077C4BA /* NPReachability */,
+				9B290A561947AFA80077C4BA /* FTASync */,
 				9B8A6A9C191887F400591E8A /* NGAParallaxMotion */,
 				ABF3FB6D190A05E80017D2EF /* SCSiriWaveformView */,
 				ABD34DAA185C054C008CD2B8 /* FTWCache */,
@@ -746,6 +761,31 @@
 				56FEA57E17A5763200FC2938 /* EWAppDelegate.m */,
 			);
 			path = Delegate;
+			sourceTree = "<group>";
+		};
+		9B290A561947AFA80077C4BA /* FTASync */ = {
+			isa = PBXGroup;
+			children = (
+				9B290A571947AFA80077C4BA /* FTAParseSync.h */,
+				9B290A581947AFA80077C4BA /* FTAParseSync.m */,
+				9B290A591947AFA80077C4BA /* FTASync.h */,
+				9B290A5A1947AFA80077C4BA /* FTASyncHandler.h */,
+				9B290A5B1947AFA80077C4BA /* FTASyncHandler.m */,
+				9B290A5C1947AFA80077C4BA /* FTASyncParent.h */,
+				9B290A5D1947AFA80077C4BA /* FTASyncParent.m */,
+			);
+			name = FTASync;
+			path = Source;
+			sourceTree = "<group>";
+		};
+		9B290A611947AFD60077C4BA /* NPReachability */ = {
+			isa = PBXGroup;
+			children = (
+				9B290A621947AFD60077C4BA /* NPReachability.h */,
+				9B290A631947AFD60077C4BA /* NPReachability.m */,
+			);
+			name = NPReachability;
+			path = Source/NPReachability;
 			sourceTree = "<group>";
 		};
 		9B8A6A9C191887F400591E8A /* NGAParallaxMotion */ = {
@@ -1116,6 +1156,7 @@
 				5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */,
 				9BF07AB9192324F800DED2E1 /* _EWGroup.m in Sources */,
 				56FEA58E17A5763200FC2938 /* EWAppDelegate.m in Sources */,
+				9B290A601947AFA80077C4BA /* FTASyncParent.m in Sources */,
 				9BF07ABB192324F800DED2E1 /* _EWMediaItem.m in Sources */,
 				AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */,
 				56FEA59717A5766B00FC2938 /* main.m in Sources */,
@@ -1156,6 +1197,7 @@
 				9BF297BD1912F713008C136E /* EWRecordingViewController.m in Sources */,
 				AB207E5E182F4D9E0076D93F /* ImageViewController.m in Sources */,
 				9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */,
+				9B290A5E1947AFA80077C4BA /* FTAParseSync.m in Sources */,
 				5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */,
 				AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */,
 				9BF297E41912F720008C136E /* EWCollectionPersonCell.m in Sources */,
@@ -1172,11 +1214,13 @@
 				9BF07ABA192324F800DED2E1 /* _EWGroupTask.m in Sources */,
 				9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */,
 				9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */,
+				9B290A5F1947AFA80077C4BA /* FTASyncHandler.m in Sources */,
 				AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */,
 				9BF297C01912F713008C136E /* EWSettingsViewController.m in Sources */,
 				AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */,
 				9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */,
 				9BF07ABF192324F800DED2E1 /* _EWSocialGraph.m in Sources */,
+				9B290A641947AFD60077C4BA /* NPReachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

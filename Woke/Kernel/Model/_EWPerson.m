@@ -8,18 +8,15 @@ const struct EWPersonAttributes EWPersonAttributes = {
 	.bgImage = @"bgImage",
 	.birthday = @"birthday",
 	.city = @"city",
-	.createdAt = @"createdAt",
 	.email = @"email",
 	.facebook = @"facebook",
 	.gender = @"gender",
 	.lastLocation = @"lastLocation",
 	.name = @"name",
-	.objectId = @"objectId",
 	.preference = @"preference",
 	.profilePic = @"profilePic",
 	.region = @"region",
 	.statement = @"statement",
-	.updatedAt = @"updatedAt",
 	.username = @"username",
 	.weibo = @"weibo",
 };
@@ -106,13 +103,6 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
 @dynamic email;
 
 
@@ -148,13 +138,6 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 
 
-@dynamic objectId;
-
-
-
-
-
-
 @dynamic preference;
 
 
@@ -177,13 +160,6 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 
 @dynamic statement;
-
-
-
-
-
-
-@dynamic updatedAt;
 
 
 

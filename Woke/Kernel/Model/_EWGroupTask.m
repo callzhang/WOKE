@@ -6,11 +6,8 @@
 const struct EWGroupTaskAttributes EWGroupTaskAttributes = {
 	.added = @"added",
 	.city = @"city",
-	.createdAt = @"createdAt",
-	.objectId = @"objectId",
 	.region = @"region",
 	.time = @"time",
-	.updatedId = @"updatedId",
 };
 
 const struct EWGroupTaskRelationships EWGroupTaskRelationships = {
@@ -69,20 +66,6 @@ const struct EWGroupTaskFetchedProperties EWGroupTaskFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
-@dynamic objectId;
-
-
-
-
-
-
 @dynamic region;
 
 
@@ -91,13 +74,6 @@ const struct EWGroupTaskFetchedProperties EWGroupTaskFetchedProperties = {
 
 
 @dynamic time;
-
-
-
-
-
-
-@dynamic updatedId;
 
 
 

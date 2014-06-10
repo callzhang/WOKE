@@ -2,22 +2,19 @@
 // Make changes to EWMediaItem.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "FTASyncParent.h"
 
 extern const struct EWMediaItemAttributes {
 	__unsafe_unretained NSString *audio;
 	__unsafe_unretained NSString *buzzKey;
-	__unsafe_unretained NSString *createdAt;
 	__unsafe_unretained NSString *image;
 	__unsafe_unretained NSString *message;
-	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *played;
 	__unsafe_unretained NSString *priority;
 	__unsafe_unretained NSString *readTime;
 	__unsafe_unretained NSString *targetDate;
 	__unsafe_unretained NSString *thumbnail;
 	__unsafe_unretained NSString *type;
-	__unsafe_unretained NSString *updatedAt;
 	__unsafe_unretained NSString *video;
 } EWMediaItemAttributes;
 
@@ -38,23 +35,20 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-
 @class NSObject;
 
 
 
 
 
-
 @class NSObject;
-
 
 
 
 @interface EWMediaItemID : NSManagedObjectID {}
 @end
 
-@interface _EWMediaItem : NSManagedObject {}
+@interface _EWMediaItem : FTASyncParent {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
@@ -84,16 +78,6 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDate* createdAt;
-
-
-
-//- (BOOL)validateCreatedAt:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
 @property (nonatomic, strong) id image;
 
 
@@ -109,16 +93,6 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 //- (BOOL)validateMessage:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSString* objectId;
-
-
-
-//- (BOOL)validateObjectId:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -192,16 +166,6 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDate* updatedAt;
-
-
-
-//- (BOOL)validateUpdatedAt:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
 @property (nonatomic, strong) NSData* video;
 
 
@@ -262,12 +226,6 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-- (NSDate*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSDate*)value;
-
-
-
-
 - (id)primitiveImage;
 - (void)setPrimitiveImage:(id)value;
 
@@ -276,12 +234,6 @@ extern const struct EWMediaItemFetchedProperties {
 
 - (NSString*)primitiveMessage;
 - (void)setPrimitiveMessage:(NSString*)value;
-
-
-
-
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
 
 
 
@@ -324,12 +276,6 @@ extern const struct EWMediaItemFetchedProperties {
 
 - (NSString*)primitiveType;
 - (void)setPrimitiveType:(NSString*)value;
-
-
-
-
-- (NSDate*)primitiveUpdatedAt;
-- (void)setPrimitiveUpdatedAt:(NSDate*)value;
 
 
 

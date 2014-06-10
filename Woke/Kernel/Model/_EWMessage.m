@@ -4,12 +4,9 @@
 #import "_EWMessage.h"
 
 const struct EWMessageAttributes EWMessageAttributes = {
-	.createdAt = @"createdAt",
 	.media = @"media",
-	.objectId = @"objectId",
 	.text = @"text",
 	.time = @"time",
-	.updatedAt = @"updatedAt",
 };
 
 const struct EWMessageRelationships EWMessageRelationships = {
@@ -55,21 +52,7 @@ const struct EWMessageFetchedProperties EWMessageFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
 @dynamic media;
-
-
-
-
-
-
-@dynamic objectId;
 
 
 
@@ -84,13 +67,6 @@ const struct EWMessageFetchedProperties EWMessageFetchedProperties = {
 
 
 @dynamic time;
-
-
-
-
-
-
-@dynamic updatedAt;
 
 
 

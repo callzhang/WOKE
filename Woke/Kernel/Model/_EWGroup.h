@@ -2,16 +2,13 @@
 // Make changes to EWGroup.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "FTASyncParent.h"
 
 extern const struct EWGroupAttributes {
-	__unsafe_unretained NSString *createdAt;
 	__unsafe_unretained NSString *imageKey;
 	__unsafe_unretained NSString *name;
-	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *statement;
 	__unsafe_unretained NSString *topic;
-	__unsafe_unretained NSString *updatedAt;
 	__unsafe_unretained NSString *wakeupTime;
 } EWGroupAttributes;
 
@@ -26,10 +23,7 @@ extern const struct EWGroupFetchedProperties {
 @class EWPerson;
 @class EWPerson;
 
-
 @class NSObject;
-
-
 
 
 
@@ -38,21 +32,11 @@ extern const struct EWGroupFetchedProperties {
 @interface EWGroupID : NSManagedObjectID {}
 @end
 
-@interface _EWGroup : NSManagedObject {}
+@interface _EWGroup : FTASyncParent {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
 - (EWGroupID*)objectID;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* createdAt;
-
-
-
-//- (BOOL)validateCreatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -78,16 +62,6 @@ extern const struct EWGroupFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* objectId;
-
-
-
-//- (BOOL)validateObjectId:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
 @property (nonatomic, strong) NSString* statement;
 
 
@@ -103,16 +77,6 @@ extern const struct EWGroupFetchedProperties {
 
 
 //- (BOOL)validateTopic:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* updatedAt;
-
-
-
-//- (BOOL)validateUpdatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -162,12 +126,6 @@ extern const struct EWGroupFetchedProperties {
 @interface _EWGroup (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSDate*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSDate*)value;
-
-
-
-
 - (id)primitiveImageKey;
 - (void)setPrimitiveImageKey:(id)value;
 
@@ -180,12 +138,6 @@ extern const struct EWGroupFetchedProperties {
 
 
 
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
-
-
-
-
 - (NSString*)primitiveStatement;
 - (void)setPrimitiveStatement:(NSString*)value;
 
@@ -194,12 +146,6 @@ extern const struct EWGroupFetchedProperties {
 
 - (NSString*)primitiveTopic;
 - (void)setPrimitiveTopic:(NSString*)value;
-
-
-
-
-- (NSDate*)primitiveUpdatedAt;
-- (void)setPrimitiveUpdatedAt:(NSDate*)value;
 
 
 

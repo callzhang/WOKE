@@ -2,25 +2,22 @@
 // Make changes to EWPerson.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "FTASyncParent.h"
 
 extern const struct EWPersonAttributes {
 	__unsafe_unretained NSString *aws_id;
 	__unsafe_unretained NSString *bgImage;
 	__unsafe_unretained NSString *birthday;
 	__unsafe_unretained NSString *city;
-	__unsafe_unretained NSString *createdAt;
 	__unsafe_unretained NSString *email;
 	__unsafe_unretained NSString *facebook;
 	__unsafe_unretained NSString *gender;
 	__unsafe_unretained NSString *lastLocation;
 	__unsafe_unretained NSString *name;
-	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *preference;
 	__unsafe_unretained NSString *profilePic;
 	__unsafe_unretained NSString *region;
 	__unsafe_unretained NSString *statement;
-	__unsafe_unretained NSString *updatedAt;
 	__unsafe_unretained NSString *username;
 	__unsafe_unretained NSString *weibo;
 } EWPersonAttributes;
@@ -69,13 +66,10 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-
 @class NSObject;
-
 
 @class NSObject;
 @class NSObject;
-
 
 
 
@@ -84,7 +78,7 @@ extern const struct EWPersonFetchedProperties {
 @interface EWPersonID : NSManagedObjectID {}
 @end
 
-@interface _EWPerson : NSManagedObject {}
+@interface _EWPerson : FTASyncParent {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
@@ -129,16 +123,6 @@ extern const struct EWPersonFetchedProperties {
 
 
 //- (BOOL)validateCity:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* createdAt;
-
-
-
-//- (BOOL)validateCreatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -194,16 +178,6 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* objectId;
-
-
-
-//- (BOOL)validateObjectId:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
 @property (nonatomic, strong) id preference;
 
 
@@ -239,16 +213,6 @@ extern const struct EWPersonFetchedProperties {
 
 
 //- (BOOL)validateStatement:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* updatedAt;
-
-
-
-//- (BOOL)validateUpdatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -483,12 +447,6 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSDate*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSDate*)value;
-
-
-
-
 - (NSString*)primitiveEmail;
 - (void)setPrimitiveEmail:(NSString*)value;
 
@@ -519,12 +477,6 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
-
-
-
-
 - (id)primitivePreference;
 - (void)setPrimitivePreference:(id)value;
 
@@ -545,12 +497,6 @@ extern const struct EWPersonFetchedProperties {
 
 - (NSString*)primitiveStatement;
 - (void)setPrimitiveStatement:(NSString*)value;
-
-
-
-
-- (NSDate*)primitiveUpdatedAt;
-- (void)setPrimitiveUpdatedAt:(NSDate*)value;
 
 
 
