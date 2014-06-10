@@ -545,7 +545,9 @@
                 NSLog(@"Uh oh, we couldn't find the object!");
                 // Now also check for connection errors:
                 //delete ParseID from MO
-                [mo setValue:[NSNull null] forKey:kParseObjectID];
+                //[mo setValue:[NSNull null] forKey:kParseObjectID];
+                [mo setValue:nil forKeyPath:kParseObjectID];
+                // 2014-06-10  mq add  
             } else if ([err code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
                 [mo updateEventually];
