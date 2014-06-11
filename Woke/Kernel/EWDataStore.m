@@ -885,8 +885,10 @@
     else{
         [self setValue:data forKey:attributeDescription.name];
     }
+    if ([NSThread isMainThread]) {
+        NSLog(@"Assign data for key: %@ on %@", attributeDescription.name, self.class);
+    }
     
-    NSLog(@"Assign data for key: %@ on %@", attributeDescription.name, self.class);
     
 }
 
