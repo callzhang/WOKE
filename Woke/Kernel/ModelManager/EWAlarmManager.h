@@ -14,6 +14,7 @@
 
 @interface EWAlarmManager : NSObject
 @property (nonatomic) BOOL alarmNeedToSetup;
+@property (nonatomic) BOOL isSchedulingAlarm;
 
 // Singleton
 + (EWAlarmManager *)sharedInstance ;

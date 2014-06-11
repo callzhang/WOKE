@@ -24,7 +24,6 @@
 #import "EWAlarmScheduleViewController.h"
 
 @implementation EWAlarmManager
-//@synthesize context;
 
 + (EWAlarmManager *)sharedInstance {
     //make sure core data stuff is always on main thread
@@ -34,6 +33,7 @@
     dispatch_once(&onceToken, ^{
         manager = [[EWAlarmManager alloc] init];
         manager.alarmNeedToSetup = NO;
+        manager.isSchedulingAlarm = NO;
         //[[NSNotificationCenter defaultCenter] addObserver:manager selector:@selector(observedAlarmChange:) name:kAlarmChangedNotification object:nil];
     }); 
     
@@ -60,7 +60,8 @@
 - (NSArray *)alarmsForUser:(EWPerson *)user{
     EWPerson *person = [EWDataStore objectForCurrentContext:user];
     NSMutableArray *alarms = [[person.alarms allObjects] mutableCopy];
-    if (alarms.count != 7 && person.isMe) {
+    if (alarms.count != 7 && person.isMe && !self.isSchedulingAlarm && [[user updatedAt] timeElapsed] > kServerUpdateInterval) {
+        NSLog(@"Alarm for me is less than 7, and me is outdated, need to fetch from server");
         //[person refresh];
     }
     
@@ -118,6 +119,11 @@
 
 //schedule according to alarms array. If array is empty, schedule according to default template.
 - (NSArray *)scheduleAlarm{
+    if (self.isSchedulingAlarm) {
+        NSLog(@"Skip scheduling alarm because it is scheduling already!");
+        return nil;
+    }
+    
     BOOL hasChange = NO;
     
     //get alarms
