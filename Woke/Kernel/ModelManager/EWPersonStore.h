@@ -22,7 +22,7 @@ extern EWPerson *me;
 @property (nonatomic, strong) NSArray *everyone;
 
 + (EWPersonStore *)sharedInstance;
-- (EWPerson *)createPersonWIthParseObject:(PFUser *)user;
+- (EWPerson *)createPersonWithParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByID:(NSString *)ID;
 /**
  Possible people that are relevant

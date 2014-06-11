@@ -692,18 +692,18 @@
     cell.time.text = @"";
     cell.time.alpha = 0;
     if (!isMe) {
-        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        EWTaskItem *nextValidTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
-        if (nextValidTask) {
-            NSString *timeLeft = [nextValidTask.time timeLeft];
-            //dispatch_async(dispatch_get_main_queue(), ^{
-            cell.time.text = timeLeft;
-            [UIView animateWithDuration:0.4 animations:^{
-                cell.time.alpha = 1;
-            }];
-            //});
-        }
-        //});
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            EWTaskItem *nextValidTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
+            if (nextValidTask) {
+                NSString *timeLeft = [nextValidTask.time timeLeft];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    cell.time.text = timeLeft;
+                    [UIView animateWithDuration:0.4 animations:^{
+                        cell.time.alpha = 1;
+                    }];
+                });
+            }
+        });
     }
     
     //location

@@ -33,10 +33,6 @@ EWPerson *me;
 @synthesize everyone;
 
 +(EWPersonStore *)sharedInstance{
-//    BOOL mainThread = [NSThread isMainThread];
-//    if (!mainThread) {
-//        NSLog(@"**** Person Store not on main thread ****");
-//    }
     static EWPersonStore *sharedPersonStore_ = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -45,13 +41,12 @@ EWPerson *me;
         [[NSNotificationCenter defaultCenter] addObserver:sharedPersonStore_ selector:@selector(userLoggedIn:) name:kPersonLoggedIn object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:sharedPersonStore_ selector:@selector(userLoggedOut:) name:kPersonLoggedOut object:nil];
     });
-        
     
     return sharedPersonStore_;
 }
 
 #pragma mark - CREATE USER
--(EWPerson *)createPersonWIthParseObject:(PFUser *)user{
+-(EWPerson *)createPersonWithParseObject:(PFUser *)user{
     EWPerson *newUser = (EWPerson *)[user managedObject];
     newUser.username = user.username;
     newUser.profilePic = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];

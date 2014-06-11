@@ -84,7 +84,7 @@
 - (BOOL)isEarlierThan:(NSDate *)date{
     NSTimeInterval t1 = [self timeIntervalSinceReferenceDate];
     NSTimeInterval t2 = [date timeIntervalSinceReferenceDate];
-    if (t1<t2) {
+    if (t2-t1>1) {
         return TRUE;
     }else{
         return FALSE;

@@ -27,7 +27,7 @@
 +(EWTaskStore *)sharedInstance{
     
     //make sure core data stuff is always on main thread
-    NSParameterAssert([NSThread isMainThread]);
+    //NSParameterAssert([NSThread isMainThread]);
     
     static EWTaskStore *sharedTaskStore_ = nil;
     static dispatch_once_t onceToken;
@@ -78,7 +78,7 @@
     //update if necessary
     if (tasks.count != 7 * nWeeksToScheduleTask && [p.updatedAt timeElapsed] > kServerUpdateInterval && !isCheckingTask) {
         NSLog(@"The task count for person %@ is %d, checking from remote!", p.name, tasks.count);
-        [p refresh];
+        [p refresh]; 
         tasks = [[p.tasks allObjects] mutableCopy];
     }
     

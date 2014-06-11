@@ -801,8 +801,10 @@
     NSParameterAssert([NSThread isMainThread]);
     NSManagedObjectID *objectID = self.objectID;
     
-    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-        NSManagedObject *currentMO = [[NSManagedObjectContext contextForCurrentThread] objectWithID:objectID];
+    //dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        
+        NSManagedObject *currentMO = [localContext objectWithID:objectID];
         NSString *parseObjectId = [currentMO valueForKey:kParseObjectID];
         if (!parseObjectId) {
             NSLog(@"@@@ Updating a managedObject %@ without a parseID, insert first", currentMO.entity.name);
@@ -811,13 +813,10 @@
             PFObject *object = [currentMO parseObject];
             [currentMO updateValueAndRelationFromParseObject:object];
         }
-        
-        //back
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSManagedObjectContext contextForCurrentThread] refreshObject:self mergeChanges:YES];
-            NSLog(@"MO %@ refreshed", self.entity.name);
-        });
-    });
+
+    } completion:^(BOOL success, NSError *error) {
+        NSLog(@"MO %@ refreshed", self.entity.name);
+    }];
     
 }
      
@@ -1083,7 +1082,10 @@
         NSLog(@"Nabaged Object created: %@", self.localClassName);
     }
     
-    [managedObject assignValueFromParseObject:self];
+    if ([(NSDate *)[managedObject valueForKey:kUpdatedDateKey] isEarlierThan:self.updatedAt]) {
+        [managedObject assignValueFromParseObject:self];
+    }
+    
     
     return managedObject;
 }

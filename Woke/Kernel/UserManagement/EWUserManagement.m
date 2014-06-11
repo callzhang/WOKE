@@ -174,7 +174,7 @@
             [user signUp:&error];
             if (!error) {
                 //create person
-                EWPerson *person = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
+                EWPerson *person = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
                 me = person;
                 [EWDataStore save];
                 
@@ -306,11 +306,13 @@
         //get user, create core data user
         EWPerson *person = (EWPerson *)[user managedObject];
         if (!person) {
-            person  = [[EWPersonStore sharedInstance] createPersonWIthParseObject:user];
+            person  = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
         }
         
         //update
-        [person refresh];
+        //[person refresh];
+        //change to update in sync mode to avoid data overriding while update value from server
+        [person updateValueAndRelationFromParseObject:[person parseObject]];
         me = person;
         
         if (block) {
