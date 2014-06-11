@@ -27,7 +27,6 @@ PODS:
     - Facebook-iOS-SDK (~> 3.11)
   - Reachability (3.1.1)
   - Reveal-iOS-SDK (1.0.3)
-  - SFObservers (1.0)
   - TestFlightSDK (3.0.2)
   - Weibo (2.4.2)
 
@@ -39,7 +38,6 @@ DEPENDENCIES:
   - Parse
   - Reachability
   - Reveal-iOS-SDK
-  - SFObservers
   - TestFlightSDK
   - Weibo
 
@@ -51,7 +49,6 @@ SPEC CHECKSUMS:
   Parse: ffebaecaddd32cb52671010f81567c298ff93d04
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   Reveal-iOS-SDK: 5f69f357d5a18a2f13db71730bc6b7973a21cf3e
-  SFObservers: b0cfcdeb0dc055545c7e4c792e3563f9929addd0
   TestFlightSDK: 0c24c533748d0d84bfe7a3cb6036fa79124d84ee
   Weibo: 8ac9c24884290718ca62da62301165d209f7336c
 
