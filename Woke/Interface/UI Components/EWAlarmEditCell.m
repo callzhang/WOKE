@@ -37,7 +37,7 @@
     task = t;
     self.alarm = task.alarm;
     //alarmOn = self.alarm.state;
-    myTime = self.task.time;
+    myTime = self.task.time ;
     myMusic = self.alarm.tone;
     myStatement = self.task.statement;
     
@@ -112,9 +112,9 @@
     NSInteger time2add = (NSInteger)sender.value;
     NSDateComponents *comp = [myTime dateComponents];
     if (comp.hour == 0 && comp.minute == 0 && time2add < 0) {
-        [myTime timeByAddingMinutes:60 * 24];
-    }else if (comp.hour == 23 && comp.minute == 50 && time2add > 0){
-        [myTime timeByAddingMinutes:-60 * 24];
+       myTime = [myTime timeByAddingMinutes:60 * 24];
+    }else if (comp.hour == 23 && comp.minute == 50 && time2add > 0 ){
+       myTime = [myTime timeByAddingMinutes:-60 * 24];
     }
     
     myTime = [myTime timeByAddingMinutes:time2add];
