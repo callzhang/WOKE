@@ -49,6 +49,7 @@
     
     if ([PFUser currentUser]) {
         //user already logged in
+        NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
         [EWUserManagement loginWithCachedDataStore:[PFUser currentUser].username withCompletionBlock:^{}];
         
         //see if user is linked with fb
@@ -116,7 +117,6 @@
         [EWUserManagement showLoginPanel];
         return;
     }
-    NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
     
     //update person
     [person refresh];
