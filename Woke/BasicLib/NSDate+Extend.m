@@ -23,9 +23,22 @@
 - (NSString *)date2timeShort{
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     
-    [formatter setDateFormat:@"h:mm"];
+//    [formatter setDateFormat:@"h:mm"];
+//    
+//    NSString *string = [formatter stringFromDate:self];
+    NSMutableString *string;
     
-    NSString *string = [formatter stringFromDate:self];
+    NSDateComponents *compt = [self dateComponents];
+    if (compt.hour == 0) {
+        [formatter setDateFormat:@":mm"];
+        string = [NSMutableString stringWithString:@"0"];
+       [string appendString: [formatter stringFromDate:self]];
+    }
+    else
+    {
+        [formatter setDateFormat:@"h:mm"];
+        string = [[formatter stringFromDate:self] mutableCopy];
+    }
     return string;
 }
 
