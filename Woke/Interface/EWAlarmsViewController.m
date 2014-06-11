@@ -144,7 +144,7 @@
         id <NSFetchedResultsSectionInfo> sectionInfo = self.fetchController.sections[0];
         NSUInteger n = [sectionInfo numberOfObjects];
         if (people.count > n) {
-            NSLog(@"Updated user list to %d", people.count);
+            NSLog(@"Updated user list to %lu", (unsigned long)people.count);
             [self.fetchController performFetch:NULL];
         }
         
