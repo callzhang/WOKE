@@ -91,6 +91,7 @@ EWPerson *me;
         return everyone;
     }
     //fetch
+    //TODO: use server function to fetch people around
     PFQuery *query = [PFUser query];
     NSArray *allUser = [query findObjects];
     NSMutableArray *allPerson = [NSMutableArray new];

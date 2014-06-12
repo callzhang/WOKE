@@ -181,7 +181,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //data
     if (!cell.task) {
-        cell.task = tasks[indexPath.row];//alarm set automatically
+        EWTaskItem *task = tasks[indexPath.row];
+        cell.task = task;//alarm set automatically
     }
     
     //breaking MVC pattern to get ringtonVC work

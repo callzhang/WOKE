@@ -536,7 +536,7 @@
             //next page
             if (nextPage) {
                 //continue loading facebook friends
-                NSLog(@"Continue facebook friends request: %@", nextPage);
+                //NSLog(@"Continue facebook friends request: %@", nextPage);
                 [self getFacebookFriendsWithPath:nextPage withReturnData:friendsHolder];
             }else{
                 NSLog(@"Finished loading friends from facebook, transfer to social graph.");

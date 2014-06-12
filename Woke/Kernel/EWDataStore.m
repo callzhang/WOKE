@@ -86,7 +86,7 @@
 
 - (NSManagedObjectModel *)model
 {
-    if (model != nil) {
+    if (model) {
         return model;
     }
     //Returns a model created by merging all the models found in given bundles. If you specify nil, then the main bundle is searched.
@@ -505,7 +505,7 @@
     }
     [deleteServerObject addObjectsFromArray: EWDataStore.sharedInstance.deleteQueue.allObjects];
     
-    NSLog(@"Start updating to server. There are %lu inserts, %lu updates, and %lu deletes", (unsigned long)insertedManagedObjects.count, (unsigned long)updatedManagedObjects.count, (unsigned long)deletedManagedObjects.count);
+    NSLog(@"============ Start updating to server. There are %lu inserts, %lu updates, and %lu deletes ===============", (unsigned long)insertedManagedObjects.count, (unsigned long)updatedManagedObjects.count, (unsigned long)deletedManagedObjects.count);
     
     //save core data
     [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
@@ -845,7 +845,7 @@
             CLLocation *location = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
             [self setValue:location forKeyPath:key];
             
-        }else if(parseValue){
+        }else if(parseValue && ![parseValue isKindOfClass:[NSNull class]]){
             if ([key serverType]){
                 //need to deal with local type
                 if ([parseValue isKindOfClass:[PFGeoPoint class]]) {
@@ -858,8 +858,11 @@
             }else{
                 [self setValue:parseValue forKey:key];
             }
-            
-            
+        }else{
+            //parse value empty, delete
+            if ([self valueForKey:key]) {
+                [self setValue:nil forKey:key];
+            }
         }
     }];
     
@@ -870,23 +873,21 @@
 
 
 - (void)setPFFile:(PFFile *)file forPropertyDescription:(NSAttributeDescription *)attributeDescription{
-    NSError *err;
-    NSData *data = [file getData:&err];
-    if (err) {
-        NSLog(@"@@@ Failed to download PFFile: %@", err.description);
-        return;
-    }
-    NSString *className = [self getPropertyClassByName:attributeDescription.name];
-    if ([className isEqualToString:@"UIImage"]) {
-        UIImage *img = [UIImage imageWithData:data];
-        [self setValue:img forKey:attributeDescription.name];
-    }
-    else{
-        [self setValue:data forKey:attributeDescription.name];
-    }
-    
-    NSLog(@"Assign data for key: %@ on %@", attributeDescription.name, self.class);
-    
+    //NSError *err;
+    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+        if (error) {
+            NSLog(@"@@@ Failed to download PFFile: %@", error.description);
+            return;
+        }
+        NSString *className = [self getPropertyClassByName:attributeDescription.name];
+        if ([className isEqualToString:@"UIImage"]) {
+            UIImage *img = [UIImage imageWithData:data];
+            [self setValue:img forKey:attributeDescription.name];
+        }
+        else{
+            [self setValue:data forKey:attributeDescription.name];
+        }
+    }];
 }
 
 - (void)updateEventually{
@@ -967,6 +968,9 @@
         }else if(value){
             //other supported value: audio/video
             [self setObject:value forKey:key];
+        }else{
+            //value is nil, delete PO value
+            [self removeObjectForKey:key];
         }
         
     }];
@@ -1064,6 +1068,12 @@
                     //add to global save callback distionary
                     [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:relatedManagedObject.objectID];
                 }
+            }
+        }else{
+            //empty relationship, delete PO relationship
+            if (self[key]) {
+                NSLog(@"Empty relationship on %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
+                [self removeObjectForKey:key];
             }
         }
         

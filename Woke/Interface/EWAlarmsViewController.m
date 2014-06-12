@@ -102,7 +102,7 @@
         //cancel if popout is present
         return;
     }
-    if ([self.fetchController.sections[0] numberOfObjects]>0) {
+    if ([_collectionView numberOfItemsInSection:0]>0) {
         [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
     }
     
@@ -207,7 +207,7 @@
     
     //parallax
     self.background.parallaxIntensity = -100;
-    self.collectionView.parallaxIntensity = 20;
+    //self.collectionView.parallaxIntensity = 20;
     
     //indicator center
     self.youIndicator.layer.anchorPoint = CGPointMake(0.5, 0.5);
@@ -247,7 +247,7 @@
     //fetch everyone
     NSError *err;
     if (![self.fetchController performFetch:&err]) {
-        NSLog(@"Failed to fetch everyone: %@", err);
+        NSLog(@"*** Failed to fetch everyone: %@", err);
     }
     
     return fetchController;
