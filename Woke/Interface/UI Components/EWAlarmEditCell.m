@@ -35,7 +35,7 @@
 - (void)setTask:(EWTaskItem *)t{
     //data
     task = t;
-    self.alarm = task.alarm;
+    alarm = task.alarm;
     //alarmOn = self.alarm.state;
     myTime = self.task.time ;
     myMusic = self.alarm.tone;
@@ -59,9 +59,10 @@
     }
 }
 
+//Not used
 - (void)setAlarm:(EWAlarmItem *)a{
     //data
-    task = [[EWAlarmManager sharedInstance] firstTaskForAlarm:a];
+    //task = [[EWAlarmManager sharedInstance] firstTaskForAlarm:a];
     alarm = a;
     myTime = alarm.time;
     myMusic = alarm.tone;

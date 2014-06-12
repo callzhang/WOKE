@@ -505,7 +505,7 @@
     }
     [deleteServerObject addObjectsFromArray: EWDataStore.sharedInstance.deleteQueue.allObjects];
     
-    NSLog(@"Start updating to server. There are %lu inserts, %lu updates, and %lu deletes", (unsigned long)insertedManagedObjects.count, (unsigned long)updatedManagedObjects.count, (unsigned long)deletedManagedObjects.count);
+    NSLog(@"============ Start updating to server. There are %lu inserts, %lu updates, and %lu deletes ===============", (unsigned long)insertedManagedObjects.count, (unsigned long)updatedManagedObjects.count, (unsigned long)deletedManagedObjects.count);
     
     //save core data
     [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
@@ -846,7 +846,7 @@
             CLLocation *location = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
             [self setValue:location forKeyPath:key];
             
-        }else if(parseValue){
+        }else if(parseValue && ![parseValue isKindOfClass:[NSNull class]]){
             if ([key serverType]){
                 //need to deal with local type
                 if ([parseValue isKindOfClass:[PFGeoPoint class]]) {
@@ -887,9 +887,6 @@
         }
         else{
             [self setValue:data forKey:attributeDescription.name];
-        }
-        if ([NSThread isMainThread]) {
-            NSLog(@"Assign data on main thread for key: %@ on %@", attributeDescription.name, self.class);
         }
     }];
 }
@@ -974,7 +971,7 @@
             [self setObject:value forKey:key];
         }else{
             //value is nil, delete PO value
-            self[key] = [NSNull null];
+            [self removeObjectForKey:key];
         }
         
     }];
@@ -1077,7 +1074,7 @@
             //empty relationship, delete PO relationship
             if (self[key]) {
                 NSLog(@"Empty relationship on %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
-                self[key] = [NSNull null];
+                [self removeObjectForKey:key];
             }
         }
         
