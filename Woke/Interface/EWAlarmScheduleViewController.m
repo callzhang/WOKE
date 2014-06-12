@@ -113,6 +113,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     for (unsigned i=0; i<[_tableView numberOfRowsInSection:0]; i++) {
         EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
         if (!cell || !cell.alarm || !cell.task) {
+            NSLog(@"*** Skip setting alarm for %d because alarm or task doesn't exist", i);
             continue;
         }
         //state

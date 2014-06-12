@@ -241,13 +241,10 @@
 
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
-
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:nil];
     [[EWDataStore currentContext] deleteObject:alarm];
-    for (EWTaskItem *t in alarm.tasks) {
-        [[EWDataStore currentContext] deleteObject:t];
-    }
     [EWDataStore save];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:@{@"alarm": alarm}];
+    
 
 }
 

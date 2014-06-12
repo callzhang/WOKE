@@ -69,14 +69,8 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         
-        //launch with local notif
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentWakeUpView:) name:UIApplicationLaunchOptionsLocalNotificationKey object:nil];
-        
         //listen to user log in, and updates its view
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
-        
-        //Task: only new task will update the view, other changes is observed in alarmPageView
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kTaskNewNotification object:nil];
         
         //initial value
         people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"];
@@ -88,7 +82,9 @@
 }
 
 - (void)refreshView{
+    //add observer to myTasks
     [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+    //update data and view
     [self initData];
     [self.fetchController performFetch:NULL];
     [self reloadAlarmPage];
@@ -440,20 +436,11 @@
         }else{
             NSLog(@"KVO observed %@ changed %@", keyPath, change);
         }
+    }else{
+        NSLog(@"@@@ Unhandled observation: %@", [object class]);
     }
 }
 
-//- (void)updateProfilePic:(NSNotification *)notif{
-//    EWPerson *person = (EWPerson *)([notif.object isKindOfClass:[EWPerson class]]?notif.object:notif.userInfo[@"person"]);
-//    NSInteger row = [allPeople indexOfObject:person];
-//    EWCollectionPersonCell *cell;
-//    if (row < allPeople.count) {
-//        cell = (EWCollectionPersonCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:row inSection:0]];
-//    }
-//    cell.profilePic.image = person.profilePic;
-//    //[_collectionView reloadData];
-//    [_collectionView setNeedsDisplay];
-//}
 
 #pragma mark - UIScrollViewDelegate
 - (NSInteger)currentPage{

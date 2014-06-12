@@ -24,7 +24,7 @@
 #import "FTWCache.h"
 
 #pragma mark - 
-#define kServerTransformTypes               @{@"CLLotation": @"PFGeoPoint"} //localType: serverType
+#define kServerTransformTypes               @{@"CLLocation": @"PFGeoPoint"} //localType: serverType
 #define kServerTransformClasses             @{@"EWPerson": @"_User"} //localClass: serverClass
 
 @interface EWDataStore()
@@ -568,7 +568,7 @@
         //TODO: Set ACL for PFUser to enable public writability
         if ([managedObject.entity.serverClassName isEqualToString:@"_User"]) {
             if (![object.objectId isEqualToString:[EWUserManagement me].objectId]) {
-                NSLog(@"Skip updating other PFUser: %@", [object valueForKey:@"name"]);
+                //NSLog(@"Skip updating other PFUser: %@", [object valueForKey:@"name"]);
                 return;
             }
         }
@@ -777,47 +777,48 @@
     
 }
 
-- (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
-    NSString *parseObjectId = [self valueForKey:kParseObjectID];
-    if (!parseObjectId) {
-        NSLog(@"@@@ Updating a managedObject without a parseID, insert first");
-        [EWDataStore updateParseObjectFromManagedObject:self];
-        if (block) {
-            block();
-        }
-    }else{
-        
-        [[PFQuery queryWithClassName:self.entity.serverClassName] getObjectInBackgroundWithId:parseObjectId block:^(PFObject *object, NSError *error) {
-            [self updateValueAndRelationFromParseObject:object];
-            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-            if (block) {
-                block();
-            }
-        }];
-    }
-}
+//- (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
+//    NSString *parseObjectId = [self valueForKey:kParseObjectID];
+//    if (!parseObjectId) {
+//        NSLog(@"@@@ Updating a managedObject without a parseID, insert first");
+//        [EWDataStore updateParseObjectFromManagedObject:self];
+//        if (block) {
+//            block();
+//        }
+//    }else{
+//        
+//        [[PFQuery queryWithClassName:self.entity.serverClassName] getObjectInBackgroundWithId:parseObjectId block:^(PFObject *object, NSError *error) {
+//            [self updateValueAndRelationFromParseObject:object];
+//            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+//            if (block) {
+//                block();
+//            }
+//        }];
+//    }
+//}
 
 - (void)refresh{
     NSParameterAssert([NSThread isMainThread]);
-    NSManagedObjectID *objectID = self.objectID;
+    NSLog(@"Downloading %@ from server", self.entity.serverClassName);
     
-    //dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-        
-        NSManagedObject *currentMO = [localContext objectWithID:objectID];
-        NSString *parseObjectId = [currentMO valueForKey:kParseObjectID];
-        if (!parseObjectId) {
-            NSLog(@"@@@ Updating a managedObject %@ without a parseID, insert first", currentMO.entity.name);
-            [EWDataStore updateParseObjectFromManagedObject:currentMO];
-        }else{
+    NSString *parseObjectId = [self valueForKey:kParseObjectID];
+    
+    if (!parseObjectId) {
+        NSLog(@"@@@ Updating a managedObject %@ without a parseID, insert first", self.entity.name);
+        [[EWDataStore sharedInstance] appendInsertQueue:self];
+        [EWDataStore save];
+    }else{
+        NSManagedObjectID *objectID = self.objectID;
+        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+            
+            NSManagedObject *currentMO = [localContext objectWithID:objectID];
             PFObject *object = [currentMO parseObject];
             [currentMO updateValueAndRelationFromParseObject:object];
-        }
-
-    } completion:^(BOOL success, NSError *error) {
-        NSLog(@"MO %@ refreshed", self.entity.name);
-    }];
-    
+            
+        } completion:^(BOOL success, NSError *error) {
+            NSLog(@"MO %@ refreshed", self.entity.name);
+        }];
+    }
 }
      
 - (void)assignValueFromParseObject:(PFObject *)object{
@@ -837,16 +838,15 @@
             return;//skip if not exist
         }
         id parseValue = [object objectForKey:key];
+        
         if ([parseValue isKindOfClass:[PFFile class]]) {
+            //PFFile
             [self setPFFile:parseValue forPropertyDescription:obj];
             
-        }else if ([parseValue isKindOfClass:[PFGeoPoint class]]){
-            PFGeoPoint *point = (PFGeoPoint *)parseValue;
-            CLLocation *location = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
-            [self setValue:location forKeyPath:key];
-            
         }else if(parseValue && ![parseValue isKindOfClass:[NSNull class]]){
-            if ([key serverType]){
+            //contains value
+            if ([[self getPropertyClassByName:key] serverType]){
+                
                 //need to deal with local type
                 if ([parseValue isKindOfClass:[PFGeoPoint class]]) {
                     PFGeoPoint *point = (PFGeoPoint *)parseValue;
@@ -1089,11 +1089,22 @@
     if (!managedObject) {
         //if managedObject not exist, create it locally
         managedObject = [NSClassFromString(self.localClassName) MR_createEntity];
-        NSLog(@"Nabaged Object created: %@", self.localClassName);
+        NSLog(@"Mabaged Object created: %@", self.localClassName);
     }
+    //check if need to assign value
+    NSDate *updated = [managedObject valueForKey:kUpdatedDateKey];
     
-    if ([(NSDate *)[managedObject valueForKey:kUpdatedDateKey] isEarlierThan:self.updatedAt]) {
+    if (!updated || [updated isEarlierThan:self.updatedAt]) {
+        
         [managedObject assignValueFromParseObject:self];
+        
+//        if ([self isKindOfClass:[PFUser class]] && ![self.objectId isEqualToString:[PFUser currentUser].objectId]) {
+//            //skip getting relation for other user
+//            [managedObject assignValueFromParseObject:self];
+//        }else{
+//            [managedObject updateValueAndRelationFromParseObject:self];
+//        }
+        
     }
     
     

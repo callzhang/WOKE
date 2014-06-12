@@ -422,20 +422,12 @@
 }
 
 - (void)alarmRemoved:(NSNotification *)notif{
-    NSArray *alarms;
-    if (![notif.object isKindOfClass:[NSArray class]]) {
-        alarms = @[notif.userInfo];
-    }else{
-        alarms = (NSArray *)notif.object;
-    }
+    EWAlarmItem *alarm = notif.object;
     
-    for (EWAlarmItem *a in alarms) {
-        for (EWTaskItem *t in a.tasks) {
-            
-            NSLog(@"Delete task on %@ due to alarm deleted", t.time.weekday);
-            [self removeTask:t];
-        }
+    for (EWTaskItem *t in alarm.tasks) {
         
+        NSLog(@"Delete task on %@ due to alarm deleted", t.time.weekday);
+        [self removeTask:t];
     }
     [EWDataStore save];
 }

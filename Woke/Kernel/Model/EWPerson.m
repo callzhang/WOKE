@@ -114,11 +114,11 @@
 
 #pragma mark - Helper methods
 - (BOOL)isMe{
-    BOOL me = NO;
+    BOOL isme = NO;
     if ([EWUserManagement me]) {
-        me = [self.username isEqualToString:[EWUserManagement me].username];
+        isme = [self.username isEqualToString:[EWUserManagement me].username];
     }
-    return me;
+    return isme;
 }
 
 

@@ -21,9 +21,10 @@
 + (void)showLoginPanel;
 + (EWPerson *)me;
 /**
- Login with username for cached coredata info
+ Login with PFUser for cached coredata info
+ This is a
  */
-+ (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock;
++ (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock;
 
 /**
  Login with local plist or ADID

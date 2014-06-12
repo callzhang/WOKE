@@ -50,7 +50,7 @@
     if ([PFUser currentUser]) {
         //user already logged in
         NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
-        [EWUserManagement loginWithCachedDataStore:[PFUser currentUser].username withCompletionBlock:^{}];
+        [EWUserManagement loginWithServerUser:[PFUser currentUser] withCompletionBlock:^{}];
         
         //see if user is linked with fb
         if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
@@ -106,19 +106,21 @@
 
 
 //login with local user default info
-+ (void)loginWithCachedDataStore:(NSString *)username withCompletionBlock:(void (^)(void))completionBlock{
++ (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     hud.labelText = @"Loading";
 
     //fetch or create
-    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:username];
+    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
     if (!person) {
-        [EWUserManagement showLoginPanel];
-        return;
+        NSLog(@"CoreData user doesn't exist, creating.");
+        person  = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
     }
     
     //update person
+    //change to update in sync mode to avoid data overriding while update value from server
+    //[person updateValueAndRelationFromParseObject:user];
     [person refresh];
     
     //save me
@@ -303,24 +305,8 @@
             return;
         }
         
-        //get user, create core data user
-        EWPerson *person = (EWPerson *)[user managedObject];
-        if (!person) {
-            person  = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
-        }
-        
-        //update
-        //[person refresh];
-        //change to update in sync mode to avoid data overriding while update value from server
-        [person updateValueAndRelationFromParseObject:[person parseObject]];
-        me = person;
-        
-        if (block) {
-            block();
-        }
-        
-        //broadcast
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
+        //login core data user with PFUser
+        [EWUserManagement loginWithServerUser:user withCompletionBlock:block];
         
         //update current user with fb info
         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
