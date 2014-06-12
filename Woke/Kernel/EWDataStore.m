@@ -69,7 +69,10 @@
         //[MagicalRecord setLoggingMask:MagicalRecordLoggingMaskError];
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
         context = [NSManagedObjectContext MR_defaultContext];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:nil];
+        //observe context change to update the modifiedData of that MO. (Only observe the main context)
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:context];
+        //Observe context save to update the update/insert/delete queue
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
         
         //facebook
         [PFFacebookUtils initializeFacebook];
@@ -386,11 +389,16 @@
     __block NSManagedObjectID *objectID;
     [obj.managedObjectContext performBlockAndWait:^{
         objectID = obj.objectID;
-        if (!objectID) {
-            //need to save
-            NSError *err;
-            [obj.managedObjectContext obtainPermanentIDsForObjects:@[obj] error:&err];
-            objectID = obj.objectID;
+        if (!objectID || objectID.isTemporaryID) {
+            //need to obtain perminent ID
+//            NSError *err;
+//            NSLog(@"Obtaining perminant ID for %@", obj.entity.name);
+//            [obj.managedObjectContext obtainPermanentIDsForObjects:@[obj] error:&err];
+//            objectID = obj.objectID;
+            //TODO: need to check if data persist to the store
+            
+            //just save the MO, it's fine now
+            [obj.managedObjectContext saveToPersistentStoreAndWait];
         }
     }];
     NSManagedObject * objForCurrentContext = [[EWDataStore currentContext] objectWithID:objectID];
@@ -493,14 +501,21 @@
     NSMutableSet *updatedManagedObjects = [[NSManagedObjectContext MR_contextForCurrentThread].updatedObjects mutableCopy];
     NSSet *deletedManagedObjects = [NSManagedObjectContext MR_contextForCurrentThread].deletedObjects;
     
-    //add queue
+    //add queue to operation array && save array to queue
+    for (NSManagedObject *MO in insertedManagedObjects) {
+        [[EWDataStore sharedInstance] appendInsertQueue:MO];
+    }
     [insertedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.insertQueue.allObjects];
+    for (NSManagedObject *MO in updatedManagedObjects) {
+        [[EWDataStore sharedInstance] appendUpdateQueue:MO];
+    }
     [updatedManagedObjects addObjectsFromArray: EWDataStore.sharedInstance.updateQueue.allObjects];
     NSMutableSet *deleteServerObject = [NSMutableSet new];
     for (NSManagedObject *mo in deletedManagedObjects) {
         PFObject *object = [mo parseObject];
         if (object) {
             [deleteServerObject addObject:object];
+            [[EWDataStore sharedInstance] appendDeleteQueue:object];
         }
     }
     [deleteServerObject addObjectsFromArray: EWDataStore.sharedInstance.deleteQueue.allObjects];
