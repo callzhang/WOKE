@@ -207,7 +207,7 @@
     
     //parallax
     self.background.parallaxIntensity = -100;
-    self.collectionView.parallaxIntensity = 20;
+    //self.collectionView.parallaxIntensity = 20;
     
     //indicator center
     self.youIndicator.layer.anchorPoint = CGPointMake(0.5, 0.5);
