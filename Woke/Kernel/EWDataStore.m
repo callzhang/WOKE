@@ -72,7 +72,7 @@
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:context];
         //Observe context save to update the update/insert/delete queue
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveNotification:) name:NSManagedObjectContextWillSaveNotification object:context];
         
         //facebook
         [PFFacebookUtils initializeFacebook];
@@ -407,6 +407,7 @@
 
 
 + (void)save{
+    NSLog(@"%s", __func__);
     [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
     
     [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
@@ -438,11 +439,12 @@
 }
 
 - (void)appendUpdateQueue:(NSManagedObject *)mo{
-    NSMutableSet *set = [self.updateQueue mutableCopy];
+    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
+    NSMutableSet *set = [[NSMutableSet setWithArray:array] mutableCopy];
     NSManagedObjectID *objectID = mo.objectID;
     NSString *str = objectID.URIRepresentation.absoluteString;
     [set addObject:str];
-    [[NSUserDefaults standardUserDefaults] setValue:[set copy] forKey:kParseQueueUpdate];
+    [[NSUserDefaults standardUserDefaults] setValue:[set allObjects] forKey:kParseQueueUpdate];
 }
 
 - (NSSet *)insertQueue{
@@ -458,11 +460,12 @@
 }
 
 - (void)appendInsertQueue:(NSManagedObject *)mo{
-    NSMutableSet *set = [self.insertQueue mutableCopy];
+    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueInsert];
+    NSMutableSet *set = [[NSMutableSet setWithArray:array] mutableCopy];
     NSManagedObjectID *objectID = mo.objectID;
     NSString *str = objectID.URIRepresentation.absoluteString;
     [set addObject:str];
-    [[NSUserDefaults standardUserDefaults] setObject:[set copy] forKey:kParseQueueInsert];
+    [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:kParseQueueInsert];
 }
 
 
@@ -492,6 +495,8 @@
 #pragma mark - Parse Server methods
 #pragma mark -
 +(void)updateToServer{
+    NSLog(@"Start update to server");
+    
     //make sure it is called on main thread
     NSParameterAssert([NSThread isMainThread]);
 
@@ -529,17 +534,17 @@
         //perform network calls
         
         for (NSManagedObject *managedObject in insertedManagedObjects) {
-            NSLog(@"Inserting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
+            //NSLog(@"Inserting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
             [EWDataStore updateParseObjectFromManagedObject:managedObject];
         }
         
         for (NSManagedObject *managedObject in updatedManagedObjects) {
-            NSLog(@"Updating PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
+            //NSLog(@"Updating PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
             [EWDataStore updateParseObjectFromManagedObject:managedObject];
         }
         
         for (NSManagedObject *managedObject in deleteServerObject) {
-            NSLog(@"Deleting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
+            //NSLog(@"Deleting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
             [EWDataStore deleteParseObject:managedObject.parseObject];
         }
         
@@ -671,6 +676,9 @@
     }
 }
 
+
+#pragma mark - KVO
+
 - (void)updateModifiedDate:(NSNotification *)notification{
     NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
     
@@ -681,6 +689,28 @@
             //update time
             [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
         }
+    }
+}
+
+- (void)saveNotification:(NSNotification *)notification{
+    NSSet *inserts = notification.userInfo[NSInsertedObjectsKey];
+    NSSet *updates = notification.userInfo[NSUpdatedObjectsKey];
+    NSSet *deletes = notification.userInfo[NSDeletedObjectsKey];
+    if (inserts.count || updates.count || deletes.count) {
+        NSLog(@"Detected %lu inserts, %lu updates, and %lu deletes", (unsigned long)inserts.count, (unsigned long)updates.count, (unsigned long)deletes.count);
+        for (NSManagedObject *MO in inserts) {
+            [self appendInsertQueue:MO];
+        }
+        for (NSManagedObject *MO in updates) {
+            [self appendUpdateQueue:MO];
+        }
+        for (NSManagedObject *MO in deletes) {
+            PFObject *PO = [MO parseObject];
+            if (PO) {
+                [self appendDeleteQueue:PO];
+            }
+        }
+        [EWDataStore save];
     }
 }
 
@@ -824,15 +854,17 @@
         [EWDataStore save];
     }else{
         NSManagedObjectID *objectID = self.objectID;
-        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-            
+        
+        //save async
+        dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+            NSManagedObjectContext *localContext = [NSManagedObjectContext contextForCurrentThread];
             NSManagedObject *currentMO = [localContext objectWithID:objectID];
             PFObject *object = [currentMO parseObject];
             [currentMO updateValueAndRelationFromParseObject:object];
-            
-        } completion:^(BOOL success, NSError *error) {
-            NSLog(@"MO %@ refreshed", self.entity.name);
-        }];
+            [localContext saveToPersistentStoreAndWait];
+        });
+        
+        
     }
 }
      

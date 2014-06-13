@@ -228,17 +228,17 @@
     
     NSLog(@"About to remove KVO to task (%@)", task.time.weekday);
     
-//    @try {
-//        [task removeObserver:self forKeyPath:@"state"];
-//        [task removeObserver:self forKeyPath:@"medias"];
-//        [task removeObserver:self forKeyPath:@"time"];
-//        [task removeObserver:self forKeyPath:@"statement"];
-//        NSLog(@"Removed KVO to task (%@)", task.time.weekday);
-//    }
-//    @catch (NSException *exception) {
-//        id observants = [task observationInfo];
-//        NSLog(@"Failed to remove observer %@ with observation info: %@",self , observants);
-//    }
+    @try {
+        [task removeObserver:self forKeyPath:@"state"];
+        [task removeObserver:self forKeyPath:@"medias"];
+        [task removeObserver:self forKeyPath:@"time"];
+        [task removeObserver:self forKeyPath:@"statement"];
+        NSLog(@"Removed KVO to task (%@)", task.time.weekday);
+    }
+    @catch (NSException *exception) {
+        id observants = [task observationInfo];
+        NSLog(@"Failed to remove observer %@ with observation info: %@",self , observants);
+    }
     
     
     
