@@ -203,6 +203,7 @@ static const int FBSDKSystemPasswordErrorSubcode = 65001;
                     userMessageKey = @"FBE:DeviceError";
                     userMessageDefault = [[error userInfo][FBErrorInnerErrorKey] userInfo][NSLocalizedDescriptionKey] ? :
                     @"Something went wrong. Please make sure you're connected to the internet and try again.";
+                    NSLog(@"Unknown error from facebook server: %@", error);
                     shouldNotifyUser = YES;
                     category = FBErrorCategoryServer;
                 } else if ([[error userInfo][FBErrorLoginFailedOriginalErrorCode] integerValue] == FBErrorOperationDisallowedForRestrictedTreament) {

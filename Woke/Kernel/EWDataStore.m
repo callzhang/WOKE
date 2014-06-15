@@ -453,7 +453,7 @@
 }
 
 - (void)removeObjectFromUpdateQueue:(NSManagedObject *)mo{
-    NSMutableArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
+    NSMutableArray *array = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate] mutableCopy];
     NSManagedObjectID *objectID = mo.objectID;
     NSString *str = objectID.URIRepresentation.absoluteString;
     if ([array containsObject:str]) {
