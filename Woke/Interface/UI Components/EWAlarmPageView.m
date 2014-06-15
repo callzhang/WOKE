@@ -123,15 +123,8 @@
     self.AM.text = [t.time date2am];
     self.descriptionText.text = t.statement ?: alarm.statement;
     
-    float h = ([t.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
-
-    if (h < 0) {
-        self.timeLeftText.text = @"Just alarmed";
-    }else if(h < 24){
-        self.timeLeftText.text = [NSString stringWithFormat:@"%.1f hours left", h];
-    }else{
-        self.timeLeftText.text = [t.time weekday];
-    }
+ 
+    [self changeTimeLeftLabel];//mq  changed 2014-06-12
     
     NSInteger mCount = task.medias.count;
     
@@ -210,6 +203,7 @@
             
             self.timeText.text = [task.time date2timeShort];
             self.AM.text = [task.time date2am];
+            [self changeTimeLeftLabel];
         }else if ([keyPath isEqualToString:@"statement"]){
         
             self.descriptionText.text = task.statement;
@@ -243,5 +237,18 @@
     
     
 }
+#pragma mark - ChangeTimeLeftLabel
 
+-(void)changeTimeLeftLabel
+{
+    float h = ([task.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
+    if (h < 0) {
+        self.timeLeftText.text = @"Just alarmed";
+    }else if(h < 24){
+        self.timeLeftText.text = [NSString stringWithFormat:@"%.1f hours left", h];
+    }else{
+        self.timeLeftText.text = [task.time weekday];
+    }
+
+}
 @end
