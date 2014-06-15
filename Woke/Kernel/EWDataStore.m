@@ -788,7 +788,7 @@
         return;
     }
     //attributes
-    [self assignValueFromParseObject:parseObject];
+     [self assignValueFromParseObject:parseObject];
     
     //realtion
     NSMutableDictionary *relations = [self.entity.relationshipsByName mutableCopy];
