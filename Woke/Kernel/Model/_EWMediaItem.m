@@ -6,17 +6,14 @@
 const struct EWMediaItemAttributes EWMediaItemAttributes = {
 	.audio = @"audio",
 	.buzzKey = @"buzzKey",
-	.createdAt = @"createdAt",
 	.image = @"image",
 	.message = @"message",
-	.objectId = @"objectId",
 	.played = @"played",
 	.priority = @"priority",
 	.readTime = @"readTime",
 	.targetDate = @"targetDate",
 	.thumbnail = @"thumbnail",
 	.type = @"type",
-	.updatedAt = @"updatedAt",
 	.video = @"video",
 };
 
@@ -87,13 +84,6 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
 @dynamic image;
 
 
@@ -102,13 +92,6 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 
 @dynamic message;
-
-
-
-
-
-
-@dynamic objectId;
 
 
 
@@ -189,13 +172,6 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 
 @dynamic type;
-
-
-
-
-
-
-@dynamic updatedAt;
 
 
 

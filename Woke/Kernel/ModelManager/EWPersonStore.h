@@ -30,7 +30,7 @@ extern EWPerson *me;
 /**
  Update person from server in sync mode.
  */
-- (void)updatePerson:(EWPerson *)person withServerUser:(PFUser *)user;
+//- (void)updatePerson:(EWPerson *)person withServerUser:(PFUser *)user;
 
 
 //- (NSArray *)everyone;

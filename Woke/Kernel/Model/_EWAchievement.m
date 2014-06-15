@@ -5,13 +5,10 @@
 
 const struct EWAchievementAttributes EWAchievementAttributes = {
 	.body = @"body",
-	.createdAt = @"createdAt",
 	.image = @"image",
 	.name = @"name",
-	.objectId = @"objectId",
 	.time = @"time",
 	.type = @"type",
-	.updatedAt = @"updatedAt",
 };
 
 const struct EWAchievementRelationships EWAchievementRelationships = {
@@ -61,13 +58,6 @@ const struct EWAchievementFetchedProperties EWAchievementFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
 @dynamic image;
 
 
@@ -82,13 +72,6 @@ const struct EWAchievementFetchedProperties EWAchievementFetchedProperties = {
 
 
 
-@dynamic objectId;
-
-
-
-
-
-
 @dynamic time;
 
 
@@ -97,13 +80,6 @@ const struct EWAchievementFetchedProperties EWAchievementFetchedProperties = {
 
 
 @dynamic type;
-
-
-
-
-
-
-@dynamic updatedAt;
 
 
 

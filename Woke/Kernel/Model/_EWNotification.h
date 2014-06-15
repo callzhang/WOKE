@@ -2,16 +2,13 @@
 // Make changes to EWNotification.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "EWServerObject.h"
 
 extern const struct EWNotificationAttributes {
 	__unsafe_unretained NSString *completed;
-	__unsafe_unretained NSString *createdAt;
 	__unsafe_unretained NSString *importance;
-	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *sender;
 	__unsafe_unretained NSString *type;
-	__unsafe_unretained NSString *updatedAt;
 	__unsafe_unretained NSString *userInfo;
 } EWNotificationAttributes;
 
@@ -28,15 +25,12 @@ extern const struct EWNotificationFetchedProperties {
 
 
 
-
-
-
 @class NSObject;
 
 @interface EWNotificationID : NSManagedObjectID {}
 @end
 
-@interface _EWNotification : NSManagedObject {}
+@interface _EWNotification : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
@@ -56,16 +50,6 @@ extern const struct EWNotificationFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDate* createdAt;
-
-
-
-//- (BOOL)validateCreatedAt:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
 @property (nonatomic, strong) NSNumber* importance;
 
 
@@ -75,16 +59,6 @@ extern const struct EWNotificationFetchedProperties {
 - (void)setImportanceValue:(int64_t)value_;
 
 //- (BOOL)validateImportance:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSString* objectId;
-
-
-
-//- (BOOL)validateObjectId:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -105,16 +79,6 @@ extern const struct EWNotificationFetchedProperties {
 
 
 //- (BOOL)validateType:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* updatedAt;
-
-
-
-//- (BOOL)validateUpdatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -153,23 +117,11 @@ extern const struct EWNotificationFetchedProperties {
 
 
 
-- (NSDate*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSDate*)value;
-
-
-
-
 - (NSNumber*)primitiveImportance;
 - (void)setPrimitiveImportance:(NSNumber*)value;
 
 - (int64_t)primitiveImportanceValue;
 - (void)setPrimitiveImportanceValue:(int64_t)value_;
-
-
-
-
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
 
 
 
@@ -182,12 +134,6 @@ extern const struct EWNotificationFetchedProperties {
 
 - (NSString*)primitiveType;
 - (void)setPrimitiveType:(NSString*)value;
-
-
-
-
-- (NSDate*)primitiveUpdatedAt;
-- (void)setPrimitiveUpdatedAt:(NSDate*)value;
 
 
 

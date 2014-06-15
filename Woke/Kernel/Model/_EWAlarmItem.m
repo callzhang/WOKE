@@ -4,15 +4,12 @@
 #import "_EWAlarmItem.h"
 
 const struct EWAlarmItemAttributes EWAlarmItemAttributes = {
-	.createdAt = @"createdAt",
 	.important = @"important",
-	.objectId = @"objectId",
 	.state = @"state",
 	.statement = @"statement",
 	.time = @"time",
 	.todo = @"todo",
 	.tone = @"tone",
-	.updatedAt = @"updatedAt",
 };
 
 const struct EWAlarmItemRelationships EWAlarmItemRelationships = {
@@ -66,13 +63,6 @@ const struct EWAlarmItemFetchedProperties EWAlarmItemFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
 @dynamic important;
 
 
@@ -94,13 +84,6 @@ const struct EWAlarmItemFetchedProperties EWAlarmItemFetchedProperties = {
 - (void)setPrimitiveImportantValue:(BOOL)value_ {
 	[self setPrimitiveImportant:[NSNumber numberWithBool:value_]];
 }
-
-
-
-
-
-@dynamic objectId;
-
 
 
 
@@ -154,13 +137,6 @@ const struct EWAlarmItemFetchedProperties EWAlarmItemFetchedProperties = {
 
 
 @dynamic tone;
-
-
-
-
-
-
-@dynamic updatedAt;
 
 
 

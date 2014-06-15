@@ -2,17 +2,14 @@
 // Make changes to EWAchievement.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "EWServerObject.h"
 
 extern const struct EWAchievementAttributes {
 	__unsafe_unretained NSString *body;
-	__unsafe_unretained NSString *createdAt;
 	__unsafe_unretained NSString *image;
 	__unsafe_unretained NSString *name;
-	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *time;
 	__unsafe_unretained NSString *type;
-	__unsafe_unretained NSString *updatedAt;
 } EWAchievementAttributes;
 
 extern const struct EWAchievementRelationships {
@@ -25,10 +22,7 @@ extern const struct EWAchievementFetchedProperties {
 @class EWPerson;
 
 
-
 @class NSObject;
-
-
 
 
 
@@ -36,7 +30,7 @@ extern const struct EWAchievementFetchedProperties {
 @interface EWAchievementID : NSManagedObjectID {}
 @end
 
-@interface _EWAchievement : NSManagedObject {}
+@interface _EWAchievement : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
@@ -51,16 +45,6 @@ extern const struct EWAchievementFetchedProperties {
 
 
 //- (BOOL)validateBody:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* createdAt;
-
-
-
-//- (BOOL)validateCreatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -86,16 +70,6 @@ extern const struct EWAchievementFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString* objectId;
-
-
-
-//- (BOOL)validateObjectId:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
 @property (nonatomic, strong) NSDate* time;
 
 
@@ -111,16 +85,6 @@ extern const struct EWAchievementFetchedProperties {
 
 
 //- (BOOL)validateType:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* updatedAt;
-
-
-
-//- (BOOL)validateUpdatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -149,12 +113,6 @@ extern const struct EWAchievementFetchedProperties {
 
 
 
-- (NSDate*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSDate*)value;
-
-
-
-
 - (id)primitiveImage;
 - (void)setPrimitiveImage:(id)value;
 
@@ -167,12 +125,6 @@ extern const struct EWAchievementFetchedProperties {
 
 
 
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
-
-
-
-
 - (NSDate*)primitiveTime;
 - (void)setPrimitiveTime:(NSDate*)value;
 
@@ -181,12 +133,6 @@ extern const struct EWAchievementFetchedProperties {
 
 - (NSString*)primitiveType;
 - (void)setPrimitiveType:(NSString*)value;
-
-
-
-
-- (NSDate*)primitiveUpdatedAt;
-- (void)setPrimitiveUpdatedAt:(NSDate*)value;
 
 
 

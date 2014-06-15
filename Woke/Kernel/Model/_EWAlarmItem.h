@@ -2,18 +2,15 @@
 // Make changes to EWAlarmItem.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "EWServerObject.h"
 
 extern const struct EWAlarmItemAttributes {
-	__unsafe_unretained NSString *createdAt;
 	__unsafe_unretained NSString *important;
-	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *state;
 	__unsafe_unretained NSString *statement;
 	__unsafe_unretained NSString *time;
 	__unsafe_unretained NSString *todo;
 	__unsafe_unretained NSString *tone;
-	__unsafe_unretained NSString *updatedAt;
 } EWAlarmItemAttributes;
 
 extern const struct EWAlarmItemRelationships {
@@ -34,27 +31,14 @@ extern const struct EWAlarmItemFetchedProperties {
 
 
 
-
-
-
 @interface EWAlarmItemID : NSManagedObjectID {}
 @end
 
-@interface _EWAlarmItem : NSManagedObject {}
+@interface _EWAlarmItem : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
 - (EWAlarmItemID*)objectID;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* createdAt;
-
-
-
-//- (BOOL)validateCreatedAt:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -69,16 +53,6 @@ extern const struct EWAlarmItemFetchedProperties {
 - (void)setImportantValue:(BOOL)value_;
 
 //- (BOOL)validateImportant:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSString* objectId;
-
-
-
-//- (BOOL)validateObjectId:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -138,16 +112,6 @@ extern const struct EWAlarmItemFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDate* updatedAt;
-
-
-
-//- (BOOL)validateUpdatedAt:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
 @property (nonatomic, strong) EWPerson *owner;
 
 //- (BOOL)validateOwner:(id*)value_ error:(NSError**)error_;
@@ -177,23 +141,11 @@ extern const struct EWAlarmItemFetchedProperties {
 @interface _EWAlarmItem (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSDate*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSDate*)value;
-
-
-
-
 - (NSNumber*)primitiveImportant;
 - (void)setPrimitiveImportant:(NSNumber*)value;
 
 - (BOOL)primitiveImportantValue;
 - (void)setPrimitiveImportantValue:(BOOL)value_;
-
-
-
-
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
 
 
 
@@ -227,12 +179,6 @@ extern const struct EWAlarmItemFetchedProperties {
 
 - (NSString*)primitiveTone;
 - (void)setPrimitiveTone:(NSString*)value;
-
-
-
-
-- (NSDate*)primitiveUpdatedAt;
-- (void)setPrimitiveUpdatedAt:(NSDate*)value;
 
 
 
