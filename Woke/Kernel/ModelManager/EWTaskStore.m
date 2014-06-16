@@ -77,9 +77,9 @@
     
     //update if necessary
     if (tasks.count != 7 * nWeeksToScheduleTask && [p.updatedAt timeElapsed] > kServerUpdateInterval && !isCheckingTask) {
-        NSLog(@"The task count for person %@ is %d, checking from remote!", p.name, tasks.count);
-        [p refresh]; 
-        tasks = [[p.tasks allObjects] mutableCopy];
+        NSLog(@"The task count for person %@ is %d!", p.name, tasks.count);
+//        [p refresh];
+//        tasks = [[p.tasks allObjects] mutableCopy];
     }
     
     
