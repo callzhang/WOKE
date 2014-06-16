@@ -54,7 +54,7 @@
         //alpha view
         self.frame = collectionView.bounds;
         _alphaView = [[UIView alloc] initWithFrame: self.bounds];
-        _alphaView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.7];
+        _alphaView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
         _alphaView.alpha = 0;
         //[(UIToolbar *)_alphaView setBarStyle:UIBarStyleBlack];
         [self addSubview:_alphaView];

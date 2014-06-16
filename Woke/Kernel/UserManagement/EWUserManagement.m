@@ -515,8 +515,6 @@
                     NSString *name = pair[@"name"];
                     [friendsHolder setObject:name forKey:fb_id];
                 }
-            }else{
-                NSLog(@"*** Didn't get friends list for current user");
             }
             
             //next page

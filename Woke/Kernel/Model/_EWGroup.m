@@ -4,13 +4,10 @@
 #import "_EWGroup.h"
 
 const struct EWGroupAttributes EWGroupAttributes = {
-	.createdAt = @"createdAt",
 	.imageKey = @"imageKey",
 	.name = @"name",
-	.objectId = @"objectId",
 	.statement = @"statement",
 	.topic = @"topic",
-	.updatedAt = @"updatedAt",
 	.wakeupTime = @"wakeupTime",
 };
 
@@ -55,13 +52,6 @@ const struct EWGroupFetchedProperties EWGroupFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
 @dynamic imageKey;
 
 
@@ -76,13 +66,6 @@ const struct EWGroupFetchedProperties EWGroupFetchedProperties = {
 
 
 
-@dynamic objectId;
-
-
-
-
-
-
 @dynamic statement;
 
 
@@ -91,13 +74,6 @@ const struct EWGroupFetchedProperties EWGroupFetchedProperties = {
 
 
 @dynamic topic;
-
-
-
-
-
-
-@dynamic updatedAt;
 
 
 

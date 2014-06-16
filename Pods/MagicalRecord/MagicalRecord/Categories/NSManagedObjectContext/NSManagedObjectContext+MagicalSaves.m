@@ -65,7 +65,7 @@
         }
         @catch(NSException *exception)
         {
-            MRLog(@"Unable to perform save: %@", (id)[exception userInfo] ? : (id)[exception reason]);
+            NSLog(@"Unable to perform save: %@", (id)[exception userInfo] ? : (id)[exception reason]);
         }
 
         @finally

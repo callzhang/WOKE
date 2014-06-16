@@ -26,6 +26,7 @@
 #define kManagedObjectID        @"objectID"
 //Attribute to store update date
 #define kUpdatedDateKey         @"updatedAt"
+#define kCreatedDateKey         @"createdAt"
 //Parse update queue
 #define kParseQueueInsert       @"parse_queue_insert"
 #define kParseQueueUpdate       @"parse_queue_update"
@@ -116,7 +117,7 @@
  *
  *5. Perform save callback block for this PO
  */
-+ (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject;
++ (void)updateParseObjectFromManagedObjectID:(NSManagedObjectID *)managedObjectID;
 
 /**
  Find or delete ManagedObject by Entity and by Server Object

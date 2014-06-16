@@ -2,16 +2,13 @@
 // Make changes to EWGroupTask.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "EWServerObject.h"
 
 extern const struct EWGroupTaskAttributes {
 	__unsafe_unretained NSString *added;
 	__unsafe_unretained NSString *city;
-	__unsafe_unretained NSString *createdAt;
-	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *region;
 	__unsafe_unretained NSString *time;
-	__unsafe_unretained NSString *updatedId;
 } EWGroupTaskAttributes;
 
 extern const struct EWGroupTaskRelationships {
@@ -32,13 +29,10 @@ extern const struct EWGroupTaskFetchedProperties {
 
 
 
-
-
-
 @interface EWGroupTaskID : NSManagedObjectID {}
 @end
 
-@interface _EWGroupTask : NSManagedObject {}
+@interface _EWGroupTask : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
@@ -68,26 +62,6 @@ extern const struct EWGroupTaskFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDate* createdAt;
-
-
-
-//- (BOOL)validateCreatedAt:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSString* objectId;
-
-
-
-//- (BOOL)validateObjectId:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
 @property (nonatomic, strong) NSString* region;
 
 
@@ -103,16 +77,6 @@ extern const struct EWGroupTaskFetchedProperties {
 
 
 //- (BOOL)validateTime:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSDate* updatedId;
-
-
-
-//- (BOOL)validateUpdatedId:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -171,18 +135,6 @@ extern const struct EWGroupTaskFetchedProperties {
 
 
 
-- (NSDate*)primitiveCreatedAt;
-- (void)setPrimitiveCreatedAt:(NSDate*)value;
-
-
-
-
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
-
-
-
-
 - (NSString*)primitiveRegion;
 - (void)setPrimitiveRegion:(NSString*)value;
 
@@ -191,12 +143,6 @@ extern const struct EWGroupTaskFetchedProperties {
 
 - (NSDate*)primitiveTime;
 - (void)setPrimitiveTime:(NSDate*)value;
-
-
-
-
-- (NSDate*)primitiveUpdatedId;
-- (void)setPrimitiveUpdatedId:(NSDate*)value;
 
 
 

@@ -6,12 +6,9 @@
 const struct EWTaskItemAttributes EWTaskItemAttributes = {
 	.added = @"added",
 	.completed = @"completed",
-	.createdAt = @"createdAt",
-	.objectId = @"objectId",
 	.state = @"state",
 	.statement = @"statement",
 	.time = @"time",
-	.updatedAt = @"updatedAt",
 };
 
 const struct EWTaskItemRelationships EWTaskItemRelationships = {
@@ -78,20 +75,6 @@ const struct EWTaskItemFetchedProperties EWTaskItemFetchedProperties = {
 
 
 
-@dynamic createdAt;
-
-
-
-
-
-
-@dynamic objectId;
-
-
-
-
-
-
 @dynamic state;
 
 
@@ -126,13 +109,6 @@ const struct EWTaskItemFetchedProperties EWTaskItemFetchedProperties = {
 
 
 @dynamic time;
-
-
-
-
-
-
-@dynamic updatedAt;
 
 
 

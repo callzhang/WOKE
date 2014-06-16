@@ -142,6 +142,8 @@
 		ABC8F96618E92F180096C073 /* UIView+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = ABC8F96518E92F180096C073 /* UIView+HUD.m */; };
 		ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAC185C054C008CD2B8 /* FTWCache.m */; };
 		ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */; };
+		ABD53FC6194D7D2F00BBC8DA /* _EWServerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD53FC5194D7D2F00BBC8DA /* _EWServerObject.m */; };
+		ABD53FC9194D7DC900BBC8DA /* EWServerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD53FC8194D7DC900BBC8DA /* EWServerObject.m */; };
 		ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABDE25EE18CF575D00DDBDB5 /* AudioToolbox.framework */; };
 		ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA95E17E027E70035DF4A /* vm1.m4a */; };
 		ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA95F17E027E70035DF4A /* vm2.m4a */; };
@@ -380,6 +382,10 @@
 		ABD34DAC185C054C008CD2B8 /* FTWCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTWCache.m; sourceTree = "<group>"; };
 		ABD34DAD185C054C008CD2B8 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
 		ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
+		ABD53FC4194D7D2F00BBC8DA /* _EWServerObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EWServerObject.h; sourceTree = "<group>"; };
+		ABD53FC5194D7D2F00BBC8DA /* _EWServerObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EWServerObject.m; sourceTree = "<group>"; };
+		ABD53FC7194D7DC900BBC8DA /* EWServerObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWServerObject.h; sourceTree = "<group>"; };
+		ABD53FC8194D7DC900BBC8DA /* EWServerObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWServerObject.m; sourceTree = "<group>"; };
 		ABDD0BBA1852E354005EA59B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		ABDD0BBC1852E360005EA59B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		ABDD0BBE1852E36C005EA59B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -512,6 +518,8 @@
 				AB198C8D1861818B008C1F15 /* EWPerson.m */,
 				AB198C8E1861818B008C1F15 /* EWTaskItem.h */,
 				AB198C8F1861818B008C1F15 /* EWTaskItem.m */,
+				ABD53FC7194D7DC900BBC8DA /* EWServerObject.h */,
+				ABD53FC8194D7DC900BBC8DA /* EWServerObject.m */,
 				AB198C861861818B008C1F15 /* EWGroupTask.h */,
 				AB198C871861818B008C1F15 /* EWGroupTask.m */,
 				AB198C881861818B008C1F15 /* EWMediaItem.h */,
@@ -533,6 +541,8 @@
 				9BF07AB0192324F800DED2E1 /* _EWNotification.m */,
 				9BF07AB1192324F800DED2E1 /* _EWPerson.h */,
 				9BF07AB2192324F800DED2E1 /* _EWPerson.m */,
+				ABD53FC4194D7D2F00BBC8DA /* _EWServerObject.h */,
+				ABD53FC5194D7D2F00BBC8DA /* _EWServerObject.m */,
 				9BF07AB3192324F800DED2E1 /* _EWSocialGraph.h */,
 				9BF07AB4192324F800DED2E1 /* _EWSocialGraph.m */,
 				9BF07AB5192324F800DED2E1 /* _EWTaskItem.h */,
@@ -1127,6 +1137,7 @@
 				56E0C36517B2CC6400835A6B /* EWViewController.m in Sources */,
 				56E0C36F17B2CEC200835A6B /* EWShakeManager.m in Sources */,
 				AB1D2D0D1877A87200D2576F /* EWUserManagement.m in Sources */,
+				ABD53FC6194D7D2F00BBC8DA /* _EWServerObject.m in Sources */,
 				9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */,
 				AB198C941861818B008C1F15 /* EWGroupTask.m in Sources */,
 				56E0C37017B2CEC200835A6B /* EWShakingDetectorView.m in Sources */,
@@ -1145,6 +1156,7 @@
 				AB29C4CB18DEBCE700C0A141 /* UIViewController+Blur.m in Sources */,
 				9BF07AB7192324F800DED2E1 /* _EWAchievement.m in Sources */,
 				AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */,
+				ABD53FC9194D7DC900BBC8DA /* EWServerObject.m in Sources */,
 				9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */,
 				ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */,
 				9BF297B41912F713008C136E /* EWFirstTimeViewController.m in Sources */,

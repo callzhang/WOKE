@@ -114,7 +114,7 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self centerView];
-
+//    [self refreshView];
 }
 
 - (void)initData {
@@ -424,7 +424,9 @@
     if ([object isKindOfClass:[EWPerson class]]) {
 
         if ([keyPath isEqualToString:@"tasks"]){
-            if (me.tasks && (me.tasks.count != tasks.count)) {
+//            if (me.tasks && (me.tasks.count != tasks.count))
+            if (me.tasks)
+            {
                 NSLog(@"KVO observed tasks changed");
                 tasks = [EWTaskStore myTasks];
                 alarms = [EWAlarmManager myAlarms];
