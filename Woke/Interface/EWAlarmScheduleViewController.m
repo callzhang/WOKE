@@ -27,6 +27,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 @implementation EWAlarmScheduleViewController{
     NSInteger selected;
+    NSMutableArray *alarmCells;
 }
 
 - (void)viewDidLoad{
@@ -65,7 +66,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     //data source
     alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskStore myTasks];
-    
+    alarmCells = [[NSMutableArray alloc] initWithCapacity:7];
     selected = 99;
 }
 
@@ -110,10 +111,10 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)save{
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    for (unsigned i=0; i<[_tableView numberOfRowsInSection:0]; i++) {
-        EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+    for (EWAlarmEditCell *cell in alarmCells) {
+        
         if (!cell || !cell.alarm || !cell.task) {
-            NSLog(@"*** Skip setting alarm for %d because alarm or task doesn't exist", i);
+            NSLog(@"*** Skip setting alarm because cell, alarm or task doesn't exist");
             continue;
         }
         //state
@@ -188,6 +189,10 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //breaking MVC pattern to get ringtonVC work
     cell.presentingViewController = self;
+    
+    //save cell
+    alarmCells[indexPath.row] = cell;
+    
     //return
     return cell;
 }
@@ -196,10 +201,10 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     CGFloat alpha = indexPath.row%2?0.05:0.06;
     cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:alpha];
     
-    EWAlarmEditCell *myCell = (EWAlarmEditCell *)cell;
-    if (myCell.alarmToggle.selected) {
-        //myCell.alarmToggle.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:1];
-    }
+//    EWAlarmEditCell *myCell = (EWAlarmEditCell *)cell;
+//    if (myCell.alarmToggle.selected) {
+//        myCell.alarmToggle.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:1];
+//    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

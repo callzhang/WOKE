@@ -897,6 +897,9 @@
         }
     }];
     
+    //UpdatedDate here only when the relations is updated
+    [self setValue:[NSDate date] forKey:kUpdatedDateKey];
+    
     //save
     [self.managedObjectContext saveToPersistentStoreAndWait];
 }
@@ -966,7 +969,7 @@
         
         NSDate *updatedDate = [self valueForKey:kUpdatedDateKey];
         if (updatedDate && [updatedDate isOutDated] == NO) {
-            NSLog(@"MO %@ skipped refresh", self.entity.name);
+            NSLog(@"MO %@ skipped refresh because not outdated (%@)", self.entity.name, updatedDate);
             return;
         }
         NSLog(@"===> Updating a managedObject %@", self.entity.name);
@@ -1021,8 +1024,6 @@
         }
     }];
     
-    //TODO: used the right update time
-    [self setValue:[NSDate date] forKey:kUpdatedDateKey];
     [[EWDataStore currentContext] saveToPersistentStoreAndWait];
 }
 
