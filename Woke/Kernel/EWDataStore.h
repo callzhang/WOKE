@@ -22,10 +22,11 @@
 
 //attribute stored on ManagedObject to identify corresponding PFObject on server
 #define kParseObjectID          @"objectId"
-//Attribute stored on PFObject to identify corresponding ManagedObject on SQLite
+//Attribute stored on PFObject to identify corresponding ManagedObject on SQLite, not used
 #define kManagedObjectID        @"objectID"
-//Attribute to store update date
+//The timestamp when MO gets updated from PO
 #define kUpdatedDateKey         @"updatedAt"
+//Not used
 #define kCreatedDateKey         @"createdAt"
 //Parse update queue
 #define kParseQueueInsert       @"parse_queue_insert"
@@ -166,7 +167,7 @@
  Refresh ManagedObject value from server in background
  @discussion If the ParseID is not found on this ManagedObject, an insert action will performed.
  */
-//- (void)refreshInBackgroundWithCompletion:(void (^)(void))block;
+- (void)refreshInBackgroundWithCompletion:(void (^)(void))block;
 
 /**
  Refresh ManagedObject value from server in the current thread

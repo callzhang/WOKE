@@ -76,10 +76,17 @@
     }
     
     //update if necessary
+<<<<<<< HEAD
     if (tasks.count != 7 * nWeeksToScheduleTask && [p.updatedAt timeElapsed] > kServerUpdateInterval && !isCheckingTask) {
         NSLog(@"The task count for person %@ is %d!", p.name, tasks.count);
 //        [p refresh];
 //        tasks = [[p.tasks allObjects] mutableCopy];
+=======
+    if (tasks.count != 7 * nWeeksToScheduleTask && [p.updatedAt isOutDated] && !isCheckingTask) {
+        NSLog(@"The task count for person %@ is %d, checking from remote!", p.name, tasks.count);
+        [p refresh];
+        tasks = [[p.tasks allObjects] mutableCopy];
+>>>>>>> FETCH_HEAD
     }
     
     
