@@ -176,6 +176,16 @@
 - (void)refresh;
 
 /**
+ *Refresh related MO from server in background.
+ *
+ *This method iterates all objects related to the MO and refresh (updatedDate) to make sure my relevant data is copied locally.
+ *
+ *TODO: It also checks that if any data on server has duplication.
+ *@discussion it is usually used for current user object (me)
+ */
+- (void)refreshRelatedInBackground;
+
+/**
  Assign only attribute values (not relation) to the ManagedObject from the Parse Object
  */
 - (void)assignValueFromParseObject:(PFObject *)object;
@@ -203,7 +213,7 @@
  -> For each end point in relationship, To-Many or To-One, find corresponding PO and assign value to that relationship. If parseID not exist on that MO, it creates a save callback block, indicating that there is a 'need' to establish relation to that PO once it is created on server.
  @discussion The attributes are updated in sync, the relationship is updated async for new andn deleted related objects.
  */
-- (void)updateValueFromManagedObject:(NSManagedObject *)managedObject;
+- (void)updateFromManagedObject:(NSManagedObject *)managedObject;
 
 /**
  The ManagedObject will only update attributes but not relations

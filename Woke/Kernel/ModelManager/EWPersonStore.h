@@ -27,11 +27,6 @@ extern EWPerson *me;
 - (EWPerson *)createPersonWithParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByID:(NSString *)ID;
 
-/**
- Update person from server in sync mode.
- */
-//- (void)updatePerson:(EWPerson *)person withServerUser:(PFUser *)user;
-
 
 //- (NSArray *)everyone;
 - (EWPerson *)anyone;

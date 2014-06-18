@@ -113,24 +113,20 @@
 
     //fetch or create
     EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
-    if (!person) {
-        NSLog(@"CoreData user doesn't exist, creating.");
-        person  = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
-    }
-    
-    //update person
-    //change to update in sync mode to avoid data overriding while update value from server
-    //[person updateValueAndRelationFromParseObject:user];
-    [person refresh];
-    
-    //save me
-    me = person;
     
     //background refresh
     if (completionBlock) {
         NSLog(@"[d] Run completion block.");
         completionBlock();
     }
+    
+    //update person
+    //change to update in sync mode to avoid data overriding while update value from server
+    [person refresh];
+    [person refreshRelatedInBackground];
+    
+    //save me
+    me = person;
     
     //Broadcast user login event
     NSLog(@"[c] Broadcast Person login notification");
@@ -162,12 +158,13 @@
     [PFUser logInWithUsernameInBackground:username password:password block:^(PFUser *user, NSError *error) {
                                        
         if (user) {
-            EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
-            [person updateValueAndRelationFromParseObject:user];
-            me = person;
+//            EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+//            [person updateValueAndRelationFromParseObject:user];
+//            me = person;
+            [EWUserManagement loginWithServerUser:user withCompletionBlock:NULL];
             
         }else{
-            NSLog(@"Create new user: %@", error.description);
+            NSLog(@"Creating new user: %@", error.description);
             //create new user
             PFUser *user = [PFUser user];
             user.username = username;

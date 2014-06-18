@@ -113,17 +113,6 @@ EWPerson *me;
     return one;
 }
 
-- (void)checkRelations{
-    //friends
-    for (EWPerson *friend in me.friends) {
-        NSLog(@"You have friend %@", friend.name);
-    }
-    
-    //media
-    for (EWMediaItem *media in me.medias) {
-        NSLog(@"You are the author of media %@", media);
-    }
-}
 
 //Danger Zone
 - (void)purgeUserData{
