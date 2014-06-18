@@ -37,10 +37,54 @@
   bgToolbar.barStyle = UIBarStyleBlack;
  }
  
+ UIViewController *navC ;
+ if ([viewController isKindOfClass:[UINavigationController class]]) {
+   UINavigationController * nav = (UINavigationController *)viewController;
+    navC = nav;
+    viewController =nav.visibleViewController;
+ }
+ else
+ {
+  navC = viewController;
+ }
+//  [viewController.view addSubview:bgToolbar];
+//  [viewController.view sendSubviewToBack:bgToolbar];
+//  
+//  [self presentViewController:navC animated:YES completion:^{
+//   //before get image, get rid of blur layer
+//   [self.view viewWithTag:kBlurViewTag].hidden = YES;
+//   
+//   //get CALayer image
+//   
+//   UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
+//   
+//   [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
+//   CGContextRef contextRef = UIGraphicsGetCurrentContext();
+//   [self.view.layer renderInContext:contextRef];
+//   UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+//   UIGraphicsEndImageContext();
+//   
+//   //get image
+//   UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//   imgView.image = img;
+//   imgView.tag = kBlurImageTag;
+//   [viewController.view addSubview:imgView];
+//   [viewController.view sendSubviewToBack:imgView];
+//   
+//   //callback
+//   if (block) {
+//    block();
+//   }
+//   
+//   
+//  }];
+//  
+//  return;
+// }
  [viewController.view addSubview:bgToolbar];
  [viewController.view sendSubviewToBack:bgToolbar];
  
- [self presentViewController:viewController animated:YES completion:^{
+ [self presentViewController:navC animated:YES completion:^{
   //before get image, get rid of blur layer
   [self.view viewWithTag:kBlurViewTag].hidden = YES;
   

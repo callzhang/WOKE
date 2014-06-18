@@ -3,11 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "Callout_Close_Btn.png"
+      "filename" : "Close Button.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "Close Button@2x.png"
     }
   ],
   "info" : {

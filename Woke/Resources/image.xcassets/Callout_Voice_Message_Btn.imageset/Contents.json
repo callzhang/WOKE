@@ -3,11 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "Callout_Voice_Message_Btn.png"
+      "filename" : "Voice Message Slice.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "Voice Message Slice@2x.png"
     }
   ],
   "info" : {

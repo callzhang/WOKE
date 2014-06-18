@@ -18,7 +18,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *distance;
 @property (weak, nonatomic) IBOutlet UILabel *initial;
 @property (nonatomic) NSString *name;
-
+@property (nonatomic,strong)NSString *timeAndDistance;
 - (void)applyHexagonMask;
 
 @end

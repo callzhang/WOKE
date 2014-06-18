@@ -44,7 +44,12 @@
     //[EWUIUtil applyHexagonSoftMaskForView:self.contentView];
 }
 
-
+-(NSString *)timeAndDistance
+{
+    _timeAndDistance = [[_time.text stringByAppendingString:@" . "] stringByAppendingString:_distance.text];
+    
+    return _timeAndDistance;
+}
 
 
 @end

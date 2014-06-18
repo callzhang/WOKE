@@ -9,13 +9,14 @@
 #import "EWPopupMenu.h"
 #import "EWUIUtil.h"
 
-#define kCallOutBtnSize         70
+#define kCallOutBtnSize         40
 
 @interface EWPopupMenu(){
     CGPoint cellCenter;
     EWCollectionPersonCell *cell;
     UIScrollView *collectionView;
     UILabel *name;
+    UILabel *locationAndTimeLabel;
 }
 
 @end
@@ -70,7 +71,10 @@
         _profileButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, kCallOutBtnSize, kCallOutBtnSize)];
         _profileButton.center = cellCenter;
         UIImage *aimge = [UIImage imageNamed:@"Callout_Profile_Btn"];
+
         [_profileButton setImage:aimge forState:UIControlStateNormal];
+//        _profileButton.backgroundColor = [UIColor redColor];
+       
         [_profileButton addTarget:self action:@selector(toPerson) forControlEvents:UIControlEventTouchUpInside];
         
         _buzzButton = [[UIButton alloc] initWithFrame: CGRectMake(0, 0, kCallOutBtnSize, kCallOutBtnSize)];
@@ -92,14 +96,28 @@
         [_closeButton setImage:dimge forState:UIControlStateNormal];
         
         //name
-        name = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kCollectionViewCellWidth, 30)];
+        name = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kCollectionViewCellWidth, 22)];
         name.center = cellCenter;
         name.text = cell.name;
         [self addSubview:name];
         name.adjustsFontSizeToFitWidth = YES;
         name.textColor = [UIColor whiteColor];
-        name.font = [UIFont systemFontOfSize:12];
+        name.font =[UIFont fontWithName:@"Lato-Regular" size:14];
+        
         name.textAlignment = NSTextAlignmentCenter;
+        
+        locationAndTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 22)];
+        locationAndTimeLabel.center = cellCenter;
+        locationAndTimeLabel.textAlignment = NSTextAlignmentCenter;
+        locationAndTimeLabel.adjustsFontSizeToFitWidth = YES;
+        locationAndTimeLabel.textColor = [UIColor whiteColor];
+        locationAndTimeLabel.font =[UIFont fontWithName:@"Lato-Regular" size:12];
+        
+        locationAndTimeLabel.text = cell.timeAndDistance;
+        
+        [self addSubview:locationAndTimeLabel];
+        // add a lable here  mq 
+        
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeMenu)];
         [self addGestureRecognizer:tap];
@@ -107,7 +125,7 @@
         [self addSubview:_profileButton];
         [self addSubview:_buzzButton];
         [self addSubview:_voiceButton];
-        [self addSubview:_closeButton];
+//        [self addSubview:_closeButton];
         _profileButton.alpha=0;
         _buzzButton.alpha=0;
         _voiceButton.alpha=0;
@@ -125,30 +143,34 @@
                         animations:
          ^{
              //CGAffineTransform flip = CGAffineTransformMakeRotation(M_PI);
-             CGAffineTransform scale = CGAffineTransformMakeScale(1.25, 1.25);
+             CGAffineTransform scale = CGAffineTransformMakeScale(1.13, 1.13);
              //cell.white.alpha = 0.8;
              //CGAffineTransform trans = CGAffineTransformConcat(flip, scale);
              cell.transform = scale;
              
-             cell.white.alpha = 0.8;
+             cell.white.alpha = 0;
+             //cell.white.alpha = 0.8;
              cell.distance.alpha = 1;
              cell.time.alpha = 1;
              cell.initial.alpha = 0;
              
              //location
-             CGRect nrect1=[_profileButton frame];
-             CGRect nrect2=[_buzzButton frame];
-             CGRect nrect3=[_voiceButton frame];
-             CGRect nrect4=[_closeButton frame];
-             CGRect nameRect = name.frame;
-             
-             nrect1.origin.x -= kCollectionViewCellWidth / 2 + 15;
-             nrect1.origin.y -= kCollectionViewCellHeight / 2 + 15;
-             nrect2.origin.y -= kCollectionViewCellHeight / 2 + 40;
-             nrect3.origin.x += kCollectionViewCellWidth / 2 + 15;
-             nrect3.origin.y -= kCollectionViewCellHeight / 2 + 15;
-             nameRect.origin.y += kCollectionViewCellHeight / 2 + 20;
-             nrect4.origin.y = nameRect.origin.y;
+             CGPoint nrect1=[_profileButton center];
+             CGPoint nrect2=[_buzzButton center];
+             CGPoint nrect3=[_voiceButton center];
+             CGPoint nrect4=[_closeButton center];
+             CGPoint nameRect = name.center;
+             CGPoint locationAndTimeLabelCenter = locationAndTimeLabel.center;
+//
+             nrect1.x += kCollectionViewCellWidth / 2 + 22.5;
+             nrect1.y -= kCollectionViewCellHeight / 2 + 15;
+             nrect2.y -= kCollectionViewCellHeight / 2 + 15;
+             nrect2.x -= kCollectionViewCellWidth / 2 + 22.5;
+             nrect3.y -= kCollectionViewCellHeight / 2 + 30 + kCallOutBtnSize/2;
+             nameRect.y += kCollectionViewCellHeight / 2 + 15;
+             nrect4.y = nameRect.y;
+             locationAndTimeLabelCenter.y =  nrect4.y + 20;
+
              
              _alphaView.alpha = 1;
              _profileButton.alpha=1;
@@ -156,13 +178,17 @@
              _voiceButton.alpha=1;
              _closeButton.alpha=1;
              name.alpha = 1;
-             [EWUIUtil applyShadow:name];
              
-             [_profileButton setFrame:nrect1];
-             [_buzzButton setFrame:nrect2];
-             [_voiceButton setFrame:nrect3];
-             [_closeButton setFrame:nrect4];
-             name.frame = nameRect;
+             
+             [EWUIUtil applyShadow:name];
+             [EWUIUtil applyShadow:locationAndTimeLabel];
+             
+             [_profileButton setCenter:nrect1];
+             [_buzzButton setCenter:nrect2];
+             [_voiceButton setCenter:nrect3];
+             [_closeButton setCenter:nrect4];
+             name.center = nrect4;
+             [locationAndTimeLabel setCenter:locationAndTimeLabelCenter];
              
          } completion:^(BOOL finished){
              
