@@ -3,11 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "Callout_Profile_Btn.png"
+      "filename" : "Profile Slice.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "Profile Slice@2x.png"
     }
   ],
   "info" : {

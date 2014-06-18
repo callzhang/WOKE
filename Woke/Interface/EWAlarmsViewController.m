@@ -737,9 +737,15 @@
     //create button block
     menu.toProfileButtonBlock = ^{
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-        EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+        
+         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+        
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+//        [[UINavigationBar appearance] setTintColor:[UIColor clearColor]];
+        [[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
+       
         controller.person = person;
-        [self presentViewControllerWithBlurBackground:controller];
+        [self presentViewControllerWithBlurBackground:navController];
         [weakMenu closeMenu];
     };
     

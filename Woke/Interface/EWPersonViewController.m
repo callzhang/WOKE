@@ -61,6 +61,13 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[UIApplication sharedApplication] setStatusBarStyle: UIStatusBarStyleBlackTranslucent];
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
+    self.navigationController.toolbar.barStyle = UIBarStyleBlackTranslucent;
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply target:self action:@selector(close:)];
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:nil];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
     if (person) {
         [self initData];
@@ -84,6 +91,11 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     }else{
         self.loginBtn.hidden = YES;
     }
+    //
+    self.navigationController.view.backgroundColor = [UIColor clearColor];
+    
+    [self.navigationController.navigationBar setTranslucent:NO];
+    
     //========table for tasks========
     
     //table view
@@ -119,9 +131,9 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         //UIColor *wcolor = [UIColor colorWithWhite:1.0f alpha:0.5f];
         //CGColorRef wCGColor = [wcolor CGColor];
         //tabView.layer.backgroundColor = wCGColor;
-        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.friends.count] forSegmentAtIndex:0];
-        [tabView setTitle:[stats wakabilityStr] forSegmentAtIndex:1];
-        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.achievements.count] forSegmentAtIndex:2];
+//        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.friends.count] forSegmentAtIndex:0];
+//        [tabView setTitle:[stats wakabilityStr] forSegmentAtIndex:1];
+//        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.achievements.count] forSegmentAtIndex:2];
         tabView.selectedSegmentIndex = 1;//initial tab
         CGRect frame = tabView.frame;
         frame.size.width = 44;
