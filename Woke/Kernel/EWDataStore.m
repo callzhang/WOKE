@@ -31,6 +31,7 @@
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
 @property (nonatomic) NSMutableDictionary *parseSaveCallbacks;
 @property (nonatomic) NSTimer *saveToServerDelayTimer;
+@property (nonatomic) NSMutableDictionary *changesDictionary;
 @end
 
 @implementation EWDataStore
@@ -83,6 +84,10 @@
 
         //watch for login event
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginDataCheck) name:kPersonLoggedIn object:Nil];
+        
+        //change dic
+        self.changesDictionary = [NSMutableDictionary new];
+        self.parseSaveCallbacks = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -457,18 +462,11 @@
 
 
 #pragma mark - Server Related Accessor methods
-- (NSMutableDictionary *)parseSaveCallbacks{
-    if (!parseSaveCallbacks) {
-        parseSaveCallbacks = [NSMutableDictionary dictionary];
-    }
-    return parseSaveCallbacks;
-}
-
 //update queue
 - (NSSet *)updateQueue{
-    NSDictionary *changeDic = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
+    NSArray *array  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
     NSMutableSet *set = [NSMutableSet new];
-    for (NSString *str in changeDic.allKeys) {
+    for (NSString *str in array) {
         NSURL *url = [NSURL URLWithString:str];
         NSManagedObjectID *ID = [[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
         if (!ID) {
@@ -482,14 +480,17 @@
 }
 
 - (void)appendUpdateQueue:(NSManagedObject *)mo{
-    NSDictionary *updateDic = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
-    NSMutableSet *set = [[NSMutableSet setWithArray:updateDic.allKeys] mutableCopy];
+    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
+    NSMutableSet *set = [[NSMutableSet setWithArray:array] mutableCopy];
     NSManagedObjectID *objectID = mo.objectID;
     if ([objectID isTemporaryID]) {
         [mo.managedObjectContext obtainPermanentIDsForObjects:@[mo] error:NULL];
         objectID = mo.objectID;
     }
-    ========
+    //changes dic
+    [self.changesDictionary setObject:[mo changedValues] forKey:objectID];
+    
+    //queue
     NSString *str = objectID.URIRepresentation.absoluteString;
     [set addObject:str];
     [[NSUserDefaults standardUserDefaults] setValue:[set allObjects] forKey:kParseQueueUpdate];
@@ -504,6 +505,9 @@
         [[NSUserDefaults standardUserDefaults] setValue:[array copy] forKey:kParseQueueUpdate];
         //NSLog(@"Removed object %@ from update queue", mo.entity.name);
     }
+    
+    //change dic
+    [self.changesDictionary removeObjectForKey:objectID];
 }
 
 //insert queue
@@ -1125,22 +1129,28 @@
 @implementation PFObject (NSManagedObject)
 - (void)updateFromManagedObject:(NSManagedObject *)managedObject{
     NSManagedObject *mo = [EWDataStore objectForCurrentContext:managedObject];
-//    NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
-//    if (updateAt){
-//        if ([updateAt timeIntervalSinceDate:self.updatedAt] < 0) {
-//            NSParameterAssert([mo valueForKey:kParseObjectID]);
-//            NSLog(@"@@@ Trying to update MO %@, but PO is newer, refresh MO!", mo.entity.name);
-//            [mo refresh];
-//            return;
-//            
+    NSParameterAssert([mo valueForKey:kParseObjectID]);
+    NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
+    if (updateAt && [updateAt timeIntervalSinceDate:self.updatedAt] < 0) {
+        NSLog(@"@@@ Trying to update MO %@, but PO is newer! Please check the code.", mo.entity.name);
+        //[mo refresh];
+        //return;
+    }
 //        } //else if([updateAt timeIntervalSinceDate:self.updatedAt] == 0) {
 //        //NSLog(@"The last modified dates are the same, parse object will not update to server");
 //        //return;
 //        //}
 //        //continue if MO updatedAt is later or equal to parse updatedAt
 //    }
-    NSMutableDictionary *mutableAttributeValues = [mo.entity.attributesByName mutableCopy];
-    [mutableAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
+    
+    NSDictionary *attributeDescriptions = [mo.entity.attributesByName mutableCopy];
+    NSArray *changeValues = [(NSDictionary *)[[EWDataStore sharedInstance].changesDictionary objectForKey:mo.objectID] allKeys];
+    if (!changeValues) {
+        changeValues = attributeDescriptions.allKeys;
+    }
+    [attributeDescriptions enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
+        if (![changeValues containsObject:key]) return;
+        
         id value = [mo valueForKey:key];
         //there could have some optimization that checks if value equals to PFFile value, and thus save some network calls. But in order to compare there will be another network call to fetch, the the comparison is redundant.
         if ([value isKindOfClass:[NSData class]]) {
