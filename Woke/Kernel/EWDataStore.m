@@ -808,7 +808,7 @@
     //download if needed
     [parseObject fetchIfNeeded];
     
-    //attributes
+    //Assign attributes
     [self assignValueFromParseObject:parseObject];
     
     //realtion
@@ -1275,6 +1275,17 @@
             //empty relationship, delete PO relationship
             if (self[key]) {
                 NSLog(@"Empty relationship on %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
+                
+                NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
+                if (inverseRelation.isToMany) {
+                    //inverse to-many relation need to be updated
+                    PFObject *inversePO = self[key];
+                    PFRelation *inversePFRelation = inversePO[inverseRelation.entity.name];
+                    [inversePFRelation removeObject:self];
+                    [inversePO save];
+                    NSLog(@"Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
+                }
+                
                 [self removeObjectForKey:key];
             }
         }
