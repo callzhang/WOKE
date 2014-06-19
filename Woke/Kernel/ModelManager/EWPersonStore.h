@@ -31,5 +31,4 @@ extern EWPerson *me;
 //- (NSArray *)everyone;
 - (EWPerson *)anyone;
 - (void)purgeUserData;
-- (void)checkRelations;
 @end

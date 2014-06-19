@@ -622,9 +622,7 @@
 + (void)updateParseObjectFromManagedObjectID:(NSManagedObjectID *)managedObjectID{
     NSError *error;
     NSManagedObject *mo = [[NSManagedObjectContext contextForCurrentThread] existingObjectWithID:managedObjectID error:&error];
-    if (!mo) {
-        NSLog(@"*** Failed to get MO from background context: %@", error);
-    }
+    NSParameterAssert(mo);
     NSString *parseObjectId = [mo valueForKey:kParseObjectID];
     PFObject *object;
     if (parseObjectId) {
@@ -929,11 +927,15 @@
         }
         
         NSManagedObjectID *objectID = self.objectID;
-        NSLog(@"===> Refreshing %@ in background", self.entity.name);
+        
         //save async
         dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+            
             NSManagedObjectContext *localContext = [EWDataStore currentContext];
             NSManagedObject *currentMO = [localContext objectWithID:objectID];
+            
+            NSLog(@"===> Refreshing %@ (%@) in background", self.entity.name, [self valueForKey:kParseObjectID]);
+            
             PFObject *object = currentMO.parseObject;
             [currentMO updateValueAndRelationFromParseObject:object];
             [localContext saveToPersistentStoreAndWait];
@@ -981,7 +983,7 @@
     NSDictionary *relations = self.entity.relationshipsByName;
     [relations enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *description, BOOL *stop) {
         if ([description.destinationEntity.name isEqualToString:kUserClass]) {
-            return;
+            //return;
         }
         
         if ([description isToMany]) {
@@ -1053,9 +1055,11 @@
 
 - (void)setPFFile:(PFFile *)file forPropertyDescription:(NSAttributeDescription *)attributeDescription{
     
-    if ([file isDataAvailable]) {
-        //get the data locally if available
-        NSData *data = [file getData];
+    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+        if (error) {
+            NSLog(@"@@@ Failed to download PFFile: %@", error.description);
+            return;
+        }
         NSString *className = [self getPropertyClassByName:attributeDescription.name];
         if ([className isEqualToString:@"UIImage"]) {
             UIImage *img = [UIImage imageWithData:data];
@@ -1064,22 +1068,7 @@
         else{
             [self setValue:data forKey:attributeDescription.name];
         }
-    }else{
-        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-            if (error) {
-                NSLog(@"@@@ Failed to download PFFile: %@", error.description);
-                return;
-            }
-            NSString *className = [self getPropertyClassByName:attributeDescription.name];
-            if ([className isEqualToString:@"UIImage"]) {
-                UIImage *img = [UIImage imageWithData:data];
-                [self setValue:img forKey:attributeDescription.name];
-            }
-            else{
-                [self setValue:data forKey:attributeDescription.name];
-            }
-        }];
-    }
+    }];
     
 }
 
@@ -1136,17 +1125,11 @@
     NSManagedObject *mo = [EWDataStore objectForCurrentContext:managedObject];
     NSParameterAssert([mo valueForKey:kParseObjectID]);
     NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
-    if (updateAt && [updateAt timeIntervalSinceDate:self.updatedAt] < 0) {
-        NSLog(@"@@@ Trying to update MO %@, but PO is newer! Please check the code.", mo.entity.name);
-        //[mo refresh];
-        //return;
+    if (updateAt && [updateAt timeIntervalSinceDate:self.updatedAt] < -60) {
+        NSLog(@"@@@ Trying to update MO %@, but PO is newer! Please check the code.(%@ -> %@)", mo.entity.name, updateAt, self.updatedAt);
+        //possible situation: the PO is just created from MO, thus have a newer time.
     }
-//        } //else if([updateAt timeIntervalSinceDate:self.updatedAt] == 0) {
-//        //NSLog(@"The last modified dates are the same, parse object will not update to server");
-//        //return;
-//        //}
-//        //continue if MO updatedAt is later or equal to parse updatedAt
-//    }
+
     
     NSDictionary *attributeDescriptions = [mo.entity.attributesByName mutableCopy];
     NSArray *changeValues = [(NSDictionary *)[[EWDataStore sharedInstance].changesDictionary objectForKey:mo.objectID] allKeys];
@@ -1279,9 +1262,7 @@
         }else{
             //empty relationship, delete PO relationship
             if (self[key]) {
-<<<<<<< HEAD
-                NSLog(@"@@@ Empty relationship on %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
-=======
+
                 NSLog(@"Empty relationship on %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
                 
                 NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
@@ -1294,7 +1275,6 @@
                     NSLog(@"Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
                 }
                 
->>>>>>> FETCH_HEAD
                 [self removeObjectForKey:key];
             }
         }
@@ -1319,13 +1299,6 @@
     if (!updated || [updated isEarlierThan:self.updatedAt]) {
         
         [managedObject assignValueFromParseObject:self];
-        
-//        if ([self isKindOfClass:[PFUser class]] && ![self.objectId isEqualToString:[PFUser currentUser].objectId]) {
-//            //skip getting relation for other user
-//            [managedObject assignValueFromParseObject:self];
-//        }else{
-//            [managedObject updateValueAndRelationFromParseObject:self];
-//        }
         
     }
     

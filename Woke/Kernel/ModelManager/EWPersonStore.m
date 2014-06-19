@@ -63,25 +63,17 @@ EWPerson *me;
 -(EWPerson *)getPersonByID:(NSString *)ID{
     //ID is username
     if(!ID) return nil;
-    EWPerson *person;
-    NSFetchRequest *userFetch = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    userFetch.predicate = [NSPredicate predicateWithFormat:@"username == %@", ID];
-    userFetch.relationshipKeyPathsForPrefetching = @[@"alarms", @"tasks", @"friends"];
-    userFetch.returnsObjectsAsFaults = NO;
-    NSError *err;
-    NSArray *result = [[EWDataStore currentContext] executeFetchRequest:userFetch error:&err];
+    EWPerson *person = [EWPerson findFirstByAttribute:@"username" withValue:ID];
     
-    if (result.count == 0){
+    if (!person){
         //First find user on server
         PFUser *user = [PFUser currentUser];
         NSParameterAssert([user.username isEqualToString:ID]);
         person = (EWPerson *)[user managedObject];
-        NSLog(@"User %@ data has CREATED", person.name);
+        NSLog(@"Current user %@ data has CREATED", person.name);
     }else{
-        person = (EWPerson *)result[0];
-        NSLog(@"User %@ data has fetched", person.name);
+        NSLog(@"Current user %@ data has FETCHED", person.name);
     }
-    
 
     return person;
 }

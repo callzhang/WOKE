@@ -123,8 +123,10 @@
     
     //update person
     //change to update in sync mode to avoid data overriding while update value from server
-    [person refresh];
-    [person refreshRelatedInBackground];
+    [person refreshInBackgroundWithCompletion:^{
+        //[person refreshRelatedInBackground];
+    }];
+    
     
     //save me
     me = person;
