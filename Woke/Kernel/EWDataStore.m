@@ -860,9 +860,11 @@
             }
             [self setValue:relatedManagedObjects forKey:key];
             
-            //delete MO not found on server
+            //delete the relation to MO not found on server
             for (NSManagedObject *MOToDelete in managedObjectToDelete) {
-                [self.managedObjectContext deleteObject:MOToDelete];
+                NSMutableSet *relatedMOs = [self mutableSetValueForKey:key];
+                [relatedMOs removeObject:MOToDelete];
+                [self setValue:relatedMOs forKeyPath:key];
             }
             
             
@@ -880,8 +882,25 @@
                 NSManagedObject *relatedManagedObject = [relatedParseObject managedObject];
                 [self setValue:relatedManagedObject forKey:key];
             }else{
-                //relation empty
-                [self setValue:nil forKey:key];
+                //relation empty, check inverse relation first
+                NSManagedObject *inverseMO = [self valueForKey:key];
+                PFObject *inversePO = inverseMO.parseObject;
+                BOOL inverseRelationExists = YES;
+                if (obj.isToMany) {
+                    PFRelation *reflectRelation = [inversePO valueForKey:obj.inverseRelationship.name];
+                    NSArray *reflectPOs = [[reflectRelation query] findObjects];
+                    inverseRelationExists = [reflectPOs containsObject:relatedParseObject];
+                }else{
+                    PFObject *reflectPO = [inversePO valueForKey:obj.inverseRelationship.entity.name];
+                    inverseRelationExists = reflectPO ? YES:NO;
+                }
+                
+                
+                if (!inverseRelationExists) {
+                    [self setValue:nil forKey:key];
+                }else{
+                    NSLog(@"*** Something wrong, the inverse relation %@ <-> %@ deoesn't agree", self.entity.name, obj.entity.name);
+                }
             }
         }
     }];
@@ -1161,6 +1180,7 @@
         }else{
             //value is nil, delete PO value
             [self removeObjectForKey:key];
+            NSLog(@"Attribute %@(%@)->%@ is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name);
         }
         
     }];
@@ -1181,6 +1201,8 @@
                         NSArray *relatedParseObjectsToDelete = [relatedParseObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT objectId IN %@", [relatedManagedObjects valueForKey:@"objectId"]]];
                         for (PFObject *PO in relatedParseObjectsToDelete) {
                             [parseRelation removeObject:PO];
+                            
+                            NSLog(@"Relation %@(%@)->%@(%@) is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, PO.objectId);
                         }
                         //save
                         if (relatedParseObjectsToDelete.count) {
@@ -1263,7 +1285,7 @@
             //empty relationship, delete PO relationship
             if (self[key]) {
 
-                NSLog(@"Empty relationship on %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
+                NSLog(@"Empty relationship on MO %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
                 
                 NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
                 if (inverseRelation.isToMany) {
