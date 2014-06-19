@@ -201,6 +201,7 @@
     //start check
     NSLog(@"Start check/scheduling tasks");
     isCheckingTask = YES;
+    [[EWDataStore currentContext] saveToPersistentStoreAndWait];
     
     //FIRST check past tasks
     BOOL hasOutDatedTask = [self checkPastTasks:tasks];

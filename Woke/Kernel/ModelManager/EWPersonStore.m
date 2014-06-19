@@ -96,7 +96,11 @@ EWPerson *me;
     NSArray *allUser = [query findObjects];
     NSMutableArray *allPerson = [NSMutableArray new];
     for (PFUser *user in allUser) {
-        [allPerson addObject:user.managedObject];
+        NSManagedObject *mo = user.managedObject;
+        [allPerson addObject:mo];
+        [mo refreshInBackgroundWithCompletion:^{
+            NSLog(@"Person %@ refreshed in background", [mo valueForKey:@"name"]);
+        }];
     }
     //return
     everyone = [allPerson copy];

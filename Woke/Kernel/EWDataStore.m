@@ -26,6 +26,7 @@
 #pragma mark - 
 #define kServerTransformTypes               @{@"CLLocation": @"PFGeoPoint"} //localType: serverType
 #define kServerTransformClasses             @{@"EWPerson": @"_User"} //localClass: serverClass
+#define kUserClass                          @"EWPerson"
 
 @interface EWDataStore()
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
@@ -457,7 +458,7 @@
 }
 
 + (NSManagedObjectContext *)currentContext{
-    return [NSManagedObjectContext MR_contextForCurrentThread];
+    return [NSManagedObjectContext contextForCurrentThread];
 }
 
 
@@ -669,6 +670,7 @@
         [object save:&error];//need to save before working on PFRelation
         if (!error) {
             NSLog(@"Inserted PO %@", mo.entity.name);
+            [mo setValue:object.objectId forKey:kParseObjectID];
         }else{
             [mo updateEventually];
             return;
@@ -691,7 +693,6 @@
         }
         
         //assign connection between MO and PO
-        [mo setValue:object.objectId forKey:kParseObjectID];
         [EWDataStore performSaveCallbacksWithParseObject:object andManagedObjectID:mo.objectID];
         [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
         
@@ -881,6 +882,7 @@
                 NSManagedObject *relatedManagedObject = [relatedParseObject managedObject];
                 [self setValue:relatedManagedObject forKey:key];
             }else{
+                //relation empty
                 [self setValue:nil forKey:key];
             }
         }
@@ -915,21 +917,24 @@
 - (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
     if (!parseObjectId) {
-        NSLog(@"+++> Insert a managedObject %@ from refresh", self.entity.name);
+        NSLog(@"+++> Insert MO %@ from refresh", self.entity.name);
         [self updateEventually];
         [EWDataStore save];
         if (block) {
             block();
         }
     }else{
+        if ([self hasChanges]) {
+            NSLog(@"*** The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!", self.entity.name);
+        }
         
         NSManagedObjectID *objectID = self.objectID;
-        NSLog(@"===> Updating a managedObject %@", self.entity.name);
+        NSLog(@"===> Refreshing %@ in background", self.entity.name);
         //save async
         dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-            NSManagedObjectContext *localContext = [NSManagedObjectContext contextForCurrentThread];
+            NSManagedObjectContext *localContext = [EWDataStore currentContext];
             NSManagedObject *currentMO = [localContext objectWithID:objectID];
-            PFObject *object = [currentMO parseObject];
+            PFObject *object = currentMO.parseObject;
             [currentMO updateValueAndRelationFromParseObject:object];
             [localContext saveToPersistentStoreAndWait];
             
@@ -942,13 +947,12 @@
 
 - (void)refresh{
     //NSParameterAssert([NSThread isMainThread]);
-    NSLog(@"Refresh %@ from server", self.entity.serverClassName);
     
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
     
     if (!parseObjectId) {
         NSParameterAssert([self isInserted]);
-        NSLog(@"+++> Insert a managedObject %@ from refresh", self.entity.name);
+        NSLog(@"+++> Insert MO %@ from refresh", self.entity.name);
         [self updateEventually];
         [EWDataStore save];
     }else{
@@ -961,7 +965,7 @@
             NSLog(@"MO %@ skipped refresh because not outdated (%@)", self.entity.name, updatedDate);
             return;
         }
-        NSLog(@"===> Updating a managedObject %@", self.entity.name);
+        NSLog(@"===> Refreshing MO %@", self.entity.name);
         PFObject *object = [self parseObject];
         [self updateValueAndRelationFromParseObject:object];
         [self.managedObjectContext saveToPersistentStoreAndWait];
@@ -969,31 +973,32 @@
 }
 
 - (void)refreshRelatedInBackground{
-    NSManagedObjectID *ID = self.objectID;
-    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-        NSError *error;
-        EWPerson *backgroundSelf = (EWPerson *)[[EWDataStore currentContext] existingObjectWithID:ID error:&error];
-        NSParameterAssert(!error);
+    
+    //first try to refresh if needed
+    [self refresh];
+    
+    //then iterate all relations
+    NSDictionary *relations = self.entity.relationshipsByName;
+    [relations enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *description, BOOL *stop) {
+        if ([description.destinationEntity.name isEqualToString:kUserClass]) {
+            return;
+        }
         
-        //first try to refresh if needed
-        [backgroundSelf refresh];
-        
-        //then iterate all relations
-        NSDictionary *relations = backgroundSelf.entity.relationshipsByName;
-        [relations enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *description, BOOL *stop) {
-            NSLog(@"Checking MO relationship: %@ -> %@", self.entity.name, description.entity.name);
-            if ([description isToMany]) {
-                
-                NSSet *relatedMOs = [backgroundSelf valueForKey:key];
-                for (NSManagedObject *relatedMO in relatedMOs) {
-                    [relatedMO refresh];
-                }
-            }else{
-                NSManagedObject *relatedMO = [backgroundSelf valueForKey:key];
-                [relatedMO refresh];
+        if ([description isToMany]) {
+            
+            NSSet *relatedMOs = [self valueForKey:key];
+            for (NSManagedObject *MO in relatedMOs) {
+                [MO refreshInBackgroundWithCompletion:^{
+                    NSLog(@"Relation %@ -> %@ refreshed in background", self.entity.name, description.destinationEntity.name);
+                }];
             }
-        }];
-    });
+        }else{
+            NSManagedObject *MO = [self valueForKey:key];
+            [MO refreshInBackgroundWithCompletion:^{
+                NSLog(@"Relation %@ -> %@ refreshed in background", self.entity.name, description.destinationEntity.name);
+            }];
+        }
+    }];
 }
 
 
@@ -1274,7 +1279,7 @@
         }else{
             //empty relationship, delete PO relationship
             if (self[key]) {
-                NSLog(@"Empty relationship on %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
+                NSLog(@"@@@ Empty relationship on %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
                 [self removeObjectForKey:key];
             }
         }

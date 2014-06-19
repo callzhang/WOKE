@@ -110,15 +110,16 @@
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     hud.labelText = @"Loading";
-
-    //fetch or create
-    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+    
     
     //background refresh
     if (completionBlock) {
         NSLog(@"[d] Run completion block.");
         completionBlock();
     }
+
+    //fetch or create
+    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
     
     //update person
     //change to update in sync mode to avoid data overriding while update value from server

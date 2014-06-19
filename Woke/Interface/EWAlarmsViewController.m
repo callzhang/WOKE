@@ -142,30 +142,9 @@
         NSUInteger n = [sectionInfo numberOfObjects];
         if (people.count > n) {
             NSLog(@"Updated user list to %lu", (unsigned long)people.count);
-            [self.fetchController performFetch:NULL];
+            //[self.fetchController performFetch:NULL];
         }
         
-        /*
-        CLLocation *location = me.lastLocation;
-        PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:location];
-        
-        [EWServer getPersonAlarmAtTime:[NSDate date] location:point completion:^(NSArray *results) {
-            //assign result
-            NSMutableArray *newPeople = [NSMutableArray new];
-            for (EWPerson *p in results) {
-                [newPeople addObject:p.username];
-            }
-            people = newPeople;
-            [[NSUserDefaults standardUserDefaults] setObject:people forKey:@"peopleList"];
-            if (people.count == 0 && me) {
-                NSLog(@"*** no result from around me fetch, please check!");
-            }
-            //reflesh
-            BOOL success = [self.fetchController performFetch:NULL];
-            if (!success) {
-                NSLog(@"Fetch failed");
-            }
-        }];*/
         
     }else{
         alarms = nil;
@@ -424,8 +403,8 @@
     if ([object isKindOfClass:[EWPerson class]]) {
 
         if ([keyPath isEqualToString:@"tasks"]){
-//            if (me.tasks && (me.tasks.count != tasks.count))
-            if (me.tasks)
+            if (me.tasks.count == 7 || me.tasks.count == 0)
+            //if (me.tasks)
             {
                 NSLog(@"KVO observed tasks changed");
                 tasks = [EWTaskStore myTasks];
