@@ -229,6 +229,7 @@
 + (void)handleNewUser{
     
     NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", me.name];
+    EWAlert(msg);
     [EWServer broadcastMessage:msg onSuccess:^{
         NSLog(@"Welcome new user %@. Push sent!", me.name);
     }onFailure:NULL];
@@ -305,8 +306,25 @@
             return;
         }
         
-        //login core data user with PFUser
-        [EWUserManagement loginWithServerUser:user withCompletionBlock:block];
+        //login core data user with PFUser, do NOT refresh from PO, refresh from fb info
+        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+        
+        //background refresh
+        if (block) {
+            NSLog(@"[d] Run completion block.");
+            block();
+        }
+        
+        //fetch or create user
+        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+        
+        //save me
+        me = person;
+        
+        //Broadcast user login event
+        NSLog(@"[c] Broadcast Person login notification");
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
+
         
         //update current user with fb info
         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
@@ -425,7 +443,7 @@
     NSParameterAssert(person);
     
     //name
-    if ([person.name isEqualToString:kDefaultUsername]) {
+    if ([person.name isEqualToString:kDefaultUsername] || person.name.length == 0) {
         person.name = user.name;
     }
     //email
@@ -460,6 +478,11 @@
             [EWDataStore save];
         }];
     });
+    
+    //update friends
+    [EWUserManagement getFacebookFriends];
+    
+    //save
     [EWDataStore save];
 }
 

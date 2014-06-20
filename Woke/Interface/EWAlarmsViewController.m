@@ -721,7 +721,7 @@
         
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
 //        [[UINavigationBar appearance] setTintColor:[UIColor clearColor]];
-        [[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
+//        [[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
        
         controller.person = person;
         [self presentViewControllerWithBlurBackground:navController];

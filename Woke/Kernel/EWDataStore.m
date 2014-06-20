@@ -303,6 +303,9 @@
      
 - (void)serverUpdate:(NSTimer *)timer{
     //services that need to run periodically
+    if (!me) {
+        return;
+    }
     NSLog(@"%s: Start sync service", __func__);
     
     //dispatch_async(dispatch_queue, ^{
@@ -436,11 +439,11 @@
             [[EWDataStore sharedInstance] appendInsertQueue:MO];
         }
         for (NSManagedObject *MO in updates) {
-            NSLog(@"===> MO %@ updated to context", MO.entity.name);
+            NSLog(@"===> MO %@ updated to context with changes: %@", MO.entity.name, MO.changedValues);
             [[EWDataStore sharedInstance] appendUpdateQueue:MO];
         }
         for (NSManagedObject *MO in deletes) {
-            NSLog(@"---> MO %@ deleted to context", MO.entity.name);
+            NSLog(@"~~~> MO %@ deleted to context", MO.entity.name);
             PFObject *PO = [MO parseObject];
             if (PO) {
                 [[EWDataStore sharedInstance] appendDeleteQueue:PO];
@@ -489,10 +492,15 @@
         objectID = mo.objectID;
     }
     //changes dic
-    [self.changesDictionary setObject:[mo changedValues] forKey:objectID];
+    NSString *str = objectID.URIRepresentation.absoluteString;
+    NSMutableDictionary *changeDic = [[mo changedValues] mutableCopy];
+    [changeDic addEntriesFromDictionary:[self.changesDictionary objectForKey:str]];
+    if (changeDic) {
+        [self.changesDictionary setObject:[changeDic copy] forKey:objectID];
+    }
+    
     
     //queue
-    NSString *str = objectID.URIRepresentation.absoluteString;
     [set addObject:str];
     [[NSUserDefaults standardUserDefaults] setValue:[set allObjects] forKey:kParseQueueUpdate];
 }
@@ -508,7 +516,7 @@
     }
     
     //change dic
-    [self.changesDictionary removeObjectForKey:objectID];
+    [self.changesDictionary removeObjectForKey:str];
 }
 
 //insert queue
@@ -629,7 +637,7 @@
         //update
         NSError *err;
         object = [[PFQuery queryWithClassName:mo.entity.serverClassName] getObjectWithId:parseObjectId error:&err];
-        //object = [PFObject objectWithoutDataWithClassName:mo.entity.serverClassName objectId:parseObjectId];
+        
         if (!object) {
             //TODO: handle error
             if ([err code] == kPFErrorObjectNotFound) {
@@ -685,9 +693,9 @@
     if (!error) {
         
         if (parseObjectId) {
-            NSLog(@"---------> PO updated to server: %@", mo.entity.serverClassName);
+            NSLog(@"---------> PO updated to server: %@(%@)", mo.entity.serverClassName, [mo valueForKey:kParseObjectID]);
         }else{
-            NSLog(@"=========> PO created: %@", mo.entity.serverClassName);
+            NSLog(@"=========> PO created: %@(%@)", mo.entity.serverClassName,[mo valueForKey:kParseObjectID]);
         }
         
         //assign connection between MO and PO
@@ -860,12 +868,13 @@
             }
             [self setValue:relatedManagedObjects forKey:key];
             
-            //delete the relation to MO not found on server
+            //delete from the relation to MO not found on server
             for (NSManagedObject *MOToDelete in managedObjectToDelete) {
                 NSLog(@"Related MO %@ -> %@(%@) deleted due to PO", self.entity.name, obj.name, [MOToDelete valueForKey:kParseObjectID]);
                 NSMutableSet *relatedMOs = [self mutableSetValueForKey:key];
                 [relatedMOs removeObject:MOToDelete];
                 [self setValue:relatedMOs forKeyPath:key];
+                
             }
             
             
@@ -885,6 +894,7 @@
             }else{
                 //relation empty, check inverse relation first
                 NSManagedObject *inverseMO = [self valueForKey:key];
+                if (!inverseMO) return;
                 PFObject *inversePO = inverseMO.parseObject;
                 BOOL inverseRelationExists = YES;
                 if (obj.isToMany) {
@@ -899,6 +909,7 @@
                 
                 if (!inverseRelationExists) {
                     [self setValue:nil forKey:key];
+                    NSLog(@"~~~> Delete relation %@->%@(%@)", self.entity.name, obj.name, [inverseMO valueForKey:kParseObjectID]);
                 }else{
                     NSLog(@"*** Something wrong, the inverse relation %@ <-> %@ deoesn't agree", self.entity.name, obj.entity.name);
                 }
@@ -1064,6 +1075,7 @@
         }else{
             //parse value empty, delete
             if ([self valueForKey:key]) {
+                NSLog(@"~~~> Delete attribute %@(%@)->%@", self.entity.name, [obj valueForKey:kParseObjectID], obj.name);
                 [self setValue:nil forKey:key];
             }
         }
@@ -1152,12 +1164,15 @@
 
     
     NSDictionary *attributeDescriptions = [mo.entity.attributesByName mutableCopy];
-    NSArray *changeValues = [(NSDictionary *)[[EWDataStore sharedInstance].changesDictionary objectForKey:mo.objectID] allKeys];
+    NSArray *changeValues = [[[EWDataStore sharedInstance].changesDictionary objectForKey:mo.objectID.URIRepresentation.absoluteString] allKeys];
     if (!changeValues) {
         changeValues = attributeDescriptions.allKeys;
     }
     [attributeDescriptions enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
-        if (![changeValues containsObject:key]) return;
+//        if (![changeValues containsObject:key]){
+//            NSLog(@"!!! MO attribute %@(%@)->%@ omitted", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name);
+//            return;
+//        }
         
         id value = [mo valueForKey:key];
         //there could have some optimization that checks if value equals to PFFile value, and thus save some network calls. But in order to compare there will be another network call to fetch, the the comparison is redundant.
@@ -1203,7 +1218,7 @@
                         for (PFObject *PO in relatedParseObjectsToDelete) {
                             [parseRelation removeObject:PO];
                             
-                            NSLog(@"Relation %@(%@)->%@(%@) is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, PO.objectId);
+                            NSLog(@"~~~> Relation %@(%@)->%@(%@) is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, PO.objectId);
                         }
                         //save
                         if (relatedParseObjectsToDelete.count) {
