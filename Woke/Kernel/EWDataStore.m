@@ -862,6 +862,7 @@
             
             //delete the relation to MO not found on server
             for (NSManagedObject *MOToDelete in managedObjectToDelete) {
+                NSLog(@"Related MO %@ -> %@(%@) deleted due to PO", self.entity.name, obj.name, [MOToDelete valueForKey:kParseObjectID]);
                 NSMutableSet *relatedMOs = [self mutableSetValueForKey:key];
                 [relatedMOs removeObject:MOToDelete];
                 [self setValue:relatedMOs forKeyPath:key];
