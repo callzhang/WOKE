@@ -303,6 +303,9 @@
      
 - (void)serverUpdate:(NSTimer *)timer{
     //services that need to run periodically
+    if (!me) {
+        return;
+    }
     NSLog(@"%s: Start sync service", __func__);
     
     //dispatch_async(dispatch_queue, ^{
@@ -860,11 +863,13 @@
             }
             [self setValue:relatedManagedObjects forKey:key];
             
-            //delete the relation to MO not found on server
+            //delete from the relation to MO not found on server
             for (NSManagedObject *MOToDelete in managedObjectToDelete) {
+                NSLog(@"~~~> Delete to-many relation %@->%@(%@)", self.entity.name, obj.name, [MOToDelete valueForKey:kParseObjectID]);
                 NSMutableSet *relatedMOs = [self mutableSetValueForKey:key];
                 [relatedMOs removeObject:MOToDelete];
                 [self setValue:relatedMOs forKeyPath:key];
+                
             }
             
             
@@ -884,6 +889,7 @@
             }else{
                 //relation empty, check inverse relation first
                 NSManagedObject *inverseMO = [self valueForKey:key];
+                if (!inverseMO) return;
                 PFObject *inversePO = inverseMO.parseObject;
                 BOOL inverseRelationExists = YES;
                 if (obj.isToMany) {
@@ -898,6 +904,7 @@
                 
                 if (!inverseRelationExists) {
                     [self setValue:nil forKey:key];
+                    NSLog(@"~~~> Delete relation %@->%@(%@)", self.entity.name, obj.name, [inverseMO valueForKey:kParseObjectID]);
                 }else{
                     NSLog(@"*** Something wrong, the inverse relation %@ <-> %@ deoesn't agree", self.entity.name, obj.entity.name);
                 }
@@ -1063,6 +1070,7 @@
         }else{
             //parse value empty, delete
             if ([self valueForKey:key]) {
+                NSLog(@"~~~> Delete attribute %@(%@)->%@", self.entity.name, [obj valueForKey:kParseObjectID], obj.name);
                 [self setValue:nil forKey:key];
             }
         }
@@ -1202,7 +1210,7 @@
                         for (PFObject *PO in relatedParseObjectsToDelete) {
                             [parseRelation removeObject:PO];
                             
-                            NSLog(@"Relation %@(%@)->%@(%@) is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, PO.objectId);
+                            NSLog(@"~~~> Relation %@(%@)->%@(%@) is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, PO.objectId);
                         }
                         //save
                         if (relatedParseObjectsToDelete.count) {
