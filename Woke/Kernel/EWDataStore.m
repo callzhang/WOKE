@@ -439,11 +439,11 @@
             [[EWDataStore sharedInstance] appendInsertQueue:MO];
         }
         for (NSManagedObject *MO in updates) {
-            NSLog(@"===> MO %@ updated to context", MO.entity.name);
+            NSLog(@"===> MO %@ updated to context with changes: %@", MO.entity.name, MO.changedValues);
             [[EWDataStore sharedInstance] appendUpdateQueue:MO];
         }
         for (NSManagedObject *MO in deletes) {
-            NSLog(@"---> MO %@ deleted to context", MO.entity.name);
+            NSLog(@"~~~> MO %@ deleted to context", MO.entity.name);
             PFObject *PO = [MO parseObject];
             if (PO) {
                 [[EWDataStore sharedInstance] appendDeleteQueue:PO];
@@ -492,10 +492,15 @@
         objectID = mo.objectID;
     }
     //changes dic
-    [self.changesDictionary setObject:[mo changedValues] forKey:objectID];
+    NSString *str = objectID.URIRepresentation.absoluteString;
+    NSMutableDictionary *changeDic = [[mo changedValues] mutableCopy];
+    [changeDic addEntriesFromDictionary:[self.changesDictionary objectForKey:str]];
+    if (changeDic) {
+        [self.changesDictionary setObject:[changeDic copy] forKey:objectID];
+    }
+    
     
     //queue
-    NSString *str = objectID.URIRepresentation.absoluteString;
     [set addObject:str];
     [[NSUserDefaults standardUserDefaults] setValue:[set allObjects] forKey:kParseQueueUpdate];
 }
@@ -511,7 +516,7 @@
     }
     
     //change dic
-    [self.changesDictionary removeObjectForKey:objectID];
+    [self.changesDictionary removeObjectForKey:str];
 }
 
 //insert queue
@@ -632,7 +637,7 @@
         //update
         NSError *err;
         object = [[PFQuery queryWithClassName:mo.entity.serverClassName] getObjectWithId:parseObjectId error:&err];
-        //object = [PFObject objectWithoutDataWithClassName:mo.entity.serverClassName objectId:parseObjectId];
+        
         if (!object) {
             //TODO: handle error
             if ([err code] == kPFErrorObjectNotFound) {
@@ -688,9 +693,9 @@
     if (!error) {
         
         if (parseObjectId) {
-            NSLog(@"---------> PO updated to server: %@", mo.entity.serverClassName);
+            NSLog(@"---------> PO updated to server: %@(%@)", mo.entity.serverClassName, [mo valueForKey:kParseObjectID]);
         }else{
-            NSLog(@"=========> PO created: %@", mo.entity.serverClassName);
+            NSLog(@"=========> PO created: %@(%@)", mo.entity.serverClassName,[mo valueForKey:kParseObjectID]);
         }
         
         //assign connection between MO and PO
@@ -1159,12 +1164,15 @@
 
     
     NSDictionary *attributeDescriptions = [mo.entity.attributesByName mutableCopy];
-    NSArray *changeValues = [(NSDictionary *)[[EWDataStore sharedInstance].changesDictionary objectForKey:mo.objectID] allKeys];
+    NSArray *changeValues = [[[EWDataStore sharedInstance].changesDictionary objectForKey:mo.objectID.URIRepresentation.absoluteString] allKeys];
     if (!changeValues) {
         changeValues = attributeDescriptions.allKeys;
     }
     [attributeDescriptions enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
-        if (![changeValues containsObject:key]) return;
+//        if (![changeValues containsObject:key]){
+//            NSLog(@"!!! MO attribute %@(%@)->%@ omitted", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name);
+//            return;
+//        }
         
         id value = [mo valueForKey:key];
         //there could have some optimization that checks if value equals to PFFile value, and thus save some network calls. But in order to compare there will be another network call to fetch, the the comparison is redundant.

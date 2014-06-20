@@ -478,6 +478,11 @@
             [EWDataStore save];
         }];
     });
+    
+    //update friends
+    [EWUserManagement getFacebookFriends];
+    
+    //save
     [EWDataStore save];
 }
 
