@@ -146,5 +146,7 @@
 #define kNotificationTypeFriendAccepted @"friendship_accepted"
 #define kNotificationTypeTimer          @"timer"
 #define kNotificationTypeNotice         @"notice"
-#define kNotificationTypeNextTaskHasMedia     @"task_has_media" 
+#define kNotificationTypeNextTaskHasMedia     @"task_has_media"
+#define kProfileTableArray              @[@"Friends", @"People woke her up", @"People her woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
+
 

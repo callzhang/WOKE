@@ -69,7 +69,9 @@
    UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
    imgView.image = img;
    imgView.tag = kBlurImageTag;
-   [[UINavigationBar appearance] setBackgroundImage:img forBarPosition:UIBarPositionTop barMetrics:UIBarMetricsDefault];
+   
+//   [[UINavigationBar appearance] setBackgroundColor:[UIColor clearColor]];
+//   [[UINavigationBar appearance] setBackgroundImage:img forBarPosition:UIBarPositionTop barMetrics:UIBarMetricsDefault];
    [navC.view addSubview:imgView];
    [navC.view sendSubviewToBack:imgView];
    

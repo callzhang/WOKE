@@ -16,6 +16,8 @@
 @interface EWPersonViewController : UIViewController<UIAlertViewDelegate, UIActionSheetDelegate> {
     NSArray *tasks;
     EWStatisticsManager *stats;
+    NSArray *profileItemsArray;
+    NSMutableArray *activityArray;
 }
 //PersonInfoView
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;
