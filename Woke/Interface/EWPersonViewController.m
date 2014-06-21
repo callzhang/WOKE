@@ -35,7 +35,7 @@
 #import "EWAppDelegate.h"
 
 static NSString *taskCellIdentifier = @"taskCellIdentifier";
-
+NSString *const profileCellIdentifier = @"ProfileCell";
 @interface EWPersonViewController (UITableView) <UITableViewDataSource, UITableViewDelegate>
 
 @end
@@ -54,19 +54,23 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.person = p;
-        
+       
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[UIApplication sharedApplication] setStatusBarStyle: UIStatusBarStyleBlackTranslucent];
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
-    self.navigationController.toolbar.barStyle = UIBarStyleBlackTranslucent;
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply target:self action:@selector(close:)];
+     profileItemsArray = kProfileTableArray;
+//    [[UIApplication sharedApplication] setStatusBarStyle: UIStatusBarStyleBlackTranslucent];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
+//    self.navigationController.toolbar.barStyle = UIBarStyleBlackTranslucent;
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply target:self action:@selector(close:)];
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:nil];
+//    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:nil];
+    
+//    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStyleBordered target:self action:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
     if (person) {
@@ -128,17 +132,17 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
         self.location.text = person.city;
         
         //tab view
-        //UIColor *wcolor = [UIColor colorWithWhite:1.0f alpha:0.5f];
-        //CGColorRef wCGColor = [wcolor CGColor];
-        //tabView.layer.backgroundColor = wCGColor;
+        UIColor *wcolor = [UIColor colorWithWhite:1.0f alpha:0.5f];
+        CGColorRef wCGColor = [wcolor CGColor];
+        tabView.layer.backgroundColor = wCGColor;
 //        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.friends.count] forSegmentAtIndex:0];
 //        [tabView setTitle:[stats wakabilityStr] forSegmentAtIndex:1];
 //        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.achievements.count] forSegmentAtIndex:2];
-        tabView.selectedSegmentIndex = 1;//initial tab
+        tabView.selectedSegmentIndex = 0;//initial tab
         CGRect frame = tabView.frame;
-        frame.size.width = 44;
-        tabView.frame = frame;
-        
+        frame.size.height = 150;
+//        tabView.frame = frame;
+        [tabView setFrame:frame];
         //statement
         EWTaskItem *t = tasks.firstObject;
         if (person.statement) {
@@ -191,8 +195,8 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     NSInteger idx = [sender selectedSegmentIndex];
     switch (idx) {
         case 0:
-            taskTableView.hidden = YES;
-            collectionView.hidden = NO;
+            taskTableView.hidden = NO;
+            collectionView.hidden = YES;
             [collectionView reloadData];
             break;
             
@@ -276,15 +280,28 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     //alarm shown in sections
-    return tasks.count;
+//    return tasks.count;
+    NSInteger tapItem =  [tabView selectedSegmentIndex];
+    switch (tapItem) {
+        case 0:
+            
+            return 1;
+#warning need update
+        case 1:
+            return 0;
+        default:
+            return 0;
+            break;
+    }
+    
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
+    return profileItemsArray.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 78;//TODO
+    return 45;//TODO
 }
 
 
@@ -293,33 +310,55 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 - (UITableViewCell *)tableView:(UITableView *)table cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     //static NSString *CellIdentifier = @"cell";
-    EWTaskHistoryCell *cell = [table dequeueReusableCellWithIdentifier:taskCellIdentifier];
+    
+    UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:profileCellIdentifier];
     if (!cell) {
-        cell = [[EWTaskHistoryCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:taskCellIdentifier];
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        cell.backgroundColor = [UIColor clearColor];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:profileCellIdentifier];
+        cell.textLabel.textColor = [UIColor whiteColor];
     }
-
     
-    EWTaskItem *task = [tasks objectAtIndex:indexPath.section];
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:task.time];
-    cell.dayOfMonth.text = [NSString stringWithFormat:@"%ld", (long)components.day];
-    //month
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"MMM"];
-    NSString *MON = [formatter stringFromDate:task.time];
-    cell.month.text = MON;
-    
-    if (task.completed) {
-        cell.wakeTime.text = [task.completed date2String];
-        cell.taskInfo.text = [NSString stringWithFormat:@"Woke up by %lu users", (unsigned long)task.waker.count];
-        
-    }else{
-        cell.wakeTime.text = [task.time date2String];
-        cell.taskInfo.text = @"Failed";
+    switch (indexPath.row) {
+        case 0:
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
+            break;
+            
+        default:
+            break;
     }
+    
+    
+    cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
+    
     
     return cell;
+    
+//    EWTaskHistoryCell *cell = [table dequeueReusableCellWithIdentifier:taskCellIdentifier];
+//    if (!cell) {
+//        cell = [[EWTaskHistoryCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:taskCellIdentifier];
+//        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+//        cell.backgroundColor = [UIColor clearColor];
+//    }
+//
+//    
+//    EWTaskItem *task = [tasks objectAtIndex:indexPath.section];
+//    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:task.time];
+//    cell.dayOfMonth.text = [NSString stringWithFormat:@"%ld", (long)components.day];
+//    //month
+//    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+//    [formatter setDateFormat:@"MMM"];
+//    NSString *MON = [formatter stringFromDate:task.time];
+//    cell.month.text = MON;
+//    
+//    if (task.completed) {
+//        cell.wakeTime.text = [task.completed date2String];
+//        cell.taskInfo.text = [NSString stringWithFormat:@"Woke up by %lu users", (unsigned long)task.waker.count];
+//        
+//    }else{
+//        cell.wakeTime.text = [task.time date2String];
+//        cell.taskInfo.text = @"Failed";
+//    }
+//    
+//    return cell;
 }
 //change cell bg color
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{

@@ -720,7 +720,11 @@
          EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
         
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-//        [[UINavigationBar appearance] setTintColor:[UIColor clearColor]];
+        [navController.navigationBar setOpaque:YES];
+//        [navController.navigationBar  setBarTintColor:[UIColor clearColor]];
+//        navController.navigationBar.alpha=0.3;
+//        [navController.navigationBar setBarStyle:UIBarStyleDefault];
+        [navController setNavigationBarHidden:YES];
 //        [[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
        
         controller.person = person;
