@@ -9,6 +9,7 @@
 #import "EWAlarmPageView.h"
 #import "EWCollectionPersonCell.h"
 #import "EWPopupMenu.h"
+#import "EWHexagonFlowLayout.h"
 
 #define kCollectionViewCellAlert    1001
 #define kOptionsAlert               1002
@@ -45,6 +46,7 @@
 
 
 
+
 //action
 - (void)loadScrollViewWithPage:(NSInteger)page;
 - (void)scrollViewDidScroll:(UIScrollView *)sender;
@@ -54,5 +56,5 @@
 - (IBAction)mainActions:(id)sender;
 - (IBAction)youBtn:(id)sender;
 - (IBAction)showNotification:(id)sender;
-
+- (IBAction)pinched:(UIPinchGestureRecognizer *)sender;
 @end

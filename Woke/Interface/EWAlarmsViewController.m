@@ -397,6 +397,18 @@
 
 
 
+- (IBAction)pinched:(UIPinchGestureRecognizer *)sender {
+    if (sender.scale < 0.5) {
+        EWHexagonFlowLayout *layout = (EWHexagonFlowLayout *)self.collectionView.collectionViewLayout;
+        [layout resetLayoutWithRatio:1.0];
+    }else if (sender.scale > 2){
+        EWHexagonFlowLayout *layout = (EWHexagonFlowLayout *)self.collectionView.collectionViewLayout;
+        [layout resetLayoutWithRatio:2.0];
+    }
+    
+}
+
+
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
 
@@ -868,7 +880,6 @@
     
     return shouldReload;
 }
-
 
 @end
 

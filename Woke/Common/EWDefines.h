@@ -136,13 +136,10 @@
 //Collection View Identifier
 #define kCollectionViewCellPersonIdenfifier  @"CollectionViewIdentifier"
 
+
 //CollectionView Cell
 #define kCollectionViewCellWidth        80
 #define kCollectionViewCellHeight       80
-#define kCollectionViewCellPersonRadius 40
-#define CELL_SPACE_RATIO                2
-//#endif
-
 
 //Notification types
 #define kNotificationTypeFriendRequest  @"friendship_request"

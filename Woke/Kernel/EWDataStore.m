@@ -1175,6 +1175,10 @@
 //        }
         
         id value = [mo valueForKey:key];
+        //check if changed
+        if (![value isEqual:self[key]] && (value || self[key])) {
+            NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign  to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, self[key], value);
+        }
         //there could have some optimization that checks if value equals to PFFile value, and thus save some network calls. But in order to compare there will be another network call to fetch, the the comparison is redundant.
         if ([value isKindOfClass:[NSData class]]) {
             //data
@@ -1191,12 +1195,12 @@
             PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
             [self setObject:point forKey:key];
         }else if(value){
-            //other supported value: audio/video
+            //other supported value
             [self setObject:value forKey:key];
         }else{
             //value is nil, delete PO value
             [self removeObjectForKey:key];
-            NSLog(@"Attribute %@(%@)->%@ is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name);
+            //NSLog(@"Attribute %@(%@)->%@ is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name);
         }
         
     }];
