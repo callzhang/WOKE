@@ -16,8 +16,7 @@
 #import "UIViewController+Blur.h"
 
 //Util
-#import "NSDate+Extend.h"
-#import "MBProgressHUD.h"
+#import "EWUIUtil.h"
 
 //backend
 #import "EWDataStore.h"
@@ -38,6 +37,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     _tableView.contentInset = UIEdgeInsetsMake(45, 0, 200, 0);
     [self.view addSubview:_tableView];
     [self.view sendSubviewToBack:_tableView];
+    UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
+    [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
+    
+    //alpha mask
+    [EWUIUtil applyAlphaGradientForView:self.alphaMask withEndPoints:@[@0.05]];
     
     //header view
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
@@ -49,8 +53,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     self.title = @"Schedule Alarm";
     
-    UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
-    [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
+    
     
     //data
     [self initData];

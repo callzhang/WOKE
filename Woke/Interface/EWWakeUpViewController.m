@@ -183,6 +183,7 @@
     alphaMask.locations = @[@0.0f, @0.1f, @1.0f];
     alphaMask.bounds = CGRectMake(0, 0, self.tableView.frame.size.width, self.tableView.frame.size.height);
     self.alphaView.layer.mask = alphaMask;
+    [EWUIUtil applyAlphaGradientForView:self.alphaView withEndPoints:@[@0.0f, @0.1f, @1.0f]];
     
     //load MediaViewCell
     UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];

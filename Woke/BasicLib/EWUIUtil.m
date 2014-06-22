@@ -172,5 +172,30 @@
     return p;
 }
 
++ (void)applyAlphaGradientForView:(UIView *)view withEndPoints:(NSArray *)locations{
+    //alpha mask
+    
+    CAGradientLayer *alphaMask = [CAGradientLayer layer];
+    alphaMask.anchorPoint = CGPointZero;
+    alphaMask.startPoint = CGPointZero;
+    alphaMask.endPoint = CGPointMake(0.0f, 1.0f);
+    UIColor *startColor = [UIColor colorWithWhite:1.0 alpha:0.0];
+    UIColor *endColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+    NSArray *endPoints;
+    NSArray *colors;
+    if (locations.count == 1) {
+        endPoints = @[@0.0, locations[0], @1.0];
+        colors = @[(id)startColor.CGColor, (id)endColor.CGColor, (id)endColor.CGColor];
+    }else if (locations.count == 2){
+        endPoints = @[@0.0, locations[0], locations[1], @1.0];
+        colors = @[(id)startColor.CGColor, (id)endColor.CGColor, (id)endColor.CGColor, (id)startColor.CGColor];
+    }
+    alphaMask.colors = colors;
+    alphaMask.locations =endPoints;
+    alphaMask.bounds = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height);
+    view.backgroundColor = [UIColor clearColor];
+    view.layer.mask = alphaMask;
+    
+}
 
 @end
