@@ -96,6 +96,8 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     self.location.text = @"";
     self.statement.text = @"";
     
+    [taskTableView reloadData];
+    
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -324,6 +326,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     switch (indexPath.row) {
         case 0:
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
+//            NSLog(@"%ld",person.friends.count);
             break;
             
         default:
