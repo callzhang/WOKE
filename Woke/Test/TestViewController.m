@@ -95,7 +95,7 @@
     if (self.navigationController == nil) {
         //header view
         UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(20, 30, 18, 30)];
-        [backBtn setImage:[UIImage imageNamed:@"back_btn"] forState:UIControlStateNormal];
+        [backBtn setImage:[UIImage imageNamed:@"BackButton"] forState:UIControlStateNormal];
         [backBtn addTarget:self action:@selector(OnBack) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:backBtn];
         

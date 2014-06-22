@@ -47,7 +47,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 
 @implementation EWPersonViewController
 @synthesize person, taskTableView;
-@synthesize collectionView;
+//@synthesize collectionView;
 @synthesize tabView;
 
 - (EWPersonViewController *)initWithPerson:(EWPerson *)p{
@@ -96,9 +96,13 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         self.loginBtn.hidden = YES;
     }
     //
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    self.navigationController.navigationBar.translucent = YES;
     self.navigationController.view.backgroundColor = [UIColor clearColor];
-    
-    [self.navigationController.navigationBar setTranslucent:NO];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
     
     //========table for tasks========
     
@@ -112,15 +116,15 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     [taskTableView registerNib:taskNib forCellReuseIdentifier:taskCellIdentifier];
     
     //collection view
-    collectionView.hidden = YES;
-    collectionView.dataSource = self;
-    collectionView.delegate = self;
-    collectionView.backgroundColor = [UIColor clearColor];
-    collectionView.backgroundView = nil;
-    collectionView.contentInset = UIEdgeInsetsMake(20, 20, 20, 20);
-    //[collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
-    UINib *personNib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
-    [collectionView registerNib:personNib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+//    collectionView.hidden = YES;
+//    collectionView.dataSource = self;
+//    collectionView.delegate = self;
+//    collectionView.backgroundColor = [UIColor clearColor];
+//    collectionView.backgroundView = nil;
+//    collectionView.contentInset = UIEdgeInsetsMake(20, 20, 20, 20);
+//    //[collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+//    UINib *personNib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
+//    [collectionView registerNib:personNib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     
     //======= UI =======
     if (person) {
@@ -196,20 +200,20 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     switch (idx) {
         case 0:
             taskTableView.hidden = NO;
-            collectionView.hidden = YES;
-            [collectionView reloadData];
+            //collectionView.hidden = YES;
+            //[collectionView reloadData];
             break;
             
         case 1:
             taskTableView.hidden = NO;
-            collectionView.hidden = YES;
-            [taskTableView reloadData];
+            //collectionView.hidden = YES;
+            //[taskTableView reloadData];
             break;
             
         case 2:
             taskTableView.hidden = YES;
-            collectionView.hidden = NO;
-            [collectionView reloadData];
+            //collectionView.hidden = NO;
+            //[collectionView reloadData];
             break;
             
         default:
@@ -264,6 +268,11 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     }
 }
 
+
+- (IBAction)more:(id)sender {
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:@"Flag" otherButtonTitles:@"Friend history", nil];
+    [sheet showFromBarButtonItem:self.navigationItem.rightBarButtonItem animated:YES];
+}
 
 @end
 

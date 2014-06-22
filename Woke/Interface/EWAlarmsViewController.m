@@ -618,7 +618,8 @@
 - (void)scheduleAlarm{
     //pop up alarmScheduleView
     EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
-    [self presentViewControllerWithBlurBackground:controller];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewControllerWithBlurBackground:navController];
     
 }
 
@@ -727,20 +728,15 @@
     
     //create button block
     menu.toProfileButtonBlock = ^{
-        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         
-         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
         
+        EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        [navController.navigationBar setOpaque:YES];
-//        [navController.navigationBar  setBarTintColor:[UIColor clearColor]];
-//        navController.navigationBar.alpha=0.3;
-//        [navController.navigationBar setBarStyle:UIBarStyleDefault];
-        [navController setNavigationBarHidden:YES];
-//        [[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
        
-        controller.person = person;
-        [self presentViewControllerWithBlurBackground:navController];
+        [self presentViewControllerWithBlurBackground:navController completion:^{
+            EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+            controller.person = person;
+        }];
         [weakMenu closeMenu];
     };
     

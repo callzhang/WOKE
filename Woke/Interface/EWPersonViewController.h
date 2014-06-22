@@ -27,11 +27,10 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *tabView;
 @property (weak, nonatomic) IBOutlet UITableView *taskTableView;
 @property (weak, nonatomic) IBOutlet UIButton *loginBtn;
-@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+//@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) EWPerson *person;
 
 - (IBAction)extProfile:(id)sender;
-- (IBAction)close:(id)sender;
 - (IBAction)login:(id)sender;
 - (IBAction)tabTapped:(UISegmentedControl *)sender;
 

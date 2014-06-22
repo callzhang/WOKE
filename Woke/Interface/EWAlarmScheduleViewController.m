@@ -37,19 +37,17 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.contentInset = UIEdgeInsetsMake(45, 0, 200, 0);
     [self.view addSubview:_tableView];
+    [self.view sendSubviewToBack:_tableView];
     
     //header view
-//    UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(20, 30, 18, 30)];
-//    [backBtn setImage:[UIImage imageNamed:@"back_btn"] forState:UIControlStateNormal];
-//    [backBtn addTarget:self action:@selector(OnDone) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:backBtn];
-    
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
-    UIBarButtonItem *cancelBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
-    UIBarButtonItem *center = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    
-    [self.navigationBar setItems:@[doneBtn, center, cancelBtn] animated:YES];
-    [self.view sendSubviewToBack:_tableView];
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.view.backgroundColor = [UIColor clearColor];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.title = @"Schedule Alarm";
     
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
     [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
