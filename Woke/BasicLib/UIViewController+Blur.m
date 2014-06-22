@@ -48,8 +48,8 @@
  {
   navC = viewController;
  }
-  [viewController.view addSubview:bgToolbar];
-  [viewController.view sendSubviewToBack:bgToolbar];
+  [navC.view addSubview:bgToolbar];
+  [navC.view sendSubviewToBack:bgToolbar];
   
   [self presentViewController:navC animated:YES completion:^{
    //before get image, get rid of blur layer

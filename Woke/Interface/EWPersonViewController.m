@@ -388,7 +388,15 @@ NSString *const profileCellIdentifier = @"ProfileCell";
             break;
         }
     }
-    [self.navigationController pushViewControllerWithBlur:controller];
+    
+    [UIView  beginAnimations:nil context:NULL];
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+    [UIView setAnimationDuration:0.75];
+    [self.navigationController pushViewController:controller animated:NO];
+    
+    //选择动画
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.navigationController.view cache:NO];
+    [UIView commitAnimations];
     
 //        [self presentViewControllerWithBlurBackground:controller];
 }
