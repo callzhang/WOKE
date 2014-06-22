@@ -8,8 +8,8 @@
 
 #import "UIViewController+Blur.h"
 
-#define kBlurViewTag       345
-#define kBlurImageTag      435
+
+
 
 @implementation UIViewController (Blur)
 

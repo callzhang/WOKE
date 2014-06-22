@@ -7,7 +7,7 @@
 //
 
 #import "EWPersonViewController.h"
-
+#import "UINavigationController+Blur.h"
 // Util
 #import "EWUIUtil.h"
 #import "UIViewController+Blur.h"
@@ -33,7 +33,7 @@
 #import "EWTaskHistoryCell.h"
 #import "EWCollectionPersonCell.h"
 #import "EWAppDelegate.h"
-
+#import "EWMyFriendsViewController.h"
 #define kProfileTableArray              @[@"Friends", @"People woke her up", @"People her woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
 
 
@@ -77,8 +77,8 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
-    
-    //========table for tasks========
+//    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];// 图片变小了
+                                             //========table for tasks========
     taskTableView.dataSource = self;
     taskTableView.delegate = self;
     taskTableView.backgroundColor = [UIColor clearColor];
@@ -372,8 +372,25 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 //tap cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
-    [self presentViewControllerWithBlurBackground:controller];
+    NSInteger tapItem =  [tabView selectedSegmentIndex];//if we selectnum is 
+    UIViewController *controller ;
+    switch (indexPath.row) {
+        case 0:
+        {
+            controller= [[EWMyFriendsViewController alloc] init];
+            break;
+        }
+            
+        default:
+        {
+            controller = [[EWRecordingViewController alloc] initWithPerson:person];
+
+            break;
+        }
+    }
+    [self.navigationController pushViewControllerWithBlur:controller];
+    
+//        [self presentViewControllerWithBlurBackground:controller];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
