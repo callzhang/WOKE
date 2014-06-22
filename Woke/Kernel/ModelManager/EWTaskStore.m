@@ -100,13 +100,12 @@
     NSMutableArray *tasks;
 
     //get from local cache if self or time elapsed since last update is shorter than predefined interval
-    BOOL isSelf = [person.username isEqualToString:me.username];
-    BOOL isUpToDate = -[person.updatedAt timeIntervalSinceNow] < kTaskUpdateInterval;
-    if ((isSelf || isUpToDate) && person.pastTasks.count > 0 ) {
+    if (person.isMe || !person.updatedAt.isOutDated) {
         tasks = [[person.pastTasks allObjects] mutableCopy];
         [tasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
     }else{
         //get from server
+        NSLog(@"Fetch past task from server for %@", person.name);
         PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
         [query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
         [query whereKey:@"state" equalTo:@YES];

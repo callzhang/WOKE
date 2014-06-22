@@ -736,6 +736,7 @@
         [self presentViewControllerWithBlurBackground:navController completion:^{
             EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
             controller.person = person;
+            [controller.view setNeedsDisplay];
         }];
         [weakMenu closeMenu];
     };

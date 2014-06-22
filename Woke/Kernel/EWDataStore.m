@@ -944,6 +944,7 @@
 }
 
 - (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
+    NSParameterAssert([NSThread isMainThread]);
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
     if (!parseObjectId) {
         NSLog(@"+++> Insert MO %@ from refresh", self.entity.name);
@@ -972,7 +973,10 @@
             [localContext saveToPersistentStoreAndWait];
             
             if (block) {
-                block();
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    block();
+                });
+                
             }
         });
     }
@@ -1175,10 +1179,7 @@
 //        }
         
         id value = [mo valueForKey:key];
-        //check if changed
-        if (![value isEqual:self[key]] && (value || self[key])) {
-            NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign  to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, self[key], value);
-        }
+        
         //there could have some optimization that checks if value equals to PFFile value, and thus save some network calls. But in order to compare there will be another network call to fetch, the the comparison is redundant.
         if ([value isKindOfClass:[NSData class]]) {
             //data
@@ -1195,7 +1196,10 @@
             PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
             [self setObject:point forKey:key];
         }else if(value){
-            //other supported value
+            //check if changed
+            if (![value isEqual:self[key]] && (value || [self valueForKey:key])) {
+                NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign  to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, [self valueForKey:key], value);
+            }
             [self setObject:value forKey:key];
         }else{
             //value is nil, delete PO value
