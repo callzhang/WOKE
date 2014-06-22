@@ -46,6 +46,7 @@
 }
 -(void)initView
 {
+   
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
     self.navigationItem.title = @"Friends";
     self.view.backgroundColor = [UIColor clearColor];
