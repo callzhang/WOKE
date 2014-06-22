@@ -405,7 +405,6 @@
         EWHexagonFlowLayout *layout = (EWHexagonFlowLayout *)self.collectionView.collectionViewLayout;
         [layout resetLayoutWithRatio:2.0];
     }
-    
 }
 
 

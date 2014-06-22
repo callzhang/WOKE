@@ -77,8 +77,19 @@
 }
 
 + (void)applyHexagonMaskForView:(UIView *)view{
+    float originalSize = 80.0;
+    
+    //get mask
     CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
     UIBezierPath *hexagonPath = [EWUIUtil getHexagonPath];
+    
+    //scale
+    float height = view.bounds.size.height;
+    float width = view.bounds.size.width;
+    float ratio = MAX(height, width)/originalSize;
+    [hexagonPath applyTransform:CGAffineTransformMakeScale(ratio, ratio)];
+    
+    //apply mask
     hexagonMask.path = hexagonPath.CGPath;
     view.layer.mask  = hexagonMask;
     view.layer.masksToBounds = YES;
@@ -86,8 +97,14 @@
 }
 
 + (void)applyHexagonSoftMaskForView:(UIView *)view{
+    float originalSize = 80.0;
     CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
     UIBezierPath *hexagonPath = [EWUIUtil getHexagonSoftPath];
+    float height = view.bounds.size.height;
+    float width = view.bounds.size.width;
+    float ratio = MAX(height, width)/originalSize;
+    [hexagonPath applyTransform:CGAffineTransformMakeScale(ratio, ratio)];
+    
     hexagonMask.path = hexagonPath.CGPath;
     view.layer.mask  = hexagonMask;
     view.layer.masksToBounds = YES;
