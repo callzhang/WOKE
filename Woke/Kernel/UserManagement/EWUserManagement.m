@@ -337,7 +337,7 @@
 
 
 + (void)updateFacebookInfo{
-    [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
+    [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
         [EWUserManagement handleFacebookException:error];
         //update with facebook info
         [EWUserManagement updateUserWithFBData:data];
@@ -597,6 +597,9 @@
 
 
 + (void)handleFacebookException:(NSError *)error{
+    if (!error) {
+        return;
+    }
     NSString *alertText;
     NSString *alertTitle;
     // If the error requires people using an app to make an action outside of the app in order to recover

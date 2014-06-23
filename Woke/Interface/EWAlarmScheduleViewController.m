@@ -35,13 +35,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     _tableView.delegate = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.contentInset = UIEdgeInsetsMake(45, 0, 200, 0);
-    [self.view addSubview:_tableView];
-    [self.view sendSubviewToBack:_tableView];
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
     [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
     
     //alpha mask
-    [EWUIUtil applyAlphaGradientForView:self.alphaMask withEndPoints:@[@0.05]];
+    [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.1]];
     
     //header view
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
@@ -52,7 +50,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     self.title = @"Schedule Alarm";
-    
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
     
     
     //data
@@ -199,13 +197,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-    CGFloat alpha = indexPath.row%2?0.05:0.06;
-    cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:alpha];
-    
-//    EWAlarmEditCell *myCell = (EWAlarmEditCell *)cell;
-//    if (myCell.alarmToggle.selected) {
-//        myCell.alarmToggle.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:1];
-//    }
+    //CGFloat alpha = indexPath.row%2?0.05:0.06;
+    cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

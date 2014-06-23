@@ -174,6 +174,11 @@
 
 + (void)applyAlphaGradientForView:(UIView *)view withEndPoints:(NSArray *)locations{
     //alpha mask
+    UIView *mask = [[UIView alloc] initWithFrame:view.frame];
+    [view.superview insertSubview:mask aboveSubview:view];
+    [mask addSubview:view];
+    view.frame = mask.bounds;
+    mask.backgroundColor = [UIColor clearColor];
     
     CAGradientLayer *alphaMask = [CAGradientLayer layer];
     alphaMask.anchorPoint = CGPointZero;
@@ -192,9 +197,9 @@
     }
     alphaMask.colors = colors;
     alphaMask.locations =endPoints;
-    alphaMask.bounds = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height);
-    view.backgroundColor = [UIColor clearColor];
-    view.layer.mask = alphaMask;
+    alphaMask.bounds = CGRectMake(0, 0, mask.frame.size.width, mask.frame.size.height);
+    
+    mask.layer.mask = alphaMask;
     
 }
 

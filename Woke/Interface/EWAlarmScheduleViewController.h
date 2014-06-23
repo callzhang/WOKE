@@ -14,5 +14,4 @@
     NSArray *tasks;
 }
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (weak, nonatomic) IBOutlet UIView *alphaMask;
 @end
