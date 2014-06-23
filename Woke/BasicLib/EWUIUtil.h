@@ -57,4 +57,6 @@
 
 + (CGPoint)getCartesianFromPolarCoordinateOfR:(float)r degree:(float)d;
 
++ (void)applyAlphaGradientForView:(UIView *)view withEndPoints:(NSArray *)locations;
+
 @end

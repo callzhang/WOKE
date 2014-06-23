@@ -20,6 +20,8 @@
 #import "EWUserManagement.h"
 
 #define everyoneCheckTimeOut            600
+#define numberOfRelevantUsers           @100 //number of relevant users returned
+#define radiusOfRelevantUsers           @-1  //search radius in kilometers for relevant users
 
 EWPerson *me;
 
@@ -82,21 +84,35 @@ EWPerson *me;
     if (everyone && [[NSDate date] timeIntervalSinceDate:timeEveryoneChecked] < everyoneCheckTimeOut) {
         return everyone;
     }
-    //fetch
-    //TODO: use server function to fetch people around
-    PFQuery *query = [PFUser query];
-    NSArray *allUser = [query findObjects];
+    //fetch from sever
     NSMutableArray *allPerson = [NSMutableArray new];
-    for (PFUser *user in allUser) {
-        if ([user.objectId isEqualToString:me.objectId]) {
-            continue;
-        }
-        NSManagedObject *mo = user.managedObject;
-        [allPerson addObject:mo];
-//        [mo refreshInBackgroundWithCompletion:^{
-//            NSLog(@"%s Person %@ refreshed in background",__func__, [mo valueForKey:@"name"]);
-//        }];
-    }
+    NSString *parseObjectId = [me.parseObject valueForKey:kParseObjectID];
+    [PFCloud callFunctionInBackground:@"getRelevantUsers"
+                       withParameters:@{@"objectId": parseObjectId,
+                                        @"topk" : numberOfRelevantUsers,
+                                        @"radius" : radiusOfRelevantUsers}
+                                block:^(NSArray *list, NSError *error) {
+                                    if (!error) {
+                                        for (NSString *parseId in list) {
+                                            PFQuery *query = [PFUser query];
+                                            PFUser *user = (PFUser*)[query getObjectWithId:parseId];
+                                            NSManagedObject *mo = user.managedObject;
+                                            [allPerson addObject:mo];
+                                        }
+                                        /*
+                                        PFQuery *query = [PFUser query];
+                                        NSArray *allUser = [query findObjects];
+                                        for (PFUser *user in allUser) {
+                                            if ([list containsObject:user.objectId]) {
+                                                NSManagedObject *mo = user.managedObject;
+                                                [allPerson addObject:mo];
+                                            }
+                                        }
+                                         */
+                                    }
+                                }];
+    //TODO: use server function to fetch people around
+
     //return
     everyone = [allPerson copy];
     timeEveryoneChecked = [NSDate date];

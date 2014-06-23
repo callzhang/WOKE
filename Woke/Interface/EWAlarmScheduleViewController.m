@@ -16,8 +16,7 @@
 #import "UIViewController+Blur.h"
 
 //Util
-#import "NSDate+Extend.h"
-#import "MBProgressHUD.h"
+#import "EWUIUtil.h"
 
 //backend
 #import "EWDataStore.h"
@@ -36,23 +35,23 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     _tableView.delegate = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.contentInset = UIEdgeInsetsMake(45, 0, 200, 0);
-    [self.view addSubview:_tableView];
-    
-    //header view
-//    UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(20, 30, 18, 30)];
-//    [backBtn setImage:[UIImage imageNamed:@"back_btn"] forState:UIControlStateNormal];
-//    [backBtn addTarget:self action:@selector(OnDone) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:backBtn];
-    
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
-    UIBarButtonItem *cancelBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(OnCancel)];
-    UIBarButtonItem *center = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    
-    [self.navigationBar setItems:@[doneBtn, center, cancelBtn] animated:YES];
-    [self.view sendSubviewToBack:_tableView];
-    
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
     [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
+    
+    //alpha mask
+    [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.1]];
+    
+    //header view
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.view.backgroundColor = [UIColor clearColor];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.title = @"Schedule Alarm";
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
+    
     
     //data
     [self initData];
@@ -198,13 +197,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-    CGFloat alpha = indexPath.row%2?0.05:0.06;
-    cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:alpha];
-    
-//    EWAlarmEditCell *myCell = (EWAlarmEditCell *)cell;
-//    if (myCell.alarmToggle.selected) {
-//        myCell.alarmToggle.backgroundColor = [UIColor colorWithRed:120 green:200 blue:255 alpha:1];
-//    }
+    //CGFloat alpha = indexPath.row%2?0.05:0.06;
+    cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

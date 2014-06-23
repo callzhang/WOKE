@@ -34,8 +34,11 @@
 #import "EWCollectionPersonCell.h"
 #import "EWAppDelegate.h"
 
-static NSString *taskCellIdentifier = @"taskCellIdentifier";
+#define kProfileTableArray              @[@"Friends", @"People woke her up", @"People her woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
 
+
+static NSString *taskCellIdentifier = @"taskCellIdentifier";
+NSString *const profileCellIdentifier = @"ProfileCell";
 @interface EWPersonViewController (UITableView) <UITableViewDataSource, UITableViewDelegate>
 
 @end
@@ -47,97 +50,93 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 @implementation EWPersonViewController
 @synthesize person, taskTableView;
-@synthesize collectionView;
+//@synthesize collectionView;
 @synthesize tabView;
 
 - (EWPersonViewController *)initWithPerson:(EWPerson *)p{
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.person = p;
-        
+       
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[UIApplication sharedApplication] setStatusBarStyle: UIStatusBarStyleBlackTranslucent];
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
-    self.navigationController.toolbar.barStyle = UIBarStyleBlackTranslucent;
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply target:self action:@selector(close:)];
+     profileItemsArray = kProfileTableArray;
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:nil];
-    
+    //login event
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
-    if (person) {
-        [self initData];
-        [self initView];
-    }
     
-}
-
-
-- (void)initData {
-    tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
-    tasks = [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
-    stats = [[EWStatisticsManager alloc] init];
-    stats.person = person;
-}
-
-
-- (void)initView {
-    if (person == me && !person.facebook) {
-        self.loginBtn.hidden = NO;
-    }else{
-        self.loginBtn.hidden = YES;
-    }
-    //
+    //navigation
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    self.navigationController.navigationBar.translucent = YES;
     self.navigationController.view.backgroundColor = [UIColor clearColor];
-    
-    [self.navigationController.navigationBar setTranslucent:NO];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
     
     //========table for tasks========
-    
-    //table view
     taskTableView.dataSource = self;
     taskTableView.delegate = self;
     taskTableView.backgroundColor = [UIColor clearColor];
     taskTableView.backgroundView = nil;
-    //tableCell
     UINib *taskNib = [UINib nibWithNibName:@"EWTaskHistoryCell" bundle:nil];
     [taskTableView registerNib:taskNib forCellReuseIdentifier:taskCellIdentifier];
     
-    //collection view
-    collectionView.hidden = YES;
-    collectionView.dataSource = self;
-    collectionView.delegate = self;
-    collectionView.backgroundColor = [UIColor clearColor];
-    collectionView.backgroundView = nil;
-    collectionView.contentInset = UIEdgeInsetsMake(20, 20, 20, 20);
-    //[collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
-    UINib *personNib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
-    [collectionView registerNib:personNib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    //tab view
+    //tabView.layer.backgroundColor = [[UIColor colorWithWhite:1.0f alpha:0.5f] CGColor];
+    tabView.selectedSegmentIndex = 0;//initial tab
     
-    //======= UI =======
+    //default state
+    [EWUIUtil applyHexagonMaskForView:self.profilePic];
+    self.name.text = @"";
+    self.location.text = @"";
+    self.statement.text = @"";
+    
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    
+    [super viewDidAppear:animated];
+    
     if (person) {
+        [self initData];
+        [self initView];
+    }
+}
+
+- (void)initData {
+    if (person) {
+        tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
+        stats = [[EWStatisticsManager alloc] init];
+        stats.person = person;
+    }
+}
+
+
+- (void)initView {
+    
+    //======= Person =======
+    if (person) {
+        if (person.isMe && !person.facebook) {
+            self.loginBtn.hidden = NO;
+        }else{
+            self.loginBtn.hidden = YES;
+        }
         [taskTableView reloadData];
         //UI
         self.profilePic.image = person.profilePic;
-        [EWUIUtil applyHexagonMaskForView:self.profilePic];
         self.name.text = person.name;
         self.location.text = person.city;
-        
-        //tab view
-        //UIColor *wcolor = [UIColor colorWithWhite:1.0f alpha:0.5f];
-        //CGColorRef wCGColor = [wcolor CGColor];
-        //tabView.layer.backgroundColor = wCGColor;
-//        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.friends.count] forSegmentAtIndex:0];
-//        [tabView setTitle:[stats wakabilityStr] forSegmentAtIndex:1];
-//        [tabView setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)person.achievements.count] forSegmentAtIndex:2];
-        tabView.selectedSegmentIndex = 1;//initial tab
-        CGRect frame = tabView.frame;
-        frame.size.width = 44;
-        tabView.frame = frame;
+        if (person.lastLocation && !person.isMe) {
+            CLLocation *loc0 = me.lastLocation;
+            CLLocation *loc1 = person.lastLocation;
+            float distance = [loc0 distanceFromLocation:loc1]/1000;
+            self.location.text = [NSString stringWithFormat:@"%@ | %.1f km", person.city, distance];
+        }
         
         //statement
         EWTaskItem *t = tasks.firstObject;
@@ -153,22 +152,26 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     }
 }
 
--(void)viewWillAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
-    
-    [self initView];
-}
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
 
 - (void)setPerson:(EWPerson *)p{
-    if ([p isFault]) {
-        [p.managedObjectContext refreshObject:p mergeChanges:YES];
+    //add observer to update when person updates
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePersonChange:) name:NSManagedObjectContextObjectsDidChangeNotification object:[EWDataStore currentContext]];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    person = p;
+    [self initData];
+    [self initView];
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    
+    if (p.updatedAt.isOutDated) {
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [p refreshInBackgroundWithCompletion:^{
+            [self initData];
+            [self initView];
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        }];
     }
     
-    person = p;
 }
 
 #pragma mark - UI Events
@@ -191,21 +194,21 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
     NSInteger idx = [sender selectedSegmentIndex];
     switch (idx) {
         case 0:
-            taskTableView.hidden = YES;
-            collectionView.hidden = NO;
-            [collectionView reloadData];
+            taskTableView.hidden = NO;
+            //collectionView.hidden = YES;
+            //[collectionView reloadData];
             break;
             
         case 1:
             taskTableView.hidden = NO;
-            collectionView.hidden = YES;
-            [taskTableView reloadData];
+            //collectionView.hidden = YES;
+            //[taskTableView reloadData];
             break;
             
         case 2:
             taskTableView.hidden = YES;
-            collectionView.hidden = NO;
-            [collectionView reloadData];
+            //collectionView.hidden = NO;
+            //[collectionView reloadData];
             break;
             
         default:
@@ -261,6 +264,11 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 }
 
 
+- (IBAction)more:(id)sender {
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:@"Flag" otherButtonTitles:@"Friend history", nil];
+    [sheet showFromBarButtonItem:self.navigationItem.rightBarButtonItem animated:YES];
+}
+
 @end
 
 
@@ -276,15 +284,28 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     //alarm shown in sections
-    return tasks.count;
+//    return tasks.count;
+    NSInteger tapItem =  [tabView selectedSegmentIndex];
+    switch (tapItem) {
+        case 0:
+            
+            return 1;
+#warning need update
+        case 1:
+            return 0;
+        default:
+            return 0;
+            break;
+    }
+    
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
+    return profileItemsArray.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 78;//TODO
+    return 45;//TODO
 }
 
 
@@ -293,33 +314,55 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 - (UITableViewCell *)tableView:(UITableView *)table cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     //static NSString *CellIdentifier = @"cell";
-    EWTaskHistoryCell *cell = [table dequeueReusableCellWithIdentifier:taskCellIdentifier];
+    
+    UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:profileCellIdentifier];
     if (!cell) {
-        cell = [[EWTaskHistoryCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:taskCellIdentifier];
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        cell.backgroundColor = [UIColor clearColor];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:profileCellIdentifier];
+        cell.textLabel.textColor = [UIColor whiteColor];
     }
-
     
-    EWTaskItem *task = [tasks objectAtIndex:indexPath.section];
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:task.time];
-    cell.dayOfMonth.text = [NSString stringWithFormat:@"%ld", (long)components.day];
-    //month
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"MMM"];
-    NSString *MON = [formatter stringFromDate:task.time];
-    cell.month.text = MON;
-    
-    if (task.completed) {
-        cell.wakeTime.text = [task.completed date2String];
-        cell.taskInfo.text = [NSString stringWithFormat:@"Woke up by %lu users", (unsigned long)task.waker.count];
-        
-    }else{
-        cell.wakeTime.text = [task.time date2String];
-        cell.taskInfo.text = @"Failed";
+    switch (indexPath.row) {
+        case 0:
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
+            break;
+            
+        default:
+            break;
     }
+    
+    
+    cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
+    
     
     return cell;
+    
+//    EWTaskHistoryCell *cell = [table dequeueReusableCellWithIdentifier:taskCellIdentifier];
+//    if (!cell) {
+//        cell = [[EWTaskHistoryCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:taskCellIdentifier];
+//        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+//        cell.backgroundColor = [UIColor clearColor];
+//    }
+//
+//    
+//    EWTaskItem *task = [tasks objectAtIndex:indexPath.section];
+//    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:task.time];
+//    cell.dayOfMonth.text = [NSString stringWithFormat:@"%ld", (long)components.day];
+//    //month
+//    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+//    [formatter setDateFormat:@"MMM"];
+//    NSString *MON = [formatter stringFromDate:task.time];
+//    cell.month.text = MON;
+//    
+//    if (task.completed) {
+//        cell.wakeTime.text = [task.completed date2String];
+//        cell.taskInfo.text = [NSString stringWithFormat:@"Woke up by %lu users", (unsigned long)task.waker.count];
+//        
+//    }else{
+//        cell.wakeTime.text = [task.time date2String];
+//        cell.taskInfo.text = @"Failed";
+//    }
+//    
+//    return cell;
 }
 //change cell bg color
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -340,9 +383,11 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 
 #pragma mark - USER LOGIN EVENT
 - (void)userLoggedIn{
-    NSLog(@"PersonVC: user logged in, starting refresh");
-    [self initData];
-    [self initView];
+    if (self.person.isMe) {
+        NSLog(@"PersonVC: user logged in, starting refresh");
+        [self initData];
+        [self initView];
+    }
 }
 
 @end

@@ -17,12 +17,12 @@
 @property (retain, nonatomic) id controller;
 
 //interface
-@property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 @property (weak, nonatomic) IBOutlet UILabel *name;
 @property (weak, nonatomic) IBOutlet UILabel *date;
 @property (weak, nonatomic) IBOutlet UILabel *description;
 @property (weak, nonatomic) IBOutlet EWMediaSlider *mediaBar;
 @property (weak, nonatomic) IBOutlet UIButton *buzzIcon;
+@property (weak, nonatomic) IBOutlet UIButton *profilePic;
 
 //action
 - (IBAction)play:(id)sender;

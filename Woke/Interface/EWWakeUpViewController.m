@@ -170,20 +170,11 @@
     tableView_.dataSource = self;
     tableView_.delegate = self;
     tableView_.separatorStyle = UITableViewCellSeparatorStyleNone;
-    tableView_.contentInset = UIEdgeInsetsMake(120, 0, 80, 0);//the distance of the content to the frame of tableview
+    tableView_.contentInset = UIEdgeInsetsMake(200, 0, 80, 0);//the distance of the content to the frame of tableview
     
     //alpha mask
-    CAGradientLayer *alphaMask = [CAGradientLayer layer];
-    alphaMask.anchorPoint = CGPointZero;
-    alphaMask.startPoint = CGPointZero;
-    alphaMask.endPoint = CGPointMake(0.0f, 1.0f);
-    UIColor *startColor = [UIColor colorWithWhite:1.0 alpha:0.0];
-    UIColor *endColor = [UIColor colorWithWhite:1.0 alpha:1.0];
-    alphaMask.colors = @[(id)startColor.CGColor, (id)endColor.CGColor, (id)endColor.CGColor];
-    alphaMask.locations = @[@0.0f, @0.1f, @1.0f];
-    alphaMask.bounds = CGRectMake(0, 0, self.tableView.frame.size.width, self.tableView.frame.size.height);
-    self.alphaView.layer.mask = alphaMask;
-    
+    [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.2f, @0.9f]];
+
     //load MediaViewCell
     UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
     //register the nib
@@ -306,7 +297,7 @@
     cell.date.text = [mi.createdAt date2String];
     
     //set image
-    cell.profilePic.image = mi.author.profilePic;
+    cell.profilePic.imageView.image = mi.author.profilePic;
     
     //control
     cell.controller = self;

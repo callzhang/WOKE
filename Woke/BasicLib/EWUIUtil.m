@@ -77,8 +77,19 @@
 }
 
 + (void)applyHexagonMaskForView:(UIView *)view{
+    float originalSize = 80.0;
+    
+    //get mask
     CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
     UIBezierPath *hexagonPath = [EWUIUtil getHexagonPath];
+    
+    //scale
+    float height = view.bounds.size.height;
+    float width = view.bounds.size.width;
+    float ratio = MAX(height, width)/originalSize;
+    [hexagonPath applyTransform:CGAffineTransformMakeScale(ratio, ratio)];
+    
+    //apply mask
     hexagonMask.path = hexagonPath.CGPath;
     view.layer.mask  = hexagonMask;
     view.layer.masksToBounds = YES;
@@ -86,8 +97,14 @@
 }
 
 + (void)applyHexagonSoftMaskForView:(UIView *)view{
+    float originalSize = 80.0;
     CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
     UIBezierPath *hexagonPath = [EWUIUtil getHexagonSoftPath];
+    float height = view.bounds.size.height;
+    float width = view.bounds.size.width;
+    float ratio = MAX(height, width)/originalSize;
+    [hexagonPath applyTransform:CGAffineTransformMakeScale(ratio, ratio)];
+    
     hexagonMask.path = hexagonPath.CGPath;
     view.layer.mask  = hexagonMask;
     view.layer.masksToBounds = YES;
@@ -155,5 +172,35 @@
     return p;
 }
 
++ (void)applyAlphaGradientForView:(UIView *)view withEndPoints:(NSArray *)locations{
+    //alpha mask
+    UIView *mask = [[UIView alloc] initWithFrame:view.frame];
+    [view.superview insertSubview:mask aboveSubview:view];
+    [mask addSubview:view];
+    view.frame = mask.bounds;
+    mask.backgroundColor = [UIColor clearColor];
+    
+    CAGradientLayer *alphaMask = [CAGradientLayer layer];
+    alphaMask.anchorPoint = CGPointZero;
+    alphaMask.startPoint = CGPointZero;
+    alphaMask.endPoint = CGPointMake(0.0f, 1.0f);
+    UIColor *startColor = [UIColor colorWithWhite:1.0 alpha:0.0];
+    UIColor *endColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+    NSArray *endPoints;
+    NSArray *colors;
+    if (locations.count == 1) {
+        endPoints = @[@0.0, locations[0], @1.0];
+        colors = @[(id)startColor.CGColor, (id)endColor.CGColor, (id)endColor.CGColor];
+    }else if (locations.count == 2){
+        endPoints = @[@0.0, locations[0], locations[1], @1.0];
+        colors = @[(id)startColor.CGColor, (id)endColor.CGColor, (id)endColor.CGColor, (id)startColor.CGColor];
+    }
+    alphaMask.colors = colors;
+    alphaMask.locations =endPoints;
+    alphaMask.bounds = CGRectMake(0, 0, mask.frame.size.width, mask.frame.size.height);
+    
+    mask.layer.mask = alphaMask;
+    
+}
 
 @end

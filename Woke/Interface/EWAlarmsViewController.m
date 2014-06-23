@@ -397,6 +397,17 @@
 
 
 
+- (IBAction)pinched:(UIPinchGestureRecognizer *)sender {
+    if (sender.scale < 0.5) {
+        EWHexagonFlowLayout *layout = (EWHexagonFlowLayout *)self.collectionView.collectionViewLayout;
+        [layout resetLayoutWithRatio:1.0];
+    }else if (sender.scale > 2){
+        EWHexagonFlowLayout *layout = (EWHexagonFlowLayout *)self.collectionView.collectionViewLayout;
+        [layout resetLayoutWithRatio:2.0];
+    }
+}
+
+
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
 
@@ -606,7 +617,8 @@
 - (void)scheduleAlarm{
     //pop up alarmScheduleView
     EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
-    [self presentViewControllerWithBlurBackground:controller];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewControllerWithBlurBackground:navController];
     
 }
 
@@ -715,16 +727,16 @@
     
     //create button block
     menu.toProfileButtonBlock = ^{
-        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         
-         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
         
+        EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-//        [[UINavigationBar appearance] setTintColor:[UIColor clearColor]];
-//        [[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
        
-        controller.person = person;
-        [self presentViewControllerWithBlurBackground:navController];
+        [self presentViewControllerWithBlurBackground:navController completion:^{
+            EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+            controller.person = person;
+            [controller.view setNeedsDisplay];
+        }];
         [weakMenu closeMenu];
     };
     
@@ -868,7 +880,6 @@
     
     return shouldReload;
 }
-
 
 @end
 

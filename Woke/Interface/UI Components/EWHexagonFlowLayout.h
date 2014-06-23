@@ -8,4 +8,6 @@
 @property (nonatomic) NSInteger itemTotalCount;
 @property (nonatomic) CGSize hexagonSize;
 
+- (void)resetLayoutWithRatio:(float)r;
+
 @end

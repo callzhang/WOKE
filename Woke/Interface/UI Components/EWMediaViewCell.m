@@ -12,6 +12,7 @@
 #import "EWMediaSlider.h"
 #import "EWDataStore.h"
 #import "EWPersonViewController.h"
+#import "EWUIUtil.h"
 
 #define maxBytes        150000
 
@@ -77,6 +78,8 @@
         [self setNeedsDisplay];
     }
     
+    self.profilePic.imageView.image = media.author.profilePic;
+    [EWUIUtil applyHexagonMaskForView:self.profilePic.imageView];
     media = m;
 }
 

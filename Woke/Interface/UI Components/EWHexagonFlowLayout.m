@@ -10,16 +10,17 @@
 #define kLevelTotal                         @[@0, @1, @7, @19, @37, @61, @91]
 #define kDynamic                            NO
 #define kZoomEffect                         NO
+#define kHexWidthRatio                      0.875
 
 @interface EWHexagonFlowLayout ()
 {
     NSInteger _itemsPerRow;
     NSInteger _itemTotalCount;
     CGSize _hexagonSize;
-    float adjWidth; //the true width of a hexagon, used to calculate coordinates
     CGPoint center;
     CGFloat latestDeltaX;
     CGFloat latestDeltaY;
+    CGFloat CELL_SPACE_RATIO;//ratio of cell spacing
 }
 @property (nonatomic, strong) UIDynamicAnimator *dynamicAnimator;
 @property (nonatomic, strong) NSMutableSet *visibleIndexPathsSet;
@@ -29,13 +30,12 @@
 @synthesize itemsPerRow = _itemsPerRow;
 @synthesize itemTotalCount = _itemTotalCount;
 @synthesize hexagonSize = _hexagonSize;
-@synthesize attributeArray;
 
 #pragma mark - UICollectionViewLayout Subclass hooks
 
 - (NSArray *)attributeArray{
     //pre-calculate the coordinates and save to attribute array
-    if (!attributeArray || attributeArray.count != _itemTotalCount) {
+    if (!_attributeArray || _attributeArray.count != _itemTotalCount) {
         
         NSMutableArray *newAttributeArray = [[NSMutableArray alloc] initWithCapacity:_itemTotalCount];
         
@@ -45,21 +45,25 @@
             newAttributeArray[i] = attribute;
         }
         
-        attributeArray = [newAttributeArray copy];
+        _attributeArray = [newAttributeArray copy];
         
         NSLog(@"CollectionView layout updated!");
     }
     
-    return attributeArray;
+    return _attributeArray;
 }
 
 - (void)prepareLayout
 {
     [super prepareLayout];
     
+    //space ratio
+    if (!CELL_SPACE_RATIO) {
+        CELL_SPACE_RATIO = 2;
+    }
+    
     //cell size
-    adjWidth = 140;
-    _hexagonSize = CGSizeMake(kCollectionViewCellWidth * CELL_SPACE_RATIO, kCollectionViewCellHeight * CELL_SPACE_RATIO);
+    _hexagonSize = CGSizeMake(kCollectionViewCellWidth, kCollectionViewCellHeight);
     self.itemSize = CGSizeMake(_hexagonSize.width, _hexagonSize.height);
     
     
@@ -137,6 +141,22 @@
     }
     
     
+}
+
+- (void)resetLayoutWithRatio:(float)r{
+    if (CELL_SPACE_RATIO == r) {
+        return;
+    }
+    CELL_SPACE_RATIO = r;
+    _attributeArray = nil;
+    
+    //[self.collectionView reloadData];
+    [self.collectionView performBatchUpdates:^{
+        //[self.collectionView reloadData];
+        [self invalidateLayout];
+    } completion:^(BOOL finished) {
+        //
+    }];
 }
 
 
@@ -249,13 +269,18 @@
     
     
     //col = indexPath.row % _itemsPerRow;
-    CGFloat horiOffset = ((row % 2) == 0) ? 0 : adjWidth * 0.5f;
+    CGFloat horiOffset = ((row % 2) == 0) ? 0 : kCollectionViewCellWidth * kHexWidthRatio * CELL_SPACE_RATIO/2;
     CGFloat vertOffset = 0;
     
     
+    
+    //CGFloat horiOffset0 = ((level0 % 2) == 0) ? 0 : kCollectionViewCellWidth * kHexWidthRatio * CELL_SPACE_RATIO;
+    float x0 = level0 * kCollectionViewCellWidth * 2 * kHexWidthRatio + horiOffset + (kCollectionViewCellWidth * kHexWidthRatio * (2-CELL_SPACE_RATIO)/2);
+    float y0 = level0 * 0.75f * kCollectionViewCellHeight * 2 + vertOffset;
+    
     attributes.size = CGSizeMake(kCollectionViewCellWidth, kCollectionViewCellHeight);
-    attributes.center = CGPointMake((col * adjWidth) + horiOffset,
-                                    row * 0.75f * _hexagonSize.height + vertOffset);
+    attributes.center = CGPointMake(x0 + (col - level0) * kCollectionViewCellWidth * CELL_SPACE_RATIO * kHexWidthRatio,
+                                    y0 + (row - level0) * 0.75f * kCollectionViewCellHeight * CELL_SPACE_RATIO);
     
     //NSLog(@"%dth item has index of (%d, %d) and coordinate of (%f, %f)", x, col, row, attributes.center.x, attributes.center.y);
     
@@ -267,7 +292,7 @@
 {
     
     //list of containing indexPath
-    NSArray *attributes = [self getContainedRect:rect fromAttributesArray:attributeArray];
+    NSArray *attributes = [self getContainedRect:rect fromAttributesArray:self.attributeArray];
     
     if (kZoomEffect) {
         //apply zoom
@@ -276,7 +301,7 @@
         //bounds.origin.y += self.collectionView.contentInset.top;
         bounds.origin.y -= self.collectionView.frame.origin.y;//compensate the frame origin
         //only update cells in the screen
-        NSArray *attributesNeedZoom = [self getContainedRect:bounds fromAttributesArray:attributeArray];
+        NSArray *attributesNeedZoom = [self getContainedRect:bounds fromAttributesArray:self.attributeArray];
         
         CGPoint midBounds = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
         for (UICollectionViewLayoutAttributes *attribute in attributesNeedZoom) {
@@ -286,8 +311,8 @@
                 CGPoint cellCenter = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
                 //calculate distance
                 CGFloat distance = [EWUIUtil distanceOfPoint:midBounds toPoint:cellCenter];
-                if (distance < _hexagonSize.width) {
-                    CGFloat normDistance = distance / _hexagonSize.width;
+                if (distance < (kCollectionViewCellHeight * CELL_SPACE_RATIO)) {
+                    CGFloat normDistance = distance / (kCollectionViewCellWidth * CELL_SPACE_RATIO);
                     CGFloat zoom = 1 + pow((1-normDistance),2)/4 ;
                     attribute.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
                     //attribute.zIndex = round(zoom);
@@ -350,17 +375,12 @@
     return kZoomEffect ? YES : NO;
 }
 
-//- (void)invalidateLayoutWithContext:(UICollectionViewLayoutInvalidationContext *)context{
-//    
-//}
 
 - (CGSize)collectionViewContentSize
 {
-    //NSInteger row = _itemsPerRow == 0?0:_itemTotalCount / _itemsPerRow;
 
-    CGFloat contentWidth = (_itemsPerRow+1) * _hexagonSize.width;
-    //CGFloat contentHeight = ( (row * 0.75f) * _hexagonSize.height) + (0.5f + _hexagonSize.height);
-    CGFloat contentHeight = (_itemsPerRow+1) * adjWidth;
+    CGFloat contentWidth = (_itemsPerRow+1) * kCollectionViewCellHeight * 2;
+    CGFloat contentHeight = (_itemsPerRow+1) * kCollectionViewCellWidth * 2;
     CGSize contentSize = CGSizeMake(contentWidth, contentHeight);
     
     return contentSize;

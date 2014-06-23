@@ -79,8 +79,8 @@
 
     if (tasks.count != 7 * nWeeksToScheduleTask && [p.updatedAt isOutDated] && !isCheckingTask && [p isMe]) {
         NSLog(@"The task count for person %@ is %lu, checking from remote!", p.name, (unsigned long)tasks.count);
-        [p refresh];
-        tasks = [[p.tasks allObjects] mutableCopy];
+        //[p refresh];
+        //tasks = [[p.tasks allObjects] mutableCopy];
 
     }
     
@@ -100,13 +100,12 @@
     NSMutableArray *tasks;
 
     //get from local cache if self or time elapsed since last update is shorter than predefined interval
-    BOOL isSelf = [person.username isEqualToString:me.username];
-    BOOL isUpToDate = -[person.updatedAt timeIntervalSinceNow] < kTaskUpdateInterval;
-    if ((isSelf || isUpToDate) && person.pastTasks.count > 0 ) {
+    if (person.isMe || !person.updatedAt.isOutDated) {
         tasks = [[person.pastTasks allObjects] mutableCopy];
         [tasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
     }else{
         //get from server
+        NSLog(@"Fetch past task from server for %@", person.name);
         PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
         [query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
         [query whereKey:@"state" equalTo:@YES];
@@ -201,7 +200,6 @@
     //start check
     NSLog(@"Start check/scheduling tasks");
     isCheckingTask = YES;
-    [[EWDataStore currentContext] saveToPersistentStoreAndWait];
     
     //FIRST check past tasks
     BOOL hasOutDatedTask = [self checkPastTasks:tasks];

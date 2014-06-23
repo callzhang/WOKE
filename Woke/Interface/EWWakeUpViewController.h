@@ -15,7 +15,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *AM;
 @property (weak, nonatomic) IBOutlet UIView *header;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (weak, nonatomic) IBOutlet UIView *alphaView;
 @property (weak, nonatomic) IBOutlet UILabel *seconds;
 
 @property (nonatomic, weak) EWPerson *person;
