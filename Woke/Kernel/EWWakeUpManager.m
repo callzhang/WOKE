@@ -77,7 +77,7 @@
         NSString *buzzSound = buzzSoundName?sounds[buzzSoundName]:@"buzz.caf";
         
 #ifdef DEV_TEST
-        EWPerson *sender = [EWUserManagement me];
+        EWPerson *sender = [EWPersonStore me];
         //alert
         [[[UIAlertView alloc] initWithTitle:@"Buzz 来啦" message:[NSString stringWithFormat:@"Got a buzz from %@. This message will not display in release.", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         
@@ -209,14 +209,14 @@
     NSInteger nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
     NSInteger nVoiceNeeded = kMaxVoicePerTask - nVoice;
     
-    NSArray *mediaAssets = [[EWUserManagement me].mediaAssets allObjects];
+    NSArray *mediaAssets = [[EWPersonStore me].mediaAssets allObjects];
     for (EWMediaItem *media in mediaAssets) {
         if (!media.targetDate || [media.targetDate isEarlierThan:[NSDate date]]) {
             
             //find media to add
             [task addMediasObject: media];
             //remove media from mediaAssets
-            [[EWUserManagement me] removeMediaAssetsObject:media];
+            [[EWPersonStore me] removeMediaAssetsObject:media];
             
             
             if ([media.type isEqualToString: kMediaTypeVoice]) {

@@ -95,15 +95,6 @@
     
 }
 
-//Current User
-+ (EWPerson *)me{
-    if ([NSThread isMainThread]) {
-        return me;
-    }else{
-        return [EWDataStore objectForCurrentContext:me];
-    }
-}
-
 
 //login with local user default info
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
@@ -260,7 +251,7 @@
 
     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         
-        EWPerson *user = [EWUserManagement me];
+        EWPerson *user = [EWPersonStore me];
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         user.lastLocation = location;
         NSLog(@"Get user location with lat: %f, lon: %f", geoPoint.latitude, geoPoint.longitude);
@@ -442,7 +433,7 @@
 //after fb login, fetch user managed object
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     //get me first
-    EWPerson *person = [EWUserManagement me];
+    EWPerson *person = [EWPersonStore me];
     NSParameterAssert(person);
     
     //name
@@ -513,7 +504,7 @@
         
         //get social graph of current user
         //if not, create one
-        EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWUserManagement me]];
+        EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWPersonStore me]];
         //skip if checked within a week
         if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
             NSLog(@"Facebook friends check skipped.");

@@ -68,22 +68,39 @@
 - (NSArray *)getTasksByPerson:(EWPerson *)p{
     EWPerson *person = [EWDataStore objectForCurrentContext:p];
     NSMutableArray *tasks = [[person.tasks allObjects] mutableCopy];
-    [tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time >= %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]]];
     
+    
+    //update if necessary(count
+
+    if (tasks.count != 7 * nWeeksToScheduleTask && p.isOutDated && !isCheckingTask && p.isMe) {
+        NSLog(@"The task count for person %@ is %lu, checking from server!", p.name, (unsigned long)tasks.count);
+        //this approach is a last resort to fetch task by owner
+        PFQuery *taskQuery= [PFQuery queryWithClassName:@"EWTaskItem"];
+        [taskQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
+        NSArray *taskOnServer = [taskQuery findObjects];
+        BOOL newTask = NO;
+        for (PFObject *t in taskOnServer) {
+            EWTaskItem *task = (EWTaskItem *)t.managedObject;
+            task.owner = me;
+            if (![tasks containsObject:task]) {
+                [tasks addObject:task];
+                newTask = YES;
+                NSLog(@"New task found from server: %@", task.time.weekday);
+            }
+            
+        }
+        if (newTask) {
+            [EWDataStore save];
+        }
+    }
+    
+    //filter
+    //[tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time >= %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]]];
+    //check past task
     if ([person isMe]) {
         //check past task, move it to pastTasks and remove it from the array
         [self checkPastTasks:tasks];
     }
-    
-    //update if necessary(count
-
-    if (tasks.count != 7 * nWeeksToScheduleTask && [p.updatedAt isOutDated] && !isCheckingTask && [p isMe]) {
-        NSLog(@"The task count for person %@ is %lu, checking from remote!", p.name, (unsigned long)tasks.count);
-        //[p refresh];
-        //tasks = [[p.tasks allObjects] mutableCopy];
-
-    }
-    
     
     //sort
     return [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
@@ -283,7 +300,7 @@
         }
         t.alarm = nil;
         t.owner = nil;
-        t.pastOwner = [EWUserManagement me];
+        t.pastOwner = [EWPersonStore me];
         [tasks removeObject:t];
         NSLog(@"====== Task on %@ moved to past ======", [t.time date2dayString]);
         [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
@@ -302,7 +319,7 @@
     
     EWTaskItem *t = [EWTaskItem createEntity];
     //relation
-    t.owner = [EWUserManagement me];
+    t.owner = [EWPersonStore me];
     //others
     t.added = [NSDate date];
     //[EWDataStore save];
@@ -454,7 +471,7 @@
 - (void)deleteAllTasks{
     NSLog(@"*** Deleting all tasks");
     
-    for (EWTaskItem *t in [self getTasksByPerson:[EWUserManagement me]]) {
+    for (EWTaskItem *t in [self getTasksByPerson:[EWPersonStore me]]) {
         //post notification
         [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t userInfo:@{kPushTaskKey: t}];
         //cancel local notif
@@ -555,7 +572,7 @@
 
 - (void)checkScheduledNotifications{
     NSMutableArray *allNotification = [[[UIApplication sharedApplication] scheduledLocalNotifications] mutableCopy];
-    NSArray *tasks = [self getTasksByPerson:[EWUserManagement me]];
+    NSArray *tasks = [self getTasksByPerson:[EWPersonStore me]];
 
     NSLog(@"There are %ld scheduled local notification and %ld stored task info", (long)allNotification.count, (long)tasks.count);
     
@@ -569,7 +586,7 @@
     
     for (UILocalNotification *aNotif in allNotification) {
 
-        NSLog(@"===== Deleted Local Notif on %@ (%@) =====", aNotif.fireDate, aNotif.userInfo[kPushTaskKey]);
+        NSLog(@"===== Deleted Local Notif on %@ (%@) =====", aNotif.fireDate.weekday, aNotif.fireDate.date2String);
         [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
 
     }

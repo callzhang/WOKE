@@ -200,7 +200,16 @@
  */
 - (void)deleteEventually;
 
+#pragma mark - Helper methods
+/**
+ Reflex method to search for runtime attributes
+ */
 - (NSString *)getPropertyClassByName:(NSString *)name;
+
+/**
+ Check if the MO's updatedAt time is more than the server refresh interval
+ */
+- (BOOL)isOutDated;
 @end
 
 #pragma mark - Parse Object extension

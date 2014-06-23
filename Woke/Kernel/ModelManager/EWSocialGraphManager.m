@@ -26,7 +26,7 @@
 }
 
 + (EWSocialGraph *)mySocialGraph{
-    EWPerson *me = [EWUserManagement me];
+    EWPerson *me = [EWPersonStore me];
     EWSocialGraph *sg = me.socialGraph;
     if (!sg) {
         sg = [[EWSocialGraphManager sharedInstance] createSocialGraphForPerson:me];

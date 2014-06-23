@@ -15,6 +15,7 @@
 #import "EWTaskItem.h"
 #import "EWTaskStore.h"
 #import "EWPerson.h"
+#import "EWPersonStore.h"
 //#import "EWPersonStore.h"
 #import "EWUserManagement.h"
 //AppDelegate
@@ -48,9 +49,9 @@
     
     //add relation
     EWAlarmItem *a = [EWAlarmItem createEntity];
-    a.owner = [EWUserManagement me];
+    a.owner = [EWPersonStore me];
     a.state = YES;
-    a.tone = [EWUserManagement me].preference[@"DefaultTone"];
+    a.tone = [EWPersonStore me].preference[@"DefaultTone"];
     
     //[EWDataStore save];
     return a;
@@ -60,9 +61,24 @@
 - (NSArray *)alarmsForUser:(EWPerson *)user{
     EWPerson *person = [EWDataStore objectForCurrentContext:user];
     NSMutableArray *alarms = [[person.alarms allObjects] mutableCopy];
-    if (alarms.count != 7 && person.isMe && !self.isSchedulingAlarm && [[user updatedAt] timeElapsed] > kServerUpdateInterval) {
-        NSLog(@"Alarm for me is less than 7, and me is outdated, need to fetch from server");
-        //[person refresh];
+    if (alarms.count != 7 && person.isMe && !self.isSchedulingAlarm) {
+        NSLog(@"Alarm for me is less than 7, fetch from server!");
+        PFQuery *alarmQuery = [PFQuery queryWithClassName:@"EWAlarmItem"];
+        [alarmQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
+        NSArray *serverAlarms = [alarmQuery findObjects];
+        BOOL newAlarm = NO;
+        for (PFObject *a in serverAlarms) {
+            EWAlarmItem *alarm = (EWAlarmItem *)a.managedObject;
+            alarm.owner = me;
+            if (![alarms containsObject:alarm]) {
+                [alarms addObject:alarm];
+                newAlarm = YES;
+                NSLog(@"Alarm found from server %@", alarm.time.weekday);
+            }
+        }
+        if (newAlarm) {
+            [EWDataStore save];
+        }
     }
     
     //sort
@@ -82,12 +98,12 @@
 }
 
 + (NSArray *)myAlarms{
-    return [[EWAlarmManager sharedInstance] alarmsForUser:[EWUserManagement me]];
+    return [[EWAlarmManager sharedInstance] alarmsForUser:me];
 }
 
 - (EWAlarmItem *)nextAlarm{
     EWAlarmItem *nextA;
-    NSArray *alarms = [self alarmsForUser:[EWUserManagement me]];
+    NSArray *alarms = [self alarmsForUser:[EWPersonStore me]];
     //determine if the day need to be next week
     NSInteger dow = [[NSDate date] weekdayNumber];
     EWAlarmItem *a = alarms[dow];
@@ -127,7 +143,7 @@
     BOOL hasChange = NO;
     
     //get alarms
-    NSMutableArray *alarms = [[self alarmsForUser:[EWUserManagement me]] mutableCopy];
+    NSMutableArray *alarms = [[self alarmsForUser:[EWPersonStore me]] mutableCopy];
     
     //check if need to check
     if (alarms.count==0) {
@@ -165,7 +181,7 @@
         //check tone
         if (!a.tone) {
             NSLog(@"Tone not set");
-            EWPerson *p = [EWUserManagement me];
+            EWPerson *p = [EWPersonStore me];
             a.tone = p.preference[@"DefaultTone"];
         }
         
@@ -249,7 +265,7 @@
 }
 
 - (void)deleteAllAlarms{
-    NSArray *alarms = [self alarmsForUser:[EWUserManagement me]];
+    NSArray *alarms = [self alarmsForUser:[EWPersonStore me]];
     
     //notification
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarms userInfo:@{@"alarms": alarms}];

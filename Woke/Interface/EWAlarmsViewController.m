@@ -232,6 +232,8 @@
 
 #pragma mark - ScrollView
 - (void)reloadAlarmPage {
+    alarms = [EWAlarmManager myAlarms];
+    tasks = [EWTaskStore myTasks];
     
     if (alarms.count == 0 || tasks.count == 0) {
         //empty task and alarm, stop
@@ -258,8 +260,8 @@
         
         self.addBtn.hidden = YES;
         [self.alarmloadingIndicator startAnimating];
-        [[EWAlarmManager sharedInstance] scheduleAlarm];
-        [[EWTaskStore sharedInstance] scheduleTasks];
+        alarms = [[EWAlarmManager sharedInstance] scheduleAlarm];
+        tasks = [[EWTaskStore sharedInstance] scheduleTasks];
         
         return;
     }else{
@@ -410,17 +412,14 @@
 
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-
+    static NSTimer *alarmPagetimer;
     if ([object isKindOfClass:[EWPerson class]]) {
 
         if ([keyPath isEqualToString:@"tasks"]){
-            if (me.tasks.count == 7 || me.tasks.count == 0)
-            //if (me.tasks)
-            {
+            if (me.tasks.count == 7 || me.tasks.count == 0){
                 NSLog(@"KVO observed tasks changed");
-                tasks = [EWTaskStore myTasks];
-                alarms = [EWAlarmManager myAlarms];
-                [self reloadAlarmPage];
+                [alarmPagetimer invalidate];
+                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
             }
             
         }else if ([keyPath isEqualToString:@"alarms"]){

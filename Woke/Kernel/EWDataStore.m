@@ -448,7 +448,7 @@
             [[EWDataStore sharedInstance] appendInsertQueue:MO];
         }
         for (NSManagedObject *MO in updates) {
-            NSLog(@"===> MO %@ updated to context with changes: %@", MO.entity.name, MO.changedValues);
+            NSLog(@"===> MO %@ updated to context with changes: %@", MO.entity.name, MO.changedValues.allKeys);
             [[EWDataStore sharedInstance] appendUpdateQueue:MO];
         }
         for (NSManagedObject *MO in deletes) {
@@ -695,7 +695,7 @@
         //skip if updating other PFUser
         //TODO: Set ACL for PFUser to enable public writability
         if ([mo.entity.serverClassName isEqualToString:@"_User"]) {
-            if (![object.objectId isEqualToString:[EWUserManagement me].objectId]) {
+            if (![object.objectId isEqualToString:[EWPersonStore me].objectId]) {
                 NSLog(@"Skip updating other PFUser: %@", [object valueForKey:@"name"]);
                 [[EWDataStore sharedInstance] removeObjectFromInsertQueue:mo];
                 [[EWDataStore sharedInstance] removeObjectFromUpdateQueue:mo];
@@ -732,7 +732,7 @@
         
         //assign connection between MO and PO
         [EWDataStore performSaveCallbacksWithParseObject:object andManagedObjectID:mo.objectID];
-        [EWDataStore saveToLocal:mo];
+        [[EWDataStore currentContext] saveToPersistentStoreAndWait];
         
         
         //remove from queue
@@ -1185,6 +1185,12 @@
     return @"";
 }
 
+- (BOOL)isOutDated{
+    BOOL outdated = [(NSDate *)[self valueForKey:kUpdatedDateKey] isOutDated];
+    return outdated;
+}
+
+
 @end
 
 #pragma mark - Parse Object extension
@@ -1229,9 +1235,9 @@
             [self setObject:point forKey:key];
         }else if(value){
             //check if changed
-            if (![value isEqual:self[key]] && (value || [self valueForKey:key])) {
-                NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign  to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, [self valueForKey:key], value);
-            }
+//            if (![value isEqual:self[key]] && (value || [self valueForKey:key])) {
+//                NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign  to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, [self valueForKey:key], value);
+//            }
             [self setObject:value forKey:key];
         }else{
             //value is nil, delete PO value

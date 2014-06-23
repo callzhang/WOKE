@@ -31,14 +31,14 @@
 
 
 - (NSArray *)allMedias{
-    return [self mediasForPerson:[EWUserManagement me]];
+    return [self mediasForPerson:[EWPersonStore me]];
 }
 
 
 #pragma mark - create media
 - (EWMediaItem *)createMedia{
     EWMediaItem *m = [EWMediaItem createEntity];
-    EWPerson *user = [EWUserManagement me];
+    EWPerson *user = [EWPersonStore me];
     m.author = user;
     return m;
 }

@@ -80,13 +80,22 @@ EWPerson *me;
     return person;
 }
 
+//Current User MO at background thread
++ (EWPerson *)me{
+    if ([NSThread isMainThread]) {
+        return me;
+    }else{
+        return [EWDataStore objectForCurrentContext:me];
+    }
+}
+
 - (NSArray *)everyone{
     if (everyone && [[NSDate date] timeIntervalSinceDate:timeEveryoneChecked] < everyoneCheckTimeOut) {
         return everyone;
     }
     //fetch from sever
     NSMutableArray *allPerson = [NSMutableArray new];
-    NSString *parseObjectId = [me.parseObject valueForKey:kParseObjectID];
+    NSString *parseObjectId = [me valueForKey:kParseObjectID];
     [PFCloud callFunctionInBackground:@"getRelevantUsers"
                        withParameters:@{@"objectId": parseObjectId,
                                         @"topk" : numberOfRelevantUsers,
@@ -99,24 +108,13 @@ EWPerson *me;
                                             NSManagedObject *mo = user.managedObject;
                                             [allPerson addObject:mo];
                                         }
-                                        /*
-                                        PFQuery *query = [PFUser query];
-                                        NSArray *allUser = [query findObjects];
-                                        for (PFUser *user in allUser) {
-                                            if ([list containsObject:user.objectId]) {
-                                                NSManagedObject *mo = user.managedObject;
-                                                [allPerson addObject:mo];
-                                            }
-                                        }
-                                         */
+                                        
+                                        //return
+                                        everyone = [allPerson copy];
+                                        timeEveryoneChecked = [NSDate date];
+                                        
                                     }
                                 }];
-    //TODO: use server function to fetch people around
-
-    //return
-    everyone = [allPerson copy];
-    timeEveryoneChecked = [NSDate date];
-    
     
     return everyone;
 }

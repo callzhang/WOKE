@@ -19,7 +19,7 @@
  */
 + (void)login;
 + (void)showLoginPanel;
-+ (EWPerson *)me;
+
 /**
  Login with PFUser for cached coredata info
  This is a

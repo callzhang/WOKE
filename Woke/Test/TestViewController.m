@@ -259,7 +259,7 @@
         
         case 7:{
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:[EWUserManagement me]];
+            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:[EWPersonStore me]];
             NSInteger m = 6 - task.medias.count;
             for (unsigned i=0; i< m; i++) {
                 NSInteger x = arc4random_uniform(2);
