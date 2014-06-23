@@ -28,7 +28,6 @@ extern EWPerson *me;
 - (EWPerson *)getPersonByID:(NSString *)ID;
 
 
-//- (NSArray *)everyone;
 - (EWPerson *)anyone;
 - (void)purgeUserData;
 @end

@@ -476,12 +476,14 @@
     //pre save check
     NSArray *updates  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
     NSArray *inserts  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
-    NSString *parseID = [mo valueForKey:kParseObjectID];
-    if ([updates filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", parseID]]) {
-        NSLog(@"!!! The object %@ you are tring to update from PO is already in the update queue. Check your code! (%@)", mo.entity.name, parseID);
+    NSString *ID = mo.objectID.URIRepresentation.absoluteString;
+    NSArray *u = [updates filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
+    NSArray *i = [inserts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
+    if (u.count) {
+        NSLog(@"!!! The object %@ you are tring to update from PO is already in the update queue. Check your code! (%@)", mo.entity.name, ID);
     }
-    if ([inserts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", parseID]]) {
-        NSLog(@"!!! The object %@ you are tring to insert from PO is already in the insert queue. Check your code! (%@)", mo.entity.name, parseID);
+    if (i.count) {
+        NSLog(@"!!! The object %@ you are tring to insert from PO is already in the insert queue. Check your code! (%@)", mo.entity.name, ID);
     }
     
     //save

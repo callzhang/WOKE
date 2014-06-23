@@ -96,26 +96,27 @@ EWPerson *me;
     //fetch from sever
     NSMutableArray *allPerson = [NSMutableArray new];
     NSString *parseObjectId = [me valueForKey:kParseObjectID];
-    [PFCloud callFunctionInBackground:@"getRelevantUsers"
-                       withParameters:@{@"objectId": parseObjectId,
-                                        @"topk" : numberOfRelevantUsers,
-                                        @"radius" : radiusOfRelevantUsers}
-                                block:^(NSArray *list, NSError *error) {
-                                    if (!error) {
-                                        for (NSString *parseId in list) {
-                                            PFQuery *query = [PFUser query];
-                                            PFUser *user = (PFUser*)[query getObjectWithId:parseId];
-                                            NSManagedObject *mo = user.managedObject;
-                                            [allPerson addObject:mo];
-                                        }
-                                        
-                                        //return
-                                        everyone = [allPerson copy];
-                                        timeEveryoneChecked = [NSDate date];
-                                        
-                                    }
-                                }];
-    
+    NSError *error;
+    NSArray *list = [PFCloud callFunction:@"getRelevantUsers"
+           withParameters:@{@"objectId": parseObjectId,
+                            @"topk" : numberOfRelevantUsers,
+                            @"radius" : radiusOfRelevantUsers}
+                    error:&error];
+    if (!error) {
+        for (NSString *parseId in list) {
+            PFQuery *query = [PFUser query];
+            PFUser *user = (PFUser*)[query getObjectWithId:parseId];
+            EWPerson *person = (EWPerson *)user.managedObject;
+            float score = 100 - [list indexOfObject:parseId];
+            person.score = score;
+            [allPerson addObject:person];
+        }
+        
+        //return
+        everyone = [allPerson copy];
+        timeEveryoneChecked = [NSDate date];
+        
+    }
     return everyone;
 }
 

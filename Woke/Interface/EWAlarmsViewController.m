@@ -73,8 +73,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
         
         //initial value
-        people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"];
-        if (!people) people = @[@"Dummy"];
+        people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"]?:@[];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
         cellChangeArray = [NSMutableArray new];
     }
@@ -86,7 +85,6 @@
     [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
     //update data and view
     [self initData];
-    [self.fetchController performFetch:NULL];
     [self reloadAlarmPage];
     [self centerView];
     
@@ -101,8 +99,6 @@
     if ([_collectionView numberOfItemsInSection:0]>0) {
         [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
     }
-    
-
 }
 
 - (void)viewDidLoad {
@@ -137,13 +133,19 @@
         }
         
         //fetch everyone
-        people = [[EWPersonStore sharedInstance] everyone];
-        id <NSFetchedResultsSectionInfo> sectionInfo = self.fetchController.sections[0];
-        NSUInteger n = [sectionInfo numberOfObjects];
-        if (people.count > n) {
-            NSLog(@"Updated user list to %lu", (unsigned long)people.count);
-            //[self.fetchController performFetch:NULL];
-        }
+        dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+            people = [[EWPersonStore sharedInstance] everyone];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                id <NSFetchedResultsSectionInfo> sectionInfo = self.fetchController.sections[0];
+                NSUInteger n = [sectionInfo numberOfObjects];
+                if (people.count > n) {
+                    NSLog(@"Updated user list to %lu", (unsigned long)people.count);
+                    [self.fetchController performFetch:NULL];
+                }
+            });
+        });
+        
+        
         
         
     }else{
@@ -197,14 +199,11 @@
     }
     
     //predicate
-    //SMPredicate *locPredicate = [SMPredicate predicateWhere:@"lastLocation" isWithin:10 milesOfGeoPoint:me.lastLocation];
-    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY tasks.time BETWEEN %@", @[[NSDate date], [[NSDate date] timeByAddingMinutes:60]]];
-    
-    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"username IN %@", people];
-    
+    //NSArray *usernameList = [people valueForKey:@"username"];
+    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"username IN %@", usernameList];
     
     //sort
-    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO];
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO];
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
@@ -417,15 +416,15 @@
 
         if ([keyPath isEqualToString:@"tasks"]){
             if (me.tasks.count == 7 || me.tasks.count == 0){
-                NSLog(@"KVO observed tasks changed");
+                NSLog(@"Main view observed tasks changed");
                 [alarmPagetimer invalidate];
                 alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
             }
             
         }else if ([keyPath isEqualToString:@"alarms"]){
-            NSLog(@"KVO observed alarms changed");
+            NSLog(@"Main view observed alarms changed");
         }else{
-            NSLog(@"KVO observed %@ changed %@", keyPath, change);
+            NSLog(@"Main view observed %@ changed %@", keyPath, change);
         }
     }else{
         NSLog(@"@@@ Unhandled observation: %@", [object class]);

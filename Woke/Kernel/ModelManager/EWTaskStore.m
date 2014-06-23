@@ -72,26 +72,27 @@
     
     //update if necessary(count
 
-    if (tasks.count != 7 * nWeeksToScheduleTask && p.isOutDated && !isCheckingTask && p.isMe) {
+    if (tasks.count != 7 * nWeeksToScheduleTask && !isCheckingTask && (person.isMe || person.isOutDated)) {
+        isCheckingTask = YES;
         NSLog(@"The task count for person %@ is %lu, checking from server!", p.name, (unsigned long)tasks.count);
         //this approach is a last resort to fetch task by owner
         PFQuery *taskQuery= [PFQuery queryWithClassName:@"EWTaskItem"];
         [taskQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
-        NSArray *taskOnServer = [taskQuery findObjects];
-        BOOL newTask = NO;
-        for (PFObject *t in taskOnServer) {
-            EWTaskItem *task = (EWTaskItem *)t.managedObject;
-            task.owner = me;
-            if (![tasks containsObject:task]) {
-                [tasks addObject:task];
-                newTask = YES;
-                NSLog(@"New task found from server: %@", task.time.weekday);
+        [taskQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            BOOL newTask = NO;
+            for (PFObject *t in objects) {
+                EWTaskItem *task = (EWTaskItem *)t.managedObject;
+                task.owner = me;
+                if (![tasks containsObject:task]) {
+                    newTask = YES;
+                    NSLog(@"New task found from server: %@", task.time.weekday);
+                }
             }
-            
-        }
-        if (newTask) {
-            [EWDataStore save];
-        }
+            if (newTask) {
+                [EWDataStore save];
+            }
+            isCheckingTask = NO;
+        }];
     }
     
     //filter

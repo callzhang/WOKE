@@ -61,28 +61,8 @@
 - (NSArray *)alarmsForUser:(EWPerson *)user{
     EWPerson *person = [EWDataStore objectForCurrentContext:user];
     NSMutableArray *alarms = [[person.alarms allObjects] mutableCopy];
-    if (alarms.count != 7 && person.isMe && !self.isSchedulingAlarm) {
-        NSLog(@"Alarm for me is less than 7, fetch from server!");
-        PFQuery *alarmQuery = [PFQuery queryWithClassName:@"EWAlarmItem"];
-        [alarmQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
-        NSArray *serverAlarms = [alarmQuery findObjects];
-        BOOL newAlarm = NO;
-        for (PFObject *a in serverAlarms) {
-            EWAlarmItem *alarm = (EWAlarmItem *)a.managedObject;
-            alarm.owner = me;
-            if (![alarms containsObject:alarm]) {
-                [alarms addObject:alarm];
-                newAlarm = YES;
-                NSLog(@"Alarm found from server %@", alarm.time.weekday);
-            }
-        }
-        if (newAlarm) {
-            [EWDataStore save];
-        }
-    }
     
-    //sort
-    NSArray *sortedAlarms = [alarms sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+    NSComparator alarmComparator = ^NSComparisonResult(id obj1, id obj2) {
         NSInteger wkd1 = [(EWAlarmItem *)obj1 time].weekdayNumber;
         NSInteger wkd2 = [(EWAlarmItem *)obj2 time].weekdayNumber;
         if (wkd1 > wkd2) {
@@ -92,7 +72,33 @@
         }else{
             return NSOrderedSame;
         }
-    }];
+    };
+    
+    if (alarms.count != 7 && !self.isSchedulingAlarm && (person.isMe || person.isOutDated)) {
+        self.isSchedulingAlarm = YES;
+        NSLog(@"Alarm for me is less than 7, fetch from server!");
+        PFQuery *alarmQuery = [PFQuery queryWithClassName:@"EWAlarmItem"];
+        [alarmQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
+        [alarmQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            BOOL newAlarm = NO;
+            for (PFObject *a in objects) {
+                EWAlarmItem *alarm = (EWAlarmItem *)a.managedObject;
+                alarm.owner = person;
+                if (![alarms containsObject:alarm]) {
+                    newAlarm = YES;
+                    NSLog(@"Alarm found from server %@", alarm.time.weekday);
+                }
+            }
+            if (newAlarm) {
+                [EWDataStore save];
+            }
+            self.isSchedulingAlarm = NO;
+        }];
+        
+    }
+    
+    //sort
+    NSArray *sortedAlarms = [alarms sortedArrayUsingComparator:alarmComparator];
     
     return sortedAlarms;
 }

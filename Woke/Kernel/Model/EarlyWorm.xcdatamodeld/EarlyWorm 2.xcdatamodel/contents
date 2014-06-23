@@ -73,6 +73,7 @@
     <entity name="EWPerson" representedClassName="EWPerson" parentEntity="EWServerObject" syncable="YES">
         <attribute name="bgImage" optional="YES" attributeType="Transformable" storedInTruthFile="YES" syncable="YES"/>
         <attribute name="birthday" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="cachedInfo" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="facebook" optional="YES" attributeType="String" syncable="YES"/>
@@ -82,6 +83,7 @@
         <attribute name="preference" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="profilePic" optional="YES" attributeType="Transformable" storedInTruthFile="YES" syncable="YES"/>
         <attribute name="region" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="score" optional="YES" transient="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="username" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="weibo" optional="YES" attributeType="String" syncable="YES"/>
@@ -136,9 +138,9 @@
         <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="270"/>
         <element name="EWMessage" positionX="0" positionY="0" width="128" height="150"/>
         <element name="EWNotification" positionX="9" positionY="153" width="128" height="135"/>
-        <element name="EWPerson" positionX="0" positionY="0" width="128" height="478"/>
+        <element name="EWPerson" positionX="0" positionY="0" width="128" height="510"/>
+        <element name="EWServerObject" positionX="9" positionY="153" width="128" height="88"/>
         <element name="EWSocialGraph" positionX="9" positionY="153" width="128" height="148"/>
         <element name="EWTaskItem" positionX="0" positionY="0" width="128" height="208"/>
-        <element name="EWServerObject" positionX="9" positionY="153" width="128" height="88"/>
     </elements>
 </model>
