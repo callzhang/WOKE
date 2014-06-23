@@ -307,7 +307,7 @@
     cell.date.text = [mi.createdAt date2String];
     
     //set image
-    cell.profilePic.image = mi.author.profilePic;
+    cell.profilePic.imageView.image = mi.author.profilePic;
     
     //control
     cell.controller = self;

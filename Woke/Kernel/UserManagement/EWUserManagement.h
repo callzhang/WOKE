@@ -58,6 +58,7 @@
 //+ (void)loginUsingFacebookWithCompletion:(void (^)(void))block;
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
 + (void)getFacebookFriends;
++ (void)updateFacebookInfo;
 //low level request
 + (NSArray *)facebookPermissions;
 + (void)openFacebookSessionWithCompletion:(void (^)(void))block;

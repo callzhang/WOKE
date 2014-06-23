@@ -327,20 +327,23 @@
 
         
         //update current user with fb info
-        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
-            if (error) {
-                NSLog(@"Failed to load facebook data: %@", error.description);
-                return;
-            }
-            //update with facebook info
-            [EWUserManagement updateUserWithFBData:data];
-            if ([PFUser currentUser].isNew) {
-                [EWUserManagement handleNewUser];
-            }
-            
-        }];
+        [EWUserManagement updateFacebookInfo];
+        
+        if ([PFUser currentUser].isNew) {
+            [EWUserManagement handleNewUser];
+        }
     }];
 }
+
+
++ (void)updateFacebookInfo{
+    [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
+        [EWUserManagement handleFacebookException:error];
+        //update with facebook info
+        [EWUserManagement updateUserWithFBData:data];
+    }];
+}
+
 
 
 + (void)linkWithFacebook{
