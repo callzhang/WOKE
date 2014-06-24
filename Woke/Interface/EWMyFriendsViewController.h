@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface EWMyFriendsViewController : UIViewController
+
+@property EWPerson *person;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *tabView;
 
 @property (strong, nonatomic) IBOutlet UICollectionView *friendsCollectionView;
