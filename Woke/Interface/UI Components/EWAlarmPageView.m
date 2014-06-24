@@ -186,7 +186,7 @@
                 [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
             }
             [self.alarmState setNeedsDisplay];
-            NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, task.state?@"YES":@"NO");
+            //NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, task.state?@"YES":@"NO");
             
             
         }else if ([keyPath isEqualToString:@"medias"]){

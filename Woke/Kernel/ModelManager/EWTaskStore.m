@@ -275,11 +275,7 @@
     //save
     if (hasOutDatedTask || newTaskNotify) {
         
-        NSDictionary *cache = me.cachedInfo;
-        EWTaskItem *next = [self nextValidTaskForPerson:me];
-        [cache setValue:next.time forKey:nextTaskTimeKey];
-        NSLog(@"Saved next task time: %@ to cacheInfo", next.time.date2detailDateString);
-        
+        [self updateNextTaskTime];
         [EWDataStore save];
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
@@ -472,8 +468,16 @@
 //Update next task time
 - (void)updateNextTaskTime{
     EWTaskItem *task = [self nextValidTaskForPerson:me];
-    [me.cachedInfo setValue:task.time forKey:nextTaskTimeKey];
-    [EWDataStore save];
+    NSMutableDictionary *cache = [me.cachedInfo mutableCopy];
+    if (!cache) {
+        cache = [NSMutableDictionary new];
+    }
+    if (![cache[nextTaskTimeKey] isEqual: task.time]) {
+        [cache setValue:task.time forKey:nextTaskTimeKey];
+        me.cachedInfo = [cache copy];
+        NSLog(@"Saved next task time: %@ to cacheInfo", task.time.date2detailDateString);
+        [EWDataStore save];
+    }
 }
 
 #pragma mark - DELETE
