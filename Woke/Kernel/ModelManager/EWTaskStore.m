@@ -359,6 +359,7 @@
     }else{
         [NSException raise:@"No alarm/task info" format:@"Check notification"];
     }
+    [self updateNextTaskTime];
 }
 
 - (void)updateTaskStateForAlarm:(EWAlarmItem *)a{
@@ -394,7 +395,7 @@
 }
 
 - (void)updateTaskTimeForAlarm:(EWAlarmItem *)a{
-    EWAlarmItem *alarm = (EWAlarmItem *)[[EWDataStore currentContext] objectWithID:a.objectID];
+    EWAlarmItem *alarm = (EWAlarmItem *)[EWDataStore objectForCurrentContext:a];
     if (!alarm.tasks.count) {
         //[a.managedObjectContext refreshObject:a mergeChanges:YES];
         //[EWDataStore refreshObjectWithServer:a];
@@ -416,10 +417,11 @@
             
         }
     }
+    [self updateNextTaskTime];
     [EWDataStore save];
 }
 
-//Notifications
+//Tone
 - (void)updateNotifTone:(NSNotification *)notif{
     EWAlarmItem *a = notif.userInfo[@"alarm"];
     EWAlarmItem *alarm = (EWAlarmItem *)[EWDataStore objectForCurrentContext:a];
@@ -466,6 +468,13 @@
         
     }
 }*/
+
+//Update next task time
+- (void)updateNextTaskTime{
+    EWTaskItem *task = [self nextValidTaskForPerson:me];
+    [me.cachedInfo setValue:task.time forKey:nextTaskTimeKey];
+    [EWDataStore save];
+}
 
 #pragma mark - DELETE
 - (void)removeTask:(EWTaskItem *)task{

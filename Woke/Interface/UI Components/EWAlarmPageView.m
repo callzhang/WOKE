@@ -89,7 +89,7 @@
     [EWDataStore save];
     
     //broadcast
-    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:self userInfo:@{@"task": task}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:task userInfo:@{@"task": task}];
     NSLog(@"Task on %@ changed to %@", task.time.weekday, (sender.selected?@"ON":@"OFF"));
 }
 

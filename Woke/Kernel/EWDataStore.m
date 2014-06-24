@@ -462,8 +462,6 @@
         }
         [context saveToPersistentStoreAndWait];
         
-        
-        
         [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
         
         [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
