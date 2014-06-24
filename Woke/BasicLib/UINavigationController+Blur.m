@@ -16,12 +16,12 @@
 {
     viewController.view.backgroundColor = [UIColor clearColor];
     
-  
+    [self pushViewController:viewController animated:YES];
     
     [self addBlurInViewContrller:viewController];
 
     
-    [self pushViewController:viewController animated:YES];
+    
 
     //callback
 
@@ -35,7 +35,8 @@
 }
 -(void)addBlurInViewContrller:(UIViewController *)viewController
 {
-//    UIToolbar *bgToolbar = [[UIToolbar alloc] initWithFrame:self.view.frame];
+    UIToolbar *bgToolbar = (UIToolbar *)[self.view viewWithTag:kBlurViewTag];
+    [self.view sendSubviewToBack:bgToolbar];
 //    bgToolbar.tag = kBlurViewTag;
     
 //    bgToolbar.barStyle = UIBarStyleBlack;

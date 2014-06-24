@@ -7,12 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EWViewController.h"
+@interface EWMyFriendsViewController : EWViewController
 
-@interface EWMyFriendsViewController : UIViewController
+-(id)initWithPerson:(EWPerson *)person;
 
 @property EWPerson *person;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *tabView;
 
 @property (strong, nonatomic) IBOutlet UICollectionView *friendsCollectionView;
 @property (strong, nonatomic) IBOutlet UITableView *friendsTableView;
+- (IBAction)tabValueChange:(id)sender;
 @end

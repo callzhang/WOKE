@@ -10,7 +10,8 @@
 #import "UINavigationController+Blur.h"
 #import "EWPerson.h" 
 #import "EWCollectionPersonCell.h"
-
+#import "EWFriendsCollectionCell.h"
+#import "EWUIUtil.h"
 NSString * const tableViewCellId =@"MyFriendsTableViewCellId";
 NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
@@ -31,7 +32,14 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     }
     return self;
 }
-
+-(id)initWithPerson:(EWPerson *)person
+{
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        self.person = person;
+    }
+    return self;
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -56,6 +64,10 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
         NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
         NSArray *sortDescriptors = [NSArray arrayWithObjects:sd, nil];
         _friendsArray = [_person.friends sortedArrayUsingDescriptors:sortDescriptors];
+        _friendsTableView.delegate = self;
+        _friendsTableView.dataSource = self;
+//        _friendsCollectionView.delegate = self;
+//        _friendsCollectionView.dataSource = self;
     }
 }
 -(void)initView
@@ -65,7 +77,13 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     self.navigationItem.title = @"Friends";
     self.view.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.backgroundColor = [UIColor clearColor];
+    _friendsTableView.backgroundView = nil;
     _friendsTableView.backgroundColor = [UIColor clearColor];
+    _friendsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _friendsTableView.allowsSelection = NO;
+    _friendsTableView.hidden = YES;
+    _friendsCollectionView.hidden = NO;
+    _tabView.selectedSegmentIndex = 0;
 }
 
 -(void)close:(id)sender
@@ -88,12 +106,17 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     }
     EWPerson * myFriend = [_friendsArray objectAtIndex:indexPath.row];
     cell.imageView.image = myFriend.profilePic;
-    
+//    [EWUIUtil applyHexagonMaskForView:cell.imageView];
+    cell.backgroundColor = [UIColor clearColor];
+    cell.textColor = [UIColor whiteColor];
     cell.textLabel.text = myFriend.name;
     
     return cell;
 }
-
+-(void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+//    cell.backgroundColor = [UIColor clearColor];
+}
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [_friendsArray count];
@@ -107,17 +130,45 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UICollectionViewCell * cell = [_friendsCollectionView dequeueReusableCellWithReuseIdentifier:collectViewCellId forIndexPath:indexPath];
+    EWFriendsCollectionCell * cell = [_friendsCollectionView dequeueReusableCellWithReuseIdentifier:collectViewCellId forIndexPath:indexPath];
     if (!cell) {
-        cell = [[EWCollectionPersonCell alloc] init];
+        cell = [[EWFriendsCollectionCell alloc] init];
         
     }
-//    cell.profilePic = 
+    
+    EWPerson * myFriend = [_friendsArray objectAtIndex:indexPath.section*3+indexPath.row];
+    
+    [cell setupCellWithInfo:myFriend];
+//    cell.
     return cell;
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 45;
 }
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     return 3;
+}
+- (IBAction)tabValueChange:(UISegmentedControl *)sender {
+    NSUInteger value =  [sender selectedSegmentIndex];
+    switch (value) {
+        case 0:
+        {
+            _friendsCollectionView.hidden = NO;
+            _friendsTableView.hidden = YES;
+            break;
+        }
+            
+        case 1:
+        {
+            _friendsTableView.hidden = NO;
+            _friendsCollectionView.hidden  = YES;
+            break;
+        }
+        default:
+            break;
+    }
 }
 @end
