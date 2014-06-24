@@ -117,7 +117,6 @@
     
     //init alarm page container
     if (me) {
-        
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskStore myTasks];
         if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
@@ -137,16 +136,12 @@
             people = [[EWPersonStore sharedInstance] everyone];
             dispatch_async(dispatch_get_main_queue(), ^{
                 id <NSFetchedResultsSectionInfo> sectionInfo = self.fetchController.sections[0];
-                NSUInteger n = [sectionInfo numberOfObjects];
-                if (people.count > n) {
+                if (people.count > [sectionInfo numberOfObjects]) {
                     NSLog(@"Updated user list to %lu", (unsigned long)people.count);
                     [self.fetchController performFetch:NULL];
                 }
             });
         });
-        
-        
-        
         
     }else{
         alarms = nil;

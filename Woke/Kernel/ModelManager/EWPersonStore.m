@@ -54,6 +54,7 @@ EWPerson *me;
     newUser.profilePic = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];
     newUser.name = kDefaultUsername;
     newUser.preference = kUserDefaults;
+    newUser.cachedInfo = [NSDictionary new];
     
     //[EWDataStore updateParseObjectFromManagedObject:newUser];
     
@@ -102,20 +103,25 @@ EWPerson *me;
                             @"topk" : numberOfRelevantUsers,
                             @"radius" : radiusOfRelevantUsers}
                     error:&error];
+    
     if (!error) {
+        
         for (NSString *parseId in list) {
             PFQuery *query = [PFUser query];
             PFUser *user = (PFUser*)[query getObjectWithId:parseId];
             EWPerson *person = (EWPerson *)user.managedObject;
-            float score = 100 - [list indexOfObject:parseId];
+            float score = 99 - [list indexOfObject:parseId];
             person.score = score;
             [allPerson addObject:person];
         }
-        
+        [EWPersonStore me].score = 100;
+        NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
         //return
         everyone = [allPerson copy];
         timeEveryoneChecked = [NSDate date];
-        
+        [[EWDataStore currentContext] saveToPersistentStoreAndWait];
+    }else{
+        NSLog(@"Failed to get friends list: %@", error.description);
     }
     return everyone;
 }

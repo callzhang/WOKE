@@ -83,7 +83,7 @@
         <attribute name="preference" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="profilePic" optional="YES" attributeType="Transformable" storedInTruthFile="YES" syncable="YES"/>
         <attribute name="region" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="score" optional="YES" transient="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="score" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="username" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="weibo" optional="YES" attributeType="String" syncable="YES"/>

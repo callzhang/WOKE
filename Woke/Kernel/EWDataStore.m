@@ -27,6 +27,8 @@
 #define kServerTransformTypes               @{@"CLLocation": @"PFGeoPoint"} //localType: serverType
 #define kServerTransformClasses             @{@"EWPerson": @"_User"} //localClass: serverClass
 #define kUserClass                          @"EWPerson"
+#define classSkipped                        @[@"EWPerson"]
+#define attributeUploadSkipped              @[kParseObjectID, kUpdatedDateKey, kCreatedDateKey, @"score"]
 
 @interface EWDataStore()
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
@@ -697,7 +699,7 @@
         //skip if updating other PFUser
         //TODO: Set ACL for PFUser to enable public writability
         if ([mo.entity.serverClassName isEqualToString:@"_User"]) {
-            if (![object.objectId isEqualToString:[EWPersonStore me].objectId]) {
+            if (![(EWPerson *)mo isMe]) {
                 NSLog(@"Skip updating other PFUser: %@", [object valueForKey:@"name"]);
                 [[EWDataStore sharedInstance] removeObjectFromInsertQueue:mo];
                 [[EWDataStore sharedInstance] removeObjectFromUpdateQueue:mo];
@@ -1237,9 +1239,14 @@
             [self setObject:point forKey:key];
         }else if(value){
             //check if changed
-//            if (![value isEqual:self[key]] && (value || [self valueForKey:key])) {
-//                NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign  to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, [self valueForKey:key], value);
-//            }
+            NSArray *attributes = attributeUploadSkipped;
+            if ([attributes containsObject:obj.name]) {
+                return;
+            }
+            
+            if (![value isEqual:self[key]] && (value || [self valueForKey:key])) {
+                NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign  to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, [self valueForKey:key], value);
+            }
             [self setObject:value forKey:key];
         }else{
             //value is nil, delete PO value
@@ -1355,6 +1362,7 @@
                 if (inverseRelation.isToMany) {
                     //inverse to-many relation need to be updated
                     PFObject *inversePO = self[key];
+                    [inversePO fetchIfNeeded];
                     PFRelation *inversePFRelation = inversePO[inverseRelation.entity.name];
                     [inversePFRelation removeObject:self];
                     [inversePO save];

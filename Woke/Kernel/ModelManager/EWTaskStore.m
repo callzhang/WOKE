@@ -16,6 +16,8 @@
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
 
+#define nextTaskTimeKey                 @"next_task_time"
+
 @interface EWTaskStore(){
     BOOL isCheckingTask;
 }
@@ -273,11 +275,15 @@
     //save
     if (hasOutDatedTask || newTaskNotify) {
         
+        NSDictionary *cache = me.cachedInfo;
+        EWTaskItem *next = [self nextValidTaskForPerson:me];
+        [cache setValue:next.time forKey:nextTaskTimeKey];
+        NSLog(@"Saved next task time: %@ to cacheInfo", next.time.date2detailDateString);
+        
         [EWDataStore save];
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
         });
-        
         
     }
     
@@ -528,7 +534,7 @@
             localNotif.applicationIconBadgeNumber = i+1;
             
             //======= user information passed to app delegate =======
-            localNotif.userInfo = @{kPushTaskKey: task.objectID.URIRepresentation.absoluteString};
+            localNotif.userInfo = @{kPushTaskKey: task.objectId};
             //=======================================================
             
             if (i == nWeeksToScheduleTask - 1) {
@@ -554,7 +560,7 @@
 - (void)cancelNotificationForTask:(EWTaskItem *)task{
     NSArray *notifications = [self localNotificationForTask:task];
     for(UILocalNotification *aNotif in notifications) {
-        NSLog(@"Local Notification cancelled for:%@", aNotif.fireDate);
+        NSLog(@"Local Notification cancelled for:%@", aNotif.fireDate.date2detailDateString);
         [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
     }
 }
@@ -562,7 +568,7 @@
 - (NSArray *)localNotificationForTask:(EWTaskItem *)task{
     NSMutableArray *notifArray = [[NSMutableArray alloc] init];
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-        if([aNotif.userInfo[kPushTaskKey] isEqualToString:task.objectID.URIRepresentation.absoluteString]) {
+        if([aNotif.userInfo[kPushTaskKey] isEqualToString:task.objectId]) {
             [notifArray addObject:aNotif];
         }
     }
@@ -587,7 +593,7 @@
     
     for (UILocalNotification *aNotif in allNotification) {
 
-        NSLog(@"===== Deleted Local Notif on %@ (%@) =====", aNotif.fireDate.weekday, aNotif.fireDate.date2String);
+        NSLog(@"===== Deleted Local Notif (%@) =====", aNotif.fireDate.date2detailDateString);
         [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
 
     }
