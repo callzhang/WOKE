@@ -12,10 +12,12 @@
 #import "EWCollectionPersonCell.h"
 #import "EWFriendsCollectionCell.h"
 #import "EWUIUtil.h"
+#import "EWFriendsTableCell.h"
+
 NSString * const tableViewCellId =@"MyFriendsTableViewCellId";
 NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
-@interface EWMyFriendsViewController ()<UITableViewDelegate,UITableViewDataSource,UICollectionViewDelegate,UICollectionViewDataSource>
+@interface EWMyFriendsViewController ()<UITableViewDelegate,UITableViewDataSource,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 {
     NSArray *_friendsArray;
 }
@@ -66,8 +68,8 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
         _friendsArray = [_person.friends sortedArrayUsingDescriptors:sortDescriptors];
         _friendsTableView.delegate = self;
         _friendsTableView.dataSource = self;
-//        _friendsCollectionView.delegate = self;
-//        _friendsCollectionView.dataSource = self;
+        _friendsCollectionView.delegate = self;
+        _friendsCollectionView.dataSource = self;
     }
 }
 -(void)initView
@@ -75,15 +77,21 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
     self.navigationItem.title = @"Friends";
+    
     self.view.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.backgroundColor = [UIColor clearColor];
+    _friendsCollectionView.hidden = NO;
+    [_friendsCollectionView registerClass:[EWFriendsCollectionCell class] forCellWithReuseIdentifier:collectViewCellId];
+    _tabView.selectedSegmentIndex = 0;
+    
+    
     _friendsTableView.backgroundView = nil;
     _friendsTableView.backgroundColor = [UIColor clearColor];
     _friendsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _friendsTableView.allowsSelection = NO;
     _friendsTableView.hidden = YES;
-    _friendsCollectionView.hidden = NO;
-    _tabView.selectedSegmentIndex = 0;
+    [_friendsTableView registerNib:[UINib nibWithNibName:@"EWFriendsTableCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:tableViewCellId];
+
 }
 
 -(void)close:(id)sender
@@ -100,27 +108,26 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [_friendsTableView dequeueReusableCellWithIdentifier:tableViewCellId];
+    EWFriendsTableCell *cell = [_friendsTableView dequeueReusableCellWithIdentifier:tableViewCellId];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:tableViewCellId];
+        cell = [[EWFriendsTableCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:tableViewCellId];
     }
     EWPerson * myFriend = [_friendsArray objectAtIndex:indexPath.row];
-    cell.imageView.image = myFriend.profilePic;
-//    [EWUIUtil applyHexagonMaskForView:cell.imageView];
-    cell.backgroundColor = [UIColor clearColor];
-    cell.textColor = [UIColor whiteColor];
-    cell.textLabel.text = myFriend.name;
+    [cell setupCellWithPerson:myFriend];
     
     return cell;
 }
--(void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-//    cell.backgroundColor = [UIColor clearColor];
-}
+
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [_friendsArray count];
 }
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 55;
+}
+
 
 #pragma mark - CollectionView
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -142,15 +149,38 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 //    cell.
     return cell;
 }
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 45;
-}
+
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 3;
+    NSUInteger eleCount  = [_friendsArray count];
+    if (eleCount > ((section+1)*3-1)) {
+        return 3;
+    }
+    else
+    {
+        return (eleCount - 3*section)%3;
+    }
+    
 }
+
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return CGSizeMake(80, 100);
+}
+
+-(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
+{
+    return UIEdgeInsetsMake(5, 20, 5, 10);
+}
+
+-(BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return NO;
+}
+
+
 - (IBAction)tabValueChange:(UISegmentedControl *)sender {
     NSUInteger value =  [sender selectedSegmentIndex];
     switch (value) {
