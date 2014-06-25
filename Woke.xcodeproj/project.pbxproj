@@ -45,6 +45,7 @@
 		0E591000194DF35B000AD7C4 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FE8194DF35B000AD7C4 /* Montserrat-Bold.ttf */; };
 		0E591001194DF35B000AD7C4 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FE9194DF35B000AD7C4 /* Montserrat-Regular.ttf */; };
 		0E591002194DF35B000AD7C4 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FEA194DF35B000AD7C4 /* OFL.txt */; };
+		0EABA9E0195939A1002F9C63 /* EWFriendsCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABA9DF195939A1002F9C63 /* EWFriendsCollectionCell.m */; };
 		0EABB2A71956884300C45788 /* EWMyFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABB2A51956884300C45788 /* EWMyFriendsViewController.m */; };
 		0EABB2A81956884300C45788 /* EWMyFriendsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EABB2A61956884300C45788 /* EWMyFriendsViewController.xib */; };
 		0EABB2AB195693C600C45788 /* UINavigationController+Blur.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABB2AA195693C600C45788 /* UINavigationController+Blur.m */; };
@@ -231,6 +232,8 @@
 		0E590FE8194DF35B000AD7C4 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Bold.ttf"; sourceTree = "<group>"; };
 		0E590FE9194DF35B000AD7C4 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Regular.ttf"; sourceTree = "<group>"; };
 		0E590FEA194DF35B000AD7C4 /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
+		0EABA9DE195939A1002F9C63 /* EWFriendsCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFriendsCollectionCell.h; sourceTree = "<group>"; };
+		0EABA9DF195939A1002F9C63 /* EWFriendsCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFriendsCollectionCell.m; sourceTree = "<group>"; };
 		0EABB2A41956884300C45788 /* EWMyFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMyFriendsViewController.h; sourceTree = "<group>"; };
 		0EABB2A51956884300C45788 /* EWMyFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMyFriendsViewController.m; sourceTree = "<group>"; };
 		0EABB2A61956884300C45788 /* EWMyFriendsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMyFriendsViewController.xib; sourceTree = "<group>"; };
@@ -915,6 +918,8 @@
 				9BF297DD1912F720008C136E /* EWTextFieldCell.xib */,
 				9BF297DE1912F720008C136E /* EWWeekDayPickerTableViewController.h */,
 				9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */,
+				0EABA9DE195939A1002F9C63 /* EWFriendsCollectionCell.h */,
+				0EABA9DF195939A1002F9C63 /* EWFriendsCollectionCell.m */,
 			);
 			path = "UI Components";
 			sourceTree = "<group>";
@@ -1319,6 +1324,7 @@
 				9BF297E81912F720008C136E /* EWMediaViewCell.m in Sources */,
 				9BF297B81912F713008C136E /* EWNotificationViewController.m in Sources */,
 				AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */,
+				0EABA9E0195939A1002F9C63 /* EWFriendsCollectionCell.m in Sources */,
 				0EABB2A71956884300C45788 /* EWMyFriendsViewController.m in Sources */,
 				9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */,
 				9BF07ABD192324F800DED2E1 /* _EWNotification.m in Sources */,
@@ -1457,7 +1463,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "3CB95FF7-3C90-4D50-8C37-87B0F6397529";
+				PROVISIONING_PROFILE = "0F831D19-4220-4E3C-B983-2B66824827BB";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};

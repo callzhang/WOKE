@@ -381,7 +381,8 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     switch (indexPath.row) {
         case 0:
         {
-            controller= [[EWMyFriendsViewController alloc] init];
+            EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
+            controller = tempVc;
             break;
         }
             

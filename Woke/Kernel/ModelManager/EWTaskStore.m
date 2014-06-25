@@ -87,7 +87,7 @@
                 task.owner = me;
                 if (![tasks containsObject:task]) {
                     newTask = YES;
-                    NSLog(@"New task found from server: %@", task.time.weekday);
+                    NSLog(@"New task found from server: %@(%@)", task.time.weekday, t.objectId);
                 }
             }
             if (newTask) {
@@ -547,7 +547,7 @@
             localNotif.applicationIconBadgeNumber = i+1;
             
             //======= user information passed to app delegate =======
-            localNotif.userInfo = @{kPushTaskKey: task.objectId};
+            localNotif.userInfo = @{kPushTaskKey: task.objectID.URIRepresentation.absoluteString};
             //=======================================================
             
             if (i == nWeeksToScheduleTask - 1) {
@@ -581,7 +581,7 @@
 - (NSArray *)localNotificationForTask:(EWTaskItem *)task{
     NSMutableArray *notifArray = [[NSMutableArray alloc] init];
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-        if([aNotif.userInfo[kPushTaskKey] isEqualToString:task.objectId]) {
+        if([aNotif.userInfo[kPushTaskKey] isEqualToString:task.objectID.URIRepresentation.absoluteString]) {
             [notifArray addObject:aNotif];
         }
     }

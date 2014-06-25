@@ -74,7 +74,7 @@
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
         context = [NSManagedObjectContext MR_defaultContext];
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:context];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:context];
         //Observe context save to update the update/insert/delete queue
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addToQueueUpOnSaving:) name:NSManagedObjectContextDidSaveNotification object:context];
         
@@ -238,69 +238,6 @@
     
     return data;
 }
-
-#pragma mark - local cache
-
-+ (NSString *)localPathForKey:(NSString *)key{
-    if (key.length > 500) {
-        NSLog(@"*** Something wrong with url, the url contains data");
-        return nil;
-    }else if ([[NSURL URLWithString:key] isFileURL] || [key hasPrefix:@"/"] || [key hasPrefix:@"\\"]) {
-        //NSLog(@"Is local file path, return key directly");
-        return key;
-    }
-    
-    NSString *path = [FTWCache localPathForKey:[key MD5Hash]];
-    if (!path) {
-        //not in local, need to download
-        //[[EWDownloadManager sharedInstance] downloadUrl:[NSURL URLWithString:key]];
-        return nil;
-    }
-    return path;
-}
-
-+ (void)updateCacheForKey:(NSString *)key withData:(NSData *)data{
-    if (!key) {
-        key = [[NSDate date] date2numberLongString];
-        NSLog(@"Assigned new key %@", key);
-    }
-    
-    if (key.length == 15) {
-        [NSException raise:@"Passed in MD5 value" format:@"Please provide original url string"];
-    }
-    
-    NSString *hashKey = [key MD5Hash];
-    [FTWCache setObject:data forKey:hashKey];
-    
-}
-
-+ (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key{
-    if (!key) {
-        return nil;
-    }
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSString *path = [self localPathForKey:key];
-	
-	if ([fileManager fileExistsAtPath:path])
-	{
-		NSDate *modificationDate = [[fileManager attributesOfItemAtPath:path error:nil] objectForKey:NSFileModificationDate];
-        return modificationDate;
-    }
-    return nil;
-}
-
-+ (void)deleteCacheForKey:(NSString *)key{
-    if (!key) return;
-    NSString *path = [self localPathForKey:key];
-    if (path){
-        NSError *err;
-        [[NSFileManager defaultManager] removeItemAtPath:path error:&err];
-        if (err) {
-            NSLog(@"Delete cache with error: %@", err);
-        }
-    }
-}
-
 #pragma mark - Timely sync
 - (void)registerServerUpdateService{
     self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:kServerUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:nil repeats:0];
@@ -337,58 +274,6 @@
 
 
 #pragma mark - Core Data Threading
-//+ (void)saveDataInContext:(void(^)(NSManagedObjectContext *currentContext))block
-//{
-//	NSManagedObjectContext *currentContext = [EWDataStore currentContext];
-//	[currentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-//	[context setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
-//	[context observeContext:currentContext];
-//    
-//    //execute change block
-//    if (block) {
-//        block(currentContext);
-//    }
-//	
-//    //save
-//	if ([currentContext hasChanges]){
-//        //commit save to background context
-//		[currentContext saveOnSuccess:^{
-//            NSLog(@"Background change saved to context");
-//        }onFailure:^(NSError *error) {
-//            NSLog(@"Save in background thread context failed");
-//        }];
-//        //revert the default merge policy for main context
-//        [context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-//	}
-//}
-
-//+ (void)saveDataInBackgroundInBlock:(void(^)(NSManagedObjectContext *context))saveBlock completion:(void(^)(void))completion
-//{
-//	dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
-//		[self saveDataInContext:saveBlock];
-//        
-//        if (completion) {
-//            dispatch_sync(dispatch_get_main_queue(), ^{
-//                completion();
-//            });
-//        }
-//	});
-//}
-
-//+ (NSManagedObject *)refreshObjectWithServer:(NSManagedObject *)obj{
-//    dispatch_sync([EWDataStore sharedInstance].coredata_queue, ^{
-//        [self saveDataInContext:^(NSManagedObjectContext *currentContext) {
-//            NSManagedObject *newObj = [currentContext objectWithID:obj.objectID];
-//            NSLog(@"Fetched obj at background: %@", newObj.class);
-//        }];
-//    });
-//    
-//    NSAssert([obj.managedObjectContext isEqual:[EWDataStore currentContext]], @"Current context is not equal to obj's context");
-//    
-//    obj = [obj.managedObjectContext objectWithID:obj.objectID];
-//    return obj;
-//}
-
 + (NSManagedObject *)objectForCurrentContext:(NSManagedObject *)obj{
     
     if (obj == nil) {
@@ -433,7 +318,11 @@
 + (void)save{
     NSLog(@"%s", __func__);
     //find updated/inserted/deleted objects in main context
-    NSParameterAssert([NSThread isMainThread]);
+    if (![NSThread isMainThread]) {
+        NSLog(@"Save to background thread");
+        [[EWDataStore currentContext] saveToPersistentStoreAndWait];
+        return;
+    }
     NSManagedObjectContext *context = [EWDataStore sharedInstance].context;
     NSSet *inserts = [context insertedObjects];
     NSSet *updates = [context updatedObjects];
@@ -480,18 +369,25 @@
     NSArray *u = [updates filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
     NSArray *i = [inserts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
     if (u.count) {
-        NSLog(@"!!! The object %@ you are tring to update from PO is already in the update queue. Check your code! (%@)", mo.entity.name, ID);
+        NSLog(@"!!! The object %@ you are trying to update from PO is already in the update queue. Check your code! (%@)", mo.entity.name, ID);
     }
     if (i.count) {
-        NSLog(@"!!! The object %@ you are tring to insert from PO is already in the insert queue. Check your code! (%@)", mo.entity.name, ID);
+        NSLog(@"!!! The object %@ you are trying to insert from PO is already in the insert queue. Check your code! (%@)", mo.entity.name, ID);
     }
     
-    //save
-    [mo.managedObjectContext saveToPersistentStoreAndWait];
+    //check if update in process
+    BOOL updating = [[EWDataStore sharedInstance].saveToServerDelayTimer isValid];
+    //save to enqueue the updates
+    [EWDataStore save];
     
     //remove from the update queue
     [[EWDataStore sharedInstance] removeObjectFromInsertQueue:mo];
     [[EWDataStore sharedInstance] removeObjectFromUpdateQueue:mo];
+    
+    //cancel update
+    if (!updating) {
+        [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
+    }
 }
 
 + (NSManagedObjectContext *)currentContext{
@@ -745,7 +641,7 @@
         
     }
     
-    //time stamp for updated date
+    //time stamp for updated date. This is very important.
     [mo setValue:[NSDate date] forKey:kUpdatedDateKey];
 
 }
@@ -794,18 +690,18 @@
 
 #pragma mark - KVO
 
-//- (void)updateModifiedDate:(NSNotification *)notification{
-//    NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
-//    
-//    //NSLog(@"Observed %lu ManagedObject changed, updating 'UpdatedAt'.", (unsigned long)updatedObjects.count);
-//    for (NSManagedObject *mo in updatedObjects) {
-//        double interval = [[mo valueForKey:kUpdatedDateKey] timeIntervalSinceNow];
-//        if (interval < -1) {
-//            //update time
-//            [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
-//        }
-//    }
-//}
+- (void)updateModifiedDate:(NSNotification *)notification{
+    NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
+    
+    //NSLog(@"Observed %lu ManagedObject changed, updating 'UpdatedAt'.", (unsigned long)updatedObjects.count);
+    for (NSManagedObject *mo in updatedObjects) {
+        double interval = [[mo valueForKey:kUpdatedDateKey] timeIntervalSinceNow];
+        if (interval < -1) {
+            //update time
+            [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
+        }
+    }
+}
 
 //- (void)addToQueueUpOnSaving:(NSNotification *)notification{
 //    NSParameterAssert([NSThread isMainThread]);
@@ -1201,7 +1097,7 @@
     NSManagedObject *mo = [EWDataStore objectForCurrentContext:managedObject];
     NSParameterAssert([mo valueForKey:kParseObjectID]);
     NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
-    if (updateAt && [updateAt timeIntervalSinceDate:self.updatedAt] < -60) {
+    if (updateAt && [self.updatedAt timeIntervalSinceDate:updateAt] > 60) {
         NSLog(@"@@@ Trying to update MO %@, but PO is newer! Please check the code.(%@ -> %@)", mo.entity.name, updateAt, self.updatedAt);
         //possible situation: the PO is just created from MO, thus have a newer time.
     }
@@ -1382,7 +1278,7 @@
     if (!mo) {
         //if managedObject not exist, create it locally
         mo = [NSClassFromString(self.localClassName) MR_createEntity];
-        [mo setValue:self.createdAt forKeyPath:kCreatedDateKey];
+        [mo assignValueFromParseObject:self];
         NSLog(@"+++> MO created: %@ (%@)", self.localClassName, self.objectId);
     }
     //check if need to assign value

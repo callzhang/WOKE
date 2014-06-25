@@ -77,6 +77,10 @@ EWPerson *me;
     }else{
         NSLog(@"Current user %@ data has FETCHED", person.name);
     }
+    
+    if (person.isMe) {
+        person.score = 100;
+    }
 
     return person;
 }

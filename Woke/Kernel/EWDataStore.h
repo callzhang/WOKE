@@ -50,9 +50,12 @@
 
 
 + (EWDataStore *)sharedInstance;
+
+/**
+ The main save function, it save and upload to the server
+ */
 + (void)save;
-//- (void)registerPushNotification;
-//+ (void)checkAlarmData;
++ (void)saveToLocal:(NSManagedObject *)mo;
 
 #pragma mark - Push notification
 /**
