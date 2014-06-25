@@ -312,7 +312,7 @@ UIViewController *rootViewController;
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
     
     //Register Push on Server
-    [EWDataStore registerPushNotificationWithToken:deviceToken];
+    [EWServer registerPushNotificationWithToken:deviceToken];
     
  
 }

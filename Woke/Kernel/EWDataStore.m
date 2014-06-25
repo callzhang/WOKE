@@ -16,6 +16,7 @@
 #import "EWMediaItem.h"
 #import "NSString+MD5.h"
 #import "EWWakeUpManager.h"
+#import "EWServer.h"
 
 #define MR_LOGGING_ENABLED 0
 #import <MagicalRecord/CoreData+MagicalRecord.h>
@@ -76,6 +77,7 @@
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:context];
         //Observe context save to update the update/insert/delete queue
+        //This turns out to be not possible because there are actions that need to save to local be not update to server
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addToQueueUpOnSaving:) name:NSManagedObjectContextDidSaveNotification object:context];
         
         //facebook
@@ -134,13 +136,10 @@
         [currentInstallation saveInBackground];
     };
     
-    //change fetch policy
-    //NSLog(@"0. Start sync with server");
-    //[self.coreDataStore syncWithServer];
     
     //refresh current user
     NSLog(@"1. Register AWS push key");
-    [EWDataStore registerAPNS];
+    [EWServer registerAPNS];
     
     //check alarm, task, and local notif
     NSLog(@"2. Check alarm");
@@ -160,117 +159,99 @@
     NSLog(@"6. Updating facebook info");
     [EWUserManagement updateFacebookInfo];
     
+    //Update my relations
+    NSLog(@"7. Refresh my relation in background");
+    [me refreshRelatedInBackground];
+    
     //update data with timely updates
     [self registerServerUpdateService];
-    
 }
 
 
-#pragma mark - PUSH
-
-+ (void)registerAPNS{
-    //push
-#if TARGET_IPHONE_SIMULATOR
-    //Code specific to simulator
-#else
-    //pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
-    //register everytime in case for events like phone replacement
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeNewsstandContentAvailability | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
-#endif
-}
-
-+ (void)registerPushNotificationWithToken:(NSData *)deviceToken{
-    
-    //Parse: Store the deviceToken in the current Installation and save it to Parse.
-    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    [currentInstallation setDeviceTokenFromData:deviceToken];
-    [currentInstallation saveInBackground];
-    
-    
-    
-}
-
-#pragma mark - DATA from Amazon S3
-+ (NSData *)getRemoteDataWithKey:(NSString *)key{
-    if (!key) {
-        return nil;
-    }
-    
-    NSData *data = nil;
-    
-    //s3 file
-    if ([key hasPrefix:@"http"]) {
-        //read from url
-        NSURL *audioURL = [NSURL URLWithString:key];
-        NSString *keyHash = [audioURL.absoluteString MD5Hash];
-        data = [FTWCache objectForKey:keyHash];
-        if (!data) {
-            //get from remote
-            NSError *err;
-            data = [NSData dataWithContentsOfURL:audioURL options:NSDataReadingUncached error:&err];
-            if (err) {
-                NSLog(@"@@@@@@ Error occured in reading remote content: %@", err);
-            }
-            [FTWCache setObject:data forKey:keyHash];
-        }
-        
-    }else if ([[NSURL URLWithString:key] isFileURL]){
-        //local file
-        NSLog(@"string is a local file: %@", key);
-        @try {
-            data = [NSData dataWithContentsOfFile:key];
-        }
-        @catch (NSException *exception) {
-            //pass by file name only, for main bundle resources
-            NSArray *array = [key componentsSeparatedByString:@"."];
-            NSAssert(array.count != 2, @"Please provide a file name with extension");
-            NSString *filePath = [[NSBundle mainBundle] pathForResource:array[0] ofType:array[1]];
-            data = [NSData dataWithContentsOfFile:filePath];
-        }
-        
-    }else if(key.length > 500){
-        //string contains data
-        data = [key dataUsingEncoding:NSUTF8StringEncoding];
-        //TODO: save again.
-        NSLog(@"Return the audio key as the data itself, please check!");
-        
-    }
-    
-    return data;
-}
 #pragma mark - Timely sync
 - (void)registerServerUpdateService{
     self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:kServerUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:nil repeats:0];
     [self serverUpdate:nil];
 }
-     
+
 - (void)serverUpdate:(NSTimer *)timer{
     //services that need to run periodically
     if (!me) {
         return;
     }
-    NSLog(@"%s: Start sync service", __func__);
+    NSLog(@"Start sync service");
     
     //dispatch_async(dispatch_queue, ^{
-        
-        //lsat seen
-        NSLog(@"Start last seen recurring task");
-        [EWUserManagement updateLastSeen];
-        
-        //location
-        NSLog(@"Start location recurring task");
-        [EWUserManagement registerLocation];
-        
-        //check task
-        NSLog(@"Start recurring task schedule");
-        [[EWTaskStore sharedInstance] scheduleTasks];
-        
-        //check alarm timer
-        NSLog(@"Start recurring alarm timer check");
-        [EWWakeUpManager alarmTimerCheck];
+    
+    //lsat seen
+    NSLog(@"[1] Start last seen recurring updates");
+    [EWUserManagement updateLastSeen];
+    
+    //location
+    NSLog(@"[2] Start location recurring update");
+    [EWUserManagement registerLocation];
+    
+    //check task
+    NSLog(@"[3] Start recurring task schedule");
+    [[EWTaskStore sharedInstance] scheduleTasks];
+    
+    //check alarm timer
+    NSLog(@"[4] Start recurring alarm timer check");
+    [EWWakeUpManager alarmTimerCheck];
     //});
     
 }
+
+
+//#pragma mark - DATA from Amazon S3
+//+ (NSData *)getRemoteDataWithKey:(NSString *)key{
+//    if (!key) {
+//        return nil;
+//    }
+//    
+//    NSData *data = nil;
+//    
+//    //s3 file
+//    if ([key hasPrefix:@"http"]) {
+//        //read from url
+//        NSURL *audioURL = [NSURL URLWithString:key];
+//        NSString *keyHash = [audioURL.absoluteString MD5Hash];
+//        data = [FTWCache objectForKey:keyHash];
+//        if (!data) {
+//            //get from remote
+//            NSError *err;
+//            data = [NSData dataWithContentsOfURL:audioURL options:NSDataReadingUncached error:&err];
+//            if (err) {
+//                NSLog(@"@@@@@@ Error occured in reading remote content: %@", err);
+//            }
+//            [FTWCache setObject:data forKey:keyHash];
+//        }
+//        
+//    }else if ([[NSURL URLWithString:key] isFileURL]){
+//        //local file
+//        NSLog(@"string is a local file: %@", key);
+//        @try {
+//            data = [NSData dataWithContentsOfFile:key];
+//        }
+//        @catch (NSException *exception) {
+//            //pass by file name only, for main bundle resources
+//            NSArray *array = [key componentsSeparatedByString:@"."];
+//            NSAssert(array.count != 2, @"Please provide a file name with extension");
+//            NSString *filePath = [[NSBundle mainBundle] pathForResource:array[0] ofType:array[1]];
+//            data = [NSData dataWithContentsOfFile:filePath];
+//        }
+//        
+//    }else if(key.length > 500){
+//        //string contains data
+//        data = [key dataUsingEncoding:NSUTF8StringEncoding];
+//        //TODO: save again.
+//        NSLog(@"Return the audio key as the data itself, please check!");
+//        
+//    }
+//    
+//    return data;
+//}
+
 
 
 #pragma mark - Core Data Threading
