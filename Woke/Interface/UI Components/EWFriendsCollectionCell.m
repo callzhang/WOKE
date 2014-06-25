@@ -8,6 +8,7 @@
 
 #import "EWFriendsCollectionCell.h"
 #import "EWPerson.h"
+#import "EWUIUtil.h"
 @implementation EWFriendsCollectionCell
 -(id)init
 {
@@ -31,7 +32,18 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code
+        _headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 70, 80)];
+        _headImageView.backgroundColor = [UIColor clearColor];
+        [EWUIUtil applyHexagonMaskForView:_headImageView];
+        [self addSubview:_headImageView];
+        
+        _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 80, 70, 20)];
+        _nameLabel.textColor = [UIColor whiteColor];
+        _nameLabel.font = [UIFont systemFontOfSize:12];
+        _nameLabel.backgroundColor = [UIColor clearColor];
+        _nameLabel.textAlignment = NSTextAlignmentCenter;
+        _nameLabel.contentMode = UIViewContentModeScaleAspectFill;
+        [self addSubview:_nameLabel];
     }
     return self;
 }
