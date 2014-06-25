@@ -89,13 +89,17 @@
 
 #pragma mark - Login & Logout
 - (void)loginUser {
-    [self.indicator startAnimating];
+    //[self.indicator startAnimating];
+    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    
+    //leaving
+    [self dismissViewControllerAnimated:YES completion:NULL];
+    
     [EWUserManagement loginParseWithFacebookWithCompletion:^{
         //update UI
         [self updateView];//notification also used
         
-        //leaving
-        [self dismissViewControllerAnimated:YES completion:NULL];
+        
     }];
     
 }

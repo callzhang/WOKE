@@ -32,6 +32,7 @@
 #define kParseQueueInsert       @"parse_queue_insert"
 #define kParseQueueUpdate       @"parse_queue_update"
 #define kParseQueueDelete       @"parse_queue_delete"
+#define kParseQueueWorking      @"parse_queue_working"
 
 @interface EWDataStore : NSObject
 //@property (nonatomic, retain) AmazonSNSClient *snsClient;
@@ -39,14 +40,14 @@
 @property (nonatomic, retain) dispatch_queue_t dispatch_queue;//Task dispatch queue runs in serial
 @property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in serial
 @property (nonatomic, retain) NSTimer *serverUpdateTimer;
-@property (nonatomic, retain) NSSet *updateQueue;
-@property (nonatomic, retain) NSSet *insertQueue;
-@property (nonatomic, retain) NSSet *deleteQueue;
+@property (nonatomic, retain) NSDate *lastChecked;//The date that last sync with server
 
-/**
- *The date that last sync with server
- */
-@property (nonatomic, retain) NSDate *lastChecked;
+
+#pragma mark - Queue
++ (NSSet *) updateQueue;
++ (NSSet *) insertQueue;
++ (NSSet *) deleteQueue;
++ (NSSet *) workingQueue;//the working queue
 
 
 + (EWDataStore *)sharedInstance;

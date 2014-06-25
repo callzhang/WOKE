@@ -115,9 +115,20 @@
 
     //fetch or create, delay 0.1s so the login view can animate
     EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+    //save me
+    me = person;
+    me.score = 100;
+    [EWDataStore saveToLocal:me];
+    
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     
     
+    //update current user with fb info
+    [EWUserManagement updateFacebookInfo];
+    
+    if ([PFUser currentUser].isNew) {
+        [EWUserManagement handleNewUser];
+    }
     
     //update person
     //change to update in sync mode to avoid data overriding while update value from server
@@ -128,9 +139,6 @@
         NSLog(@"[c] Broadcast Person login notification");
         [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
     }];
-    
-    //save me
-    me = person;
 
 }
 
@@ -303,30 +311,14 @@
         //login core data user with PFUser, do NOT refresh from PO, refresh from fb info
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
         
-        //background refresh
-        if (block) {
-            NSLog(@"[d] Run completion block.");
-            block();
-        }
+        [EWUserManagement loginWithServerUser:[PFUser currentUser] withCompletionBlock:^{
+            //background refresh
+            if (block) {
+                NSLog(@"[d] Run completion block.");
+                block();
+            }
+        }];
         
-        //fetch or create user in background
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
-        
-        //save me
-        me = person;
-        me.score = 100;
-        
-        //Broadcast user login event
-        NSLog(@"[c] Broadcast Person login notification");
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
-
-        
-        //update current user with fb info
-        [EWUserManagement updateFacebookInfo];
-        
-        if ([PFUser currentUser].isNew) {
-            [EWUserManagement handleNewUser];
-        }
     }];
 }
 

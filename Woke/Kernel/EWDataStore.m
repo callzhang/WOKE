@@ -45,7 +45,6 @@
 @synthesize lastChecked;
 //@synthesize snsClient;
 @synthesize parseSaveCallbacks;
-@synthesize updateQueue, insertQueue, deleteQueue;
 
 + (EWDataStore *)sharedInstance{
     
@@ -318,7 +317,7 @@
                 continue;
             }
             NSLog(@"+++> MO %@ inserted to context", MO.entity.name);
-            [[EWDataStore sharedInstance] appendInsertQueue:MO];
+            [EWDataStore appendInsertQueue:MO];
         }
         for (NSManagedObject *MO in updates) {
             //skip if updatedMO contained in insertedMOs
@@ -330,7 +329,7 @@
             [changedKeys removeObjectsInArray:attributeUploadSkipped];
             if (changedKeys.count > 0) {
                 NSLog(@"===> MO %@(%@) updated to context with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
-                [[EWDataStore sharedInstance] appendUpdateQueue:MO];
+                [EWDataStore appendUpdateQueue:MO];
             }
             
         }
@@ -338,14 +337,14 @@
             NSLog(@"~~~> MO %@ deleted to context", MO.entity.name);
             PFObject *PO = [MO parseObject];
             if (PO) {
-                [[EWDataStore sharedInstance] appendDeleteQueue:PO];
+                [EWDataStore appendDeleteQueue:PO];
             }
         }
         [context saveToPersistentStoreAndWait];
         
         [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
-        
         [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
+        
     }
     
 }
@@ -373,8 +372,8 @@
     [EWDataStore save];
     
     //remove from the update queue
-    [[EWDataStore sharedInstance] removeObjectFromInsertQueue:mo];
-    [[EWDataStore sharedInstance] removeObjectFromUpdateQueue:mo];
+    [EWDataStore removeObjectFromInsertQueue:mo];
+    [EWDataStore removeObjectFromUpdateQueue:mo];
     
     //cancel update
     if (!updating) {
@@ -389,65 +388,69 @@
 
 #pragma mark - Server Related Accessor methods
 //update queue
-- (NSSet *)updateQueue{
-    NSArray *array  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
-    NSMutableSet *set = [NSMutableSet new];
-    for (NSString *str in array) {
-        NSURL *url = [NSURL URLWithString:str];
-        NSManagedObjectID *ID = [[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
-        if (!ID) {
-            NSLog(@"@@@ ManagedObjectID not found: %@", url);
-            continue;
-        }
-        NSManagedObject *MO = [[EWDataStore currentContext] objectWithID:ID];
-        [set addObject:MO];
-    }
-    return [set copy];
++ (NSSet *)updateQueue{
+    return [EWDataStore getObjectFromQueue:kParseQueueUpdate];
 }
 
-- (void)appendUpdateQueue:(NSManagedObject *)mo{
-    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
-    NSMutableSet *set = [[NSMutableSet setWithArray:array] mutableCopy];
++ (void)appendUpdateQueue:(NSManagedObject *)mo{
     NSManagedObjectID *objectID = mo.objectID;
     if ([objectID isTemporaryID]) {
         [mo.managedObjectContext obtainPermanentIDsForObjects:@[mo] error:NULL];
         objectID = mo.objectID;
     }
-    //changes dic
+    //Add changed attributes minus skipped ones to changes dic
     NSString *str = objectID.URIRepresentation.absoluteString;
     NSMutableDictionary *changeDic = [[mo changedValues] mutableCopy];
-    [changeDic addEntriesFromDictionary:[self.changesDictionary objectForKey:str]];
+    [changeDic removeObjectsForKeys:attributeUploadSkipped];
+    [changeDic addEntriesFromDictionary:[[EWDataStore sharedInstance].changesDictionary objectForKey:str]];
     if (changeDic) {
-        [self.changesDictionary setObject:[changeDic copy] forKey:objectID];
+        [[EWDataStore sharedInstance].changesDictionary setObject:[changeDic copy] forKey:objectID];
     }
     
+    //skip if included in insert queue
+    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueInsert];
+    if ([array containsObject:str]) {
+        NSLog(@"MO %@(%@) insertion to update queue skipped because it is contained in insert queue", mo.entity.name, [mo valueForKey:kParseObjectID]);
+        return;
+    }
     
     //queue
-    if (![set containsObject:str]) {
-        [set addObject:str];
-        NSLog(@"MO %@(%@) added to update queue", mo.entity.name, [mo valueForKey:kParseObjectID]);
-    }
-    
-    [[NSUserDefaults standardUserDefaults] setValue:[set allObjects] forKey:kParseQueueUpdate];
+    [EWDataStore appendObject:mo toQueue:kParseQueueUpdate];
 }
 
-- (void)removeObjectFromUpdateQueue:(NSManagedObject *)mo{
-    NSMutableArray *array = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate] mutableCopy];
-    NSManagedObjectID *objectID = mo.objectID;
-    NSString *str = objectID.URIRepresentation.absoluteString;
-    if ([array containsObject:str]) {
-        [array removeObject:str];
-        [[NSUserDefaults standardUserDefaults] setValue:[array copy] forKey:kParseQueueUpdate];
-        //NSLog(@"Removed object %@ from update queue", mo.entity.name);
-    }
-    
-    //change dic
-    [self.changesDictionary removeObjectForKey:str];
++ (void)removeObjectFromUpdateQueue:(NSManagedObject *)mo{
+    [EWDataStore removeObject:mo fromQueue:kParseQueueUpdate];
 }
 
 //insert queue
-- (NSSet *)insertQueue{
-    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueInsert];
++ (NSSet *)insertQueue{
+    return [EWDataStore getObjectFromQueue:kParseQueueInsert];
+}
+
++ (void)appendInsertQueue:(NSManagedObject *)mo{
+    [EWDataStore appendObject:mo toQueue:kParseQueueInsert];
+}
+
++ (void)removeObjectFromInsertQueue:(NSManagedObject *)mo{
+    [EWDataStore removeObject:mo fromQueue:kParseQueueInsert];
+}
+
+//uploading queue
++ (NSSet *)uploadingQueue{
+    return [EWDataStore getObjectFromQueue:kParseQueueWorking];
+}
+
++ (void)appendObjectToWorkingQueue:(NSManagedObject *)mo{
+    [EWDataStore appendObject:mo toQueue:kParseQueueWorking];
+}
+
++ (void)removeObjectFromWorkingQueue:(NSManagedObject *)mo{
+    [EWDataStore removeObject:mo fromQueue:kParseQueueWorking];
+}
+
+//queue functions
++ (NSSet *)getObjectFromQueue:(NSString *)queue{
+    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:queue];
     NSMutableSet *set = [NSMutableSet new];
     for (NSString *str in array) {
         NSURL *url = [NSURL URLWithString:str];
@@ -462,8 +465,8 @@
     return [set copy];
 }
 
-- (void)appendInsertQueue:(NSManagedObject *)mo{
-    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueInsert];
++ (void)appendObject:(NSManagedObject *)mo toQueue:(NSString *)queue{
+    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:queue];
     NSMutableSet *set = [[NSMutableSet setWithArray:array] mutableCopy];
     NSManagedObjectID *objectID = mo.objectID;
     if ([objectID isTemporaryID]) {
@@ -473,25 +476,29 @@
     NSString *str = objectID.URIRepresentation.absoluteString;
     if (![set containsObject:str]) {
         [set addObject:str];
-        NSLog(@"MO %@(%@) add to insert queue", mo.entity.name, mo.objectID);
+        [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:queue];
+        NSLog(@"MO %@(%@) add to %@", mo.entity.name, mo.objectID, queue);
     }
     
-    [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:kParseQueueInsert];
 }
 
-- (void)removeObjectFromInsertQueue:(NSManagedObject *)mo{
-    NSMutableArray *array = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueInsert] mutableCopy];
++ (void)removeObject:(NSManagedObject *)mo fromQueue:(NSString *)queue{
+    NSMutableArray *array = [[[NSUserDefaults standardUserDefaults] valueForKey:queue] mutableCopy];
     NSManagedObjectID *objectID = mo.objectID;
     NSString *str = objectID.URIRepresentation.absoluteString;
     if ([array containsObject:str]) {
         [array removeObject:str];
-        [[NSUserDefaults standardUserDefaults] setValue:[array copy] forKey:kParseQueueInsert];
+        [[NSUserDefaults standardUserDefaults] setValue:[array copy] forKey:queue];
         //NSLog(@"Removed object %@ from insert queue", mo.entity.name);
     }
 }
 
++ (void)clearQueue:(NSString *)queue{
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:queue];
+}
+
 //DeletedQueue underlying is a dictionary of objectId:className
-- (NSSet *)deleteQueue{
++ (NSSet *)deleteQueue{
     NSDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy];
     NSParameterAssert(!dic || [dic isKindOfClass:[NSDictionary class]]);
     NSMutableSet *set = [NSMutableSet new];
@@ -501,20 +508,21 @@
     return [set copy];
 }
 
-- (void)appendDeleteQueue:(PFObject *)object{
++ (void)appendDeleteQueue:(PFObject *)object{
+    if (!object) return;
     NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy];
     [dic setObject:object.parseClassName forKey:object.objectId];
     [[NSUserDefaults standardUserDefaults] setObject:[dic copy] forKey:kParseQueueDelete];
 }
 
-- (void)removeDeleteQueue:(PFObject *)object{
++ (void)removeDeleteQueue:(PFObject *)object{
+    if (!object) return;
     NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy];
     [dic removeObjectForKey:object.objectId];
     [[NSUserDefaults standardUserDefaults] setObject:[dic copy] forKey:kParseQueueDelete];
 }
 
 #pragma mark - Parse Server methods
-#pragma mark -
 +(void)updateToServer{
     //make sure it is called on main thread
     NSParameterAssert([NSThread isMainThread]);
@@ -526,29 +534,36 @@
     
     NSLog(@"Start update to server");
     
-
-
-    
     //only ManagedObjectID is thread safe
-    NSSet *insertedManagedObjectIDs = [EWDataStore.sharedInstance.insertQueue valueForKey:@"objectID"];
-    NSMutableSet *updatedManagedObjectIDs = [[EWDataStore.sharedInstance.updateQueue valueForKey:@"objectID"] mutableCopy];
-    NSSet *deletedServerObjects = EWDataStore.sharedInstance.deleteQueue;
+    NSSet *insertedManagedObjects = [EWDataStore insertQueue];
+    NSSet *updatedManagedObjects = [EWDataStore updateQueue];
+    NSSet *deletedServerObjects = EWDataStore.deleteQueue;
+    NSMutableSet *workingObjects = [NSMutableSet new];
+    
+    //copy the list to working queue
+    [workingObjects unionSet:updatedManagedObjects];
+    [workingObjects unionSet:insertedManagedObjects];
+    for (NSManagedObject *mo in workingObjects) {
+        [EWDataStore appendObject:mo toQueue:kParseQueueWorking];
+    }
+    NSSet *workingObjectIDs = [workingObjects valueForKey:@"objectID"];
+    
+    //clear queues
+    [EWDataStore clearQueue:kParseQueueInsert];
+    [EWDataStore clearQueue:kParseQueueUpdate];
     
     
-    NSLog(@"============ Start updating to server. There are %lu inserts, %lu updates, and %lu deletes ===============", (unsigned long)insertedManagedObjectIDs.count, (unsigned long)updatedManagedObjectIDs.count, (unsigned long)deletedServerObjects.count);
-    
-    
-    [updatedManagedObjectIDs unionSet:insertedManagedObjectIDs];
+    NSLog(@"============ Start updating to server. \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ ===============", [insertedManagedObjects valueForKey:kParseObjectID], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
 
+    //start background update
     dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-        //perform network calls
         
-        for (NSManagedObjectID *ID in updatedManagedObjectIDs) {
+        for (NSManagedObjectID *ID in workingObjectIDs) {
             [EWDataStore updateParseObjectFromManagedObjectID:ID];
         }
         
         for (NSManagedObject *managedObject in deletedServerObjects) {
-            NSLog(@"Deleting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
+            NSLog(@"~~~> Deleting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
             [EWDataStore deleteParseObject:managedObject.parseObject];
         }
         
@@ -598,8 +613,7 @@
         if ([mo.entity.serverClassName isEqualToString:@"_User"]) {
             if (![(EWPerson *)mo isMe]) {
                 NSLog(@"Skip updating other PFUser: %@", [object valueForKey:@"name"]);
-                [[EWDataStore sharedInstance] removeObjectFromInsertQueue:mo];
-                [[EWDataStore sharedInstance] removeObjectFromUpdateQueue:mo];
+                [EWDataStore removeObjectFromWorkingQueue:mo];
                 return;
             }
         }
@@ -637,8 +651,7 @@
         
         
         //remove from queue
-        [[EWDataStore sharedInstance] removeObjectFromInsertQueue:mo];
-        [[EWDataStore sharedInstance] removeObjectFromUpdateQueue:mo];
+        [EWDataStore removeObjectFromWorkingQueue:mo];
     } else {
         NSLog(@"Failed to save server object: %@", error.description);
         
@@ -654,15 +667,15 @@
         
         if (succeeded) {
             //Good
-            [[EWDataStore sharedInstance] removeDeleteQueue:parseObject];
+            [EWDataStore removeDeleteQueue:parseObject];
             
         }else if (error.code == kPFErrorObjectNotFound){
             //fine
-            [[EWDataStore sharedInstance] removeDeleteQueue:parseObject];
+            [EWDataStore removeDeleteQueue:parseObject];
             
         }else{
             //not good
-            [[EWDataStore sharedInstance] appendDeleteQueue:parseObject];
+            [EWDataStore appendDeleteQueue:parseObject];
         }
     }];
 }
@@ -1047,11 +1060,11 @@
     if (hasParseObjectLinked) {
         //update
         NSLog(@"%s: updated %@ eventually", __func__, self.entity.name);
-        [[EWDataStore sharedInstance] appendUpdateQueue:self];
+        [EWDataStore appendUpdateQueue:self];
     }else{
         //insert
         NSLog(@"%s: insert %@ eventually", __func__, self.entity.name);
-        [[EWDataStore sharedInstance] appendInsertQueue:self];
+        [EWDataStore appendInsertQueue:self];
     }
     
 }
@@ -1062,7 +1075,7 @@
         return;
     }
     NSLog(@"%s: delete %@ eventually", __func__, self.entity.name);
-    [[EWDataStore sharedInstance] appendDeleteQueue:self.parseObject];
+    [EWDataStore appendDeleteQueue:self.parseObject];
 
     //delete
     [self.managedObjectContext performBlock:^{
@@ -1215,7 +1228,7 @@
                         [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:relatedManagedObject.objectID];
 
                         //add relatedMO to insertQueue
-                        [[EWDataStore sharedInstance] appendInsertQueue:relatedManagedObject];
+                        [EWDataStore appendInsertQueue:relatedManagedObject];
                     }
                 }
             } else {
