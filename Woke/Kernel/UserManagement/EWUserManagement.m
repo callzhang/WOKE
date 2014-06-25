@@ -50,7 +50,7 @@
     if ([PFUser currentUser]) {
         //user already logged in
         NSLog(@"[a]Get Parse logged in user: %@", [PFUser currentUser].username);
-        [EWUserManagement loginWithServerUser:[PFUser currentUser] withCompletionBlock:^{}];
+        [EWUserManagement loginWithServerUser:[PFUser currentUser] withCompletionBlock:NULL];
         
         //see if user is linked with fb
         if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
@@ -99,9 +99,9 @@
 
 //login with local user default info
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-    hud.labelText = @"Loading";
+
+//    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+//    hud.labelText = @"Loading";
     
     
     //background refresh
@@ -114,10 +114,9 @@
     }
 
     //fetch or create, delay 0.1s so the login view can animate
-    __block EWPerson *person;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
-    });
+    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+    
     
     
     //update person

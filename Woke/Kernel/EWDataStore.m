@@ -804,7 +804,7 @@
             
             //delete from the relation to MO not found on server
             for (NSManagedObject *MOToDelete in managedObjectToDelete) {
-                NSLog(@"~~~> Delete to-many relation %@->%@(%@)", self.entity.name, obj.name, [MOToDelete valueForKey:kParseObjectID]);
+                NSLog(@"~~~> Delete to-many relation on MO %@->%@(%@)", self.entity.name, obj.name, [MOToDelete valueForKey:kParseObjectID]);
                 NSMutableSet *relatedMOs = [self mutableSetValueForKey:key];
                 [relatedMOs removeObject:MOToDelete];
                 [self setValue:relatedMOs forKeyPath:key];
@@ -843,7 +843,7 @@
                 
                 if (!inverseRelationExists) {
                     [self setValue:nil forKey:key];
-                    NSLog(@"~~~> Delete relation %@->%@(%@)", self.entity.name, obj.name, [inverseMO valueForKey:kParseObjectID]);
+                    NSLog(@"~~~> Delete to-one relation on MO %@->%@(%@)", self.entity.name, obj.name, [inverseMO valueForKey:kParseObjectID]);
                 }else{
                     NSLog(@"*** Something wrong, the inverse relation %@ <-> %@ deoesn't agree", self.entity.name, obj.entity.name);
                 }
@@ -1013,7 +1013,7 @@
         }else{
             //parse value empty, delete
             if ([self valueForKey:key]) {
-                NSLog(@"~~~> Delete attribute %@(%@)->%@", self.entity.name, [obj valueForKey:kParseObjectID], obj.name);
+                //NSLog(@"~~~> Delete attribute %@(%@)->%@", self.entity.name, [obj valueForKey:kParseObjectID], obj.name);
                 [self setValue:nil forKey:key];
             }
         }
@@ -1170,7 +1170,7 @@
                         for (PFObject *PO in relatedParseObjectsToDelete) {
                             [parseRelation removeObject:PO];
                             
-                            NSLog(@"~~~> Relation %@(%@)->%@(%@) is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, PO.objectId);
+                            NSLog(@"~~~> To-many relation on PO %@(%@)->%@(%@) deleted when update from MO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, PO.objectId);
                         }
                         //save
                         if (relatedParseObjectsToDelete.count) {
@@ -1264,7 +1264,7 @@
                     PFRelation *inversePFRelation = inversePO[inverseRelation.entity.name];
                     [inversePFRelation removeObject:self];
                     [inversePO save];
-                    NSLog(@"Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
+                    NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
                 }
                 
                 [self removeObjectForKey:key];
