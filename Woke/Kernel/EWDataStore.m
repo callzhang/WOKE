@@ -316,13 +316,14 @@
 
 
 + (void)save{
-    NSLog(@"%s", __func__);
+    
     //find updated/inserted/deleted objects in main context
     if (![NSThread isMainThread]) {
         NSLog(@"Save to background thread");
         [[EWDataStore currentContext] saveToPersistentStoreAndWait];
         return;
     }
+    NSLog(@"%s", __func__);
     NSManagedObjectContext *context = [EWDataStore sharedInstance].context;
     NSSet *inserts = [context insertedObjects];
     NSSet *updates = [context updatedObjects];
@@ -339,8 +340,18 @@
             [[EWDataStore sharedInstance] appendInsertQueue:MO];
         }
         for (NSManagedObject *MO in updates) {
-            NSLog(@"===> MO %@ updated to context with changes: %@", MO.entity.name, MO.changedValues.allKeys);
-            [[EWDataStore sharedInstance] appendUpdateQueue:MO];
+            //skip if updatedMO contained in insertedMOs
+            if ([inserts containsObject:MO]) {
+                continue;
+            }
+            //check if updated keys are valid
+            NSMutableArray *changedKeys = MO.changedValues.allKeys.mutableCopy;
+            [changedKeys removeObjectsInArray:attributeUploadSkipped];
+            if (changedKeys.count > 0) {
+                NSLog(@"===> MO %@(%@) updated to context with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
+                [[EWDataStore sharedInstance] appendUpdateQueue:MO];
+            }
+            
         }
         for (NSManagedObject *MO in deletes) {
             NSLog(@"~~~> MO %@ deleted to context", MO.entity.name);
@@ -431,7 +442,11 @@
     
     
     //queue
-    [set addObject:str];
+    if (![set containsObject:str]) {
+        [set addObject:str];
+        NSLog(@"MO %@(%@) added to update queue", mo.entity.name, [mo valueForKey:kParseObjectID]);
+    }
+    
     [[NSUserDefaults standardUserDefaults] setValue:[set allObjects] forKey:kParseQueueUpdate];
 }
 
@@ -475,7 +490,11 @@
         objectID = mo.objectID;
     }
     NSString *str = objectID.URIRepresentation.absoluteString;
-    [set addObject:str];
+    if (![set containsObject:str]) {
+        [set addObject:str];
+        NSLog(@"MO %@(%@) add to insert queue", mo.entity.name, mo.objectID);
+    }
+    
     [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:kParseQueueInsert];
 }
 
@@ -560,7 +579,10 @@
 + (void)updateParseObjectFromManagedObjectID:(NSManagedObjectID *)managedObjectID{
     NSError *error;
     NSManagedObject *mo = [[NSManagedObjectContext contextForCurrentThread] existingObjectWithID:managedObjectID error:&error];
-    NSParameterAssert(mo);
+    if (!mo) {
+        NSLog(@"Object not found for ID %@", managedObjectID);
+        return;
+    }
     NSString *parseObjectId = [mo valueForKey:kParseObjectID];
     PFObject *object;
     if (parseObjectId) {
@@ -1023,7 +1045,7 @@
 - (void)setPFFile:(PFFile *)file forPropertyDescription:(NSAttributeDescription *)attributeDescription{
     
     [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-        if (error) {
+        if (error || !data) {
             NSLog(@"@@@ Failed to download PFFile: %@", error.description);
             return;
         }
@@ -1211,7 +1233,8 @@
                         //add to global save callback distionary
                         [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:relatedManagedObject.objectID];
 
-                        
+                        //add relatedMO to insertQueue
+                        [[EWDataStore sharedInstance] appendInsertQueue:relatedManagedObject];
                     }
                 }
             } else {
@@ -1287,7 +1310,7 @@
     if (!updated || [updated isEarlierThan:self.updatedAt]) {
         
         [mo assignValueFromParseObject:self];
-        [EWDataStore saveToLocal:mo];
+        //[EWDataStore saveToLocal:mo];
     }
     
     

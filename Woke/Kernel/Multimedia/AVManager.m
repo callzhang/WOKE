@@ -212,13 +212,7 @@
     
     //data
     NSError *err;
-    NSString *path = [EWDataStore localPathForKey:url.absoluteString];
-    //play
-    if (path) {
-        player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:&err];
-    }else{
-        player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
-    }
+    player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
     player.volume = 1.0;
     
     if (err) {
@@ -593,17 +587,11 @@ void RouteChangeListener(	void *inClientData,
             //local file
             soundUrl = path;
         }else{
-            NSString *cachePath = [EWDataStore localPathForKey:path.absoluteString];
-            if (cachePath) {
-                soundUrl = [NSURL fileURLWithPath:cachePath];
-            }else{
-                NSLog(@"Passed remote url to system audio service");
-                soundUrl = path;
-            }
-            
+            NSLog(@"Passed remote url to system audio service");
+            soundUrl = path;
         }
-        
     }
+    
     //play
     NSLog(@"Start playing system sound");
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)soundUrl, &soundID);

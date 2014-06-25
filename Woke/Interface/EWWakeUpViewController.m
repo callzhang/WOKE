@@ -298,6 +298,7 @@
     
     //set image
     cell.profilePic.imageView.image = mi.author.profilePic;
+    [EWUIUtil applyHexagonMaskForView:cell.profilePic];
     
     //control
     cell.controller = self;
@@ -412,6 +413,7 @@
     postWakeUpVCBtn.frame = footerFrame;
     
 }
+
 
 #pragma mark - Handle player events
 - (void)startPlayCells{

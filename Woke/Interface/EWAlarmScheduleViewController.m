@@ -34,12 +34,12 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.contentInset = UIEdgeInsetsMake(45, 0, 200, 0);
+    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 100, 0);
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
     [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
     
     //alpha mask
-    [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.1]];
+    [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.15]];
     
     //header view
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];

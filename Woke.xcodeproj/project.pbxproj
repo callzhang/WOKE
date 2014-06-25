@@ -49,6 +49,8 @@
 		0EABB2A71956884300C45788 /* EWMyFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABB2A51956884300C45788 /* EWMyFriendsViewController.m */; };
 		0EABB2A81956884300C45788 /* EWMyFriendsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EABB2A61956884300C45788 /* EWMyFriendsViewController.xib */; };
 		0EABB2AB195693C600C45788 /* UINavigationController+Blur.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABB2AA195693C600C45788 /* UINavigationController+Blur.m */; };
+		0EAD6FB7195A62EC00DDB052 /* EWFriendsTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD6FB5195A62EC00DDB052 /* EWFriendsTableCell.m */; };
+		0EAD6FB8195A62EC00DDB052 /* EWFriendsTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */; };
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
 		185B5274190D1D82006D6FB9 /* UIView+Sreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
@@ -239,6 +241,9 @@
 		0EABB2A61956884300C45788 /* EWMyFriendsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMyFriendsViewController.xib; sourceTree = "<group>"; };
 		0EABB2A9195693C600C45788 /* UINavigationController+Blur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+Blur.h"; sourceTree = "<group>"; };
 		0EABB2AA195693C600C45788 /* UINavigationController+Blur.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+Blur.m"; sourceTree = "<group>"; };
+		0EAD6FB4195A62EC00DDB052 /* EWFriendsTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFriendsTableCell.h; sourceTree = "<group>"; };
+		0EAD6FB5195A62EC00DDB052 /* EWFriendsTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFriendsTableCell.m; sourceTree = "<group>"; };
+		0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWFriendsTableCell.xib; sourceTree = "<group>"; };
 		185B5272190D1D82006D6FB9 /* UIView+Sreenshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Sreenshot.h"; sourceTree = "<group>"; };
 		185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Sreenshot.m"; sourceTree = "<group>"; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -920,6 +925,9 @@
 				9BF297DF1912F720008C136E /* EWWeekDayPickerTableViewController.m */,
 				0EABA9DE195939A1002F9C63 /* EWFriendsCollectionCell.h */,
 				0EABA9DF195939A1002F9C63 /* EWFriendsCollectionCell.m */,
+				0EAD6FB4195A62EC00DDB052 /* EWFriendsTableCell.h */,
+				0EAD6FB5195A62EC00DDB052 /* EWFriendsTableCell.m */,
+				0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */,
 			);
 			path = "UI Components";
 			sourceTree = "<group>";
@@ -1128,6 +1136,7 @@
 				561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */,
 				0E590FF0194DF35B000AD7C4 /* Lato-Hairline.ttf in Resources */,
 				ABF3FB611908B72F0017D2EF /* 12.jpg in Resources */,
+				0EAD6FB8195A62EC00DDB052 /* EWFriendsTableCell.xib in Resources */,
 				9BF297B71912F713008C136E /* EWLogInViewController.xib in Resources */,
 				ABF3FB551908B72F0017D2EF /* 0.jpg in Resources */,
 				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
@@ -1324,6 +1333,7 @@
 				9BF297E81912F720008C136E /* EWMediaViewCell.m in Sources */,
 				9BF297B81912F713008C136E /* EWNotificationViewController.m in Sources */,
 				AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */,
+				0EAD6FB7195A62EC00DDB052 /* EWFriendsTableCell.m in Sources */,
 				0EABA9E0195939A1002F9C63 /* EWFriendsCollectionCell.m in Sources */,
 				0EABB2A71956884300C45788 /* EWMyFriendsViewController.m in Sources */,
 				9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */,
@@ -1463,7 +1473,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "0F831D19-4220-4E3C-B983-2B66824827BB";
+				PROVISIONING_PROFILE = "3CB95FF7-3C90-4D50-8C37-87B0F6397529";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};

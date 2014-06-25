@@ -315,6 +315,7 @@
         
         //save me
         me = person;
+        me.score = 100;
         
         //Broadcast user login event
         NSLog(@"[c] Broadcast Person login notification");

@@ -123,6 +123,7 @@
             NSLog(@"%s: Alarm(%ld) and Task(%ld)", __func__, (long)alarms.count, (long)tasks.count);
             alarms = nil;
             tasks = nil;
+            
         }else{
             //alarmPages
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
@@ -254,9 +255,9 @@
         
         self.addBtn.hidden = YES;
         [self.alarmloadingIndicator startAnimating];
-        alarms = [[EWAlarmManager sharedInstance] scheduleAlarm];
+        alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];
         tasks = [[EWTaskStore sharedInstance] scheduleTasks];
-        
+        [self.alarmloadingIndicator stopAnimating];
         return;
     }else{
         //start loading alarm
@@ -411,7 +412,7 @@
 
         if ([keyPath isEqualToString:@"tasks"]){
             if (me.tasks.count == 7 || me.tasks.count == 0){
-                NSLog(@"Main view observed tasks changed");
+                NSLog(@"Main view observed tasks changed to %d", me.tasks.count);
                 [alarmPagetimer invalidate];
                 alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
             }
@@ -653,10 +654,10 @@
     UIImage *profile = person.profilePic;
     cell.profilePic.image = profile;
     //UI
-    cell.alpha = 0.0;
-    [UIView animateWithDuration:0.4 animations:^{
-        cell.alpha = 1;
-    }];
+//    cell.alpha = 0.0;
+//    [UIView animateWithDuration:0.4 animations:^{
+//        cell.alpha = 1;
+//    }];
     
     //text
     if (!isMe) cell.initial.alpha = 0;

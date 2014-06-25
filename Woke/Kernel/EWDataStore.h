@@ -69,26 +69,26 @@
 
 
 #pragma mark - data
-/**
- get Amazon S3 storage data with key from StackMob backend
- */
-+ (NSData *)getRemoteDataWithKey:(NSString *)key;
-
-/**
- *Get local cached file path for url. If not cached, dispatch a download URLSession
- @param key: the normal string url, not MD5 value
- */
-+ (NSString *)localPathForKey:(NSString *)key;
-
-/**
- Update the data for key. Create object if not cached.
- */
-+ (void)updateCacheForKey:(NSString *)key withData:(NSData *)data;
-
-//check cache data
-+ (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key;
-//deletion
-+ (void)deleteCacheForKey:(NSString *)key;
+///**
+// get Amazon S3 storage data with key from StackMob backend
+// */
+//+ (NSData *)getRemoteDataWithKey:(NSString *)key;
+//
+///**
+// *Get local cached file path for url. If not cached, dispatch a download URLSession
+// @param key: the normal string url, not MD5 value
+// */
+//+ (NSString *)localPathForKey:(NSString *)key;
+//
+///**
+// Update the data for key. Create object if not cached.
+// */
+//+ (void)updateCacheForKey:(NSString *)key withData:(NSData *)data;
+//
+////check cache data
+//+ (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key;
+////deletion
+//+ (void)deleteCacheForKey:(NSString *)key;
 
 /**
  * Register the server update process, which will run periodically to sync with server data
