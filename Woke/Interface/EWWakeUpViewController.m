@@ -298,6 +298,7 @@
     
     //set image
     cell.profilePic.imageView.image = mi.author.profilePic;
+    [EWUIUtil applyHexagonMaskForView:cell.profilePic];
     
     //control
     cell.controller = self;
@@ -385,33 +386,34 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     
     
-//    //header
-//    //NSInteger tableOffsetY = scrollView.contentOffset.y;
-//    CGRect newFrame = headerFrame;
-//    newFrame.origin.y = MAX(headerFrame.origin.y - (120 + scrollView.contentOffset.y), -70);
-//    header.frame = newFrame;
-//    //font size
-//    CGRect f = self.timer.frame;
-//    CGPoint c = self.timer.center;
-//    f.size.width = 180 + newFrame.origin.y;
-//    self.timer.frame = f;
-//    self.timer.center = c;
-//    
-//    
-//    
-//    //footer
-//    CGRect footerFrame = postWakeUpVCBtn.frame;
-//    if (scrollView.contentSize.height < 1) {
-//        //init phrase
-//        footerFrame.origin.y = self.view.frame.size.height - footerFrame.size.height;
-//    }else{
-//        NSInteger footerOffset = scrollView.contentSize.height + scrollView.contentInset.top - (scrollView.contentOffset.y + scrollView.frame.size.height);
-//        footerFrame.origin.y = MAX(scrollView.frame.size.height + footerOffset, self.view.frame.size.height - footerFrame.size.height) ;
-//    }
-//    
-//    postWakeUpVCBtn.frame = footerFrame;
-//    
+    //header
+    //NSInteger tableOffsetY = scrollView.contentOffset.y;
+    CGRect newFrame = headerFrame;
+    newFrame.origin.y = MAX(headerFrame.origin.y - (120 + scrollView.contentOffset.y), -70);
+    header.frame = newFrame;
+    //font size
+    CGRect f = self.timer.frame;
+    CGPoint c = self.timer.center;
+    f.size.width = 180 + newFrame.origin.y;
+    self.timer.frame = f;
+    self.timer.center = c;
+    
+    
+    
+    //footer
+    CGRect footerFrame = postWakeUpVCBtn.frame;
+    if (scrollView.contentSize.height < 1) {
+        //init phrase
+        footerFrame.origin.y = self.view.frame.size.height - footerFrame.size.height;
+    }else{
+        NSInteger footerOffset = scrollView.contentSize.height + scrollView.contentInset.top - (scrollView.contentOffset.y + scrollView.frame.size.height);
+        footerFrame.origin.y = MAX(scrollView.frame.size.height + footerOffset, self.view.frame.size.height - footerFrame.size.height) ;
+    }
+    
+    postWakeUpVCBtn.frame = footerFrame;
+    
 }
+
 
 #pragma mark - Handle player events
 - (void)startPlayCells{

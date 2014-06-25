@@ -58,9 +58,6 @@
     if ([Url isFileURL] || ![Url.absoluteString hasPrefix:@"http"]) {
         NSLog(@"Url is local file");
         return;
-    }else if ([EWDataStore localPathForKey:Url.absoluteString]){
-        //NSLog(@"Url already cached");
-        return;
     }
     
     NSURLRequest *request = [NSURLRequest requestWithURL:Url];
@@ -83,15 +80,9 @@
 - (void)downloadMedia:(EWMediaItem *)media{
     //assume only audio to be downloaded
     NSString *path = media.audioKey;
-    if (!path || path.length>500) return;
     
     //check if task has already exsited
     if ([downloadQueue objectForKey:path]) {
-        return;
-        
-    }else if([EWDataStore localPathForKey:path]){
-        //already cached
-        NSLog(@"Media already cached");
         return;
         
     }else{
@@ -153,7 +144,7 @@
     NSString *str = request.URL.absoluteString;
     
     //save
-    [EWDataStore updateCacheForKey:str withData:data];
+    //[EWDataStore updateCacheForKey:str withData:data];
     NSLog(@"Saved FTW cache for %@", str);
     
     //completion task

@@ -21,6 +21,9 @@
 @synthesize audioKey;
 
 - (NSString *)audioKey{
+    if (audioKey) {
+        return audioKey;
+    }
     NSString *path = [NSTemporaryDirectory() stringByAppendingString:@"audioTempFile"];
     [self.audio writeToFile:path atomically:YES];
     return path;
