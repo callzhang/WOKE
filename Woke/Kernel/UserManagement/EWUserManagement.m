@@ -62,12 +62,13 @@
                 }else if([error.userInfo[FBErrorParsedJSONResponseKey][@"body"][@"error"][@"type"] isEqualToString:@"OAuthException"]) {
                     // Since the request failed, we can check if it was due to an invalid session
                     EWAlert(@"The facebook session was expired");
-                    //[EWUserManagement showLoginPanel];
+                    [EWUserManagement showLoginPanel];
                     
                 }else{
                     EWAlert(@"Failed to login Facebook");
                     NSLog(@"Failed to login facebook, error: %@", error.description);
                     //[EWUserManagement showLoginPanel];
+                    [self handleFacebookException:error];
                     
                 }
             }];
@@ -105,26 +106,32 @@
     
     //background refresh
     if (completionBlock) {
-        NSLog(@"[d] Run completion block.");
-        completionBlock();
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"[d] Run completion block.");
+            completionBlock();
+        });
+        
     }
 
-    //fetch or create
-    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+    //fetch or create, delay 0.1s so the login view can animate
+    __block EWPerson *person;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+    });
+    
     
     //update person
     //change to update in sync mode to avoid data overriding while update value from server
     [person refreshInBackgroundWithCompletion:^{
         //[person refreshRelatedInBackground];
+        
+        //Broadcast user login event
+        NSLog(@"[c] Broadcast Person login notification");
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
     }];
-    
     
     //save me
     me = person;
-    
-    //Broadcast user login event
-    NSLog(@"[c] Broadcast Person login notification");
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
 
 }
 
@@ -152,10 +159,7 @@
     [PFUser logInWithUsernameInBackground:username password:password block:^(PFUser *user, NSError *error) {
                                        
         if (user) {
-//            EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
-//            [person updateValueAndRelationFromParseObject:user];
-//            me = person;
-            [EWUserManagement loginWithServerUser:user withCompletionBlock:NULL];
+            [EWUserManagement loginWithServerUser:user withCompletionBlock:block];
             
         }else{
             NSLog(@"Creating new user: %@", error.description);
@@ -293,7 +297,7 @@
     //login with facebook
     [PFFacebookUtils logInWithPermissions:[EWUserManagement facebookPermissions] block:^(PFUser *user, NSError *error) {
         if (error) {
-            NSLog(@"Failed to link user: %@", error.description);
+            [EWUserManagement handleFacebookException:error];
             return;
         }
         
@@ -306,7 +310,7 @@
             block();
         }
         
-        //fetch or create user
+        //fetch or create user in background
         EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
         
         //save me
@@ -348,18 +352,12 @@
             NSLog(@"Failed to get facebook info: %@", error.description);
             return ;
         }
-        //get fb info
-        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
-            if (error) {
-                NSLog(@"Failed to load facebook data: %@", error.description);
-                return;
-            }
-            //update to current user
-            [EWUserManagement updateUserWithFBData:data];
-            
-            //alert
-            EWAlert(@"Facebook account linked!");
-        }];
+        
+        //alert
+        EWAlert(@"Facebook account linked!");
+        
+        //update current user with fb info
+        [EWUserManagement updateFacebookInfo];
     }];
 }
 
