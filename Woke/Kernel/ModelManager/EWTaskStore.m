@@ -18,12 +18,6 @@
 
 #define nextTaskTimeKey                 @"next_task_time"
 
-@interface EWTaskStore(){
-    BOOL isCheckingTask;
-}
-
-@end
-
 @implementation EWTaskStore
 
 +(EWTaskStore *)sharedInstance{
@@ -56,7 +50,7 @@
 - (id)init{
     self = [super init];
     if (self) {
-        //
+        self.isCheckingTask = NO;
     }
     return self;
 }
@@ -72,30 +66,6 @@
     NSMutableArray *tasks = [[person.tasks allObjects] mutableCopy];
     
     
-    //update if necessary(count
-
-    if (tasks.count != 7 * nWeeksToScheduleTask && !isCheckingTask && (person.isMe || person.isOutDated)) {
-        isCheckingTask = YES;
-        NSLog(@"The task count for person %@ is %lu, checking from server!", p.name, (unsigned long)tasks.count);
-        //this approach is a last resort to fetch task by owner
-        PFQuery *taskQuery= [PFQuery queryWithClassName:@"EWTaskItem"];
-        [taskQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
-        [taskQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            BOOL newTask = NO;
-            for (PFObject *t in objects) {
-                EWTaskItem *task = (EWTaskItem *)t.managedObject;
-                task.owner = me;
-                if (![tasks containsObject:task]) {
-                    newTask = YES;
-                    NSLog(@"New task found from server: %@(%@)", task.time.weekday, t.objectId);
-                }
-            }
-            if (newTask) {
-                [EWDataStore save];
-            }
-            isCheckingTask = NO;
-        }];
-    }
     
     //filter
     //[tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time >= %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]]];
@@ -200,7 +170,7 @@
 #pragma mark - SCHEDULE
 //schedule new task in the future
 - (NSArray *)scheduleTasks{
-    if (isCheckingTask) {
+    if (self.isCheckingTask) {
         NSLog(@"@@@ It is already checking task, skip!");
         return nil;
     }
@@ -212,20 +182,42 @@
         NSLog(@"Something wrong with my alarms, get nil");
         return nil;
     }
-    if (alarms.count == 0 && tasks.count == 0) {
-        NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
-        return nil;
-    }
     
     //start check
     NSLog(@"Start check/scheduling tasks");
-    isCheckingTask = YES;
+    self.isCheckingTask = YES;
     
+    BOOL newTask = NO;
+    
+    //Check task from server if not desired number
+    if (tasks.count != 7 * nWeeksToScheduleTask) {
+        //cannot check my task from server, which will cause checking / schedule cycle
+        NSLog(@"My task count is %lu, checking from server!", (unsigned long)tasks.count);
+        //this approach is a last resort to fetch task by owner
+        PFQuery *taskQuery= [PFQuery queryWithClassName:@"EWTaskItem"];
+        [taskQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
+        NSArray *objects = [taskQuery findObjects];
+        for (PFObject *t in objects) {
+            EWTaskItem *task = (EWTaskItem *)t.managedObject;
+            task.owner = me;
+            if (![tasks containsObject:task]) {
+                [tasks addObject:task];
+                newTask = YES;
+                NSLog(@"New task found from server: %@(%@)", task.time.weekday, t.objectId);
+            }
+        }
+    }
+
+    if (alarms.count == 0 && tasks.count == 0) {
+        NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
+        self.isCheckingTask = NO;
+        return nil;
+    }
+
     //FIRST check past tasks
     BOOL hasOutDatedTask = [self checkPastTasks:tasks];
     
     //for each alarm, find matching task, or create new task
-    BOOL newTaskNotify = NO;
     NSMutableArray *goodTasks = [NSMutableArray new];
     
     for (EWAlarmItem *a in alarms){//loop through alarms
@@ -241,6 +233,10 @@
                     //find the task, move to good task
                     [goodTasks addObject:t];
                     [tasks removeObject:t];
+                    if (!t.alarm) {
+                        t.alarm = a;
+                        newTask = YES;
+                    }
                     taskMatched = YES;
                     //break here to avoid creating new task
                     break;
@@ -259,7 +255,7 @@
                 //localNotif
                 [self scheduleNotificationForTask:t];
                 //prepare to broadcast
-                newTaskNotify = YES;
+                newTask = YES;
             }
         }
     }
@@ -273,7 +269,7 @@
     }
     
     //save
-    if (hasOutDatedTask || newTaskNotify) {
+    if (hasOutDatedTask || newTask) {
         
         [self updateNextTaskTime];
         [EWDataStore save];
@@ -286,7 +282,7 @@
     //last checked
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
     
-    isCheckingTask = NO;
+    self.isCheckingTask = NO;
     return goodTasks;
 }
 
@@ -297,10 +293,6 @@
     NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingSeconds:-kMaxWakeTime]];
     NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
     for (EWTaskItem *t in outDatedTasks) {
-        if (![t.owner.username isEqualToString:me.username]) {
-            NSLog(@"@@@ Passed in tasks are not for current user");
-            return NO;
-        }
         t.alarm = nil;
         t.owner = nil;
         t.pastOwner = [EWPersonStore me];
@@ -445,13 +437,21 @@
 }
 
 - (void)alarmRemoved:(NSNotification *)notif{
-    EWAlarmItem *alarm = notif.object;
-    
-    for (EWTaskItem *t in alarm.tasks) {
-        
-        NSLog(@"Delete task on %@ due to alarm deleted", t.time.weekday);
-        [self removeTask:t];
+    id objects = notif.object;
+    NSArray *alarms;
+    if ([objects isKindOfClass:[NSArray class]]) {
+        alarms = objects;
+    }else if ([objects isKindOfClass:[EWAlarmItem class]]){
+        alarms = @[objects];
     }
+    for (EWAlarmItem *alarm in alarms) {
+        while (alarm.tasks.count > 0) {
+            EWTaskItem *t = alarm.tasks.anyObject;
+            NSLog(@"Delete task on %@ due to alarm deleted", t.time.weekday);
+            [self removeTask:t];
+        }
+    }
+    
     [EWDataStore save];
 }
 
@@ -482,6 +482,7 @@
 
 #pragma mark - DELETE
 - (void)removeTask:(EWTaskItem *)task{
+    NSLog(@"Task on %@ deleted", task.time.date2detailDateString);
     [self cancelNotificationForTask:task];
     [[EWDataStore currentContext] deleteObject:task];
     [EWDataStore save];

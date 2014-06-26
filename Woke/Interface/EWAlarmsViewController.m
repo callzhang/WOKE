@@ -49,7 +49,6 @@
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
     NSTimer *indicatorHideTimer;
-    UICollectionViewCell *cell0;
 }
 
 @property (nonatomic, retain) NSFetchedResultsController *fetchController;
@@ -83,6 +82,10 @@
 - (void)refreshView{
     //add observer to myTasks
     [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+    //listen to schedule signal
+    [[EWAlarmManager sharedInstance] addObserver:self forKeyPath:@"isSchedulingAlarm" options:NSKeyValueObservingOptionNew context:nil];
+    [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingAlarm" options:NSKeyValueObservingOptionNew context:nil];
+    
     //update data and view
     [self initData];
     [self reloadAlarmPage];
@@ -123,6 +126,7 @@
             NSLog(@"%s: Alarm(%ld) and Task(%ld)", __func__, (long)alarms.count, (long)tasks.count);
             alarms = nil;
             tasks = nil;
+            
         }else{
             //alarmPages
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
@@ -229,12 +233,11 @@
     alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskStore myTasks];
     
+    //init state
+    [self.alarmloadingIndicator startAnimating];
+    self.addBtn.hidden = YES;
+    
     if (alarms.count == 0 || tasks.count == 0) {
-        //empty task and alarm, stop
-        
-        self.addBtn.hidden = NO;
-        self.addBtn.backgroundColor = [UIColor clearColor];
-        [self.alarmloadingIndicator stopAnimating];
         //remove all page
         for (EWAlarmPageView *view in _scrollView.subviews) {
             if ([view isKindOfClass:[EWAlarmPageView class]]) {
@@ -253,10 +256,9 @@
         //task or alarm incomplete, schedule
         
         self.addBtn.hidden = YES;
-        [self.alarmloadingIndicator startAnimating];
-        alarms = [[EWAlarmManager sharedInstance] scheduleAlarm];
-        tasks = [[EWTaskStore sharedInstance] scheduleTasks];
         
+        alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];
+        tasks = [[EWTaskStore sharedInstance] scheduleTasks];
         return;
     }else{
         //start loading alarm
@@ -408,10 +410,10 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     static NSTimer *alarmPagetimer;
     if ([object isKindOfClass:[EWPerson class]]) {
-
+        
         if ([keyPath isEqualToString:@"tasks"]){
             if (me.tasks.count == 7 || me.tasks.count == 0){
-                NSLog(@"Main view observed tasks changed");
+                NSLog(@"Main view observed tasks changed to %d", me.tasks.count);
                 [alarmPagetimer invalidate];
                 alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
             }
@@ -420,6 +422,15 @@
             NSLog(@"Main view observed alarms changed");
         }else{
             NSLog(@"Main view observed %@ changed %@", keyPath, change);
+        }
+    }else if ([object isKindOfClass:[EWTaskStore class]] || [object isKindOfClass:[EWAlarmManager class]]){
+        if ([EWAlarmManager sharedInstance].isSchedulingAlarm || [EWTaskStore sharedInstance].isCheckingTask) {
+            NSLog(@"Detected is scheduling");
+            [self.alarmloadingIndicator startAnimating];
+            self.addBtn.hidden = YES;
+        }else{
+            [self.alarmloadingIndicator stopAnimating];
+            self.addBtn.hidden = NO;
         }
     }else{
         NSLog(@"@@@ Unhandled observation: %@", [object class]);
@@ -461,9 +472,7 @@
         static float const maxY = 190;
         
         CGPoint frameCenter = _collectionView.center;
-        if (!cell0) {
-            cell0 = [self collectionView:_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-        }
+        UICollectionViewCell *cell0 = [self collectionView:_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
         CGPoint center = [_collectionView convertPoint:cell0.center toView:self.view];
         float X = center.x - frameCenter.x;
         float Y = center.y - frameCenter.y;
@@ -653,10 +662,10 @@
     UIImage *profile = person.profilePic;
     cell.profilePic.image = profile;
     //UI
-    cell.alpha = 0.0;
-    [UIView animateWithDuration:0.4 animations:^{
-        cell.alpha = 1;
-    }];
+//    cell.alpha = 0.0;
+//    [UIView animateWithDuration:0.4 animations:^{
+//        cell.alpha = 1;
+//    }];
     
     //text
     if (!isMe) cell.initial.alpha = 0;

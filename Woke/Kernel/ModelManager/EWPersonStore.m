@@ -77,10 +77,6 @@ EWPerson *me;
     }else{
         NSLog(@"Current user %@ data has FETCHED", person.name);
     }
-    
-    if (person.isMe) {
-        person.score = 100;
-    }
 
     return person;
 }
@@ -141,8 +137,8 @@ EWPerson *me;
 //Danger Zone
 - (void)purgeUserData{
     NSLog(@"Cleaning all cache and server data");
-    //[context deleteObject:me];
-    //[context saveAndWait:NULL];
+    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+
     //Alarm
     [EWAlarmManager.sharedInstance deleteAllAlarms];
     //task
@@ -152,12 +148,11 @@ EWPerson *me;
     //check
     [EWTaskStore.sharedInstance checkScheduledNotifications];
     
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+    
     [EWDataStore save];
     //person
     //me = nil;
-    
-    //cache clear
-    //[[EWDataStore sharedInstance].coreDataStore resetCache];
     
     //alert
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];

@@ -74,28 +74,6 @@
         }
     };
     
-    if (alarms.count != 7 && !self.isSchedulingAlarm && (person.isMe || person.isOutDated)) {
-        self.isSchedulingAlarm = YES;
-        NSLog(@"Alarm for me is less than 7, fetch from server!");
-        PFQuery *alarmQuery = [PFQuery queryWithClassName:@"EWAlarmItem"];
-        [alarmQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
-        [alarmQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            BOOL newAlarm = NO;
-            for (PFObject *a in objects) {
-                EWAlarmItem *alarm = (EWAlarmItem *)a.managedObject;
-                alarm.owner = person;
-                if (![alarms containsObject:alarm]) {
-                    newAlarm = YES;
-                    NSLog(@"Alarm found from server %@", alarm.time.weekday);
-                }
-            }
-            if (newAlarm) {
-                [EWDataStore save];
-            }
-            self.isSchedulingAlarm = NO;
-        }];
-        
-    }
     
     //sort
     NSArray *sortedAlarms = [alarms sortedArrayUsingComparator:alarmComparator];
@@ -146,16 +124,39 @@
         return nil;
     }
     
-    BOOL hasChange = NO;
     
     //get alarms
     NSMutableArray *alarms = [[self alarmsForUser:[EWPersonStore me]] mutableCopy];
+    
+    
+    BOOL hasChange = NO;
+    self.isSchedulingAlarm = YES;
+    //check from server for alarm with owner but lost relation
+    if (alarms.count != 7) {
+        //cannot check alarm for myself, which will cause a checking/schedule cycle
+        
+        NSLog(@"Alarm for me is less than 7, fetch from server!");
+        PFQuery *alarmQuery = [PFQuery queryWithClassName:@"EWAlarmItem"];
+        [alarmQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
+        NSArray *objects = [alarmQuery findObjects];
+        
+        for (PFObject *a in objects) {
+            EWAlarmItem *alarm = (EWAlarmItem *)a.managedObject;
+            alarm.owner = me;
+            if (![alarms containsObject:alarm]) {
+                [alarms addObject:alarm];
+                hasChange = YES;
+                NSLog(@"Alarm found from server %@", alarm.time.weekday);
+            }
+        }
+    }
     
     //check if need to check
     if (alarms.count==0) {
         if ([EWTaskStore myTasks].count == 0 && !self.alarmNeedToSetup) {
             //initial state task==0, need another indicator to break the lock
             NSLog(@"Skip check alarm due to 0 tasks exists");
+            self.isSchedulingAlarm = NO;
             return nil;
         }
     }
@@ -239,16 +240,6 @@
         //notification
         NSLog(@"Saving new alarms");
         [EWDataStore save];
-//        
-//        
-//        //check
-//        NSArray *myAlarms = [EWAlarmManager myAlarms];
-//        NSInteger retry = 3;
-//        while (myAlarms.count != newAlarms.count && retry >0) {
-//            myAlarms = [EWAlarmManager myAlarms];
-//            [NSThread sleepForTimeInterval:0.1];
-//            retry--;
-//        }
         
         //notification
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -257,6 +248,7 @@
         
     }
     
+    self.isSchedulingAlarm = NO;
     self.alarmNeedToSetup = NO;
     return newAlarms;
 }
@@ -274,11 +266,11 @@
     NSArray *alarms = [self alarmsForUser:[EWPersonStore me]];
     
     //notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarms userInfo:@{@"alarms": alarms}];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarms userInfo:@{@"alarms": alarms}];
     
     //delete
     for (EWAlarmItem *alarm in alarms) {
-        [[EWDataStore currentContext] deleteObject:alarm];
+        [self removeAlarm:alarm];
     }
     
     //save

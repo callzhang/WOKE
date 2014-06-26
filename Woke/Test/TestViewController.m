@@ -11,7 +11,6 @@
 #import "EWAppDelegate.h"
 #import "EWServer.h"
 
-// 业务界面
 #import "EWWakeUpViewController.h"
 #import "TestShakeViewController.h"
 #import "TestSocailSDKViewController.h"
@@ -94,7 +93,7 @@
     //title view
     if (self.navigationController == nil) {
         //header view
-        UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(20, 30, 18, 30)];
+        UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(30, 30, 18, 30)];
         [backBtn setImage:[UIImage imageNamed:@"BackButton"] forState:UIControlStateNormal];
         [backBtn addTarget:self action:@selector(OnBack) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:backBtn];

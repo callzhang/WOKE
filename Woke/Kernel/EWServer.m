@@ -353,4 +353,29 @@
     [push sendPushInBackgroundWithBlock:block];
 }
 
+
+#pragma mark - PUSH
+
++ (void)registerAPNS{
+    //push
+#if TARGET_IPHONE_SIMULATOR
+    //Code specific to simulator
+#else
+    //pushClient = [[SMPushClient alloc] initWithAPIVersion:@"0" publicKey:kStackMobKeyDevelopment privateKey:kStackMobKeyDevelopmentPrivate];
+    //register everytime in case for events like phone replacement
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeNewsstandContentAvailability | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
+#endif
+}
+
++ (void)registerPushNotificationWithToken:(NSData *)deviceToken{
+    
+    //Parse: Store the deviceToken in the current Installation and save it to Parse.
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+    [currentInstallation saveInBackground];
+    
+    
+    
+}
+
 @end
