@@ -49,7 +49,6 @@
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
     NSTimer *indicatorHideTimer;
-    //UICollectionViewCell *cell0;
 }
 
 @property (nonatomic, retain) NSFetchedResultsController *fetchController;
@@ -71,7 +70,7 @@
         
         //listen to user log in, and updates its view
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
-        //listen to schedule
+        
         //initial value
         people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"]?:@[];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
@@ -83,6 +82,10 @@
 - (void)refreshView{
     //add observer to myTasks
     [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+    //listen to schedule signal
+    [[EWAlarmManager sharedInstance] addObserver:self forKeyPath:@"isSchedulingAlarm" options:NSKeyValueObservingOptionNew context:nil];
+    [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingAlarm" options:NSKeyValueObservingOptionNew context:nil];
+    
     //update data and view
     [self initData];
     [self reloadAlarmPage];
@@ -230,12 +233,11 @@
     alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskStore myTasks];
     
+    //init state
+    [self.alarmloadingIndicator startAnimating];
+    self.addBtn.hidden = YES;
+    
     if (alarms.count == 0 || tasks.count == 0) {
-        //empty task and alarm, stop
-        
-        self.addBtn.hidden = NO;
-        self.addBtn.backgroundColor = [UIColor clearColor];
-        [self.alarmloadingIndicator stopAnimating];
         //remove all page
         for (EWAlarmPageView *view in _scrollView.subviews) {
             if ([view isKindOfClass:[EWAlarmPageView class]]) {
@@ -254,10 +256,9 @@
         //task or alarm incomplete, schedule
         
         self.addBtn.hidden = YES;
-        [self.alarmloadingIndicator startAnimating];
+        
         alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];
         tasks = [[EWTaskStore sharedInstance] scheduleTasks];
-        [self.alarmloadingIndicator stopAnimating];
         return;
     }else{
         //start loading alarm
@@ -409,7 +410,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     static NSTimer *alarmPagetimer;
     if ([object isKindOfClass:[EWPerson class]]) {
-
+        
         if ([keyPath isEqualToString:@"tasks"]){
             if (me.tasks.count == 7 || me.tasks.count == 0){
                 NSLog(@"Main view observed tasks changed to %d", me.tasks.count);
@@ -421,6 +422,15 @@
             NSLog(@"Main view observed alarms changed");
         }else{
             NSLog(@"Main view observed %@ changed %@", keyPath, change);
+        }
+    }else if ([object isKindOfClass:[EWTaskStore class]] || [object isKindOfClass:[EWAlarmManager class]]){
+        if ([EWAlarmManager sharedInstance].isSchedulingAlarm || [EWTaskStore sharedInstance].isCheckingTask) {
+            NSLog(@"Detected is scheduling");
+            [self.alarmloadingIndicator startAnimating];
+            self.addBtn.hidden = YES;
+        }else{
+            [self.alarmloadingIndicator stopAnimating];
+            self.addBtn.hidden = NO;
         }
     }else{
         NSLog(@"@@@ Unhandled observation: %@", [object class]);

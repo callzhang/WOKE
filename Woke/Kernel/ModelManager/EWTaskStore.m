@@ -18,12 +18,6 @@
 
 #define nextTaskTimeKey                 @"next_task_time"
 
-@interface EWTaskStore(){
-    BOOL isCheckingTask;
-}
-
-@end
-
 @implementation EWTaskStore
 
 +(EWTaskStore *)sharedInstance{
@@ -56,7 +50,7 @@
 - (id)init{
     self = [super init];
     if (self) {
-        //
+        self.isCheckingTask = NO;
     }
     return self;
 }
@@ -176,7 +170,7 @@
 #pragma mark - SCHEDULE
 //schedule new task in the future
 - (NSArray *)scheduleTasks{
-    if (isCheckingTask) {
+    if (self.isCheckingTask) {
         NSLog(@"@@@ It is already checking task, skip!");
         return nil;
     }
@@ -191,7 +185,7 @@
     
     //start check
     NSLog(@"Start check/scheduling tasks");
-    isCheckingTask = YES;
+    self.isCheckingTask = YES;
     
     BOOL newTask = NO;
     
@@ -216,7 +210,7 @@
 
     if (alarms.count == 0 && tasks.count == 0) {
         NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
-        isCheckingTask = NO;
+        self.isCheckingTask = NO;
         return nil;
     }
 
@@ -288,7 +282,7 @@
     //last checked
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
     
-    isCheckingTask = NO;
+    self.isCheckingTask = NO;
     return goodTasks;
 }
 
