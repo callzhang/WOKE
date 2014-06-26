@@ -13,8 +13,8 @@
 @class EWAlarmItem, EWPerson, EWTaskItem;
 
 @interface EWAlarmManager : NSObject
-@property (nonatomic) BOOL alarmNeedToSetup;
-@property (nonatomic) BOOL isSchedulingAlarm;
+@property BOOL alarmNeedToSetup;
+@property BOOL isSchedulingAlarm;
 
 // Singleton
 + (EWAlarmManager *)sharedInstance ;
