@@ -477,7 +477,7 @@
     if (![set containsObject:str]) {
         [set addObject:str];
         [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:queue];
-        NSLog(@"MO %@(%@) add to %@", mo.entity.name, mo.objectID, queue);
+        NSLog(@"MO %@(%@) add to %@", mo.entity.name, [mo valueForKey:kParseObjectID], queue);
     }
     
 }
@@ -562,9 +562,9 @@
             [EWDataStore updateParseObjectFromManagedObjectID:ID];
         }
         
-        for (NSManagedObject *managedObject in deletedServerObjects) {
-            NSLog(@"~~~> Deleting PO %@ (%@)", managedObject.entity.serverClassName, [managedObject valueForKey:kParseObjectID]);
-            [EWDataStore deleteParseObject:managedObject.parseObject];
+        for (PFObject *po in deletedServerObjects) {
+            NSLog(@"~~~> Deleting PO %@ (%@)", po.parseClassName, po.objectId);
+            [EWDataStore deleteParseObject:po];
         }
         
     });
