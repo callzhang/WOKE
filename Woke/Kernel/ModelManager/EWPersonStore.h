@@ -22,6 +22,7 @@ extern EWPerson *me;
  Possible people that are relevant, fetched from server(TODO)
  */
 @property (nonatomic, strong) NSArray *everyone;
+@property EWPerson *currentUser;
 + (EWPerson *)me;
 + (EWPersonStore *)sharedInstance;
 - (EWPerson *)createPersonWithParseObject:(PFUser *)user;

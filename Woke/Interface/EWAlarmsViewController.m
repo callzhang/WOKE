@@ -49,6 +49,7 @@
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
     NSTimer *indicatorHideTimer;
+    BOOL taskScheduled;
 }
 
 @property (nonatomic, retain) NSFetchedResultsController *fetchController;
@@ -69,12 +70,14 @@
     if (self) {
         
         //listen to user log in, and updates its view
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
+        [[EWPersonStore sharedInstance] addObserver:self forKeyPath:@"currentUser" options:NSKeyValueObservingOptionNew context:nil];
         
         //initial value
         people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"]?:@[];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
         cellChangeArray = [NSMutableArray new];
+        taskScheduled = NO;
     }
     return self;
 }
@@ -83,8 +86,7 @@
     //add observer to myTasks
     [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
     //listen to schedule signal
-    [[EWAlarmManager sharedInstance] addObserver:self forKeyPath:@"isSchedulingAlarm" options:NSKeyValueObservingOptionNew context:nil];
-    [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingAlarm" options:NSKeyValueObservingOptionNew context:nil];
+    [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
     
     //update data and view
     [self initData];
@@ -113,7 +115,7 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self centerView];
-//    [self refreshView];
+
 }
 
 - (void)initData {
@@ -178,6 +180,9 @@
     blurBar.barStyle = UIBarStyleBlack;
     [self.view insertSubview:blurBar aboveSubview:_collectionView];
     
+    //show loading indicator
+    [self showAlarmPageLoading:YES];
+    
     //load page
     [self reloadAlarmPage];
     
@@ -230,14 +235,13 @@
 
 #pragma mark - ScrollView
 - (void)reloadAlarmPage {
+    //data
     alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskStore myTasks];
     
-    //init state
-    [self.alarmloadingIndicator startAnimating];
-    self.addBtn.hidden = YES;
-    
     if (alarms.count == 0 || tasks.count == 0) {
+        //init state
+        
         //remove all page
         for (EWAlarmPageView *view in _scrollView.subviews) {
             if ([view isKindOfClass:[EWAlarmPageView class]]) {
@@ -254,22 +258,15 @@
         
     }else if(alarms.count<7 || tasks.count < 7* nWeeksToScheduleTask){
         //task or alarm incomplete, schedule
-        
-        self.addBtn.hidden = YES;
+        //init state
         
         alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];
         tasks = [[EWTaskStore sharedInstance] scheduleTasks];
         return;
-    }else{
-        //start loading alarm
-        
-        self.addBtn.hidden = YES;
-        [self.alarmloadingIndicator stopAnimating];
     }
     
-    
-    
-    
+    self.addBtn.hidden = YES;
+    [self.alarmloadingIndicator stopAnimating];
     _pageView.numberOfPages = tasks.count;
     //determine if scroll need flash
     bool flash = NO;
@@ -406,31 +403,55 @@
 }
 
 
+- (void)showAlarmPageLoading:(BOOL)on{
+    if (on) {
+        [self.alarmloadingIndicator startAnimating];
+        self.addBtn.hidden = YES;
+    }else{
+        
+        [self.alarmloadingIndicator stopAnimating];
+        self.addBtn.hidden = NO;
+    }
+}
+
+
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    static NSTimer *alarmPagetimer;
-    if ([object isKindOfClass:[EWPerson class]]) {
+    
+    if ([object isKindOfClass:[EWPersonStore class]]) {
+        if (me) {
+            [self refreshView];
+        }
+    }else if ([object isKindOfClass:[EWPerson class]]) {
         
         if ([keyPath isEqualToString:@"tasks"]){
-            if (me.tasks.count == 7 || me.tasks.count == 0){
+            static NSTimer *alarmPagetimer;
+            NSInteger nTask = me.tasks.count;
+            if (nTask == 7 || nTask == 0){
                 NSLog(@"Main view observed tasks changed to %d", me.tasks.count);
                 [alarmPagetimer invalidate];
-                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
+                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
+                if (nTask == 0){
+                    if (taskScheduled) {
+                        [self showAlarmPageLoading:NO];
+                    }else{
+                        [self showAlarmPageLoading:YES];
+                    }
+                }
+            }else{
+                [self showAlarmPageLoading:YES];
             }
             
-        }else if ([keyPath isEqualToString:@"alarms"]){
-            NSLog(@"Main view observed alarms changed");
-        }else{
-            NSLog(@"Main view observed %@ changed %@", keyPath, change);
         }
-    }else if ([object isKindOfClass:[EWTaskStore class]] || [object isKindOfClass:[EWAlarmManager class]]){
-        if ([EWAlarmManager sharedInstance].isSchedulingAlarm || [EWTaskStore sharedInstance].isCheckingTask) {
-            NSLog(@"Detected is scheduling");
-            [self.alarmloadingIndicator startAnimating];
-            self.addBtn.hidden = YES;
+    }else if ([object isKindOfClass:[EWTaskStore class]]){
+        if ([EWTaskStore sharedInstance].isSchedulingTask) {
+            NSLog(@"Detected %@ is scheduling", [object class]);
+            [self showAlarmPageLoading:YES];
+            taskScheduled = NO;
         }else{
-            [self.alarmloadingIndicator stopAnimating];
-            self.addBtn.hidden = NO;
+            NSLog(@"%@ finished scheduling", [object class]);
+            [self showAlarmPageLoading:NO];
+            taskScheduled = YES;
         }
     }else{
         NSLog(@"@@@ Unhandled observation: %@", [object class]);

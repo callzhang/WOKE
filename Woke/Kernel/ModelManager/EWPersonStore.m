@@ -23,7 +23,9 @@
 #define numberOfRelevantUsers           @100 //number of relevant users returned
 #define radiusOfRelevantUsers           @-1  //search radius in kilometers for relevant users
 
+//===========the global shortcut to currentUser ===========
 EWPerson *me;
+//=========================================================
 
 @interface EWPersonStore(){
     NSDate *timeEveryoneChecked;
@@ -33,6 +35,7 @@ EWPerson *me;
 
 @implementation EWPersonStore
 @synthesize everyone;
+@synthesize currentUser;
 
 +(EWPersonStore *)sharedInstance{
     static EWPersonStore *sharedPersonStore_ = nil;
@@ -45,6 +48,25 @@ EWPerson *me;
     });
     
     return sharedPersonStore_;
+}
+
+#pragma mark - ME
+//Current User MO at background thread
++ (EWPerson *)me{
+    if ([NSThread isMainThread]) {
+        return me;
+    }else{
+        return [EWDataStore objectForCurrentContext:me];
+    }
+}
+
+- (EWPerson *)currentUser{
+    return currentUser;
+}
+
+- (void)setCurrentUser:(EWPerson *)user{
+    me = user;
+    currentUser = user;
 }
 
 #pragma mark - CREATE USER
@@ -79,15 +101,6 @@ EWPerson *me;
     }
 
     return person;
-}
-
-//Current User MO at background thread
-+ (EWPerson *)me{
-    if ([NSThread isMainThread]) {
-        return me;
-    }else{
-        return [EWDataStore objectForCurrentContext:me];
-    }
 }
 
 - (NSArray *)everyone{
@@ -167,13 +180,13 @@ EWPerson *me;
 - (void)userLoggedIn:(NSNotification *)notif{
     EWPerson *user = notif.userInfo[kUserLoggedInUserKey];
     if (![me isEqual:user]) {
-        me = user;
+        self.currentUser = user;
     }
     
 }
 
 - (void)userLoggedOut:(NSNotification *)notif{
-    me = nil;
+    self.currentUser = nil;
 }
 
 @end

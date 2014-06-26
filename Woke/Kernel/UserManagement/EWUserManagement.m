@@ -116,8 +116,8 @@
     //fetch or create, delay 0.1s so the login view can animate
     EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
     //save me
-    me = person;
-    me.score = 100;
+    person.score = 100;
+    [EWPersonStore sharedInstance].currentUser = person;
     [EWDataStore saveToLocal:me];
     
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];

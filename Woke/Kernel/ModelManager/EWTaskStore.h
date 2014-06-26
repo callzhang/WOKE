@@ -13,7 +13,7 @@
 #define kTaskUpdateInterval         3600 * 24
 
 @interface EWTaskStore : NSObject <NSKeyedArchiverDelegate>
-@property BOOL isCheckingTask;
+@property BOOL isSchedulingTask;
 
 #pragma mark - Search Task
 /**
