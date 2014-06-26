@@ -49,7 +49,7 @@
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
     NSTimer *indicatorHideTimer;
-    UICollectionViewCell *cell0;
+    //UICollectionViewCell *cell0;
 }
 
 @property (nonatomic, retain) NSFetchedResultsController *fetchController;
@@ -461,9 +461,7 @@
         static float const maxY = 190;
         
         CGPoint frameCenter = _collectionView.center;
-        if (!cell0) {
-            cell0 = [self collectionView:_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-        }
+        UICollectionViewCell *cell0 = [self collectionView:_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
         CGPoint center = [_collectionView convertPoint:cell0.center toView:self.view];
         float X = center.x - frameCenter.x;
         float Y = center.y - frameCenter.y;

@@ -336,9 +336,7 @@
         for (NSManagedObject *MO in deletes) {
             NSLog(@"~~~> MO %@ deleted to context", MO.entity.name);
             PFObject *PO = [MO parseObject];
-            if (PO) {
-                [EWDataStore appendDeleteQueue:PO];
-            }
+            [EWDataStore appendDeleteQueue:PO];
         }
         [context saveToPersistentStoreAndWait];
         
@@ -467,7 +465,7 @@
 
 + (void)appendObject:(NSManagedObject *)mo toQueue:(NSString *)queue{
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:queue];
-    NSMutableSet *set = [[NSMutableSet setWithArray:array] mutableCopy];
+    NSMutableSet *set = [[NSMutableSet setWithArray:array] mutableCopy]?:[NSMutableSet new];
     NSManagedObjectID *objectID = mo.objectID;
     if ([objectID isTemporaryID]) {
         [mo.managedObjectContext obtainPermanentIDsForObjects:@[mo] error:NULL];
@@ -510,7 +508,7 @@
 
 + (void)appendDeleteQueue:(PFObject *)object{
     if (!object) return;
-    NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy];
+    NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy]?:[NSMutableSet new];;
     [dic setObject:object.parseClassName forKey:object.objectId];
     [[NSUserDefaults standardUserDefaults] setObject:[dic copy] forKey:kParseQueueDelete];
 }
@@ -905,6 +903,12 @@
             NSLog(@"*** The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!", self.entity.name);
         }
         
+        NSDate *updatedAt = [self valueForKey:kUpdatedDateKey];
+        if (updatedAt && ![updatedAt isOutDated] && ![self isKindOfClass:[EWPerson class]]) {
+            NSLog(@"MO %@(%@) is not out dated, skip refresh in background", self.entity.name, [self valueForKey:kParseObjectID]);
+            return;
+        }
+        
         NSManagedObjectID *objectID = self.objectID;
         
         //save async
@@ -1026,7 +1030,7 @@
         }else{
             //parse value empty, delete
             if ([self valueForKey:key]) {
-                //NSLog(@"~~~> Delete attribute %@(%@)->%@", self.entity.name, [obj valueForKey:kParseObjectID], obj.name);
+                //NSLog(@"~~~> Delete attribute on MO %@(%@)->%@", self.entity.name, [obj valueForKey:kParseObjectID], obj.name);
                 [self setValue:nil forKey:key];
             }
         }

@@ -306,7 +306,6 @@
     //media -> set type and UI
     cell.media = mi;
     
-    
     return cell;
 }
 

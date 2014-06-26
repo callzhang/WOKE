@@ -488,6 +488,7 @@
 
 #pragma mark - DELETE
 - (void)removeTask:(EWTaskItem *)task{
+    NSLog(@"Task on %@ deleted", task.time.date2detailDateString);
     [self cancelNotificationForTask:task];
     [[EWDataStore currentContext] deleteObject:task];
     [EWDataStore save];
