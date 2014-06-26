@@ -11,7 +11,6 @@
                 <outlet property="seconds" destination="rp3-K9-Plt" id="VN7-HR-Sho"/>
                 <outlet property="tableView" destination="zOY-lf-mXY" id="Jcn-Xa-jP9"/>
                 <outlet property="timer" destination="OzV-SY-syv" id="yEf-bm-7PI"/>
-                <outlet property="title" destination="dZG-uW-imt" id="2EW-OC-wWp"/>
                 <outlet property="view" destination="WP8-VN-sH3" id="bXU-R7-D5o"/>
             </connections>
         </placeholder>
