@@ -35,6 +35,7 @@
     CGRect headerFrame;
     UIButton * postWakeUpVCBtn;
     NSTimer *timerTimer;
+    NSUInteger timePast;
 }
 @property (nonatomic, strong) EWShakeManager *shakeManager;
 @end
@@ -64,6 +65,7 @@
     
     //first time loop
     next = YES;
+    timePast = 1;
     loopCount = kLoopMediaPlayCount;
     
     //origin header frame
@@ -112,7 +114,7 @@
     }
     
     //timer updates
-    timerTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
+    timerTimer = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
     [self updateTimer];
     
     //position the content
@@ -200,7 +202,9 @@
     //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:postWakeUpVCBtn];
-    
+
+    //warnlabel
+    _warnLabel.hidden = YES;
     
 }
 
@@ -614,13 +618,17 @@
     NSDate *t = [NSDate date];
     NSString *ts = [t date2timeShort];
     self.timer.text = ts;
-    
+    NSTimeInterval time = [t timeIntervalSinceDate:self.task.time];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"ss"];
     NSString *string = [formatter stringFromDate:t];
     self.seconds.text = [NSString stringWithFormat:@"%@\"", string];
-    self.warnLabel.text = [[NSString stringWithFormat:@"%@\"", string] stringByAppendingString:@" minutes past your wake-up time"];
-    
+    if (_warnLabel.hidden) {
+        _warnLabel.hidden = NO;
+    }
+//    self.warnLabel.text = [[NSString stringWithFormat:@"%@\"", string] stringByAppendingString:@" minutes past your wake-up time"];
+    timePast++;
+    self.warnLabel.text = [NSString stringWithFormat:@"%ld minutes past your wake-up time", (unsigned long)time/60];
     self.AM.text = [t date2am];
 }
 
