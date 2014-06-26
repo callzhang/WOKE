@@ -384,7 +384,7 @@
 }
 
 
-#pragma mark - Server Related Accessor methods
+#pragma mark - Server Updating Queue methods
 //update queue
 + (NSSet *)updateQueue{
     return [EWDataStore getObjectFromQueue:kParseQueueUpdate];
@@ -508,7 +508,7 @@
 
 + (void)appendDeleteQueue:(PFObject *)object{
     if (!object) return;
-    NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy]?:[NSMutableSet new];;
+    NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy]?:[NSMutableDictionary new];;
     [dic setObject:object.parseClassName forKey:object.objectId];
     [[NSUserDefaults standardUserDefaults] setObject:[dic copy] forKey:kParseQueueDelete];
 }

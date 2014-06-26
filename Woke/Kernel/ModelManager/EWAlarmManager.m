@@ -156,6 +156,7 @@
         if ([EWTaskStore myTasks].count == 0 && !self.alarmNeedToSetup) {
             //initial state task==0, need another indicator to break the lock
             NSLog(@"Skip check alarm due to 0 tasks exists");
+            self.isSchedulingAlarm = NO;
             return nil;
         }
     }

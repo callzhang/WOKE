@@ -71,6 +71,7 @@
         
         //listen to user log in, and updates its view
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
+        //listen to schedule
         //initial value
         people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"]?:@[];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
