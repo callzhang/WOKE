@@ -14,7 +14,7 @@
 
 @interface EWMediaViewCell : UITableViewCell
 //controller
-@property (retain, nonatomic) id controller;
+@property (weak, nonatomic) id controller;
 
 //interface
 @property (weak, nonatomic) IBOutlet UILabel *name;

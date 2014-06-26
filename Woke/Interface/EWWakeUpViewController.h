@@ -19,6 +19,7 @@
 
 @property (nonatomic, weak) EWPerson *person;
 @property (nonatomic, weak) EWTaskItem *task;
+@property (strong, nonatomic) IBOutlet UILabel *warnLabel;
 
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
 //- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;

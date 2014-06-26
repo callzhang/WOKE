@@ -12,10 +12,10 @@
 @interface EWMediaSlider : UISlider{
     UILabel *typeLabel;
 }
-@property (nonatomic) UILabel *timeLabel;
+//@property (nonatomic) UILabel *timeLabel;
 @property (nonatomic) UIImageView *buzzIcon;
 @property (nonatomic) UIImageView *playIndicator;
-
+@property (atomic,assign)CGFloat meidaTime;
 
 - (void)play;
 - (void)stop;

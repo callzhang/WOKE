@@ -68,7 +68,7 @@
         CGRect frame = self.mediaBar.frame;
         AVAudioPlayer *p = [[AVAudioPlayer alloc] initWithData:m.audio error:NULL];
         double len = p.duration;
-        self.mediaBar.timeLabel.text = [NSString stringWithFormat:@"%.1f\"", len];
+//        self.mediaBar.timeLabel.text = [NSString stringWithFormat:@"%.1f\"", len];
         double ratio = len/30/2 + 0.5;
         if (ratio > 1.0) ratio = 1.0;
         frame.size.width = 240.0 * ratio;
@@ -78,16 +78,21 @@
         [self setNeedsDisplay];
     }
     
-    self.profilePic.imageView.image = media.author.profilePic;
-    [EWUIUtil applyHexagonMaskForView:self.profilePic.imageView];
+//    [self.profilePic.imageView setImage:media.author.profilePic];
+//    self.profilePic.imageView.image = media.author.profilePic;
+//    [EWUIUtil applyHexagonMaskForView:self.profilePic.imageView];
     media = m;
 }
 
 
 - (IBAction)profile:(id)sender{
     EWPersonViewController *profileVC = [[EWPersonViewController alloc] initWithPerson:media.author];
-    [self.controller presentViewControllerWithBlurBackground:profileVC];
+//    [self.controller presentViewControllerWithBlurBackground:profileVC];
     
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:profileVC];
+    
+    [self.controller presentViewControllerWithBlurBackground:navController];
+
 //    if([self.superview isKindOfClass:[UITableView class]]){
 //        UITableView *table = (UITableView *)self.superview;
 //        if ([table.delegate isKindOfClass:[EWWakeUpViewController class]]) {

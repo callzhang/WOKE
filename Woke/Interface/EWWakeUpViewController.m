@@ -163,10 +163,16 @@
 
 - (void)initView {
     
+    header.layer.cornerRadius = 10;
+    header.layer.masksToBounds = YES;
+    header.layer.borderWidth = 1;
+    header.layer.borderColor = [UIColor whiteColor].CGColor;
+    
     timer.text = [task.time date2timeShort];
     self.AM.text = [task.time date2am];
     
     //table view
+    tableView_.frame = CGRectMake(0, 150, self.view.frame.size.width, self.view.frame.size.height-230);
     tableView_.dataSource = self;
     tableView_.delegate = self;
     tableView_.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -185,11 +191,11 @@
     
     postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGRect frame =[UIScreen mainScreen].bounds;
-    frame.origin.y = frame.size.height ;
+    frame.origin.y = frame.size.height-80 ;
     frame.size.height = 80;
     postWakeUpVCBtn.frame = frame;
     [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"wake_view_bar"] forState:UIControlStateNormal];
-    [postWakeUpVCBtn setTitle:@"Wake Up!" forState:UIControlStateNormal];
+    [postWakeUpVCBtn setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
     //[postWakeUpVCBtn setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.5]];
     //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
@@ -297,9 +303,10 @@
     cell.date.text = [mi.createdAt date2String];
     
     //set image
-    cell.profilePic.imageView.image = mi.author.profilePic;
+//    cell.profilePic.imageView.image = mi.author.profilePic;
+//    [EWUIUtil applyHexagonMaskForView:cell.profilePic];
+    [cell.profilePic setBackgroundImage:mi.author.profilePic forState:UIControlStateNormal];
     [EWUIUtil applyHexagonMaskForView:cell.profilePic];
-    
     //control
     cell.controller = self;
     
@@ -387,29 +394,32 @@
     
     //header
     //NSInteger tableOffsetY = scrollView.contentOffset.y;
-    CGRect newFrame = headerFrame;
-    newFrame.origin.y = MAX(headerFrame.origin.y - (120 + scrollView.contentOffset.y), -70);
-    header.frame = newFrame;
-    //font size
-    CGRect f = self.timer.frame;
-    CGPoint c = self.timer.center;
-    f.size.width = 180 + newFrame.origin.y;
-    self.timer.frame = f;
-    self.timer.center = c;
     
+    // mq
     
-    
-    //footer
-    CGRect footerFrame = postWakeUpVCBtn.frame;
-    if (scrollView.contentSize.height < 1) {
-        //init phrase
-        footerFrame.origin.y = self.view.frame.size.height - footerFrame.size.height;
-    }else{
-        NSInteger footerOffset = scrollView.contentSize.height + scrollView.contentInset.top - (scrollView.contentOffset.y + scrollView.frame.size.height);
-        footerFrame.origin.y = MAX(scrollView.frame.size.height + footerOffset, self.view.frame.size.height - footerFrame.size.height) ;
-    }
-    
-    postWakeUpVCBtn.frame = footerFrame;
+//    CGRect newFrame = headerFrame;
+//    newFrame.origin.y = MAX(headerFrame.origin.y - (120 + scrollView.contentOffset.y), -70);
+//    header.frame = newFrame;
+//    //font size
+//    CGRect f = self.timer.frame;
+//    CGPoint c = self.timer.center;
+//    f.size.width = 180 + newFrame.origin.y;
+//    self.timer.frame = f;
+//    self.timer.center = c;
+//    
+//    
+//    
+//    //footer
+//    CGRect footerFrame = postWakeUpVCBtn.frame;
+//    if (scrollView.contentSize.height < 1) {
+//        //init phrase
+//        footerFrame.origin.y = self.view.frame.size.height - footerFrame.size.height;
+//    }else{
+//        NSInteger footerOffset = scrollView.contentSize.height + scrollView.contentInset.top - (scrollView.contentOffset.y + scrollView.frame.size.height);
+//        footerFrame.origin.y = MAX(scrollView.frame.size.height + footerOffset, self.view.frame.size.height - footerFrame.size.height) ;
+//    }
+//    
+//    postWakeUpVCBtn.frame = footerFrame;
     
 }
 
@@ -609,6 +619,7 @@
     [formatter setDateFormat:@"ss"];
     NSString *string = [formatter stringFromDate:t];
     self.seconds.text = [NSString stringWithFormat:@"%@\"", string];
+    self.warnLabel.text = [[NSString stringWithFormat:@"%@\"", string] stringByAppendingString:@" minutes past your wake-up time"];
     
     self.AM.text = [t date2am];
 }

@@ -172,7 +172,7 @@
     
     //assign new value
     progressBar = cell.mediaBar;
-    currentTime = progressBar.timeLabel;
+//    currentTime = progressBar.timeLabel;
     media = cell.media;
     currentCell = cell;
 }
