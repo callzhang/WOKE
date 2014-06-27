@@ -21,11 +21,11 @@
 {
     //__weak IBOutlet UIImageView * backGroundImage;
     
-    __weak IBOutlet UILabel * timeLabel;
-    __weak IBOutlet UILabel * unitLabel;
-    __weak IBOutlet UIView *timerView;
+//    __weak IBOutlet UILabel * timeLabel;
+//    __weak IBOutlet UILabel * unitLabel;
+//    __weak IBOutlet UIView *timerView;
     
-    __weak IBOutlet UILabel *markTitle;
+//    __weak IBOutlet UILabel *markTitle;
     __weak IBOutlet UILabel * markALabel;
     __weak IBOutlet UILabel * markBLabel;
     //__weak IBOutlet UIImageView * barImageView;
@@ -127,8 +127,8 @@
     /*此处应将再上一个controller完成赋值，目前只是举个例子*/
     personArray = [[EWPersonStore sharedInstance] everyone];
     
-    timeLabel.text = [self getTime];
-    unitLabel.text = [self getUnit];
+//    timeLabel.text = [self getTime];
+//    unitLabel.text = [self getUnit];
 }
 
 #pragma mark -
