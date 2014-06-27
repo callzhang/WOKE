@@ -621,8 +621,9 @@
         object = [PFObject objectWithClassName:mo.entity.serverClassName];
         [object save:&error];//need to save before working on PFRelation
         if (!error) {
-            NSLog(@"Inserted PO %@", mo.entity.name);
+            NSLog(@"+++> CREATED PO %@(%@)", object.parseClassName, object.objectId);
             [mo setValue:object.objectId forKey:kParseObjectID];
+            [mo setValue:object.updatedAt forKeyPath:kUpdatedDateKey];
         }else{
             [mo updateEventually];
             return;
@@ -814,7 +815,7 @@
             }
             [self setValue:relatedManagedObjects forKey:key];
             
-            //delete from the relation to MO not found on server
+            //DELETE from the relation to MO not found on server
             for (NSManagedObject *MOToDelete in managedObjectToDelete) {
                 NSLog(@"~~~> Delete to-many relation on MO %@->%@(%@)", self.entity.name, obj.name, [MOToDelete valueForKey:kParseObjectID]);
                 NSMutableSet *relatedMOs = [self mutableSetValueForKey:key];
@@ -842,12 +843,12 @@
                 if (!inverseMO) return;
                 PFObject *inversePO = inverseMO.parseObject;
                 BOOL inverseRelationExists = YES;
-                if (obj.isToMany) {
+                if (obj.inverseRelationship.isToMany) {
                     PFRelation *reflectRelation = [inversePO valueForKey:obj.inverseRelationship.name];
                     NSArray *reflectPOs = [[reflectRelation query] findObjects];
                     inverseRelationExists = [reflectPOs containsObject:relatedParseObject];
                 }else{
-                    PFObject *reflectPO = [inversePO valueForKey:obj.inverseRelationship.entity.name];
+                    PFObject *reflectPO = [inversePO valueForKey:obj.inverseRelationship.name];
                     inverseRelationExists = reflectPO ? YES:NO;
                 }
                 
@@ -856,7 +857,7 @@
                     [self setValue:nil forKey:key];
                     NSLog(@"~~~> Delete to-one relation on MO %@->%@(%@)", self.entity.name, obj.name, [inverseMO valueForKey:kParseObjectID]);
                 }else{
-                    NSLog(@"*** Something wrong, the inverse relation %@ <-> %@ deoesn't agree", self.entity.name, obj.entity.name);
+                    NSLog(@"*** Something wrong, the inverse relation %@(%@) <-> %@(%@) deoesn't agree", self.entity.name, [self valueForKey:kParseObjectID], inverseMO.entity.name, [inverseMO valueForKey:kParseObjectID]);
                 }
             }
         }
@@ -1119,7 +1120,8 @@
     NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
     if (updateAt && [self.updatedAt timeIntervalSinceDate:updateAt] > 60) {
         NSLog(@"@@@ Trying to update MO %@, but PO is newer! Please check the code.(%@ -> %@)", mo.entity.name, updateAt, self.updatedAt);
-        //possible situation: the PO is just created from MO, thus have a newer time.
+        NSParameterAssert(YES);
+        return;
     }
 
     
@@ -1270,18 +1272,21 @@
         }else{
             //empty relationship, delete PO relationship
             if (self[key]) {
-
-                NSLog(@"Empty relationship on MO %@ -> %@, delete PO relation.", managedObject.entity.name, obj.name);
+                NSParameterAssert(!obj.isToMany);
+                NSLog(@"Empty relationship on MO %@(%@) -> %@, delete PO relation.", managedObject.entity.name, self.objectId, obj.name);
                 
                 NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
+                PFObject *inversePO = self[key];
                 if (inverseRelation.isToMany) {
                     //inverse to-many relation need to be updated
-                    PFObject *inversePO = self[key];
                     [inversePO fetchIfNeeded];
                     PFRelation *inversePFRelation = inversePO[inverseRelation.name];
                     [inversePFRelation removeObject:self];
                     [inversePO save];
                     NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
+                }else{
+                    //to-one
+                    [inversePO removeObjectForKey:inverseRelation.name];
                 }
                 
                 [self removeObjectForKey:key];

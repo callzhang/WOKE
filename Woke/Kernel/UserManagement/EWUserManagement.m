@@ -123,9 +123,6 @@
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     
     
-    //update current user with fb info
-    [EWUserManagement updateFacebookInfo];
-    
     if ([PFUser currentUser].isNew) {
         [EWUserManagement handleNewUser];
     }
@@ -133,7 +130,9 @@
     //update person
     //change to update in sync mode to avoid data overriding while update value from server
     [person refreshInBackgroundWithCompletion:^{
-        //[person refreshRelatedInBackground];
+        
+        //update current user with fb info
+        [EWUserManagement updateFacebookInfo];
         
         //Broadcast user login event
         NSLog(@"[c] Broadcast Person login notification");

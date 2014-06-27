@@ -126,11 +126,10 @@
 
 
 - (NSArray *)checkMediaAssets{
-    PFUser *currentUser = [PFUser currentUser];
-    NSArray *mediaAssets = currentUser[@"mediaAssets"];
-    PFQuery *queue = [PFQuery queryWithClassName:@"EWMediaItem" predicate:[NSPredicate predicateWithFormat:@"receiver = %@ && NOT SELF IN %@", currentUser, mediaAssets]];
-    NSArray *mediaPO = [queue findObjects];
-    for (PFObject *po in mediaPO) {
+    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem" predicate:[NSPredicate predicateWithFormat:@"receiver = %@", [PFUser currentUser]]];
+    NSMutableArray *mediaPOs = [[query findObjects] mutableCopy];
+    [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT objectId IN %@", [me.mediaAssets valueForKey:kParseObjectID]]];
+    for (PFObject *po in mediaPOs) {
         EWMediaItem *mo = (EWMediaItem *)po.managedObject;
         
         //relationship
@@ -139,6 +138,7 @@
         }else{
             mo.receiver = me;
             NSLog(@"Received media (%@)", mo.objectId);
+            EWAlert(@"You got voice for your next wake up");
         }
         [EWDataStore save];
     }
