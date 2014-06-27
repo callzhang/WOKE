@@ -298,11 +298,11 @@
 + (void)save{
     
     //find updated/inserted/deleted objects in main context
-    if (![NSThread isMainThread]) {
-        NSLog(@"Save to background thread");
-        [[EWDataStore currentContext] saveToPersistentStoreAndWait];
-        return;
-    }
+//    if (![NSThread isMainThread]) {
+//        NSLog(@"Save to background thread");
+//        [[EWDataStore currentContext] saveToPersistentStoreAndWait];
+//        return;
+//    }
     NSLog(@"%s", __func__);
     NSManagedObjectContext *context = [EWDataStore sharedInstance].context;
     NSSet *inserts = [context insertedObjects];
@@ -819,7 +819,6 @@
                 NSMutableSet *relatedMOs = [self mutableSetValueForKey:key];
                 [relatedMOs removeObject:MOToDelete];
                 [self setValue:relatedMOs forKeyPath:key];
-                
             }
             
             
@@ -1278,7 +1277,7 @@
                     //inverse to-many relation need to be updated
                     PFObject *inversePO = self[key];
                     [inversePO fetchIfNeeded];
-                    PFRelation *inversePFRelation = inversePO[inverseRelation.entity.name];
+                    PFRelation *inversePFRelation = inversePO[inverseRelation.name];
                     [inversePFRelation removeObject:self];
                     [inversePO save];
                     NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
