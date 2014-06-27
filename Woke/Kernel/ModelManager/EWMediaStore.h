@@ -14,9 +14,10 @@
 @class EWMediaItem;
 @interface EWMediaStore : NSObject //EWStore
 
-//you don't need to see all medias
-@property (nonatomic) NSArray *allMedias;
-//@property (nonatomic) NSManagedObjectContext *context;
+/*
+ medias that has been played.
+ **/
+@property (nonatomic) NSArray *myMedias;
 
 + (EWMediaStore *)sharedInstance;
 
@@ -36,19 +37,12 @@
  */
 - (NSArray *)mediaCreatedByPerson:(EWPerson *)person;
 
-
-//- (EWMediaItem *)getMediaByID:(NSString *)mediaID;
 /**
  Fetch media by receiver
  */
 - (NSArray *)mediasForPerson:(EWPerson *)person;
 
-
-//edit
-
-
-
-
-//- (NSString *)mediaArchievePath;
+//Check media assets relationship
+- (NSArray *)checkMediaAssets;
 
 @end

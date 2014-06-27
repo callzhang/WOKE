@@ -146,9 +146,10 @@
     
     NSLog(@"3. Check task");
     [[EWTaskStore sharedInstance] scheduleTasks];
-    
-    NSLog(@"4. Check local notification");
     [EWTaskStore.sharedInstance checkScheduledNotifications];
+    
+    NSLog(@"4. Check my unread media");
+    [[EWMediaStore sharedInstance] checkMediaAssets];
     
     //updating facebook friends
     NSLog(@"5. Updating facebook friends");
@@ -270,26 +271,26 @@
     [obj.managedObjectContext performBlockAndWait:^{
         objectID = obj.objectID;
         if (!objectID || objectID.isTemporaryID) {
-            //need to obtain perminent ID
-//            NSError *err;
-//            NSLog(@"Obtaining perminant ID for %@", obj.entity.name);
-//            [obj.managedObjectContext obtainPermanentIDsForObjects:@[obj] error:&err];
-//            objectID = obj.objectID;
-            //TODO: need to check if data persist to the store
             
-            //just save the MO, it's fine now
+            //need to save the MO to get the ID
             if ([obj.managedObjectContext isEqual:[EWDataStore sharedInstance].context]) {
                 [EWDataStore saveToLocal:obj];
             }else{
                 [obj.managedObjectContext saveToPersistentStoreAndWait];
             }
-            
         }
     }];
+    
+    if (!objectID) {
+        NSLog(@"*** failed to get the ID, return UNSAFE MO %@(%@)", obj.entity.name, [obj valueForKey:kParseObjectID]);
+        return obj;
+    }
+    
     NSError *error;
     NSManagedObject * objForCurrentContext = [[EWDataStore currentContext] existingObjectWithID:objectID error:&error];
     if (error) {
-        NSLog(@"*** Error getting exsiting MO %@", obj.entity.name);
+        NSLog(@"*** Error getting exsiting MO %@(%@)", obj.entity.name, obj.objectID);
+        return obj;
     }
     return objForCurrentContext;
 }

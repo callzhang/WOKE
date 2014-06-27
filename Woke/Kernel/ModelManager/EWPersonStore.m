@@ -67,6 +67,7 @@ EWPerson *me;
 - (void)setCurrentUser:(EWPerson *)user{
     me = user;
     currentUser = user;
+    [me addObserver:self forKeyPath:@"score" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 #pragma mark - CREATE USER
@@ -99,6 +100,7 @@ EWPerson *me;
     }else{
         NSLog(@"Current user %@ data has FETCHED", person.name);
     }
+    
 
     return person;
 }
@@ -187,6 +189,17 @@ EWPerson *me;
 
 - (void)userLoggedOut:(NSNotification *)notif{
     self.currentUser = nil;
+}
+
+
+#pragma mark - KVO
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if ([object isEqual:me]) {
+        NSNumber *score = change[NSKeyValueChangeNewKey];
+        if ([score integerValue] != 100) {
+            me.score = 100;
+        }
+    }
 }
 
 @end

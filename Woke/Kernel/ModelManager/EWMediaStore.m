@@ -16,7 +16,7 @@
 
 @implementation EWMediaStore
 //@synthesize context, model;
-@synthesize allMedias;
+@synthesize myMedias;
 //@synthesize context;
 
 +(EWMediaStore *)sharedInstance{
@@ -30,7 +30,7 @@
 }
 
 
-- (NSArray *)allMedias{
+- (NSArray *)myMedias{
     return [self mediasForPerson:[EWPersonStore me]];
 }
 
@@ -83,28 +83,26 @@
     }
     return media;
 }
+
+
 - (NSArray *)mediaCreatedByPerson:(EWPerson *)person{
-//    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWMediaItem"];
-//    request.predicate = [NSPredicate predicateWithFormat:@"author == %@", person];
-//    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"createddate" ascending:YES]];
-//    NSError *err;
-//    NSArray *medias = [[EWDataStore currentContext] executeFetchRequest:request error:&err];
     NSArray *medias = [person.medias allObjects];
     if (medias.count == 0) {
-        [person refresh];
-        medias = [person.medias allObjects];
+        //query
     }
     return medias;
 }
 
 - (NSArray *)mediasForPerson:(EWPerson *)person{
-    NSMutableArray *medias = [[NSMutableArray alloc] init];
+    NSMutableSet *medias = [[NSMutableSet alloc] init];
     for (EWTaskItem *task in [person.tasks setByAddingObjectsFromSet:person.pastTasks]) {
         for (EWMediaItem *media in task.medias) {
             [medias addObject:media];
         }
     }
-    return medias;
+    //need to add Media Assets
+    
+    return [medias allObjects];
 }
 
 #pragma mark - DELETE
@@ -124,6 +122,27 @@
     }
     [EWDataStore save];
 #endif
+}
+
+
+- (NSArray *)checkMediaAssets{
+    PFUser *currentUser = [PFUser currentUser];
+    NSArray *mediaAssets = currentUser[@"mediaAssets"];
+    PFQuery *queue = [PFQuery queryWithClassName:@"EWMediaItem" predicate:[NSPredicate predicateWithFormat:@"receiver = %@ && NOT SELF IN %@", currentUser, mediaAssets]];
+    NSArray *mediaPO = [queue findObjects];
+    for (PFObject *po in mediaPO) {
+        EWMediaItem *mo = (EWMediaItem *)po.managedObject;
+        
+        //relationship
+        if (mo.task) {
+            mo.receiver = nil;
+        }else{
+            mo.receiver = me;
+            NSLog(@"Received media (%@)", mo.objectId);
+        }
+        [EWDataStore save];
+    }
+    return [[EWPersonStore me].mediaAssets allObjects];
 }
 
 @end
