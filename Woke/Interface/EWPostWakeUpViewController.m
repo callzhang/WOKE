@@ -118,7 +118,16 @@
     //collectionView.showsVerticalScrollIndicator = NO;
     collectionView.showsHorizontalScrollIndicator = NO;
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
+
+    buzzButton.layer.cornerRadius = 5.0;
+    buzzButton.layer.masksToBounds= YES;
+    buzzButton.layer.borderWidth =1;
+    buzzButton.layer.borderColor = [UIColor whiteColor].CGColor;
     
+    voiceMessageButton.layer.cornerRadius = 10.0;
+    voiceMessageButton.layer.masksToBounds= YES;
+    voiceMessageButton.layer.borderWidth =1;
+    voiceMessageButton.layer.borderColor = [UIColor whiteColor].CGColor;
 }
 
 -(void)initData

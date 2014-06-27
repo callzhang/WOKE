@@ -196,7 +196,7 @@
     frame.origin.y = frame.size.height-80 ;
     frame.size.height = 80;
     postWakeUpVCBtn.frame = frame;
-    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"wake_view_bar"] forState:UIControlStateNormal];
+//    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"wake_view_bar"] forState:UIControlStateNormal];
     [postWakeUpVCBtn setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
     //[postWakeUpVCBtn setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.5]];
     //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
