@@ -21,11 +21,11 @@
 {
     //__weak IBOutlet UIImageView * backGroundImage;
     
-    __weak IBOutlet UILabel * timeLabel;
-    __weak IBOutlet UILabel * unitLabel;
-    __weak IBOutlet UIView *timerView;
+//    __weak IBOutlet UILabel * timeLabel;
+//    __weak IBOutlet UILabel * unitLabel;
+//    __weak IBOutlet UIView *timerView;
     
-    __weak IBOutlet UILabel *markTitle;
+//    __weak IBOutlet UILabel *markTitle;
     __weak IBOutlet UILabel * markALabel;
     __weak IBOutlet UILabel * markBLabel;
     //__weak IBOutlet UIImageView * barImageView;
@@ -118,7 +118,16 @@
     //collectionView.showsVerticalScrollIndicator = NO;
     collectionView.showsHorizontalScrollIndicator = NO;
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
+
+    buzzButton.layer.cornerRadius = 5.0;
+    buzzButton.layer.masksToBounds= YES;
+    buzzButton.layer.borderWidth =1;
+    buzzButton.layer.borderColor = [UIColor whiteColor].CGColor;
     
+    voiceMessageButton.layer.cornerRadius = 10.0;
+    voiceMessageButton.layer.masksToBounds= YES;
+    voiceMessageButton.layer.borderWidth =1;
+    voiceMessageButton.layer.borderColor = [UIColor whiteColor].CGColor;
 }
 
 -(void)initData
@@ -127,8 +136,8 @@
     /*此处应将再上一个controller完成赋值，目前只是举个例子*/
     personArray = [[EWPersonStore sharedInstance] everyone];
     
-    timeLabel.text = [self getTime];
-    unitLabel.text = [self getUnit];
+//    timeLabel.text = [self getTime];
+//    unitLabel.text = [self getUnit];
 }
 
 #pragma mark -

@@ -138,7 +138,16 @@ NSString *const profileCellIdentifier = @"ProfileCell";
             CLLocation *loc0 = me.lastLocation;
             CLLocation *loc1 = person.lastLocation;
             float distance = [loc0 distanceFromLocation:loc1]/1000;
-            self.location.text = [NSString stringWithFormat:@"%@ | %.1f km", person.city, distance];
+            if (person.city) {
+                self.location.text =[NSString stringWithFormat:@"%@ | ",person.city];
+                self.location.text = [self.location.text stringByAppendingString:[NSString stringWithFormat:@"%1.f km",distance]];
+            }
+            else
+            {
+                self.location.text = [NSString stringWithFormat:@"%1.f km",distance];
+            }
+//            self.location.text = [NSString stringWithFormat:@"%@ | %.1f km", person.city, distance];
+          
         }
         
         //statement

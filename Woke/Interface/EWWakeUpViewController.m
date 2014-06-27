@@ -196,7 +196,7 @@
     frame.origin.y = frame.size.height-80 ;
     frame.size.height = 80;
     postWakeUpVCBtn.frame = frame;
-    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"wake_view_bar"] forState:UIControlStateNormal];
+//    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"wake_view_bar"] forState:UIControlStateNormal];
     [postWakeUpVCBtn setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
     //[postWakeUpVCBtn setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.5]];
     //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
@@ -619,6 +619,11 @@
     NSString *ts = [t date2timeShort];
     self.timer.text = ts;
     NSTimeInterval time = [t timeIntervalSinceDate:self.task.time];
+    
+    if (time < 0) {
+        time = 0;
+    }
+    
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"ss"];
     NSString *string = [formatter stringFromDate:t];
@@ -629,6 +634,7 @@
 //    self.warnLabel.text = [[NSString stringWithFormat:@"%@\"", string] stringByAppendingString:@" minutes past your wake-up time"];
     timePast++;
     self.warnLabel.text = [NSString stringWithFormat:@"%ld minutes past your wake-up time", (unsigned long)time/60];
+    
     self.AM.text = [t date2am];
 }
 

@@ -46,7 +46,24 @@
 
 -(NSString *)timeAndDistance
 {
-    _timeAndDistance = [[_time.text stringByAppendingString:@" . "] stringByAppendingString:_distance.text];
+    if ([_time.text isEqualToString:@""]||[_distance.text isEqualToString:@""]) {
+        if ([_time.text  isEqualToString:@""]&&[_distance.text isEqualToString:@""]) {
+            _timeAndDistance = @"";
+        }
+        else
+        {
+            _timeAndDistance = [_time.text stringByAppendingString:_distance.text];
+        }
+    }
+    else
+    {
+       _timeAndDistance = [[_time.text stringByAppendingString:@" . "] stringByAppendingString:_distance.text];
+    }
+    
+    
+    
+        
+    
     
     return _timeAndDistance;
 }

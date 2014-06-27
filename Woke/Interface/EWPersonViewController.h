@@ -19,6 +19,7 @@
     NSArray *profileItemsArray;
     NSMutableArray *activityArray;
 }
+@property (strong, nonatomic) IBOutlet UIButton *addFriendButton;
 //PersonInfoView
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 @property (weak, nonatomic) IBOutlet UILabel *name;
