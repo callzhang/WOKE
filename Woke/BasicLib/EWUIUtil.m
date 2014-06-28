@@ -203,4 +203,15 @@
     
 }
 
++ (void)addTransparantNavigationBarToViewController:(UIViewController *)vc withLeftItem:(UIBarButtonItem *)leftItem rightItem:(UIBarButtonItem *)rightItem{
+    [vc.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    vc.navigationController.navigationBar.shadowImage = [UIImage new];
+    vc.navigationController.navigationBar.translucent = YES;
+    vc.navigationController.view.backgroundColor = [UIColor clearColor];
+    vc.navigationItem.rightBarButtonItem = rightItem;
+    vc.navigationItem.leftBarButtonItem = leftItem;
+    vc.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
+}
+
 @end

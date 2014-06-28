@@ -59,4 +59,5 @@
 
 + (void)applyAlphaGradientForView:(UIView *)view withEndPoints:(NSArray *)locations;
 
++ (void)addTransparantNavigationBarToViewController:(UIViewController *)vc withLeftItem:(UIBarButtonItem *)leftItem rightItem:(UIBarButtonItem *)rightItem;
 @end

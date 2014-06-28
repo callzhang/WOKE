@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "personInfoBG.png"
+      "filename" : "Confirm Button.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "personInfoBG@2x.png"
+      "filename" : "Confirm Button@2x.png"
     }
   ],
   "info" : {

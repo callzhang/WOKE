@@ -64,11 +64,9 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        personArray = [[NSArray alloc] init];
-        selectedPersonSet = [[NSMutableSet alloc]initWithCapacity:0];
+        personArray = [NSArray new];
+        selectedPersonSet = [NSMutableSet new];
         time = 0;
-        
-        
     }
     return self;
 }
@@ -115,29 +113,27 @@
     collectionView.dataSource = self;
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
-    //collectionView.showsVerticalScrollIndicator = NO;
-    collectionView.showsHorizontalScrollIndicator = NO;
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
 
-    buzzButton.layer.cornerRadius = 5.0;
+    buzzButton.layer.cornerRadius = 4.0;
     buzzButton.layer.masksToBounds= YES;
-    buzzButton.layer.borderWidth =1;
-    buzzButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    buzzButton.layer.borderWidth = 1;
+    buzzButton.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.3].CGColor;
+    buzzButton.layer.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2].CGColor;
+    buzzButton.imageEdgeInsets = UIEdgeInsetsMake(10, 5, 10, 5);
     
-    voiceMessageButton.layer.cornerRadius = 10.0;
+    voiceMessageButton.layer.cornerRadius = 4.0;
     voiceMessageButton.layer.masksToBounds= YES;
-    voiceMessageButton.layer.borderWidth =1;
-    voiceMessageButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    voiceMessageButton.layer.borderWidth = 1;
+    voiceMessageButton.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.3].CGColor;
+    voiceMessageButton.layer.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2].CGColor;
+    voiceMessageButton.imageEdgeInsets = UIEdgeInsetsMake(10, 5, 10, 5);
 }
 
 -(void)initData
 {
-
-    /*此处应将再上一个controller完成赋值，目前只是举个例子*/
+    //take the cached value or a new value
     personArray = [[EWPersonStore sharedInstance] everyone];
-    
-//    timeLabel.text = [self getTime];
-//    unitLabel.text = [self getUnit];
 }
 
 #pragma mark -

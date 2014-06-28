@@ -467,26 +467,6 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     if (sender.tag == kCollectionViewTag) {
-
-//        //update background paralex effects
-//        float margin = 0.2;
-//        float w = sender.contentSize.width + sender.contentInset.left + sender.contentInset.right;
-//        float h = sender.contentSize.height + sender.contentInset.top + sender.contentInset.bottom;
-//        float x = -(sender.bounds.origin.x + sender.contentInset.left);
-//        float y = -(sender.bounds.origin.y + sender.contentInset.top);
-//        float percentX = x/(w - self.view.frame.size.width);
-//        float percentY = y/(h - self.view.frame.size.height);
-//        
-//        CGRect frame = self.background.frame;
-//        float spanX = frame.size.width - self.view.frame.size.width;
-//        float spanY = frame.size.height - self.view.frame.size.height;
-//        
-//        float x1 = percentX * spanX * (1-2*margin) - spanX * margin;
-//        float y1 = percentY * spanY * (1-2*margin) - spanY * margin;
-//        
-//        frame.origin.x = x1;
-//        frame.origin.y = y1;
-//        self.background.frame = frame;
         
         //indicator
         static float const maxX = 120;
@@ -858,7 +838,7 @@
                 }
             } completion:^(BOOL finished){
                 if (finished) {
-                    //NSLog(@"Updates for collection view completed");
+                    [self centerView];
                 }else{
                     NSLog(@"*** Update of collection view failed");
                 }

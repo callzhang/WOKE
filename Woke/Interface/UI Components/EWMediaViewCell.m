@@ -14,7 +14,8 @@
 #import "EWPersonViewController.h"
 #import "EWUIUtil.h"
 
-#define maxBytes        150000
+#define maxBytes            150000
+#define progressBarLength   200
 
 @implementation EWMediaViewCell
 @synthesize media;
@@ -59,28 +60,33 @@
 - (void)setMedia:(EWMediaItem *)m{
     if ([m.type isEqualToString:kMediaTypeBuzz]) {
         self.mediaBar.hidden = YES;
-        self.buzzIcon.hidden = NO;
+        [self.buzzIcon setImage:[UIImage imageNamed:@"Buzz Button"] forState:UIControlStateNormal];
     }else{
         self.mediaBar.hidden = NO;
-        self.buzzIcon.hidden = YES;
+        [self.buzzIcon setImage:[UIImage imageNamed:@"Voice Message"] forState:UIControlStateNormal];
         
         //set media bar length
         CGRect frame = self.mediaBar.frame;
         AVAudioPlayer *p = [[AVAudioPlayer alloc] initWithData:m.audio error:NULL];
         double len = p.duration;
-//        self.mediaBar.timeLabel.text = [NSString stringWithFormat:@"%.1f\"", len];
         double ratio = len/30/2 + 0.5;
         if (ratio > 1.0) ratio = 1.0;
-        frame.size.width = 240.0 * ratio;
+        frame.size.width = progressBarLength * ratio;
         self.mediaBar.frame = frame;
-        //NSLog(@"changed slider width to %f", frame.size.width);
         
         [self setNeedsDisplay];
     }
     
-//    [self.profilePic.imageView setImage:media.author.profilePic];
-//    self.profilePic.imageView.image = media.author.profilePic;
-//    [EWUIUtil applyHexagonMaskForView:self.profilePic.imageView];
+    //date
+    self.date.text = [media.updatedAt date2MMDD];
+    
+    //profile
+    [self.profilePic setImage:media.author.profilePic forState:UIControlStateNormal];
+    [EWUIUtil applyHexagonMaskForView:self.profilePic.imageView];
+    
+    //description
+    self.description.text = media.message;
+    
     media = m;
 }
 

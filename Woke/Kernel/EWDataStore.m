@@ -179,6 +179,7 @@
     if (!me) {
         return;
     }
+    //this will run at the beginning and every 600s
     NSLog(@"Start sync service");
     
     //dispatch_async(dispatch_queue, ^{
@@ -341,6 +342,10 @@
         }
         [context saveToPersistentStoreAndWait];
         
+        if ([EWDataStore workingQueue].count > 0) {
+            NSLog(@"@@@ Executing an UPLOAD action while there are still objects in working queue");
+        }
+        
         [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
         [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
         
@@ -435,7 +440,7 @@
 }
 
 //uploading queue
-+ (NSSet *)uploadingQueue{
++ (NSSet *)workingQueue{
     return [EWDataStore getObjectFromQueue:kParseQueueWorking];
 }
 

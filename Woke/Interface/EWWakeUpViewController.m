@@ -24,7 +24,6 @@
 #import "EWPostWakeUpViewController.h"
 
 #define cellIdentifier                  @"EWMediaViewCell"
-#define WAKEUP_VIEW_HEADER_HEIGHT       180
 
 
 @interface EWWakeUpViewController (){
@@ -114,7 +113,7 @@
     }
     
     //timer updates
-    timerTimer = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
+    timerTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
     [self updateTimer];
     
     //position the content
@@ -169,16 +168,17 @@
     header.layer.masksToBounds = YES;
     header.layer.borderWidth = 1;
     header.layer.borderColor = [UIColor whiteColor].CGColor;
+    header.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.1];
     
     timer.text = [task.time date2timeShort];
     self.AM.text = [task.time date2am];
     
     //table view
-    tableView_.frame = CGRectMake(0, 150, self.view.frame.size.width, self.view.frame.size.height-230);
+    //tableView_.frame = CGRectMake(0, 150, self.view.frame.size.width, self.view.frame.size.height-230);
     tableView_.dataSource = self;
     tableView_.delegate = self;
     tableView_.separatorStyle = UITableViewCellSeparatorStyleNone;
-    tableView_.contentInset = UIEdgeInsetsMake(200, 0, 80, 0);//the distance of the content to the frame of tableview
+    tableView_.contentInset = UIEdgeInsetsMake(20, 0, 80, 0);//the distance of the content to the frame of tableview
     
     //alpha mask
     [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.2f, @0.9f]];
@@ -187,24 +187,16 @@
     UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
     //register the nib
     [tableView_ registerNib:nib forCellReuseIdentifier:cellIdentifier];
-    //nav btn
-    self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
-    //self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Wake Up" style:UIBarButtonItemStylePlain target:self action:@selector(presentPostWakeUpVC)];
     
     postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGRect frame =[UIScreen mainScreen].bounds;
     frame.origin.y = frame.size.height-80 ;
     frame.size.height = 80;
     postWakeUpVCBtn.frame = frame;
-//    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"wake_view_bar"] forState:UIControlStateNormal];
+    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"AlarmViewBar"] forState:UIControlStateNormal];
     [postWakeUpVCBtn setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
-    //[postWakeUpVCBtn setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.5]];
-    //[postWakeUpVCBtn setContentEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:postWakeUpVCBtn];
-
-    //warnlabel
-    _warnLabel.hidden = YES;
     
 }
 
@@ -297,20 +289,7 @@
     
     //title
     cell.name.text = mi.author.name;
-    if (mi.message) {
-        cell.description.text = mi.message;
-    }else{
-        cell.description.text = @"No description for this autio";
-    }
     
-    //date
-    cell.date.text = [mi.createdAt date2String];
-    
-    //set image
-//    cell.profilePic.imageView.image = mi.author.profilePic;
-//    [EWUIUtil applyHexagonMaskForView:cell.profilePic];
-    [cell.profilePic setBackgroundImage:mi.author.profilePic forState:UIControlStateNormal];
-    [EWUIUtil applyHexagonMaskForView:cell.profilePic];
     //control
     cell.controller = self;
     
@@ -380,12 +359,16 @@
     return 80;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return @"Flag";
+}
+
 - (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
     return @"Like";
 }
 
 - (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.view showSuccessNotification:@"Like sent"];
+    [self.view showSuccessNotification:@"Liked"];
     
     // Hide the More/Delete menu.
     [self setEditing:NO animated:YES];
@@ -410,20 +393,21 @@
 //    f.size.width = 180 + newFrame.origin.y;
 //    self.timer.frame = f;
 //    self.timer.center = c;
-//    
-//    
-//    
-//    //footer
-//    CGRect footerFrame = postWakeUpVCBtn.frame;
-//    if (scrollView.contentSize.height < 1) {
-//        //init phrase
-//        footerFrame.origin.y = self.view.frame.size.height - footerFrame.size.height;
-//    }else{
-//        NSInteger footerOffset = scrollView.contentSize.height + scrollView.contentInset.top - (scrollView.contentOffset.y + scrollView.frame.size.height);
-//        footerFrame.origin.y = MAX(scrollView.frame.size.height + footerOffset, self.view.frame.size.height - footerFrame.size.height) ;
-//    }
-//    
-//    postWakeUpVCBtn.frame = footerFrame;
+    
+    
+    
+    //footer
+    CGRect footerFrame = postWakeUpVCBtn.frame;
+    if (scrollView.contentSize.height < 1) {
+        //init phrase
+        footerFrame.origin.y = self.view.frame.size.height - footerFrame.size.height;
+    }else{
+        CGPoint bottomPoint = [self.view convertPoint:CGPointMake(0, scrollView.contentSize.height) fromView:scrollView];
+        //NSInteger footerOffset = scrollView.contentSize.height + scrollView.contentInset.top - (scrollView.contentOffset.y + scrollView.frame.size.height);
+        footerFrame.origin.y = MAX(bottomPoint.y, self.view.frame.size.height - footerFrame.size.height) ;
+    }
+    
+    postWakeUpVCBtn.frame = footerFrame;
     
 }
 
@@ -628,12 +612,8 @@
     [formatter setDateFormat:@"ss"];
     NSString *string = [formatter stringFromDate:t];
     self.seconds.text = [NSString stringWithFormat:@"%@\"", string];
-    if (_warnLabel.hidden) {
-        _warnLabel.hidden = NO;
-    }
-//    self.warnLabel.text = [[NSString stringWithFormat:@"%@\"", string] stringByAppendingString:@" minutes past your wake-up time"];
     timePast++;
-    self.warnLabel.text = [NSString stringWithFormat:@"%ld minutes past your wake-up time", (unsigned long)time/60];
+    self.timeDescription.text = [NSString stringWithFormat:@"%ld minutes past", (unsigned long)time/60];
     
     self.AM.text = [t date2am];
 }
