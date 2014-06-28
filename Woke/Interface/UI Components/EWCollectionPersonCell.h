@@ -8,17 +8,24 @@
 
 #import <UIKit/UIKit.h>
 
+@class EWPerson;
 @interface EWCollectionPersonCell : UICollectionViewCell
 
 //@property (nonatomic, retain) UILabel *name;
-@property (weak, nonatomic) IBOutlet UIImageView *profilePic;
+@property (weak, nonatomic) IBOutlet UIImageView *profile;
+@property (weak, nonatomic) IBOutlet UIImageView *selection;
+@property (weak, nonatomic) IBOutlet UIView *image;
 @property (weak, nonatomic) IBOutlet UILabel *time;
-@property (weak, nonatomic) IBOutlet UIImageView *selectionView;
-@property (weak, nonatomic) IBOutlet UIView *white;
-@property (weak, nonatomic) IBOutlet UILabel *distance;
+@property (weak, nonatomic) IBOutlet UILabel *km;
 @property (weak, nonatomic) IBOutlet UILabel *initial;
-@property (nonatomic) NSString *name;
+@property (weak, nonatomic) IBOutlet UILabel *name;
+
 @property (nonatomic,strong)NSString *timeAndDistance;
+@property (nonatomic, strong) EWPerson *person;
+@property (nonatomic) float distance;
+@property (nonatomic) BOOL showName;
+@property (nonatomic) BOOL showDistance;
+@property (nonatomic) BOOL showTime;
 - (void)applyHexagonMask;
 
 @end

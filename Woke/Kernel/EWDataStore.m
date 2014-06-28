@@ -259,7 +259,7 @@
 + (NSManagedObject *)objectForCurrentContext:(NSManagedObject *)obj{
     
     if (obj == nil) {
-        NSLog(@"Passed in nil");
+        NSLog(@"Passed in nil to get current MO");
         return nil;
     }
     
@@ -822,7 +822,7 @@
             
             //DELETE from the relation to MO not found on server
             for (NSManagedObject *MOToDelete in managedObjectToDelete) {
-                NSLog(@"~~~> Delete to-many relation on MO %@->%@(%@)", self.entity.name, obj.name, [MOToDelete valueForKey:kParseObjectID]);
+                NSLog(@"~~~> Delete to-many relation on MO %@(%@)->%@(%@)", self.entity.name, parseObject.objectId, obj.name, [MOToDelete valueForKey:kParseObjectID]);
                 NSMutableSet *relatedMOs = [self mutableSetValueForKey:key];
                 [relatedMOs removeObject:MOToDelete];
                 [self setValue:relatedMOs forKeyPath:key];
@@ -860,7 +860,7 @@
                 
                 if (!inverseRelationExists) {
                     [self setValue:nil forKey:key];
-                    NSLog(@"~~~> Delete to-one relation on MO %@->%@(%@)", self.entity.name, obj.name, [inverseMO valueForKey:kParseObjectID]);
+                    NSLog(@"~~~> Delete to-one relation on MO %@(%@)->%@(%@)", self.entity.name, parseObject.objectId, obj.name, [inverseMO valueForKey:kParseObjectID]);
                 }else{
                     NSLog(@"*** Something wrong, the inverse relation %@(%@) <-> %@(%@) deoesn't agree", self.entity.name, [self valueForKey:kParseObjectID], inverseMO.entity.name, [inverseMO valueForKey:kParseObjectID]);
                 }
@@ -888,6 +888,7 @@
         }	
         return object;
     }else{
+        NSLog(@"!!! ParseObject not found!");
         return nil;
     }
     
@@ -1110,7 +1111,11 @@
 }
 
 - (BOOL)isOutDated{
-    BOOL outdated = [(NSDate *)[self valueForKey:kUpdatedDateKey] isOutDated];
+    NSDate *date = (NSDate *)[self valueForKey:kUpdatedDateKey];
+    if (!date) {
+        return YES;
+    }
+    BOOL outdated = [date isOutDated];
     return outdated;
 }
 

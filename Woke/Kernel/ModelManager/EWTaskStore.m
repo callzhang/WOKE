@@ -16,7 +16,6 @@
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
 
-#define nextTaskTimeKey                 @"next_task_time"
 
 @implementation EWTaskStore
 

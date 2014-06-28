@@ -9,31 +9,27 @@
 #import "EWMyFriendsViewController.h"
 #import "UINavigationController+Blur.h"
 #import "EWPerson.h" 
+//#import "EWCollectionPersonCell.h"
 #import "EWCollectionPersonCell.h"
 #import "EWFriendsCollectionCell.h"
 #import "EWUIUtil.h"
 #import "EWFriendsTableCell.h"
+#import "EWPersonStore.h"
 
 NSString * const tableViewCellId =@"MyFriendsTableViewCellId";
 NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
 @interface EWMyFriendsViewController ()<UITableViewDelegate,UITableViewDataSource,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 {
-    NSArray *_friendsArray;
+    NSArray *friends;
+    NSArray *mutualFriends;
 }
 
 @end
 
 @implementation EWMyFriendsViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
+
 -(id)initWithPerson:(EWPerson *)person
 {
     self = [super initWithNibName:nil bundle:nil];
@@ -42,6 +38,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     }
     return self;
 }
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -50,11 +47,6 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     [self initView];
 
     // Do any additional setup after loading the view from its nib.
-}
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - init
@@ -65,7 +57,10 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
         
         NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
         NSArray *sortDescriptors = [NSArray arrayWithObjects:sd, nil];
-        _friendsArray = [_person.friends sortedArrayUsingDescriptors:sortDescriptors];
+        friends = [_person.friends sortedArrayUsingDescriptors:sortDescriptors];
+        NSMutableSet *myFriends = [me.friends mutableCopy];
+        [myFriends intersectSet:[NSSet setWithArray:friends]];
+        mutualFriends = [[myFriends allObjects] sortedArrayUsingDescriptors:sortDescriptors];
         _friendsTableView.delegate = self;
         _friendsTableView.dataSource = self;
         _friendsCollectionView.delegate = self;
@@ -81,7 +76,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     self.view.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.hidden = NO;
-    [_friendsCollectionView registerClass:[EWFriendsCollectionCell class] forCellWithReuseIdentifier:collectViewCellId];
+    [_friendsCollectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:collectViewCellId];
     _tabView.selectedSegmentIndex = 0;
     
     
@@ -106,21 +101,18 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     return 1;
 }
 
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [mutualFriends count];
+}
+
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EWFriendsTableCell *cell = [_friendsTableView dequeueReusableCellWithIdentifier:tableViewCellId];
-    if (!cell) {
-        cell = [[EWFriendsTableCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:tableViewCellId];
-    }
-    EWPerson * myFriend = [_friendsArray objectAtIndex:indexPath.row];
+    EWPerson * myFriend = [friends objectAtIndex:indexPath.row];
     [cell setupCellWithPerson:myFriend];
     
     return cell;
-}
-
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [_friendsArray count];
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -132,36 +124,25 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 #pragma mark - CollectionView
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return [_friendsArray count]/3+1;
+    return 1;
 }
-
--(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    EWFriendsCollectionCell * cell = [_friendsCollectionView dequeueReusableCellWithReuseIdentifier:collectViewCellId forIndexPath:indexPath];
-    if (!cell) {
-        cell = [[EWFriendsCollectionCell alloc] init];
-        
-    }
-    
-    EWPerson * myFriend = [_friendsArray objectAtIndex:indexPath.section*3+indexPath.row];
-    
-    [cell setupCellWithInfo:myFriend];
-//    cell.
-    return cell;
-}
-
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    NSUInteger eleCount  = [_friendsArray count];
-    if (eleCount > ((section+1)*3-1)) {
-        return 3;
-    }
-    else
-    {
-        return (eleCount - 3*section)%3;
-    }
+    return [friends count];
     
+}
+
+
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+    EWCollectionPersonCell * cell = [_friendsCollectionView dequeueReusableCellWithReuseIdentifier:collectViewCellId forIndexPath:indexPath];
+    cell.showName = YES;
+    EWPerson * friend = [friends objectAtIndex:indexPath.row];
+    
+    cell.person = friend;
+
+    return cell;
 }
 
 

@@ -473,8 +473,9 @@
         static float const maxY = 190;
         
         CGPoint frameCenter = _collectionView.center;
-        UICollectionViewCell *cell0 = [self collectionView:_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-        CGPoint center = [_collectionView convertPoint:cell0.center toView:self.view];
+        //UICollectionViewCell *cell0 = [self collectionView:_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
+        UICollectionViewLayoutAttributes *attribute = [_collectionView layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
+        CGPoint center = [_collectionView convertPoint:attribute.center toView:self.view];
         float X = center.x - frameCenter.x;
         float Y = center.y - frameCenter.y;
         
@@ -648,65 +649,7 @@
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
     
-    BOOL isMe = NO;
-    if ([person.username isEqualToString: me.username]) isMe = YES;
-
-    cell.initial.text = [person.name initial];
-    if ([person.username isEqualToString: me.username]) {
-        cell.initial.text = @"YOU";
-    }
-    cell.initial.alpha = 1;
-    //cell.profilePic.image = [UIImage imageNamed:@"profile"];
-    cell.name = person.name;
-    
-    //profile
-    UIImage *profile = person.profilePic;
-    cell.profilePic.image = profile;
-    //UI
-//    cell.alpha = 0.0;
-//    [UIView animateWithDuration:0.4 animations:^{
-//        cell.alpha = 1;
-//    }];
-    
-    //text
-    if (!isMe) cell.initial.alpha = 0;
-    
-    
-    //time
-    cell.time.text = @"";
-    cell.time.alpha = 0;
-    if (!isMe) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            EWTaskItem *nextValidTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
-            if (nextValidTask) {
-                NSString *timeLeft = [nextValidTask.time timeLeft];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    cell.time.text = timeLeft;
-                    [UIView animateWithDuration:0.4 animations:^{
-                        cell.time.alpha = 1;
-                    }];
-                });
-            }
-        });
-    }
-    
-    //location
-    cell.distance.text = @"";
-    cell.distance.alpha = 0;
-    if (!isMe && person.lastLocation && me.lastLocation) {
-        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        CLLocation *loc0 = me.lastLocation;
-        CLLocation *loc1 = person.lastLocation;
-        
-        CLLocationDistance distance = [loc0 distanceFromLocation:loc1]/1000;
-        //dispatch_async(dispatch_get_main_queue(), ^{
-        cell.distance.text = [NSString stringWithFormat:@"%.1lf km", distance];
-        [UIView animateWithDuration:0.4 animations:^{
-            cell.distance.alpha = 1;
-        }];
-        //});
-        //});
-    }
+    cell.person = person;
     
     return cell;
 }

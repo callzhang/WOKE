@@ -209,7 +209,7 @@
     }
     NSInteger seconds = left % 60;
     NSInteger minutes = floorf(left/60);
-    NSInteger hours = floorf(left/3600);
+    NSInteger hours = (left/3600);
     NSString *string;
     if (hours != 0) {
         string = [NSString stringWithFormat:@"%ld hours", (long)hours];

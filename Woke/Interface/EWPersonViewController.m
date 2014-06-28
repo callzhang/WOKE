@@ -70,16 +70,10 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
     
     //navigation
-     self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    self.navigationController.navigationBar.shadowImage = [UIImage new];
-    self.navigationController.navigationBar.translucent = YES;
-    self.navigationController.view.backgroundColor = [UIColor clearColor];
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:nil rightItem:nil];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
-//    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];// 图片变小了
-                                             //========table for tasks========
+    
     taskTableView.dataSource = self;
     taskTableView.delegate = self;
     taskTableView.backgroundColor = [UIColor clearColor];
@@ -121,47 +115,57 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 
 
 - (void)initView {
-    
+    if (!person) return;
     //======= Person =======
-    if (person) {
-        if (person.isMe && !person.facebook) {
-            self.loginBtn.hidden = NO;
+    
+    
+    if (!person.isMe) {
+        self.loginBtn.hidden = YES;
+        if ([me.friends containsObject:self.person]) {
+            [self.addFriend setImage:[UIImage imageNamed:@"Voice Message"] forState:UIControlStateNormal];
+        }
+    }else{
+        if(!person.facebook){
+            [self.loginBtn setTitle:@"Log in" forState:UIControlStateNormal];
+            self.addFriend.hidden = YES;
         }else{
-            self.loginBtn.hidden = YES;
+            self.addFriend.hidden = YES;
+            [self.loginBtn setTitle:@"Edit" forState:UIControlStateNormal];
         }
-        [taskTableView reloadData];
-        //UI
-        self.profilePic.image = person.profilePic;
-        self.name.text = person.name;
-        self.location.text = person.city;
-        if (person.lastLocation && !person.isMe) {
-            CLLocation *loc0 = me.lastLocation;
-            CLLocation *loc1 = person.lastLocation;
-            float distance = [loc0 distanceFromLocation:loc1]/1000;
-            if (person.city) {
-                self.location.text =[NSString stringWithFormat:@"%@ | ",person.city];
-                self.location.text = [self.location.text stringByAppendingString:[NSString stringWithFormat:@"%1.f km",distance]];
-            }
-            else
-            {
-                self.location.text = [NSString stringWithFormat:@"%1.f km",distance];
-            }
-//            self.location.text = [NSString stringWithFormat:@"%@ | %.1f km", person.city, distance];
-          
-        }
-        
-        //statement
-        EWTaskItem *t = tasks.firstObject;
-        if (person.statement) {
-            self.statement.text = person.statement;
-        }else if (t.statement){
-            self.statement.text = t.statement;
-        }else{
-            self.statement.text = @"No statement written by this owner";
-        }
-        
-        [self.view setNeedsDisplay];
     }
+    [taskTableView reloadData];
+    //UI
+    self.profilePic.image = person.profilePic;
+    self.name.text = person.name;
+    self.location.text = person.city;
+    if (person.lastLocation && !person.isMe) {
+        CLLocation *loc0 = me.lastLocation;
+        CLLocation *loc1 = person.lastLocation;
+        float distance = [loc0 distanceFromLocation:loc1]/1000;
+        if (person.city) {
+            self.location.text =[NSString stringWithFormat:@"%@ | ",person.city];
+            self.location.text = [self.location.text stringByAppendingString:[NSString stringWithFormat:@"%1.f km",distance]];
+        }
+        else
+        {
+            self.location.text = [NSString stringWithFormat:@"%1.f km",distance];
+        }
+        //            self.location.text = [NSString stringWithFormat:@"%@ | %.1f km", person.city, distance];
+        
+    }
+    
+    //statement
+    EWTaskItem *t = tasks.firstObject;
+    if (person.statement) {
+        self.statement.text = person.statement;
+    }else if (t.statement){
+        self.statement.text = t.statement;
+    }else{
+        self.statement.text = @"No statement written by this owner";
+    }
+    
+    [self.view setNeedsDisplay];
+    
 }
 
 
@@ -188,9 +192,15 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 
 #pragma mark - UI Events
 - (IBAction)extProfile:(id)sender{
+    if ([me.friends containsObject:self.person]) {
+        //is friend
+        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:self.person];
+        [self.navigationController pushViewController:controller animated:YES];
+    } else {
+        UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
+        [as showInView:self.view];
+    }
     
-    UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
-    [as showInView:self.view];
 }
 
 - (IBAction)close:(id)sender {
@@ -228,57 +238,33 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     }
 }
 
-//The action view (alert)
-- (void)addPerson{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Add friend"
-                                message:[NSString stringWithFormat:@"Add %@ as your friend?", person.name]
-                                delegate:self
-                     cancelButtonTitle:@"OK"
-                     otherButtonTitles:@"Cancel", nil];
-    [alert show];
-    
-}
-
-- (void)unfriend{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Unfriend"
-                                                    message:[NSString stringWithFormat:@"Really unfriend %@?", person.name]
-                                                   delegate:self
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:@"Cancel", nil];
-    [alert show];
-}
-
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if ([alertView.title isEqualToString:@"Add friend"]) {
-        switch (buttonIndex) {
-            case 0:
-            {
-                //friend
-                [me addFriendsObject:person];
-                [EWDataStore save];
-                [self.view showSuccessNotification:@"Added"];
-            }
-                break;
-                
-            default:
-                break;
-        }
-    }else if ([alertView.title isEqualToString:@"Unfriend"]){
-        //unfriend
-        if (buttonIndex == 0) {
-            [me removeFriendsObject:person];
-            [EWDataStore save];
-            [self.view showSuccessNotification:@"Unfriended"];
-            
-        }
-    }
-}
-
 
 - (IBAction)more:(id)sender {
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:@"Flag" otherButtonTitles:@"Friend history", nil];
     [sheet showFromBarButtonItem:self.navigationItem.rightBarButtonItem animated:YES];
+}
+
+#pragma mark - Actionsheet
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
+    if ([title isEqualToString:@"Add friend"]) {
+        //friend
+        [me addFriendsObject:person];
+        [EWDataStore save];
+        [self.view showSuccessNotification:@"Added"];
+    }else if ([title isEqualToString:@"Unfriend"]){
+        //unfriend
+        
+        [me removeFriendsObject:person];
+        [EWDataStore save];
+        [self.view showSuccessNotification:@"Unfriended"];
+        
+        
+    }else if ([title isEqualToString:@"Send Voice Greeting"]){
+        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:self.person];
+        [self.navigationController pushViewController:controller animated:YES];
+    }
+
 }
 
 @end
@@ -300,7 +286,6 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     NSInteger tapItem =  [tabView selectedSegmentIndex];
     switch (tapItem) {
         case 0:
-            
             return 1;
 #warning need update
         case 1:
@@ -348,34 +333,6 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     
     
     return cell;
-    
-//    EWTaskHistoryCell *cell = [table dequeueReusableCellWithIdentifier:taskCellIdentifier];
-//    if (!cell) {
-//        cell = [[EWTaskHistoryCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:taskCellIdentifier];
-//        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-//        cell.backgroundColor = [UIColor clearColor];
-//    }
-//
-//    
-//    EWTaskItem *task = [tasks objectAtIndex:indexPath.section];
-//    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:task.time];
-//    cell.dayOfMonth.text = [NSString stringWithFormat:@"%ld", (long)components.day];
-//    //month
-//    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-//    [formatter setDateFormat:@"MMM"];
-//    NSString *MON = [formatter stringFromDate:task.time];
-//    cell.month.text = MON;
-//    
-//    if (task.completed) {
-//        cell.wakeTime.text = [task.completed date2String];
-//        cell.taskInfo.text = [NSString stringWithFormat:@"Woke up by %lu users", (unsigned long)task.waker.count];
-//        
-//    }else{
-//        cell.wakeTime.text = [task.time date2String];
-//        cell.taskInfo.text = @"Failed";
-//    }
-//    
-//    return cell;
 }
 //change cell bg color
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -392,27 +349,19 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         {
             EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
             controller = tempVc;
-            break;
-        }
-            
-        default:
-        {
-            controller = [[EWRecordingViewController alloc] initWithPerson:person];
-
+            //[self.navigationController pushViewController:controller animated:YES]
+            [self.navigationController pushViewController:controller animated:YES];
             break;
         }
     }
     
-    [UIView  beginAnimations:nil context:NULL];
-    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-    [UIView setAnimationDuration:0.75];
-    [self.navigationController pushViewController:controller animated:NO];
-    
     //选择动画
-    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.navigationController.view cache:NO];
-    [UIView commitAnimations];
+//    [UIView  beginAnimations:nil context:NULL];
+//    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+//    [UIView setAnimationDuration:0.75];
+//    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.navigationController.view cache:NO];
+//    [UIView commitAnimations];
     
-//        [self presentViewControllerWithBlurBackground:controller];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
@@ -426,72 +375,6 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         NSLog(@"PersonVC: user logged in, starting refresh");
         [self initData];
         [self initView];
-    }
-}
-
-@end
-
-
-
-#pragma mark -
-@implementation EWPersonViewController (UICollectionViewAdditions)
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    if (section != 0) return 0;
-    if (tabView.selectedSegmentIndex == 0) {
-        //friends
-        return person.friends.count;//me.achievements.count;
-    }else if(tabView.selectedSegmentIndex == 2){
-        //achievements
-        return person.achievements.count;
-    }
-    
-    NSLog(@"Selected tab for wake up history");
-    return 0;
-}
-
--(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    return CGSizeMake(kCollectionViewCellWidth, kCollectionViewCellHeight);
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)cView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    EWCollectionPersonCell *cell = [cView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
-    if (tabView.selectedSegmentIndex == 0) {
-        //friends
-        EWPerson *friend = [[person.friends allObjects] objectAtIndex:indexPath.row];
-        cell.profilePic.image = friend.profilePic;
-        cell.initial.text = [friend.name initial];
-        
-    }else if (tabView.selectedSegmentIndex == 2){
-        //achievements
-        EWAchievement *a = [[person.achievements allObjects] objectAtIndex:indexPath.row];
-        cell.initial.text = a.name;
-        if (a.image) {
-            cell.profilePic.image = a.image;
-        }else{
-            cell.profilePic.image = [UIImage imageNamed:@"music_note"];
-        }
-    }
-    return cell;
-}
-
-
-#pragma mark - UIActionSheetDelegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex == 0) {
-        //add friend
-        if (person != me) {
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            [me addFriendsObject:person];
-            [EWDataStore save];
-            [self.view showSuccessNotification:@"Added"];
-            
-        }
-    }else if (buttonIndex == 1) {
-        //send voice greeting
-        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
-        [self presentViewControllerWithBlurBackground:controller];
     }
 }
 

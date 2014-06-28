@@ -93,7 +93,7 @@
     hexagonMask.path = hexagonPath.CGPath;
     view.layer.mask  = hexagonMask;
     view.layer.masksToBounds = YES;
-    //view.clipsToBounds = YES;
+    view.clipsToBounds = YES;
 }
 
 + (void)applyHexagonSoftMaskForView:(UIView *)view{

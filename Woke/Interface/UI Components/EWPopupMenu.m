@@ -8,6 +8,7 @@
 
 #import "EWPopupMenu.h"
 #import "EWUIUtil.h"
+#import "EWPersonStore.h"
 
 #define kCallOutBtnSize         40
 
@@ -60,21 +61,14 @@
         //[(UIToolbar *)_alphaView setBarStyle:UIBarStyleBlack];
         [self addSubview:_alphaView];
         
-        //cell
-        CGRect cellFrame = cell.frame;
-        cellFrame.origin.x = cellFrame.origin.x - collectionView.bounds.origin.x;
-        cellFrame.origin.y = cellFrame.origin.y - collectionView.bounds.origin.y;
-        cellCenter.x = cellFrame.origin.x + cellFrame.size.width/2;
-        cellCenter.y = cellFrame.origin.y + cellFrame.size.height/2;
+        //cellCenter
+        cellCenter = [self convertPoint:cell.center fromView:collectionView];
         
         //create buttons
         _profileButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, kCallOutBtnSize, kCallOutBtnSize)];
         _profileButton.center = cellCenter;
         UIImage *aimge = [UIImage imageNamed:@"Callout_Profile_Btn"];
-
         [_profileButton setImage:aimge forState:UIControlStateNormal];
-//        _profileButton.backgroundColor = [UIColor redColor];
-       
         [_profileButton addTarget:self action:@selector(toPerson) forControlEvents:UIControlEventTouchUpInside];
         
         _buzzButton = [[UIButton alloc] initWithFrame: CGRectMake(0, 0, kCallOutBtnSize, kCallOutBtnSize)];
@@ -96,15 +90,14 @@
         [_closeButton setImage:dimge forState:UIControlStateNormal];
         
         //name
-        name = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kCollectionViewCellWidth, 22)];
-        name.center = cellCenter;
-        name.text = cell.name;
-        [self addSubview:name];
-        name.adjustsFontSizeToFitWidth = YES;
-        name.textColor = [UIColor whiteColor];
-        name.font =[UIFont fontWithName:@"Lato-Regular" size:14];
-        
-        name.textAlignment = NSTextAlignmentCenter;
+//        name = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kCollectionViewCellWidth, 22)];
+//        name.center = cellCenter;
+//        name.text = cell.name.text;
+//        [self addSubview:name];
+//        name.adjustsFontSizeToFitWidth = YES;
+//        name.textColor = [UIColor whiteColor];
+//        name.font =[UIFont fontWithName:@"Lato-Regular" size:14];
+//        name.textAlignment = NSTextAlignmentCenter;
         
         locationAndTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 22)];
         locationAndTimeLabel.center = cellCenter;
@@ -112,11 +105,10 @@
         locationAndTimeLabel.adjustsFontSizeToFitWidth = YES;
         locationAndTimeLabel.textColor = [UIColor whiteColor];
         locationAndTimeLabel.font =[UIFont fontWithName:@"Lato-Regular" size:12];
-        
         locationAndTimeLabel.text = cell.timeAndDistance;
-        
+        locationAndTimeLabel.alpha = 0;
         [self addSubview:locationAndTimeLabel];
-        // add a lable here  mq 
+        
         
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeMenu)];
@@ -130,7 +122,7 @@
         _buzzButton.alpha=0;
         _voiceButton.alpha=0;
         _closeButton.alpha=0;
-        name.alpha = 0;
+        //name.alpha = 0;
         
         
         //bring cell to the top
@@ -138,47 +130,42 @@
         
         
         [UIView transitionWithView:cell
-                          duration:0.4
-                           options:(UIViewAnimationOptionTransitionFlipFromLeft | UIViewAnimationOptionAllowAnimatedContent)
+                          duration:0.3
+                           options:(/*UIViewAnimationOptionTransitionFlipFromLeft | */UIViewAnimationOptionAllowAnimatedContent)
                         animations:
          ^{
-             //CGAffineTransform flip = CGAffineTransformMakeRotation(M_PI);
-             CGAffineTransform scale = CGAffineTransformMakeScale(1.13, 1.13);
-             //cell.white.alpha = 0.8;
-             //CGAffineTransform trans = CGAffineTransformConcat(flip, scale);
+             CGAffineTransform scale = CGAffineTransformMakeScale(1.2, 1.2);
              cell.transform = scale;
              
-             cell.white.alpha = 0;
-             //cell.white.alpha = 0.8;
-             cell.distance.alpha = 1;
-             cell.time.alpha = 1;
+             //hide everything
+             cell.km.alpha = 0;
+             cell.time.alpha = 0;
              cell.initial.alpha = 0;
              
+             //show name and info
+             locationAndTimeLabel.alpha = 1;
+             cell.name.alpha = 1;
+             
              //location
-             CGPoint nrect1=[_profileButton center];
-             CGPoint nrect2=[_buzzButton center];
-             CGPoint nrect3=[_voiceButton center];
-             CGPoint nrect4=[_closeButton center];
-             CGPoint nameRect = name.center;
-             CGPoint locationAndTimeLabelCenter = locationAndTimeLabel.center;
-//
+             CGPoint nrect1 = [_profileButton center];
+             CGPoint nrect2 = [_buzzButton center];
+             CGPoint nrect3 = [_voiceButton center];
+             CGPoint infoRect = locationAndTimeLabel.center;
+             CGPoint nameRect = cell.name.center;
+
              nrect1.x += kCollectionViewCellWidth / 2 + 22.5;
              nrect1.y -= kCollectionViewCellHeight / 2 + 15;
              nrect2.y -= kCollectionViewCellHeight / 2 + 15;
              nrect2.x -= kCollectionViewCellWidth / 2 + 22.5;
              nrect3.y -= kCollectionViewCellHeight / 2 + 30 + kCallOutBtnSize/2;
-             nameRect.y += kCollectionViewCellHeight / 2 + 15;
-             nrect4.y = nameRect.y;
-             locationAndTimeLabelCenter.y =  nrect4.y + 20;
-
+             infoRect.y += kCollectionViewCellHeight / 2 + 40;
+             nameRect.y += 20;
              
              _alphaView.alpha = 1;
              _profileButton.alpha=1;
              _buzzButton.alpha=1;
              _voiceButton.alpha=1;
              _closeButton.alpha=1;
-             name.alpha = 1;
-             
              
              [EWUIUtil applyShadow:name];
              [EWUIUtil applyShadow:locationAndTimeLabel];
@@ -186,9 +173,9 @@
              [_profileButton setCenter:nrect1];
              [_buzzButton setCenter:nrect2];
              [_voiceButton setCenter:nrect3];
-             [_closeButton setCenter:nrect4];
-             name.center = nrect4;
-             [locationAndTimeLabel setCenter:locationAndTimeLabelCenter];
+             //[_closeButton setCenter:nrect4];
+             [locationAndTimeLabel setCenter:infoRect];
+             cell.name.center = nameRect;
              
          } completion:^(BOOL finished){
              
@@ -221,52 +208,67 @@
     
     [UIView transitionWithView:cell
                       duration:0.4
-                       options:(UIViewAnimationOptionTransitionFlipFromRight | UIViewAnimationOptionAllowAnimatedContent)
+                       options:(/*UIViewAnimationOptionTransitionFlipFromRight | */UIViewAnimationOptionAllowAnimatedContent)
                     animations:
      ^{
-         cell.white.alpha = 0;
-         //cell.distance.alpha = 0;
-         //cell.time.alpha = 0;
-         if ([cell.initial.text isEqualToString:@"YOU"]) {
+         //me
+         if (cell.person.isMe) {
              cell.initial.alpha = 1;
          }
-     
-        CGAffineTransform scale = CGAffineTransformMakeScale(1.0, 1.0);
-        cell.transform = scale;
-        cell.white.alpha = 0;
-        //cell.initial.alpha = 0;
-        cell.layer.shadowRadius = 0;
-        
-        _profileButton.center = cellCenter;
-        _buzzButton.center = cellCenter;
-        _voiceButton.center = cellCenter;
-        _closeButton.center = cellCenter;
-        name.center = cellCenter;
-        
-        _profileButton.alpha=0;
-        _buzzButton.alpha=0;
-        _voiceButton.alpha=0;
-        _closeButton.alpha=0;
-        _alphaView.alpha=0;
-        name.alpha = 0;
-        
-    } completion:^(BOOL finished) {
-        collectionView.scrollEnabled = YES;
-        [self removeFromSuperview];
-        
-        
-    }];
+         
+         //scale
+         CGAffineTransform scale = CGAffineTransformMakeScale(1.0, 1.0);
+         cell.transform = scale;
+         
+         //shadow
+         cell.layer.shadowRadius = 0;
+         
+         //location
+         _profileButton.center = cellCenter;
+         _buzzButton.center = cellCenter;
+         _voiceButton.center = cellCenter;
+         _closeButton.center = cellCenter;
+         CGPoint nameRect = cell.name.center;
+         nameRect.y -= 20;
+         cell.name.center = nameRect;
+         locationAndTimeLabel.center = cellCenter;
+         
+         if (cell.showDistance){
+             cell.km.alpha = 1;
+         }
+         if (cell.showTime) {
+             cell.time.alpha = 1;
+         }
+         if (!cell.showName) {
+             cell.name.alpha = 0;
+         }
+         _profileButton.alpha=0;
+         _buzzButton.alpha=0;
+         _voiceButton.alpha=0;
+         _closeButton.alpha=0;
+         _alphaView.alpha=0;
+         //name.alpha = 0;
+         locationAndTimeLabel.alpha = 0;
+         
+     } completion:^(BOOL finished) {
+         collectionView.scrollEnabled = YES;
+         [self removeFromSuperview];
+         
+         
+     }];
 }
 
+
+//open method
 + (void)flipCell:(EWCollectionPersonCell *)cell completion:(void (^)(void))block{
-    if (cell.white.alpha == 0) {
-        //initial state
+    if (cell.isSelected == YES) {
+        //back to initial state
         [UIView transitionWithView:cell
                           duration:0.4
-                           options:(UIViewAnimationOptionTransitionFlipFromLeft | UIViewAnimationOptionAllowAnimatedContent)
+                           options:(/*UIViewAnimationOptionTransitionFlipFromLeft | */UIViewAnimationOptionAllowAnimatedContent)
                         animations:^{
-            cell.white.alpha = 0.8;
-            cell.distance.alpha = 1;
+            //cell.white.alpha = 0.8;
+            //cell.distance.alpha = 1;
             cell.time.alpha = 1;
             cell.initial.alpha = 0;
         } completion:^(BOOL finished) {
@@ -278,17 +280,15 @@
             
         }];
     }else{
+        
         [UIView transitionWithView:cell
                           duration:0.4
-                           options:(UIViewAnimationOptionTransitionFlipFromRight | UIViewAnimationOptionAllowAnimatedContent)
+                           options:(/*UIViewAnimationOptionTransitionFlipFromRight | */UIViewAnimationOptionAllowAnimatedContent)
                         animations:
          ^{
-            cell.white.alpha = 0;
-            cell.distance.alpha = 0;
-            cell.time.alpha = 0;
-            if ([cell.initial.text isEqualToString:@"YOU"]) {
-                cell.initial.alpha = 1;
-            }
+             cell.selected = YES;
+             cell.time.alpha = 0;
+             cell.initial.alpha = 1;
         } completion:^(BOOL finished) {
             if (block) {
                 block();

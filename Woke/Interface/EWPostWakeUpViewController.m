@@ -114,6 +114,7 @@
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
+    collectionView.allowsMultipleSelection = YES;
 
     buzzButton.layer.cornerRadius = 4.0;
     buzzButton.layer.masksToBounds= YES;
@@ -284,37 +285,34 @@
 {
     
     EWCollectionPersonCell * cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
-    [cell applyHexagonMask];
+    cell.showName = YES;
     
     //person
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
-    cell.profilePic.image = person.profilePic;
-    cell.name = person.name;
-    cell.initial.text = person.name.initial;
+    cell.person = person;
     return cell;
 }
 
 -(void)collectionView:(UICollectionView *)cView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSArray *selectedIndexPaths = [cView indexPathsForSelectedItems];
+    
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[cView cellForItemAtIndexPath:indexPath];
-    EWPerson * person = [personArray objectAtIndex:indexPath.row];
-    if ([selectedPersonSet containsObject:person])
+    //EWPerson * person = [personArray objectAtIndex:indexPath.row];
+    if (![selectedIndexPaths containsObject:indexPath])
     {
         //取消被选中状态
-        [selectedPersonSet removeObject:person];
-        cell.selectionView.hidden = YES;
+        [cView deselectItemAtIndexPath:indexPath animated:YES];
+        cell.selection.hidden = YES;
     }
-    else
-    {
+    else{
         //选中
-        [selectedPersonSet addObject:person];
-        cell.selectionView.hidden = NO;
+        [cView selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+        cell.selection.hidden = NO;
     }
     
     //[collectionView reloadData];
     [collectionView setNeedsDisplay];
-    
-    NSLog(@"%@",person.name);
     
 }
 
