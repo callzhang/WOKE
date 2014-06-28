@@ -34,6 +34,7 @@
 #import "EWCollectionPersonCell.h"
 #import "EWAppDelegate.h"
 #import "EWMyFriendsViewController.h"
+#import "EWMyProfileViewController.h"
 #define kProfileTableArray              @[@"Friends", @"People woke her up", @"People her woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
 
 
@@ -97,6 +98,9 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     self.location.text = @"";
     self.statement.text = @"";
     
+    
+    
+    
     [taskTableView reloadData];
     
 }
@@ -124,6 +128,16 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     
     //======= Person =======
     if (person) {
+        /*
+         *  add friends button
+         */
+        if (person.isMyFriend) {
+            [self.addFriendButton setImage:[UIImage imageNamed:@"FriendedIcon"] forState:UIControlStateDisabled];
+            [self.addFriendButton setEnabled:NO];
+        }
+
+        
+        
         if (person.isMe && !person.facebook) {
             self.loginBtn.hidden = NO;
         }else{
@@ -189,6 +203,13 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 #pragma mark - UI Events
 - (IBAction)extProfile:(id)sender{
     
+    if (person.isMe) {
+        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
+        
+        [self.navigationController pushViewControllerWithBlur:controller];
+        
+        return;
+    }
     UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
     [as showInView:self.view];
 }

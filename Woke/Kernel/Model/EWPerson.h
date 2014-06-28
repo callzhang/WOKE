@@ -21,6 +21,9 @@
 @property (nonatomic, strong) NSDictionary *cachedInfo;
 
 - (BOOL)isMe;
+- (BOOL)isMyFriend;
+
+
 /*
 @property (nonatomic, strong) NSString* aws_id;
 @property (nonatomic, strong) NSDate* birthday;

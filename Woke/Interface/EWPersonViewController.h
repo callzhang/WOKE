@@ -18,6 +18,7 @@
     EWStatisticsManager *stats;
     NSArray *profileItemsArray;
     NSMutableArray *activityArray;
+
 }
 @property (strong, nonatomic) IBOutlet UIButton *addFriendButton;
 //PersonInfoView

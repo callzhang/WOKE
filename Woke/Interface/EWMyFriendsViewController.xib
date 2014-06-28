@@ -18,10 +18,10 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bordered" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="rJR-l6-FKM">
-                    <rect key="frame" x="20" y="63" width="280" height="51"/>
+                    <rect key="frame" x="20" y="57" width="280" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="50" id="vGg-d3-lJs"/>
+                        <constraint firstAttribute="height" constant="40" id="vGg-d3-lJs"/>
                     </constraints>
                     <segments>
                         <segment title="All"/>

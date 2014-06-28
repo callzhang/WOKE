@@ -16,7 +16,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "EWAppDelegate.h"
 #import "EWRecordingViewController.h"
-
+NSString * const selectAllCellId = @"selectAllCellId";
 @interface EWPostWakeUpViewController ()
 {
     //__weak IBOutlet UIImageView * backGroundImage;
@@ -110,11 +110,12 @@
     //[collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    [collectionView registerNib:nib forCellWithReuseIdentifier:selectAllCellId];
     collectionView.dataSource = self;
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
-
+    [collectionView setAllowsMultipleSelection:YES];
     buzzButton.layer.cornerRadius = 4.0;
     buzzButton.layer.masksToBounds= YES;
     buzzButton.layer.borderWidth = 1;
@@ -276,16 +277,28 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [personArray count];
+    return [personArray count]+1;
 }
 
 // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    EWCollectionPersonCell * cell ;
     
-    EWCollectionPersonCell * cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
+    if (indexPath.row == [personArray count]) {
+        cell = [cView  dequeueReusableCellWithReuseIdentifier:selectAllCellId forIndexPath:indexPath];
+        [cell applyHexagonMask];
+        cell.name = @"Select";
+        cell.time.text = @"All";
+        cell.initial.text = cell.name;
+        cell.initial.alpha = 1;
+        cell.time.alpha = 1;
+        return cell;
+    }
+    
+    cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     [cell applyHexagonMask];
-    
+
     //person
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
     cell.profilePic.image = person.profilePic;
@@ -296,6 +309,12 @@
 
 -(void)collectionView:(UICollectionView *)cView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"%@",cView.indexPathsForSelectedItems);
+    if (indexPath.row == [personArray count]) {
+        [self selectAllCell];
+        return;
+    }
+    
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[cView cellForItemAtIndexPath:indexPath];
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
     if ([selectedPersonSet containsObject:person])
@@ -331,7 +350,29 @@
     
     [collectionView reloadData];
 }
+-(void)selectAllCell
+{
+    for (int i =0 ; i < [personArray count]; i++) {
+        NSIndexPath *selectedPath = [NSIndexPath indexPathForRow:i inSection:0];
+        EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:selectedPath];
+        EWPerson * person = [personArray objectAtIndex:selectedPath.row];
+        
+        if ([selectedPersonSet containsObject:person])
+        {
+            
+//            [selectedPersonSet removeObject:person];
+//            cell.selectionView.hidden = YES;
+        }
+        else
+        {
+            //选中
+            [selectedPersonSet addObject:person];
+            cell.selectionView.hidden = NO;
+        }
 
+//        [self collectionView:collectionView didSelectItemAtIndexPath:selectedPath];
+    }
+}
 #pragma mark -
 #pragma mark - memorying warning -
 
