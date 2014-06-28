@@ -97,7 +97,17 @@
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:profileVC];
     
-    [self.controller presentViewControllerWithBlurBackground:navController];
+    navController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
+    [navController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navController.navigationBar.shadowImage = [UIImage new];
+    navController.navigationBar.translucent = YES;
+    navController.view.backgroundColor = [UIColor clearColor];
+    navController.navigationBar.tintColor = [UIColor whiteColor];
+    
+    [self.controller presentViewControllerWithBlurBackground:navController completion:^(){
+       
+       
+    }];
 
 //    if([self.superview isKindOfClass:[UITableView class]]){
 //        UITableView *table = (UITableView *)self.superview;
