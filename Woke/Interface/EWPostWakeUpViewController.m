@@ -16,7 +16,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "EWAppDelegate.h"
 #import "EWRecordingViewController.h"
-
+NSString * const selectAllCellId = @"selectAllCellId";
 @interface EWPostWakeUpViewController ()
 {
     //__weak IBOutlet UIImageView * backGroundImage;
@@ -110,6 +110,7 @@
     //[collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    [collectionView registerNib:nib forCellWithReuseIdentifier:selectAllCellId];
     collectionView.dataSource = self;
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
@@ -277,16 +278,20 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [personArray count];
+    return [personArray count]+1;
 }
 
 // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    EWCollectionPersonCell * cell ;
     
     EWCollectionPersonCell * cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     cell.showName = YES;
     
+    cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
+    [cell applyHexagonMask];
+
     //person
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
     cell.person = person;
@@ -329,7 +334,29 @@
     
     [collectionView reloadData];
 }
+-(void)selectAllCell
+{
+    for (int i =0 ; i < [personArray count]; i++) {
+        NSIndexPath *selectedPath = [NSIndexPath indexPathForRow:i inSection:0];
+        EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:selectedPath];
+        EWPerson * person = [personArray objectAtIndex:selectedPath.row];
+        
+        if ([selectedPersonSet containsObject:person])
+        {
+            
+//            [selectedPersonSet removeObject:person];
+//            cell.selectionView.hidden = YES;
+        }
+        else
+        {
+            //选中
+            [selectedPersonSet addObject:person];
+            cell.selectionView.hidden = NO;
+        }
 
+//        [self collectionView:collectionView didSelectItemAtIndexPath:selectedPath];
+    }
+}
 #pragma mark -
 #pragma mark - memorying warning -
 

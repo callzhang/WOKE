@@ -284,6 +284,7 @@
     
     //Use reusable cell or create a new cell
     EWMediaViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+//    EWMediaViewCell *cell = [[EWMediaViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
     //get media item
     EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
     

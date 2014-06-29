@@ -34,6 +34,7 @@
 #import "EWCollectionPersonCell.h"
 #import "EWAppDelegate.h"
 #import "EWMyFriendsViewController.h"
+#import "EWMyProfileViewController.h"
 #define kProfileTableArray              @[@"Friends", @"People woke her up", @"People her woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
 
 
@@ -90,6 +91,9 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     self.name.text = @"";
     self.location.text = @"";
     self.statement.text = @"";
+    
+    
+    
     
     [taskTableView reloadData];
     

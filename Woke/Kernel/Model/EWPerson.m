@@ -27,5 +27,36 @@
     return isme;
 }
 
+-(BOOL)isMyFriend
+{
+    
+    if ([self.friends containsObject:me]) {
+        return YES;
+    }
+    return NO;
+//    __block BOOL  isMyFriend = false;
+//    [self.friends enumerateObjectsUsingBlock:^(EWPerson * person , BOOL * stop){
+//        
+//        if([person.name isEqualToString:[EWPersonStore me].username])
+//        {
+//            *stop = YES;
+//            isMyFriend = true;
+//        }
+//        
+//     }
+//     ];
+//    
+//    
+//    return isMyFriend;
+}
 
+//-(BOOL)isEqual:(id)object
+//{
+//    EWPerson *person = (EWPerson *)object;
+//    if ([person.name isEqualToString:self.name]) {
+//        return true;
+//    }
+//    return false;
+//    
+//}
 @end
