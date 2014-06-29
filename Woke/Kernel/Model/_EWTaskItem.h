@@ -5,8 +5,8 @@
 #import "EWServerObject.h"
 
 extern const struct EWTaskItemAttributes {
-	__unsafe_unretained NSString *added;
 	__unsafe_unretained NSString *completed;
+	__unsafe_unretained NSString *log;
 	__unsafe_unretained NSString *state;
 	__unsafe_unretained NSString *statement;
 	__unsafe_unretained NSString *time;
@@ -18,7 +18,6 @@ extern const struct EWTaskItemRelationships {
 	__unsafe_unretained NSString *messages;
 	__unsafe_unretained NSString *owner;
 	__unsafe_unretained NSString *pastOwner;
-	__unsafe_unretained NSString *waker;
 } EWTaskItemRelationships;
 
 extern const struct EWTaskItemFetchedProperties {
@@ -29,10 +28,9 @@ extern const struct EWTaskItemFetchedProperties {
 @class EWMessage;
 @class EWPerson;
 @class EWPerson;
-@class EWPerson;
 
 
-
+@class NSObject;
 
 
 
@@ -50,21 +48,21 @@ extern const struct EWTaskItemFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDate* added;
-
-
-
-//- (BOOL)validateAdded:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
 @property (nonatomic, strong) NSDate* completed;
 
 
 
 //- (BOOL)validateCompleted:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
+@property (nonatomic, strong) id log;
+
+
+
+//- (BOOL)validateLog:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -139,13 +137,6 @@ extern const struct EWTaskItemFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSSet *waker;
-
-- (NSMutableSet*)wakerSet;
-
-
-
-
 
 @end
 
@@ -161,24 +152,19 @@ extern const struct EWTaskItemFetchedProperties {
 - (void)addMessagesObject:(EWMessage*)value_;
 - (void)removeMessagesObject:(EWMessage*)value_;
 
-- (void)addWaker:(NSSet*)value_;
-- (void)removeWaker:(NSSet*)value_;
-- (void)addWakerObject:(EWPerson*)value_;
-- (void)removeWakerObject:(EWPerson*)value_;
-
 @end
 
 @interface _EWTaskItem (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSDate*)primitiveAdded;
-- (void)setPrimitiveAdded:(NSDate*)value;
-
-
-
-
 - (NSDate*)primitiveCompleted;
 - (void)setPrimitiveCompleted:(NSDate*)value;
+
+
+
+
+- (id)primitiveLog;
+- (void)setPrimitiveLog:(id)value;
 
 
 
@@ -227,11 +213,6 @@ extern const struct EWTaskItemFetchedProperties {
 
 - (EWPerson*)primitivePastOwner;
 - (void)setPrimitivePastOwner:(EWPerson*)value;
-
-
-
-- (NSMutableSet*)primitiveWaker;
-- (void)setPrimitiveWaker:(NSMutableSet*)value;
 
 
 @end

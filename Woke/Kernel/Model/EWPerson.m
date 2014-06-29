@@ -14,7 +14,6 @@
 @dynamic profilePic;
 @dynamic bgImage;
 @dynamic preference;
-@dynamic score;
 @dynamic cachedInfo;
 
 
@@ -27,5 +26,23 @@
     return isme;
 }
 
+-(BOOL)isFriend
+{
+    BOOL myFriend = self.friendPending;
+    BOOL friended = self.friendWaiting;
+    
+    if (myFriend && friended) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)friendPending{
+    return [me.friends containsObject:self];
+}
+
+- (BOOL)friendWaiting{
+    return [self.friends containsObject:me];
+}
 
 @end

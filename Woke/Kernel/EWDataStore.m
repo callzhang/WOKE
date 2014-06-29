@@ -259,7 +259,7 @@
 + (NSManagedObject *)objectForCurrentContext:(NSManagedObject *)obj{
     
     if (obj == nil) {
-        NSLog(@"Passed in nil");
+        NSLog(@"Passed in nil to get current MO");
         return nil;
     }
     
@@ -583,12 +583,23 @@
         NSLog(@"Object not found for ID %@", managedObjectID);
         return;
     }
+    
+    //skip if updating other PFUser
+    //TODO: Set ACL for PFUser to enable public writability
+    if ([mo isKindOfClass:[EWPerson class]]) {
+        if (![(EWPerson *)mo isMe]) {
+            NSLog(@"Skip updating other PFUser: %@", [(EWPerson *)mo name]);
+            [EWDataStore removeObjectFromWorkingQueue:mo];
+            return;
+        }
+    }
+    
     NSString *parseObjectId = [mo valueForKey:kParseObjectID];
     PFObject *object;
     if (parseObjectId) {
-        //update
+        //download
         NSError *err;
-        object = [[PFQuery queryWithClassName:mo.entity.serverClassName] getObjectWithId:parseObjectId error:&err];
+        object =[mo getParseObjectWithError:&err];
         
         if (!object) {
             //TODO: handle error
@@ -612,15 +623,7 @@
             
             return;
         }
-        //skip if updating other PFUser
-        //TODO: Set ACL for PFUser to enable public writability
-        if ([mo.entity.serverClassName isEqualToString:@"_User"]) {
-            if (![(EWPerson *)mo isMe]) {
-                NSLog(@"Skip updating other PFUser: %@", [object valueForKey:@"name"]);
-                [EWDataStore removeObjectFromWorkingQueue:mo];
-                return;
-            }
-        }
+        
     } else {
         //insert
         object = [PFObject objectWithClassName:mo.entity.serverClassName];
@@ -760,7 +763,7 @@
 
 - (void)updateValueAndRelationFromParseObject:(PFObject *)parseObject{
     if (!parseObject) {
-        NSLog(@"The MO %@ doesn't not has server key, please check", self.entity.name);
+        NSLog(@"*** The MO %@ doesn't not has server key, please check", self.entity.name);
         return;
     }
     
@@ -775,7 +778,18 @@
     [relations enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
         
         if ([obj isToMany]) {
-            //Fetch PFRelation
+            //if no inverse relation, use Array of pointers
+            if (!obj.inverseRelationship) {
+                NSArray *relatedPOs = parseObject[key];
+                NSMutableSet *relatedMOs = [NSMutableSet new];
+                for (PFObject *PO in relatedPOs) {
+                    [relatedMOs addObject:PO.managedObject];
+                }
+                [self setValue:[relatedMOs copy] forKey:key];
+                return ;
+            }
+            
+            //Fetch PFRelation for normal relation
             PFRelation *toManyRelation;
             @try{
                 toManyRelation = [parseObject relationForKey:key];
@@ -822,7 +836,7 @@
             
             //DELETE from the relation to MO not found on server
             for (NSManagedObject *MOToDelete in managedObjectToDelete) {
-                NSLog(@"~~~> Delete to-many relation on MO %@->%@(%@)", self.entity.name, obj.name, [MOToDelete valueForKey:kParseObjectID]);
+                NSLog(@"~~~> Delete to-many relation on MO %@(%@)->%@(%@)", self.entity.name, parseObject.objectId, obj.name, [MOToDelete valueForKey:kParseObjectID]);
                 NSMutableSet *relatedMOs = [self mutableSetValueForKey:key];
                 [relatedMOs removeObject:MOToDelete];
                 [self setValue:relatedMOs forKeyPath:key];
@@ -860,7 +874,7 @@
                 
                 if (!inverseRelationExists) {
                     [self setValue:nil forKey:key];
-                    NSLog(@"~~~> Delete to-one relation on MO %@->%@(%@)", self.entity.name, obj.name, [inverseMO valueForKey:kParseObjectID]);
+                    NSLog(@"~~~> Delete to-one relation on MO %@(%@)->%@(%@)", self.entity.name, parseObject.objectId, obj.name, [inverseMO valueForKey:kParseObjectID]);
                 }else{
                     NSLog(@"*** Something wrong, the inverse relation %@(%@) <-> %@(%@) deoesn't agree", self.entity.name, [self valueForKey:kParseObjectID], inverseMO.entity.name, [inverseMO valueForKey:kParseObjectID]);
                 }
@@ -876,22 +890,39 @@
 }
 
 - (PFObject *)parseObject{
-    NSString *parseID = [self valueForKey:kParseObjectID];
-    if (parseID) {
-        PFQuery *query = [PFQuery queryWithClassName:self.entity.serverClassName];
-        [query whereKey:kParseObjectID equalTo:parseID];
-        PFObject *object = [query getFirstObject];
-        if (!object) {
-            NSLog(@"@@@ Need some treatment when no parse object found");
-            [self setValue:nil forKey:kParseObjectID];
-            //TODO: need to check if all related MO has removed their relation with self, if so, delete this MO.
-        }	
+    return [self getParseObjectWithError:nil];
+}
+
+- (PFObject *)getParseObjectWithError:(NSError **)err{
+    NSString *parseObjectId = [self valueForKey:kParseObjectID];
+    
+    if (parseObjectId) {
+        PFObject *object;
+        //download
+        NSDate *updatedAt = (NSDate *)[self valueForKey:kUpdatedDateKey];
+        //try to get the object locally first if not outdated
+        if (![updatedAt isOutDated]) {
+            object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
+            [object fetchIfNeeded];
+        }else{
+            //if local mo is outdated, query from server
+            PFQuery *query = [PFQuery queryWithClassName:self.entity.serverClassName];
+            if ([self isKindOfClass:[EWPerson class]]) {
+                NSLog(@"Fetching User %@ with keys", [self valueForKey:@"name"]);
+                [query includeKey:@"friends"];
+                [query includeKey:@"mediaAssets"];
+                [query includeKey:@"tasks"];
+                [query includeKey:@"alarms"];
+            }
+            object = [query getObjectWithId:parseObjectId error:err];
+        }
         return object;
     }else{
+        NSLog(@"!!! ParseObjectID not exist, upload first!");
         return nil;
     }
     
-    
+    return nil;
 }
 
 - (void)createParseObjectWithCompletion:(void (^)(void))block {
@@ -1126,7 +1157,11 @@
 }
 
 - (BOOL)isOutDated{
-    BOOL outdated = [(NSDate *)[self valueForKey:kUpdatedDateKey] isOutDated];
+    NSDate *date = (NSDate *)[self valueForKey:kUpdatedDateKey];
+    if (!date) {
+        return YES;
+    }
+    BOOL outdated = [date isOutDated];
     return outdated;
 }
 
@@ -1200,7 +1235,19 @@
         if (relatedManagedObjects){
             if ([obj isToMany]) {
                 //To-Many relation
-                //Parse relation
+                //Determine array or relation
+                if (!obj.inverseRelationship) {
+                    //No inverse relation, use array of pointer
+                    
+                    NSSet *relatedMOs = [mo valueForKey:key];
+                    NSMutableArray *relatedPOs = [NSMutableArray new];
+                    for (NSManagedObject *MO in relatedMOs) {
+                        PFObject *PO = [PFObject objectWithoutDataWithClassName:MO.entity.serverClassName objectId:[MO valueForKey:kParseObjectID]];
+                        [relatedPOs addObject:PO];
+                    }
+                    [self setObject:[relatedPOs copy] forKey:key];
+                    return;
+                }
                 PFRelation *parseRelation = [self relationForKey:key];
                 //Find related PO to delete async
                 [[parseRelation query] findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {

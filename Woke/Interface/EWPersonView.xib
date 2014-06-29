@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EWPersonViewController">
             <connections>
+                <outlet property="addFriend" destination="9" id="Wh7-uw-jaE"/>
                 <outlet property="addFriendButton" destination="9" id="cNE-7f-ZoS"/>
                 <outlet property="location" destination="6" id="45"/>
                 <outlet property="loginBtn" destination="vVD-Gl-uPp" id="KcQ-dE-yqt"/>

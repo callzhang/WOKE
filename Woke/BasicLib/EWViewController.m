@@ -8,6 +8,7 @@
 
 #import "EWViewController.h"
 #import "EWDeviceInfo.h"
+#import "EWUIUtil.h"
 
 @interface EWViewController ()
 
@@ -26,8 +27,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    //self.view.backgroundColor = kCustomWhite;
+    self.view.backgroundColor = [UIColor clearColor];
+    [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:nil rightItem:nil];
     
 }
 

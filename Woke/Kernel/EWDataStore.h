@@ -156,7 +156,7 @@
  Get conterparty Parse Object
  */
 - (PFObject *)parseObject;
-
+- (PFObject *)getParseObjectWithError:(NSError **)error;
 /**
  Create a parse object
  */

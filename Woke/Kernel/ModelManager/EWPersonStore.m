@@ -78,8 +78,11 @@ EWPerson *me;
     newUser.name = kDefaultUsername;
     newUser.preference = kUserDefaults;
     newUser.cachedInfo = [NSDictionary new];
+    if ([user isEqual:[PFUser currentUser]]) {
+        newUser.score = @100;
+    }
     
-    //[EWDataStore updateParseObjectFromManagedObject:newUser];
+    //skip uploading because there will have more info to upload
     
     [EWDataStore save];
 
@@ -126,10 +129,10 @@ EWPerson *me;
             PFUser *user = (PFUser*)[query getObjectWithId:parseId];
             EWPerson *person = (EWPerson *)user.managedObject;
             float score = 99 - [list indexOfObject:parseId];
-            person.score = score;
+            person.score = [NSNumber numberWithFloat:score];
             [allPerson addObject:person];
         }
-        [EWPersonStore me].score = 100;
+        [EWPersonStore me].score = @100;
         NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
         //return
         everyone = [allPerson copy];
@@ -197,7 +200,8 @@ EWPerson *me;
     if ([object isEqual:me]) {
         NSNumber *score = change[NSKeyValueChangeNewKey];
         if ([score integerValue] != 100) {
-            me.score = 100;
+            NSLog(@"My score resotred to 100");
+            me.score = @100;
         }
     }
 }

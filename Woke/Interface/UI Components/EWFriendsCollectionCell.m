@@ -10,24 +10,24 @@
 #import "EWPerson.h"
 #import "EWUIUtil.h"
 @implementation EWFriendsCollectionCell
--(id)init
-{
-    if (self = [super init]) {
-        self = [self initWithFrame:CGRectMake(0, 0, 70, 100)];
-        _headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 70, 80)];
-        _headImageView.backgroundColor = [UIColor clearColor];
-        
-        [self addSubview:_headImageView];
-        
-        _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 80, 70, 20)];
-        _nameLabel.textColor = [UIColor whiteColor];
-        _nameLabel.backgroundColor = [UIColor clearColor];
-        _nameLabel.textAlignment = NSTextAlignmentCenter;
-        _nameLabel.contentMode = UIViewContentModeScaleAspectFill;
-        [self addSubview:_nameLabel];
-    }
-    return self;
-}
+//-(id)init
+//{
+//    if (self = [super init]) {
+//        self = [self initWithFrame:CGRectMake(0, 0, 70, 100)];
+//        _headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 70, 80)];
+//        _headImageView.backgroundColor = [UIColor clearColor];
+//        
+//        [self addSubview:_headImageView];
+//        
+//        _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 80, 70, 20)];
+//        _nameLabel.textColor = [UIColor whiteColor];
+//        _nameLabel.backgroundColor = [UIColor clearColor];
+//        _nameLabel.textAlignment = NSTextAlignmentCenter;
+//        _nameLabel.contentMode = UIViewContentModeScaleAspectFill;
+//        [self addSubview:_nameLabel];
+//    }
+//    return self;
+//}
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];

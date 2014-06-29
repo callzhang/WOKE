@@ -8,6 +8,7 @@
 
 #import "NSDate+Extend.h"
 #import "EWDefines.h"
+#import "EWUIUtil.h"
 
 @implementation NSDate (Extend)
 
@@ -203,27 +204,26 @@
 }
 
 - (NSString *)timeLeft{
+    NSInteger left = -[self timeIntervalSinceNow];
+    if (left<0) {
+        return @"";
+    }
+    
+    return [EWUIUtil getStringFromTime:left];
+}
+
+- (NSString *)timeSpent{
     NSInteger left = [self timeIntervalSinceNow];
     if (left<0) {
         return @"";
     }
-    NSInteger seconds = left % 60;
-    NSInteger minutes = floorf(left/60);
-    NSInteger hours = floorf(left/3600);
-    NSString *string;
-    if (hours != 0) {
-        string = [NSString stringWithFormat:@"%ld hours", (long)hours];
-    }else if (minutes != 0){
-        string = [NSString stringWithFormat:@"%ld min", (long)minutes];
-    }else{
-        string = [NSString stringWithFormat:@"%ld sec", (long)seconds];
-    }
-    return string;
+    
+    return [EWUIUtil getStringFromTime:left];
 }
 
 - (double)timeElapsed{
     double t = [self timeIntervalSinceNow];
-    return -t;
+    return t;
     
 }
 

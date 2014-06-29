@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+#define nextTaskTimeKey                 @"next_task_time"
+
+
 @class EWPerson, EWTaskItem, EWAlarmItem;
 
 #define kTaskUpdateInterval         3600 * 24

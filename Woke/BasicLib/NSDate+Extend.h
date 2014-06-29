@@ -106,7 +106,7 @@
  Time left to next alarm
  */
 - (NSString *)timeLeft;
-
+- (NSString *)timeSpent;
 /**
  Time elapsed since last update
  */

@@ -7,15 +7,18 @@
 extern const struct EWPersonAttributes {
 	__unsafe_unretained NSString *bgImage;
 	__unsafe_unretained NSString *birthday;
+	__unsafe_unretained NSString *cachedInfo;
 	__unsafe_unretained NSString *city;
 	__unsafe_unretained NSString *email;
 	__unsafe_unretained NSString *facebook;
 	__unsafe_unretained NSString *gender;
+	__unsafe_unretained NSString *history;
 	__unsafe_unretained NSString *lastLocation;
 	__unsafe_unretained NSString *name;
 	__unsafe_unretained NSString *preference;
 	__unsafe_unretained NSString *profilePic;
 	__unsafe_unretained NSString *region;
+	__unsafe_unretained NSString *score;
 	__unsafe_unretained NSString *statement;
 	__unsafe_unretained NSString *username;
 	__unsafe_unretained NSString *weibo;
@@ -60,14 +63,17 @@ extern const struct EWPersonFetchedProperties {
 
 @class NSObject;
 
+@class NSObject;
 
 
 
 
 @class NSObject;
+@class NSObject;
 
 @class NSObject;
 @class NSObject;
+
 
 
 
@@ -101,6 +107,16 @@ extern const struct EWPersonFetchedProperties {
 
 
 //- (BOOL)validateBirthday:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
+@property (nonatomic, strong) id cachedInfo;
+
+
+
+//- (BOOL)validateCachedInfo:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -141,6 +157,16 @@ extern const struct EWPersonFetchedProperties {
 
 
 //- (BOOL)validateGender:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
+@property (nonatomic, strong) id history;
+
+
+
+//- (BOOL)validateHistory:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -191,6 +217,20 @@ extern const struct EWPersonFetchedProperties {
 
 
 //- (BOOL)validateRegion:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
+@property (nonatomic, strong) NSNumber* score;
+
+
+
+@property float scoreValue;
+- (float)scoreValue;
+- (void)setScoreValue:(float)value_;
+
+//- (BOOL)validateScore:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -423,6 +463,12 @@ extern const struct EWPersonFetchedProperties {
 
 
 
+- (id)primitiveCachedInfo;
+- (void)setPrimitiveCachedInfo:(id)value;
+
+
+
+
 - (NSString*)primitiveCity;
 - (void)setPrimitiveCity:(NSString*)value;
 
@@ -443,6 +489,12 @@ extern const struct EWPersonFetchedProperties {
 
 - (NSString*)primitiveGender;
 - (void)setPrimitiveGender:(NSString*)value;
+
+
+
+
+- (id)primitiveHistory;
+- (void)setPrimitiveHistory:(id)value;
 
 
 
@@ -473,6 +525,15 @@ extern const struct EWPersonFetchedProperties {
 
 - (NSString*)primitiveRegion;
 - (void)setPrimitiveRegion:(NSString*)value;
+
+
+
+
+- (NSNumber*)primitiveScore;
+- (void)setPrimitiveScore:(NSNumber*)value;
+
+- (float)primitiveScoreValue;
+- (void)setPrimitiveScoreValue:(float)value_;
 
 
 

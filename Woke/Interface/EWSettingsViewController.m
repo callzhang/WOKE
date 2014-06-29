@@ -49,6 +49,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.view.backgroundColor = [UIColor clearColor];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+
+    
     [self initData];
     [self initView];
 }
@@ -73,10 +81,10 @@
     
     //navigationItem
     self.navigationItem.titleView = settingGroupController;
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    self.navigationController.navigationBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStyleDone target:self action:@selector(onDone:)];
+//    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+//    self.navigationController.navigationBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+//    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStyleDone target:self action:@selector(onDone:)];
     
     //TableView
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
@@ -275,9 +283,14 @@
                     cell.textLabel.text = LOCALSTR(@"Bed time notification");
                     //switch
                     UISwitch *bedTimeNotifSwitch = [[UISwitch alloc] init];
+                    bedTimeNotifSwitch.tintColor = [UIColor greenColor];
+//                    bedTimeNotifSwitch.backgroundColor = [UIColor greenColor];
+                    bedTimeNotifSwitch.tintColor = [UIColor clearColor];
                     bedTimeNotifSwitch.on = (BOOL)preference[@"BedTimeNotification"];
                     bedTimeNotifSwitch.tag = 3;
-                    bedTimeNotifSwitch.onTintColor = kCustomGray;
+//                    bedTimeNotifSwitch.onTintColor = kCustomGray;
+                    bedTimeNotifSwitch.onTintColor = [UIColor greenColor];
+                    
                     [bedTimeNotifSwitch addTarget:self action:@selector(OnBedTimeNotificationSwitchChanged:) forControlEvents:UIControlEventValueChanged];
                     cell.accessoryView = bedTimeNotifSwitch;
                     //cell.detailTextLabel.text = @"";

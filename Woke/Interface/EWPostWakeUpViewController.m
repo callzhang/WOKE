@@ -16,7 +16,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "EWAppDelegate.h"
 #import "EWRecordingViewController.h"
-
+NSString * const selectAllCellId = @"selectAllCellId";
 @interface EWPostWakeUpViewController ()
 {
     //__weak IBOutlet UIImageView * backGroundImage;
@@ -75,6 +75,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    [self initData];
     [self initViews];
     
 }
@@ -91,6 +92,12 @@
 
 #pragma mark -
 #pragma mark - init views and data
+
+-(void)initData
+{
+    //take the cached value or a new value
+    personArray = [[EWPersonStore sharedInstance] everyone];
+}
 
 -(void)initViews
 {
@@ -110,11 +117,12 @@
     //[collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    [collectionView registerNib:nib forCellWithReuseIdentifier:selectAllCellId];
     collectionView.dataSource = self;
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
-
+//    [collectionView setAllowsMultipleSelection:YES];
     buzzButton.layer.cornerRadius = 4.0;
     buzzButton.layer.masksToBounds= YES;
     buzzButton.layer.borderWidth = 1;
@@ -130,94 +138,14 @@
     voiceMessageButton.imageEdgeInsets = UIEdgeInsetsMake(10, 5, 10, 5);
 }
 
--(void)initData
-{
-    //take the cached value or a new value
-    personArray = [[EWPersonStore sharedInstance] everyone];
-}
 
 #pragma mark -
 #pragma mark - get buzzing time & unit -
 
 - (void)setTaskItem:(EWTaskItem *)t{
     taskItem = t;
-    time = [[NSDate date] timeIntervalSinceDate:t.time];
-    NSLog(@"Time interval is %ld", (long)time);
+    NSLog(@"Time interval is %@", [taskItem.time timeLeft]);
 }
-
-
--(NSString *)getTime
-{
-    
-    NSString * timeStr;
-    if (time < 60 && time >= 0)
-    {
-        timeStr = [NSString stringWithFormat:@"%ld",(long)time];
-    }
-    else if (time >= 60 && time < 3600)
-    {
-        if (time%60 == 0)
-        {
-            timeStr = [NSString stringWithFormat:@"%f",time/60.0];
-        }
-        else
-        {
-            if (time/60.0 > 10.0)
-            {
-                timeStr = [NSString stringWithFormat:@"%f",time/60.0];
-            }
-            timeStr = [NSString stringWithFormat:@"%.1f",time/60.0];
-        }
-    }
-    else
-    {
-        if (time%3600 == 0)
-        {
-            timeStr = [NSString stringWithFormat:@"%f",time/3600.0];
-        }
-        else
-        {
-            if (time/3600.0 > 10.0)
-            {
-                timeStr = [NSString stringWithFormat:@"%f",time/3600.0];
-            }
-            timeStr = [NSString stringWithFormat:@"%.1f",time/3600.0];
-        }
-    }
-    
-    return timeStr;
-}
--(NSString *)getUnit
-{
-    
-    if (time < 60 && time >= 0)
-    {
-        if (time == 0 || time == 1)
-        {
-            return @"second";
-        }
-        return @"seconds";
-    }
-    else if( time >= 60 && time < 3600)
-    {
-        if (time == 60)
-        {
-            return @"minute";
-        }
-        return @"minutes";
-    }
-    else
-    {
-        if (time == 3600)
-        {
-            return @"hour";
-        }
-        return @"hours";
-    }
-    
-    return nil; 
-}
-
 
 #pragma mark -
 #pragma mark - IBAction -
@@ -276,45 +204,62 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [personArray count];
+    return [personArray count]+1;
 }
 
 // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    EWCollectionPersonCell * cell ;
     
-    EWCollectionPersonCell * cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
+    if (indexPath.row == [personArray count]) {
+        cell = [cView  dequeueReusableCellWithReuseIdentifier:selectAllCellId forIndexPath:indexPath];
+        [cell applyHexagonMask];
+        cell.image.alpha = 0.1;
+        cell.initial.text = @"Select";
+        cell.time.text = @"All";
+        cell.initial.alpha = 1;
+        cell.time.alpha = 1;
+        
+        return cell;
+    }
+
+    cell.showName = YES;
+    
+    cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     [cell applyHexagonMask];
-    
+
     //person
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
-    cell.profilePic.image = person.profilePic;
-    cell.name = person.name;
-    cell.initial.text = person.name.initial;
+    cell.person = person;
     return cell;
 }
 
 -(void)collectionView:(UICollectionView *)cView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"%@",cView.indexPathsForSelectedItems);
+    if (indexPath.row == [personArray count]) {
+        [self selectAllCell];
+        return;
+    }
+    
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[cView cellForItemAtIndexPath:indexPath];
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
     if ([selectedPersonSet containsObject:person])
     {
         //取消被选中状态
         [selectedPersonSet removeObject:person];
-        cell.selectionView.hidden = YES;
+        cell.selection.hidden = YES;
     }
     else
     {
         //选中
         [selectedPersonSet addObject:person];
-        cell.selectionView.hidden = NO;
+        cell.selection.hidden = NO;
     }
     
     //[collectionView reloadData];
     [collectionView setNeedsDisplay];
-    
-    NSLog(@"%@",person.name);
     
 }
 
@@ -331,7 +276,29 @@
     
     [collectionView reloadData];
 }
+-(void)selectAllCell
+{
+    for (int i =0 ; i < [personArray count]; i++) {
+        NSIndexPath *selectedPath = [NSIndexPath indexPathForRow:i inSection:0];
+        EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:selectedPath];
+        EWPerson * person = [personArray objectAtIndex:selectedPath.row];
+        
+        if ([selectedPersonSet containsObject:person])
+        {
+            
+//            [selectedPersonSet removeObject:person];
+//            cell.selectionView.hidden = YES;
+        }
+        else
+        {
+            //选中
+            [selectedPersonSet addObject:person];
+            cell.selection.hidden = NO;
+        }
 
+//        [self collectionView:collectionView didSelectItemAtIndexPath:selectedPath];
+    }
+}
 #pragma mark -
 #pragma mark - memorying warning -
 

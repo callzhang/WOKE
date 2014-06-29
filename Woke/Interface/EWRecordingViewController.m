@@ -111,10 +111,9 @@
 #pragma mark - collection view
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
-    [cell applyHexagonMask];
+    cell.showName = YES;
     EWPerson *receiver = personSet[indexPath.row];
-    cell.profilePic.image = receiver.profilePic;
-    cell.initial.text = [receiver.name initial];
+    cell.person = receiver;
     return cell;
 }
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{

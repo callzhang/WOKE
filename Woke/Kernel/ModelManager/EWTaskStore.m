@@ -16,7 +16,6 @@
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
 
-#define nextTaskTimeKey                 @"next_task_time"
 
 @implementation EWTaskStore
 
@@ -316,7 +315,7 @@
     //relation
     t.owner = [EWPersonStore me];
     //others
-    t.added = [NSDate date];
+    t.createdAt = [NSDate date];
     //[EWDataStore save];
     
     NSLog(@"Created new Task");
