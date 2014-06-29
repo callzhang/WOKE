@@ -122,7 +122,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
-    [collectionView setAllowsMultipleSelection:YES];
+//    [collectionView setAllowsMultipleSelection:YES];
     buzzButton.layer.cornerRadius = 4.0;
     buzzButton.layer.masksToBounds= YES;
     buzzButton.layer.borderWidth = 1;
