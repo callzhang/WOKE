@@ -315,7 +315,7 @@
     //relation
     t.owner = [EWPersonStore me];
     //others
-    t.added = [NSDate date];
+    t.createdAt = [NSDate date];
     //[EWDataStore save];
     
     NSLog(@"Created new Task");

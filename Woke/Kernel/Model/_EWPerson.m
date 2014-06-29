@@ -6,15 +6,18 @@
 const struct EWPersonAttributes EWPersonAttributes = {
 	.bgImage = @"bgImage",
 	.birthday = @"birthday",
+	.cachedInfo = @"cachedInfo",
 	.city = @"city",
 	.email = @"email",
 	.facebook = @"facebook",
 	.gender = @"gender",
+	.history = @"history",
 	.lastLocation = @"lastLocation",
 	.name = @"name",
 	.preference = @"preference",
 	.profilePic = @"profilePic",
 	.region = @"region",
+	.score = @"score",
 	.statement = @"statement",
 	.username = @"username",
 	.weibo = @"weibo",
@@ -67,6 +70,11 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
 	
+	if ([key isEqualToString:@"scoreValue"]) {
+		NSSet *affectingKey = [NSSet setWithObject:@"score"];
+		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
+		return keyPaths;
+	}
 
 	return keyPaths;
 }
@@ -82,6 +90,13 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 
 @dynamic birthday;
+
+
+
+
+
+
+@dynamic cachedInfo;
 
 
 
@@ -110,6 +125,13 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 
 @dynamic gender;
+
+
+
+
+
+
+@dynamic history;
 
 
 
@@ -146,6 +168,32 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 @dynamic region;
 
+
+
+
+
+
+@dynamic score;
+
+
+
+- (float)scoreValue {
+	NSNumber *result = [self score];
+	return [result floatValue];
+}
+
+- (void)setScoreValue:(float)value_ {
+	[self setScore:[NSNumber numberWithFloat:value_]];
+}
+
+- (float)primitiveScoreValue {
+	NSNumber *result = [self primitiveScore];
+	return [result floatValue];
+}
+
+- (void)setPrimitiveScoreValue:(float)value_ {
+	[self setPrimitiveScore:[NSNumber numberWithFloat:value_]];
+}
 
 
 

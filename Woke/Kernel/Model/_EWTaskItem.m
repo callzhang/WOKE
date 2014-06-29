@@ -4,8 +4,8 @@
 #import "_EWTaskItem.h"
 
 const struct EWTaskItemAttributes EWTaskItemAttributes = {
-	.added = @"added",
 	.completed = @"completed",
+	.log = @"log",
 	.state = @"state",
 	.statement = @"statement",
 	.time = @"time",
@@ -17,7 +17,6 @@ const struct EWTaskItemRelationships EWTaskItemRelationships = {
 	.messages = @"messages",
 	.owner = @"owner",
 	.pastOwner = @"pastOwner",
-	.waker = @"waker",
 };
 
 const struct EWTaskItemFetchedProperties EWTaskItemFetchedProperties = {
@@ -61,14 +60,14 @@ const struct EWTaskItemFetchedProperties EWTaskItemFetchedProperties = {
 
 
 
-@dynamic added;
-
-
-
-
-
-
 @dynamic completed;
+
+
+
+
+
+
+@dynamic log;
 
 
 
@@ -151,19 +150,6 @@ const struct EWTaskItemFetchedProperties EWTaskItemFetchedProperties = {
 
 @dynamic pastOwner;
 
-	
-
-@dynamic waker;
-
-	
-- (NSMutableSet*)wakerSet {
-	[self willAccessValueForKey:@"waker"];
-  
-	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"waker"];
-  
-	[self didAccessValueForKey:@"waker"];
-	return result;
-}
 	
 
 

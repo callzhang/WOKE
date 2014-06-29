@@ -14,7 +14,6 @@
 @dynamic profilePic;
 @dynamic bgImage;
 @dynamic preference;
-@dynamic score;
 @dynamic cachedInfo;
 
 
@@ -27,36 +26,23 @@
     return isme;
 }
 
--(BOOL)isMyFriend
+-(BOOL)isFriend
 {
+    BOOL myFriend = self.friendPending;
+    BOOL friended = self.friendWaiting;
     
-    if ([self.friends containsObject:me]) {
+    if (myFriend && friended) {
         return YES;
     }
     return NO;
-//    __block BOOL  isMyFriend = false;
-//    [self.friends enumerateObjectsUsingBlock:^(EWPerson * person , BOOL * stop){
-//        
-//        if([person.name isEqualToString:[EWPersonStore me].username])
-//        {
-//            *stop = YES;
-//            isMyFriend = true;
-//        }
-//        
-//     }
-//     ];
-//    
-//    
-//    return isMyFriend;
 }
 
-//-(BOOL)isEqual:(id)object
-//{
-//    EWPerson *person = (EWPerson *)object;
-//    if ([person.name isEqualToString:self.name]) {
-//        return true;
-//    }
-//    return false;
-//    
-//}
+- (BOOL)friendPending{
+    return [me.friends containsObject:self];
+}
+
+- (BOOL)friendWaiting{
+    return [self.friends containsObject:me];
+}
+
 @end

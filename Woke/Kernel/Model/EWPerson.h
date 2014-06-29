@@ -17,12 +17,12 @@
 @property (nonatomic, strong) UIImage *profilePic;
 @property (nonatomic, strong) UIImage *bgImage;
 @property (nonatomic, strong) NSDictionary *preference;
-@property (nonatomic) float score;
 @property (nonatomic, strong) NSDictionary *cachedInfo;
 
 - (BOOL)isMe;
-- (BOOL)isMyFriend;
-
+- (BOOL)isFriend;
+- (BOOL)friendPending;
+- (BOOL)friendWaiting;
 
 /*
 @property (nonatomic, strong) NSString* aws_id;

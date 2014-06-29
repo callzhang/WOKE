@@ -117,7 +117,7 @@
     EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
     //save me
     [EWPersonStore sharedInstance].currentUser = person;
-    me.score = 100;
+    me.score = @100;
     [EWDataStore saveToLocal:me];
     
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
