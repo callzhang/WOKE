@@ -158,6 +158,11 @@
 - (PFObject *)parseObject;
 
 /**
+ Create a parse object
+ */
+- (void)createParseObjectWithCompletion:(void (^)(void))block;
+
+/**
  Refresh ManagedObject value from server in background
  @discussion If the ParseID is not found on this ManagedObject, an insert action will performed.
  */

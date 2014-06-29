@@ -894,6 +894,22 @@
     
 }
 
+- (void)createParseObjectWithCompletion:(void (^)(void))block {
+    PFObject *object = [PFObject objectWithClassName:self.entity.serverClassName];
+    NSError *error;
+    [object save:&error];
+    if (!error) {
+        NSLog(@"+++> CREATED PO %@(%@)", object.parseClassName, object.objectId);
+        [self setValue:object.objectId forKey:kParseObjectID];
+        [self setValue:object.updatedAt forKeyPath:kUpdatedDateKey];
+    }else{
+        [self updateEventually];
+        return;
+    }
+    if (block) block();
+}
+
+
 - (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
     NSParameterAssert([NSThread isMainThread]);
     NSString *parseObjectId = [self valueForKey:kParseObjectID];

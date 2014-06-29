@@ -67,6 +67,7 @@
     EWMediaItem *media = [self createMedia];
     media.type = kMediaTypeBuzz;
     media.buzzKey = [me.preference objectForKey:@"buzzSound"];
+    [media createParseObjectWithCompletion:nil];
     [media refresh];//insert to server
     return media;
 }
