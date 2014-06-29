@@ -115,8 +115,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
-    collectionView.allowsMultipleSelection = YES;
-
+    [collectionView setAllowsMultipleSelection:YES];
     buzzButton.layer.cornerRadius = 4.0;
     buzzButton.layer.masksToBounds= YES;
     buzzButton.layer.borderWidth = 1;
@@ -284,8 +283,6 @@ NSString * const selectAllCellId = @"selectAllCellId";
 // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    EWCollectionPersonCell * cell ;
-    
     EWCollectionPersonCell * cell = [cView  dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     cell.showName = YES;
     
@@ -351,7 +348,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
         {
             //选中
             [selectedPersonSet addObject:person];
-            cell.selectionView.hidden = NO;
+            cell.selection.hidden = NO;
         }
 
 //        [self collectionView:collectionView didSelectItemAtIndexPath:selectedPath];

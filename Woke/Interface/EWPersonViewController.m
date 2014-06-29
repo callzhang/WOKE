@@ -205,6 +205,15 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         [as showInView:self.view];
     }
     
+    if (person.isMe) {
+        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
+        
+        [self.navigationController pushViewControllerWithBlur:controller];
+        
+        return;
+    }
+    UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
+    [as showInView:self.view];
 }
 
 - (IBAction)close:(id)sender {
