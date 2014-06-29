@@ -8,17 +8,101 @@
 
 #import "UINavigationController+Blur.h"
 #import "UIViewController+Blur.h"
-
+#import "AFBlurSegue.h"
+#import "UIImage+ImageEffects.h"
 @implementation UINavigationController(Blur)
 
 
 -(void)pushViewControllerWithBlur:(UIViewController *)viewController
 {
+    
+    NSInteger _blurRadius = 20;
+    UIColor  *_tintColor = [UIColor clearColor];
+    CGFloat _saturationDeltaFactor = 0.5;
     viewController.view.backgroundColor = [UIColor clearColor];
     
-    [self pushViewController:viewController animated:YES];
     
-    [self addBlurInViewContrller:viewController];
+    UIViewController *sourceController = self;
+    UIViewController *destinationController = viewController;
+    
+     UIImageView *bgImageView =( UIImageView *) [self.view viewWithTag:kBlurImageTag];
+    
+    UIImage *background = bgImageView.image;
+    
+//    if ([sourceController isKindOfClass:[UITableViewController class]]) {
+//        
+//        UIView *viewToRender = [(UITableViewController *)sourceController tableView];
+//        CGPoint contentOffset = [[(UITableViewController *)sourceController tableView]contentOffset];
+//        
+//        UIGraphicsBeginImageContext(viewToRender.bounds.size);
+//        CGContextRef context = UIGraphicsGetCurrentContext();
+//        CGContextTranslateCTM(context, 0, -contentOffset.y);
+//        [viewToRender.layer renderInContext:context];
+//        background = UIGraphicsGetImageFromCurrentImageContext();
+//        UIGraphicsEndImageContext();
+//    } else {
+//        
+//        UIGraphicsBeginImageContextWithOptions(sourceController.view.bounds.size, YES, 0);
+//        CGContextRef context = UIGraphicsGetCurrentContext();
+//        [sourceController.view.layer renderInContext:context];
+//        background = UIGraphicsGetImageFromCurrentImageContext();
+//        UIGraphicsEndImageContext();
+//    }
+    
+    switch ([[UIApplication sharedApplication]statusBarOrientation]) {
+        case UIInterfaceOrientationPortrait:
+            background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationUp];
+            break;
+            
+        case UIInterfaceOrientationPortraitUpsideDown:
+            background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationDown];
+            break;
+            
+        case UIInterfaceOrientationLandscapeLeft:
+            background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationLeft];
+            break;
+            
+        case UIInterfaceOrientationLandscapeRight:
+            background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationRight];
+            break;
+            
+        default:
+            break;
+    }
+    
+    UIImageView *blurredBackground = [[UIImageView alloc]initWithImage:[background applyBlurWithRadius:_blurRadius tintColor:_tintColor saturationDeltaFactor:_saturationDeltaFactor maskImage:nil]];
+    
+    CGRect backgroundRect = [sourceController.view convertRect:sourceController.view.window.bounds fromView:Nil];
+    
+    if (destinationController.modalTransitionStyle == UIModalTransitionStyleCoverVertical) {
+        blurredBackground.frame = CGRectMake(0, -backgroundRect.size.width, backgroundRect.size.width, backgroundRect.size.height);
+    } else {
+        blurredBackground.frame = CGRectMake(0, 0, backgroundRect.size.width, backgroundRect.size.height);
+    }
+    
+    
+    destinationController.view.backgroundColor = [UIColor clearColor];
+    
+    if ([destinationController isKindOfClass:[UITableViewController class]]) {
+        [[(UITableViewController *)destinationController tableView]setBackgroundView:blurredBackground];
+    } else {
+        [destinationController.view addSubview:blurredBackground];
+        [destinationController.view sendSubviewToBack:blurredBackground];
+    }
+    
+    [self pushViewController:destinationController animated:YES];
+    
+    [destinationController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        [UIView animateWithDuration:[context transitionDuration] animations:^{
+            blurredBackground.frame = CGRectMake(0, 0, backgroundRect.size.width, backgroundRect.size.height);
+        }];
+    } completion:nil];
+
+    
+//    [self pushViewController:viewController animated:YES];
+    
+//    [self addBlurInViewContrller:viewController];
 
     
     

@@ -11,6 +11,7 @@
 // Util
 #import "EWUIUtil.h"
 #import "UIViewController+Blur.h"
+#import "UINavigationController+Blur.h"
 
 // Model
 #import "EWPerson.h"
@@ -389,7 +390,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
             EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
             controller = tempVc;
             //[self.navigationController pushViewController:controller animated:YES]
-            [self.navigationController pushViewController:controller animated:YES];
+            [self.navigationController pushViewControllerWithBlur:controller];
             break;
         }
     }
