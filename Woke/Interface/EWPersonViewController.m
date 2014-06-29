@@ -11,6 +11,7 @@
 // Util
 #import "EWUIUtil.h"
 #import "UIViewController+Blur.h"
+#import "UINavigationController+Blur.h"
 
 // Model
 #import "EWPerson.h"
@@ -28,6 +29,7 @@
 #import "EWStatisticsManager.h"
 
 //view
+#import "UIView+HUD.h"
 #import "EWRecordingViewController.h"
 #import "EWLogInViewController.h"
 #import "EWTaskHistoryCell.h"
@@ -40,6 +42,11 @@
 
 static NSString *taskCellIdentifier = @"taskCellIdentifier";
 NSString *const profileCellIdentifier = @"ProfileCell";
+@interface EWPersonViewController()
+- (void)showSuccessNotification:(NSString *)alert;
+
+@end
+
 @interface EWPersonViewController (UITableView) <UITableViewDataSource, UITableViewDelegate>
 
 @end
@@ -50,6 +57,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 
 
 @implementation EWPersonViewController
+
 @synthesize person, taskTableView;
 //@synthesize collectionView;
 @synthesize tabView;
@@ -200,9 +208,11 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         //is friend
         EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:self.person];
         [self.navigationController pushViewController:controller animated:YES];
+        return;
     } else {
         UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
         [as showInView:self.view];
+        return;
     }
     
     if (person.isMe) {
@@ -221,6 +231,15 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 }
 
 - (IBAction)login:(id)sender {
+    
+    if (person.facebook) {
+        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
+        
+        [self.navigationController pushViewControllerWithBlur:controller];
+        
+        return;
+    }
+    
     EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
     [loginVC connect:nil];
 }
@@ -264,7 +283,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         //friend
         [me addFriendsObject:person];
         [EWDataStore save];
-        [self.view showSuccessNotification:@"Added"];
+        [self showSuccessNotification:@"Added"];
     }else if ([title isEqualToString:@"Unfriend"]){
         //unfriend
         
@@ -279,7 +298,15 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     }
 
 }
-
+- (void)showSuccessNotification:(NSString *)alert{
+    
+    
+    [self.addFriend setImage:[UIImage imageNamed:@"Voice Message"] forState:UIControlStateNormal];
+    
+    [self.taskTableView reloadData];
+    
+    [self.view showNotification:alert WithStyle:hudStyleSuccess];
+}
 @end
 
 
@@ -363,7 +390,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
             EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
             controller = tempVc;
             //[self.navigationController pushViewController:controller animated:YES]
-            [self.navigationController pushViewController:controller animated:YES];
+            [self.navigationController pushViewControllerWithBlur:controller];
             break;
         }
     }
@@ -390,5 +417,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         [self initView];
     }
 }
+
+
 
 @end

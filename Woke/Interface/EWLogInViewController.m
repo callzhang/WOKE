@@ -15,7 +15,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "MBProgressHUD.h"
 #import "EWUserManagement.h"
-
+#define WhyFaceBook @"Lorem ipsum dolor sit amet,\nconsectertur adipisicing elit,sed do\neiusmod tempor incididunt ut\n labore et dolore magna aliqua Ut enim ad minim veniam."
 @interface EWLogInViewController ()
 
 @end
@@ -42,9 +42,9 @@
 - (void)updateView {
 
     if (FBSession.activeSession.state == FBSessionStateOpen || FBSession.activeSession.state == FBSessionStateOpenTokenExtended) {
-        [self.btnLoginLogout setTitle:@"Log out" forState:UIControlStateNormal];
+//        [self.btnLoginLogout setTitle:@"Log out" forState:UIControlStateNormal];
     } else {
-        [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
+//        [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
     }
     
     [self.indicator stopAnimating];
@@ -85,6 +85,13 @@
     if (FBSession.activeSession.state == FBSessionStateOpen) {
         [self logoutUser];
     }
+}
+
+- (IBAction)whyFacebookPopup:(id)sender {
+    
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"Why Facebook?" message:WhyFaceBook delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+    [alertV show];
+    
 }
 
 #pragma mark - Login & Logout

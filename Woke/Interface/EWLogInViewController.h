@@ -21,5 +21,6 @@
 - (IBAction)check:(id)sender;
 - (IBAction)skip:(id)sender;
 - (IBAction)logout:(id)sender;
+- (IBAction)whyFacebookPopup:(id)sender;
 
 @end
