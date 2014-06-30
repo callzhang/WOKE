@@ -10,6 +10,7 @@
 #define kBlurViewTag       345
 
 #define kBlurImageTag      435
+#define kBgPicViewTag      999
 typedef enum{
     EWBlurViewOptionWhite,
     EWBlurViewOptionBlack

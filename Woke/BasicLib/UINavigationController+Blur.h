@@ -11,5 +11,7 @@
 @interface UINavigationController(Blur)
 
 -(void)pushViewControllerWithBlur:(UIViewController *)viewController;
+-(void)pushViewControllerWithBlur:(UIViewController *)viewController tableViewInHead:(BOOL)hasHeadTableView;
 -(void)popViewControllerWithBlur;
+-(UIImageView *)navBlurView;
 @end
