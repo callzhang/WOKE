@@ -140,7 +140,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
             [self.addFriend setImage:[UIImage imageNamed:@"Add Friend Button"] forState:UIControlStateNormal];
         }else if(person.friendPending){
             [self.addFriend setImage:[UIImage imageNamed:@"Add Friend Button"] forState:UIControlStateNormal];
-            self.addFriend.alpha = 0.5;
+            self.addFriend.alpha = 0.2;
         }else{
             [self.addFriend setImage:[UIImage imageNamed:@"Add Friend Button"] forState:UIControlStateNormal];
         }
@@ -273,7 +273,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 
 
 - (IBAction)more:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:@"Flag" otherButtonTitles: nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles: nil];
     if (person.isMe) {
         [sheet addButtonWithTitle:@"Edit"];
         if (DEV_TEST) {
@@ -282,8 +282,11 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     }else{
         [sheet addButtonWithTitle:@"Flag"];
         sheet.destructiveButtonIndex = 0;
+        [sheet addButtonWithTitle:@"Send friend request"];
         if (person.isFriend) {
             [sheet addButtonWithTitle:@"Friend history"];
+            [sheet addButtonWithTitle:@"Send Voice Greeting"];
+        }else if (DEV_TEST) {
             [sheet addButtonWithTitle:@"Send Voice Greeting"];
         }
     }
@@ -326,7 +329,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         [EWNotificationManager sendFriendRequestNotificationToUser:me];
     }
         
-
+    [self initView];
 }
 
 - (void)showSuccessNotification:(NSString *)alert{
@@ -396,30 +399,32 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 //            NSLog(@"%ld",person.friends.count);
             break;
         case 1:
-            if (person) {
-                NSLog(@"%@",person);
-            }
+        {
+            NSArray *receivedMedias = [[EWMediaStore sharedInstance] mediasForPerson:person];
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)receivedMedias.count];
+        }
             break;
         case 2:
         {
+            NSArray *medias = [[EWMediaStore sharedInstance] mediaCreatedByPerson:person];
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)medias.count];
             break;
         }
         case 3:
         {
             NSDate *date = person.updatedAt;
             cell.detailTextLabel.text = [date date2MMDD] ;
-
             break;
         }
-        case 4:
+        case 4://next task time
         {
-            NSDate *date = person.cachedInfo[@"next_task_time"];
+            NSDate *date = person.cachedInfo[kNextTaskTime];
             cell.detailTextLabel.text = [[date time2HMMSS] stringByAppendingString:[date date2am]];
             break;
         }
-        case 5:
+        case 5://wake-ability
         {
-            cell.detailTextLabel.text =  [person.score stringValue];
+            cell.detailTextLabel.text =  [NSString stringWithFormat:@"%d", stats.wakability];
             break;
         }
             

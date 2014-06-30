@@ -91,7 +91,7 @@
     }
     
     //time
-    NSDate *time = person.cachedInfo[nextTaskTimeKey];
+    NSDate *time = person.cachedInfo[kNextTaskTime];
     if (!time) {
         time = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person].time;
     }

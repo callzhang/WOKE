@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define nextTaskTimeKey                 @"next_task_time"
+#define kNextTaskTime                 @"next_task_time"
 
 
 @class EWPerson, EWTaskItem, EWAlarmItem;

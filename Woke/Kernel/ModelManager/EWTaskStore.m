@@ -471,8 +471,8 @@
     if (!cache) {
         cache = [NSMutableDictionary new];
     }
-    if (![cache[nextTaskTimeKey] isEqual: task.time]) {
-        [cache setValue:task.time forKey:nextTaskTimeKey];
+    if (![cache[kNextTaskTime] isEqual: task.time]) {
+        [cache setValue:task.time forKey:kNextTaskTime];
         me.cachedInfo = [cache copy];
         NSLog(@"Saved next task time: %@ to cacheInfo", task.time.date2detailDateString);
         [EWDataStore save];

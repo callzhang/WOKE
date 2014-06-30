@@ -314,11 +314,13 @@
 
 
 + (void)updateFacebookInfo{
-    [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
-        [EWUserManagement handleFacebookException:error];
-        //update with facebook info
-        [EWUserManagement updateUserWithFBData:data];
-    }];
+    if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
+        [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
+            [EWUserManagement handleFacebookException:error];
+            //update with facebook info
+            [EWUserManagement updateUserWithFBData:data];
+        }];
+    }
 }
 
 

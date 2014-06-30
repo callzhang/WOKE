@@ -273,7 +273,7 @@
      
      */
     
-    [PFCloud callFunctionInBackground:@"voiceMessageButton"
+    [PFCloud callFunctionInBackground:@"sendFriendRequestNotificationToUser"
                        withParameters:@{@"sender": me.objectId,
                                         @"owner": person.objectId}
                                 block:^(id object, NSError *error)
@@ -300,7 +300,7 @@
      body: /name/ has approved your friendship request. Now send her/him a voice greeting!
      userInfo: {User:user.objectId, Type: kNotificationTypeFriendAccepted}
      */
-    [PFCloud callFunctionInBackground:@"voiceMessageButton"
+    [PFCloud callFunctionInBackground:@"sendFriendAcceptNotificationToUser"
                        withParameters:@{@"sender": me.objectId, @"owner": person.objectId}
                                 block:^(id object, NSError *error)
     {

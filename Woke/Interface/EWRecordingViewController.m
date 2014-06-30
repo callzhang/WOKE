@@ -177,24 +177,25 @@
         //save data to task
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         
+        
+        
+        EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
+        media.author = me;
+        media.message = self.message.text;
+        
+        //Add to media queue instead of task
+        media.receivers = [NSSet setWithArray:personSet];
+        
+        media.audio = recordData;
+        media.createdAt = [NSDate date];
+        
+        
+        //save
+        [EWDataStore save];
+        
+        //send push notification
         for (EWPerson *receiver in personSet) {
-            __block EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
-            media.author = me;
-            media.message = self.message.text;
-            
-            //Add to media queue instead of task
-            [media addReceiversObject: receiver];
-            
-            media.audio = recordData;
-            media.createdAt = [NSDate date];
-            
-            
-            //save
-            [EWDataStore save];
-            
-            //send push notification
             [EWServer pushMedia:media ForUser:receiver];
-            
         }
         
         //clean up
