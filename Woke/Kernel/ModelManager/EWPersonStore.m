@@ -100,10 +100,17 @@ EWPerson *me;
         //First find user on server
         PFUser *user = [PFUser currentUser];
         NSParameterAssert([user.username isEqualToString:ID]);
-        person = (EWPerson *)[user managedObject];
-        NSLog(@"Current user %@ data has CREATED", person.name);
+        if (user.isNew) {
+            person = [self createPersonWithParseObject:user];
+            NSLog(@"Current user %@ data has CREATED", person.name);
+        }else{
+            person = (EWPerson *)[user managedObject];
+            NSLog(@"Person created from PO");
+        }
+        
+        
     }else{
-        NSLog(@"Current user %@ data has FETCHED", person.name);
+        NSLog(@"Me %@ data has FETCHED", person.name);
     }
     
 

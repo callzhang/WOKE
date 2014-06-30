@@ -273,7 +273,21 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 
 
 - (IBAction)more:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:@"Flag" otherButtonTitles:@"Friend history", @"Send Voice Greeting", nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:@"Flag" otherButtonTitles: nil];
+    if (person.isMe) {
+        [sheet addButtonWithTitle:@"Edit"];
+        if (DEV_TEST) {
+            [sheet addButtonWithTitle:@"Send test friend request"];
+        }
+    }else{
+        [sheet addButtonWithTitle:@"Flag"];
+        sheet.destructiveButtonIndex = 0;
+        if (person.isFriend) {
+            [sheet addButtonWithTitle:@"Friend history"];
+            [sheet addButtonWithTitle:@"Send Voice Greeting"];
+        }
+    }
+    
     [sheet showFromBarButtonItem:self.navigationItem.rightBarButtonItem animated:YES];
 }
 
@@ -286,12 +300,12 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         [me addFriendsObject:person];
         [EWDataStore save];
         [EWNotificationManager sendFriendRequestNotificationToUser:person];
-        [self showSuccessNotification:@"Added"];
         
     }else if ([title isEqualToString:@"Unfriend"]){
         
         //unfriend
         [me removeFriendsObject:person];
+        [person removeFriendsObject:me];
         [EWDataStore save];
         [self.view showSuccessNotification:@"Unfriended"];
         
@@ -303,13 +317,15 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         [self showSuccessNotification:@"Added"];
         
     }else if ([title isEqualToString:@"Send Voice Greeting"]){
-        
         [self sendVoice];
     }else if ([title isEqualToString:@"Flag"]){
         //
     }else if ([title isEqualToString:@"Friendship history"]){
         //
+    }else if ([title isEqualToString:@"Send test friend request"]){
+        [EWNotificationManager sendFriendRequestNotificationToUser:me];
     }
+        
 
 }
 

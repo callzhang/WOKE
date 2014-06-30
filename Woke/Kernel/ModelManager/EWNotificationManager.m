@@ -272,6 +272,19 @@
      userInfo: {User:user.objectId, Type: kNotificationTypeFriendRequest}
      
      */
+    
+    [PFCloud callFunctionInBackground:@"voiceMessageButton"
+                       withParameters:@{@"sender": me.objectId,
+                                        @"owner": person.objectId}
+                                block:^(id object, NSError *error)
+     {
+         if (error) {
+             NSLog(@"Failed sending friendship request: %@", error.description);
+             EWAlert(@"Network error, please send it later");
+         }else{
+             [rootViewController.view showSuccessNotification:@"sent"];
+         }
+     }];
 }
 
 + (void)sendFriendAcceptNotificationToUser:(EWPerson *)person{
@@ -287,6 +300,18 @@
      body: /name/ has approved your friendship request. Now send her/him a voice greeting!
      userInfo: {User:user.objectId, Type: kNotificationTypeFriendAccepted}
      */
+    [PFCloud callFunctionInBackground:@"voiceMessageButton"
+                       withParameters:@{@"sender": me.objectId, @"owner": person.objectId}
+                                block:^(id object, NSError *error)
+    {
+        if (error) {
+            NSLog(@"Failed sending friendship acceptance: %@", error.description);
+            EWAlert(@"Network error, please send it later");
+        }else{
+            [rootViewController.view showSuccessNotification:@"sent"];
+        }
+        
+    }];
 }
 
 @end
