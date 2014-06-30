@@ -76,7 +76,8 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     self.view.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.hidden = NO;
-    [_friendsCollectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:collectViewCellId];
+     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
+    [_friendsCollectionView registerNib:nib  forCellWithReuseIdentifier:collectViewCellId];
     _tabView.selectedSegmentIndex = 0;
     
     
@@ -141,7 +142,8 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     EWPerson * friend = [friends objectAtIndex:indexPath.row];
     
     cell.person = friend;
-
+    cell.backgroundColor = [UIColor redColor];
+    [cell.name setCenter:CGPointZero];
     return cell;
 }
 
