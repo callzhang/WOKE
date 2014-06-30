@@ -84,7 +84,7 @@
 - (NSString *)date2MMDD{
     NSDateFormatter *parseFormatter = [[NSDateFormatter alloc] init];
     parseFormatter.timeZone = [NSTimeZone defaultTimeZone];
-    parseFormatter.dateFormat = @"M/DD";
+    parseFormatter.dateFormat = @"MM/dd";
     return [parseFormatter stringFromDate:self];
 }
 
@@ -135,7 +135,11 @@
     NSArray *weekdayArray = weekdays;
     return weekdayArray[self.weekdayNumber];
 }
-
+-(NSString *)weekdayShort
+{
+    NSArray *weekdayArray = weekdayshort;
+    return weekdayArray[self.weekdayNumber];
+}
 - (NSString *)timeInString{
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *comp = [cal components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSWeekdayCalendarUnit) fromDate:self];

@@ -56,6 +56,11 @@
 - (NSString *)weekday;
 
 /**
+ Weekday in short format
+ */
+- (NSString *)weekdayShort;
+
+/**
  Time in string format HHMM
  */
 - (NSString *)timeInString;
