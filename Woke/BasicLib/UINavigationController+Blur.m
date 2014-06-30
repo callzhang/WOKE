@@ -108,8 +108,8 @@
 {
     
     NSInteger _blurRadius = 10;
-    UIColor  *_tintColor = [UIColor colorWithRed:0.8 green:0.6 blue:0.05 alpha:0.3];
-//    UIColor *_tintColor = [UIColor clearColor];
+//    UIColor  *_tintColor = [UIColor colorWithRed:0.8 green:0.6 blue:0.05 alpha:0.3];
+    UIColor *_tintColor = [UIColor clearColor];
     CGFloat _saturationDeltaFactor = 0.5;
     viewController.view.backgroundColor = [UIColor clearColor];
     

@@ -84,7 +84,7 @@
 - (NSString *)date2MMDD{
     NSDateFormatter *parseFormatter = [[NSDateFormatter alloc] init];
     parseFormatter.timeZone = [NSTimeZone defaultTimeZone];
-    parseFormatter.dateFormat = @"M/DD";
+    parseFormatter.dateFormat = @"MM/dd";
     return [parseFormatter stringFromDate:self];
 }
 

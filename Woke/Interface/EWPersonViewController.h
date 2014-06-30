@@ -20,6 +20,7 @@
     NSMutableArray *activityArray;
 
 }
+@property (assign,nonatomic)BOOL canSeeFriendsDetail;
 @property (strong, nonatomic) IBOutlet UIButton *addFriendButton;
 //PersonInfoView
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;

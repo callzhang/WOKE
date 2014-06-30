@@ -15,7 +15,7 @@
 #import "EWUIUtil.h"
 #import "EWFriendsTableCell.h"
 #import "EWPersonStore.h"
-
+#import "EWPersonViewController.h"
 NSString * const tableViewCellId =@"MyFriendsTableViewCellId";
 NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
@@ -128,9 +128,11 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    return;
     if (_cellSelect) {
         EWPerson * friend = [friends objectAtIndex:indexPath.row];
-        EWMyFriendsViewController *viewController = [[EWMyFriendsViewController alloc] initWithPerson:friend cellSelect:NO];
+        EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
+        viewController.canSeeFriendsDetail = NO;
         [self.navigationController pushViewControllerWithBlur:viewController];
 
     }
@@ -175,12 +177,14 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
 -(BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return _cellSelect;
+//    return _cellSelect;
+    return NO;
 }
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     EWPerson * friend = [friends objectAtIndex:indexPath.row];
-    EWMyFriendsViewController *viewController = [[EWMyFriendsViewController alloc] initWithPerson:friend cellSelect:NO];
+     EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
+    viewController.canSeeFriendsDetail = NO;
     [self.navigationController pushViewControllerWithBlur:viewController];
 }
 

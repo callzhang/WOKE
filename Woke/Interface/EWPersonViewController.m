@@ -38,7 +38,7 @@
 #import "EWAppDelegate.h"
 #import "EWMyFriendsViewController.h"
 #import "EWMyProfileViewController.h"
-#define kProfileTableArray              @[@"Friends", @"People woke her up", @"People her woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
+#define kProfileTableArray              @[@"Friends", @"People woke her up", @"People I woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
 
 
 static NSString *taskCellIdentifier = @"taskCellIdentifier";
@@ -67,7 +67,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.person = p;
-       
+        _canSeeFriendsDetail = YES;
     }
     return self;
 }
@@ -373,19 +373,46 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:profileCellIdentifier];
         cell.textLabel.textColor = [UIColor whiteColor];
     }
-    
+    cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
     switch (indexPath.row) {
         case 0:
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
 //            NSLog(@"%ld",person.friends.count);
             break;
+        case 1:
+            if (person) {
+                NSLog(@"%@",person);
+            }
+            break;
+        case 2:
+        {
+            break;
+        }
+        case 3:
+        {
+            NSDate *date = person.updatedAt;
+            cell.detailTextLabel.text = [date date2MMDD] ;
+
+            break;
+        }
+        case 4:
+        {
+            NSDate *date = person.cachedInfo[@"next_task_time"];
+            cell.detailTextLabel.text = [[date time2HMMSS] stringByAppendingString:[date date2am]];
+            break;
+        }
+        case 5:
+        {
+            cell.detailTextLabel.text =  [person.score stringValue];
+            break;
+        }
             
         default:
             break;
     }
     
     
-    cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
+    
     
     
     return cell;
@@ -404,6 +431,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         case 0:
         {
             EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
+            tempVc.cellSelect =_canSeeFriendsDetail;
             controller = tempVc;
             //[self.navigationController pushViewController:controller animated:YES]
             [self.navigationController pushViewControllerWithBlur:controller];
