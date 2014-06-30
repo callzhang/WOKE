@@ -44,7 +44,7 @@
     //view
     self.time.text = [myTime date2timeShort];
     self.AM.text = [myTime date2am];
-    self.weekday.text = [myTime weekday];
+    self.weekday.text = [myTime weekdayShort];
     NSArray *name = [myMusic componentsSeparatedByString:@"."];
     [self.music setTitle:name[0] forState:UIControlStateNormal];
     self.statement.text = myStatement;

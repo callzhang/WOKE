@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
@@ -14,41 +14,31 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Saturday" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U3J-qk-8q9">
-                        <rect key="frame" x="58" y="7" width="94" height="24"/>
+                        <rect key="frame" x="16" y="33" width="94" height="24"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="AppleSDGothicNeo-Thin" family="Apple SD Gothic Neo" pointSize="12"/>
                         <color key="textColor" white="1" alpha="0.80000000000000004" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="08:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uyf-Eh-JF9">
-                        <rect key="frame" x="58" y="28" width="114" height="45"/>
+                        <rect key="frame" x="34" y="21" width="112" height="48"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" name="AppleSDGothicNeo-Thin" family="Apple SD Gothic Neo" pointSize="40"/>
+                        <fontDescription key="fontDescription" name="AppleSDGothicNeo-Thin" family="Apple SD Gothic Neo" pointSize="34"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Say something to myself" minimumFontSize="16" clearButtonMode="unlessEditing" translatesAutoresizingMaskIntoConstraints="NO" id="tzv-qF-b9m">
-                        <rect key="frame" x="53" y="121" width="254" height="30"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="0.29999999999999999" colorSpace="calibratedWhite"/>
-                        <color key="textColor" red="0.51458560289999999" green="0.90120905880000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" keyboardAppearance="light" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
-                        <connections>
-                            <action selector="hideKeyboard:" destination="rDh-E1-XtL" eventType="editingDidEnd" id="NqU-aL-3TO"/>
-                            <action selector="hideKeyboard:" destination="rDh-E1-XtL" eventType="touchUpOutside" id="mQb-Or-Z51"/>
-                            <action selector="hideKeyboard:" destination="rDh-E1-XtL" eventType="editingDidEndOnExit" id="rxI-gr-mzg"/>
-                        </connections>
-                    </textField>
-                    <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minimumValue="-100" maximumValue="100" stepValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="ErU-mV-aag">
-                        <rect key="frame" x="213" y="30" width="94" height="29"/>
+                    <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minimumValue="-100" maximumValue="100" stepValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="ErU-mV-aag">
+                        <rect key="frame" x="184" y="30" width="94" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="40" id="uSs-PO-gyv"/>
+                        </constraints>
                         <connections>
                             <action selector="changeTime:" destination="rDh-E1-XtL" eventType="valueChanged" id="nB0-ha-fkv"/>
                         </connections>
                     </stepper>
                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2pj-0g-l0b">
-                        <rect key="frame" x="75" y="84" width="130" height="29"/>
+                        <rect key="frame" x="25" y="77" width="130" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <state key="normal" title="Drive">
@@ -58,12 +48,8 @@
                             <action selector="changeMusic:" destination="rDh-E1-XtL" eventType="touchUpInside" id="cF5-2k-xY7"/>
                         </connections>
                     </button>
-                    <imageView userInteractionEnabled="NO" alpha="0.49999999999999961" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="music_note" translatesAutoresizingMaskIntoConstraints="NO" id="fL3-h4-FAz">
-                        <rect key="frame" x="53" y="88" width="20" height="20"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    </imageView>
                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cZF-xc-Dzb">
-                        <rect key="frame" x="13" y="29" width="32" height="32"/>
+                        <rect key="frame" x="283" y="30" width="32" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <state key="normal" image="On_Btn">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -73,7 +59,7 @@
                         </connections>
                     </button>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="PM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ond-mm-R2B">
-                        <rect key="frame" x="168" y="44" width="28" height="21"/>
+                        <rect key="frame" x="137" y="34" width="28" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
@@ -87,7 +73,6 @@
                 <outlet property="AM" destination="Ond-mm-R2B" id="VlF-k8-Nbx"/>
                 <outlet property="alarmToggle" destination="cZF-xc-Dzb" id="osu-Uf-qYg"/>
                 <outlet property="music" destination="2pj-0g-l0b" id="KBJ-D4-dc1"/>
-                <outlet property="statement" destination="tzv-qF-b9m" id="2l8-hI-Hy1"/>
                 <outlet property="time" destination="Uyf-Eh-JF9" id="9df-il-C5U"/>
                 <outlet property="timeStepper" destination="ErU-mV-aag" id="Rla-V0-oc6"/>
                 <outlet property="weekday" destination="U3J-qk-8q9" id="iiT-rO-CXO"/>
@@ -96,6 +81,5 @@
     </objects>
     <resources>
         <image name="On_Btn" width="32" height="32"/>
-        <image name="music_note" width="100" height="100"/>
     </resources>
 </document>

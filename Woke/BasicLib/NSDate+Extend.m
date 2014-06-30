@@ -135,7 +135,11 @@
     NSArray *weekdayArray = weekdays;
     return weekdayArray[self.weekdayNumber];
 }
-
+-(NSString *)weekdayShort
+{
+    NSArray *weekdayArray = weekdayshort;
+    return weekdayArray[self.weekdayNumber];
+}
 - (NSString *)timeInString{
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *comp = [cal components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSWeekdayCalendarUnit) fromDate:self];
