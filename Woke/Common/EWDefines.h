@@ -125,7 +125,7 @@
 #define kADIDKey                        @"ADID" //key for ADID
 #define kPushTypeKey                    @"type"
 #define kPushTypeNoticeKey              @"notice"
-#define kPushNofiticationKey            @"notification"
+#define kPushNofiticationIDKey          @"notificationID"
 
 //Audio & Video
 #define kMaxRecordTime                  20.0;

@@ -30,5 +30,11 @@ extern EWPerson *me;
 
 
 - (EWPerson *)anyone;
+
+//friend
+- (void)requestFriend:(EWPerson *)user;
+- (void)acceptFriend:(EWPerson *)user;
+- (void)unfriend:(EWPerson *)user;
+
 - (void)purgeUserData;
 @end

@@ -96,7 +96,7 @@
         //create buzz
         EWMediaItem *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
         //add waker
-        buzz.receiver = person;
+        [buzz addReceiversObject:person];
         //add sound
         NSString *sound = me.preference[@"buzzSound"]?:@"default";
         buzz.buzzKey = sound;

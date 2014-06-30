@@ -133,16 +133,21 @@
         EWMediaItem *mo = (EWMediaItem *)po.managedObject;
         
         //relationship
-        if (mo.task) {
-            mo.receiver = nil;
+        if ([mo.tasks containsObject:me]) {
+            [mo removeReceiversObject:me];
         }else{
-            mo.receiver = me;
+            [mo addReceiversObject:me];
             NSLog(@"Received media (%@)", mo.objectId);
             EWAlert(@"You got voice for your next wake up");
         }
         [EWDataStore save];
     }
     return [[EWPersonStore me].mediaAssets allObjects];
+}
+
++ (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media{
+    EWTaskItem *task = [[media.tasks filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owner = %@", me]] anyObject];
+    return task;
 }
 
 @end

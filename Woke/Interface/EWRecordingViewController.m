@@ -183,7 +183,7 @@
             media.message = self.message.text;
             
             //Add to media queue instead of task
-            media.receiver = receiver;
+            [media addReceiversObject: receiver];
             
             media.audio = recordData;
             media.createdAt = [NSDate date];

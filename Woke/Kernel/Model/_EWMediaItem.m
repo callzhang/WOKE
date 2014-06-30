@@ -20,8 +20,8 @@ const struct EWMediaItemAttributes EWMediaItemAttributes = {
 const struct EWMediaItemRelationships EWMediaItemRelationships = {
 	.author = @"author",
 	.groupTask = @"groupTask",
-	.receiver = @"receiver",
-	.task = @"task",
+	.receivers = @"receivers",
+	.tasks = @"tasks",
 };
 
 const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
@@ -193,12 +193,30 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 	
 
-@dynamic receiver;
+@dynamic receivers;
 
 	
+- (NSMutableSet*)receiversSet {
+	[self willAccessValueForKey:@"receivers"];
+  
+	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"receivers"];
+  
+	[self didAccessValueForKey:@"receivers"];
+	return result;
+}
+	
 
-@dynamic task;
+@dynamic tasks;
 
+	
+- (NSMutableSet*)tasksSet {
+	[self willAccessValueForKey:@"tasks"];
+  
+	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"tasks"];
+  
+	[self didAccessValueForKey:@"tasks"];
+	return result;
+}
 	
 
 

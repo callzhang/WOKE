@@ -271,7 +271,7 @@
                     //voice
                     EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
                     //[task addMediasObject:media];
-                    media.task = task;
+                    [media addTasksObject:task];
                     [EWDataStore save];
                 }
                 

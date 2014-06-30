@@ -21,8 +21,8 @@ extern const struct EWMediaItemAttributes {
 extern const struct EWMediaItemRelationships {
 	__unsafe_unretained NSString *author;
 	__unsafe_unretained NSString *groupTask;
-	__unsafe_unretained NSString *receiver;
-	__unsafe_unretained NSString *task;
+	__unsafe_unretained NSString *receivers;
+	__unsafe_unretained NSString *tasks;
 } EWMediaItemRelationships;
 
 extern const struct EWMediaItemFetchedProperties {
@@ -190,16 +190,16 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-@property (nonatomic, strong) EWPerson *receiver;
+@property (nonatomic, strong) NSSet *receivers;
 
-//- (BOOL)validateReceiver:(id*)value_ error:(NSError**)error_;
-
-
+- (NSMutableSet*)receiversSet;
 
 
-@property (nonatomic, strong) EWTaskItem *task;
 
-//- (BOOL)validateTask:(id*)value_ error:(NSError**)error_;
+
+@property (nonatomic, strong) NSSet *tasks;
+
+- (NSMutableSet*)tasksSet;
 
 
 
@@ -208,6 +208,16 @@ extern const struct EWMediaItemFetchedProperties {
 @end
 
 @interface _EWMediaItem (CoreDataGeneratedAccessors)
+
+- (void)addReceivers:(NSSet*)value_;
+- (void)removeReceivers:(NSSet*)value_;
+- (void)addReceiversObject:(EWPerson*)value_;
+- (void)removeReceiversObject:(EWPerson*)value_;
+
+- (void)addTasks:(NSSet*)value_;
+- (void)removeTasks:(NSSet*)value_;
+- (void)addTasksObject:(EWTaskItem*)value_;
+- (void)removeTasksObject:(EWTaskItem*)value_;
 
 @end
 
@@ -297,13 +307,13 @@ extern const struct EWMediaItemFetchedProperties {
 
 
 
-- (EWPerson*)primitiveReceiver;
-- (void)setPrimitiveReceiver:(EWPerson*)value;
+- (NSMutableSet*)primitiveReceivers;
+- (void)setPrimitiveReceivers:(NSMutableSet*)value;
 
 
 
-- (EWTaskItem*)primitiveTask;
-- (void)setPrimitiveTask:(EWTaskItem*)value;
+- (NSMutableSet*)primitiveTasks;
+- (void)setPrimitiveTasks:(NSMutableSet*)value;
 
 
 @end

@@ -27,6 +27,7 @@
 #import "EWPersonStore.h"
 #import "EWMediaStore.h"
 #import "EWStatisticsManager.h"
+#import "EWNotificationManager.h"
 
 //view
 #import "UIView+HUD.h"
@@ -131,12 +132,19 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     //======= Person =======
     
     
-    if (!person.isMe) {
+    if (!person.isMe) {//other user
         self.loginBtn.hidden = YES;
-        if ([me.friends containsObject:self.person]) {
-            [self.addFriend setImage:[UIImage imageNamed:@"Voice Message"] forState:UIControlStateNormal];
+        if (person.isFriend) {
+            [self.addFriend setImage:[UIImage imageNamed:@"FriendedIcon"] forState:UIControlStateNormal];
+        }else if (person.friendWaiting){
+            [self.addFriend setImage:[UIImage imageNamed:@"Add Friend Button"] forState:UIControlStateNormal];
+        }else if(person.friendPending){
+            [self.addFriend setImage:[UIImage imageNamed:@"Add Friend Button"] forState:UIControlStateNormal];
+            self.addFriend.alpha = 0.5;
+        }else{
+            [self.addFriend setImage:[UIImage imageNamed:@"Add Friend Button"] forState:UIControlStateNormal];
         }
-    }else{
+    }else{//self
         if(!person.facebook){
             [self.loginBtn setTitle:@"Log in" forState:UIControlStateNormal];
             self.addFriend.hidden = YES;
@@ -204,26 +212,19 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 
 #pragma mark - UI Events
 - (IBAction)extProfile:(id)sender{
-    if ([me.friends containsObject:self.person]) {
-        //is friend
-        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:self.person];
-        [self.navigationController pushViewController:controller animated:YES];
+    if (person.isFriend) {
+        //is friend: do nothing
         return;
-    } else {
-        UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
+    } else if(person.friendWaiting){
+        UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Accept friend", @"Send Voice Greeting", nil];
         [as showInView:self.view];
         return;
+    }else if (person.friendPending){
+        [[[UIAlertView alloc] initWithTitle:@"Friendship pending" message:@"You have already requested friendship to this person." delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil] show];
+    }else{
+        UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
+        [as showInView:self.view];
     }
-    
-    if (person.isMe) {
-        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
-        
-        [self.navigationController pushViewControllerWithBlur:controller];
-        
-        return;
-    }
-    UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
-    [as showInView:self.view];
 }
 
 - (IBAction)close:(id)sender {
@@ -272,7 +273,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 
 
 - (IBAction)more:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:@"Flag" otherButtonTitles:@"Friend history", nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:@"Flag" otherButtonTitles:@"Friend history", @"Send Voice Greeting", nil];
     [sheet showFromBarButtonItem:self.navigationItem.rightBarButtonItem animated:YES];
 }
 
@@ -280,33 +281,48 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
     NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
     if ([title isEqualToString:@"Add friend"]) {
+        
         //friend
         [me addFriendsObject:person];
         [EWDataStore save];
+        [EWNotificationManager sendFriendRequestNotificationToUser:person];
         [self showSuccessNotification:@"Added"];
-    }else if ([title isEqualToString:@"Unfriend"]){
-        //unfriend
         
+    }else if ([title isEqualToString:@"Unfriend"]){
+        
+        //unfriend
         [me removeFriendsObject:person];
         [EWDataStore save];
         [self.view showSuccessNotification:@"Unfriended"];
         
+    }else if ([title isEqualToString:@"Accept friend"]){
+        
+        [me addFriendsObject:person];
+        [EWDataStore save];
+        [EWNotificationManager sendFriendAcceptNotificationToUser:person];
+        [self showSuccessNotification:@"Added"];
         
     }else if ([title isEqualToString:@"Send Voice Greeting"]){
-        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:self.person];
-        [self.navigationController pushViewController:controller animated:YES];
+        
+        [self sendVoice];
+    }else if ([title isEqualToString:@"Flag"]){
+        //
+    }else if ([title isEqualToString:@"Friendship history"]){
+        //
     }
 
 }
+
 - (void)showSuccessNotification:(NSString *)alert{
-    
-    
-    [self.addFriend setImage:[UIImage imageNamed:@"Voice Message"] forState:UIControlStateNormal];
-    
-    [self.taskTableView reloadData];
-    
+    [self initView];
     [self.view showNotification:alert WithStyle:hudStyleSuccess];
 }
+
+- (void)sendVoice{
+    EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:self.person];
+    [self.navigationController pushViewController:controller animated:YES];
+}
+
 @end
 
 

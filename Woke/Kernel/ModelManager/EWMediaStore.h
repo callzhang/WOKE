@@ -45,4 +45,7 @@
 //Check media assets relationship
 - (NSArray *)checkMediaAssets;
 
+//get my task in a media
++ (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media;
+
 @end

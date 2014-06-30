@@ -18,6 +18,8 @@
 #import "EWLogInViewController.h"
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
+#import "EWNotificationManager.h"
+#import "EWNotification.h"
 
 #define everyoneCheckTimeOut            600
 #define numberOfRelevantUsers           @100 //number of relevant users returned
@@ -204,6 +206,12 @@ EWPerson *me;
             me.score = @100;
         }
     }
+}
+
+#pragma mark - Friend
+- (void)requestFriend:(EWPerson *)user{
+    [me addFriendsObject:user];
+    [EWNotificationManager sharedInstance];
 }
 
 @end
