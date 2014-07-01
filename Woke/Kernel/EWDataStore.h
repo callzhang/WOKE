@@ -15,9 +15,11 @@
 #import <Parse/Parse.h>
 //#import <AWSSNS/AWSSNS.h>
 
-typedef   void(^EWSavingCallback)(void);
+
 
 @class EWPerson;
+typedef void (^EWSavingCallback)(void);
+
 
 //Server update time
 #define kServerUpdateInterval            1800 //30 min
@@ -35,6 +37,8 @@ typedef   void(^EWSavingCallback)(void);
 #define kParseQueueUpdate       @"parse_queue_update"
 #define kParseQueueDelete       @"parse_queue_delete"
 #define kParseQueueWorking      @"parse_queue_working"
+#define kUserID                 @"user_object_id"
+#define kUsername               @"username"
 
 @interface EWDataStore : NSObject
 //@property (nonatomic, retain) AmazonSNSClient *snsClient;
@@ -59,6 +63,7 @@ typedef   void(^EWSavingCallback)(void);
  The main save function, it save and upload to the server
  */
 + (void)save;
++ (void)saveWithCompletion:(EWSavingCallback)block;
 + (void)saveToLocal:(NSManagedObject *)mo;
 
 

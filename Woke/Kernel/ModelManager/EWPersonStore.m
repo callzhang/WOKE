@@ -131,25 +131,35 @@ EWPerson *me;
                             @"radius" : radiusOfRelevantUsers}
                     error:&error];
     
-    if (!error) {
-        
-        for (NSString *parseId in list) {
-            PFQuery *query = [PFUser query];
-            PFUser *user = (PFUser*)[query getObjectWithId:parseId];
-            EWPerson *person = (EWPerson *)user.managedObject;
-            float score = 99 - [list indexOfObject:parseId];
-            person.score = [NSNumber numberWithFloat:score];
-            [allPerson addObject:person];
+    if (error && list.count == 0) {
+        NSLog(@"*** Failed to get friends list: %@", error.description);
+        //get ramdom person
+        PFQuery *q = [PFQuery queryWithClassName:@"EWPerson"];
+        q.limit = 100;
+        error = nil;
+        list = [q findObjects:&error];
+        if (error) {
+            NSLog(@"*** Failed to get anyone: %@", error.description);
         }
-        [EWPersonStore me].score = @100;
-        NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
-        //return
-        everyone = [allPerson copy];
-        timeEveryoneChecked = [NSDate date];
-        [[EWDataStore currentContext] saveToPersistentStoreAndWait];
-    }else{
-        NSLog(@"Failed to get friends list: %@", error.description);
     }
+    
+    for (NSString *parseId in list) {
+        PFQuery *query = [PFUser query];
+        PFUser *user = (PFUser*)[query getObjectWithId:parseId];
+        EWPerson *person = (EWPerson *)user.managedObject;
+        float score = 99 - [list indexOfObject:parseId];
+        person.score = [NSNumber numberWithFloat:score];
+        [allPerson addObject:person];
+    }
+    
+    [EWPersonStore me].score = @100;
+    NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
+    //return
+    everyone = [allPerson copy];
+    timeEveryoneChecked = [NSDate date];
+    [[EWDataStore currentContext] saveToPersistentStoreAndWait];
+    
+    
     return everyone;
 }
 
