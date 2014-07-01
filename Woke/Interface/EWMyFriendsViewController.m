@@ -90,7 +90,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     _friendsTableView.backgroundView = nil;
     _friendsTableView.backgroundColor = [UIColor clearColor];
     _friendsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _friendsTableView.allowsSelection = YES;
+    _friendsTableView.allowsSelection = _cellSelect;
     _friendsTableView.hidden = YES;
     [_friendsTableView registerNib:[UINib nibWithNibName:@"EWFriendsTableCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:tableViewCellId];
 
@@ -128,7 +128,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return;
+//    return;
     if (_cellSelect) {
         EWPerson * friend = [friends objectAtIndex:indexPath.row];
         EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
@@ -177,8 +177,8 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
 -(BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-//    return _cellSelect;
-    return NO;
+    return _cellSelect;
+//    return NO;
 }
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {

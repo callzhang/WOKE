@@ -230,7 +230,11 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 }
 
 - (IBAction)close:(id)sender {
-    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+    if (_canSeeFriendsDetail) {
+        [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+
+    }
+    [self.navigationController popViewControllerWithBlur];
 }
 
 - (IBAction)login:(id)sender {
