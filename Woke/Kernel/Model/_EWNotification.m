@@ -6,6 +6,7 @@
 const struct EWNotificationAttributes EWNotificationAttributes = {
 	.completed = @"completed",
 	.importance = @"importance",
+	.receiver = @"receiver",
 	.sender = @"sender",
 	.type = @"type",
 	.userInfo = @"userInfo",
@@ -84,6 +85,13 @@ const struct EWNotificationFetchedProperties EWNotificationFetchedProperties = {
 - (void)setPrimitiveImportanceValue:(int64_t)value_ {
 	[self setPrimitiveImportance:[NSNumber numberWithLongLong:value_]];
 }
+
+
+
+
+
+@dynamic receiver;
+
 
 
 

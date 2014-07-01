@@ -22,7 +22,14 @@
 
 /**
  Login with PFUser for cached coredata info
- This is a
+ 
+ 1) Get the Person MO, assign to me, save to local
+ 
+ 2) Handle new user
+ 
+ 3) Refresh person in background
+ 
+ 4) After finished refreshing, update fb info and broadcast user login
  */
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock;
 

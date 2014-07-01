@@ -626,7 +626,8 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
         
         if (!m) m = media;
-        EWTaskItem *task = m.task;
+        EWTaskItem *task = [[m.tasks filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owner = %@", me]] anyObject];
+        
         NSString *title = [task.time weekday];
         
         //info

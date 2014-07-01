@@ -15,7 +15,7 @@
 #import "EWUIUtil.h"
 #import "EWFriendsTableCell.h"
 #import "EWPersonStore.h"
-
+#import "EWPersonViewController.h"
 NSString * const tableViewCellId =@"MyFriendsTableViewCellId";
 NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
@@ -29,12 +29,18 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
 @implementation EWMyFriendsViewController
 
-
+-(id)initWithPerson:(EWPerson *)person cellSelect:(BOOL)cellSelect
+{
+    self = [self initWithPerson:person];
+    self.cellSelect = cellSelect;
+    return self;
+}
 -(id)initWithPerson:(EWPerson *)person
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.person = person;
+        self.cellSelect = YES;
     }
     return self;
 }
@@ -76,14 +82,15 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     self.view.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.hidden = NO;
-    [_friendsCollectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:collectViewCellId];
+     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
+    [_friendsCollectionView registerNib:nib  forCellWithReuseIdentifier:collectViewCellId];
     _tabView.selectedSegmentIndex = 0;
     
     
     _friendsTableView.backgroundView = nil;
     _friendsTableView.backgroundColor = [UIColor clearColor];
     _friendsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _friendsTableView.allowsSelection = NO;
+    _friendsTableView.allowsSelection = YES;
     _friendsTableView.hidden = YES;
     [_friendsTableView registerNib:[UINib nibWithNibName:@"EWFriendsTableCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:tableViewCellId];
 
@@ -119,6 +126,18 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 {
     return 55;
 }
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return;
+    if (_cellSelect) {
+        EWPerson * friend = [friends objectAtIndex:indexPath.row];
+        EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
+        viewController.canSeeFriendsDetail = NO;
+        [self.navigationController pushViewControllerWithBlur:viewController];
+
+    }
+   
+}
 
 
 #pragma mark - CollectionView
@@ -141,7 +160,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     EWPerson * friend = [friends objectAtIndex:indexPath.row];
     
     cell.person = friend;
-
+//    cell.backgroundColor = [UIColor redColor];
     return cell;
 }
 
@@ -158,9 +177,16 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
 -(BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+//    return _cellSelect;
     return NO;
 }
-
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    EWPerson * friend = [friends objectAtIndex:indexPath.row];
+     EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
+    viewController.canSeeFriendsDetail = NO;
+    [self.navigationController pushViewControllerWithBlur:viewController];
+}
 
 - (IBAction)tabValueChange:(UISegmentedControl *)sender {
     NSUInteger value =  [sender selectedSegmentIndex];

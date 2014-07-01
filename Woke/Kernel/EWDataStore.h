@@ -15,6 +15,8 @@
 #import <Parse/Parse.h>
 //#import <AWSSNS/AWSSNS.h>
 
+typeof void (^EWSavingCallback)(void);
+
 @class EWPerson;
 
 //Server update time
@@ -41,6 +43,7 @@
 @property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in serial
 @property (nonatomic, retain) NSTimer *serverUpdateTimer;
 @property (nonatomic, retain) NSDate *lastChecked;//The date that last sync with server
+@property (nonatomic, retain) NSMutableArray *saveCallbacks;
 
 
 #pragma mark - Queue

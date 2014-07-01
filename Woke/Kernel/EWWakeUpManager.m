@@ -132,7 +132,7 @@
 
         //download media
         NSLog(@"Download media: %@", media.objectId);
-        [[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded in test mode
+        //[[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded in test mode
         
         //determin action based on task timing
         if ([[NSDate date] isEarlierThan:task.time]) {
@@ -153,11 +153,11 @@
         }else{
             
             //Woke state -> assign media to next task, download
-            
-            if (media.task) {
+            EWTaskItem *myTask = [EWMediaStore myTaskInMedia:media];
+            if (myTask) {
                 //need to move to media pool
-                media.task = nil;
-                media.receiver = me;
+                [media removeTasksObject:myTask];
+                [me addMediaAssetsObject:media];
                 [EWDataStore save];
             }
         }
@@ -297,25 +297,21 @@
                 return;
             }
             EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
-            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:media.receiver];
+            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
             
             if (!task.completed) {
                 [EWWakeUpManager presentWakeUpViewWithTask:task];
             }else{
                 EWAlert(@"Someone has sent a voice greeting to you. You will hear it on your next wake up.");
-                if (media.task) {
-                    media.task = nil;
-                    [EWDataStore save];
-
-                }
+                [me addMediaAssetsObject:media];
                 
             }
             
             
-        }else if([type isEqualToString:kPushTypeNoticeKey]){
+        }else if([type isEqualToString:kPushTypeNoticeKey] || [type isEqualToString:kNotificationTypeFriendAccepted] || [type isEqualToString:kNotificationTypeFriendRequest]){
             // ============== System notice ================
             
-            NSString *notificationID = remoteNotif[kPushNofiticationKey];
+            NSString *notificationID = remoteNotif[kPushNofiticationIDKey];
             [EWNotificationManager handleNotification:notificationID];
             
         }

@@ -353,6 +353,11 @@
     
 }
 
++ (void)saveWithCompletion:(EWSavingCallback)block{
+    [[EWDataStore sharedInstance].saveCallbacks addObject:block];
+    [EWDataStore save];
+}
+
 + (void)saveToLocal:(NSManagedObject *)mo{
     if(![NSThread isMainThread]){
         [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
@@ -557,7 +562,7 @@
     [EWDataStore clearQueue:kParseQueueUpdate];
     
     
-    NSLog(@"============ Start updating to server. \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ ===============", [insertedManagedObjects valueForKey:kParseObjectID], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
+    NSLog(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ \n ==============================", [insertedManagedObjects valueForKey:kParseObjectID], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
 
     //start background update
     dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
@@ -570,6 +575,14 @@
             NSLog(@"~~~> Deleting PO %@ (%@)", po.parseClassName, po.objectId);
             [EWDataStore deleteParseObject:po];
         }
+        
+        //completion block
+        NSArray *callbacks = [[EWDataStore sharedInstance].saveCallbacks copy];
+        EWSavingCallback block = callbacks.firstObject;
+        while (block) {
+            block();
+        }
+        
         
     });
 }

@@ -18,6 +18,8 @@
 #import "EWLogInViewController.h"
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
+#import "EWNotificationManager.h"
+#import "EWNotification.h"
 
 #define everyoneCheckTimeOut            600
 #define numberOfRelevantUsers           @100 //number of relevant users returned
@@ -98,10 +100,17 @@ EWPerson *me;
         //First find user on server
         PFUser *user = [PFUser currentUser];
         NSParameterAssert([user.username isEqualToString:ID]);
-        person = (EWPerson *)[user managedObject];
-        NSLog(@"Current user %@ data has CREATED", person.name);
+        if (user.isNew) {
+            person = [self createPersonWithParseObject:user];
+            NSLog(@"Current user %@ data has CREATED", person.name);
+        }else{
+            person = (EWPerson *)[user managedObject];
+            NSLog(@"Person created from PO");
+        }
+        
+        
     }else{
-        NSLog(@"Current user %@ data has FETCHED", person.name);
+        NSLog(@"Me %@ data has FETCHED", person.name);
     }
     
 
@@ -204,6 +213,12 @@ EWPerson *me;
             me.score = @100;
         }
     }
+}
+
+#pragma mark - Friend
+- (void)requestFriend:(EWPerson *)user{
+    [me addFriendsObject:user];
+    [EWNotificationManager sharedInstance];
 }
 
 @end

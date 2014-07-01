@@ -50,8 +50,8 @@
         <attribute name="video" optional="YES" attributeType="Binary" storedInTruthFile="YES" syncable="YES"/>
         <relationship name="author" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="medias" inverseEntity="EWPerson" syncable="YES"/>
         <relationship name="groupTask" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWGroupTask" inverseName="medias" inverseEntity="EWGroupTask" syncable="YES"/>
-        <relationship name="receiver" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" syncable="YES"/>
-        <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWTaskItem" inverseName="medias" inverseEntity="EWTaskItem" syncable="YES"/>
+        <relationship name="receivers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" syncable="YES"/>
+        <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWTaskItem" inverseName="medias" inverseEntity="EWTaskItem" syncable="YES"/>
     </entity>
     <entity name="EWMessage" representedClassName="EWMessage" parentEntity="EWServerObject" syncable="YES">
         <attribute name="media" optional="YES" attributeType="Binary" storedInTruthFile="YES" syncable="YES"/>
@@ -65,6 +65,7 @@
     <entity name="EWNotification" representedClassName="EWNotification" parentEntity="EWServerObject" syncable="YES">
         <attribute name="completed" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="importance" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="receiver" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="sender" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="userInfo" optional="YES" attributeType="Transformable" syncable="YES"/>
@@ -125,7 +126,7 @@
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="alarm" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="EWAlarmItem" inverseName="tasks" inverseEntity="EWAlarmItem" syncable="YES"/>
-        <relationship name="medias" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMediaItem" inverseName="task" inverseEntity="EWMediaItem" syncable="YES"/>
+        <relationship name="medias" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMediaItem" inverseName="tasks" inverseEntity="EWMediaItem" syncable="YES"/>
         <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMessage" inverseName="task" inverseEntity="EWMessage" syncable="YES"/>
         <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="tasks" inverseEntity="EWPerson" syncable="YES"/>
         <relationship name="pastOwner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="pastTasks" inverseEntity="EWPerson" syncable="YES"/>
@@ -135,9 +136,9 @@
         <element name="EWAlarmItem" positionX="0" positionY="0" width="128" height="163"/>
         <element name="EWGroup" positionX="0" positionY="0" width="128" height="148"/>
         <element name="EWGroupTask" positionX="9" positionY="99" width="128" height="150"/>
-        <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="270"/>
+        <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="268"/>
         <element name="EWMessage" positionX="0" positionY="0" width="128" height="150"/>
-        <element name="EWNotification" positionX="9" positionY="153" width="128" height="135"/>
+        <element name="EWNotification" positionX="9" positionY="153" width="128" height="148"/>
         <element name="EWPerson" positionX="0" positionY="0" width="128" height="523"/>
         <element name="EWServerObject" positionX="9" positionY="153" width="128" height="88"/>
         <element name="EWSocialGraph" positionX="9" positionY="153" width="128" height="148"/>

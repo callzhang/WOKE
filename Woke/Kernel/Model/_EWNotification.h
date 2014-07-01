@@ -7,6 +7,7 @@
 extern const struct EWNotificationAttributes {
 	__unsafe_unretained NSString *completed;
 	__unsafe_unretained NSString *importance;
+	__unsafe_unretained NSString *receiver;
 	__unsafe_unretained NSString *sender;
 	__unsafe_unretained NSString *type;
 	__unsafe_unretained NSString *userInfo;
@@ -20,6 +21,7 @@ extern const struct EWNotificationFetchedProperties {
 } EWNotificationFetchedProperties;
 
 @class EWPerson;
+
 
 
 
@@ -59,6 +61,16 @@ extern const struct EWNotificationFetchedProperties {
 - (void)setImportanceValue:(int64_t)value_;
 
 //- (BOOL)validateImportance:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
+@property (nonatomic, strong) NSString* receiver;
+
+
+
+//- (BOOL)validateReceiver:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -122,6 +134,12 @@ extern const struct EWNotificationFetchedProperties {
 
 - (int64_t)primitiveImportanceValue;
 - (void)setPrimitiveImportanceValue:(int64_t)value_;
+
+
+
+
+- (NSString*)primitiveReceiver;
+- (void)setPrimitiveReceiver:(NSString*)value;
 
 
 

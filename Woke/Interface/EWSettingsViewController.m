@@ -93,6 +93,10 @@
     _tableView.backgroundColor = [UIColor clearColor];
     _tableView.backgroundView = nil;
     _tableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.1];
+    if ([[UIDevice currentDevice].systemVersion doubleValue]>=7.0f) {
+        _tableView.separatorInset = UIEdgeInsetsZero;// 这样修改，那条线就会占满
+    }
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     [self.view addSubview:_tableView];
 }
 
@@ -195,7 +199,7 @@
             return 8;
             break;
         case settingGroupPreference:
-            return 6;
+            return 4;
             break;
         default: //settingGroupAbout
             return 1;
@@ -270,35 +274,40 @@
                     break;
                 }
                 case 1: {
-                    cell.textLabel.text = LOCALSTR(@"Social interaction");
-                    cell.detailTextLabel.text = preference[@"SocialLevel"];
+                    cell.textLabel.text = LOCALSTR(@"Who can see me");
+                    cell.detailTextLabel.text = preference[@"PrivacyLevel"];
                 }
                     break;
                 case 2: {
-                    cell.textLabel.text = LOCALSTR(@"Download connection");
-                    cell.detailTextLabel.text = preference[@"DownloadConnection"];
-                }
-                    break;
-                case 3: {
                     cell.textLabel.text = LOCALSTR(@"Bed time notification");
                     //switch
                     UISwitch *bedTimeNotifSwitch = [[UISwitch alloc] init];
                     bedTimeNotifSwitch.tintColor = [UIColor greenColor];
-//                    bedTimeNotifSwitch.backgroundColor = [UIColor greenColor];
+                    //                    bedTimeNotifSwitch.backgroundColor = [UIColor greenColor];
                     bedTimeNotifSwitch.tintColor = [UIColor clearColor];
                     bedTimeNotifSwitch.on = (BOOL)preference[@"BedTimeNotification"];
                     bedTimeNotifSwitch.tag = 3;
-//                    bedTimeNotifSwitch.onTintColor = kCustomGray;
+                    //                    bedTimeNotifSwitch.onTintColor = kCustomGray;
                     bedTimeNotifSwitch.onTintColor = [UIColor greenColor];
                     
                     [bedTimeNotifSwitch addTarget:self action:@selector(OnBedTimeNotificationSwitchChanged:) forControlEvents:UIControlEventValueChanged];
                     cell.accessoryView = bedTimeNotifSwitch;
                     //cell.detailTextLabel.text = @"";
-                }
+
+                    
+                                    }
                     break;
-                case 4: {
+                case 3: {
                     cell.textLabel.text = LOCALSTR(@"Sleep duration");
                     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ hours", preference[@"SleepDuration"]];
+                    
+                                    }
+                    break;
+                case 4: {
+                    
+                    cell.textLabel.text = LOCALSTR(@"Download connection");
+                    cell.detailTextLabel.text = preference[@"DownloadConnection"];
+
                 }
                     break;
                 case 5: {

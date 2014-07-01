@@ -100,9 +100,6 @@
 //login with local user default info
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
 
-//    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-//    hud.labelText = @"Loading";
-    
     
     //background refresh
     if (completionBlock) {
@@ -176,17 +173,11 @@
             error = nil;
             [user signUp:&error];
             if (!error) {
-                //create person
-                EWPerson *person = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
-                me = person;
-                [EWDataStore save];
-                
-                //broadcast
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
-                //callback
-                if (block) {
-                    block();
-                }
+                [EWUserManagement loginWithServerUser:user withCompletionBlock:^{
+                    if (block) {
+                        block();
+                    }
+                }];
             }else{
                 NSLog(@"Failed to sign up new user: %@", error.description);
                 EWAlert(@"Server not available, please try again.");
@@ -323,11 +314,13 @@
 
 
 + (void)updateFacebookInfo{
-    [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
-        [EWUserManagement handleFacebookException:error];
-        //update with facebook info
-        [EWUserManagement updateUserWithFBData:data];
-    }];
+    if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
+        [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *data, NSError *error) {
+            [EWUserManagement handleFacebookException:error];
+            //update with facebook info
+            [EWUserManagement updateUserWithFBData:data];
+        }];
+    }
 }
 
 

@@ -17,12 +17,15 @@
 #import "EWPersonViewController.h"
 #import "EWAppDelegate.h"
 #import "EWWakeUpManager.h"
+#import "EWServer.h"
 
 #define kNextTaskHasMediaAlert      1011
 #define kFriendRequestAlert         1012
 #define kFriendAcceptedAlert        1013
 #define kTimerEventAlert            1014
 #define kSystemNoticeAlert          1015
+
+#define nNotificationToDisplay      10
 
 
 @interface EWNotificationManager()
@@ -56,15 +59,23 @@
     NSSortDescriptor *sortImportance = [NSSortDescriptor sortDescriptorWithKey:@"importance" ascending:NO];
     notifications = [notifications sortedArrayUsingDescriptors:@[sortImportance, sortDate]];
     
-    return notifications;
+    return [notifications subarrayWithRange:NSMakeRange(0, nNotificationToDisplay)];
 }
 
+#pragma mark - CREATE
 + (EWNotification *)newNotification{
-    EWNotification *notice = [NSEntityDescription insertNewObjectForEntityForName:@"EWNotification" inManagedObjectContext:[EWDataStore currentContext]];
+    EWNotification *notice = [EWNotification createEntity];
     notice.owner = me;
     notice.importance = 0;
     return notice;
 }
+//
+//+ (EWNotification *)newFriendRequestNotification:(EWPerson *)person{
+//    EWNotification *notice = [EWNotificationManager newNotification];
+//    notice.receiver = person.objectId;
+//    notice.type = kNotificationTypeFriendRequest;
+//    [EWNotificationManager sendNotification:notice];
+//}
 
 
 + (void)handleNotification:(NSString *)notificationID{
@@ -82,8 +93,8 @@
         
     } else if ([notification.type isEqualToString:kNotificationTypeFriendRequest]) {
         
-        NSString *personID = notification.sender;
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:personID];
+        //NSString *personID = notification.sender;
+        EWPerson *person = notification.owner;
         [EWNotificationManager sharedInstance].person = person;
         
         //TODO: add image to alert
@@ -156,19 +167,13 @@
 
 + (EWNotification *)getNotificationByID:(NSString *)notificationID{
     
-    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWNotification"];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ewnotification_id == %@", notificationID];
-    request.predicate = predicate;
-    NSArray *array = [[EWDataStore currentContext] executeFetchRequest:request error:NULL];
-    if (array.count != 1) {
-        NSLog(@"Failed to get notification");
-    }
-    return array[0];
+    EWNotification *notification = [EWNotification findFirstByAttribute:kParseObjectID withValue:notificationID];
+    return notification;
 }
 
 
 + (void)clickedNotification:(EWNotification *)notice{
-    
+    [EWNotificationManager handleNotification:notice.objectId];
 }
 
 
@@ -249,6 +254,64 @@
     [EWDataStore save];
     NSLog(@"Notification of type %@ deleted", notification.type);
     
+}
+
+
+#pragma mark - Push
++ (void)sendFriendRequestNotificationToUser:(EWPerson *)person{
+    /*
+    call the cloud code
+    server create a notification object
+    notification.type = kNotificationTypeFriendRequest
+    notification.sender = me.objectId
+    notification.owner = the recerver AND person.notification add this notification
+     
+     create push:
+     title: Friendship request
+     body: /name/ is requesting your premission to become your friend.
+     userInfo: {User:user.objectId, Type: kNotificationTypeFriendRequest}
+     
+     */
+    
+    [PFCloud callFunctionInBackground:@"sendFriendRequestNotificationToUser"
+                       withParameters:@{@"sender": me.objectId,
+                                        @"owner": person.objectId}
+                                block:^(id object, NSError *error)
+     {
+         if (error) {
+             NSLog(@"Failed sending friendship request: %@", error.description);
+             EWAlert(@"Network error, please send it later");
+         }else{
+             [rootViewController.view showSuccessNotification:@"sent"];
+         }
+     }];
+}
+
++ (void)sendFriendAcceptNotificationToUser:(EWPerson *)person{
+    /*
+     call the cloud code
+     server create a notification object
+     notification.type = kNotificationTypeFriendAccepted
+     notification.sender = me.objectId
+     notification.owner = the recerver AND person.notification add this notification
+     
+     create push:
+     title: Friendship accepted
+     body: /name/ has approved your friendship request. Now send her/him a voice greeting!
+     userInfo: {User:user.objectId, Type: kNotificationTypeFriendAccepted}
+     */
+    [PFCloud callFunctionInBackground:@"sendFriendAcceptNotificationToUser"
+                       withParameters:@{@"sender": me.objectId, @"owner": person.objectId}
+                                block:^(id object, NSError *error)
+    {
+        if (error) {
+            NSLog(@"Failed sending friendship acceptance: %@", error.description);
+            EWAlert(@"Network error, please send it later");
+        }else{
+            [rootViewController.view showSuccessNotification:@"sent"];
+        }
+        
+    }];
 }
 
 @end
