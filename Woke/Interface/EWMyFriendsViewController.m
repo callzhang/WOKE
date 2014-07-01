@@ -130,10 +130,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 {
 //    return;
     if (_cellSelect) {
-        EWPerson * friend = [friends objectAtIndex:indexPath.row];
-        EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
-        viewController.canSeeFriendsDetail = NO;
-        [self.navigationController pushViewControllerWithBlur:viewController];
+        [self pushControllerWithArrayNumber:indexPath.row];
 
     }
    
@@ -182,10 +179,8 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 }
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    EWPerson * friend = [friends objectAtIndex:indexPath.row];
-     EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
-    viewController.canSeeFriendsDetail = NO;
-    [self.navigationController pushViewControllerWithBlur:viewController];
+    [self pushControllerWithArrayNumber:indexPath.row];
+    
 }
 
 - (IBAction)tabValueChange:(UISegmentedControl *)sender {
@@ -208,4 +203,16 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
             break;
     }
 }
-@end
+#pragma mark - help method
+-(void)pushControllerWithArrayNumber:(NSInteger)number
+{
+    if ([self.navigationController.viewControllers count] <kMaxPersonNavigationConnt) {
+        
+        EWPerson * friend = [friends objectAtIndex:number];
+        EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
+        viewController.canSeeFriendsDetail = YES;
+        [self.navigationController pushViewControllerWithBlur:viewController];
+    }
+
+}
+   @end

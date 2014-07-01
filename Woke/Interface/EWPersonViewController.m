@@ -230,7 +230,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 }
 
 - (IBAction)close:(id)sender {
-    if (_canSeeFriendsDetail) {
+    if (_canSeeFriendsDetail&& [[self.navigationController viewControllers] objectAtIndex:0] == self) {
         [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 
     }
@@ -458,12 +458,15 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     switch (indexPath.row) {
         case 0:
         {
-            EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
-            tempVc.cellSelect =_canSeeFriendsDetail;
-            controller = tempVc;
-            //[self.navigationController pushViewController:controller animated:YES]
-            [self.navigationController pushViewControllerWithBlur:controller];
-            break;
+            if ([self.navigationController.viewControllers count] <kMaxPersonNavigationConnt) {
+                EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
+                tempVc.cellSelect =_canSeeFriendsDetail;
+                controller = tempVc;
+                //[self.navigationController pushViewController:controller animated:YES]
+                [self.navigationController pushViewControllerWithBlur:controller];
+                break;
+            }
+      
         }
     }
     

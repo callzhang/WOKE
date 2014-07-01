@@ -149,4 +149,7 @@
 #define kNotificationTypeNotice         @"notice"
 #define kNotificationTypeNextTaskHasMedia     @"task_has_media"
 
+//Navgation Controller
+#define kMaxPersonNavigationConnt       6
+
 
