@@ -38,5 +38,6 @@
 - (IBAction)tabTapped:(UISegmentedControl *)sender;
 
 - (EWPersonViewController *)initWithPerson:(EWPerson *)person;
+- (void)refresh;
 
 @end

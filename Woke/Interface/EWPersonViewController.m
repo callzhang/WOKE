@@ -101,9 +101,6 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     self.location.text = @"";
     self.statement.text = @"";
     
-    
-    
-    
     [taskTableView reloadData];
     
 }
@@ -124,6 +121,11 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         stats = [[EWStatisticsManager alloc] init];
         stats.person = person;
     }
+}
+
+- (void)refresh{
+    [self initData];
+    [self initView];
 }
 
 

@@ -343,14 +343,17 @@
 #pragma mark - Parse Push
 + (void)parsePush:(NSDictionary *)pushPayload toUsers:(NSArray *)users completion:(PFBooleanResultBlock)block{
     
-    NSArray *parseIDs = [users valueForKey:kParseObjectID];
+    NSArray *userIDs = [users valueForKey:kUsername];
     PFQuery *pushQuery = [PFInstallation query];
-    [pushQuery whereKey:kParseObjectID containedIn:parseIDs];
+    [pushQuery whereKey:kUsername containedIn:userIDs];
     PFPush *push = [PFPush new];
     [push setQuery:pushQuery];
     [push setData:pushPayload];
     block = block?:NULL;
-    [push sendPushInBackgroundWithBlock:block];
+    //[push sendPushInBackgroundWithBlock:block];
+    [push sendPushInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        block(succeeded, error);
+    }];
 }
 
 
