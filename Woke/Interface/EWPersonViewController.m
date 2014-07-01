@@ -410,8 +410,9 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         {
             NSArray *medias = [[EWMediaStore sharedInstance] mediaCreatedByPerson:person];
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)medias.count];
-            break;
+           
         }
+             break;
         case 3:
         {
             NSDate *date = person.updatedAt;
@@ -426,7 +427,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
         }
         case 5://wake-ability
         {
-            cell.detailTextLabel.text =  [NSString stringWithFormat:@"%d", stats.wakability];
+            cell.detailTextLabel.text =  [NSString stringWithFormat:@"%ld",(long) stats.wakability];
             break;
         }
             
