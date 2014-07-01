@@ -15,7 +15,7 @@
 #import <Parse/Parse.h>
 //#import <AWSSNS/AWSSNS.h>
 
-typeof void (^EWSavingCallback)(void);
+typedef   void(^EWSavingCallback)(void);
 
 @class EWPerson;
 
