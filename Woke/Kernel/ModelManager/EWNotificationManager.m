@@ -25,7 +25,7 @@
 #define kTimerEventAlert            1014
 #define kSystemNoticeAlert          1015
 
-#define nNotificationToDisplay      10
+#define nNotificationToDisplay      9
 
 
 @interface EWNotificationManager()
@@ -58,8 +58,11 @@
     NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO];
     NSSortDescriptor *sortImportance = [NSSortDescriptor sortDescriptorWithKey:@"importance" ascending:NO];
     notifications = [notifications sortedArrayUsingDescriptors:@[sortImportance, sortDate]];
-    
-    return [notifications subarrayWithRange:NSMakeRange(0, nNotificationToDisplay)];
+    NSInteger n = MIN(notifications.count , nNotificationToDisplay);
+    if (n > 0) {
+        return [notifications subarrayWithRange:NSMakeRange(0, n)];
+    }
+    return nil;
 }
 
 #pragma mark - CREATE
