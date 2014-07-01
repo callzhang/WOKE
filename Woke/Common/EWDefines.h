@@ -125,7 +125,7 @@
 #define kFinishedSync                   @"FinishedSync" //server has finished syncing (usually at startup)
 #define kADIDKey                        @"ADID" //key for ADID
 #define kPushTypeKey                    @"type"
-#define kPushTypeNoticeKey              @"notice"
+#define kPushTypeNotificationKey        @"notice"
 #define kPushNofiticationIDKey          @"notificationID"
 
 //Audio & Video

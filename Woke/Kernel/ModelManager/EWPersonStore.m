@@ -98,8 +98,19 @@ EWPerson *me;
     
     if (!person){
         //First find user on server
-        PFUser *user = [PFUser currentUser];
-        NSParameterAssert([user.username isEqualToString:ID]);
+        PFUser *user;
+        if ([[PFUser currentUser].username isEqualToString:ID]) {
+            user = [PFUser currentUser];
+        }else{
+            PFQuery *query = [PFUser query];
+            [query whereKey:kUsername equalTo:ID];
+            NSError *error;
+            user = [query findObjects:&error].firstObject;
+            if (error) {
+                NSLog(@"Failed to find user with ID %@. Reason:%@", ID, error.description);
+            }
+        }
+        
         if (user.isNew) {
             person = [self createPersonWithParseObject:user];
             NSLog(@"Current user %@ data has CREATED", person.name);

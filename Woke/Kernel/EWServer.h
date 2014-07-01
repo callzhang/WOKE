@@ -16,6 +16,10 @@
 
 + (NSArray *)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint;
 + (void)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock;
+
+#pragma mark - Handle Push Notification
++ (void)handlePushNotification:(NSDictionary *)push;
+
 /**
  Send buzz
  */

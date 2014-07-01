@@ -19,6 +19,9 @@
 #import "EWMediaItem.h"
 #import "EWMediaStore.h"
 #import "EWDownloadManager.h"
+#import "EWNotification.h"
+#import "EWNotificationManager.h"
+#import "EWWakeUpManager.h"
 
 //view
 #import "EWWakeUpViewController.h"
@@ -79,6 +82,19 @@
     });
 }
 
+#pragma mark - Handle Push Notification
++ (void)handlePushNotification:(NSDictionary *)pushInfo{
+    NSString *type = pushInfo[kPushTypeKey];
+    BOOL isBuzz = [type isEqualToString:kPushTypeBuzzKey];
+    BOOL isVoice = [type isEqualToString:kPushTypeMediaKey];
+    BOOL isNotification = [type isEqualToString:kPushTypeNotificationKey];
+    if (isNotification) {
+        [EWNotificationManager handleNotification: pushInfo[kPushNofiticationIDKey]];
+    }else if(isBuzz || isVoice){
+        [EWWakeUpManager handlePushNotification:pushInfo];
+    }
+}
+
 #pragma mark - Push buzz
 
 + (void)buzz:(NSArray *)users{
@@ -101,54 +117,60 @@
         NSString *sound = me.preference[@"buzzSound"]?:@"default";
         buzz.buzzKey = sound;
         
-        //push payload
-        NSDictionary *pushMessage;
-        
-        
-        if ([[NSDate date] isEarlierThan:task.time]) {
-            //before wake up
-            //silent push
-            pushMessage = @{@"alert": @"Someone has sent you an buzz",
-                            @"content-available": @1,
-                            @"badge": @"Increment",
-                            kPushMediaKey: buzz.objectId,
-                            kPushTypeKey: kPushTypeBuzzKey};
-
+        [EWDataStore saveWithCompletion:^{
+            NSParameterAssert(buzz.objectId);
             
-        }else if (!task.completed || [[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
-            //struggle state
-            //send push notification, The payload can consist of the alert, badge, and sound keys.
+            //push payload
+            NSDictionary *pushMessage;
             
-            NSString *buzzType = buzz.buzzKey;
-            NSDictionary *sounds = buzzSounds;
-            NSString *buzzSound = sounds[buzzType];
             
-            pushMessage = @{@"alert": @"Someone has sent you an buzz",
-                            @"content-available": @1,
-                            @"badge": @"Increment",
-                            @"sound": buzzSound,
-                            kPushMediaKey: buzz.objectId,
-                            kPushTypeKey: kPushTypeBuzzKey};
-
-        }else{
-            
-            //tomorrow's task
-            //silent push
-            pushMessage = @{@"alert": @"Someone has sent you an buzz",
-                            @"content-available": @1,
-                            @"badge": @"Increment",
-                            kPushMediaKey: buzz.objectId,
-                            kPushTypeKey: kPushTypeBuzzKey};
-        }
-        
-        //send
-        [EWServer parsePush:pushMessage toUsers:@[person] completion:^(BOOL succeeded, NSError *error) {
-            if (succeeded) {
-                NSLog(@"Buzz sent to %@", person.name);
+            if ([[NSDate date] isEarlierThan:task.time]) {
+                //before wake up
+                //silent push
+                pushMessage = @{@"alert": @"Someone has sent you an buzz",
+                                @"content-available": @1,
+                                @"badge": @"Increment",
+                                kPushMediaKey: buzz.objectId,
+                                kPushTypeKey: kPushTypeBuzzKey};
+                
+                
+            }else if (!task.completed || [[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
+                //struggle state
+                //send push notification, The payload can consist of the alert, badge, and sound keys.
+                
+                NSString *buzzType = buzz.buzzKey;
+                NSDictionary *sounds = buzzSounds;
+                NSString *buzzSound = sounds[buzzType];
+                
+                pushMessage = @{@"alert": @"Someone has sent you an buzz",
+                                @"content-available": @1,
+                                @"badge": @"Increment",
+                                @"sound": buzzSound,
+                                kPushMediaKey: buzz.objectId,
+                                kPushTypeKey: kPushTypeBuzzKey};
+                
             }else{
-                NSLog(@"Failed to send push: %@", error.description);
+                
+                //tomorrow's task
+                //silent push
+                pushMessage = @{@"alert": @"Someone has sent you an buzz",
+                                @"content-available": @1,
+                                @"badge": @"Increment",
+                                kPushMediaKey: buzz.objectId,
+                                kPushTypeKey: kPushTypeBuzzKey};
             }
+            
+            //send
+            [EWServer parsePush:pushMessage toUsers:@[person] completion:^(BOOL succeeded, NSError *error) {
+                if (succeeded) {
+                    NSLog(@"Buzz sent to %@", person.name);
+                }else{
+                    NSLog(@"Failed to send push: %@", error.description);
+                }
+            }];
         }];
+        
+        
         
         
         //send

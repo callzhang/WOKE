@@ -308,7 +308,7 @@
             }
             
             
-        }else if([type isEqualToString:kPushTypeNoticeKey] || [type isEqualToString:kNotificationTypeFriendAccepted] || [type isEqualToString:kNotificationTypeFriendRequest]){
+        }else if([type isEqualToString:kPushNofiticationIDKey] || [type isEqualToString:kNotificationTypeFriendAccepted] || [type isEqualToString:kNotificationTypeFriendRequest]){
             // ============== System notice ================
             
             NSString *notificationID = remoteNotif[kPushNofiticationIDKey];
