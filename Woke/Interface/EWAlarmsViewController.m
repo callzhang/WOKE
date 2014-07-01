@@ -676,6 +676,7 @@
         
         
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+        controller.canSeeFriendsDetail = YES;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         controller.person = person;
