@@ -78,8 +78,11 @@
         //get from server
         PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
         [query whereKey:kParseObjectID equalTo:media];
+        [query includeKey:@"receivers"];
+        [query includeKey:@"tasks"];
         PFObject *object = [query getFirstObject];
         media = (EWMediaItem *)[object managedObject];
+        [media refresh];
     }
     return media;
 }

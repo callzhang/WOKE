@@ -979,6 +979,9 @@
             
             NSSet *relatedMOs = [self valueForKey:key];
             for (NSManagedObject *MO in relatedMOs) {
+                if ([MO isKindOfClass:[EWPerson class]]) {
+                    return ;
+                }
                 [MO refreshInBackgroundWithCompletion:^{
                     NSLog(@"Relation %@ -> %@ refreshed in background", self.entity.name, description.destinationEntity.name);
                 }];

@@ -289,7 +289,10 @@
 
 #pragma mark - FACEBOOK
 + (void)loginParseWithFacebookWithCompletion:(void (^)(void))block{
-    NSParameterAssert(![PFUser currentUser]);
+    if([PFUser currentUser]){
+        [EWUserManagement linkWithFacebook];
+        return;
+    }
     
     //login with facebook
     [PFFacebookUtils logInWithPermissions:[EWUserManagement facebookPermissions] block:^(PFUser *user, NSError *error) {
@@ -334,6 +337,7 @@
     [PFFacebookUtils linkUser:[PFUser currentUser] permissions:[EWUserManagement facebookPermissions] block:^(BOOL succeeded, NSError *error) {
         if (error) {
             NSLog(@"Failed to get facebook info: %@", error.description);
+            [EWUserManagement handleFacebookException:error];
             return ;
         }
         
@@ -345,71 +349,7 @@
     }];
 }
 
-//+ (void)loginUsingFacebookWithCompletion:(void (^)(void))block{
-//
-//    [EWUserManagement openFacebookSessionWithCompletion:^{
-//        [[FBRequest requestForMe] startWithCompletionHandler:
-//         ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fb_user, NSError *error) {
-//             if (!error) {
-//                 __block EWPerson *oldUser = me;
-//                 __block BOOL newUser;
-//                 
-//                 //test if facebook user exists
-//                 [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken onSuccess:^(NSDictionary *result) {
-//                     newUser = NO;
-//                 } onFailure:^(NSError *error) {
-//                     newUser = YES;
-//                 }];
-//                 
-//                 //login
-//                 [client loginWithFacebookToken:FBSession.activeSession.accessTokenData.accessToken createUserIfNeeded:YES usernameForCreate:fb_user.username onSuccess:^(NSDictionary *result) {
-//                     NSLog(@"Logged in facebook for:%@", fb_user.name);
-//                     
-//                     //fetch coredata person for fb_user
-//                     [EWUserManagement loginWithCachedDataStore:fb_user.username withCompletionBlock:^{
-//                         //update fb info
-//                         [EWUserManagement updateUserWithFBData:fb_user];
-//                         
-//                         //welcome new user
-//                         if (newUser) {
-//                             [EWUserManagement handleNewUser];
-//                             
-//                         }else{
-//                             NSLog(@"User %@ logged in from facebook", fb_user.name);
-//                         }
-//                         
-//                         //save
-//                         [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-//                             NSLog(@"Unable to save user");
-//                         }];
-//                         
-//                         //completion
-//                         dispatch_async(dispatch_get_main_queue(), ^{
-//                             block();
-//                             
-//                         });
-//                         
-//                         
-//                     }];
-//                     
-//                     //void old user AWS token
-//                     oldUser.aws_id = @"";
-//                     
-//                     
-//                 }onFailure:^(NSError *error) {
-//                     NSLog(@"Error: %@", error);
-//                 }];
-//             } else {
-//                 // Handle error accordingly
-//                 [EWUserManagement handleFacebookException:error];
-//             }
-//             
-//             
-//             
-//         }];
-//    }];
-//    
-//}
+
 
 
 //after fb login, fetch user managed object

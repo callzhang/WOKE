@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #import "EWPersonStore.h"
 
+#define buzzSounds                      @{@"default": @"buzz.caf"};
+
 @class EWMediaItem;
 @interface EWMediaStore : NSObject //EWStore
 

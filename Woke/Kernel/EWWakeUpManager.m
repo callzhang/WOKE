@@ -69,15 +69,15 @@
         // ============== Buzz ================
         
         
-        NSLog(@"Received buzz from %@", personID);
+        NSLog(@"Received buzz from %@", media.author.name);
         
         //sound
-        NSString *buzzSoundName = media.buzzKey;
+        NSString *buzzSoundName = media.buzzKey?:me.preference[@"buzzSound"];
         NSDictionary *sounds = buzzSounds;
-        NSString *buzzSound = buzzSoundName?sounds[buzzSoundName]:@"buzz.caf";
+        NSString *buzzSound = sounds[buzzSoundName];
         
 #ifdef DEV_TEST
-        EWPerson *sender = [EWPersonStore me];
+        EWPerson *sender = media.author;
         //alert
         [[[UIAlertView alloc] initWithTitle:@"Buzz 来啦" message:[NSString stringWithFormat:@"Got a buzz from %@. This message will not display in release.", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         
@@ -96,7 +96,6 @@
         }else if ([[NSDate date] isEarlierThan:task.time]){
             
             //============== buzz earlier than alarm, schedule local notif ==============
-            
             
             UILocalNotification *notif = [[UILocalNotification alloc] init];
             //time: a random time after
@@ -120,7 +119,10 @@
             [EWWakeUpManager presentWakeUpViewWithTask:task];
             
             //broadcast event so that wakeup VC can play it
-            [[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
+            //[[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
+            
+            [task addMediasObject:media];
+            [EWDataStore save];
         }
         
 
@@ -131,8 +133,9 @@
         
 
         //download media
-        NSLog(@"Download media: %@", media.objectId);
-        //[[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded in test mode
+        NSLog(@"Downloading media: %@", media.objectId);
+        
+        //[[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded in test mode+
         
         //determin action based on task timing
         if ([[NSDate date] isEarlierThan:task.time]) {
@@ -146,20 +149,26 @@
             [EWWakeUpManager presentWakeUpViewWithTask:task];
             
             //broadcast so wakeupVC can react to it
-            [[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: task.objectId}];
+            //[[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: task.objectId}];
             
-            
+            //use KVO
+            [task addMediasObject:media];
+            [EWDataStore save];
             
         }else{
             
             //Woke state -> assign media to next task, download
-            EWTaskItem *myTask = [EWMediaStore myTaskInMedia:media];
-            if (myTask) {
-                //need to move to media pool
-                [media removeTasksObject:myTask];
+            if (![me.mediaAssets containsObject:media]) {
                 [me addMediaAssetsObject:media];
-                [EWDataStore save];
+                
+                EWTaskItem *myTask = [EWMediaStore myTaskInMedia:media];
+                if (myTask) {
+                    //need to move to media pool
+                    [media removeTasksObject:myTask];
+                    [EWDataStore save];
+                }
             }
+            
         }
         
 #ifdef DEV_TEST
@@ -238,6 +247,7 @@
         [task addMediasObject:media];
         //[EWDataStore save];
     }
+    //TODO: need to get some data from server (Simin)
     
     //save
     [EWDataStore save];
@@ -245,7 +255,7 @@
     //cancel local alarm
     [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
     
-    //fire a silent alarm
+    //fire an alarm
     [[EWTaskStore sharedInstance] fireAlarmForTask:task];
     
     //play sounds after 30s - time for alarm
@@ -257,7 +267,7 @@
     //post notification
     [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
     
-    //download
+    //TODO: download
     [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:NULL];
     
 }
