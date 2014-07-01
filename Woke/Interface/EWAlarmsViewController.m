@@ -97,7 +97,7 @@
 }
 
 - (void)centerView{
-    if([rootViewController.view viewWithTag:kMenuTag]){
+    if([rootViewController.view viewWithTag:kMenuTag] || [indicatorHideTimer isValid]){
         //cancel if popout is present
         return;
     }
@@ -677,11 +677,13 @@
         
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+        controller.person = person;
        
         [self presentViewControllerWithBlurBackground:navController completion:^{
-            EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-            controller.person = person;
-            controller.canSeeFriendsDetail = YES;
+            [person refreshInBackgroundWithCompletion:^{
+                [controller refresh];
+            }];
             [controller.view setNeedsDisplay];
         }];
         [weakMenu closeMenu];
@@ -782,7 +784,9 @@
                 }
             } completion:^(BOOL finished){
                 if (finished) {
-                    [self centerView];
+                    static NSTimer *viewCenterTimer;
+                    [viewCenterTimer invalidate];
+                    viewCenterTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
                 }else{
                     NSLog(@"*** Update of collection view failed");
                 }

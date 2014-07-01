@@ -191,12 +191,13 @@
         
         
         //save
-        [EWDataStore save];
+        [EWDataStore saveWithCompletion:^{
+            //send push notification
+            for (EWPerson *receiver in personSet) {
+                [EWServer pushMedia:media ForUser:receiver];
+            }
+        }];
         
-        //send push notification
-        for (EWPerson *receiver in personSet) {
-            [EWServer pushMedia:media ForUser:receiver];
-        }
         
         //clean up
         recordingFileUrl = nil;

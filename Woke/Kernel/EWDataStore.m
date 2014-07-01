@@ -92,6 +92,7 @@
         //change dic
         self.changesDictionary = [NSMutableDictionary new];
         self.parseSaveCallbacks = [NSMutableDictionary dictionary];
+        self.saveCallbacks = [NSMutableArray new];
     }
     return self;
 }
@@ -130,9 +131,16 @@
 - (void)loginDataCheck{
     NSLog(@"=== [%s] Logged in, performing login tasks.===", __func__);
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    if (![currentInstallation[@"username"] isEqualToString: me.username]){
-        currentInstallation[@"username"] = me.username;
-        [currentInstallation saveInBackground];
+    if (![currentInstallation[kParseObjectID] isEqualToString: me.objectId]){
+        currentInstallation[kUserID] = me.objectId;
+        currentInstallation[kUsername] = me.username;
+        [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                NSLog(@"Installation %@ saved", currentInstallation.objectId);
+            }else{
+                NSLog(@"*** Installation %@ failed to save: %@", currentInstallation.objectId, error.description);
+            }
+        }];
     };
     
     
@@ -204,56 +212,6 @@
 }
 
 
-//#pragma mark - DATA from Amazon S3
-//+ (NSData *)getRemoteDataWithKey:(NSString *)key{
-//    if (!key) {
-//        return nil;
-//    }
-//    
-//    NSData *data = nil;
-//    
-//    //s3 file
-//    if ([key hasPrefix:@"http"]) {
-//        //read from url
-//        NSURL *audioURL = [NSURL URLWithString:key];
-//        NSString *keyHash = [audioURL.absoluteString MD5Hash];
-//        data = [FTWCache objectForKey:keyHash];
-//        if (!data) {
-//            //get from remote
-//            NSError *err;
-//            data = [NSData dataWithContentsOfURL:audioURL options:NSDataReadingUncached error:&err];
-//            if (err) {
-//                NSLog(@"@@@@@@ Error occured in reading remote content: %@", err);
-//            }
-//            [FTWCache setObject:data forKey:keyHash];
-//        }
-//        
-//    }else if ([[NSURL URLWithString:key] isFileURL]){
-//        //local file
-//        NSLog(@"string is a local file: %@", key);
-//        @try {
-//            data = [NSData dataWithContentsOfFile:key];
-//        }
-//        @catch (NSException *exception) {
-//            //pass by file name only, for main bundle resources
-//            NSArray *array = [key componentsSeparatedByString:@"."];
-//            NSAssert(array.count != 2, @"Please provide a file name with extension");
-//            NSString *filePath = [[NSBundle mainBundle] pathForResource:array[0] ofType:array[1]];
-//            data = [NSData dataWithContentsOfFile:filePath];
-//        }
-//        
-//    }else if(key.length > 500){
-//        //string contains data
-//        data = [key dataUsingEncoding:NSUTF8StringEncoding];
-//        //TODO: save again.
-//        NSLog(@"Return the audio key as the data itself, please check!");
-//        
-//    }
-//    
-//    return data;
-//}
-
-
 
 #pragma mark - Core Data Threading
 + (NSManagedObject *)objectForCurrentContext:(NSManagedObject *)obj{
@@ -299,13 +257,6 @@
 
 + (void)save{
     
-    //find updated/inserted/deleted objects in main context
-//    if (![NSThread isMainThread]) {
-//        NSLog(@"Save to background thread");
-//        [[EWDataStore currentContext] saveToPersistentStoreAndWait];
-//        return;
-//    }
-    NSLog(@"%s", __func__);
     NSManagedObjectContext *context = [EWDataStore sharedInstance].context;
     NSSet *inserts = [context insertedObjects];
     NSSet *updates = [context updatedObjects];
@@ -563,6 +514,10 @@
     
     
     NSLog(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ \n ==============================", [insertedManagedObjects valueForKey:kParseObjectID], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
+    
+    
+    NSArray *callbacks = [[EWDataStore sharedInstance].saveCallbacks copy];
+    [[EWDataStore sharedInstance].saveCallbacks removeAllObjects];
 
     //start background update
     dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
@@ -577,13 +532,11 @@
         }
         
         //completion block
-        NSArray *callbacks = [[EWDataStore sharedInstance].saveCallbacks copy];
-        EWSavingCallback block = callbacks.firstObject;
-        while (block) {
-            block();
-        }
-        
-        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            for (EWSavingCallback block in callbacks){
+                block();
+            }
+        });
     });
 }
 #pragma mark -
