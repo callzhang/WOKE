@@ -75,7 +75,7 @@
 #define weekdayshort @[@"Sun", @"Mon",@"Tue", @"Wed", @"Thur", @"Fri", @"Sat"];
 #define defaultAlarmTimes               @[@8.00, @8.00, @8.00, @8.00, @8.00, @8.00, @8.00];
 #define kUserDefaults                    @{@"DefaultTone": @"Autumn Spring.caf", @"SocialLevel":@"Social Network Only", @"DownloadConnection":@"Cellular and Wifi", @"BedTimeNotification":@YES, @"SleepDuration":@8.0, @"PrivacyLevel":@"Privacy info", @"SystemID":@"0", @"FirstTime":@YES, @"SkipTutorial":@NO, @"Region":@"America", @"alarmTime":@"08:00", @"buzzSound":@"default"};
-#define buzzSounds                      @{@"default": @"buzz.caf"};
+
 
 //user defaults key
 #define kPushTokenDicKey                @"push_token_dic" //the key for local defaults to get the array of tokenByUser dict
@@ -125,7 +125,7 @@
 #define kFinishedSync                   @"FinishedSync" //server has finished syncing (usually at startup)
 #define kADIDKey                        @"ADID" //key for ADID
 #define kPushTypeKey                    @"type"
-#define kPushTypeNoticeKey              @"notice"
+#define kPushTypeNotificationKey        @"notice"
 #define kPushNofiticationIDKey          @"notificationID"
 
 //Audio & Video
@@ -148,5 +148,8 @@
 #define kNotificationTypeTimer          @"timer"
 #define kNotificationTypeNotice         @"notice"
 #define kNotificationTypeNextTaskHasMedia     @"task_has_media"
+
+//Navgation Controller
+#define kMaxPersonNavigationConnt       6
 
 

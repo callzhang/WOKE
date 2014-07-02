@@ -24,7 +24,7 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Bg" id="MQd-sS-vOE">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Home Bg" id="MQd-sS-vOE">
                     <rect key="frame" x="-80" y="-142" width="480" height="852"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
@@ -143,8 +143,8 @@
     </objects>
     <resources>
         <image name="AlarmViewBar" width="320" height="100"/>
-        <image name="Bg" width="480" height="852"/>
         <image name="Configure_Btn" width="32" height="32"/>
+        <image name="Home Bg" width="320" height="568"/>
         <image name="You_Indicator" width="64" height="64"/>
         <image name="addBtn" width="50" height="50"/>
     </resources>
