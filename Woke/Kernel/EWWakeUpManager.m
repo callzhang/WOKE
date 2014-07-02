@@ -268,7 +268,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
     
     //TODO: download
-    [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:NULL];
+    //[[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:NULL];
     
 }
 
