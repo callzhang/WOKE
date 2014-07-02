@@ -79,10 +79,8 @@
     //notification
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     
@@ -128,7 +126,6 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
     
     NSLog(@"WakeUpViewController popped out of view: remote control event listner stopped. Observers removed.");
     
@@ -211,7 +208,6 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
     
     NSLog(@"WakeUpViewController deallocated. Observers removed.");
 }
@@ -228,7 +224,19 @@
 - (void)setTask:(EWTaskItem *)t{
     task = t;
     medias = [[task.medias allObjects] mutableCopy];
+    //KVO
+    [self.task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:nil];
     [self initData];
+}
+
+#pragma mark - KVO
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if ([object isKindOfClass:[EWTaskItem class]]) {
+        if ([keyPath isEqualToString:@"medias"] && task.medias.count != medias.count) {
+            //observed task.media changed
+            [self refresh];
+        }
+    }
 }
 
 #pragma mark - Functions

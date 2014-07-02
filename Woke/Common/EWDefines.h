@@ -118,6 +118,7 @@
 //Notification key
 #define kPushPersonKey                  @"person"
 #define kPushTaskKey                    @"task"
+#define kLocalTaskKey                   @"task_object_id"
 #define kPushMediaKey                   @"media"
 #define kPushTypeBuzzKey                @"buzz"
 #define kPushTypeMediaKey               @"media"

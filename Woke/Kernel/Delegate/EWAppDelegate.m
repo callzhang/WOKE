@@ -345,27 +345,25 @@ UIViewController *rootViewController;
         if (self.musicList.count > 0) {
             [self playDownloadedMusic:[self.musicList objectAtIndex:self.musicList.count-1]];
         }*/
-        NSString *taskID = [notification.userInfo objectForKey:kPushTaskKey];
-        
-        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
-        
-        if (!taskID) {
-            //unexpected notification
-            if (!notification) {
-                //Unidentified issue
-                
-#ifdef DEV_TEST
-                task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
-                
-#endif
+        NSString *localID = notification.userInfo[kLocalTaskKey];
+        if (localID) {
+            //alarm time up event, time to wake up
+            EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByLocalID:localID];
+            NSDate *wakeTimeMax = [task.time timeByAddingSeconds:kMaxWakeTime];
+            if ([[NSDate date] isEarlierThan:wakeTimeMax]) {
+                //struggle
+                [EWWakeUpManager presentWakeUpViewWithTask:task];
             }else{
-                return;
+                EWAlert(@"You didn't wake up in time. Try harder next time!");
             }
+            
+        } else {
+            //something else
+            NSLog(@"Received unknown local notification: %@", notification);
         }
-        
-        [EWWakeUpManager presentWakeUpViewWithTask:task];
     }
 }
+
 /*
 //normal handler for remote notification
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{

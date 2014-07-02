@@ -157,7 +157,8 @@
 - (void)handleTaskDeletion:(NSNotification *)notification{
     id sender = [notification object];
     if (!sender) {
-        sender = notification.userInfo[kPushTaskKey];
+        NSLog(@"*** task should be contained in notification");
+        return;
     }
     NSAssert([sender isKindOfClass:[EWTaskItem class]], @"Target is not task item, check code!");
     EWTaskItem *t = (EWTaskItem *)sender;
