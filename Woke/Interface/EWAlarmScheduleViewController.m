@@ -20,7 +20,7 @@
 
 //backend
 #import "EWDataStore.h"
-
+#import "EWCostumTextField.h"
 
 static NSString *cellIdentifier = @"scheduleAlarmCell";
 
@@ -198,7 +198,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	// If our cell is selected, return double height
 	if(selected == indexPath.row    ) {
-		return 160.0;
+		return 130.0;
 	}
 	
 	// Cell isn't selected so return single height

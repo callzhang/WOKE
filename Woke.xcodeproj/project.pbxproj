@@ -55,6 +55,7 @@
 		0EAD6FB8195A62EC00DDB052 /* EWFriendsTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */; };
 		0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */; };
 		0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */; };
+		0ECB00A21964585A00B122EF /* EWCostumTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECB00A11964585A00B122EF /* EWCostumTextField.m */; };
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
 		185B5274190D1D82006D6FB9 /* UIView+Sreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
@@ -255,6 +256,8 @@
 		0EB02D02195F1C7700ECACED /* EWMyProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMyProfileViewController.h; sourceTree = "<group>"; };
 		0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMyProfileViewController.m; sourceTree = "<group>"; };
 		0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMyProfileViewController.xib; sourceTree = "<group>"; };
+		0ECB00A01964585A00B122EF /* EWCostumTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWCostumTextField.h; sourceTree = "<group>"; };
+		0ECB00A11964585A00B122EF /* EWCostumTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWCostumTextField.m; sourceTree = "<group>"; };
 		185B5272190D1D82006D6FB9 /* UIView+Sreenshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Sreenshot.h"; sourceTree = "<group>"; };
 		185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Sreenshot.m"; sourceTree = "<group>"; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -623,6 +626,8 @@
 				185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */,
 				0EABB2A9195693C600C45788 /* UINavigationController+Blur.h */,
 				0EABB2AA195693C600C45788 /* UINavigationController+Blur.m */,
+				0ECB00A01964585A00B122EF /* EWCostumTextField.h */,
+				0ECB00A11964585A00B122EF /* EWCostumTextField.m */,
 			);
 			name = Extension;
 			path = BasicLib;
@@ -1328,6 +1333,7 @@
 				0EABB2AB195693C600C45788 /* UINavigationController+Blur.m in Sources */,
 				ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */,
 				56D997F517B426C3003EDA53 /* NSDate+Extend.m in Sources */,
+				0ECB00A21964585A00B122EF /* EWCostumTextField.m in Sources */,
 				9BF07ABE192324F800DED2E1 /* _EWPerson.m in Sources */,
 				9BF297BC1912F713008C136E /* EWPostWakeUpViewController.m in Sources */,
 				AB29C4CB18DEBCE700C0A141 /* UIViewController+Blur.m in Sources */,

@@ -11,7 +11,7 @@
 #import "EWAlarmManager.h"
 #import "EWAlarmItem.h"
 #import "NSDate+Extend.h"
-
+#import "EWCostumTextField.h"
 @implementation EWAlarmEditCell
 @synthesize task, alarm;
 @synthesize myTime, myStatement, myMusic;
@@ -21,6 +21,11 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         self.contentView.backgroundColor = [UIColor clearColor];
+        self.statement.textColor = [UIColor whiteColor];
+       [ self.statement setValue:[UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
+//        UIColor *color = [UIColor whiteColor];
+//        self.statement.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"PlaceHolder Text" attributes:@{NSForegroundColorAttributeName: color}];
+        [self bringSubviewToFront:self.statement];
     }
     return self;
 }
