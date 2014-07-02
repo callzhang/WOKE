@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "EWRingtoneSelectionViewController.h"
 @class EWAlarmItem, EWTaskItem;
-
+@class EWCostumTextField;
 @interface EWAlarmEditCell : UITableViewCell<EWRingtoneSelectionDelegate>
 //container
 @property (nonatomic) EWTaskItem *task;
@@ -24,7 +24,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *alarmToggle;
 @property (weak, nonatomic) IBOutlet UILabel *weekday;
 @property (weak, nonatomic) IBOutlet UILabel *time;
-@property (weak, nonatomic) IBOutlet UITextField *statement;
+@property (weak, nonatomic) IBOutlet EWCostumTextField *statement;
 @property (weak, nonatomic) IBOutlet UIStepper *timeStepper;
 @property (weak, nonatomic) IBOutlet UIButton *music;
 @property (weak, nonatomic) IBOutlet UILabel *AM;

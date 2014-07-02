@@ -20,7 +20,7 @@
 
 //backend
 #import "EWDataStore.h"
-
+#import "EWCostumTextField.h"
 
 static NSString *cellIdentifier = @"scheduleAlarmCell";
 
@@ -42,10 +42,10 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.15]];
     
     //header view
-    UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
-    UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
+    UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Confirm Button"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
+    UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Close Button"] style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:leftBarButtonItem rightItem:rightBarButtonItem];
-    self.title = @"Configure Alarm";
+    self.title = @"Schedule Alarms";
     
     //data
     [self initData];
@@ -198,7 +198,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	// If our cell is selected, return double height
 	if(selected == indexPath.row    ) {
-		return 160.0;
+		return 130.0;
 	}
 	
 	// Cell isn't selected so return single height
