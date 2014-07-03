@@ -256,7 +256,7 @@
             break;
         }
         
-        case 7:{
+        case 7:{//add some media
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:[EWPersonStore me]];
             NSInteger m = 6 - task.medias.count;
@@ -278,12 +278,9 @@
             }
             
             
-            EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:[EWDataStore objectForCurrentContext:task]];
+
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-            [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
-                
-                [rootViewController presentViewControllerWithBlurBackground:controller];
-            }];
+            [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
             break;
         }
             

@@ -58,16 +58,17 @@
 }
 
 - (void)setMedia:(EWMediaItem *)m{
-    if ([m.type isEqualToString:kMediaTypeBuzz]) {
+    media = m;
+    if ([media.type isEqualToString:kMediaTypeBuzz]) {
         self.mediaBar.hidden = YES;
         [self.buzzIcon setImage:[UIImage imageNamed:@"Buzz Button"] forState:UIControlStateNormal];
-    }else if([m.type isEqualToString:kMediaTypeVoice]){
+    }else if([media.type isEqualToString:kMediaTypeVoice]){
         self.mediaBar.hidden = NO;
         [self.buzzIcon setImage:[UIImage imageNamed:@"Voice Message"] forState:UIControlStateNormal];
         
         //set media bar length
         CGRect frame = self.mediaBar.frame;
-        AVAudioPlayer *p = [[AVAudioPlayer alloc] initWithData:m.audio error:NULL];
+        AVAudioPlayer *p = [[AVAudioPlayer alloc] initWithData:media.audio error:NULL];
         double len = p.duration;
         double ratio = len/30/2 + 0.5;
         if (ratio > 1.0) ratio = 1.0;
@@ -76,7 +77,7 @@
         
         [self setNeedsDisplay];
     }else{
-        [NSException raise:@"Unexpected media type" format:@"Reason: please support %@", m.type];
+        [NSException raise:@"Unexpected media type" format:@"Reason: please support %@", media.type];
     }
     
     //date
@@ -89,7 +90,7 @@
     //description
     self.description.text = media.message;
     
-    media = m;
+    
 }
 
 
