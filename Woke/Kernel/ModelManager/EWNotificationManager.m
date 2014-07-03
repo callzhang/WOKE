@@ -101,14 +101,17 @@
     } else if ([notification.type isEqualToString:kNotificationTypeFriendRequest]) {
         
         //NSString *personID = notification.sender;
-        EWPerson *person = notification.owner;
+        //EWPerson *person = notification.owner;
+        
+        NSString *personID = notification.sender;
+        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByObjectID:personID];
         [EWNotificationManager sharedInstance].person = person;
         
         //TODO: add image to alert
         //alert
         UIAlertView *alert;
         alert = [[UIAlertView alloc] initWithTitle:@"Friendship request"
-                                           message:[NSString stringWithFormat:@"%@ wants to be your friend. Accept?", userInfo[@"sendername"]]
+                                           message:[NSString stringWithFormat:@"%@ wants to be your friend. Accept?", person.name]
                                           delegate:[EWNotificationManager sharedInstance] cancelButtonTitle:@"No"
                                  otherButtonTitles:@"Yes", @"Profile", nil];
         alert.tag = kFriendRequestAlert;
@@ -117,7 +120,8 @@
     } else if ([notification.type isEqualToString:kNotificationTypeFriendAccepted]) {
         
         NSString *personID = notification.sender;
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:personID];
+        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByObjectID:personID];
+        //EWPerson *person = notification.owner;
         [EWNotificationManager sharedInstance].person = person;
         
         //alert

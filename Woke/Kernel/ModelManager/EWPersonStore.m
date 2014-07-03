@@ -91,6 +91,43 @@ EWPerson *me;
     return newUser;
 }
 
+-(EWPerson *)getPersonByObjectID:(NSString *)ID{
+    //ID is username
+    if(!ID) return nil;
+    EWPerson *person = [EWPerson findFirstByAttribute:@"objectId" withValue:ID];
+    
+    if (!person){
+        //First find user on server
+        PFUser *user;
+        if ([[PFUser currentUser].objectId isEqualToString:ID]) {
+            user = [PFUser currentUser];
+        }else{
+            PFQuery *query = [PFUser query];
+            [query whereKey:kParseObjectID equalTo:ID];
+            NSError *error;
+            user = [query findObjects:&error].firstObject;
+            if (error) {
+                NSLog(@"Failed to find user with ID %@. Reason:%@", ID, error.description);
+            }
+        }
+        
+        if (user.isNew) {
+            person = [self createPersonWithParseObject:user];
+            NSLog(@"Current user %@ data has CREATED", person.name);
+        }else{
+            person = (EWPerson *)[user managedObject];
+            NSLog(@"Person created from PO");
+        }
+        
+        
+    }else{
+        NSLog(@"Me %@ data has FETCHED", person.name);
+    }
+    
+    
+    return person;
+}
+
 -(EWPerson *)getPersonByID:(NSString *)ID{
     //ID is username
     if(!ID) return nil;
