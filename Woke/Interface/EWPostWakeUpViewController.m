@@ -213,6 +213,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
     EWCollectionPersonCell * cell ;
     
     if (indexPath.row == [personArray count]) {
+        //last one, select all
         cell = [cView  dequeueReusableCellWithReuseIdentifier:selectAllCellId forIndexPath:indexPath];
         [cell applyHexagonMask];
         cell.image.alpha = 0.1;

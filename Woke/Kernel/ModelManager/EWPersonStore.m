@@ -129,7 +129,7 @@ EWPerson *me;
 }
 
 - (NSArray *)everyone{
-    if (everyone && [[NSDate date] timeIntervalSinceDate:timeEveryoneChecked] < everyoneCheckTimeOut) {
+    if (everyone && [[NSDate date] timeIntervalSinceDate:timeEveryoneChecked] < everyoneCheckTimeOut && everyone.count != 0) {
         return everyone;
     }
     //fetch from sever
@@ -146,30 +146,39 @@ EWPerson *me;
         NSLog(@"*** Failed to get friends list: %@", error.description);
         //get ramdom person
         PFQuery *q = [PFQuery queryWithClassName:@"EWPerson"];
+        [q includeKey:@"friends"];
         q.limit = 100;
         error = nil;
-        list = [q findObjects:&error];
+        list = [[q findObjects:&error] valueForKey:kParseObjectID];
         if (error) {
             NSLog(@"*** Failed to get anyone: %@", error.description);
         }
     }
     
-    for (NSString *parseId in list) {
-        PFQuery *query = [PFUser query];
-        PFUser *user = (PFUser*)[query getObjectWithId:parseId];
-        EWPerson *person = (EWPerson *)user.managedObject;
-        float score = 99 - [list indexOfObject:parseId];
-        person.score = [NSNumber numberWithFloat:score];
-        [allPerson addObject:person];
-    }
+    //fetch
+    error = nil;
+    PFQuery *query = [PFUser query];
+    [query whereKey:kParseObjectID containedIn:list];
+    [query includeKey:@"friends"];
+    NSArray *people = [query findObjects:&error];
     
-    [EWPersonStore me].score = @100;
-    NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
-    //return
-    everyone = [allPerson copy];
-    timeEveryoneChecked = [NSDate date];
-    [[EWDataStore currentContext] saveToPersistentStoreAndWait];
-    
+    //make sure the everyone is saved on main thread
+    [[NSManagedObjectContext defaultContext] performBlockAndWait:^{
+        
+        for (PFUser *user in people) {
+            EWPerson *person = (EWPerson *)user.managedObject;
+            float score = 99 - [people indexOfObject:user];
+            person.score = [NSNumber numberWithFloat:score];
+            [allPerson addObject:person];
+        }
+        
+        [EWPersonStore me].score = @100;
+        NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
+        
+        everyone = [allPerson copy];
+        timeEveryoneChecked = [NSDate date];
+        [[EWDataStore currentContext] saveToPersistentStoreAndWait];
+    }];
     
     return everyone;
 }

@@ -909,7 +909,7 @@
         }
         
         NSDate *updatedAt = [self valueForKey:kUpdatedDateKey];
-        if (updatedAt && ![updatedAt isOutDated] && ![self isKindOfClass:[EWPerson class]]) {
+        if ((updatedAt && ![updatedAt isOutDated]) || ![self isKindOfClass:[EWPerson class]]) {
             NSLog(@"MO %@(%@) is not out dated, skip refresh in background", self.entity.name, [self valueForKey:kParseObjectID]);
             return;
         }

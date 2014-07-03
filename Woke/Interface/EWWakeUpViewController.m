@@ -117,6 +117,11 @@
     //position the content
     [self scrollViewDidScroll:tableView_];
     [self.view setNeedsDisplay];
+    
+    //pre download everyone for postWakeUpVC
+    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+        [[EWPersonStore sharedInstance] everyone];
+    });
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -268,7 +273,10 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self scrollViewDidScroll:self.tableView];//prevent header move
     });
-        
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [EWPersonStore sharedInstance].everyone;
+    });
     EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:nil bundle:nil];
     postWakeUpVC.taskItem = task;
     
