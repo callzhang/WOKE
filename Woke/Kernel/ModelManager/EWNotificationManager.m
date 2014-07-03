@@ -87,7 +87,7 @@
         NSLog(@"@@@ Cannot find notification %@", notificationID);
         return;
     }
-    NSDictionary *userInfo = notification.userInfo;
+    NSDictionary *userInfo = notification.userInfo;//[@"userInfo"];
     [EWNotificationManager sharedInstance].notification = notification;
     
     if ([notification.type isEqualToString:kNotificationTypeNextTaskHasMedia]) {
@@ -108,7 +108,7 @@
         //alert
         UIAlertView *alert;
         alert = [[UIAlertView alloc] initWithTitle:@"Friendship request"
-                                           message:[NSString stringWithFormat:@"%@ wants to be your friend. Accept?", person.name]
+                                           message:[NSString stringWithFormat:@"%@ wants to be your friend. Accept?", userInfo[@"sendername"]]
                                           delegate:[EWNotificationManager sharedInstance] cancelButtonTitle:@"No"
                                  otherButtonTitles:@"Yes", @"Profile", nil];
         alert.tag = kFriendRequestAlert;
@@ -179,7 +179,8 @@
         //get from server
         PFQuery *q = [PFQuery queryWithClassName:@"EWNotification"];
         [q whereKey:kParseObjectID equalTo:notificationID];
-        notification = (EWNotification *)[q getFirstObject];
+        notification = (EWNotification *)[[q getFirstObject] managedObject];
+        [notification refresh];
     }
     return notification;
 }
