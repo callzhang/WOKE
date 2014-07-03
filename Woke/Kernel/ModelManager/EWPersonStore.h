@@ -26,6 +26,7 @@ extern EWPerson *me;
 + (EWPerson *)me;
 + (EWPersonStore *)sharedInstance;
 - (EWPerson *)createPersonWithParseObject:(PFUser *)user;
+- (EWPerson *)getPersonByObjectID:(NSString *)ID;
 - (EWPerson *)getPersonByID:(NSString *)ID;
 
 
