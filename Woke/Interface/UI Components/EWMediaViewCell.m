@@ -28,7 +28,7 @@
         self.name.text = @"";
         self.description.text = @"";
         self.backgroundColor = [UIColor clearColor];
-        
+    
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCell:) name:kAudioPlayerWillStart object:nil];
     }
     return self;

@@ -224,6 +224,15 @@
     
     return [EWUIUtil getStringFromTime:left];
 }
+-(NSString *)time2MonthDotDate
+{
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents* deltaComps = [cal components:(NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:self];
+    NSArray *monthArray = monthShort
+    NSString *str = [monthArray[deltaComps.month] stringByAppendingFormat:@"%ld",deltaComps.day];
+    
+    return str;
+}
 
 - (double)timeElapsed{
     double t = [self timeIntervalSinceNow];

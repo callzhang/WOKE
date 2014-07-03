@@ -17,7 +17,7 @@
     NSArray *tasks;
     EWStatisticsManager *stats;
     NSArray *profileItemsArray;
-    NSMutableArray *activityArray;
+   
 
 }
 @property (assign,nonatomic)BOOL canSeeFriendsDetail;
@@ -29,6 +29,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *statement;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *tabView;
 @property (weak, nonatomic) IBOutlet UITableView *taskTableView;
+
 @property (weak, nonatomic) IBOutlet UIButton *loginBtn;
 @property (weak, nonatomic) IBOutlet UIButton *addFriend;
 @property (weak, nonatomic) EWPerson *person;

@@ -96,7 +96,7 @@
     if ([[UIDevice currentDevice].systemVersion doubleValue]>=7.0f) {
         _tableView.separatorInset = UIEdgeInsetsZero;// 这样修改，那条线就会占满
     }
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:_tableView];
 }
 
