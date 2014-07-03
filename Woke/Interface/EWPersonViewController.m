@@ -440,9 +440,6 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     }
     
     
-    
-    
-    
     return cell;
 }
 //change cell bg color

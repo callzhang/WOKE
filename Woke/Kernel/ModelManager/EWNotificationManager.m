@@ -83,6 +83,10 @@
 
 + (void)handleNotification:(NSString *)notificationID{
     EWNotification *notification = [EWNotificationManager getNotificationByID:notificationID];
+    if (!notification) {
+        NSLog(@"@@@ Cannot find notification %@", notificationID);
+        return;
+    }
     NSDictionary *userInfo = notification.userInfo;
     [EWNotificationManager sharedInstance].notification = notification;
     
@@ -171,6 +175,12 @@
 + (EWNotification *)getNotificationByID:(NSString *)notificationID{
     
     EWNotification *notification = [EWNotification findFirstByAttribute:kParseObjectID withValue:notificationID];
+    if (!notification) {
+        //get from server
+        PFQuery *q = [PFQuery queryWithClassName:@"EWNotification"];
+        [q whereKey:kParseObjectID equalTo:notificationID];
+        notification = (EWNotification *)[q getFirstObject];
+    }
     return notification;
 }
 

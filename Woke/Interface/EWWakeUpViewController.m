@@ -79,10 +79,8 @@
     //notification
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     
@@ -119,6 +117,11 @@
     //position the content
     [self scrollViewDidScroll:tableView_];
     [self.view setNeedsDisplay];
+    
+    //pre download everyone for postWakeUpVC
+    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+        [[EWPersonStore sharedInstance] everyone];
+    });
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -128,7 +131,6 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
     
     NSLog(@"WakeUpViewController popped out of view: remote control event listner stopped. Observers removed.");
     
@@ -211,7 +213,6 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
     
     NSLog(@"WakeUpViewController deallocated. Observers removed.");
 }
@@ -228,7 +229,19 @@
 - (void)setTask:(EWTaskItem *)t{
     task = t;
     medias = [[task.medias allObjects] mutableCopy];
+    //KVO
+    [self.task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:nil];
     [self initData];
+}
+
+#pragma mark - KVO
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if ([object isKindOfClass:[EWTaskItem class]]) {
+        if ([keyPath isEqualToString:@"medias"] && task.medias.count != medias.count) {
+            //observed task.media changed
+            [self refresh];
+        }
+    }
 }
 
 #pragma mark - Functions
@@ -260,7 +273,10 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self scrollViewDidScroll:self.tableView];//prevent header move
     });
-        
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [EWPersonStore sharedInstance].everyone;
+    });
     EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:nil bundle:nil];
     postWakeUpVC.taskItem = task;
     

@@ -257,7 +257,7 @@
 
 + (void)save{
     
-    NSManagedObjectContext *context = [EWDataStore sharedInstance].context;
+    NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
     NSSet *inserts = [context insertedObjects];
     NSSet *updates = [context updatedObjects];
     NSSet *deletes = [context deletedObjects];
@@ -287,14 +287,14 @@
             
         }
         for (NSManagedObject *MO in deletes) {
-            NSLog(@"~~~> MO %@ deleted to context", MO.entity.name);
+            NSLog(@"~~~> MO %@(%@) deleted to context", MO.entity.name, [MO valueForKey:kParseObjectID]);
             PFObject *PO = [MO parseObject];
             [EWDataStore appendDeleteQueue:PO];
         }
         [context saveToPersistentStoreAndWait];
         
         if ([EWDataStore workingQueue].count > 0) {
-            NSLog(@"@@@ Executing an UPLOAD action while there are still objects in working queue");
+            NSLog(@"@@@ Executing an UPLOAD action while there are still objects in working queue (still uploading)");
         }
         
         [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
@@ -641,10 +641,12 @@
         
         if (succeeded) {
             //Good
+            NSLog(@"~~~> PO %@(%@) deleted from server", parseObject.parseClassName, parseObject.objectId);
             [EWDataStore removeDeleteQueue:parseObject];
             
         }else if (error.code == kPFErrorObjectNotFound){
             //fine
+            NSLog(@"~~~> Trying to deleted PO %@(%@) but not found", parseObject.parseClassName, parseObject.objectId);
             [EWDataStore removeDeleteQueue:parseObject];
             
         }else{
@@ -757,13 +759,13 @@
             
             //Fetch PFRelation for normal relation
             PFRelation *toManyRelation;
-            @try{
+            //@try{
                 toManyRelation = [parseObject relationForKey:key];
-            }
-            @catch (NSException *exception) {
-                NSLog(@"Failed to assign value of key: %@ from Parse Object %@ to ManagedObject %@ \n Error: %@", key, parseObject, self, exception.description);
-                return;
-            }
+//            }
+//            @catch (NSException *exception) {
+//                NSLog(@"Failed to assign value of key: %@ from Parse Object %@ to ManagedObject %@ \n Error: %@", key, parseObject, self, exception.description);
+//                return;
+//            }
             if (!toManyRelation){
                 [self setValue:nil forKey:key];
                 return;
@@ -923,7 +925,7 @@
         }
         
         NSDate *updatedAt = [self valueForKey:kUpdatedDateKey];
-        if (updatedAt && ![updatedAt isOutDated] && ![self isKindOfClass:[EWPerson class]]) {
+        if ((updatedAt && ![updatedAt isOutDated]) || ![self isKindOfClass:[EWPerson class]]) {
             NSLog(@"MO %@(%@) is not out dated, skip refresh in background", self.entity.name, [self valueForKey:kParseObjectID]);
             return;
         }
@@ -991,21 +993,23 @@
             //return;
         }
         
+        
         if ([description isToMany]) {
             
             NSSet *relatedMOs = [self valueForKey:key];
+            
             for (NSManagedObject *MO in relatedMOs) {
                 if ([MO isKindOfClass:[EWPerson class]]) {
                     return ;
                 }
                 [MO refreshInBackgroundWithCompletion:^{
-                    NSLog(@"Relation %@ -> %@ refreshed in background", self.entity.name, description.destinationEntity.name);
+                    NSLog(@"Relation %@(%@) -> %@(%@) refreshed in background", self.entity.name, [self valueForKey:kParseObjectID], description.destinationEntity.name, [relatedMOs valueForKey:kParseObjectID]);
                 }];
             }
         }else{
             NSManagedObject *MO = [self valueForKey:key];
             [MO refreshInBackgroundWithCompletion:^{
-                NSLog(@"Relation %@ -> %@ refreshed in background", self.entity.name, description.destinationEntity.name);
+                NSLog(@"Relation %@(%@) -> %@(%@) refreshed in background", self.entity.name, [self valueForKey:kParseObjectID], description.destinationEntity.name, [MO valueForKey:kParseObjectID]);
             }];
         }
     }];
@@ -1191,7 +1195,13 @@
             [self setObject:value forKey:key];
         }else{
             //value is nil, delete PO value
-            [self removeObjectForKey:key];
+            @try{
+                [self removeObjectForKey:key];
+            }
+            @catch (NSError *error){
+                //
+            }
+            
             //NSLog(@"Attribute %@(%@)->%@ is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name);
         }
         

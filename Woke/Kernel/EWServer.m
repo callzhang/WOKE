@@ -240,38 +240,6 @@
     //save
     [EWDataStore save];
     
-
-    //push
-//    [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
-//        NSLog(@"Push media successfully sent to %@, message ID: %@", person.name, response.messageId);
-//        
-//        [rootViewController.view showSuccessNotification:@"Sent"];
-//        
-//        
-//    } onFailure:^(NSException *exception) {
-//        NSLog(@"Send push message about media %@ failed. Reason:%@", mediaId, exception.description);
-//        EWAlert(@"Server is unavailable, please try again.");
-//    }];
-//    
-//    [[EWDataStore currentContext] saveOnSuccess:NULL onFailure:^(NSError *error) {
-//        NSLog(@"save voice media failed. Retry... Reason:%@", error.description);
-//        [[EWDataStore currentContext] saveAndWait:NULL];
-//    }];
-//    
-        /*
-    [pushClient sendMessage:pushMessage toUsers:userIDs onSuccess:^{
-        NSLog(@"Push media successfully sent to %@", userIDs);
-        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-        hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark"]];
-        hud.mode = MBProgressHUDModeCustomView;
-        hud.labelText = @"Sent";
-        [hud hide:YES afterDelay:1.5];
-
-    } onFailure:^(NSError *error) {
-        NSString *str = [NSString stringWithFormat:@"Send push message about media %@ failed. Reason:%@", mediaId, error.localizedDescription];
-        EWAlert(str);
-    }];*/
 }
 
 
@@ -303,42 +271,6 @@
 //
 //}
 
-
-#pragma mark - AWS method
-//
-//+ (void)AWSPush:(NSDictionary *)pushDic toUsers:(NSArray *)users onSuccess:(void (^)(SNSPublishResponse *))successBlock onFailure:(void (^)(NSException *))failureBlock{
-//    NSString *pushStr = [EWUIUtil toString:pushDic];
-//    pushStr = [pushStr stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-//    pushStr = [NSString stringWithFormat:@"{\"APNS_SANDBOX\":\"%@\", \"default\":\"You got a new push from AWS\"}", pushStr];
-//    SNSPublishRequest *request = [[SNSPublishRequest alloc] init];
-//    request.message = pushStr;
-//    request.messageStructure = @"json";
-//    
-//    for (EWPerson *target in users) {
-//        if (!target.aws_id) {
-//            NSString *str = [NSString stringWithFormat:@"User (%@) doesn't have a valid push key to receive push", target.name];
-//            EWAlert(str);
-//            continue;
-//        }
-//        request.targetArn = target.aws_id;
-//
-//        //NSLog(@"Push content: %@ \nTarget:%@", pushStr, me.name);
-//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//            @try {
-//                SNSPublishResponse *response = [snsClient publish:request];
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    successBlock(response);
-//                });
-//            }
-//            @catch (NSException *exception) {
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    failureBlock(exception);
-//                });
-//            }
-//        });
-//    }
-//
-//}
 
 
 + (void)broadcastMessage:msg onSuccess:(void (^)(void))block onFailure:(void (^)(void))failureBlock{

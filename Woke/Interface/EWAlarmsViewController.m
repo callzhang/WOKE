@@ -139,14 +139,14 @@
         
         //fetch everyone
         dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-            people = [[EWPersonStore sharedInstance] everyone];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                id <NSFetchedResultsSectionInfo> sectionInfo = self.fetchController.sections[0];
-                if (people.count > [sectionInfo numberOfObjects]) {
-                    NSLog(@"Updated user list to %lu", (unsigned long)people.count);
-                    [self.fetchController performFetch:NULL];
-                }
-            });
+            [[EWPersonStore sharedInstance] everyone];
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                id <NSFetchedResultsSectionInfo> sectionInfo = self.fetchController.sections[0];
+//                if (people.count > [sectionInfo numberOfObjects]) {
+//                    NSLog(@"Updated user list to %lu", (unsigned long)people.count);
+//                    [self.fetchController performFetch:NULL];
+//                }
+//            });
         });
         
     }else{

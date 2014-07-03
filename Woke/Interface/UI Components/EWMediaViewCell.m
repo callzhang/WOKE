@@ -61,7 +61,7 @@
     if ([m.type isEqualToString:kMediaTypeBuzz]) {
         self.mediaBar.hidden = YES;
         [self.buzzIcon setImage:[UIImage imageNamed:@"Buzz Button"] forState:UIControlStateNormal];
-    }else{
+    }else if([m.type isEqualToString:kMediaTypeVoice]){
         self.mediaBar.hidden = NO;
         [self.buzzIcon setImage:[UIImage imageNamed:@"Voice Message"] forState:UIControlStateNormal];
         
@@ -75,6 +75,8 @@
         self.mediaBar.frame = frame;
         
         [self setNeedsDisplay];
+    }else{
+        [NSException raise:@"Unexpected media type" format:@"Reason: please support %@", m.type];
     }
     
     //date

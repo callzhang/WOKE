@@ -106,7 +106,7 @@
             notif.soundName = buzzSound;
             //message
             notif.alertBody = [NSString stringWithFormat:@"Buzz from %@", media.author.name];
-            notif.userInfo = @{kPushTaskKey: task.objectId, kPushMediaKey: mediaID};
+            notif.userInfo = @{kPushTaskKey: task.objectId, kPushMediaKey: mediaID, kLocalTaskKey: task.objectID.URIRepresentation.absoluteString};
             //schedule
             [[UIApplication sharedApplication] scheduleLocalNotification:notif];
             
@@ -245,7 +245,6 @@
         //need to create some voice
         EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
         [task addMediasObject:media];
-        //[EWDataStore save];
     }
     //TODO: need to get some data from server (Simin)
     
@@ -265,10 +264,10 @@
     });
     
     //post notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
     
     //TODO: download
-    [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:NULL];
+    //[[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:NULL];
     
 }
 
@@ -278,10 +277,9 @@
     if([notification isKindOfClass:[UILocalNotification class]]){
         //========= local notif ===========
         UILocalNotification *localNotif = (UILocalNotification *)notification;
-        NSString *taskID = [localNotif.userInfo objectForKey:kPushTaskKey];
+        NSString *localID = [localNotif.userInfo objectForKey:kLocalTaskKey];
         
-       
-        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByLocalID:localID];
         NSLog(@"Entered app with local notification with task on %@", [task.time weekday]);
         
         if (task.completed) {

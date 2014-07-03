@@ -98,7 +98,8 @@
         PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
         [query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
         [query whereKey:@"state" equalTo:@YES];
-        [query whereKey:@"owner" equalTo:[person parseObject]];
+        PFUser *user = [PFUser objectWithoutDataWithClassName:@"PFUser" objectId:person.objectId];
+        [query whereKey:@"owner" equalTo:user];
         [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]];
         query.limit = 10;
         tasks = [[query findObjects] mutableCopy];
@@ -154,17 +155,24 @@
 
 - (EWTaskItem *)getTaskByID:(NSString *)taskID{
     if (!taskID) return nil;
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"EWTaskItem"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ewtaskitem_id == %@", taskID];
-    NSError *err;
-    NSArray *tasks = [EWDataStore.currentContext executeFetchRequest:request error:&err];
-    if (tasks.count != 1) {
-        NSLog(@"Error getting task from ID: %@. Error: %@", taskID, err.description);
-        return nil;
+    
+    EWTaskItem *task = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:taskID];
+    
+    if (!task) {
+        PFQuery *q = [PFQuery queryWithClassName:@"EWTaskItem"];
+        [q whereKey:kParseObjectID equalTo:taskID];
+        PFObject *PO = [q getFirstObject];
+        task = (EWTaskItem *)PO.managedObject;
+        [task refreshInBackgroundWithCompletion:NULL];
     }
-    return tasks[0];
+    return task;
 }
 
+- (EWTaskItem *)getTaskByLocalID:(NSString *)localID{
+    NSManagedObjectID *taskID = [[NSManagedObjectContext contextForCurrentThread].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:localID]];
+    EWTaskItem *task = (EWTaskItem *)[[NSManagedObjectContext contextForCurrentThread] objectWithID:taskID];
+    return task;
+}
 
 #pragma mark - SCHEDULE
 //schedule new task in the future
@@ -420,20 +428,21 @@
     }
 }
 
-- (void)updateTaskMedia:(NSNotification *)notif{
-    //NSString *mediaID = [notif userInfo][kPushMediaKey];
-    NSString *taskID = [notif userInfo][kPushTaskKey];
-    if ([taskID isEqualToString:@""]) return;
-    EWTaskItem *task = [self getTaskByID:taskID];
-    //EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
-    //NSAssert([task.medias containsObject:media], @"Media and Task should have relation");
-    dispatch_async(dispatch_get_main_queue(), ^{
-        //[task.managedObjectContext refreshObject:task mergeChanges:YES];
-        //[EWDataStore refreshObjectWithServer:task];
-        EWTaskItem *task_ = (EWTaskItem *)[EWDataStore objectForCurrentContext:task];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{kPushTaskKey: task_}];
-    });
-}
+//update task when new media available
+//- (void)updateTaskMedia:(NSNotification *)notif{
+//    //NSString *mediaID = [notif userInfo][kPushMediaKey];
+//    NSString *taskID = [notif userInfo][kPushTaskKey];
+//    if ([taskID isEqualToString:@""]) return;
+//    EWTaskItem *task = [self getTaskByID:taskID];
+//    //EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+//    //NSAssert([task.medias containsObject:media], @"Media and Task should have relation");
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        //[task.managedObjectContext refreshObject:task mergeChanges:YES];
+//        //[EWDataStore refreshObjectWithServer:task];
+//        EWTaskItem *task_ = (EWTaskItem *)[EWDataStore objectForCurrentContext:task];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{kPushTaskKey: task_}];
+//    });
+//}
 
 - (void)alarmRemoved:(NSNotification *)notif{
     id objects = notif.object;
@@ -485,7 +494,7 @@
     [self cancelNotificationForTask:task];
     [[EWDataStore currentContext] deleteObject:task];
     [EWDataStore save];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:task userInfo:@{kPushTaskKey: task}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:task userInfo:@{kLocalTaskKey: task}];
 }
 
 - (void)deleteAllTasks{
@@ -493,7 +502,7 @@
     
     for (EWTaskItem *t in [self getTasksByPerson:[EWPersonStore me]]) {
         //post notification
-        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t userInfo:@{kPushTaskKey: t}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t userInfo:@{kLocalTaskKey: t}];
         //cancel local notif
         [self cancelNotificationForTask:t];
         //delete
@@ -547,7 +556,7 @@
             localNotif.applicationIconBadgeNumber = i+1;
             
             //======= user information passed to app delegate =======
-            localNotif.userInfo = @{kPushTaskKey: task.objectID.URIRepresentation.absoluteString};
+            localNotif.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString};
             //=======================================================
             
             if (i == nWeeksToScheduleTask - 1) {
@@ -581,7 +590,7 @@
 - (NSArray *)localNotificationForTask:(EWTaskItem *)task{
     NSMutableArray *notifArray = [[NSMutableArray alloc] init];
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-        if([aNotif.userInfo[kPushTaskKey] isEqualToString:task.objectID.URIRepresentation.absoluteString]) {
+        if([aNotif.userInfo[kLocalTaskKey] isEqualToString:task.objectID.URIRepresentation.absoluteString]) {
             [notifArray addObject:aNotif];
         }
     }
@@ -620,7 +629,7 @@
     alarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
     alarm.alertAction = @"Wake up!";
     alarm.soundName = task.alarm.tone;
-    alarm.userInfo = @{kPushTaskKey: task.objectID.URIRepresentation.absoluteString};
+    alarm.userInfo = @{kPushTaskKey: task.objectId, kLocalTaskKey: task.objectID.URIRepresentation.absoluteString};
     [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
 }
 

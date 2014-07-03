@@ -37,17 +37,6 @@
                             <action selector="changeTime:" destination="rDh-E1-XtL" eventType="valueChanged" id="nB0-ha-fkv"/>
                         </connections>
                     </stepper>
-                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2pj-0g-l0b">
-                        <rect key="frame" x="25" y="77" width="130" height="29"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                        <state key="normal" title="Drive">
-                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                        </state>
-                        <connections>
-                            <action selector="changeMusic:" destination="rDh-E1-XtL" eventType="touchUpInside" id="cF5-2k-xY7"/>
-                        </connections>
-                    </button>
                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cZF-xc-Dzb">
                         <rect key="frame" x="283" y="30" width="32" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -65,6 +54,21 @@
                         <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view alpha="0.14999999999999969" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jE2-ig-Bfq">
+                        <rect key="frame" x="0.0" y="80" width="320" height="80"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Say something!" textAlignment="center" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="7Ia-xY-P8W" customClass="EWCostumTextField">
+                        <rect key="frame" x="10" y="90" width="300" height="30"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                        <connections>
+                            <action selector="hideKeyboard:" destination="rDh-E1-XtL" eventType="editingDidEndOnExit" id="98y-9f-MNo"/>
+                        </connections>
+                    </textField>
                 </subviews>
                 <color key="backgroundColor" red="0.1960784314" green="0.30980392159999998" blue="0.52156862749999999" alpha="1" colorSpace="calibratedRGB"/>
             </tableViewCellContentView>
@@ -72,7 +76,7 @@
             <connections>
                 <outlet property="AM" destination="Ond-mm-R2B" id="VlF-k8-Nbx"/>
                 <outlet property="alarmToggle" destination="cZF-xc-Dzb" id="osu-Uf-qYg"/>
-                <outlet property="music" destination="2pj-0g-l0b" id="KBJ-D4-dc1"/>
+                <outlet property="statement" destination="7Ia-xY-P8W" id="87r-Dh-0Bd"/>
                 <outlet property="time" destination="Uyf-Eh-JF9" id="9df-il-C5U"/>
                 <outlet property="timeStepper" destination="ErU-mV-aag" id="Rla-V0-oc6"/>
                 <outlet property="weekday" destination="U3J-qk-8q9" id="iiT-rO-CXO"/>
