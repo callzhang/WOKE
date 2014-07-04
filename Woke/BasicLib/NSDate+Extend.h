@@ -111,7 +111,6 @@
  Time left to next alarm
  */
 - (NSString *)timeLeft;
-- (NSString *)timeLeft;
 
 
 /**
@@ -126,4 +125,6 @@
  */
 - (double)timeElapsed;
 
+- (NSDate *)beginingOfDay;
+- (NSDate *)endOfDay;
 @end

@@ -10,6 +10,7 @@
 #import "EWNotification.h"
 #import "EWPerson.h"
 #import "EWUIUtil.h"
+#import "EWPersonStore.h"
 
 
 @implementation EWNotificationCell
@@ -49,13 +50,15 @@
     }else{
         self.profilePic.image = notification.owner.profilePic;
         [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
+        EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByObjectID:notification.sender];
         if([type isEqualToString:kNotificationTypeFriendRequest]){
             
-            self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request", notification.owner.name];
+            self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request", sender.name];
             
         }else if([type isEqualToString:kNotificationTypeFriendAccepted]){
             
-            self.detail.text = [NSString stringWithFormat:@"%@ has sent accepted your friend request", notification.owner.name];
+            self.detail.text = [NSString stringWithFormat:@"%@ has sent accepted your friend request", sender.name];
+            
         }else if (kNotificationTypeNextTaskHasMedia){
             self.detail.text = @"You have received voice(s) for tomorrow morning. To find out, wake up on time!";
         }

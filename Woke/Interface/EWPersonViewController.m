@@ -12,6 +12,7 @@
 #import "EWUIUtil.h"
 #import "UIViewController+Blur.h"
 #import "UINavigationController+Blur.h"
+#import "NSDate+Extend.h"
 
 // Model
 #import "EWPerson.h"
@@ -411,7 +412,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     //static NSString *CellIdentifier = @"cell";
   
     if (tabView.selectedSegmentIndex == 1) {
-          NSLog(@"%ld,%ld",indexPath.section,indexPath.row);
+          NSLog(@"%ld,%ld",(long)indexPath.section,(long)indexPath.row);
         
         EWTaskItem *task = tasks[indexPath.section];
         UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
@@ -425,19 +426,28 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         }
         switch (indexPath.row) {
             case 0:{
-                if (task.completed) {
-                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ %@ by %ld people",[task.completed timeInString],[task.completed date2am],[task.medias count]];
+                if (task.completed && [task.completed timeIntervalSinceDate:task.time] < kMaxWakeTime) {
+                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ by %ld people",[task.completed date2String], (unsigned long)[task.medias count]];
                 }
                 else
                 {
-                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ %@ by %ld people",[task.time timeInString],[task.completed date2am],[task.medias count]];
+                    cell.textLabel.text = [NSString stringWithFormat:@"Failed to wake up (%@). Messaged by %ld people",[task.time date2String], (unsigned long)[task.medias count]];
                 }
                 
             }
                 break;
-            case 1:
-                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %d people",12];
+            case 1:{
+                //advanced query
+                
+                NSDate *eod = task.time.endOfDay;
+                NSDate *bod = task.time.beginingOfDay;
+                
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"author == %@ AND task.time >= %@ AND task.time <= %@", [EWPersonStore me], bod, eod];
+                NSArray *myMedias = [EWMediaItem findAllWithPredicate:predicate];
+                
+                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %d people",myMedias.count];
                 break;
+            }
             default:
                 break;
         }

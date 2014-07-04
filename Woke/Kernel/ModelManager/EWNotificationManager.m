@@ -29,10 +29,10 @@
 
 
 @interface EWNotificationManager()
-@property (nonatomic, weak) EWPerson *person;
-@property (nonatomic, weak) EWTaskItem *task;
-@property (nonatomic, weak) EWMediaItem *media;
-@property (nonatomic, weak) EWNotification *notification;
+@property EWPerson *person;
+@property EWTaskItem *task;
+@property EWMediaItem *media;
+@property (nonatomic)  EWNotification *notification;
 @end
 
 @implementation EWNotificationManager
@@ -197,7 +197,6 @@
     
     if (alertView.tag == kFriendRequestAlert) {
         
-        [self finishedNotification:self.notification];
         switch (buttonIndex) {
             case 0: //Cancel
                 
@@ -242,11 +241,12 @@
                 break;
         }
         
-        [self finishedNotification:self.notification];
     }else{
-        
-        [self finishedNotification:self.notification];
+        //
     }
+    
+    
+    [self finishedNotification:self.notification];
     
 }
 

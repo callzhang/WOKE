@@ -221,7 +221,7 @@
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents* deltaComps = [cal components:(NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:self];
     NSArray *monthArray = monthShort
-    NSString *str = [monthArray[deltaComps.month] stringByAppendingFormat:@"%ld",deltaComps.day];
+    NSString *str = [monthArray[deltaComps.month] stringByAppendingFormat:@"%ld", (long)deltaComps.day];
     
     return str;
 }
@@ -230,6 +230,26 @@
     double t = -[self timeIntervalSinceNow];
     return t;
     
+}
+
+- (NSDate *)beginingOfDay{
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *com = self.dateComponents;
+    com.hour = 0;
+    com.minute = 0;
+    com.second = 0;
+    NSDate *BOD = [cal dateFromComponents:com];
+    return BOD;
+}
+
+- (NSDate *)endOfDay{
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *com = self.dateComponents;
+    com.hour = 23;
+    com.minute = 59;
+    com.second = 59;
+    NSDate *EOD = [cal dateFromComponents:com];
+    return EOD;
 }
 
 @end
