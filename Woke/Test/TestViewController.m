@@ -311,19 +311,19 @@
             NSArray *people = [[EWPersonStore sharedInstance] everyone];
             NSInteger k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user = people[k];
-            notice_friending.sender = user.username;
+            notice_friending.sender = user.objectId;
             //2
             notice_friended.type = kNotificationTypeFriendAccepted;
             notice_friended.owner = me;
             k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user2 = people[k];
-            notice_friended.sender = user2.username;
+            notice_friended.sender = user2.objectId;
             //3
             notice_newMedia.type = kNotificationTypeNextTaskHasMedia;
             notice_newMedia.owner = me;
             k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user3 = people[k];
-            notice_newMedia.sender = user3.username;
+            notice_newMedia.sender = user3.objectId;
             //4
             notice_system.type = kNotificationTypeNotice;
             notice_system.owner = me;
