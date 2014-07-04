@@ -112,6 +112,15 @@
  */
 - (NSString *)timeLeft;
 - (NSString *)timeSpent;
+
+
+/**
+ *
+ *  Jan.27
+ *
+ */
+-(NSString *)time2MonthDotDate;
+
 /**
  Time elapsed since last update
  */

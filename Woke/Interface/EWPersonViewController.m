@@ -38,11 +38,13 @@
 #import "EWAppDelegate.h"
 #import "EWMyFriendsViewController.h"
 #import "EWMyProfileViewController.h"
+#import "EWActivityHeadView.h"
 #define kProfileTableArray              @[@"Friends", @"People woke her up", @"People I woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
 
 
 static NSString *taskCellIdentifier = @"taskCellIdentifier";
 NSString *const profileCellIdentifier = @"ProfileCell";
+NSString *const activitiyCellIdentifier = @"ActivityCell";
 @interface EWPersonViewController()
 - (void)showSuccessNotification:(NSString *)alert;
 
@@ -68,6 +70,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     if (self) {
         self.person = p;
         _canSeeFriendsDetail = YES;
+        
     }
     return self;
 }
@@ -252,29 +255,10 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 }
 
 - (IBAction)tabTapped:(UISegmentedControl *)sender {
-    NSInteger idx = [sender selectedSegmentIndex];
-    switch (idx) {
-        case 0:
-            taskTableView.hidden = NO;
-            //collectionView.hidden = YES;
-            //[collectionView reloadData];
-            break;
-            
-        case 1:
-            taskTableView.hidden = NO;
-            //collectionView.hidden = YES;
-            //[taskTableView reloadData];
-            break;
-            
-        case 2:
-            taskTableView.hidden = YES;
-            //collectionView.hidden = NO;
-            //[collectionView reloadData];
-            break;
-            
-        default:
-            break;
-    }
+    
+    [taskTableView reloadData];
+    
+
 }
 
 
@@ -368,9 +352,8 @@ NSString *const profileCellIdentifier = @"ProfileCell";
     switch (tapItem) {
         case 0:
             return 1;
-#warning need update
         case 1:
-            return 0;
+            return tasks.count;
         default:
             return 0;
             break;
@@ -379,11 +362,29 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return profileItemsArray.count;
+    if (tabView.selectedSegmentIndex==0) {
+         return profileItemsArray.count;
+    }
+    else
+    {
+//        NSArray *taskArray = person
+//        EWTaskItem *task  = EWTask;
+        return 1;
+        
+    }
+    return 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 45;//TODO
+    if (tabView.selectedSegmentIndex == 0) {
+        return 45;
+    }
+    else
+    {
+        return 50;
+    }
+    
+    
 }
 
 
@@ -392,13 +393,45 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 - (UITableViewCell *)tableView:(UITableView *)table cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     //static NSString *CellIdentifier = @"cell";
+  
+    if (tabView.selectedSegmentIndex == 1) {
+          NSLog(@"%ld,%ld",indexPath.section,indexPath.row);
+        
+        EWTaskItem *task = tasks[indexPath.section];
+        UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
+        if (!cell) {
+            
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:activitiyCellIdentifier];
+            cell.textLabel.textColor = [UIColor lightGrayColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        switch (indexPath.row) {
+            case 0:
+                cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ %@ by %ld people",[task.completed timeInString],[task.completed date2am],[task.medias count]];
+            
+                break;
+            case 1:
+//                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %d people",task.]
+                break;
+            default:
+                break;
+        }
+        return cell;
+    }
     
     UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:profileCellIdentifier];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:profileCellIdentifier];
         cell.textLabel.textColor = [UIColor whiteColor];
     }
+    
     cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
+    if (indexPath.row== 1&&[person.gender isEqualToString:@"male"]) {
+        
+        cell.textLabel.text = @"People woke him up";
+    }
+    
     switch (indexPath.row) {
         case 0:
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
@@ -450,7 +483,11 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 //tap cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    NSInteger tapItem =  [tabView selectedSegmentIndex];//if we selectnum is 
+    NSInteger tapItem =  [tabView selectedSegmentIndex];//if we selectnum is
+    if (tapItem == 1) {
+        return;
+    }
+    
     UIViewController *controller ;
     switch (indexPath.row) {
         case 0:
@@ -465,6 +502,7 @@ NSString *const profileCellIdentifier = @"ProfileCell";
             }
       
         }
+        
     }
     
     //选择动画
@@ -475,10 +513,21 @@ NSString *const profileCellIdentifier = @"ProfileCell";
 //    [UIView commitAnimations];
     
 }
-
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    if (tabView.selectedSegmentIndex == 0) {
+        return  [[UIView alloc] initWithFrame:CGRectZero];
+    }
+    EWActivityHeadView *headView = [[EWActivityHeadView alloc]initWithFrame:CGRectMake(0, 0, 320, 80)];
+    EWTaskItem *task = tasks[section];
+    headView.titleLabel.text = [task.time time2MonthDotDate];
+    
+    return headView;
+}
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     NSLog(@"Accessory button tapped");
 }
+
 
 
 #pragma mark - USER LOGIN EVENT

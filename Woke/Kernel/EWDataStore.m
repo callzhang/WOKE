@@ -266,7 +266,7 @@
         for (NSManagedObject *MO in inserts) {
             NSString *serverID = [MO valueForKey:kParseObjectID];
             if (serverID) {
-                NSLog(@"MO %@ has serverID, means it is fetched from server, skip!", MO.entity.name);
+                NSLog(@"MO %@(%@) has serverID, meaning it is fetched from server, skip!", MO.entity.name, [MO valueForKey:kParseObjectID]);
                 continue;
             }
             NSLog(@"+++> MO %@ inserted to context", MO.entity.name);
