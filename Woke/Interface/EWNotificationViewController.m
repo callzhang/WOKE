@@ -11,7 +11,7 @@
 #import "EWNotification.h"
 #import "EWPerson.h"
 #import "EWPersonStore.h"
-
+#import "EWUIUtil.h"
 #define kNotificationCellIdentifier     @"NotificationCellIdentifier"
 
 @interface EWNotificationViewController (){
@@ -37,10 +37,12 @@
     
     //notification
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNotificationCompleted object:nil];
-    
-    // Data source
+ 
+        // Data source
     notifications = [[EWNotificationManager allNotifications] mutableCopy];
     //[self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kNotificationCellIdentifier];
+    
+
     
     //tableview
     self.tableView.delegate = self;
@@ -49,11 +51,23 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     //toolbar
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
-    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)];
+    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
+
     
-    [self.toolbar setItems:@[doneBtn, spacer, refreshBtn] animated:YES];
+    UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)];
+    [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:doneBtn rightItem:refreshBtn];
+    
+    if (notifications.count != 0) {
+        self.title = [NSString stringWithFormat:@"Notifications(%ld)",notifications.count];
+       
+        
+    }
+    else
+    {
+        self.title = @"Notifications";
+       
+        
+    }
 
 }
 
