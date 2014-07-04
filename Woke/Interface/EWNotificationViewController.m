@@ -12,6 +12,7 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 #import "EWUIUtil.h"
+#import "EWNotificationTableCellTableViewCell.h"
 #define kNotificationCellIdentifier     @"NotificationCellIdentifier"
 
 @interface EWNotificationViewController (){
@@ -47,9 +48,10 @@
     //tableview
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.tableView.contentInset = UIEdgeInsetsMake(45, 0, 200, 0);
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
+    self.tableView.contentInset = UIEdgeInsetsMake(2, 0, 200, 0);
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    self.tableView.separatorInset = UIEdgeInsetsZero;
+     [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.15]];
     //toolbar
     UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
 
@@ -103,15 +105,16 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kNotificationCellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kNotificationCellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kNotificationCellIdentifier];
         cell.contentView.backgroundColor = [UIColor clearColor];
         cell.textLabel.textColor = [UIColor whiteColor];
     }
-    
+    cell.detailTextLabel.textColor = [UIColor whiteColor];
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:15];
     //data
     EWNotification *notice = notifications[indexPath.row];
     if (!notice.completed) {
-        cell.textLabel.font = [UIFont boldSystemFontOfSize:17];
+        
     }else{
         cell.textLabel.textColor = [UIColor lightGrayColor];
     }
@@ -142,19 +145,27 @@
     
     //get sender pic
     if (showPic) {
+        [EWUIUtil applyHexagonMaskForView: cell.imageView];
         cell.imageView.image = [UIImage imageNamed:@"profile"];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            EWPerson *p = [[EWPersonStore sharedInstance] getPersonByID:notice.sender];
-            UIImage *pic = p.profilePic;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                cell.imageView.image = pic;
-                cell.imageView.alpha = 0;
-                [UIView animateWithDuration:0.3 animations:^{
-                    cell.imageView.alpha = 1;
-                }];
+        
+        EWPerson *p = [[EWPersonStore sharedInstance] getPersonByID:notice.sender];
+        if (p) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                
+                UIImage *pic = p.profilePic;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    cell.imageView.image = pic;
+                    cell.imageView.alpha = 0;
+                    [UIView animateWithDuration:0.3 animations:^{
+                        cell.imageView.alpha = 1;
+                    }];
+                });
             });
-        });
-    }else{
+
+        }
+        
+    }
+    else{
         cell.imageView.image = nil;
     }
     
@@ -177,8 +188,18 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-    CGFloat alpha = indexPath.row%2?0.05:0.06;
-    cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:alpha];
+//    CGFloat alpha = indexPath.row%2?0.05:0.06;
+    cell.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 80;
+}
+-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
+    view.backgroundColor = [UIColor clearColor];
+    return view;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{

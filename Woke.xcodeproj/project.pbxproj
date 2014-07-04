@@ -47,6 +47,8 @@
 		0E591002194DF35B000AD7C4 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FEA194DF35B000AD7C4 /* OFL.txt */; };
 		0E646275196079AA00B70DC9 /* AFBlurSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E646272196079AA00B70DC9 /* AFBlurSegue.m */; };
 		0E646276196079AA00B70DC9 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E646274196079AA00B70DC9 /* UIImage+ImageEffects.m */; };
+		0E67F3141967075C0081F8BE /* EWNotificationTableCellTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E67F3121967075C0081F8BE /* EWNotificationTableCellTableViewCell.m */; };
+		0E67F3151967075C0081F8BE /* EWNotificationTableCellTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0E67F3131967075C0081F8BE /* EWNotificationTableCellTableViewCell.xib */; };
 		0EA8ACD91965BA0000EEDCF4 /* EWActivityHeadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EA8ACD81965BA0000EEDCF4 /* EWActivityHeadView.m */; };
 		0EABA9E0195939A1002F9C63 /* EWFriendsCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABA9DF195939A1002F9C63 /* EWFriendsCollectionCell.m */; };
 		0EABB2A71956884300C45788 /* EWMyFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABB2A51956884300C45788 /* EWMyFriendsViewController.m */; };
@@ -244,6 +246,9 @@
 		0E646272196079AA00B70DC9 /* AFBlurSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFBlurSegue.m; path = Woke/AFBlur/AFBlurSegue.m; sourceTree = SOURCE_ROOT; };
 		0E646273196079AA00B70DC9 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+ImageEffects.h"; path = "Woke/AFBlur/UIImage+ImageEffects.h"; sourceTree = SOURCE_ROOT; };
 		0E646274196079AA00B70DC9 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+ImageEffects.m"; path = "Woke/AFBlur/UIImage+ImageEffects.m"; sourceTree = SOURCE_ROOT; };
+		0E67F3111967075C0081F8BE /* EWNotificationTableCellTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationTableCellTableViewCell.h; sourceTree = "<group>"; };
+		0E67F3121967075C0081F8BE /* EWNotificationTableCellTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWNotificationTableCellTableViewCell.m; sourceTree = "<group>"; };
+		0E67F3131967075C0081F8BE /* EWNotificationTableCellTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWNotificationTableCellTableViewCell.xib; sourceTree = "<group>"; };
 		0EA8ACD71965BA0000EEDCF4 /* EWActivityHeadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWActivityHeadView.h; sourceTree = "<group>"; };
 		0EA8ACD81965BA0000EEDCF4 /* EWActivityHeadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWActivityHeadView.m; sourceTree = "<group>"; };
 		0EABA9DE195939A1002F9C63 /* EWFriendsCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFriendsCollectionCell.h; sourceTree = "<group>"; };
@@ -956,6 +961,9 @@
 				0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */,
 				0EA8ACD71965BA0000EEDCF4 /* EWActivityHeadView.h */,
 				0EA8ACD81965BA0000EEDCF4 /* EWActivityHeadView.m */,
+				0E67F3111967075C0081F8BE /* EWNotificationTableCellTableViewCell.h */,
+				0E67F3121967075C0081F8BE /* EWNotificationTableCellTableViewCell.m */,
+				0E67F3131967075C0081F8BE /* EWNotificationTableCellTableViewCell.xib */,
 			);
 			path = "UI Components";
 			sourceTree = "<group>";
@@ -1179,6 +1187,7 @@
 				0E590FF9194DF35B000AD7C4 /* Lato-Regular.ttf in Resources */,
 				0E590FF3194DF35B000AD7C4 /* Lato-HeavyItalic.ttf in Resources */,
 				ABF3FB601908B72F0017D2EF /* 11.jpg in Resources */,
+				0E67F3151967075C0081F8BE /* EWNotificationTableCellTableViewCell.xib in Resources */,
 				ABF3FB5F1908B72F0017D2EF /* 10.jpg in Resources */,
 				AB4B837918CFE68F0087E654 /* Silence04s.caf in Resources */,
 				ABF192AC18C03D71006A4AA2 /* media.caf in Resources */,
@@ -1373,6 +1382,7 @@
 				AB198C971861818B008C1F15 /* EWPerson.m in Sources */,
 				AB7807A418393A66007C8BFD /* EWPersonStore.m in Sources */,
 				ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */,
+				0E67F3141967075C0081F8BE /* EWNotificationTableCellTableViewCell.m in Sources */,
 				9BF07ABA192324F800DED2E1 /* _EWGroupTask.m in Sources */,
 				0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */,
 				9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */,
