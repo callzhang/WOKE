@@ -83,9 +83,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
     
     //navigation
-    [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:nil rightItem:nil];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
+   
+    
     
     taskTableView.dataSource = self;
     taskTableView.delegate = self;
@@ -93,7 +92,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     taskTableView.backgroundView = nil;
     UINib *taskNib = [UINib nibWithNibName:@"EWTaskHistoryCell" bundle:nil];
     [taskTableView registerNib:taskNib forCellReuseIdentifier:taskCellIdentifier];
-    
+    [EWUIUtil applyAlphaGradientForView:taskTableView withEndPoints:@[@0.13]];
+    taskTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     //tab view
     //tabView.layer.backgroundColor = [[UIColor colorWithWhite:1.0f alpha:0.5f] CGColor];
     tabView.selectedSegmentIndex = 0;//initial tab
@@ -107,12 +107,20 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     [taskTableView reloadData];
     
 }
+-(void)viewWillAppear:(BOOL)animated
+{
+    [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:nil rightItem:nil];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
+}
 
 -(void)viewDidAppear:(BOOL)animated{
     
     [super viewDidAppear:animated];
     
     if (person) {
+
+
         [self initData];
         [self initView];
     }
@@ -257,6 +265,15 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 }
 
 - (IBAction)tabTapped:(UISegmentedControl *)sender {
+    if (sender.selectedSegmentIndex == 0) {
+//        taskTableView.contentInset = UIEdgeInsetsMake(0, 0, 200, 0);
+        taskTableView.tableHeaderView = nil;
+    }
+    else
+    {
+        taskTableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
+
+    }
     
     [taskTableView reloadData];
     
@@ -368,7 +385,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     {
 //        NSArray *taskArray = person
 //        EWTaskItem *task  = EWTask;
-        return 1;
+        return 2;
         
     }
     return 0;
@@ -402,16 +419,24 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:activitiyCellIdentifier];
             cell.textLabel.textColor = [UIColor lightGrayColor];
+         
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
         }
         switch (indexPath.row) {
-            case 0:
-                cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ %@ by %ld people",[task.completed timeInString],[task.completed date2am],[task.medias count]];
-            
+            case 0:{
+                if (task.completed) {
+                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ %@ by %ld people",[task.completed timeInString],[task.completed date2am],[task.medias count]];
+                }
+                else
+                {
+                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ %@ by %ld people",[task.time timeInString],[task.completed date2am],[task.medias count]];
+                }
+                
+            }
                 break;
             case 1:
-//                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %d people",task.]
+                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %d people",12];
                 break;
             default:
                 break;
@@ -514,9 +539,13 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
+    
     if (tabView.selectedSegmentIndex == 0) {
+        
         return  [[UIView alloc] initWithFrame:CGRectZero];
+        
     }
+    
     EWActivityHeadView *headView = [[EWActivityHeadView alloc]initWithFrame:CGRectMake(0, 0, 320, 80)];
     EWTaskItem *task = tasks[section];
     headView.titleLabel.text = [task.time time2MonthDotDate];
@@ -526,6 +555,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     NSLog(@"Accessory button tapped");
 }
+
 
 
 

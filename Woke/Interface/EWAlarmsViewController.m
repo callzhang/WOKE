@@ -358,7 +358,9 @@
 
 - (IBAction)showNotification:(id)sender {
     EWNotificationViewController *controller = [[EWNotificationViewController alloc] initWithNibName:nil bundle:nil];
-    [self presentViewControllerWithBlurBackground:controller];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewControllerWithBlurBackground:navController];
 }
 
 

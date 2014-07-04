@@ -213,7 +213,8 @@
             case 2:{ //profile
                 [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
                     EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:self.person];
-                    [rootViewController presentViewControllerWithBlurBackground:controller];
+                    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+                    [rootViewController presentViewControllerWithBlurBackground:navController];
                 }];
                 break;
             }
@@ -231,7 +232,8 @@
             case 1:{//view profile
                 [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
                     EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:self.person];
-                    [rootViewController presentViewControllerWithBlurBackground:controller];
+                    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+                    [rootViewController presentViewControllerWithBlurBackground:navController];
                 }];
             }
                 break;

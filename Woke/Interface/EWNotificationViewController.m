@@ -38,6 +38,8 @@
     notifications = [[EWNotificationManager allNotifications] mutableCopy];
     
     
+
+    
     //tableview
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -46,9 +48,11 @@
     //self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
     
     //toolbar
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
-    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
+
+    
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)];
+    [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:doneBtn rightItem:refreshBtn];
     
     [self.toolbar setItems:@[doneBtn, spacer, refreshBtn] animated:YES];
     
