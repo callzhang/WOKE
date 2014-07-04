@@ -76,6 +76,8 @@
 		56FEA59617A5766B00FC2938 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 56FEA59217A5766B00FC2938 /* InfoPlist.strings */; };
 		56FEA59717A5766B00FC2938 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA59417A5766B00FC2938 /* main.m */; };
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
+		9B5AF7F11965EC640002AA06 /* EWNotificationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B5AF7EF1965EC640002AA06 /* EWNotificationCell.m */; };
+		9B5AF7F21965EC640002AA06 /* EWNotificationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B5AF7F01965EC640002AA06 /* EWNotificationCell.xib */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
 		9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */; };
 		9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F9718EB416700C07809 /* EWUtil.m */; };
@@ -306,6 +308,9 @@
 		56FEA59417A5766B00FC2938 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9B2DEEF518B811EC0046EB80 /* EWServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWServer.h; sourceTree = "<group>"; };
 		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWServer.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		9B5AF7EE1965EC640002AA06 /* EWNotificationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationCell.h; sourceTree = "<group>"; };
+		9B5AF7EF1965EC640002AA06 /* EWNotificationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWNotificationCell.m; sourceTree = "<group>"; };
+		9B5AF7F01965EC640002AA06 /* EWNotificationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWNotificationCell.xib; sourceTree = "<group>"; };
 		9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadManager.h; path = Download/EWDownloadManager.h; sourceTree = "<group>"; };
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
 		9B8A6A9D191887F400591E8A /* NGAParallaxMotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGAParallaxMotion.h; sourceTree = "<group>"; };
@@ -921,6 +926,9 @@
 		9BF297C31912F71F008C136E /* UI Components */ = {
 			isa = PBXGroup;
 			children = (
+				9B5AF7EE1965EC640002AA06 /* EWNotificationCell.h */,
+				9B5AF7EF1965EC640002AA06 /* EWNotificationCell.m */,
+				9B5AF7F01965EC640002AA06 /* EWNotificationCell.xib */,
 				9BF297C41912F71F008C136E /* EWAlarmEditCell.h */,
 				9BF297C51912F71F008C136E /* EWAlarmEditCell.m */,
 				9BF297C61912F71F008C136E /* EWAlarmEditCell.xib */,
@@ -1230,6 +1238,7 @@
 				AB4B837C18D2C5470087E654 /* new.caf in Resources */,
 				ABB8C3061932C630001F7832 /* EWPersonView.xib in Resources */,
 				9BF297C11912F713008C136E /* EWWakeUpView.xib in Resources */,
+				9B5AF7F21965EC640002AA06 /* EWNotificationCell.xib in Resources */,
 				ABFCB2E4186E957100355781 /* Drive.caf in Resources */,
 				0E590FEB194DF35B000AD7C4 /* lanenar.ttf in Resources */,
 				ABF3FB5E1908B72F0017D2EF /* 9.jpg in Resources */,
@@ -1377,6 +1386,7 @@
 				0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */,
 				9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */,
 				9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */,
+				9B5AF7F11965EC640002AA06 /* EWNotificationCell.m in Sources */,
 				AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */,
 				9BF297C01912F713008C136E /* EWSettingsViewController.m in Sources */,
 				0E646276196079AA00B70DC9 /* UIImage+ImageEffects.m in Sources */,

@@ -58,11 +58,7 @@
     NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO];
     NSSortDescriptor *sortImportance = [NSSortDescriptor sortDescriptorWithKey:@"importance" ascending:NO];
     notifications = [notifications sortedArrayUsingDescriptors:@[sortImportance, sortDate]];
-    NSInteger n = MIN(notifications.count , nNotificationToDisplay);
-    if (n > 0) {
-        return [notifications subarrayWithRange:NSMakeRange(0, n)];
-    }
-    return nil;
+    return notifications;
 }
 
 #pragma mark - CREATE
@@ -87,7 +83,7 @@
         NSLog(@"@@@ Cannot find notification %@", notificationID);
         return;
     }
-    NSDictionary *userInfo = notification.userInfo;//[@"userInfo"];
+    NSDictionary *userInfo = notification.userInfo;
     [EWNotificationManager sharedInstance].notification = notification;
     
     if ([notification.type isEqualToString:kNotificationTypeNextTaskHasMedia]) {
@@ -111,9 +107,10 @@
         //alert
         UIAlertView *alert;
         alert = [[UIAlertView alloc] initWithTitle:@"Friendship request"
-                                           message:[NSString stringWithFormat:@"%@ wants to be your friend. Accept?", person.name]
-                                          delegate:[EWNotificationManager sharedInstance] cancelButtonTitle:@"No"
-                                 otherButtonTitles:@"Yes", @"Profile", nil];
+                                           message:[NSString stringWithFormat:@"%@ wants to be your friend.", person.name]
+                                          delegate:[EWNotificationManager sharedInstance]
+                                 cancelButtonTitle:@"Don't accept"
+                                 otherButtonTitles:@"Accept", @"Profile", nil];
         alert.tag = kFriendRequestAlert;
         [alert show];
         
@@ -165,10 +162,10 @@
         NSString *body = notification.userInfo[@"content"];
         NSString *link = notification.userInfo[@"link"];
         [[[UIAlertView alloc] initWithTitle:title
-                                    message:[NSString stringWithFormat:@"%@\n(%@)", body, link]
+                                    message:[NSString stringWithFormat:@"%@\n", body]
                                    delegate:[EWNotificationManager sharedInstance]
                           cancelButtonTitle:@"OK"
-                          otherButtonTitles: nil] show];
+                          otherButtonTitles: @"More", nil] show];
         
     }else{
         
@@ -195,20 +192,22 @@
 }
 
 
-
+#pragma mark - Handle alert
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     
     if (alertView.tag == kFriendRequestAlert) {
         
+        [self finishedNotification:self.notification];
         switch (buttonIndex) {
             case 0: //Cancel
-                [self finishedNotification:self.notification];
+                
                 break;
                 
             case 1:{ //accepted
                 [me addFriendsObject:self.person];
                 [self.person addFriendsObject:me];
-                [self finishedNotification:self.notification];
+                [EWNotificationManager sendFriendAcceptNotificationToUser:self.person];
+                [rootViewController.view showSuccessNotification:@"Accepted"];
                 break;
             }
             case 2:{ //profile

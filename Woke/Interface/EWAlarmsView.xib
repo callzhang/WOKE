@@ -11,6 +11,7 @@
                 <outlet property="alarmloadingIndicator" destination="5xJ-P3-L3R" id="EWi-WU-zJH"/>
                 <outlet property="background" destination="MQd-sS-vOE" id="xWT-Zi-JZB"/>
                 <outlet property="collectionView" destination="J19-yS-M7x" id="sJr-bL-L4H"/>
+                <outlet property="notificationBtn" destination="BEY-Ng-hV7" id="hXK-EA-mlE"/>
                 <outlet property="pageView" destination="dxw-Xf-eo8" id="ETF-aX-van"/>
                 <outlet property="scrollView" destination="nNj-2P-l6y" id="t2s-AI-Oky"/>
                 <outlet property="view" destination="1" id="U7f-Ud-LLb"/>
@@ -75,7 +76,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="BEY-Ng-hV7">
-                    <rect key="frame" x="20" y="39" width="22" height="22"/>
+                    <rect key="frame" x="20" y="37" width="25" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>

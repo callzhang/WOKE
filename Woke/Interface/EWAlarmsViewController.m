@@ -21,6 +21,7 @@
 #import "EWAlarmManager.h"
 #import "EWPersonStore.h"
 #import "EWTaskStore.h"
+#import "EWNotificationManager.h"
 
 // Model
 #import "EWPerson.h"
@@ -87,6 +88,7 @@
     [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
     //listen to schedule signal
     [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
+    [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
     
     //update data and view
     [self initData];
@@ -174,6 +176,7 @@
     _scrollView.pagingEnabled = YES;
     _pageView.currentPage = 0;
     _pageView.hidden = YES;
+
     
     //add blur bar
     UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
@@ -414,7 +417,6 @@
     }
 }
 
-
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     
@@ -442,6 +444,19 @@
                 [self showAlarmPageLoading:YES];
             }
             
+        }else if ([keyPath isEqualToString:@"notifications"]){
+            //notification count
+            NSInteger nUnread = [EWNotificationManager myNotifications].count;
+            [self.notificationBtn setTitle:[NSString stringWithFormat:@"%ld", (long)nUnread] forState:UIControlStateNormal];
+            if (nUnread == 0) {
+                [UIView animateWithDuration:0.5 animations:^{
+                    self.notificationBtn.alpha = 0.1;
+                }];
+            }else{
+                [UIView animateWithDuration:0.5 animations:^{
+                    self.notificationBtn.alpha = 1;
+                }];
+            }
         }
     }else if ([object isKindOfClass:[EWTaskStore class]]){
         if ([EWTaskStore sharedInstance].isSchedulingTask) {

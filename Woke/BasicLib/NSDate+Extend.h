@@ -111,7 +111,7 @@
  Time left to next alarm
  */
 - (NSString *)timeLeft;
-- (NSString *)timeSpent;
+- (NSString *)timeLeft;
 
 
 /**

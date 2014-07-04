@@ -42,6 +42,7 @@
 @property (weak, nonatomic) IBOutlet UIView *youIndicator;
 @property (weak, nonatomic) IBOutlet UILabel *you;
 @property (weak, nonatomic) IBOutlet UIButton *youBtn;
+@property (weak, nonatomic) IBOutlet UIButton *notificationBtn;
 
 
 

@@ -513,7 +513,7 @@
     [EWDataStore clearQueue:kParseQueueUpdate];
     
     
-    NSLog(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ \n ==============================", [insertedManagedObjects valueForKey:kParseObjectID], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
+    NSLog(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ \n ==============================", [insertedManagedObjects valueForKeyPath:@"entity.name"], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
     
     
     NSArray *callbacks = [[EWDataStore sharedInstance].saveCallbacks copy];
@@ -527,7 +527,6 @@
         }
         
         for (PFObject *po in deletedServerObjects) {
-            NSLog(@"~~~> Deleting PO %@ (%@)", po.parseClassName, po.objectId);
             [EWDataStore deleteParseObject:po];
         }
         
@@ -1138,6 +1137,9 @@
     return outdated;
 }
 
+- (NSString *)serverID{
+    return [self valueForKeyPath:kParseObjectID];
+}
 
 @end
 

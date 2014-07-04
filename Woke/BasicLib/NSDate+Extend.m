@@ -149,8 +149,7 @@
 
 - (BOOL)isOutDated{
     if (self == nil) return YES;
-    NSInteger timeElapsed = [[NSDate date] timeIntervalSinceReferenceDate]-[self timeIntervalSinceReferenceDate];
-    BOOL outdated = timeElapsed > kServerUpdateInterval;
+    BOOL outdated = self.timeElapsed > kServerUpdateInterval;
     return outdated;
 }
 
@@ -208,15 +207,6 @@
 }
 
 - (NSString *)timeLeft{
-    NSInteger left = -[self timeIntervalSinceNow];
-    if (left<0) {
-        return @"";
-    }
-    
-    return [EWUIUtil getStringFromTime:left];
-}
-
-- (NSString *)timeSpent{
     NSInteger left = [self timeIntervalSinceNow];
     if (left<0) {
         return @"";
@@ -224,6 +214,8 @@
     
     return [EWUIUtil getStringFromTime:left];
 }
+
+
 -(NSString *)time2MonthDotDate
 {
     NSCalendar *cal = [NSCalendar currentCalendar];
@@ -235,7 +227,7 @@
 }
 
 - (double)timeElapsed{
-    double t = [self timeIntervalSinceNow];
+    double t = -[self timeIntervalSinceNow];
     return t;
     
 }

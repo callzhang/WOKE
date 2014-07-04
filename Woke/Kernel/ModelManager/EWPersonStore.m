@@ -106,14 +106,15 @@ EWPerson *me;
             [query whereKey:kParseObjectID equalTo:ID];
             NSError *error;
             user = [query findObjects:&error].firstObject;
-            if (error) {
+            if (error || !user) {
                 NSLog(@"Failed to find user with ID %@. Reason:%@", ID, error.description);
+                return nil;
             }
         }
         
         if (user.isNew) {
             person = [self createPersonWithParseObject:user];
-            NSLog(@"Current user %@ data has CREATED", person.name);
+            NSLog(@"New user %@ data has CREATED", person.name);
         }else{
             person = (EWPerson *)[user managedObject];
             NSLog(@"Person created from PO");
@@ -207,6 +208,7 @@ EWPerson *me;
             float score = 99 - [people indexOfObject:user];
             person.score = [NSNumber numberWithFloat:score];
             [allPerson addObject:person];
+            [EWDataStore saveToLocal:person];
         }
         
         [EWPersonStore me].score = @100;
@@ -214,7 +216,7 @@ EWPerson *me;
         
         everyone = [allPerson copy];
         timeEveryoneChecked = [NSDate date];
-        [[EWDataStore currentContext] saveToPersistentStoreAndWait];
+        
     }];
     
     return everyone;

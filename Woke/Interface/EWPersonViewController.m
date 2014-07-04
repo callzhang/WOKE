@@ -99,7 +99,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     tabView.selectedSegmentIndex = 0;//initial tab
     
     //default state
-    [EWUIUtil applyHexagonMaskForView:self.profilePic];
+    [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
     self.name.text = @"";
     self.location.text = @"";
     self.statement.text = @"";
@@ -233,11 +233,13 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 }
 
 - (IBAction)close:(id)sender {
-    if (_canSeeFriendsDetail&& [[self.navigationController viewControllers] objectAtIndex:0] == self) {
+    if ([[self.navigationController viewControllers] objectAtIndex:0] == self || !self.navigationController) {
         [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 
+    }else{
+        [self.navigationController popViewControllerWithBlur];
     }
-    [self.navigationController popViewControllerWithBlur];
+    
 }
 
 - (IBAction)login:(id)sender {
@@ -263,21 +265,20 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 
 - (IBAction)more:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles: nil];
+    UIActionSheet *sheet;
     if (person.isMe) {
-        [sheet addButtonWithTitle:@"Edit"];
+        
+        sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference", nil];
         if (DEV_TEST) {
-            [sheet addButtonWithTitle:@"Send test friend request"];
+            [sheet addButtonWithTitle:@"Add friend"];
         }
     }else{
-        [sheet addButtonWithTitle:@"Flag"];
-        sheet.destructiveButtonIndex = 0;
-        [sheet addButtonWithTitle:@"Send friend request"];
+        //sheet.destructiveButtonIndex = 0;
         if (person.isFriend) {
-            [sheet addButtonWithTitle:@"Friend history"];
-            [sheet addButtonWithTitle:@"Send Voice Greeting"];
-        }else if (DEV_TEST) {
-            [sheet addButtonWithTitle:@"Send Voice Greeting"];
+            sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Flag", @"Unfriend", @"Send Voice Greeting", @"Friend history", nil];
+        }else{
+            
+            sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", nil];
         }
     }
     
@@ -315,8 +316,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         //
     }else if ([title isEqualToString:@"Friendship history"]){
         //
-    }else if ([title isEqualToString:@"Send test friend request"]){
-        [EWNotificationManager sendFriendRequestNotificationToUser:me];
     }
         
     [self initView];

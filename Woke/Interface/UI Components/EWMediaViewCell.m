@@ -85,7 +85,7 @@
     
     //profile
     [self.profilePic setImage:media.author.profilePic forState:UIControlStateNormal];
-    [EWUIUtil applyHexagonMaskForView:self.profilePic.imageView];
+    [EWUIUtil applyHexagonSoftMaskForView:self.profilePic.imageView];
     
     //description
     self.description.text = media.message;
