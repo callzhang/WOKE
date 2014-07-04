@@ -269,19 +269,19 @@
                 NSLog(@"MO %@(%@) has serverID, meaning it is fetched from server, skip!", MO.entity.name, [MO valueForKey:kParseObjectID]);
                 continue;
             }
-            NSLog(@"+++> MO %@ inserted to context", MO.entity.name);
+            NSLog(@"+++> MO %@ inserted to queue", MO.entity.name);
             [EWDataStore appendInsertQueue:MO];
         }
         for (NSManagedObject *MO in updates) {
             //skip if updatedMO contained in insertedMOs
-            if ([inserts containsObject:MO]) {
+            if ([inserts containsObject:MO] && MO.serverID) {
                 continue;
             }
             //check if updated keys are valid
             NSMutableArray *changedKeys = MO.changedValues.allKeys.mutableCopy;
             [changedKeys removeObjectsInArray:attributeUploadSkipped];
             if (changedKeys.count > 0) {
-                NSLog(@"===> MO %@(%@) updated to context with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
+                NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
                 [EWDataStore appendUpdateQueue:MO];
             }
             

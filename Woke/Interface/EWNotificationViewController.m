@@ -11,6 +11,8 @@
 #import "EWNotification.h"
 #import "EWPerson.h"
 #import "EWPersonStore.h"
+#import "EWUIUtil.h"
+//#import "EWNotificationTableCellTableViewCell.h"
 #import "EWNotificationCell.h"
 
 #define kNotificationCellIdentifier     @"NotificationCellIdentifier"
@@ -37,15 +39,17 @@
     // Data source
     notifications = [[EWNotificationManager allNotifications] mutableCopy];
     
-    
 
     
     //tableview
     self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    self.tableView.contentInset = UIEdgeInsetsMake(45, 0, 200, 0);
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    //self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
+    self.tableView.dataSource =self;
+    self.tableView.contentInset = UIEdgeInsetsMake(2, 0, 200, 0);
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    self.tableView.separatorInset = UIEdgeInsetsZero;
+    [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.15]];
+    UINib *nib = [UINib nibWithNibName:@"EWNotificationCell" bundle:nil];
+    [self.tableView registerNib:nib forCellReuseIdentifier:kNotificationCellIdentifier];
     
     //toolbar
     UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
@@ -54,10 +58,17 @@
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)];
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:doneBtn rightItem:refreshBtn];
     
-    [self.toolbar setItems:@[doneBtn, spacer, refreshBtn] animated:YES];
-    
-    UINib *nib = [UINib nibWithNibName:@"EWNotificationCell" bundle:nil];
-    [self.tableView registerNib:nib forCellReuseIdentifier:kNotificationCellIdentifier];
+    if (notifications.count != 0) {
+        self.title = [NSString stringWithFormat:@"Notifications(%ld)",(unsigned long)notifications.count];
+       
+        
+    }
+    else
+    {
+        self.title = @"Notifications";
+       
+        
+    }
 
 }
 
@@ -81,28 +92,6 @@
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
-
-//- (void)changeMode{
-//    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-//        if (allNotification) {
-//            notifications = [[EWNotificationManager myNotifications] mutableCopy];
-//            allBtn.title = @"Unread";
-//        }else{
-//            notifications = [[EWNotificationManager allNotifications] mutableCopy];
-//            allBtn.title = @"All";
-//        }
-//        allNotification = !allNotification;
-//        
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            
-//            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-//            [self.tableView reloadData];
-//            
-//        });
-//    });
-//    
-//}
 
 - (void)refresh{
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -132,17 +121,12 @@
     if (!cell.notification || cell.notification != notification) {
         cell.notification = notification;
     }
-    
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    //EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
-    //NSInteger h = cell.height;
-    EWNotification *n = notifications[indexPath.row];
-    NSString *title = n.userInfo[@"title"];
-    NSInteger row = title.length / 30;
-    NSInteger h = 63 + row * 20;
+    EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
+    NSInteger h = cell.height;
     return h;
 }
 
@@ -168,6 +152,13 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
     //CGFloat alpha = indexPath.row%2?0.05:0.06;
     cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0];
+}
+
+-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
+    view.backgroundColor = [UIColor clearColor];
+    return view;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
