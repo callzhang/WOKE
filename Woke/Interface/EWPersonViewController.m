@@ -431,7 +431,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 }
                 else
                 {
-                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ %@ by %ld people",[task.time timeInString],[task.completed date2am],[task.medias count]];
+                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ %@ by %ld people",[task.time timeInString],[task.time date2am],[task.medias count]];
                 }
                 
             }
