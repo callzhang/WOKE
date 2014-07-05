@@ -53,12 +53,12 @@
         EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByObjectID:notification.sender];
         if([type isEqualToString:kNotificationTypeFriendRequest]){
             
-               self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request  fdsj fdls kfjk lsdjflj sdalkjf lksdajlfja sdk  lfjlk sdfjljs dlfj lsdajf", sender.name];
+               self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request", sender.name];
             
             
         }else if([type isEqualToString:kNotificationTypeFriendAccepted]){
             
-            self.detail.text = [NSString stringWithFormat:@"%@ has sent accepted your friend request fjdlfjdslkflfdls", sender.name];
+            self.detail.text = [NSString stringWithFormat:@"%@ has sent accepted your friend request", sender.name];
             
         }else if (kNotificationTypeNextTaskHasMedia){
             self.detail.text = @"You have received voice(s) for tomorrow morning. To find out, wake up on time!";

@@ -15,7 +15,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.origin.x+20,-20, frame.size.width/4, frame.size.height)];
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.origin.x+20,-30, frame.size.width, frame.size.height)];
         _titleLabel.textColor = [UIColor whiteColor];
         _titleLabel.font = [UIFont systemFontOfSize:20];
         _titleLabel.backgroundColor = [UIColor clearColor];
