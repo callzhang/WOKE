@@ -432,6 +432,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 else
                 {
                     cell.textLabel.text = [NSString stringWithFormat:@"Failed to wake up at %@. Messaged by %ld people",[task.time date2String], (unsigned long)[task.medias count]];
+
                 }
                 
             }
@@ -454,6 +455,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 }
                 
                 cell.textLabel.text = [NSString stringWithFormat:@"Woke up %d people",myTasks.count];
+
                 break;
             }
             default:
