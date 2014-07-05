@@ -431,7 +431,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 }
                 else
                 {
-                    cell.textLabel.text = [NSString stringWithFormat:@"Failed to wake up (%@). Messaged by %ld people",[task.time date2String], (unsigned long)[task.medias count]];
+                    cell.textLabel.text = [NSString stringWithFormat:@"Failed to wake up at %@. Messaged by %ld people",[task.time date2String], (unsigned long)[task.medias count]];
                 }
                 
             }
@@ -442,10 +442,18 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 NSDate *eod = task.time.endOfDay;
                 NSDate *bod = task.time.beginingOfDay;
                 
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"author == %@ AND task.time >= %@ AND task.time <= %@", [EWPersonStore me], bod, eod];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"author == %@", [EWPersonStore me]];
                 NSArray *myMedias = [EWMediaItem findAllWithPredicate:predicate];
+                NSMutableArray *myTasks = [NSMutableArray new];
+                for (EWMediaItem *m in myMedias) {
+                    for (EWTaskItem *t in m.tasks) {
+                        if ([t.time isEarlierThan:eod] && [bod isEarlierThan:t.time]) {
+                            [myTasks addObject:t];
+                        }
+                    }
+                }
                 
-                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %d people",myMedias.count];
+                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %d people",myTasks.count];
                 break;
             }
             default:

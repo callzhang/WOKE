@@ -202,7 +202,7 @@
 
 - (NSDateComponents *)dateComponents{
     NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents* deltaComps = [cal components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSDayCalendarUnit) fromDate:self];
+    NSDateComponents* deltaComps = [cal components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSDayCalendarUnit | NSSecondCalendarUnit | NSYearCalendarUnit | NSMonthCalendarUnit) fromDate:self];
     return deltaComps;
 }
 

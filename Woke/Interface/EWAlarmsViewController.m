@@ -672,6 +672,18 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    //if me
+    EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
+    if (person.isMe) {
+        EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
+        controller.canSeeFriendsDetail = YES;
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+        
+        [self presentViewControllerWithBlurBackground:navController completion:NULL];
+        return;
+    }
+    
+    
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];
     selectedPersonIndex = indexPath.row;
@@ -691,19 +703,12 @@
     //create button block
     menu.toProfileButtonBlock = ^{
         
-        
-        EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
+        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+        EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
         controller.canSeeFriendsDetail = YES;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-        controller.person = person;
        
-        [self presentViewControllerWithBlurBackground:navController completion:^{
-            [person refreshInBackgroundWithCompletion:^{
-                [controller refresh];
-            }];
-            [controller.view setNeedsDisplay];
-        }];
+        [self presentViewControllerWithBlurBackground:navController completion:NULL];
         [weakMenu closeMenu];
     };
     
