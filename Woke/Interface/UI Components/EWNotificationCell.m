@@ -75,9 +75,10 @@
     
     
     self.detail.textColor = [UIColor whiteColor];
-    
+    CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:self.detail.frame.size lineBreakMode:UILineBreakModeWordWrap];
+    self.detail.height = fixLabelSize.height;
     //size
-    NSInteger deltaHeight = self.detail.height - 35;
+    CGFloat deltaHeight = self.detail.height - 35;
     //self.detail.height += deltaHeight;
     self.time.y += deltaHeight;
     self.contentView.height += deltaHeight;
