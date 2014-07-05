@@ -28,7 +28,7 @@
 }
 
 - (void)setNotification:(EWNotification *)notification{
-    
+  
     //time
     double t = notification.updatedAt.timeElapsed;
     self.time.text = [[EWUIUtil getStringFromTime:t] stringByAppendingString:@" ago"];
@@ -53,11 +53,12 @@
         EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByObjectID:notification.sender];
         if([type isEqualToString:kNotificationTypeFriendRequest]){
             
-            self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request", sender.name];
+               self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request  fdsj fdls kfjk lsdjflj sdalkjf lksdajlfja sdk  lfjlk sdfjljs dlfj lsdajf", sender.name];
+            
             
         }else if([type isEqualToString:kNotificationTypeFriendAccepted]){
             
-            self.detail.text = [NSString stringWithFormat:@"%@ has sent accepted your friend request", sender.name];
+            self.detail.text = [NSString stringWithFormat:@"%@ has sent accepted your friend request fjdlfjdslkflfdls", sender.name];
             
         }else if (kNotificationTypeNextTaskHasMedia){
             self.detail.text = @"You have received voice(s) for tomorrow morning. To find out, wake up on time!";
@@ -74,16 +75,20 @@
     }
     
     
-    self.detail.textColor = [UIColor whiteColor];
-    CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:self.detail.frame.size lineBreakMode:UILineBreakModeWordWrap];
-    self.detail.height = fixLabelSize.height;
-    //size
-    CGFloat deltaHeight = self.detail.height - 35;
-    //self.detail.height += deltaHeight;
-    self.time.y += deltaHeight;
-    self.contentView.height += deltaHeight;
-    self.height = self.contentView.height;
-    [self setNeedsDisplay];
+//    self.detail.textColor = [UIColor whiteColor];
+//    CGSize fixLabelSize = [self.detail.text  sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
+//    self.detail.height = fixLabelSize.height;
+//    
+//   
+//    self.detail.backgroundColor = [UIColor whiteColor];
+//   
+//    CGFloat deltaHeight = self.detail.height - 35;
+//    //self.detail.height += deltaHeight;
+//    self.time.y += deltaHeight;
+//    self.contentView.height += deltaHeight;
+//    self.height = self.contentView.height;
+//    
+//    [self setNeedsDisplay];
 }
 
 
