@@ -46,8 +46,9 @@
     self.tableView.dataSource =self;
     self.tableView.contentInset = UIEdgeInsetsMake(2, 0, 200, 0);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    self.tableView.separatorColor = [UIColor lightGrayColor];
     self.tableView.separatorInset = UIEdgeInsetsZero;
-    [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.15]];
+    [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.13]];
     UINib *nib = [UINib nibWithNibName:@"EWNotificationCell" bundle:nil];
     [self.tableView registerNib:nib forCellReuseIdentifier:kNotificationCellIdentifier];
     
