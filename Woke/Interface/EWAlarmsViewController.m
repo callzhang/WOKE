@@ -99,10 +99,7 @@
 }
 
 - (void)centerView{
-    if([rootViewController.view viewWithTag:kMenuTag] || [indicatorHideTimer isValid]){
-        //cancel if popout is present
-        return;
-    }
+
     if ([_collectionView numberOfItemsInSection:0]>0) {
         [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
     }

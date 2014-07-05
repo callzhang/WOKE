@@ -214,19 +214,20 @@
         return;
     }
     
+    //update media
+    NSArray *medias = [[EWMediaStore sharedInstance] checkMediaAssets];
+    
     //fill media from mediaAssets, if no media for task, create a pseudo media
     NSInteger nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
     NSInteger nVoiceNeeded = kMaxVoicePerTask - nVoice;
     
-    NSArray *mediaAssets = [[EWPersonStore me].mediaAssets allObjects];
-    for (EWMediaItem *media in mediaAssets) {
+    for (EWMediaItem *media in medias) {
         if (!media.targetDate || [media.targetDate isEarlierThan:[NSDate date]]) {
             
             //find media to add
             [task addMediasObject: media];
             //remove media from mediaAssets
-            [[EWPersonStore me] removeMediaAssetsObject:media];
-            
+            [[EWPersonStore me] removeMediaAssetsObject:media];            
             
             if ([media.type isEqualToString: kMediaTypeVoice]) {
                 
