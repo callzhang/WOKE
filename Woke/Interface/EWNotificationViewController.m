@@ -12,7 +12,9 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 #import "EWUIUtil.h"
-#import "EWNotificationTableCellTableViewCell.h"
+//#import "EWNotificationTableCellTableViewCell.h"
+#import "EWNotificationCell.h"
+
 #define kNotificationCellIdentifier     @"NotificationCellIdentifier"
 
 @interface EWNotificationViewController (){
@@ -23,13 +25,8 @@
 
 @implementation EWNotificationViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad
@@ -37,21 +34,23 @@
     [super viewDidLoad];
     
     //notification
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNotificationCompleted object:nil];
- 
-        // Data source
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reload) name:kNotificationCompleted object:nil];
+    
+    // Data source
     notifications = [[EWNotificationManager allNotifications] mutableCopy];
-    //[self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kNotificationCellIdentifier];
     
 
     
     //tableview
     self.tableView.delegate = self;
-    self.tableView.dataSource = self;
+    self.tableView.dataSource =self;
     self.tableView.contentInset = UIEdgeInsetsMake(2, 0, 200, 0);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     self.tableView.separatorInset = UIEdgeInsetsZero;
-     [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.15]];
+    [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.15]];
+    UINib *nib = [UINib nibWithNibName:@"EWNotificationCell" bundle:nil];
+    [self.tableView registerNib:nib forCellReuseIdentifier:kNotificationCellIdentifier];
+    
     //toolbar
     UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
 
@@ -60,7 +59,7 @@
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:doneBtn rightItem:refreshBtn];
     
     if (notifications.count != 0) {
-        self.title = [NSString stringWithFormat:@"Notifications(%ld)",notifications.count];
+        self.title = [NSString stringWithFormat:@"Notifications(%ld)",(unsigned long)notifications.count];
        
         
     }
@@ -73,19 +72,12 @@
 
 }
 
-- (void)refresh{
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        notifications = [[EWNotificationManager allNotifications] mutableCopy];
-    });
-    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-    [self.tableView reloadData];
-    
-}
-
 - (BOOL)prefersStatusBarHidden{
     return YES;
+}
+
+- (void)reload{
+    [self.tableView reloadData];
 }
 
 
@@ -101,81 +93,51 @@
 }
 
 
+- (void)refresh{
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"EWNotification"];
+    [query whereKey:kParseObjectID notContainedIn:[me.notifications valueForKey:kParseObjectID]];
+    [query whereKey:@"owner" equalTo:[PFUser currentUser]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        for (PFObject *PO in objects) {
+            EWNotification *notification = (EWNotification *)PO.managedObject;
+            NSLog(@"Found new notification %@(%@)", notification.type, notification.objectId);
+            notification.owner = [EWPersonStore me];
+        }
+        notifications = [[EWNotificationManager allNotifications] mutableCopy];
+        [self.tableView reloadData];
+        
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    }];
+    
+}
+
 #pragma mark - TableView
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kNotificationCellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kNotificationCellIdentifier];
-        cell.contentView.backgroundColor = [UIColor clearColor];
-        cell.textLabel.textColor = [UIColor whiteColor];
-    }
-    cell.detailTextLabel.textColor = [UIColor whiteColor];
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:15];
-    //data
-    EWNotification *notice = notifications[indexPath.row];
-    if (!notice.completed) {
-        
-    }else{
-        cell.textLabel.textColor = [UIColor lightGrayColor];
-    }
-    BOOL showPic = YES;
+    EWNotificationCell *cell = [tableView dequeueReusableCellWithIdentifier:kNotificationCellIdentifier];
     
-    //action
-    if ([notice.type isEqualToString:kNotificationTypeFriendAccepted]) {
-        cell.textLabel.text = @"Friend request accepted";
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ has accepted your friends request!", notice.sender];
-    }else if ([notice.type isEqualToString:kNotificationTypeFriendRequest]){
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"Friend request from %@", notice.sender];
-        cell.textLabel.text = @"Friend request received";
-    }else if ([notice.type isEqualToString:kNotificationTypeNextTaskHasMedia]){
-        cell.textLabel.text = @"Voice received!";
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"You have a new voice for tomorrow morning."];
-    }else if ([notice.type isEqualToString:kNotificationTypeNotice]){
-        cell.textLabel.text = @"Notification";
-        cell.detailTextLabel.text = notice.userInfo[@"title"];
-        cell.detailTextLabel.text = notice.userInfo[@"content"];
-        showPic = NO;
-    }else if ([notice.type isEqualToString:kNotificationTypeTimer]){
-        cell.textLabel.text = @"It's time to wake up!";
-        cell.detailTextLabel.text = @"";
-        showPic = NO;
-    }else{
-        NSLog(@"*** Received unknown type of notification!");
+    EWNotification *notification = notifications[indexPath.row];
+    if (!cell.notification || cell.notification != notification) {
+        cell.notification = notification;
     }
-    
-    //get sender pic
-    if (showPic) {
-        [EWUIUtil applyHexagonMaskForView: cell.imageView];
-        cell.imageView.image = [UIImage imageNamed:@"profile"];
-        
-        EWPerson *p = [[EWPersonStore sharedInstance] getPersonByID:notice.sender];
-        if (p) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                
-                UIImage *pic = p.profilePic;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    cell.imageView.image = pic;
-                    cell.imageView.alpha = 0;
-                    [UIView animateWithDuration:0.3 animations:^{
-                        cell.imageView.alpha = 1;
-                    }];
-                });
-            });
-
-        }
-        
-    }
-    else{
-        cell.imageView.image = nil;
-    }
-    
-    
     return cell;
 }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
+    NSInteger h = cell.height;
+    return h;
+}
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     EWNotification *notice = notifications[indexPath.row];
     [EWNotificationManager handleNotification:notice.objectId];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    });
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -188,13 +150,10 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-//    CGFloat alpha = indexPath.row%2?0.05:0.06;
-    cell.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
+    //CGFloat alpha = indexPath.row%2?0.05:0.06;
+    cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0];
 }
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 80;
-}
+
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
     UIView *view = [[UIView alloc] initWithFrame:CGRectZero];

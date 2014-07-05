@@ -67,8 +67,6 @@
     EWMediaItem *media = [self createMedia];
     media.type = kMediaTypeBuzz;
     media.buzzKey = [me.preference objectForKey:@"buzzSound"];
-    [media createParseObjectWithCompletion:nil];
-    [media refresh];//insert to server
     return media;
 }
 
@@ -78,7 +76,7 @@
     if (!media) {
         //get from server
         PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
-        [query whereKey:kParseObjectID equalTo:media];
+        [query whereKey:kParseObjectID equalTo:mediaID];
         [query includeKey:@"receivers"];
         [query includeKey:@"tasks"];
         PFObject *object = [query getFirstObject];

@@ -34,7 +34,7 @@
     if (self) {
         _headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 70, 80)];
         _headImageView.backgroundColor = [UIColor clearColor];
-        [EWUIUtil applyHexagonMaskForView:_headImageView];
+        [EWUIUtil applyHexagonSoftMaskForView:_headImageView];
         [self addSubview:_headImageView];
         
         _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 80, 70, 20)];

@@ -29,7 +29,7 @@
     self.proImageView.image = person.profilePic;
     self.nameLabel.text = person.name;
     self.nameLabel.textColor = [UIColor whiteColor];
-    [EWUIUtil applyHexagonMaskForView:self.proImageView];
+    [EWUIUtil applyHexagonSoftMaskForView:self.proImageView];
 }
 
 @end

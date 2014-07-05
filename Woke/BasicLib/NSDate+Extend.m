@@ -149,8 +149,7 @@
 
 - (BOOL)isOutDated{
     if (self == nil) return YES;
-    NSInteger timeElapsed = [[NSDate date] timeIntervalSinceReferenceDate]-[self timeIntervalSinceReferenceDate];
-    BOOL outdated = timeElapsed > kServerUpdateInterval;
+    BOOL outdated = self.timeElapsed > kServerUpdateInterval;
     return outdated;
 }
 
@@ -208,15 +207,6 @@
 }
 
 - (NSString *)timeLeft{
-    NSInteger left = -[self timeIntervalSinceNow];
-    if (left<0) {
-        return @"";
-    }
-    
-    return [EWUIUtil getStringFromTime:left];
-}
-
-- (NSString *)timeSpent{
     NSInteger left = [self timeIntervalSinceNow];
     if (left<0) {
         return @"";
@@ -224,20 +214,42 @@
     
     return [EWUIUtil getStringFromTime:left];
 }
+
+
 -(NSString *)time2MonthDotDate
 {
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents* deltaComps = [cal components:(NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:self];
     NSArray *monthArray = monthShort
-    NSString *str = [monthArray[deltaComps.month] stringByAppendingFormat:@"%ld",deltaComps.day];
+    NSString *str = [monthArray[deltaComps.month] stringByAppendingFormat:@"%ld", (long)deltaComps.day];
     
     return str;
 }
 
 - (double)timeElapsed{
-    double t = [self timeIntervalSinceNow];
+    double t = -[self timeIntervalSinceNow];
     return t;
     
+}
+
+- (NSDate *)beginingOfDay{
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *com = self.dateComponents;
+    com.hour = 0;
+    com.minute = 0;
+    com.second = 0;
+    NSDate *BOD = [cal dateFromComponents:com];
+    return BOD;
+}
+
+- (NSDate *)endOfDay{
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *com = self.dateComponents;
+    com.hour = 23;
+    com.minute = 59;
+    com.second = 59;
+    NSDate *EOD = [cal dateFromComponents:com];
+    return EOD;
 }
 
 @end

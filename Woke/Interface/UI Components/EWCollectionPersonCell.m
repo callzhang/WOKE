@@ -42,7 +42,7 @@
 //}
 
 - (void)applyHexagonMask{
-    [EWUIUtil applyHexagonMaskForView:self.image];
+    [EWUIUtil applyHexagonSoftMaskForView:self.image];
 }
 
 -(NSString *)timeAndDistance

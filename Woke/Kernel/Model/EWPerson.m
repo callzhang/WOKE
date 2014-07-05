@@ -37,10 +37,12 @@
     return NO;
 }
 
+//request pending
 - (BOOL)friendPending{
     return [me.friends containsObject:self];
 }
 
+//wait for friend acceptance
 - (BOOL)friendWaiting{
     return [self.friends containsObject:me];
 }

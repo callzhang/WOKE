@@ -145,11 +145,11 @@
 #define kCollectionViewCellHeight       80
 
 //Notification types
-#define kNotificationTypeFriendRequest  @"friendship_request"
-#define kNotificationTypeFriendAccepted @"friendship_accepted"
-#define kNotificationTypeTimer          @"timer"
-#define kNotificationTypeNotice         @"notice"
-#define kNotificationTypeNextTaskHasMedia     @"task_has_media"
+#define kNotificationTypeFriendRequest      @"friendship_request"
+#define kNotificationTypeFriendAccepted     @"friendship_accepted"
+#define kNotificationTypeTimer              @"timer"
+#define kNotificationTypeNotice             @"notice"
+#define kNotificationTypeNextTaskHasMedia   @"task_has_media"
 
 //Navgation Controller
 #define kMaxPersonNavigationConnt       6

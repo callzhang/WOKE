@@ -9,7 +9,7 @@
 #import "EWMyProfileViewController.h"
 #import "EWPersonStore.h"
 @interface EWMyProfileViewController ()<UITableViewDelegate,UITableViewDataSource>
-//@property (nonatomic, weak) id<FBGraphUser> me;
+
 @property (strong, nonatomic) IBOutlet UITableView *myTableView;
 @end
 
@@ -33,6 +33,7 @@
     [self initData];
     // Do any additional setup after loading the view from its nib.
 }
+
 -(void)initView
 {
     [self.view setBackgroundColor:[UIColor clearColor]];
@@ -41,28 +42,34 @@
     
        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
 }
+
 -(void)initData
 {
     
 }
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 #pragma mark - TableView
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 1;
 }
+
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return 8;
 }
+
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSLog(@"%@",indexPath);
 }
+
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"profileCell"];
@@ -132,6 +139,12 @@
 #pragma mark  - additional method
 -(void)close:(id)sender
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    if (self.navigationController) {
+        
+        [self.navigationController popViewControllerAnimated:YES];
+        
+    }else{
+        [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+    }
 }
 @end

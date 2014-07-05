@@ -100,36 +100,44 @@
     float originalSize = 80.0;
     CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
     UIBezierPath *hexagonPath = [EWUIUtil getHexagonSoftPath];
+    
+    //scale
     float height = view.bounds.size.height;
     float width = view.bounds.size.width;
     float ratio = MAX(height, width)/originalSize;
     [hexagonPath applyTransform:CGAffineTransformMakeScale(ratio, ratio)];
     
+    //apply mask
     hexagonMask.path = hexagonPath.CGPath;
     view.layer.mask  = hexagonMask;
     view.layer.masksToBounds = YES;
     //view.clipsToBounds = YES;
+    
+    //stroke
+//    
+//    [[UIColor whiteColor] setStroke];
+//    hexagonPath.lineWidth = 1;
+//    [hexagonPath stroke];
 }
 
 + (UIBezierPath *)getHexagonSoftPath{
     
     UIBezierPath* polygonPath = [UIBezierPath bezierPath];
-    [polygonPath moveToPoint: CGPointMake(70.23, 17.06)];
-    [polygonPath addCurveToPoint: CGPointMake(45.22, 2.34) controlPoint1: CGPointMake(55, 8.1) controlPoint2: CGPointMake(56.04, 8.53)];
-    [polygonPath addCurveToPoint: CGPointMake(34.71, 2.34) controlPoint1: CGPointMake(41.86, 0.42) controlPoint2: CGPointMake(37.52, 0.68)];
-    [polygonPath addCurveToPoint: CGPointMake(9.73, 17.06) controlPoint1: CGPointMake(32.64, 3.57) controlPoint2: CGPointMake(17.78, 12.31)];
-    [polygonPath addCurveToPoint: CGPointMake(5, 25.9) controlPoint1: CGPointMake(6.86, 18.76) controlPoint2: CGPointMake(4.97, 20.93)];
-    [polygonPath addCurveToPoint: CGPointMake(5, 52.86) controlPoint1: CGPointMake(5.08, 39.43) controlPoint2: CGPointMake(5.06, 48.65)];
-    [polygonPath addCurveToPoint: CGPointMake(9.73, 62.37) controlPoint1: CGPointMake(4.94, 57.06) controlPoint2: CGPointMake(6.39, 60.1)];
-    [polygonPath addCurveToPoint: CGPointMake(34.71, 77.51) controlPoint1: CGPointMake(13.07, 64.64) controlPoint2: CGPointMake(31.59, 75.65)];
-    [polygonPath addCurveToPoint: CGPointMake(45.22, 77.51) controlPoint1: CGPointMake(37.83, 79.36) controlPoint2: CGPointMake(41.56, 79.63)];
-    [polygonPath addCurveToPoint: CGPointMake(70.23, 62.37) controlPoint1: CGPointMake(55.42, 71.57) controlPoint2: CGPointMake(68.24, 63.93)];
-    [polygonPath addCurveToPoint: CGPointMake(74.99, 52.86) controlPoint1: CGPointMake(72.93, 60.25) controlPoint2: CGPointMake(74.98, 58.06)];
-    [polygonPath addCurveToPoint: CGPointMake(74.99, 25.9) controlPoint1: CGPointMake(75, 41.06) controlPoint2: CGPointMake(75, 40.06)];
-    [polygonPath addCurveToPoint: CGPointMake(70.23, 17.06) controlPoint1: CGPointMake(74.98, 20.8) controlPoint2: CGPointMake(74.04, 19.3)];
+    [polygonPath moveToPoint: CGPointMake(72.5, 17.5)];
+    [polygonPath addCurveToPoint: CGPointMake(42.87, 0.93) controlPoint1: CGPointMake(65.28, 13.42) controlPoint2: CGPointMake(47.9, 3.76)];
+    [polygonPath addCurveToPoint: CGPointMake(36.84, 0.93) controlPoint1: CGPointMake(41, -0.12) controlPoint2: CGPointMake(38.37, 0.06)];
+    [polygonPath addCurveToPoint: CGPointMake(8.07, 17.62) controlPoint1: CGPointMake(35.71, 1.57) controlPoint2: CGPointMake(13.74, 14.31)];
+    [polygonPath addCurveToPoint: CGPointMake(5, 22.5) controlPoint1: CGPointMake(6.05, 18.81) controlPoint2: CGPointMake(4.99, 20.08)];
+    [polygonPath addCurveToPoint: CGPointMake(5, 57) controlPoint1: CGPointMake(5.02, 29.07) controlPoint2: CGPointMake(4.99, 55.25)];
+    [polygonPath addCurveToPoint: CGPointMake(7.5, 61.5) controlPoint1: CGPointMake(5.01, 58.75) controlPoint2: CGPointMake(5.97, 60.61)];
+    [polygonPath addCurveToPoint: CGPointMake(37.47, 78.89) controlPoint1: CGPointMake(9.03, 62.39) controlPoint2: CGPointMake(35.79, 77.96)];
+    [polygonPath addCurveToPoint: CGPointMake(42.87, 78.89) controlPoint1: CGPointMake(39.15, 79.82) controlPoint2: CGPointMake(40.63, 80.28)];
+    [polygonPath addCurveToPoint: CGPointMake(73.01, 61.05) controlPoint1: CGPointMake(49.13, 75.01) controlPoint2: CGPointMake(71.62, 61.94)];
+    [polygonPath addCurveToPoint: CGPointMake(74.99, 56.45) controlPoint1: CGPointMake(74.9, 59.83) controlPoint2: CGPointMake(75, 58.3)];
+    [polygonPath addCurveToPoint: CGPointMake(74.99, 22.64) controlPoint1: CGPointMake(74.97, 52.25) controlPoint2: CGPointMake(74.93, 29.58)];
+    [polygonPath addCurveToPoint: CGPointMake(72.5, 17.5) controlPoint1: CGPointMake(75.01, 20.14) controlPoint2: CGPointMake(74.31, 18.52)];
     [polygonPath closePath];
     polygonPath.miterLimit = 11;
-    
     polygonPath.lineJoinStyle = kCGLineJoinRound;
     
     
@@ -204,14 +212,24 @@
 }
 
 + (void)addTransparantNavigationBarToViewController:(UIViewController *)vc withLeftItem:(UIBarButtonItem *)leftItem rightItem:(UIBarButtonItem *)rightItem{
-    [vc.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    vc.navigationController.navigationBar.shadowImage = [UIImage new];
-    vc.navigationController.navigationBar.translucent = YES;
-    vc.navigationController.view.backgroundColor = [UIColor clearColor];
-    vc.navigationItem.rightBarButtonItem = rightItem;
-    vc.navigationItem.leftBarButtonItem = leftItem;
-    vc.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
+    //first detect if navigation item exists
+    if (vc.navigationController) {
+        [vc.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+        vc.navigationController.navigationBar.shadowImage = [UIImage new];
+        vc.navigationController.navigationBar.translucent = YES;
+        vc.navigationController.view.backgroundColor = [UIColor clearColor];
+        vc.navigationItem.rightBarButtonItem = rightItem;
+        vc.navigationItem.leftBarButtonItem = leftItem;
+        vc.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+        [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
+    }else{
+        //not in navigation controller
+        UIButton *closeBtn = [[UIButton alloc] initWithFrame:CGRectMake(260, 20, 40, 40)];
+        [closeBtn setImage:[UIImage imageNamed:@"Close Button"] forState:UIControlStateNormal];
+        [closeBtn addTarget:vc action:@selector(close:) forControlEvents:UIControlEventTouchUpInside];
+        [vc.view addSubview:closeBtn];
+    }
+    
 }
 
 + (NSString *)getStringFromTime:(float)time{

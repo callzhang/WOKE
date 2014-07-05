@@ -217,6 +217,10 @@ typedef void (^EWSavingCallback)(void);
  Check if the MO's updatedAt time is more than the server refresh interval
  */
 - (BOOL)isOutDated;
+
+//Parse objectId
+- (NSString *)serverID;
+
 @end
 
 #pragma mark - Parse Object extension
