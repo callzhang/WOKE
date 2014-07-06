@@ -201,14 +201,14 @@
     }
 }
 
-+ (void)handleAlarmTimerEvent:(NSDictionary *)pushInfo{
++ (void)handleAlarmTimerEvent:(NSDictionary *)info{
     BOOL isLaunchedFromLocalNotification = NO;
     
     //get target task
     EWTaskItem *task;
-    if (pushInfo) {
-        NSString *taskID = pushInfo[kPushTaskKey];
-        NSString *taskLocalID = pushInfo[kLocalTaskKey];
+    if (info) {
+        NSString *taskID = info[kPushTaskKey];
+        NSString *taskLocalID = info[kLocalTaskKey];
         NSParameterAssert(taskID || taskLocalID);
         if (taskID) {
             task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
@@ -286,7 +286,14 @@
         
     }else{
         //fire an alarm
-        [[EWTaskStore sharedInstance] fireAlarmForTask:task];
+        NSLog(@"Firing alarm");
+        UILocalNotification *alarm = [[UILocalNotification alloc] init];
+        alarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
+        alarm.alertAction = @"Wake up!";
+        alarm.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
+                           kLocalNotificationTypeKey: kLocalNotificationTypeAlarmTimer};
+        [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
+        [[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
         
         //play sounds after 30s - time for alarm
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

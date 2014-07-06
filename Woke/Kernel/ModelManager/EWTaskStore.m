@@ -638,16 +638,6 @@
 }
 
 
-- (void)fireAlarmForTask:(EWTaskItem *)task{
-    NSLog(@"Firing alarm");
-    UILocalNotification *alarm = [[UILocalNotification alloc] init];
-    alarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
-    alarm.alertAction = @"Wake up!";
-    alarm.soundName = task.alarm.tone;
-    alarm.userInfo = @{kPushTaskKey: task.objectId, kLocalTaskKey: task.objectID.URIRepresentation.absoluteString};
-    [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
-}
-
 #pragma mark - check
 
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task{
