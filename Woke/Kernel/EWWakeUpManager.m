@@ -50,7 +50,8 @@
 + (void)handlePushNotification:(NSDictionary *)notification{
     NSString *type = notification[kPushTypeKey];
     NSString *mediaID = notification[kPushMediaKey];
-    //NSString *personID = notification[kPushPersonKey];
+    NSString *taskID = notification[kPushTaskKey];
+    NSString *personID = notification[kPushPersonKey];
     
     if (!mediaID) {
         
@@ -201,10 +202,20 @@
 }
 
 + (void)handleAlarmTimerEvent:(NSDictionary *)pushInfo{
+    BOOL isLaunchedFromLocalNotification = NO;
+    
+    //get target task
     EWTaskItem *task;
     if (pushInfo) {
         NSString *taskID = pushInfo[kPushTaskKey];
-        task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        NSString *taskLocalID = pushInfo[kLocalTaskKey];
+        NSParameterAssert(taskID || taskLocalID);
+        if (taskID) {
+            task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        }else if (taskLocalID){
+            isLaunchedFromLocalNotification = YES;
+            task = [[EWTaskStore sharedInstance] getTaskByLocalID:taskLocalID];
+        }
     }else{
         task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
     }
@@ -217,6 +228,13 @@
     
     if (task.state == NO) {
         NSLog(@"Task is OFF, skip today's alarm");
+        return;
+    }
+    
+    if (task.completed || task.time.timeElapsed > kMaxWakeTime) {
+        task.completed = [task.time timeByAddingSeconds:kMaxWakeTime];
+        [EWDataStore save];
+        NSLog(@"Task has completed at %@, skip.", task.completed.date2String);
         return;
     }
     
@@ -261,51 +279,25 @@
     //cancel local alarm
     [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
     
-    //fire an alarm
-    [[EWTaskStore sharedInstance] fireAlarmForTask:task];
-    
-    //play sounds after 30s - time for alarm
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        //present wakeupVC and paly when displayed
+    if (isLaunchedFromLocalNotification) {
+        
+        NSLog(@"Entered from local notification, start wakeup view now");
         [EWWakeUpManager presentWakeUpViewWithTask:task];
-    });
-    
-    //post notification
-    //[[NSNotificationCenter defaultCenter] postNotificationName:kNewTimerNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
-    
-    //TODO: download
-    //[[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:NULL];
-    
-}
-
-
-#pragma mark - Handle notification info on app launch
-+ (void)handleAppLaunchNotification:(id)notification{
-    if([notification isKindOfClass:[UILocalNotification class]]){
-        //========= local notif ===========
-        UILocalNotification *localNotif = (UILocalNotification *)notification;
-        NSString *localID = [localNotif.userInfo objectForKey:kLocalTaskKey];
-        
-        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByLocalID:localID];
-        NSLog(@"Entered app with local notification with task on %@", [task.time weekday]);
-        
-        if (task.completed) {
-            NSLog(@"Task has already completed, ignore the local notification entry");
-            return;
-        }
-        
-        [EWWakeUpManager presentWakeUpViewWithTask:task];
-        
-        
-    }else if ([notification isKindOfClass:[NSDictionary class]]){
-        
-        //========== push notif ============
-        
-        [EWServer handlePushNotification:notification];
         
     }else{
-        NSLog(@"Unexpected userInfo from app launch: %@", notification);
+        //fire an alarm
+        [[EWTaskStore sharedInstance] fireAlarmForTask:task];
+        
+        //play sounds after 30s - time for alarm
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            //present wakeupVC and paly when displayed
+            [EWWakeUpManager presentWakeUpViewWithTask:task];
+        });
     }
+    
+    
+    
+    
 }
 
 #pragma mark - Utility

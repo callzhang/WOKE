@@ -115,6 +115,20 @@
     return tasks;
 }
 
+#pragma mark - Next task
+- (NSDate *)nextWakeUpTimeForPerson:(EWPerson *)person{
+    EWTaskItem *t = [self nextValidTaskForPerson:person];
+    NSDate *time;
+    if (t) {
+        time = t.time;
+    }else{
+        NSLog(@"Didn't get next task for %@, use catched info", person.name);
+        time = person.cachedInfo[kNextTaskTime];
+    }
+    
+    return time;
+}
+
 //next valid task
 - (EWTaskItem *)nextValidTaskForPerson:(EWPerson *)person{
     return [self nextNth:0 validTaskForPerson:person];
@@ -556,7 +570,8 @@
             localNotif.applicationIconBadgeNumber = i+1;
             
             //======= user information passed to app delegate =======
-            localNotif.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString};
+            localNotif.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
+                                    kLocalNotificationTypeKey: kLocalNotificationTypeAlarmTimer};
             //=======================================================
             
             if (i == nWeeksToScheduleTask - 1) {

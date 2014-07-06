@@ -104,10 +104,10 @@ UIViewController *rootViewController;
         //Let server class to handle notif info
         if (localNotif) {
             NSLog(@"Launched with local notification: %@", localNotif);
-            [EWWakeUpManager handleAppLaunchNotification:localNotif];
+            [EWServer handleLocalNotification:localNotif];
         }else if (remoteNotif){
             NSLog(@"Launched with push notification: %@", remoteNotif);
-            [EWWakeUpManager handleAppLaunchNotification:remoteNotif];
+            [EWServer handlePushNotification:remoteNotif];
         }
     }
 
@@ -324,53 +324,8 @@ UIViewController *rootViewController;
 
 //entrance of Local Notification
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-    NSLog(@"Received local notification: %@", notification);
-    if ([application applicationState] == UIApplicationStateActive) {
-        UIAlertView *alert = [[UIAlertView alloc]
-                              initWithTitle:@"Woke Alarm"
-                              message:@"It's time to get up!"
-                              delegate:self
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil];
-        
-        [[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
-        [alert show];
-    } else {
-        //could be a state that user select a local notif in notification center while app is running
-        
-        NSLog(@"Entered by local notification");
-        /*
-        if (self.musicList.count > 0) {
-            [self playDownloadedMusic:[self.musicList objectAtIndex:self.musicList.count-1]];
-        }*/
-        NSString *localID = notification.userInfo[kLocalTaskKey];
-        if (localID) {
-            //alarm time up event, time to wake up
-            EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByLocalID:localID];
-            NSDate *wakeTimeMax = [task.time timeByAddingSeconds:kMaxWakeTime];
-            if ([[NSDate date] isEarlierThan:wakeTimeMax]) {
-                //struggle
-                [EWWakeUpManager presentWakeUpViewWithTask:task];
-            }else{
-                EWAlert(@"You didn't wake up in time. Try harder next time!");
-            }
-            
-        } else {
-            //something else
-            NSLog(@"Received unknown local notification: %@", notification);
-        }
-    }
+    [EWServer handleLocalNotification:notification];
 }
-
-/*
-//normal handler for remote notification
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
-    if ([application applicationState] == UIApplicationStateActive) {
-        NSLog(@"%s: Push received when app is running: %@", __func__, userInfo);
-    }else{
-        NSLog(@"%s: Push received when app is in %d : %@", __func__, application.applicationState, userInfo);
-    }
-}*/
 
 //Receive remote notification in background or in foreground
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{

@@ -89,7 +89,7 @@
     if ([notification.type isEqualToString:kNotificationTypeNextTaskHasMedia]) {
         
         [[[UIAlertView alloc] initWithTitle:@"New Voice"
-                                    message:@"You got a new voice for your next morning!"
+                                    message:@"You've got a new voice for your next morning!"
                                    delegate:[EWNotificationManager sharedInstance]
                           cancelButtonTitle:@"OK"
                           otherButtonTitles: nil] show];

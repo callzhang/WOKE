@@ -120,6 +120,8 @@
 #define kPushPersonKey                  @"person"
 #define kPushTaskKey                    @"task"
 #define kLocalTaskKey                   @"task_object_id"
+#define kLocalNotificationTypeKey       @"type"
+#define kLocalNotificationTypeAlarmTimer    @"alarm_timer"
 #define kPushMediaKey                   @"media"
 #define kPushTypeBuzzKey                @"buzz"
 #define kPushTypeMediaKey               @"media"

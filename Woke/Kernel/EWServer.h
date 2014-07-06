@@ -8,17 +8,15 @@
 
 #import <Foundation/Foundation.h>
 #import "EWPerson.h"
-//#import <AWSRuntime/AWSRuntime.h>
-//#import <AWSSNS/AWSSNS.h>
 
 
 @interface EWServer : NSObject
 
-+ (NSArray *)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint;
-+ (void)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock;
-
 #pragma mark - Handle Push Notification
 + (void)handlePushNotification:(NSDictionary *)push;
+
+#pragma mark - Handle Local Notification
++ (void)handleLocalNotification:(UILocalNotification *)localNotif;
 
 /**
  Send buzz

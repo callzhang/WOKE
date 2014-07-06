@@ -44,43 +44,6 @@
 }
 
 
-#pragma mark - Main Server method
-+ (NSArray *)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint{
-    NSLog(@"%s", __func__);
-    
-    PFQuery *geoQuery = [PFQuery queryWithClassName:@"EWPerson"];
-    [geoQuery whereKey:@"lastLocation" nearGeoPoint:geoPoint withinKilometers:100];
-    NSArray *parsePeople = [geoQuery findObjects];
-    NSMutableArray *people = [NSMutableArray new];
-    
-    for (PFObject *object in parsePeople) {
-        NSManagedObject *person = [object managedObject];
-        [people addObject:person];
-    }
-    
-    return people;
-}
-
-
-//Get person with task time and with location in async mode and a completion block
-+ (void)getPersonAlarmAtTime:(NSDate *)time location:(PFGeoPoint *)geoPoint completion: (void (^)(NSArray *results))successBlock{
-    __block NSArray *result;
-    dispatch_async([EWDataStore sharedInstance].coredata_queue, ^{
-        //get people from server
-        //result = [EWServer getPersonAlarmAtTime:time location:geoPoint];
-        result = [[EWPersonStore sharedInstance] everyone];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSMutableArray *mainResult = [NSMutableArray new];
-            for (EWPerson *p in result) {
-                EWPerson *p_ = [EWDataStore objectForCurrentContext:p];
-                [mainResult addObject:p_];
-            }
-            
-            //call back
-            successBlock(mainResult);
-        });
-    });
-}
 
 #pragma mark - Handle Push Notification
 + (void)handlePushNotification:(NSDictionary *)pushInfo{
@@ -95,6 +58,20 @@
     }
 }
 
+#pragma mark - Handle Local Notification
++ (void)handleLocalNotification:(UILocalNotification *)notification{
+    NSString *type = notification.userInfo[kLocalNotificationTypeKey]?:kLocalNotificationTypeAlarmTimer;
+    NSLog(@"Received local notification: %@", type);
+    
+    if ([type isEqualToString:kLocalNotificationTypeAlarmTimer]) {
+        [EWWakeUpManager handleAlarmTimerEvent:notification.userInfo];
+    }else{
+        [NSException raise:@"Unexpected Local Notification Type" format:@"Detail: %@", notification];
+    }
+
+
+}
+
 #pragma mark - Push buzz
 
 + (void)buzz:(NSArray *)users{
@@ -107,11 +84,11 @@
     
     
     for (EWPerson *person in users) {
-        //get next task
-        EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
+        //get next wake up time
+        NSDate *time = [[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:person];
         //create buzz
         EWMediaItem *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
-        //add waker
+        //add receiver: single direction
         [buzz addReceiversObject:person];
         //add sound
         NSString *sound = me.preference[@"buzzSound"]?:@"default";
@@ -121,20 +98,18 @@
             NSParameterAssert(buzz.objectId);
             
             //push payload
-            NSDictionary *pushMessage;
+            NSMutableDictionary *pushMessage = [@{@"content-available": @1,
+                                          @"badge": @"Increment",
+                                          kPushMediaKey: buzz.objectId,
+                                          kPushTypeKey: kPushTypeBuzzKey} mutableCopy];
             
             
-            if ([[NSDate date] isEarlierThan:task.time]) {
+            if ([[NSDate date] isEarlierThan:time]) {
                 //before wake up
                 //silent push
-                pushMessage = @{@"alert": @"Someone has sent you an buzz",
-                                @"content-available": @1,
-                                @"badge": @"Increment",
-                                kPushMediaKey: buzz.objectId,
-                                kPushTypeKey: kPushTypeBuzzKey};
                 
                 
-            }else if (!task.completed || [[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
+            }else if (time.timeElapsed < kMaxWakeTime){
                 //struggle state
                 //send push notification, The payload can consist of the alert, badge, and sound keys.
                 
@@ -142,49 +117,27 @@
                 NSDictionary *sounds = buzzSounds;
                 NSString *buzzSound = sounds[buzzType];
                 
-                pushMessage = @{@"alert": @"Someone has sent you an buzz",
-                                @"content-available": @1,
-                                @"badge": @"Increment",
-                                @"sound": buzzSound,
-                                kPushMediaKey: buzz.objectId,
-                                kPushTypeKey: kPushTypeBuzzKey};
+                pushMessage[@"alert"] = @"Someone has sent you an buzz";
+                pushMessage[@"sound"] = buzzSound;
                 
             }else{
                 
                 //tomorrow's task
                 //silent push
-                pushMessage = @{@"alert": @"Someone has sent you an buzz",
-                                @"content-available": @1,
-                                @"badge": @"Increment",
-                                kPushMediaKey: buzz.objectId,
-                                kPushTypeKey: kPushTypeBuzzKey};
             }
             
             //send
             [EWServer parsePush:pushMessage toUsers:@[person] completion:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
-                    NSLog(@"Buzz sent to %@", person.name);
+                    [rootViewController.view showSuccessNotification:@"Sent"];
                 }else{
-                    NSLog(@"Failed to send push: %@", error.description);
+                    NSLog(@"Send push message about media %@ failed. Reason:%@", buzz.objectId, error.description);
+                    [rootViewController.view showFailureNotification:@"Failed"];
                 }
             }];
         }];
         
-        
-        
-        
-        //send
-//        [EWServer AWSPush:pushMessage toUsers:@[person] onSuccess:^(SNSPublishResponse *response) {
-//            NSLog(@"Buzz sent via AWS: %@", response.messageId);
-//            [rootViewController.view showSuccessNotification:@"Sent"];
-//        } onFailure:^(NSException *exception) {
-//            NSLog(@"Failed to send Buzz: %@", exception.description);
-//            [rootViewController.view showFailureNotification:@"Failed"];
-//        }];
     }
-    
-    //save media and update to server
-    [EWDataStore save];
     
 }
 
@@ -192,39 +145,27 @@
 + (void)pushMedia:(EWMediaItem *)media ForUser:(EWPerson *)person{
     
     NSString *mediaId = media.objectId;
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person];
+    NSDate *time = [[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:person];
     
-    NSDictionary *pushMessage;
+    NSMutableDictionary *pushMessage = [@{@"badge": @"Increment",
+                                 @"alert": @"Someone has sent you an voice greeting",
+                                 @"content-available": @1,
+                                 kPushTypeKey: kPushTypeMediaKey,
+                                 kPushPersonKey: me.objectId,
+                                 kPushMediaKey: mediaId} mutableCopy];
     
     //form push payload
-    if ([[NSDate date] isEarlierThan:task.time]) {
+    if ([[NSDate date] isEarlierThan:time]) {
         //early, silent message
-        pushMessage = @{@"badge": @"Increment",
-                        @"alert": @"Someone has sent you an voice greeting",
-                        @"content-available": @1,
-                        kPushTypeKey: kPushTypeMediaKey,
-                        kPushPersonKey: me.username,
-                        kPushMediaKey: mediaId};
 
-    }else if([[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
+    }else if(time.timeElapsed < kMaxWakeTime){
         //struggle state
-        pushMessage = @{@"badge": @"Increment",
-                        @"sound": @"media.caf",
-                        @"alert": @"Someone has sent you an voice greeting",
-                        @"content-available": @1,
-                        kPushTypeKey: kPushTypeMediaKey,
-                        kPushPersonKey: me.username,
-                        kPushMediaKey: mediaId};
+        pushMessage[@"sound"] = @"media.caf";
+        pushMessage[@"alert"] = @"Someone has sent you an voice greeting";
         
     }else{
         //send silent push for next task
         
-        pushMessage = @{@"badge": @"Increment",
-                        @"alert": @"Someone has sent you an voice greeting",
-                        @"content-available": @1,
-                        kPushTypeKey: kPushTypeMediaKey,
-                        kPushPersonKey: me.username,
-                        kPushMediaKey: mediaId};
     }
     
     //push
@@ -241,35 +182,6 @@
     [EWDataStore save];
     
 }
-
-
-
-//#pragma mark - Alert Delegate
-///**
-// action when user received push alert in active state
-// 1. buzz: play the buzz (shouldn't be here)
-// 2. media:
-//    a. before woke: play voice
-//    b. after woke or before timer: do nothing
-// */
-//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-//    
-//    NSString *type = alertView.userInfo[@"type"];
-//    
-//    if ([type isEqualToString:kPushTypeBuzzKey]) {
-//        NSLog(@"Clicked OK on buzz");
-//        
-//    }else if ([type isEqualToString:kPushTypeMediaKey]) {
-//        //got taskInAction
-//        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:alertView.userInfo[kPushTaskKey]];
-//        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-//        controller.task = task;
-//        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-//        EWAppDelegate * appDelegate = (EWAppDelegate *)[UIApplication sharedApplication].delegate;
-//        [appDelegate.window.rootViewController presentViewController:navigationController animated:YES completion:NULL];
-//    }
-//
-//}
 
 
 
@@ -330,9 +242,6 @@
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
     [currentInstallation saveInBackground];
-    
-    
-    
 }
 
 @end

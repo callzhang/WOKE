@@ -45,6 +45,12 @@
  */
 - (EWTaskItem *)nextValidTaskForPerson:(EWPerson *)person;
 - (EWTaskItem *)nextNth:(NSInteger)n validTaskForPerson:(EWPerson *)person;
+
+/**
+ Next Wake Up Time For Person
+ */
+- (NSDate *)nextWakeUpTimeForPerson:(EWPerson *)person;
+
 /**
  Main method for getting task:
  First decide if a fetch is needed. A fetch is needed if

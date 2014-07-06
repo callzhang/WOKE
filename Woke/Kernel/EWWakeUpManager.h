@@ -46,16 +46,6 @@
 + (void)handleAlarmTimerEvent:(NSDictionary *)pushInfo;
 
 /**
- Handle the information passed in when app is launched
- 1. Local notification: UILocalNotification
- 2. Remote Notification: NSDictionary
- a. buzz: TBD
- 
- b. media: TBD
- */
-+ (void)handleAppLaunchNotification:(id)notification;
-
-/**
  Detect if root view is presenting EWWakeUpViewController
  */
 + (BOOL)isRootPresentingWakeUpView;

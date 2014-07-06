@@ -127,9 +127,9 @@
 
 
 - (NSArray *)checkMediaAssets{
-    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem" predicate:[NSPredicate predicateWithFormat:@"receiver = %@", [PFUser currentUser]]];
+    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem" predicate:[NSPredicate predicateWithFormat:@"ANY receivers = %@", [PFUser currentUser]]];
     NSMutableArray *mediaPOs = [[query findObjects] mutableCopy];
-    [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT objectId IN %@", [me.mediaAssets valueForKey:kParseObjectID]]];
+    [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [me.mediaAssets valueForKey:kParseObjectID]]];
     for (PFObject *po in mediaPOs) {
         EWMediaItem *mo = (EWMediaItem *)po.managedObject;
         
