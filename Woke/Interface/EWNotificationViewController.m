@@ -12,7 +12,7 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 #import "EWUIUtil.h"
-//#import "EWNotificationTableCellTableViewCell.h"
+
 #import "EWNotificationCell.h"
 
 #define kNotificationCellIdentifier     @"NotificationCellIdentifier"
