@@ -93,7 +93,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     taskTableView.backgroundView = nil;
     UINib *taskNib = [UINib nibWithNibName:@"EWTaskHistoryCell" bundle:nil];
     [taskTableView registerNib:taskNib forCellReuseIdentifier:taskCellIdentifier];
-    [EWUIUtil applyAlphaGradientForView:taskTableView withEndPoints:@[@0.13]];
+    [EWUIUtil applyAlphaGradientForView:taskTableView withEndPoints:@[@0.10]];
     taskTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     //tab view
     //tabView.layer.backgroundColor = [[UIColor colorWithWhite:1.0f alpha:0.5f] CGColor];
@@ -431,6 +431,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 }
                 else
                 {
+                    cell.textLabel.numberOfLines = 0;
                     cell.textLabel.text = [NSString stringWithFormat:@"Failed to wake up at %@. Messaged by %ld people",[task.time date2String], (unsigned long)[task.medias count]];
 
                 }
@@ -454,7 +455,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                     }
                 }
                 
-                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %d people",myTasks.count];
+                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %lu people",(unsigned long)myTasks.count];
 
                 break;
             }
@@ -548,7 +549,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         }
         
     }
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     //选择动画
 //    [UIView  beginAnimations:nil context:NULL];
 //    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];

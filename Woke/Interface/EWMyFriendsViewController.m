@@ -121,10 +121,13 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     
     return cell;
 }
-
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+//    [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
+}
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 55;
+    return 80;
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -157,7 +160,19 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     EWPerson * friend = [friends objectAtIndex:indexPath.row];
     
     cell.person = friend;
+    if (friend.isMe) {
+        cell.initial.hidden = NO;
+        cell.initial.text = @"YOU";
+    }else if(cell.showName){
+       
+            cell.name.alpha = 1;
+            CGRect frame = cell.name.frame;
+            frame.origin.y += 20;
+            cell.name.frame = frame;
+       
+    }
 //    cell.backgroundColor = [UIColor redColor];
+   
     return cell;
 }
 

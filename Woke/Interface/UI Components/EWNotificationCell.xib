@@ -17,21 +17,30 @@
                         <rect key="frame" x="8" y="8" width="45" height="45"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </imageView>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Is it possible to auto-resize the box/bounds og UILabel to fit the contained text?" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="250" translatesAutoresizingMaskIntoConstraints="NO" id="IQA-XM-wdY">
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Is it possible to auto-resize the box/bounds og UILabel to fit the contained text?" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="250" translatesAutoresizingMaskIntoConstraints="NO" id="IQA-XM-wdY">
                         <rect key="frame" x="61" y="8" width="250" height="35"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="18 minutes ago" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PK1-eG-W0r">
-                        <rect key="frame" x="61" y="39" width="181" height="29"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="18 minutes ago" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PK1-eG-W0r">
+                        <rect key="frame" x="61" y="47" width="181" height="15"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
+                <constraints>
+                    <constraint firstItem="PK1-eG-W0r" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="61" id="Ifx-eU-zN6"/>
+                    <constraint firstItem="PK1-eG-W0r" firstAttribute="top" secondItem="IQA-XM-wdY" secondAttribute="bottom" constant="4" id="O19-Xf-ltx"/>
+                    <constraint firstItem="IQA-XM-wdY" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="61" id="PFr-po-A9O"/>
+                    <constraint firstAttribute="trailing" secondItem="PK1-eG-W0r" secondAttribute="trailing" constant="78" id="YfP-rn-xKt"/>
+                    <constraint firstAttribute="bottom" secondItem="IQA-XM-wdY" secondAttribute="bottom" constant="19" id="fkm-XV-jTG"/>
+                    <constraint firstItem="IQA-XM-wdY" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="jXt-b9-0yz"/>
+                    <constraint firstAttribute="trailing" secondItem="IQA-XM-wdY" secondAttribute="trailing" constant="9" id="uiE-B0-g4p"/>
+                </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" red="0.48559622819999998" green="0.5963714255" blue="0.78003427930000002" alpha="1" colorSpace="calibratedRGB"/>
             <connections>
