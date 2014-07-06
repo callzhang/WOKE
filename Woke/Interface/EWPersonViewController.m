@@ -189,11 +189,13 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }
     
     //statement
-    EWTaskItem *t = tasks.firstObject;
-    if (person.statement) {
-        self.statement.text = person.statement;
-    }else if (t.statement){
+    EWTaskItem *t = [[EWTaskStore sharedInstance] nextNth:0 validTaskForPerson:me];
+    if (t.statement) {
         self.statement.text = t.statement;
+    }else if (t.alarm.statement){
+        self.statement.text = t.alarm.statement;
+    }else if (person.statement){
+        self.statement.text = person.statement;
     }else{
         self.statement.text = @"No statement written by this owner";
     }

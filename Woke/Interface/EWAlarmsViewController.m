@@ -663,6 +663,9 @@
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
     
+    //shallow update
+    //[person shallowRefreshInBackground];
+    
     cell.person = person;
     
     return cell;

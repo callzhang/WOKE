@@ -193,6 +193,11 @@ typedef void (^EWSavingCallback)(void);
 - (void)refreshRelatedInBackground;
 
 /**
+ Update object only within it's related PO, not it's relation
+ */
+- (void)shallowRefreshInBackground;
+
+/**
  Assign only attribute values (not relation) to the ManagedObject from the Parse Object
  */
 - (void)assignValueFromParseObject:(PFObject *)object;

@@ -694,31 +694,6 @@
     }
 }
 
-//- (void)addToQueueUpOnSaving:(NSNotification *)notification{
-//    NSParameterAssert([NSThread isMainThread]);
-//    NSSet *inserts = notification.userInfo[NSInsertedObjectsKey];
-//    NSSet *updates = notification.userInfo[NSUpdatedObjectsKey];
-//    NSSet *deletes = notification.userInfo[NSDeletedObjectsKey];
-//    if (inserts.count || updates.count || deletes.count) {
-//        for (NSManagedObject *MO in inserts) {
-//            NSLog(@"+++> MO %@ inserted to context", MO.entity.name);
-//            [self appendInsertQueue:MO];
-//        }
-//        for (NSManagedObject *MO in updates) {
-//            NSLog(@"===> MO %@ updated to context", MO.entity.name);
-//            [self appendUpdateQueue:MO];
-//        }
-//        for (NSManagedObject *MO in deletes) {
-//            NSLog(@"---> MO %@ deleted to context", MO.entity.name);
-//            PFObject *PO = [MO parseObject];
-//            if (PO) {
-//                [self appendDeleteQueue:PO];
-//            }
-//        }
-//        [EWDataStore save];
-//    }
-//}
-
 
 @end
 
@@ -865,24 +840,14 @@
     
     if (parseObjectId) {
         PFObject *object;
-        //download
-        NSDate *updatedAt = (NSDate *)[self valueForKey:kUpdatedDateKey];
+        
         //try to get the object locally first if not outdated
-        if (![updatedAt isOutDated]) {
-            object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
-            [object fetchIfNeeded];
-        }else{
-            //if local mo is outdated, query from server
-            PFQuery *query = [PFQuery queryWithClassName:self.entity.serverClassName];
-            if ([self isKindOfClass:[EWPerson class]]) {
-                NSLog(@"Fetching User %@ with keys", [self valueForKey:@"name"]);
-                [query includeKey:@"friends"];
-                [query includeKey:@"mediaAssets"];
-                [query includeKey:@"tasks"];
-                [query includeKey:@"alarms"];
-            }
-            object = [query getObjectWithId:parseObjectId error:err];
-        }
+        object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
+        [object fetchIfNeeded];
+        
+        //update value
+        [self assignValueFromParseObject:object];
+        
         return object;
     }else{
         NSLog(@"!!! ParseObjectID not exist, upload first!");
@@ -1012,6 +977,27 @@
             }];
         }
     }];
+}
+
+- (void)shallowRefreshInBackground{
+    NSDate *updatedAt = [self valueForKey:kUpdatedDateKey];
+    if (updatedAt && !updatedAt.isOutDated) {
+        return;
+    }
+    
+    NSManagedObjectID *ID = self.objectID;
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        NSError *err;
+        NSManagedObject *backMO = [localContext existingObjectWithID:ID error:&err];
+        if (err) {
+            NSLog(@"Failed to get back MO: %@", err.description);
+            return ;
+        }
+        PFObject *object = backMO.parseObject;
+        NSLog(@"Shallow refreshed MO %@(%@) in backgound", object.parseClassName, object.objectId);
+    }];
+    
+    
 }
 
 
