@@ -131,72 +131,39 @@ UIViewController *rootViewController;
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]){
         result = [[UIDevice currentDevice] isMultitaskingSupported];
     }if (!result) {
-        return;
+        EWAlert(@"Your device doesn't support background task. Alarm will not fire. Please change your settings.");
     }
 
-#ifdef BACKGROUND_TEST
-    
-    //开启一个后台任务
-    [self backgroundTaskKeepAlive];
-    
     // keep active
-//    if ([myTimer isValid]) [myTimer invalidate];
-//    myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerCheckInterval target:self selector:@selector(keepAlive:) userInfo:nil repeats:YES];
-
-    
-#endif
+    if ([myTimer isValid]) [myTimer invalidate];
+    myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerCheckInterval target:self selector:@selector(backgroundTaskKeepAlive:) userInfo:nil repeats:YES];
     
     application.applicationIconBadgeNumber = 0;
 }
 
 
-- (void)backgroundTaskKeepAlive{
+- (void)backgroundTaskKeepAlive:(NSTimer *)timer{
     UIApplication *application = [UIApplication sharedApplication];
+    if (timer) {
+        NSLog(@"Timer: %@", timer);
+    }
     
     //start silent sound
     [[AVManager sharedManager] playSilentSound];
     
-    //结束旧的后台任务
+    //end old background task
     [application endBackgroundTask:backgroundTaskIdentifier];
     
-    //开启一个新的后台
+    //begin a new background task
     count++;
     backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        [self backgroundTaskKeepAlive];
+        [self backgroundTaskKeepAlive:nil];
         NSLog(@"The backgound task is renewed at (%ld)" , count);
         
     }];
-}
-
-
-//Depreciated: this method has been replaced by alarmTimerCheck method in wakeUpManager
-- (void) keepAlive:(NSTimer *)paramSender{
-    NSLog(@"===========================>> Keep Alive <<=============================");
-    //check time left
-    NSInteger tLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
-    NSLog(@"%s Time left (after) %@ (%ld)", __func__, tLeft>1000?@"999s":[NSString stringWithFormat:@"%ld",(long)tLeft] , count++);
     
-    
-#ifdef BACKGROUND_TEST
-    [UIApplication sharedApplication].applicationIconBadgeNumber = count;
-#endif
-    
-    
-    //check time
-    if (!me) return;
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
-    if (task.state == NO) return;
-    
-    //alarm time up
-    NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
-    
-    if (timeLeft < kAlarmTimerCheckInterval && timeLeft > 0) {
-        NSLog(@"alarmTimerCheck: About to init alart timer in %fs",timeLeft);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [EWWakeUpManager handleAlarmTimerEvent:nil];
-        });
-    }
-    
+    //alarm timer check
+    [EWWakeUpManager alarmTimerCheck];
 }
 
 #pragma mark - APP LIFE CYCLE

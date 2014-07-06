@@ -371,6 +371,7 @@
 #pragma mark - CHECK ALARM TIMER
 + (void) alarmTimerCheck{
     NSLog(@"===========================>> Check Alarm Timer <<=============================");
+
     
     //check time
     if (!me) return;
