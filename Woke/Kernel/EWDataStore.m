@@ -29,7 +29,7 @@
 #define kServerTransformClasses             @{@"EWPerson": @"_User"} //localClass: serverClass
 #define kUserClass                          @"EWPerson"
 #define classSkipped                        @[@"EWPerson"]
-#define attributeUploadSkipped              @[kParseObjectID, kUpdatedDateKey, kCreatedDateKey, @"score"]
+#define attributeUploadSkipped              @[kParseObjectID, kUpdatedDateKey, @"score"]
 
 @interface EWDataStore()
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
@@ -63,11 +63,11 @@
         dispatch_queue = dispatch_queue_create("com.wokealarm.datastore.dispatchQueue", DISPATCH_QUEUE_SERIAL);
         coredata_queue = dispatch_queue_create("com.wokealarm.datastore.coreDataQueue", DISPATCH_QUEUE_SERIAL);
         
-        //AWS
-        //snsClient = [[AmazonSNSClient alloc] initWithAccessKey:AWS_ACCESS_KEY_ID withSecretKey:AWS_SECRET_KEY];
-        //snsClient.endpoint = [AmazonEndpoints snsEndpoint:US_WEST_2];
-        
-        
+        //server: enable alert when offline
+        [Parse offlineMessagesEnabled:YES];
+#ifdef DEV_TEST
+        [Parse errorMessagesEnabled:YES];
+#endif
         
         //core data
         //[MagicalRecord setLoggingMask:MagicalRecordLoggingMaskError];
@@ -76,7 +76,7 @@
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:context];
         //Observe context save to update the update/insert/delete queue
-        //This turns out to be not possible because there are actions that need to save to local be not update to server
+        //This turns out to be not possible because there are actions that need to save to local but not update to server
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addToQueueUpOnSaving:) name:NSManagedObjectContextDidSaveNotification object:context];
         
         //facebook
@@ -277,11 +277,18 @@
             if ([inserts containsObject:MO] && MO.serverID) {
                 continue;
             }
+            
+            //check if class is skipped
+            if ([classSkipped containsObject:MO.entity.name] && MO.serverID != me.serverID) {
+                NSLog(@"Class %@ skipped uploading to server", MO.entity.name);
+                continue;
+            }
             //check if updated keys are valid
             NSMutableArray *changedKeys = MO.changedValues.allKeys.mutableCopy;
             [changedKeys removeObjectsInArray:attributeUploadSkipped];
+            
             if (changedKeys.count > 0) {
-                NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
+                NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], MO.changedValues);
                 [EWDataStore appendUpdateQueue:MO];
             }
             
@@ -522,6 +529,10 @@
     //start background update
     dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
         
+        //reset object first
+        NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
+        [context reset];
+        
         for (NSManagedObjectID *ID in workingObjectIDs) {
             [EWDataStore updateParseObjectFromManagedObjectID:ID];
         }
@@ -545,8 +556,16 @@
     NSError *error;
     NSManagedObject *mo = [[NSManagedObjectContext contextForCurrentThread] existingObjectWithID:managedObjectID error:&error];
     if (!mo) {
-        NSLog(@"Object not found for ID %@", managedObjectID);
+        NSLog(@"Failed to get MO from ID: %@, reason: %@", managedObjectID, error.description);
         return;
+    }
+    
+    //validate MO
+    NSString *type = mo.entity.name;
+    if ([type isEqualToString:@"EWTaskItem"]) {
+        
+    } else if([type isEqualToString:@"EWMediaItem"]){
+        
     }
     
     //skip if updating other PFUser
@@ -558,6 +577,9 @@
             return;
         }
     }
+    
+    //make sure the value is the latest from store
+    [mo.managedObjectContext refreshObject:mo mergeChanges:NO];
     
     NSString *parseObjectId = [mo valueForKey:kParseObjectID];
     PFObject *object;
@@ -832,7 +854,12 @@
 }
 
 - (PFObject *)parseObject{
-    return [self getParseObjectWithError:nil];
+    PFObject *object = [self getParseObjectWithError:nil];
+    
+    //update value
+    [self assignValueFromParseObject:object];
+    
+    return object;
 }
 
 - (PFObject *)getParseObjectWithError:(NSError **)err{
@@ -845,8 +872,6 @@
         object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
         [object fetchIfNeeded];
         
-        //update value
-        [self assignValueFromParseObject:object];
         
         return object;
     }else{
@@ -1010,10 +1035,10 @@
     }
     //attributes
     NSDictionary *managedObjectAttributes = self.entity.attributesByName;
-    NSArray *allKeys = object.allKeys;
+    //NSArray *allKeys = object.allKeys;
     //add or delete some attributes here
     [managedObjectAttributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
-        if (![allKeys containsObject:key]) {
+        if ([attributeUploadSkipped containsObject:key]) {
             //NSLog(@"Key %@ does not exist on PO %@", key, object.parseClassName);
             return;//skip if not exist
         }
@@ -1137,21 +1162,23 @@
     NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
     if (updateAt && [self.updatedAt timeIntervalSinceDate:updateAt] > 60) {
         NSLog(@"@@@ Trying to update MO %@, but PO is newer! Please check the code.(%@ -> %@)", mo.entity.name, updateAt, self.updatedAt);
-        NSParameterAssert(YES);
         return;
     }
 
-    
-    NSDictionary *attributeDescriptions = [mo.entity.attributesByName mutableCopy];
-    NSArray *changeValues = [[[EWDataStore sharedInstance].changesDictionary objectForKey:mo.objectID.URIRepresentation.absoluteString] allKeys];
-    if (!changeValues) {
-        changeValues = attributeDescriptions.allKeys;
-    }
-    [attributeDescriptions enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
+//    NSArray *changeValues = [[[EWDataStore sharedInstance].changesDictionary objectForKey:mo.objectID.URIRepresentation.absoluteString] allKeys];
+//    if (!changeValues) {
+//        changeValues = attributeDescriptions.allKeys;
+//    }
+    [mo.entity.attributesByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
 //        if (![changeValues containsObject:key]){
 //            NSLog(@"!!! MO attribute %@(%@)->%@ omitted", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name);
 //            return;
 //        }
+        
+        //check if changed
+        if ([attributeUploadSkipped containsObject:key]) {
+            return;
+        }
         
         id value = [mo valueForKey:key];
         
@@ -1170,12 +1197,7 @@
             //location
             PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
             [self setObject:point forKey:key];
-        }else if(value){
-            //check if changed
-            NSArray *attributes = attributeUploadSkipped;
-            if ([attributes containsObject:obj.name]) {
-                return;
-            }
+        }else if(value != nil){
             
             if (![value isEqual:self[key]] && (value || [self valueForKey:key])) {
                 NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign  to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, [self valueForKey:key], value);

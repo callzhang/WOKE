@@ -147,9 +147,10 @@ UIViewController *rootViewController;
     UIApplication *application = [UIApplication sharedApplication];
     if (timer) {
         NSDate *start = myTimer.userInfo[@"start_date"];
-        NSInteger count = myTimer.userInfo[@"count"];
-        NSLog(@"Backgrounding started at %@ is checking the %d times", start.date2detailDateString, count);
-        myTimer.userInfo[@"count"] = count + 1;
+        count = [(NSNumber *)myTimer.userInfo[@"count"] integerValue];
+        NSLog(@"Backgrounding started at %@ is checking the %ld times", start.date2detailDateString, count);
+        count++;
+        myTimer.userInfo[@"count"] = [NSNumber numberWithInteger:count];
     }
     
     //start silent sound
@@ -159,7 +160,6 @@ UIViewController *rootViewController;
     [application endBackgroundTask:backgroundTaskIdentifier];
     
     //begin a new background task
-    count++;
     backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
         [self backgroundTaskKeepAlive:nil];
         NSLog(@"The backgound task is renewed at (%ld)" , count);

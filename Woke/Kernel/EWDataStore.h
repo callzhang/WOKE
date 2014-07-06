@@ -161,9 +161,12 @@ typedef void (^EWSavingCallback)(void);
 - (void)updateValueAndRelationFromParseObject:(PFObject *)object;
 
 /**
- Get conterparty Parse Object
+ Get conterparty Parse Object and assign value to self
  */
 - (PFObject *)parseObject;
+/**
+ Get PO only
+ */
 - (PFObject *)getParseObjectWithError:(NSError **)error;
 /**
  Create a parse object
