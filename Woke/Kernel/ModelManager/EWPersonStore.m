@@ -104,6 +104,7 @@ EWPerson *me;
         }else{
             PFQuery *query = [PFUser query];
             [query whereKey:kParseObjectID equalTo:ID];
+            [query includeKey:@"friends"];
             NSError *error;
             user = [query findObjects:&error].firstObject;
             if (error || !user) {
@@ -112,14 +113,19 @@ EWPerson *me;
             }
         }
         
+        
         if (user.isNew) {
             person = [self createPersonWithParseObject:user];
             NSLog(@"New user %@ data has CREATED", person.name);
         }else{
             person = (EWPerson *)[user managedObject];
             NSLog(@"Person created from PO");
+            //assign user
+            for (PFUser *friendPO in user[@"friends"]) {
+                EWPerson *friend = (EWPerson *)friendPO.managedObject;
+                [person addFriendsObject:friend];
+            }
         }
-        
         
     }else{
         NSLog(@"Me %@ data has FETCHED", person.name);
@@ -129,6 +135,7 @@ EWPerson *me;
     return person;
 }
 
+//Depreciated
 -(EWPerson *)getPersonByID:(NSString *)ID{
     //ID is username
     if(!ID) return nil;
@@ -165,6 +172,8 @@ EWPerson *me;
 
     return person;
 }
+
+
 
 - (NSArray *)everyone{
     if (everyone && [[NSDate date] timeIntervalSinceDate:timeEveryoneChecked] < everyoneCheckTimeOut && everyone.count != 0) {

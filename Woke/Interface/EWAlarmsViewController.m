@@ -670,6 +670,9 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     //if me
+#ifdef DEV_TEST
+    
+#else
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
     if (person.isMe) {
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
@@ -679,7 +682,7 @@
         [self presentViewControllerWithBlurBackground:navController completion:NULL];
         return;
     }
-    
+#endif
     
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];

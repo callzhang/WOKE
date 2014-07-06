@@ -69,7 +69,7 @@
 - (void)updateTaskState:(NSNotification *)notif;
 - (void)updateTaskTime:(NSNotification *)notif;
 - (void)updateNotifTone:(NSNotification *)notif;
-- (void)updateTaskMedia:(NSNotification *)notif;
+//- (void)updateTaskMedia:(NSNotification *)notif;
 - (void)alarmRemoved:(NSNotification *)notif;
 
 #pragma mark - delete 

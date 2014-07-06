@@ -20,6 +20,9 @@
 #import "EWNotificationManager.h"
 #import "EWPerson.h"
 #import "EWUserManagement.h"
+#import "EWServer.h"
+
+
 //UI
 #import "EWWakeUpViewController.h"
 
@@ -47,7 +50,7 @@
 + (void)handlePushNotification:(NSDictionary *)notification{
     NSString *type = notification[kPushTypeKey];
     NSString *mediaID = notification[kPushMediaKey];
-    NSString *personID = notification[kPushPersonKey];
+    //NSString *personID = notification[kPushPersonKey];
     
     if (!mediaID) {
         
@@ -58,16 +61,15 @@
     
     EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
-
-    if (!personID) {
-        personID = media.author.username;
-        
-    }
+//    EWPerson *person;
+//    if (!personID) {
+//        personID = media.author.username;
+//        person = media.author;
+//    }
     
     
     if ([type isEqualToString:kPushTypeBuzzKey]) {
-        // ============== Buzz ================
-        
+        // ============== Buzz ===============
         
         NSLog(@"Received buzz from %@", media.author.name);
         
@@ -81,7 +83,6 @@
         //alert
         [[[UIAlertView alloc] initWithTitle:@"Buzz 来啦" message:[NSString stringWithFormat:@"Got a buzz from %@. This message will not display in release.", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         
-        [[AVManager sharedManager] playSoundFromFile:buzzSound];
 #endif
         
         if (task.completed || [[NSDate date] timeIntervalSinceDate:task.time] > kMaxWakeTime) {
@@ -172,14 +173,14 @@
         }
         
 #ifdef DEV_TEST
-        [[[UIAlertView alloc] initWithTitle:@"Voice来啦" message:@"收到一条神秘的语音"  delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        [[[UIAlertView alloc] initWithTitle:@"Voice来啦" message:@"收到一条神秘的语音."  delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 #endif
         
         
     }else if([type isEqualToString:kPushTypeTimerKey]){
         // ============== Timer ================
         
-        [EWWakeUpManager handleAlarmTimerEvent];
+        [EWWakeUpManager handleAlarmTimerEvent:notification];
         
         
     }else if([type isEqualToString:@"test"]){
@@ -199,11 +200,16 @@
     }
 }
 
-+ (void)handleAlarmTimerEvent{
-    NSLog(@"Start handle timer event");
-    //next ABSOLUTE (not VALID) task
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
++ (void)handleAlarmTimerEvent:(NSDictionary *)pushInfo{
+    EWTaskItem *task;
+    if (pushInfo) {
+        NSString *taskID = pushInfo[kPushTaskKey];
+        task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+    }else{
+        task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
+    }
     
+    NSLog(@"Start handle timer event");
     if (!task) {
         NSLog(@"%s No task found for next task, abord", __func__);
         return;
@@ -285,6 +291,7 @@
         
         if (task.completed) {
             NSLog(@"Task has already completed, ignore the local notification entry");
+            return;
         }
         
         [EWWakeUpManager presentWakeUpViewWithTask:task];
@@ -294,36 +301,8 @@
         
         //========== push notif ============
         
-        NSDictionary *remoteNotif = (NSDictionary *)notification;
-        NSString *type = remoteNotif[@"type"];
+        [EWServer handlePushNotification:notification];
         
-        if ([type isEqualToString:kPushTypeTimerKey] || [type isEqualToString:kPushTypeMediaKey] || [type isEqualToString:kPushTypeBuzzKey]) {
-            //========== push notif ============
-            //task type
-            NSString *mediaID = remoteNotif[kPushMediaKey];
-            if (!mediaID) {
-                NSLog(@"Media ID not found, aboard");
-                return;
-            }
-            EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
-            EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
-            
-            if (!task.completed) {
-                [EWWakeUpManager presentWakeUpViewWithTask:task];
-            }else{
-                EWAlert(@"Someone has sent a voice greeting to you. You will hear it on your next wake up.");
-                [me addMediaAssetsObject:media];
-                
-            }
-            
-            
-        }else if([type isEqualToString:kPushNofiticationIDKey] || [type isEqualToString:kNotificationTypeFriendAccepted] || [type isEqualToString:kNotificationTypeFriendRequest]){
-            // ============== System notice ================
-            
-            NSString *notificationID = remoteNotif[kPushNofiticationIDKey];
-            [EWNotificationManager handleNotification:notificationID];
-            
-        }
     }else{
         NSLog(@"Unexpected userInfo from app launch: %@", notification);
     }
@@ -405,7 +384,7 @@
     if (timeLeft < kServerUpdateInterval && timeLeft > 0) {
         NSLog(@"alarmTimerCheck: About to init alart timer in %fs",timeLeft);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [EWWakeUpManager handleAlarmTimerEvent];
+            [EWWakeUpManager handleAlarmTimerEvent:nil];
         });
     }
     

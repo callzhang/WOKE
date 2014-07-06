@@ -43,7 +43,7 @@
     b. fire silent alarm
     c. present wakeupVC and start play in 30s
  */
-+ (void)handleAlarmTimerEvent;
++ (void)handleAlarmTimerEvent:(NSDictionary *)pushInfo;
 
 /**
  Handle the information passed in when app is launched

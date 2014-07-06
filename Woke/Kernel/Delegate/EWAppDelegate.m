@@ -88,6 +88,15 @@ UIViewController *rootViewController;
     self.window.rootViewController = controler;
     rootViewController = self.window.rootViewController;
     
+    //init coredata and backend server
+    [EWDataStore sharedInstance];
+    
+    //window
+    [self.window makeKeyAndVisible];
+    
+    //User login
+    [EWUserManagement login];
+    
     //local notification entry
     if (launchOptions) {
         UILocalNotification *localNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
@@ -101,17 +110,6 @@ UIViewController *rootViewController;
             [EWWakeUpManager handleAppLaunchNotification:remoteNotif];
         }
     }
-    
-    //init coredata and backend server
-    [EWDataStore sharedInstance];
-    
-    //window
-    [self.window makeKeyAndVisible];
-    
-    //User login
-    [EWUserManagement login];
-    
-    
 
     return YES;
 }
@@ -195,7 +193,7 @@ UIViewController *rootViewController;
     if (timeLeft < kAlarmTimerCheckInterval && timeLeft > 0) {
         NSLog(@"alarmTimerCheck: About to init alart timer in %fs",timeLeft);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [EWWakeUpManager handleAlarmTimerEvent];
+            [EWWakeUpManager handleAlarmTimerEvent:nil];
         });
     }
     

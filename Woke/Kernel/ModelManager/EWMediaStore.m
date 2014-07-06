@@ -72,7 +72,7 @@
 
 #pragma mark - SEARCH
 - (EWMediaItem *)getMediaByID:(NSString *)mediaID{
-    EWMediaItem *media = [EWMediaItem findFirstByAttribute:kParseObjectID withValue:mediaID];
+    EWMediaItem *media = [EWMediaItem MR_findFirstByAttribute:kParseObjectID withValue:mediaID];
     if (!media) {
         //get from server
         PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];

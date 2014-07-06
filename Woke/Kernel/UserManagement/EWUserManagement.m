@@ -111,7 +111,7 @@
     }
 
     //fetch or create, delay 0.1s so the login view can animate
-    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByID:user.username];
+    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByObjectID:user.objectId];
     //save me
     [EWPersonStore sharedInstance].currentUser = person;
     me.score = @100;

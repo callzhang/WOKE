@@ -137,20 +137,30 @@
         EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         [EWNotificationManager sharedInstance].task = task;
         //it's now between alarm timer and before max wake time
-        if (!task.completed && [[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime && [task.time isEarlierThan:[NSDate date]]) {
-            if (![EWWakeUpManager isRootPresentingWakeUpView]) {
-                [EWWakeUpManager handleAlarmTimerEvent];
+        if (!task.completed) {
+            if ([[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime) {
+                //valid task
+                if (![EWWakeUpManager isRootPresentingWakeUpView]) {
+                    [EWWakeUpManager handleAlarmTimerEvent:nil];
+                }
+            } else {
+                //passed
+                [[[UIAlertView alloc] initWithTitle:@"Past alarm"
+                                            message:@"The alarm has passed, try to wake up earlier next timee to find out what people sent to you."
+                                           delegate:[EWNotificationManager sharedInstance]
+                                  cancelButtonTitle:@"OK"
+                                  otherButtonTitles:nil] show];
+                //complete task
+                task.completed = [NSDate date];
+                [EWDataStore save];
+                //completed task
+                [[EWNotificationManager sharedInstance] finishedNotification:notification];
             }
-            
-            //delete notification?
             
             
         }else{
-            [[[UIAlertView alloc] initWithTitle:@"Past alarm"
-                                        message:@"The alarm has passed"
-                                       delegate:[EWNotificationManager sharedInstance]
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil] show];
+            //completed task
+            [[EWNotificationManager sharedInstance] finishedNotification:notification];
         }
         
     } else if ([notification.type isEqualToString:kNotificationTypeNotice]) {
