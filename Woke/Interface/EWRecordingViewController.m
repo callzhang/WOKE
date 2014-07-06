@@ -28,10 +28,14 @@
 #import "EWDataStore.h"
 #import "EWServer.h"
 
+
+#import "UAProgressView.h"
 @interface EWRecordingViewController (){
     NSArray *personSet;
     NSURL *recordingFileUrl;
     AVManager *manager;
+    CGFloat _localProgress;
+    BOOL  everPlayed;
     //EWMediaItem *media;
 }
 
@@ -39,7 +43,7 @@
 
 @implementation EWRecordingViewController
 @synthesize progressBar, playBtn, recordBtn, closeBtn;
-
+@synthesize manager = manager;
 
 - (EWRecordingViewController *)initWithPerson:(EWPerson *)user{
     self = [super init];
@@ -63,6 +67,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self initProgressView];
+    _localProgress = 0;
+    
+    
     if (personSet.count == 1) {
         EWPerson *receiver = personSet[0];
         EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
@@ -89,7 +97,61 @@
     //slider
     [progressBar setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
 }
-
+-(void)initProgressView
+{
+//    self.progressView.tintColor = [UIColor colorWithRed:5/255.0 green:204/255.0 blue:197/255.0 alpha:1.0];
+    self.progressView.tintColor = [UIColor whiteColor];
+    //不显示外层
+	self.progressView.borderWidth = 0.0;
+	self.progressView.lineWidth = 2.5;
+    
+	self.progressView.fillOnTouch = YES;
+	
+	UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 32.0)];
+	textLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:32];
+	textLabel.textAlignment = NSTextAlignmentCenter;
+	textLabel.textColor = self.progressView.tintColor;
+	textLabel.backgroundColor = [UIColor clearColor];
+	self.progressView.centralView = textLabel;
+	
+      __weak  typeof (self) copySelf =  self;
+    
+	self.progressView.fillChangedBlock = ^(UAProgressView *progressView, BOOL filled, BOOL animated){
+		UIColor *color = (filled ? [UIColor redColor] : progressView.tintColor);
+      
+		if (animated) {
+			[UIView animateWithDuration:0.3 animations:^{
+                progressView.tintColor = [UIColor redColor];
+				[(UILabel *)progressView.centralView setTextColor:color];
+                [copySelf record:nil];
+			}];
+		} else {
+            progressView.tintColor = [UIColor whiteColor];
+			[(UILabel *)progressView.centralView setTextColor:color];
+		}
+	};
+	
+	self.progressView.progressChangedBlock = ^(UAProgressView *progressView, float progress){
+        if (copySelf.manager.recorder.isRecording) {
+            [(UILabel *)progressView.centralView setText:[NSString stringWithFormat:@"%2.0f",copySelf.manager.recorder.currentTime]];
+            
+        }
+        if (copySelf.manager.player.isPlaying) {
+            [(UILabel *)progressView.centralView setText:[NSString stringWithFormat:@"%2.0f",copySelf.manager.player.currentTime]];
+        }
+		
+	};
+	
+		
+	self.progressView.didSelectBlock = ^(UAProgressView *progressView){
+		
+//		[copySelf record:nil];
+	};
+	
+	self.progressView.progress = 0;
+	
+	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateProgress:) userInfo:nil repeats:YES];
+}
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
@@ -146,6 +208,7 @@
     
     if (!manager.player.isPlaying) {
         [playBtn setTitle:@"Stop" forState:UIControlStateNormal];
+        everPlayed = YES;
         [manager playSoundFromURL:recordingFileUrl];
     }else{
         [playBtn setTitle:@"Play" forState:UIControlStateNormal];
@@ -160,7 +223,7 @@
     if (manager.recorder.isRecording) {
         [recordBtn setTitle:@"Stop" forState:UIControlStateNormal];
     }else{
-        [recordBtn setTitle:@"Record" forState:UIControlStateNormal];
+        [recordBtn setTitle:@"Retake" forState:UIControlStateNormal];
     }
 }
 
@@ -181,7 +244,7 @@
         
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
         media.author = me;
-        media.message = self.message.text;
+//        media.message = self.message.text;
         
         //Add to media queue instead of task
         media.receivers = [NSSet setWithArray:personSet];
@@ -215,5 +278,31 @@
 
 - (IBAction)back:(id)sender {
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+}
+
+
+- (void)updateProgress:(NSTimer *)timer {
+    
+    if ([manager.recorder isRecording]) {
+        [self.progressView  setProgress: manager.recorder.currentTime/kMaxRecordTime];
+    
+    }
+    if(manager.player.isPlaying)
+    {
+        [self.progressView  setProgress: manager.player.currentTime/kMaxRecordTime];
+    }
+    if (!manager.player.isPlaying&&everPlayed) {
+        
+        [playBtn setTitle:@"stop" forState:UIControlStateNormal];
+        [self.progressView  setProgress: 0];
+        
+//        [recordBtn setTitle:@"Retake" forState:UIControlStateNormal];
+    }
+    if (!manager.recorder.isRecording && recordingFileUrl) {
+        [recordBtn setTitle:@"Retake" forState:UIControlStateNormal];
+    }
+		
+//		[self.progressView setProgress:_localProgress];
+
 }
 @end
