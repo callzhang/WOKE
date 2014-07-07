@@ -47,4 +47,9 @@
     return [self.friends containsObject:me];
 }
 
+- (NSString *)genderObjectiveCaseString{
+    NSString *str = [self.gender isEqualToString:@"male"]?@"him":@"her";
+    return str;
+}
+
 @end

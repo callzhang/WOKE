@@ -142,19 +142,15 @@
 }
 
 - (void)initData {
-    //depend on whether passed in with task or person, the media will populaeed accordingly
-    if (task) {
-        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:YES];
-        medias = [[task.medias allObjects] mutableCopy];
-        [medias sortUsingDescriptors:@[sort]];
-        [tableView_ reloadData];
-        
-    }else{
-        NSLog(@"Task didn't pass into view controller");
-        medias = [[[EWMediaStore sharedInstance] mediasForPerson:person] mutableCopy];
-        [tableView_ reloadData];
-    }
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:YES];
+    medias = [[task.medias allObjects] mutableCopy];
+    [medias sortUsingDescriptors:@[sort]];
+    [tableView_ reloadData];
     
+    //refresh media
+    for (EWMediaItem *media in medias) {
+        [media refreshRelatedInBackground];
+    }
     
     
     //_shakeManager = [[EWShakeManager alloc] init];
@@ -199,7 +195,6 @@
     [postWakeUpVCBtn setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:postWakeUpVCBtn];
-    
 }
 
 
@@ -273,9 +268,6 @@
         [self scrollViewDidScroll:self.tableView];//prevent header move
     });
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [EWPersonStore sharedInstance].everyone;
-    });
     EWPostWakeUpViewController * postWakeUpVC = [[EWPostWakeUpViewController alloc] initWithNibName:nil bundle:nil];
     postWakeUpVC.taskItem = task;
     

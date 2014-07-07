@@ -23,6 +23,7 @@
 - (BOOL)isFriend;
 - (BOOL)friendPending;
 - (BOOL)friendWaiting;
+- (NSString *)genderObjectiveCaseString;
 
 /*
 @property (nonatomic, strong) NSString* aws_id;

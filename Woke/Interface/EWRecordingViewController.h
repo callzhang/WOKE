@@ -17,21 +17,18 @@
 @property (strong,nonatomic)     AVManager *manager;
 
 
-@property (weak, nonatomic) IBOutlet UISlider *progressBar;
 @property (weak, nonatomic) IBOutlet UIButton *playBtn;
 @property (weak, nonatomic) IBOutlet UIButton *recordBtn;
 
 @property (weak, nonatomic) IBOutlet UILabel *detail;
-@property (weak, nonatomic) IBOutlet UIButton *closeBtn;
 @property (weak, nonatomic) IBOutlet UICollectionView *peopleView;
 @property (weak, nonatomic) IBOutlet SCSiriWaveformView *waveformView;
 @property (strong, nonatomic) IBOutlet UAProgressView *progressView;
+@property (weak, nonatomic) IBOutlet UILabel *wish;
 
 - (IBAction)play:(id)sender;
 - (IBAction)record:(id)sender;
 - (IBAction)send:(id)sender;
-- (IBAction)seek:(id)sender;
-- (IBAction)back:(id)sender;
 
 
 - (EWRecordingViewController *)initWithPerson:(EWPerson *)user;

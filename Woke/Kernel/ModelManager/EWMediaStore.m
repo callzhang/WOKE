@@ -134,16 +134,12 @@
     mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT objectId IN %@", kParseObjectID, [me.mediaAssets valueForKey:kParseObjectID]]];
     for (PFObject *po in mediaPOs) {
         EWMediaItem *mo = (EWMediaItem *)po.managedObject;
-        
+        [mo refresh];
         //relationship
-        if ([mo.tasks containsObject:me]) {
-            //media has been used in task
-        }else{
-            [mo addReceiversObject:me];
-            [me addMediaAssetsObject:mo];
-            NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
-            EWAlert(@"You got voice for your next wake up");
-        }
+        [mo removeReceiversObject:me];
+        [me addMediaAssetsObject:mo];
+        NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
+        EWAlert(@"You got voice for your next wake up");
         [EWDataStore save];
     }
     return [[EWPersonStore me].mediaAssets allObjects];

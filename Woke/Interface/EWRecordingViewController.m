@@ -42,7 +42,7 @@
 @end
 
 @implementation EWRecordingViewController
-@synthesize progressBar, playBtn, recordBtn, closeBtn;
+@synthesize playBtn, recordBtn;
 @synthesize manager = manager;
 
 - (EWRecordingViewController *)initWithPerson:(EWPerson *)user{
@@ -73,10 +73,11 @@
     
     if (personSet.count == 1) {
         EWPerson *receiver = personSet[0];
-        EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
-        self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", receiver.name, [task.time weekday]];
+        self.detail.text = [NSString stringWithFormat:@"Send a greeting to %@", receiver.name];
+        self.wish.text = receiver.cachedInfo[kNextTaskStatement];
     }else{
-        self.detail.text = @"Sent voice greeting for their next wake up";
+        self.detail.text = @"Sent voice greeting for their next morning";
+        self.wish.text = @"";
     }
     
     //collection view
@@ -84,18 +85,11 @@
     [self.peopleView registerNib:nib forCellWithReuseIdentifier:@"cellIdentifier"];
     self.peopleView.backgroundColor = [UIColor clearColor];
     
-    //close btn
-    closeBtn.layer.cornerRadius = 5;
-    
     //waveform
     [self.waveformView setWaveColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
     [AVManager sharedManager].waveformView = self.waveformView;
-    [AVManager sharedManager].progressBar = (EWMediaSlider *)progressBar;
     [AVManager sharedManager].playStopBtn = playBtn;
     [AVManager sharedManager].recordStopBtn = recordBtn;
-    
-    //slider
-    [progressBar setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
 }
 -(void)initProgressView
 {
@@ -217,7 +211,6 @@
 }
 
 - (IBAction)record:(id)sender {
-    progressBar.maximumValue = kMaxRecordTime;
     recordingFileUrl = [manager record];
     
     if (manager.recorder.isRecording) {
@@ -286,9 +279,10 @@
 }
 
 - (IBAction)seek:(id)sender {
+    //
 }
 
-- (IBAction)back:(id)sender {
+- (IBAction)close:(id)sender {
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
