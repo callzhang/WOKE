@@ -630,16 +630,6 @@
     //==========set Parse value/relation and callback block===========
     [object updateFromManagedObject:mo];
     //================================================================
-    
-    //set ACL
-    if ([mo.entity.serverClassName isEqualToString:@"EWMediaItem"]){
-        PFACL *acl = [PFACL ACL];
-        for (PFUser *receiver in [object valueForKey:@"receivers"]) {
-            [acl setReadAccess:YES forUserId:receiver.objectId];
-            [acl setWriteAccess:YES forUserId:receiver.objectId];
-        }
-        [object setACL:acl];
-    }
 
     [object save:&error];
     if (!error) {

@@ -256,6 +256,17 @@
         
         //save
         [EWDataStore saveWithCompletion:^{
+            
+            //set ACL
+            PFACL *acl = [PFACL ACL];
+            PFObject *object = media.parseObject;
+            for (NSString *userID in [personSet valueForKey:kParseObjectID]) {
+                [acl setReadAccess:YES forUserId:userID];
+                [acl setWriteAccess:YES forUserId:userID];
+            }
+            [object setACL:acl];
+            [object saveInBackground];
+            
             //send push notification
             for (EWPerson *receiver in personSet) {
                 [EWServer pushMedia:media ForUser:receiver];

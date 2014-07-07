@@ -133,7 +133,7 @@
 #define kPushNofiticationIDKey          @"notificationID"
 
 //Audio & Video
-#define kMaxRecordTime                  20.0
+#define kMaxRecordTime                  30.0
 #define kAudioPlayerDidFinishPlaying    @"audio_finished_playing"
 #define kAudioPlayerWillStart           @"audio_will_start"
 #define kAudioPlayerNextPath            @"audio_next_path"
