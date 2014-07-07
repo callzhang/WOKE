@@ -244,7 +244,7 @@
     }
 }
 
-#pragma mark - Functions
+#pragma mark - UI Actions
 
 
 - (void)OnCancel{
@@ -264,9 +264,8 @@
     [EWWakeUpManager woke];
     
     //set wakeup time
-    NSDate *time = [NSDate date];
-    if ([task.time isEarlierThan:time]) {
-        task.completed = time;
+    if ([task.time isEarlierThan:[NSDate date]]) {
+        task.completed = [NSDate date];
         [EWDataStore save];
     }
     

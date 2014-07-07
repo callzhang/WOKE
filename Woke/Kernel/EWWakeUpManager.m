@@ -30,6 +30,7 @@
 @interface EWWakeUpManager()
 //retain the controller so that it won't deallocate when needed
 @property (nonatomic, retain) EWWakeUpViewController *controller;
+@property (nonatomic) BOOL isWakingUp;
 @end
 
 
@@ -40,7 +41,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[EWWakeUpManager alloc] init];
-        
+        manager.isWakingUp = NO;
     });
     return manager;
 }
@@ -202,6 +203,11 @@
 }
 
 + (void)handleAlarmTimerEvent:(NSDictionary *)info{
+    if ([EWWakeUpManager sharedInstance].isWakingUp) {
+        NSLog(@"WakeUpManager is already handling alaerm timer, skip");
+        return;
+    }
+    
     BOOL isLaunchedFromLocalNotification = NO;
     
     //get target task
@@ -278,6 +284,9 @@
     
     //cancel local alarm
     [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
+    
+    //state change
+    [EWWakeUpManager sharedInstance].isWakingUp = YES;
     
     if (isLaunchedFromLocalNotification) {
         
@@ -362,7 +371,8 @@
 + (void)woke{
     [EWWakeUpManager sharedInstance].controller = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:kWokeNotification object:nil];
-    //something to do in the future
+    [EWWakeUpManager sharedInstance].isWakingUp = NO;
+    //TODO: something to do in the future
     //notify friends and challengers
     //update history stats
 }

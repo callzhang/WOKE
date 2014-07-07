@@ -130,16 +130,17 @@
     PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
     [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
     [query whereKey:kParseObjectID notContainedIn:[me.mediaAssets valueForKey:kParseObjectID]];
-    NSArray *mediaPOs = [[query findObjects] mutableCopy];
+    NSArray *mediaPOs = [query findObjects];
     mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT objectId IN %@", kParseObjectID, [me.mediaAssets valueForKey:kParseObjectID]]];
     for (PFObject *po in mediaPOs) {
         EWMediaItem *mo = (EWMediaItem *)po.managedObject;
         
         //relationship
         if ([mo.tasks containsObject:me]) {
-            
+            //media has been used in task
         }else{
             [mo addReceiversObject:me];
+            [me addMediaAssetsObject:mo];
             NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
             EWAlert(@"You got voice for your next wake up");
         }
