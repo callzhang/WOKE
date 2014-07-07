@@ -127,7 +127,11 @@
 
 
 - (NSArray *)checkMediaAssets{
-    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem" predicate:[NSPredicate predicateWithFormat:@"ANY receivers = %@", [PFUser currentUser]]];
+    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"] ;//]predicate:[NSPredicate predicateWithFormat:@"ANY receivers = %@", [PFUser currentUser]]];
+    [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
+                                                  
+
+
     NSMutableArray *mediaPOs = [[query findObjects] mutableCopy];
     [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [me.mediaAssets valueForKey:kParseObjectID]]];
     for (PFObject *po in mediaPOs) {
