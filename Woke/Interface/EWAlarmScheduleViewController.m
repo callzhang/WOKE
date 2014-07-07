@@ -106,6 +106,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     for (EWAlarmEditCell *cell in alarmCells) {
         
+        BOOL hasChanges = NO;
+        
         if (!cell || !cell.alarm || !cell.task) {
             NSLog(@"*** Skip setting alarm because cell, alarm or task doesn't exist");
             continue;
@@ -115,12 +117,14 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
             cell.alarm.state = cell.alarmToggle.selected?YES:NO;
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
+            hasChanges = YES;
         }
         //music
         if (![cell.myMusic isEqualToString:cell.alarm.tone] && cell.myMusic != nil) {
             NSLog(@"Music changed to %@", cell.myMusic);
             cell.alarm.tone = cell.myMusic;
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
+            hasChanges = YES;
         }
         //time
         if (![cell.myTime isEqual:cell.task.time]) {
@@ -129,14 +133,20 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             //save alarm time to user defaults
             [[EWAlarmManager sharedInstance] setSavedAlarmTime:cell.alarm];
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
+            hasChanges = YES;
         }
         //statement
         if (cell.statement.text.length && ![cell.statement.text isEqualToString:cell.task.statement]) {
             cell.task.statement = cell.statement.text;
+            hasChanges = YES;
             
         }
         //save
         [EWDataStore save];
+        
+        if (hasChanges) {
+            [[EWTaskStore sharedInstance] updateNextTaskTime];
+        }
     }
     
     

@@ -143,6 +143,9 @@
         }];
     };
     
+    //continue upload to server if any
+    NSLog(@"0. Continue uploading to server");
+    [EWDataStore updateToServer];
     
     //refresh current user
     NSLog(@"1. Register AWS push key");

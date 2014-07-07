@@ -63,9 +63,6 @@
 - (NSArray *)getTasksByPerson:(EWPerson *)p{
     EWPerson *person = [EWDataStore objectForCurrentContext:p];
     NSMutableArray *tasks = [[person.tasks allObjects] mutableCopy];
-    
-    
-    
     //filter
     //[tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time >= %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]]];
     //check past task

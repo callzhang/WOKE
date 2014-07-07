@@ -9,7 +9,6 @@
                 <outlet property="detail" destination="A89-fD-bEW" id="aT4-6K-1qU"/>
                 <outlet property="peopleView" destination="aN8-Jf-xcg" id="vQG-aG-FNs"/>
                 <outlet property="playBtn" destination="r2h-Py-vN0" id="RHz-yZ-e0l"/>
-                <outlet property="progressBar" destination="ClQ-Pb-UTf" id="UfK-Xr-CNe"/>
                 <outlet property="progressView" destination="GEV-0T-wYT" id="Tad-UA-zL0"/>
                 <outlet property="recordBtn" destination="7Gm-XY-EfQ" id="2Bg-Oz-1GH"/>
                 <outlet property="view" destination="1" id="3"/>

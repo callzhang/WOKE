@@ -75,13 +75,27 @@
     
     if (personSet.count == 1) {
         EWPerson *receiver = personSet[0];
+
         EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
 //        self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", receiver.name, [task.time weekday]];
-        self.detail.text = task.statement;
+        
         
         
 
         self.wish.text = receiver.cachedInfo[kNextTaskStatement];
+
+
+        self.detail.text = [NSString stringWithFormat:@"%@ wants to hear", receiver.name];
+        EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
+        NSString *str;
+        if (nextTask.statement) {
+            str = [NSString stringWithFormat:@"\"%@\"", nextTask.statement];
+        }else if (receiver.cachedInfo[kNextTaskStatement]){
+            str = [NSString stringWithFormat:@"\"%@\"", str];
+        }else{
+            str = @"\"say good morning\"";
+        }
+        self.wish.text = str;
 
     }else{
         self.detail.text = @"Sent voice greeting for their next morning";
