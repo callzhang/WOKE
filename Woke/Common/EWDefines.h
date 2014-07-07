@@ -59,11 +59,11 @@
 #define kAlarmTimerCheckInterval        150 //10 min
 #define alarmInterval                   600 //10 min
 #define kMaxWakeTime                    3600 // 60min
-#define kMediaPlayInterval              3 //3s
+#define kMediaPlayInterval              5 //5s
 #define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
 #define kSocialGraphUpdateInterval      3600*24*7
 #define kMaxVoicePerTask                3
-#define kLoopMediaPlayCount             10
+#define kLoopMediaPlayCount             100
 
 #define autoGroupIndentifier @"wakeUpTogetherGroup"
 #define autoGroupStatement @"Wake up together with people around you."
@@ -133,7 +133,7 @@
 #define kPushNofiticationIDKey          @"notificationID"
 
 //Audio & Video
-#define kMaxRecordTime                  20.0
+#define kMaxRecordTime                  30.0
 #define kAudioPlayerDidFinishPlaying    @"audio_finished_playing"
 #define kAudioPlayerWillStart           @"audio_will_start"
 #define kAudioPlayerNextPath            @"audio_next_path"

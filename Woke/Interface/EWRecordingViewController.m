@@ -43,7 +43,7 @@
 @end
 
 @implementation EWRecordingViewController
-@synthesize progressBar, playBtn, recordBtn, closeBtn;
+@synthesize playBtn, recordBtn;
 @synthesize manager = manager;
 
 - (EWRecordingViewController *)initWithPerson:(EWPerson *)user{
@@ -80,8 +80,12 @@
         self.detail.text = task.statement;
         
         
+
+        self.wish.text = receiver.cachedInfo[kNextTaskStatement];
+
     }else{
-        self.detail.text = @"Sent voice greeting for their next wake up";
+        self.detail.text = @"Sent voice greeting for their next morning";
+        self.wish.text = @"";
     }
     
     //collection view
@@ -89,18 +93,13 @@
     [self.peopleView registerNib:nib forCellWithReuseIdentifier:@"cellIdentifier"];
     self.peopleView.backgroundColor = [UIColor clearColor];
     
-    //close btn
-    
-    
+
     //waveform
     [self.waveformView setWaveColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
     [AVManager sharedManager].waveformView = self.waveformView;
-//    [AVManager sharedManager].progressBar = (EWMediaSlider *)progressBar;
+
     [AVManager sharedManager].playStopBtn = playBtn;
     [AVManager sharedManager].recordStopBtn = recordBtn;
-    
-    //slider
-    [progressBar setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
 }
 -(void)initProgressView
 {
@@ -227,7 +226,6 @@
 }
 
 - (IBAction)record:(id)sender {
-    progressBar.maximumValue = kMaxRecordTime;
     recordingFileUrl = [manager record];
     
     if (manager.recorder.isRecording) {
@@ -254,6 +252,7 @@
         
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
         media.author = me;
+        media.type = kMediaTypeVoice;
 //        media.message = self.message.text;
         
         //Add to media queue instead of task
@@ -265,6 +264,17 @@
         
         //save
         [EWDataStore saveWithCompletion:^{
+            
+            //set ACL
+            PFACL *acl = [PFACL ACL];
+            PFObject *object = media.parseObject;
+            for (NSString *userID in [personSet valueForKey:kParseObjectID]) {
+                [acl setReadAccess:YES forUserId:userID];
+                [acl setWriteAccess:YES forUserId:userID];
+            }
+            [object setACL:acl];
+            [object saveInBackground];
+            
             //send push notification
             for (EWPerson *receiver in personSet) {
                 [EWServer pushMedia:media ForUser:receiver];
@@ -284,9 +294,11 @@
 }
 
 - (IBAction)seek:(id)sender {
+    //
 }
 
 - (IBAction)close:(id)sender {
+
     
     if ([self.manager.recorder isRecording]) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Stop Record Before Close" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
@@ -294,7 +306,7 @@
         
     }
     else{
-        
+
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }
 }

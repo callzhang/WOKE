@@ -137,7 +137,8 @@ UIViewController *rootViewController;
     // keep active
     if ([myTimer isValid]) [myTimer invalidate];
     myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerCheckInterval target:self selector:@selector(backgroundTaskKeepAlive:) userInfo:nil repeats:YES];
-    
+    myTimer.userInfo[@"start_date"] = [NSDate date];
+    myTimer.userInfo[@"count"] = 0;
     application.applicationIconBadgeNumber = 0;
 }
 
@@ -145,7 +146,11 @@ UIViewController *rootViewController;
 - (void)backgroundTaskKeepAlive:(NSTimer *)timer{
     UIApplication *application = [UIApplication sharedApplication];
     if (timer) {
-        NSLog(@"Timer: %@", timer);
+        NSDate *start = myTimer.userInfo[@"start_date"];
+        count = [(NSNumber *)myTimer.userInfo[@"count"] integerValue];
+        NSLog(@"Backgrounding started at %@ is checking the %ld times", start.date2detailDateString, count);
+        count++;
+        myTimer.userInfo[@"count"] = [NSNumber numberWithInteger:count];
     }
     
     //start silent sound
@@ -155,7 +160,6 @@ UIViewController *rootViewController;
     [application endBackgroundTask:backgroundTaskIdentifier];
     
     //begin a new background task
-    count++;
     backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
         [self backgroundTaskKeepAlive:nil];
         NSLog(@"The backgound task is renewed at (%ld)" , count);

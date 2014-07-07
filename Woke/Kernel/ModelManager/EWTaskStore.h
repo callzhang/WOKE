@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #define kNextTaskTime                 @"next_task_time"
+#define kNextTaskStatement            @"next_task_statement"
 
 
 @class EWPerson, EWTaskItem, EWAlarmItem;
@@ -103,5 +104,5 @@
 
 #pragma mark - check
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task;
-
++ (BOOL)validateTask:(EWTaskItem *)task;
 @end

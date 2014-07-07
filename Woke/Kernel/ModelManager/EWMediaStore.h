@@ -50,4 +50,7 @@
 //get my task in a media
 + (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media;
 
+
+//Validation
++ (BOOL)validateMedia:(EWMediaItem *)media;
 @end

@@ -218,6 +218,9 @@ EWPerson *me;
             person.score = [NSNumber numberWithFloat:score];
             [allPerson addObject:person];
             [EWDataStore saveToLocal:person];
+            
+            //test KVO
+            //[person addObserver:self forKeyPath:@"profilePic" options:NSKeyValueObservingOptionNew context:nil];
         }
         
         [EWPersonStore me].score = @100;
@@ -290,6 +293,8 @@ EWPerson *me;
             NSLog(@"My score resotred to 100");
             me.score = @100;
         }
+    }else if ([keyPath isEqualToString:@"profilePic"]){
+        NSLog(@"Profile picture changed");
     }
 }
 

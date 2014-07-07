@@ -496,6 +496,7 @@
     }
     if (![cache[kNextTaskTime] isEqual: task.time]) {
         [cache setValue:task.time forKey:kNextTaskTime];
+        [cache setValue:task.statement forKeyPath:kNextTaskStatement];
         me.cachedInfo = [cache copy];
         NSLog(@"Saved next task time: %@ to cacheInfo", task.time.date2detailDateString);
         [EWDataStore save];
@@ -648,6 +649,12 @@
         }
     }
     return nMedia;
+}
+
++ (BOOL)validateTask:(EWTaskItem *)task{
+    NSParameterAssert(task.owner || task.pastOwner);
+    NSParameterAssert(task.alarm);
+    return YES;
 }
 
 @end
