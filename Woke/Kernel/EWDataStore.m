@@ -614,6 +614,7 @@
     } else {
         //insert
         object = [PFObject objectWithClassName:mo.entity.serverClassName];
+
         [object save:&error];//need to save before working on PFRelation
         if (!error) {
             NSLog(@"+++> CREATED PO %@(%@)", object.parseClassName, object.objectId);
@@ -630,6 +631,15 @@
     [object updateFromManagedObject:mo];
     //================================================================
     
+    //set ACL
+    if ([mo.entity.serverClassName isEqualToString:@"EWMediaItem"]){
+        PFACL *acl = [PFACL ACL];
+        for (PFUser *receiver in [object valueForKey:@"receivers"]) {
+            [acl setReadAccess:YES forUserId:receiver.objectId];
+            [acl setWriteAccess:YES forUserId:receiver.objectId];
+        }
+        [object setACL:acl];
+    }
 
     [object save:&error];
     if (!error) {
