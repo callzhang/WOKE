@@ -15,6 +15,7 @@
 #import "EWCollectionPersonCell.h"
 #import "SCSiriWaveformView.h"
 #import "EWUIUtil.h"
+#import "EWTaskStore.h"
 
 //object
 #import "EWTaskItem.h"
@@ -70,11 +71,15 @@
     [self initProgressView];
     _localProgress = 0;
     
+    self.title = @"Recording";
     
     if (personSet.count == 1) {
         EWPerson *receiver = personSet[0];
         EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
-        self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", receiver.name, [task.time weekday]];
+//        self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", receiver.name, [task.time weekday]];
+        self.detail.text = task.statement;
+        
+        
     }else{
         self.detail.text = @"Sent voice greeting for their next wake up";
     }
@@ -85,12 +90,12 @@
     self.peopleView.backgroundColor = [UIColor clearColor];
     
     //close btn
-    closeBtn.layer.cornerRadius = 5;
+    
     
     //waveform
     [self.waveformView setWaveColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
     [AVManager sharedManager].waveformView = self.waveformView;
-    [AVManager sharedManager].progressBar = (EWMediaSlider *)progressBar;
+//    [AVManager sharedManager].progressBar = (EWMediaSlider *)progressBar;
     [AVManager sharedManager].playStopBtn = playBtn;
     [AVManager sharedManager].recordStopBtn = recordBtn;
     
@@ -100,9 +105,9 @@
 -(void)initProgressView
 {
 //    self.progressView.tintColor = [UIColor colorWithRed:5/255.0 green:204/255.0 blue:197/255.0 alpha:1.0];
-    self.progressView.tintColor = [UIColor whiteColor];
+    self.progressView.tintColor = [UIColor greenColor];
     //不显示外层
-	self.progressView.borderWidth = 0.0;
+	self.progressView.borderWidth = 1.0;
 	self.progressView.lineWidth = 2.5;
     
 	self.progressView.fillOnTouch = YES;
@@ -117,21 +122,25 @@
       __weak  typeof (self) copySelf =  self;
     
 	self.progressView.fillChangedBlock = ^(UAProgressView *progressView, BOOL filled, BOOL animated){
-		UIColor *color = (filled ? [UIColor redColor] : progressView.tintColor);
-      
-		if (animated) {
-			[UIView animateWithDuration:0.3 animations:^{
-                progressView.tintColor = [UIColor redColor];
-				[(UILabel *)progressView.centralView setTextColor:color];
-                [copySelf record:nil];
-			}];
-		} else {
-            progressView.tintColor = [UIColor whiteColor];
-			[(UILabel *)progressView.centralView setTextColor:color];
-		}
+//		UIColor *color = (filled ? [UIColor redColor] : progressView.tintColor);
+//      
+//		if (animated) {
+//			[UIView animateWithDuration:0.3 animations:^{
+//                progressView.tintColor = [UIColor redColor];
+//				[(UILabel *)progressView.centralView setTextColor:color];
+//                [copySelf record:nil];
+//			}];
+//		} else {
+//            progressView.tintColor = [UIColor whiteColor];
+//			[(UILabel *)progressView.centralView setTextColor:color];
+//		}
 	};
 	
 	self.progressView.progressChangedBlock = ^(UAProgressView *progressView, float progress){
+        
+//        self.progressView.tintColor = [UIColor clearColor];
+        copySelf.progressView.borderWidth = 0;
+        
         if (copySelf.manager.recorder.isRecording) {
             [(UILabel *)progressView.centralView setText:[NSString stringWithFormat:@"%2.0f",copySelf.manager.recorder.currentTime]];
             
@@ -145,12 +154,13 @@
 		
 	self.progressView.didSelectBlock = ^(UAProgressView *progressView){
 		
-//		[copySelf record:nil];
+		[copySelf record:nil];
 	};
 	
 	self.progressView.progress = 0;
 	
 	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateProgress:) userInfo:nil repeats:YES];
+    
 }
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
@@ -276,8 +286,17 @@
 - (IBAction)seek:(id)sender {
 }
 
-- (IBAction)back:(id)sender {
+- (IBAction)close:(id)sender {
+    
+    if ([self.manager.recorder isRecording]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Stop Record Before Close" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        [alert show];
+        
+    }
+    else{
+        
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+    }
 }
 
 
@@ -293,7 +312,7 @@
     }
     if (!manager.player.isPlaying&&everPlayed) {
         
-        [playBtn setTitle:@"stop" forState:UIControlStateNormal];
+        [playBtn setTitle:@"Replay" forState:UIControlStateNormal];
         [self.progressView  setProgress: 0];
         
 //        [recordBtn setTitle:@"Retake" forState:UIControlStateNormal];
