@@ -244,6 +244,7 @@
         
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
         media.author = me;
+        media.type = kMediaTypeVoice;
 //        media.message = self.message.text;
         
         //Add to media queue instead of task

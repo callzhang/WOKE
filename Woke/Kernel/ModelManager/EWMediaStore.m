@@ -127,18 +127,20 @@
 
 
 - (NSArray *)checkMediaAssets{
-    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem" predicate:[NSPredicate predicateWithFormat:@"ANY receivers = %@", [PFUser currentUser]]];
-    NSMutableArray *mediaPOs = [[query findObjects] mutableCopy];
-    [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [me.mediaAssets valueForKey:kParseObjectID]]];
+    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
+    [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
+    [query whereKey:kParseObjectID notContainedIn:[me.mediaAssets valueForKey:kParseObjectID]];
+    NSArray *mediaPOs = [[query findObjects] mutableCopy];
+    mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT objectId IN %@", kParseObjectID, [me.mediaAssets valueForKey:kParseObjectID]]];
     for (PFObject *po in mediaPOs) {
         EWMediaItem *mo = (EWMediaItem *)po.managedObject;
         
         //relationship
         if ([mo.tasks containsObject:me]) {
-            [mo removeReceiversObject:me];
+            
         }else{
             [mo addReceiversObject:me];
-            NSLog(@"Received media (%@)", mo.objectId);
+            NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
             EWAlert(@"You got voice for your next wake up");
         }
         [EWDataStore save];
@@ -149,6 +151,20 @@
 + (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media{
     EWTaskItem *task = [[media.tasks filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owner = %@", me]] anyObject];
     return task;
+}
+
++ (BOOL)validateMedia:(EWMediaItem *)media{
+    NSParameterAssert(media.type);
+    if ([media.type isEqualToString:kMediaTypeVoice]) {
+        NSParameterAssert(media.audio);
+    }else if ([media.type isEqualToString:kMediaTypeBuzz]){
+        NSParameterAssert(media.buzzKey);
+    }
+    if (!media.receivers) {
+        NSParameterAssert(media.tasks.count > 0);
+    }
+    
+    return YES;
 }
 
 @end

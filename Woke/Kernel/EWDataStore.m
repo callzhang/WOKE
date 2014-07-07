@@ -288,14 +288,14 @@
             [changedKeys removeObjectsInArray:attributeUploadSkipped];
             
             if (changedKeys.count > 0) {
-                NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], MO.changedValues);
+                NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
                 [EWDataStore appendUpdateQueue:MO];
             }
             
         }
         for (NSManagedObject *MO in deletes) {
             NSLog(@"~~~> MO %@(%@) deleted to context", MO.entity.name, [MO valueForKey:kParseObjectID]);
-            PFObject *PO = [MO parseObject];
+            PFObject *PO = [PFObject objectWithoutDataWithClassName:MO.entity.name objectId:MO.serverID];
             [EWDataStore appendDeleteQueue:PO];
         }
         [context saveToPersistentStoreAndWait];
@@ -444,7 +444,7 @@
     if (![set containsObject:str]) {
         [set addObject:str];
         [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:queue];
-        NSLog(@"MO %@(%@) add to %@", mo.entity.name, [mo valueForKey:kParseObjectID], queue);
+        NSLog(@"MO %@(%@) add to %@", mo.entity.name, mo.serverID, queue);
     }
     
 }
@@ -563,9 +563,9 @@
     //validate MO
     NSString *type = mo.entity.name;
     if ([type isEqualToString:@"EWTaskItem"]) {
-        
+        [EWTaskStore validateTask:(EWTaskItem *)mo];
     } else if([type isEqualToString:@"EWMediaItem"]){
-        
+        [EWMediaStore validateMedia:(EWMediaItem *)mo];
     }
     
     //skip if updating other PFUser

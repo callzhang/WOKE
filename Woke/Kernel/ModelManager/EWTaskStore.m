@@ -651,4 +651,10 @@
     return nMedia;
 }
 
++ (BOOL)validateTask:(EWTaskItem *)task{
+    NSParameterAssert(task.owner || task.pastOwner);
+    NSParameterAssert(task.alarm);
+    return YES;
+}
+
 @end

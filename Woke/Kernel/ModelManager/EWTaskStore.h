@@ -104,5 +104,5 @@
 
 #pragma mark - check
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task;
-
++ (BOOL)validateTask:(EWTaskItem *)task;
 @end
