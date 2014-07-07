@@ -59,7 +59,7 @@
 #define kAlarmTimerCheckInterval        150 //10 min
 #define alarmInterval                   600 //10 min
 #define kMaxWakeTime                    3600 // 60min
-#define kMediaPlayInterval              10 //3s
+#define kMediaPlayInterval              5 //5s
 #define kBackgroundFetchInterval        600.0 //TODO: possible conflict with serverUpdateInterval
 #define kSocialGraphUpdateInterval      3600*24*7
 #define kMaxVoicePerTask                3
