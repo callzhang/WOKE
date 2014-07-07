@@ -101,6 +101,7 @@
  3. Delete unmatched local notif
  */
 - (void)checkScheduledNotifications;
+- (void)updateNextTaskTime;
 
 #pragma mark - check
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task;
