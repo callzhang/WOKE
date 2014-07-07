@@ -291,9 +291,15 @@
     
     //Use reusable cell or create a new cell
     EWMediaViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-//    EWMediaViewCell *cell = [[EWMediaViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
     //get media item
-    EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
+    EWMediaItem *mi;
+    if (indexPath.row >= medias.count) {
+        NSLog(@"@@@ WakupView asking for deleted media");
+        mi = nil;
+    }else{
+        mi = [medias objectAtIndex:indexPath.row];
+    }
+    
     
     //title
     cell.name.text = mi.author.name;

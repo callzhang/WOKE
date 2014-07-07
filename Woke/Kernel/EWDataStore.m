@@ -298,7 +298,7 @@
         }
         for (NSManagedObject *MO in deletes) {
             NSLog(@"~~~> MO %@(%@) deleted to context", MO.entity.name, [MO valueForKey:kParseObjectID]);
-            PFObject *PO = [PFObject objectWithoutDataWithClassName:MO.entity.name objectId:MO.serverID];
+            PFObject *PO = [MO getParseObjectWithError:nil];
             [EWDataStore appendDeleteQueue:PO];
         }
         [context saveToPersistentStoreAndWait];
@@ -869,13 +869,8 @@
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
     
     if (parseObjectId) {
-        PFObject *object;
-        
-        //try to get the object locally first if not outdated
-        object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
+        PFObject *object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
         [object fetchIfNeeded];
-        
-        
         return object;
     }else{
         NSLog(@"!!! ParseObjectID not exist, upload first!");
@@ -952,7 +947,7 @@
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
     
     if (!parseObjectId) {
-        NSParameterAssert([self isInserted]);
+        //NSParameterAssert([self isInserted]);
         NSLog(@"+++> Insert MO %@ from refresh", self.entity.name);
         [self updateEventually];
         [EWDataStore save];

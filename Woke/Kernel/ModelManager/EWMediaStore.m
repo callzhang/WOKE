@@ -57,6 +57,7 @@
     media.audio = data;
     media.type = kMediaTypeVoice;
     media.message = @"This is a test voice tone";
+    media.type = kMediaTypeVoice;
     
     [EWDataStore save];
     
