@@ -36,7 +36,7 @@
             
 //        UIView *viewToRender = [(UITableViewController *)sourceController tableView];
             CGPoint contentOffset = [[(UITableViewController *)sourceController tableView]contentOffset];
-    
+            
             UIGraphicsBeginImageContext(viewToRender.bounds.size);
             CGContextRef context = UIGraphicsGetCurrentContext();
             CGContextTranslateCTM(context, 0, -contentOffset.y);
@@ -107,7 +107,7 @@
 -(void)pushViewControllerWithBlur:(UIViewController *)viewController
 {
     
-    NSInteger _blurRadius = 10;
+    NSInteger _blurRadius = 50;
 //    UIColor  *_tintColor = [UIColor colorWithRed:0.8 green:0.6 blue:0.05 alpha:0.3];
     UIColor *_tintColor = [UIColor clearColor];
     CGFloat _saturationDeltaFactor = 0.5;
@@ -210,7 +210,7 @@
 //    [self addBlurInViewContrller:viewController];
     
 }
--(void)addBlurInViewContrller:(UIViewController *)viewController
+-(void)addBlurInViewController:(UIViewController *)viewController
 {
     UIToolbar *bgToolbar = (UIToolbar *)[self.view viewWithTag:kBlurViewTag];
     [self.view sendSubviewToBack:bgToolbar];

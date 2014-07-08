@@ -62,11 +62,10 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     if (_person) {
         
         NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
-        NSArray *sortDescriptors = [NSArray arrayWithObjects:sd, nil];
-        friends = [_person.friends sortedArrayUsingDescriptors:sortDescriptors];
+        friends = [_person.friends sortedArrayUsingDescriptors:@[sd]];
         NSMutableSet *myFriends = [me.friends mutableCopy];
         [myFriends intersectSet:[NSSet setWithArray:friends]];
-        mutualFriends = [[myFriends allObjects] sortedArrayUsingDescriptors:sortDescriptors];
+        mutualFriends = [[myFriends allObjects] sortedArrayUsingDescriptors:@[sd]];
         _friendsTableView.delegate = self;
         _friendsTableView.dataSource = self;
         _friendsCollectionView.delegate = self;

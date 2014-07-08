@@ -83,10 +83,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     //login event
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
     
-    //navigation
-   
-    
-    
+    //table view
     taskTableView.dataSource = self;
     taskTableView.delegate = self;
     taskTableView.backgroundColor = [UIColor clearColor];
@@ -108,11 +105,14 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     [taskTableView reloadData];
     
 }
--(void)viewWillAppear:(BOOL)animated
-{
+
+- (void)viewWillAppear:(BOOL)animated{
+    //navigation
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:nil rightItem:nil];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
+    
+
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -529,9 +529,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 //tap cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    
-    NSInteger tapItem =  [tabView selectedSegmentIndex];//if we selectnum is
-    if (tapItem == 1) {
+    //return if it is not at the first tab
+    if ([tabView selectedSegmentIndex] != 0) {
         return;
     }
     
@@ -543,7 +542,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
                 tempVc.cellSelect =_canSeeFriendsDetail;
                 controller = tempVc;
-                //[self.navigationController pushViewController:controller animated:YES]
+                
                 [self.navigationController pushViewControllerWithBlur:controller];
                 break;
             }

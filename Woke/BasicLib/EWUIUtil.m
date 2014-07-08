@@ -243,11 +243,11 @@
     if (hours > 10) {
         timeStr = [NSString stringWithFormat:@"%.1f hours",time/3600];
     }else if (hours > 0){
-        timeStr = [NSString stringWithFormat:@"%d hours",hours];
+        timeStr = [NSString stringWithFormat:@"%ld hours",(long)hours];
     }else if(minutes > 0){
-        timeStr = [NSString stringWithFormat:@"%d minutes",minutes];
+        timeStr = [NSString stringWithFormat:@"%ld minutes",(long)minutes];
     }else{
-        timeStr = [NSString stringWithFormat:@"%d seconds",seconds];
+        timeStr = [NSString stringWithFormat:@"%ld seconds",(long)seconds];
     }
         return timeStr;
 }

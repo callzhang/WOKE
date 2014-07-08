@@ -21,9 +21,7 @@
 #import "EWNotificationManager.h"
 #import "EWNotification.h"
 
-#define everyoneCheckTimeOut            600
-#define numberOfRelevantUsers           @100 //number of relevant users returned
-#define radiusOfRelevantUsers           @-1  //search radius in kilometers for relevant users
+
 
 //===========the global shortcut to currentUser ===========
 EWPerson *me;
@@ -135,7 +133,7 @@ EWPerson *me;
     return person;
 }
 
-//Depreciated
+//DEPRECIATED
 -(EWPerson *)getPersonByID:(NSString *)ID{
     //ID is username
     if(!ID) return nil;
@@ -173,6 +171,15 @@ EWPerson *me;
     return person;
 }
 
+//check my relation, used for new installation with existing user
++ (void)updateMe{
+    NSDate *lastCheckedMe = [[NSUserDefaults standardUserDefaults] valueForKey:kLastCheckedMe];
+    if (!lastCheckedMe || [[NSDate date] timeIntervalSinceDate:lastCheckedMe] > kCheckMeInternal) {
+        [me refreshRelatedInBackground];
+        [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kLastCheckedMe];
+    }
+}
+
 
 
 - (NSArray *)everyone{
@@ -191,15 +198,15 @@ EWPerson *me;
     
     if (error && list.count == 0) {
         NSLog(@"*** Failed to get friends list: %@", error.description);
-        //get ramdom person
-        PFQuery *q = [PFQuery queryWithClassName:@"EWPerson"];
-        [q includeKey:@"friends"];
-        q.limit = 100;
+        //get cached person
         error = nil;
-        list = [[q findObjects:&error] valueForKey:kParseObjectID];
-        if (error) {
-            NSLog(@"*** Failed to get anyone: %@", error.description);
-        }
+        list = me.cachedInfo[kEveryone];
+    }else{
+        //cache
+        NSMutableDictionary *cachedInfo = [me.cachedInfo mutableCopy];
+        cachedInfo[kEveryone] = list;
+        cachedInfo[kEveryoneLastFetched] = [NSDate date];
+        me.cachedInfo = cachedInfo;
     }
     
     //fetch
@@ -208,6 +215,11 @@ EWPerson *me;
     [query whereKey:kParseObjectID containedIn:list];
     [query includeKey:@"friends"];
     NSArray *people = [query findObjects:&error];
+    
+    if (error) {
+        NSLog(@"*** Failed to fetch everyone.");
+        return nil;
+    }
     
     //make sure the everyone is saved on main thread
     [[NSManagedObjectContext defaultContext] performBlockAndWait:^{
@@ -230,6 +242,8 @@ EWPerson *me;
         timeEveryoneChecked = [NSDate date];
         
     }];
+    
+    [EWDataStore save];
     
     return everyone;
 }

@@ -10,7 +10,14 @@
 #import "EWDataStore.h"
 #import "EWPerson.h"
 
-#define kDefaultUsername                 @"New User"
+#define everyoneCheckTimeOut            3600 //1hr
+#define numberOfRelevantUsers           @100 //number of relevant users returned
+#define radiusOfRelevantUsers           @-1  //search radius in kilometers for relevant users
+#define kDefaultUsername                    @"New User"
+#define kEveryoneLastFetched                @"everyone_last_fetched"
+#define kEveryone                           @"everyone"
+#define kLastCheckedMe                      @"last_checked_me"
+#define kCheckMeInternal                    3600 * 24 * 10 //10 days
 
 extern EWPerson *me;
 
@@ -28,7 +35,7 @@ extern EWPerson *me;
 - (EWPerson *)createPersonWithParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByObjectID:(NSString *)ID;
 - (EWPerson *)getPersonByID:(NSString *)ID;
-
++ (void)updateMe;
 
 - (EWPerson *)anyone;
 

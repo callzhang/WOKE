@@ -172,7 +172,7 @@
     
     //Update my relations
     NSLog(@"7. Refresh my relation in background");
-    [me refreshRelatedInBackground];
+    [EWPersonStore updateMe];
     
     //update data with timely updates
     [self registerServerUpdateService];
