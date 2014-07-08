@@ -111,8 +111,8 @@
 {
     
     NSInteger _blurRadius = 50;
-    UIColor  *_tintColor = [UIColor colorWithWhite:0 alpha:0.05];
-    CGFloat _saturationDeltaFactor = 0.5;
+    UIColor  *_tintColor = [UIColor clearColor];
+    CGFloat _saturationDeltaFactor = 2.0;
     viewController.view.backgroundColor = [UIColor clearColor];
     
     //get img
@@ -127,7 +127,7 @@
     viewController.view.transform = scale;
     
     //animation
-    [self pushViewController:viewController animated:YES];
+    [self pushViewController:viewController animated:NO];
     
     [UIView transitionWithView:viewController.view
                       duration:0.4
@@ -135,6 +135,7 @@
                     animations:
      ^{
          blurredBackground.alpha = 1;
+         viewController.view.alpha = 1;
          CGAffineTransform scale = CGAffineTransformMakeScale(1.0, 1.0);
          viewController.view.transform = scale;
          
