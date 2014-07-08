@@ -118,15 +118,15 @@
 -(void)initProgressView
 {
 //    self.progressView.tintColor = [UIColor colorWithRed:5/255.0 green:204/255.0 blue:197/255.0 alpha:1.0];
-    self.progressView.tintColor = [UIColor greenColor];
+    self.progressView.tintColor = [UIColor whiteColor];
     //不显示外层
-	self.progressView.borderWidth = 1.0;
+	self.progressView.borderWidth = 0.0;
 	self.progressView.lineWidth = 2.5;
     
-	self.progressView.fillOnTouch = YES;
+//	self.progressView.fillOnTouch = YES;
 	
-	UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 32.0)];
-	textLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:32];
+	UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 32.0)];
+	textLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:20];
 	textLabel.textAlignment = NSTextAlignmentCenter;
 	textLabel.textColor = self.progressView.tintColor;
 	textLabel.backgroundColor = [UIColor clearColor];
@@ -152,7 +152,7 @@
 	self.progressView.progressChangedBlock = ^(UAProgressView *progressView, float progress){
         
 //        self.progressView.tintColor = [UIColor clearColor];
-        copySelf.progressView.borderWidth = 0;
+//        copySelf.progressView.borderWidth = 0;
         
         if (copySelf.manager.recorder.isRecording) {
             [(UILabel *)progressView.centralView setText:[NSString stringWithFormat:@"%2.0f",copySelf.manager.recorder.currentTime]];
@@ -167,7 +167,7 @@
 		
 	self.progressView.didSelectBlock = ^(UAProgressView *progressView){
 		
-		[copySelf record:nil];
+//		[copySelf record:nil];
 	};
 	
 	self.progressView.progress = 0;
