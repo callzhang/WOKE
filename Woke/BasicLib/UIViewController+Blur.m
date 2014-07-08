@@ -7,7 +7,7 @@
 //
 
 #import "UIViewController+Blur.h"
-
+#import "EWUIUtil.h"
 
 
 
@@ -56,14 +56,7 @@
    [self.view viewWithTag:kBlurViewTag].hidden = YES;
    
    //get CALayer image
-   
-   UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
-   
-   [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
-   CGContextRef contextRef = UIGraphicsGetCurrentContext();
-   [self.view.layer renderInContext:contextRef];
-   UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
-   UIGraphicsEndImageContext();
+   UIImage * img = [EWUIUtil getScreenshot:self.view];
    
    //get image
    UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];

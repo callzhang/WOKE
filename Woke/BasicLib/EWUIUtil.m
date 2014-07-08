@@ -252,4 +252,14 @@
         return timeStr;
 }
 
++ (UIImage *)getScreenshot:(UIView *)view{
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0);
+    CGContextRef contextRef = UIGraphicsGetCurrentContext();
+    [view.layer renderInContext:contextRef];
+    UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return img;
+}
+
 @end
