@@ -34,7 +34,7 @@
     //CGContextRef context = UIGraphicsGetCurrentContext();
     //CGContextSetFillColorWithColor(context, [UIColor yellowColor].CGColor);
     [[UIColor lightGrayColor] setFill];
-    rect.origin.x = rect.origin.x+rect.size.width/2 - self.placeholder.length*4;
+//    rect.origin.x = rect.origin.x+rect.size.width/2 - self.placeholder.length*4;
     [[self placeholder] drawInRect:rect withFont:[UIFont systemFontOfSize:17]];
 }
 

@@ -33,5 +33,6 @@
 - (IBAction)changeMusic:(id)sender;
 - (IBAction)hideKeyboard:(UITextField *)sender;
 - (IBAction)changeTime:(UIStepper *)sender;
+@property (strong, nonatomic) IBOutlet UIView *staticTextLabel;
 
 @end
