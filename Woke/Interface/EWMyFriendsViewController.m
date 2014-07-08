@@ -92,6 +92,12 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     _friendsTableView.allowsSelection = _cellSelect;
     _friendsTableView.hidden = YES;
     [_friendsTableView registerNib:[UINib nibWithNibName:@"EWFriendsTableCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:tableViewCellId];
+    
+    //
+    if ([friends count]==1&& friends[0]==me) {
+        
+        _tabView.hidden = YES;
+    }
 
 }
 

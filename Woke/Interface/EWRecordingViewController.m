@@ -70,17 +70,12 @@
     [super viewDidLoad];
     [self initProgressView];
     _localProgress = 0;
+    self.playBtn.enabled = NO;
     
     self.title = @"Recording";
     
     if (personSet.count == 1) {
         EWPerson *receiver = personSet[0];
-
-        EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
-//        self.detail.text = [NSString stringWithFormat:@"Leave voice to %@ for %@", receiver.name, [task.time weekday]];
-        
-        
-        
 
         self.wish.text = receiver.cachedInfo[kNextTaskStatement];
 
@@ -91,7 +86,7 @@
         if (nextTask.statement) {
             str = [NSString stringWithFormat:@"\"%@\"", nextTask.statement];
         }else if (receiver.cachedInfo[kNextTaskStatement]){
-            str = [NSString stringWithFormat:@"\"%@\"", str];
+            str = [NSString stringWithFormat:@"\"%@\"", receiver.cachedInfo[kNextTaskStatement]];
         }else{
             str = @"\"say good morning\"";
         }
@@ -222,6 +217,7 @@
     
     if (!recordingFileUrl){
         NSLog(@"Recording url empty");
+        
         return;
     }
     
@@ -346,7 +342,7 @@
     if (!manager.recorder.isRecording && recordingFileUrl) {
         [recordBtn setTitle:@"Retake" forState:UIControlStateNormal];
     }
-		
+  
 //		[self.progressView setProgress:_localProgress];
 
 }
