@@ -26,6 +26,12 @@
 @property (strong, nonatomic) IBOutlet UAProgressView *progressView;
 @property (weak, nonatomic) IBOutlet UILabel *wish;
 
+@property (strong, nonatomic) IBOutlet UILabel *retakeLabel;
+
+@property (strong, nonatomic) IBOutlet UILabel *playLabel;
+
+@property (strong, nonatomic) IBOutlet UILabel *sendLabel;
+
 - (IBAction)play:(id)sender;
 - (IBAction)record:(id)sender;
 - (IBAction)send:(id)sender;

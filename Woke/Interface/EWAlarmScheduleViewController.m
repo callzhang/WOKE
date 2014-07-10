@@ -44,7 +44,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     //header view
     UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Confirm Button"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
     UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Close Button"] style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
-    [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:leftBarButtonItem rightItem:rightBarButtonItem];
+    [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:rightBarButtonItem rightItem:leftBarButtonItem];
     self.title = @"Schedule Alarms";
     
     //data

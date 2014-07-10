@@ -9,8 +9,11 @@
                 <outlet property="detail" destination="A89-fD-bEW" id="aT4-6K-1qU"/>
                 <outlet property="peopleView" destination="aN8-Jf-xcg" id="vQG-aG-FNs"/>
                 <outlet property="playBtn" destination="r2h-Py-vN0" id="RHz-yZ-e0l"/>
+                <outlet property="playLabel" destination="ttD-Ft-KfN" id="yPe-pz-2PF"/>
                 <outlet property="progressView" destination="GEV-0T-wYT" id="Tad-UA-zL0"/>
                 <outlet property="recordBtn" destination="7Gm-XY-EfQ" id="2Bg-Oz-1GH"/>
+                <outlet property="retakeLabel" destination="eSL-DB-MV1" id="znO-rh-lKz"/>
+                <outlet property="sendLabel" destination="VhW-4c-F0S" id="zRU-vJ-AVB"/>
                 <outlet property="view" destination="1" id="3"/>
                 <outlet property="waveformView" destination="wqd-e7-pMy" id="Wv7-2C-tyT"/>
                 <outlet property="wish" destination="lWh-Ii-0Jm" id="dRk-XB-XB2"/>
@@ -22,22 +25,16 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GEV-0T-wYT" customClass="UAProgressView">
-                    <rect key="frame" x="130" y="300" width="60" height="60"/>
+                    <rect key="frame" x="130" y="290" width="60" height="60"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wqd-e7-pMy" customClass="SCSiriWaveformView">
-                    <rect key="frame" x="0.0" y="230" width="320" height="200"/>
+                    <rect key="frame" x="0.0" y="250" width="320" height="100"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
-                <slider opaque="NO" alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ClQ-Pb-UTf">
-                    <rect key="frame" x="-2" y="225" width="324" height="31"/>
-                    <color key="minimumTrackTintColor" red="0.51458560289999999" green="0.90120905880000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                    <color key="maximumTrackTintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <color key="thumbTintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </slider>
                 <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" keyboardDismissMode="onDrag" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="aN8-Jf-xcg">
-                    <rect key="frame" x="0.0" y="74" width="320" height="159"/>
+                    <rect key="frame" x="0.0" y="75" width="320" height="140"/>
                     <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="20" minimumInteritemSpacing="10" id="Yce-jt-deF">
                         <size key="itemSize" width="80" height="80"/>
                         <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -50,29 +47,29 @@
                         <outlet property="delegate" destination="-1" id="18U-hn-BNB"/>
                     </connections>
                 </collectionView>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Gm-XY-EfQ">
-                    <rect key="frame" x="135" y="471" width="55" height="30"/>
-                    <state key="normal" title="Record">
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Gm-XY-EfQ">
+                    <rect key="frame" x="140" y="450" width="40" height="40"/>
+                    <state key="normal" image="Play Button">
                         <color key="titleColor" red="0.51458560289999999" green="0.90120905880000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>
-                        <action selector="record:" destination="-1" eventType="touchUpInside" id="p9x-O0-xlh"/>
+                        <action selector="play:" destination="-1" eventType="touchUpInside" id="ELg-Zi-tJp"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r2h-Py-vN0">
-                    <rect key="frame" x="24" y="470" width="60" height="30"/>
-                    <state key="normal" title="Play">
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r2h-Py-vN0">
+                    <rect key="frame" x="55" y="450" width="40" height="40"/>
+                    <state key="normal" image="Record Button Red ">
                         <color key="titleColor" red="0.51458560289999999" green="0.90120905880000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>
-                        <action selector="play:" destination="-1" eventType="touchUpInside" id="Ceo-Y5-EAT"/>
+                        <action selector="record:" destination="-1" eventType="touchUpInside" id="AR2-yL-8aO"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J0J-Y8-aeq">
-                    <rect key="frame" x="264" y="471" width="36" height="30"/>
-                    <state key="normal" title="Send">
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J0J-Y8-aeq">
+                    <rect key="frame" x="225" y="450" width="40" height="40"/>
+                    <state key="normal" image="Confirm Button">
                         <color key="titleColor" red="0.51458560289999999" green="0.90120905880000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
@@ -87,10 +84,34 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="160" translatesAutoresizingMaskIntoConstraints="NO" id="lWh-Ii-0Jm">
-                    <rect key="frame" x="80" y="241" width="160" height="22"/>
+                    <rect key="frame" x="80" y="240" width="160" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Take" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSL-DB-MV1">
+                    <rect key="frame" x="48" y="490" width="54" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Play" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ttD-Ft-KfN">
+                    <rect key="frame" x="144" y="490" width="33" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Send" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VhW-4c-F0S">
+                    <rect key="frame" x="225" y="490" width="40" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -99,4 +120,9 @@
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
         </view>
     </objects>
+    <resources>
+        <image name="Confirm Button" width="40" height="40"/>
+        <image name="Play Button" width="40" height="40"/>
+        <image name="Record Button Red " width="40" height="40"/>
+    </resources>
 </document>
