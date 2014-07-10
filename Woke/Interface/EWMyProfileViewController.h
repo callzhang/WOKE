@@ -8,6 +8,6 @@
 
 #import "EWViewController.h"
 
-@interface EWMyProfileViewController : EWViewController
+@interface EWMyProfileViewController : UIViewController
 
 @end

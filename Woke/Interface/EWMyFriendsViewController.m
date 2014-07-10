@@ -76,7 +76,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 {
    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
-    self.navigationItem.title = @"Friends";
+    self.title = @"Friends";
     
     self.view.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.backgroundColor = [UIColor clearColor];
@@ -98,7 +98,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
         
         _tabView.hidden = YES;
     }
-
+   
 }
 
 -(void)close:(id)sender
@@ -132,7 +132,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80;
+    return 60;
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -165,17 +165,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     EWPerson * friend = [friends objectAtIndex:indexPath.row];
     
     cell.person = friend;
-    if (friend.isMe) {
-        cell.initial.hidden = NO;
-        cell.initial.text = @"YOU";
-    }else if(cell.showName){
-       
-            cell.name.alpha = 1;
-            CGRect frame = cell.name.frame;
-            frame.origin.y += 20;
-            cell.name.frame = frame;
-       
-    }
+
 //    cell.backgroundColor = [UIColor redColor];
    
     return cell;

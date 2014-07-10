@@ -41,6 +41,7 @@
     self.myTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
+     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Confirm Button"] style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
 }
 
 -(void)initData
@@ -68,6 +69,8 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSLog(@"%@",indexPath);
+   
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -78,18 +81,21 @@
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         cell.backgroundColor = kCustomLightGray;
     }
+    cell.textLabel.textColor = [UIColor whiteColor];
     switch (indexPath.row){
+            
         case 0: {
-            cell.textLabel.text = LOCALSTR(@"Name");
-            cell.detailTextLabel.text = me.name;
-        }
-            break;
-        case 1: {
             cell.textLabel.text = LOCALSTR(@"Profile Picture");
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.imageView.image = me.profilePic;
         }
+
+        case 1: {
+            cell.textLabel.text = LOCALSTR(@"Name");
+            cell.detailTextLabel.text = me.name;
+        }
             break;
+                    break;
         case 2: {
             cell.textLabel.text = LOCALSTR(@"ID");
             cell.detailTextLabel.text = me.username;
