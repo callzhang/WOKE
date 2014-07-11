@@ -35,7 +35,7 @@
     NSArray *personSet;
     NSURL *recordingFileUrl;
     AVManager *manager;
-    CGFloat _localProgress;
+    
     BOOL  everPlayed;
     //EWMediaItem *media;
 }
@@ -69,34 +69,9 @@
 {
     [super viewDidLoad];
     [self initProgressView];
-    _localProgress = 0;
-    self.playBtn.enabled = NO;
     
-    self.title = @"Recording";
-    
-    if (personSet.count == 1) {
-        EWPerson *receiver = personSet[0];
 
-        self.wish.text = receiver.cachedInfo[kNextTaskStatement];
-
-
-        self.detail.text = [NSString stringWithFormat:@"%@ wants to hear", receiver.name];
-        EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
-        NSString *str;
-        if (nextTask.statement) {
-            str = [NSString stringWithFormat:@"\"%@\"", nextTask.statement];
-        }else if (receiver.cachedInfo[kNextTaskStatement]){
-            str = [NSString stringWithFormat:@"\"%@\"", receiver.cachedInfo[kNextTaskStatement]];
-        }else{
-            str = @"\"say good morning\"";
-        }
-        self.wish.text = str;
-
-    }else{
-        self.detail.text = @"Sent voice greeting for their next morning";
-        self.wish.text = @"";
-    }
-    
+    [self initView];
     //collection view
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [self.peopleView registerNib:nib forCellWithReuseIdentifier:@"cellIdentifier"];
@@ -170,6 +145,38 @@
 	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateProgress:) userInfo:nil repeats:YES];
     
 }
+
+-(void)initView{
+    
+    self.playBtn.enabled = NO;
+    
+    self.title = @"Recording";
+    
+    if (personSet.count == 1) {
+        EWPerson *receiver = personSet[0];
+        
+        self.wish.text = receiver.cachedInfo[kNextTaskStatement];
+        
+        
+        self.detail.text = [NSString stringWithFormat:@"%@ wants to hear", receiver.name];
+        EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
+        NSString *str;
+        if (nextTask.statement) {
+            str = [NSString stringWithFormat:@"\"%@\"", nextTask.statement];
+        }else if (receiver.cachedInfo[kNextTaskStatement]){
+            str = [NSString stringWithFormat:@"\"%@\"", receiver.cachedInfo[kNextTaskStatement]];
+        }else{
+            str = @"\"say good morning\"";
+        }
+        self.wish.text = str;
+        
+    }else{
+        self.detail.text = @"Sent voice greeting for their next morning";
+        self.wish.text = @"";
+    }
+    
+}
+
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
@@ -317,7 +324,7 @@
     }
     else{
 
-    [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+        [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }
 }
 

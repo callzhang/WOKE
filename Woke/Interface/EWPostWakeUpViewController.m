@@ -16,6 +16,8 @@
 #import <QuartzCore/QuartzCore.h>
 #import "EWAppDelegate.h"
 #import "EWRecordingViewController.h"
+
+#import "EWUIUtil.h"
 NSString * const selectAllCellId = @"selectAllCellId";
 @interface EWPostWakeUpViewController ()
 {
@@ -121,8 +123,12 @@ NSString * const selectAllCellId = @"selectAllCellId";
     collectionView.dataSource = self;
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
-    [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 50, 20)];
+    [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 150, 20)];
 //    [collectionView setAllowsMultipleSelection:YES];
+    
+    [EWUIUtil applyAlphaGradientForView:collectionView withEndPoints:@[@0.05,@0.6]];
+    
+    
     buzzButton.layer.cornerRadius = 4.0;
     buzzButton.layer.masksToBounds= YES;
     buzzButton.layer.borderWidth = 1;

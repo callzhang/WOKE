@@ -88,7 +88,7 @@
             frame.origin.y += 20;
             self.name.frame = frame;
             
-            self.height = self.height+20;
+//            self.height = self.height+20;
         }];
     }
     
