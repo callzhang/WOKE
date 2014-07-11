@@ -750,6 +750,7 @@
                 NSArray *relatedPOs = parseObject[key];
                 NSMutableSet *relatedMOs = [NSMutableSet new];
                 for (PFObject *PO in relatedPOs) {
+                    if ([PO allKeys].count > 0)
                     [relatedMOs addObject:PO.managedObject];
                 }
                 [self setValue:[relatedMOs copy] forKey:key];
