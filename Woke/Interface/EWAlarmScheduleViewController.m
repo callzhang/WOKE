@@ -221,8 +221,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     [tableView beginUpdates];
     
+    //highlight the seleted cell
+    //[tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    
     if (selected == indexPath.row) {
         selected = 99;
     }else{
@@ -232,6 +235,12 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     [tableView endUpdates];
 }
+
+
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath{
+    return NO;
+}
+
 
 
 

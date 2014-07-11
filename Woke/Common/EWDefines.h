@@ -83,7 +83,7 @@
 #define kUserLoggedInUserKey            @"user"
 #define kAWSEndPointDicKey              @"AWS_EndPoint_dic"
 #define kAWSTopicDicKey                 @"AWS_Topic_dic"
-#define kLastChecked                    @"last_checked"
+#define kLastChecked                    @"last_checked"//stores the last checked task
 #define kSavedAlarms                    @"saved_alarms"
 
 //events

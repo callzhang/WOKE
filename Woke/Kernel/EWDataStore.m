@@ -569,6 +569,8 @@
         [EWTaskStore validateTask:(EWTaskItem *)mo];
     } else if([type isEqualToString:@"EWMediaItem"]){
         [EWMediaStore validateMedia:(EWMediaItem *)mo];
+    }else if ([type isEqualToString:@"EWPerson"){
+        [[EWPersonStore vidatePerson:(EWPerson *)mo]];
     }
     
     //skip if updating other PFUser
@@ -913,8 +915,18 @@
         }
         
         NSDate *updatedAt = [self valueForKey:kUpdatedDateKey];
-        if ((updatedAt && ![updatedAt isOutDated]) || ![self isKindOfClass:[EWPerson class]]) {
-            NSLog(@"MO %@(%@) is not out dated, skip refresh in background", self.entity.name, [self valueForKey:kParseObjectID]);
+        BOOL outdated = updatedAt && [updatedAt isOutDated];
+        BOOL isPerson = [self isKindOfClass:[EWPerson class]];
+        if (!outdated || !isPerson) {
+            if (!outdated) NSLog(@"MO %@(%@) is not out dated, skip refresh in background", self.entity.name, self.serverID);
+            if (!isPerson) NSLog(@"MO %@(%@) is not person, skip refresh in background", self.entity.name, self.serverID);
+            
+            if (block) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    block();
+                });
+                
+            }
             return;
         }
         

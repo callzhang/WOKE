@@ -650,7 +650,12 @@
 
 + (BOOL)validateTask:(EWTaskItem *)task{
     NSParameterAssert(task.owner || task.pastOwner);
-    NSParameterAssert(task.alarm);
+    if (task.completed) {
+        NSParameterAssert(!task.alarm);
+    }else{
+        NSParameterAssert(task.alarm);
+    }
+    
     return YES;
 }
 

@@ -74,7 +74,6 @@
             }];
         }
         
-        
     }else{
         //log in using local machine info
         [EWUserManagement showLoginPanel];

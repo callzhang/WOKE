@@ -175,6 +175,11 @@ EWPerson *me;
 + (void)updateMe{
     NSDate *lastCheckedMe = [[NSUserDefaults standardUserDefaults] valueForKey:kLastCheckedMe];
     if (!lastCheckedMe || [[NSDate date] timeIntervalSinceDate:lastCheckedMe] > kCheckMeInternal) {
+        if (!lastCheckedMe) {
+            NSLog(@"Didn't find lastCheckedMe date, start to refresh my relation in background");
+        }else{
+            NSLog(@"lastCheckedMe date is %@, which exceed the check interval %d, start to refresh my relation in background", lastCheckedMe.date2detailDateString, kCheckMeInternal);
+        }
         [me refreshRelatedInBackground];
         [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kLastCheckedMe];
     }
@@ -318,4 +323,13 @@ EWPerson *me;
     [EWNotificationManager sharedInstance];
 }
 
+
++ (BOOL)validatePerson:(EWPerson *)person{
+    NSParameterAssert(person.alarms.count == 7);
+    NSParameterAssert(person.tasks.count == 7*nWeeksToScheduleTask);
+    NSParameterAssert(person.name);
+    NSParameterAssert(person.profilePic);
+    NSParameterAssert(person.username);
+    return YES;
+}
 @end

@@ -17,7 +17,7 @@
 #define kEveryoneLastFetched                @"everyone_last_fetched"
 #define kEveryone                           @"everyone"
 #define kLastCheckedMe                      @"last_checked_me"
-#define kCheckMeInternal                    3600 * 24 * 10 //10 days
+#define kCheckMeInternal                    3600 * 24 * 7 //7 days
 
 extern EWPerson *me;
 
@@ -45,4 +45,6 @@ extern EWPerson *me;
 - (void)unfriend:(EWPerson *)user;
 
 - (void)purgeUserData;
+
++ (BOOL)validatePerson:(EWPerson *)person;
 @end
