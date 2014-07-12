@@ -87,8 +87,7 @@
             CGRect frame = self.name.frame;
             frame.origin.y += 20;
             self.name.frame = frame;
-            
-//            self.height = self.height+20;
+          
         }];
     }
     

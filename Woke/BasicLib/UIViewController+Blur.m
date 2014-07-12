@@ -48,8 +48,8 @@
  {
   navC = viewController;
  }
- [navC.view addSubview:bgToolbar];
- [navC.view sendSubviewToBack:bgToolbar];
+ [viewController.view addSubview:bgToolbar];
+ [viewController.view sendSubviewToBack:bgToolbar];
  
  [self presentViewController:navC animated:YES completion:^{
   
@@ -63,8 +63,8 @@
   
   //   [[UINavigationBar appearance] setBackgroundColor:[UIColor clearColor]];
   //   [[UINavigationBar appearance] setBackgroundImage:img forBarPosition:UIBarPositionTop barMetrics:UIBarMetricsDefault];
-  [navC.view addSubview:imgView];
-  [navC.view sendSubviewToBack:imgView];
+  [viewController.view  addSubview:imgView];
+  [viewController.view  sendSubviewToBack:imgView];
   
   //callback
   if (block) {
@@ -76,35 +76,35 @@
  
  return;
  
- [viewController.view addSubview:bgToolbar];
- [viewController.view sendSubviewToBack:bgToolbar];
- 
- [self presentViewController:navC animated:YES completion:^{
-  //before get image, get rid of blur layer
-  [self.view viewWithTag:kBlurViewTag].hidden = YES;
-  
-  //get CALayer image
-  
-  UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
-  
-  [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
-  CGContextRef contextRef = UIGraphicsGetCurrentContext();
-  [self.view.layer renderInContext:contextRef];
-  UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  
-  //get image
-  UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
-  imgView.image = img;
-  imgView.tag = kBlurImageTag;
-  [viewController.view addSubview:imgView];
-  [viewController.view sendSubviewToBack:imgView];
-  
-  //callback
-  if (block) {
-   block();
-  }
- }];
+// [viewController.view addSubview:bgToolbar];
+// [viewController.view sendSubviewToBack:bgToolbar];
+// 
+// [self presentViewController:navC animated:YES completion:^{
+//  //before get image, get rid of blur layer
+//  [self.view viewWithTag:kBlurViewTag].hidden = YES;
+//  
+//  //get CALayer image
+//  
+//  UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
+//  
+//  [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
+//  CGContextRef contextRef = UIGraphicsGetCurrentContext();
+//  [self.view.layer renderInContext:contextRef];
+//  UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+//  UIGraphicsEndImageContext();
+//  
+//  //get image
+//  UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//  imgView.image = img;
+//  imgView.tag = kBlurImageTag;
+//  [viewController.view addSubview:imgView];
+//  [viewController.view sendSubviewToBack:imgView];
+//  
+//  //callback
+//  if (block) {
+//   block();
+//  }
+// }];
 }
 
 

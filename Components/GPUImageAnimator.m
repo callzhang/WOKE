@@ -13,6 +13,7 @@
 #import "GPUImageView.h"
 #import "UIViewController+Blur.h"
 
+#define ScreenShotImageViewTag  1000
 static const float duration = 0.4;
 
 @interface GPUImageAnimator ()
@@ -83,11 +84,18 @@ static const float duration = 0.4;
     if (self.type == UINavigationControllerOperationPush) {
         //hide blur view
         
-//        UIView *tabView = [fromViewController.navigationController.view viewWithTag:kBlurViewTag];
-//        tabView.hidden = YES;
-        // 这两个view 被我加在了navicationController.view 上
-        UIImageView *imageView =(UIImageView *)[fromViewController.navigationController.view viewWithTag:kBlurImageTag];
-        UIImage *fromViewImage = imageView.image;
+        UIView *tabView = [fromViewController.navigationController.view viewWithTag:kBlurViewTag];
+        tabView.hidden = YES;
+        
+        UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Home Bg"]];
+        [fromViewController.view addSubview:bgImageView];
+        [fromViewController.view sendSubviewToBack:bgImageView];
+        bgImageView.center = fromViewController.view.center;
+      
+        UIImage *fromViewImage = fromViewController.view.screenshot;
+        
+        
+        
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.blurFilter];
         
