@@ -34,7 +34,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 240, 0);
+    _tableView.contentInset = UIEdgeInsetsMake(44, 0, 240, 0);
     UINib *cellNib = [UINib nibWithNibName:@"EWAlarmEditCell" bundle:nil];
     [_tableView registerNib:cellNib forCellReuseIdentifier:cellIdentifier];
     
