@@ -82,11 +82,12 @@ static const float duration = 0.4;
     
     if (self.type == UINavigationControllerOperationPush) {
         //hide blur view
-        >>>>>>>>> Need to hide blur biew
-        UIView *tabView = [fromViewController.view viewWithTag:kBlurViewTag];
-        tabView.hidden = YES;
         
-        UIImage *fromViewImage = fromViewController.view.screenshot;
+//        UIView *tabView = [fromViewController.navigationController.view viewWithTag:kBlurViewTag];
+//        tabView.hidden = YES;
+        // 这两个view 被我加在了navicationController.view 上
+        UIImageView *imageView =(UIImageView *)[fromViewController.navigationController.view viewWithTag:kBlurImageTag];
+        UIImage *fromViewImage = imageView.image;
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.blurFilter];
         
