@@ -11,5 +11,5 @@
 @interface UIView (Sreenshot)
 
 -(UIImage *)convertViewToImage;
-
+- (UIImage *)screenshot;
 @end

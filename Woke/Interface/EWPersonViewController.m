@@ -38,6 +38,8 @@
 #import "EWMyFriendsViewController.h"
 #import "EWMyProfileViewController.h"
 #import "EWActivityHeadView.h"
+#import "NavigationControllerDelegate.h"
+
 #define kProfileTableArray              @[@"Friends", @"People woke her up", @"People I woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
 
 
@@ -89,6 +91,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     UINib *taskNib = [UINib nibWithNibName:@"EWTaskHistoryCell" bundle:nil];
     [taskTableView registerNib:taskNib forCellReuseIdentifier:taskCellIdentifier];
     [EWUIUtil applyAlphaGradientForView:taskTableView withEndPoints:@[@0.10]];
+    
     taskTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     //tab view
     //tabView.layer.backgroundColor = [[UIColor colorWithWhite:1.0f alpha:0.5f] CGColor];

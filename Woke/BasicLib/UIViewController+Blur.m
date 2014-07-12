@@ -8,7 +8,7 @@
 
 #import "UIViewController+Blur.h"
 #import "EWUIUtil.h"
-
+#import "UIView+Sreenshot.h"
 
 
 @implementation UIViewController (Blur)
@@ -39,44 +39,42 @@
  
  UIViewController *navC ;
  if ([viewController isKindOfClass:[UINavigationController class]]) {
-   UINavigationController * nav = (UINavigationController *)viewController;
-    navC = nav;
-    viewController =nav.visibleViewController;
+  UINavigationController * nav = (UINavigationController *)viewController;
+  navC = nav;
+  viewController =nav.visibleViewController;
   viewController.view.backgroundColor = [UIColor clearColor];
  }
  else
  {
   navC = viewController;
  }
-  [navC.view addSubview:bgToolbar];
-  [navC.view sendSubviewToBack:bgToolbar];
+ [navC.view addSubview:bgToolbar];
+ [navC.view sendSubviewToBack:bgToolbar];
+ 
+ [self presentViewController:navC animated:YES completion:^{
   
-  [self presentViewController:navC animated:YES completion:^{
-   //before get image, get rid of blur layer
-   [self.view viewWithTag:kBlurViewTag].hidden = YES;
-   
-   //get CALayer image
-   UIImage * img = self.view.screenshot;
-   
-   //get image
-   UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
-   imgView.image = img;
-   imgView.tag = kBlurImageTag;
-   
-//   [[UINavigationBar appearance] setBackgroundColor:[UIColor clearColor]];
-//   [[UINavigationBar appearance] setBackgroundImage:img forBarPosition:UIBarPositionTop barMetrics:UIBarMetricsDefault];
-   [navC.view addSubview:imgView];
-   [navC.view sendSubviewToBack:imgView];
-   
-   //callback
-   if (block) {
-    block();
-   }
-   
-   
-  }];
+  //get CALayer image
+  UIImage * img = self.view.screenshot;
   
-  return;
+  //get image
+  UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
+  imgView.image = img;
+  imgView.tag = kBlurImageTag;
+  
+  //   [[UINavigationBar appearance] setBackgroundColor:[UIColor clearColor]];
+  //   [[UINavigationBar appearance] setBackgroundImage:img forBarPosition:UIBarPositionTop barMetrics:UIBarMetricsDefault];
+  [navC.view addSubview:imgView];
+  [navC.view sendSubviewToBack:imgView];
+  
+  //callback
+  if (block) {
+   block();
+  }
+  
+  
+ }];
+ 
+ return;
  
  [viewController.view addSubview:bgToolbar];
  [viewController.view sendSubviewToBack:bgToolbar];

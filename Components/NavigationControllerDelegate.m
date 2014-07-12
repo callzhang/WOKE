@@ -28,6 +28,13 @@ static NSString * PushSegueIdentifier = @"push segue identifier";
     self.animator = [GPUImageAnimator new];
 }
 
+
+- (NavigationControllerDelegate *)init{
+    self = [super init];
+    self.animator = [GPUImageAnimator new];
+    return self;
+}
+
 - (void)pan:(UIPanGestureRecognizer*)recognizer
 {
     UIView* view = self.navigationController.view;

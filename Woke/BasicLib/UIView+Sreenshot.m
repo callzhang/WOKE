@@ -19,4 +19,15 @@
     return image;
 }
 
+
+- (UIImage *)screenshot{
+    UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.opaque, 0.0);
+    CGContextRef contextRef = UIGraphicsGetCurrentContext();
+    [self.layer renderInContext:contextRef];
+    UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return img;
+}
+
 @end

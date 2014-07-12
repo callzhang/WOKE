@@ -11,6 +11,7 @@
 #import "GPUImagePicture.h"
 #import "GPUImagePixellateFilter.h"
 #import "GPUImageView.h"
+#import "UIViewController+Blur.h"
 
 static const float duration = 0.4;
 
@@ -72,6 +73,7 @@ static const float duration = 0.4;
     self.context = transitionContext;
     UIViewController* toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     UIViewController* fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    toViewController.view.backgroundColor = [UIColor clearColor];
     UIView* container = [transitionContext containerView];
     
     self.imageView.frame = container.bounds;
@@ -79,8 +81,13 @@ static const float duration = 0.4;
     [container addSubview:self.imageView];
     
     if (self.type == UINavigationControllerOperationPush) {
+        //hide blur view
+        >>>>>>>>> Need to hide blur biew
+        UIView *tabView = [fromViewController.view viewWithTag:kBlurViewTag];
+        tabView.hidden = YES;
         
-        self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewController.view.screenshot];
+        UIImage *fromViewImage = fromViewController.view.screenshot;
+        self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.blurFilter];
         
         [self triggerRenderOfNextFrame];
@@ -101,6 +108,8 @@ static const float duration = 0.4;
         }];
         
     }else if(self.type == UINavigationControllerOperationPop){
+        UIView *tabView = [toViewController.view viewWithTag:kBlurViewTag];
+        tabView.hidden = NO;
         
         UIView *fromView = fromViewController.view;
         [[self.context containerView] addSubview:fromView];
@@ -120,7 +129,8 @@ static const float duration = 0.4;
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             
-            self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewController.view.screenshot];
+            UIImage *toViewImage = toViewController.view.screenshot;
+            self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];
             [self.blurImage addTarget:self.blurFilter];
             [self triggerRenderOfNextFrame];
             self.startTime = 0;

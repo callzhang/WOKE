@@ -52,6 +52,7 @@
     NSInteger selectedPersonIndex;
     NSTimer *indicatorHideTimer;
     BOOL taskScheduled;
+    NavigationControllerDelegate *navDelegate;
 }
 
 @property (nonatomic, retain) NSFetchedResultsController *fetchController;
@@ -682,7 +683,8 @@
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
         controller.canSeeFriendsDetail = YES;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        
+        navDelegate = [[NavigationControllerDelegate alloc] init];
+        navController.delegate = navDelegate;
         [self presentViewControllerWithBlurBackground:navController completion:NULL];
         return;
     }
@@ -711,9 +713,8 @@
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
         controller.canSeeFriendsDetail = YES;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        NavigationControllerDelegate *navDelegate = [NavigationControllerDelegate new];
+        navDelegate = [[NavigationControllerDelegate alloc] init];
         navController.delegate = navDelegate;
-       
         [self presentViewControllerWithBlurBackground:navController completion:NULL];
         [weakMenu closeMenu];
     };
