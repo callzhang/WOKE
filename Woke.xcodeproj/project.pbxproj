@@ -45,13 +45,10 @@
 		0E591000194DF35B000AD7C4 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FE8194DF35B000AD7C4 /* Montserrat-Bold.ttf */; };
 		0E591001194DF35B000AD7C4 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FE9194DF35B000AD7C4 /* Montserrat-Regular.ttf */; };
 		0E591002194DF35B000AD7C4 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FEA194DF35B000AD7C4 /* OFL.txt */; };
-		0E646275196079AA00B70DC9 /* AFBlurSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E646272196079AA00B70DC9 /* AFBlurSegue.m */; };
-		0E646276196079AA00B70DC9 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E646274196079AA00B70DC9 /* UIImage+ImageEffects.m */; };
 		0EA8ACD91965BA0000EEDCF4 /* EWActivityHeadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EA8ACD81965BA0000EEDCF4 /* EWActivityHeadView.m */; };
 		0EABA9E0195939A1002F9C63 /* EWFriendsCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABA9DF195939A1002F9C63 /* EWFriendsCollectionCell.m */; };
 		0EABB2A71956884300C45788 /* EWMyFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABB2A51956884300C45788 /* EWMyFriendsViewController.m */; };
 		0EABB2A81956884300C45788 /* EWMyFriendsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EABB2A61956884300C45788 /* EWMyFriendsViewController.xib */; };
-		0EABB2AB195693C600C45788 /* UINavigationController+Blur.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EABB2AA195693C600C45788 /* UINavigationController+Blur.m */; };
 		0EAD6FB7195A62EC00DDB052 /* EWFriendsTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD6FB5195A62EC00DDB052 /* EWFriendsTableCell.m */; };
 		0EAD6FB8195A62EC00DDB052 /* EWFriendsTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */; };
 		0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */; };
@@ -77,6 +74,8 @@
 		56FEA59617A5766B00FC2938 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 56FEA59217A5766B00FC2938 /* InfoPlist.strings */; };
 		56FEA59717A5766B00FC2938 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA59417A5766B00FC2938 /* main.m */; };
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
+		9B3EC17A1970DEBC00BB52AA /* GPUImageAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3EC1791970DEBC00BB52AA /* GPUImageAnimator.m */; };
+		9B3EC17D1970DECF00BB52AA /* NavigationControllerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3EC17C1970DECF00BB52AA /* NavigationControllerDelegate.m */; };
 		9B5AF7F11965EC640002AA06 /* EWNotificationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B5AF7EF1965EC640002AA06 /* EWNotificationCell.m */; };
 		9B5AF7F21965EC640002AA06 /* EWNotificationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B5AF7F01965EC640002AA06 /* EWNotificationCell.xib */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
@@ -243,10 +242,6 @@
 		0E590FE8194DF35B000AD7C4 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Bold.ttf"; sourceTree = "<group>"; };
 		0E590FE9194DF35B000AD7C4 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Regular.ttf"; sourceTree = "<group>"; };
 		0E590FEA194DF35B000AD7C4 /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
-		0E646271196079AA00B70DC9 /* AFBlurSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFBlurSegue.h; path = Woke/AFBlur/AFBlurSegue.h; sourceTree = SOURCE_ROOT; };
-		0E646272196079AA00B70DC9 /* AFBlurSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFBlurSegue.m; path = Woke/AFBlur/AFBlurSegue.m; sourceTree = SOURCE_ROOT; };
-		0E646273196079AA00B70DC9 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+ImageEffects.h"; path = "Woke/AFBlur/UIImage+ImageEffects.h"; sourceTree = SOURCE_ROOT; };
-		0E646274196079AA00B70DC9 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+ImageEffects.m"; path = "Woke/AFBlur/UIImage+ImageEffects.m"; sourceTree = SOURCE_ROOT; };
 		0EA8ACD71965BA0000EEDCF4 /* EWActivityHeadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWActivityHeadView.h; sourceTree = "<group>"; };
 		0EA8ACD81965BA0000EEDCF4 /* EWActivityHeadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWActivityHeadView.m; sourceTree = "<group>"; };
 		0EABA9DE195939A1002F9C63 /* EWFriendsCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFriendsCollectionCell.h; sourceTree = "<group>"; };
@@ -254,8 +249,6 @@
 		0EABB2A41956884300C45788 /* EWMyFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMyFriendsViewController.h; sourceTree = "<group>"; };
 		0EABB2A51956884300C45788 /* EWMyFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMyFriendsViewController.m; sourceTree = "<group>"; };
 		0EABB2A61956884300C45788 /* EWMyFriendsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMyFriendsViewController.xib; sourceTree = "<group>"; };
-		0EABB2A9195693C600C45788 /* UINavigationController+Blur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+Blur.h"; sourceTree = "<group>"; };
-		0EABB2AA195693C600C45788 /* UINavigationController+Blur.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+Blur.m"; sourceTree = "<group>"; };
 		0EAD6FB4195A62EC00DDB052 /* EWFriendsTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFriendsTableCell.h; sourceTree = "<group>"; };
 		0EAD6FB5195A62EC00DDB052 /* EWFriendsTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFriendsTableCell.m; sourceTree = "<group>"; };
 		0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWFriendsTableCell.xib; sourceTree = "<group>"; };
@@ -311,6 +304,10 @@
 		56FEA59417A5766B00FC2938 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9B2DEEF518B811EC0046EB80 /* EWServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWServer.h; sourceTree = "<group>"; };
 		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWServer.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		9B3EC1781970DEBC00BB52AA /* GPUImageAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUImageAnimator.h; sourceTree = "<group>"; };
+		9B3EC1791970DEBC00BB52AA /* GPUImageAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPUImageAnimator.m; sourceTree = "<group>"; };
+		9B3EC17B1970DECF00BB52AA /* NavigationControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationControllerDelegate.h; sourceTree = "<group>"; };
+		9B3EC17C1970DECF00BB52AA /* NavigationControllerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationControllerDelegate.m; sourceTree = "<group>"; };
 		9B5AF7EE1965EC640002AA06 /* EWNotificationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationCell.h; sourceTree = "<group>"; };
 		9B5AF7EF1965EC640002AA06 /* EWNotificationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWNotificationCell.m; sourceTree = "<group>"; };
 		9B5AF7F01965EC640002AA06 /* EWNotificationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWNotificationCell.xib; sourceTree = "<group>"; };
@@ -620,10 +617,6 @@
 		5642AF4817ACCE27000C73E8 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
-				0E646271196079AA00B70DC9 /* AFBlurSegue.h */,
-				0E646272196079AA00B70DC9 /* AFBlurSegue.m */,
-				0E646273196079AA00B70DC9 /* UIImage+ImageEffects.h */,
-				0E646274196079AA00B70DC9 /* UIImage+ImageEffects.m */,
 				ABC8F96418E92F180096C073 /* UIView+HUD.h */,
 				ABC8F96518E92F180096C073 /* UIView+HUD.m */,
 				56D997F017B425D2003EDA53 /* NSString+Extend.h */,
@@ -644,8 +637,6 @@
 				5632E39217D1C5950079D81C /* EWDeviceInfo.m */,
 				185B5272190D1D82006D6FB9 /* UIView+Sreenshot.h */,
 				185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */,
-				0EABB2A9195693C600C45788 /* UINavigationController+Blur.h */,
-				0EABB2AA195693C600C45788 /* UINavigationController+Blur.m */,
 				0ECB00A01964585A00B122EF /* EWCostumTextField.h */,
 				0ECB00A11964585A00B122EF /* EWCostumTextField.m */,
 			);
@@ -878,6 +869,7 @@
 		56FEA57417A5763200FC2938 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				9B3EC1771970DE9E00BB52AA /* GPUAnimator */,
 				0EB0C05619684F3B0061BC70 /* UAProgress */,
 				9B8A6A9C191887F400591E8A /* NGAParallaxMotion */,
 				ABF3FB6D190A05E80017D2EF /* SCSiriWaveformView */,
@@ -925,6 +917,17 @@
 				56FEA57E17A5763200FC2938 /* EWAppDelegate.m */,
 			);
 			path = Delegate;
+			sourceTree = "<group>";
+		};
+		9B3EC1771970DE9E00BB52AA /* GPUAnimator */ = {
+			isa = PBXGroup;
+			children = (
+				9B3EC1781970DEBC00BB52AA /* GPUImageAnimator.h */,
+				9B3EC1791970DEBC00BB52AA /* GPUImageAnimator.m */,
+				9B3EC17B1970DECF00BB52AA /* NavigationControllerDelegate.h */,
+				9B3EC17C1970DECF00BB52AA /* NavigationControllerDelegate.m */,
+			);
+			name = GPUAnimator;
 			sourceTree = "<group>";
 		};
 		9B8A6A9C191887F400591E8A /* NGAParallaxMotion */ = {
@@ -1327,9 +1330,10 @@
 				5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */,
 				5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */,
 				AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */,
+				9B3EC17D1970DECF00BB52AA /* NavigationControllerDelegate.m in Sources */,
 				9BF297B01912F713008C136E /* EWAlarmScheduleViewController.m in Sources */,
-				0E646275196079AA00B70DC9 /* AFBlurSegue.m in Sources */,
 				9BF07AB8192324F800DED2E1 /* _EWAlarmItem.m in Sources */,
+				9B3EC17A1970DEBC00BB52AA /* GPUImageAnimator.m in Sources */,
 				AB207E69182FFFB60076D93F /* MBProgressHUD.m in Sources */,
 				9BF297C21912F713008C136E /* EWWakeUpViewController.m in Sources */,
 				9BF297BA1912F713008C136E /* EWPersonViewController.m in Sources */,
@@ -1359,7 +1363,6 @@
 				AB1B140F187E661E009D1DB2 /* EWAchievement.m in Sources */,
 				9BF297EC1912F720008C136E /* EWTaskHistoryCell.m in Sources */,
 				9BF297B61912F713008C136E /* EWLogInViewController.m in Sources */,
-				0EABB2AB195693C600C45788 /* UINavigationController+Blur.m in Sources */,
 				ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */,
 				56D997F517B426C3003EDA53 /* NSDate+Extend.m in Sources */,
 				0ECB00A21964585A00B122EF /* EWCostumTextField.m in Sources */,
@@ -1403,7 +1406,6 @@
 				9B5AF7F11965EC640002AA06 /* EWNotificationCell.m in Sources */,
 				AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */,
 				9BF297C01912F713008C136E /* EWSettingsViewController.m in Sources */,
-				0E646276196079AA00B70DC9 /* UIImage+ImageEffects.m in Sources */,
 				AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */,
 				9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */,
 				9BF07ABF192324F800DED2E1 /* _EWSocialGraph.m in Sources */,

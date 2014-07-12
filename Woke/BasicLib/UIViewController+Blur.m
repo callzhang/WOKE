@@ -56,7 +56,7 @@
    [self.view viewWithTag:kBlurViewTag].hidden = YES;
    
    //get CALayer image
-   UIImage * img = [EWUIUtil getScreenshot:self.view];
+   UIImage * img = self.view.screenshot;
    
    //get image
    UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];

@@ -569,8 +569,8 @@
         [EWTaskStore validateTask:(EWTaskItem *)mo];
     } else if([type isEqualToString:@"EWMediaItem"]){
         [EWMediaStore validateMedia:(EWMediaItem *)mo];
-    }else if ([type isEqualToString:@"EWPerson"){
-        [[EWPersonStore vidatePerson:(EWPerson *)mo]];
+    }else if ([type isEqualToString:@"EWPerson"]){
+        [EWPersonStore validatePerson:(EWPerson *)mo];
     }
     
     //skip if updating other PFUser

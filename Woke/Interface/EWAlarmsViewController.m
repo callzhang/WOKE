@@ -38,6 +38,7 @@
 #import "EWSettingsViewController.h"
 #import "EWRecordingViewController.h"
 #import "EWNotificationViewController.h"
+#import "NavigationControllerDelegate.h"
 
 //backend
 
@@ -710,6 +711,8 @@
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
         controller.canSeeFriendsDetail = YES;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+        NavigationControllerDelegate *navDelegate = [NavigationControllerDelegate new];
+        navController.delegate = navDelegate;
        
         [self presentViewControllerWithBlurBackground:navController completion:NULL];
         [weakMenu closeMenu];

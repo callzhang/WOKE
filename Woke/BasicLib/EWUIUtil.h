@@ -61,6 +61,4 @@
 + (void)addTransparantNavigationBarToViewController:(UIViewController *)vc withLeftItem:(UIBarButtonItem *)leftItem rightItem:(UIBarButtonItem *)rightItem;
 
 + (NSString *)getStringFromTime:(float)time;
-
-+ (UIImage *)getScreenshot:(UIView *)view;
 @end

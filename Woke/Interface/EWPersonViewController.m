@@ -7,11 +7,9 @@
 //
 
 #import "EWPersonViewController.h"
-#import "UINavigationController+Blur.h"
 // Util
 #import "EWUIUtil.h"
 #import "UIViewController+Blur.h"
-#import "UINavigationController+Blur.h"
 #import "NSDate+Extend.h"
 
 // Model
@@ -248,7 +246,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 
     }else{
-        [self.navigationController popViewControllerWithBlur];
+        [self.navigationController popViewControllerAnimated:YES];
     }
     
 }
@@ -258,7 +256,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if (person.facebook) {
         EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
         
-        [self.navigationController pushViewControllerWithBlur:controller];
+        [self.navigationController pushViewController:controller animated:YES];
         
         return;
     }
@@ -538,12 +536,12 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     switch (indexPath.row) {
         case 0:
         {
-            if ([self.navigationController.viewControllers count] <kMaxPersonNavigationConnt&&[person.friends count]>0) {
+            if ([self.navigationController.viewControllers count] < kMaxPersonNavigationConnt && [person.friends count]>0) {
                 EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
                 tempVc.cellSelect =_canSeeFriendsDetail;
                 controller = tempVc;
                 
-                [self.navigationController pushViewControllerWithBlur:controller];
+                [self.navigationController pushViewController:controller animated:YES];
                 break;
             }
       

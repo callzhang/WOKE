@@ -7,9 +7,7 @@
 //
 
 #import "EWMyFriendsViewController.h"
-#import "UINavigationController+Blur.h"
-#import "EWPerson.h" 
-//#import "EWCollectionPersonCell.h"
+#import "EWPerson.h"
 #import "EWCollectionPersonCell.h"
 #import "EWFriendsCollectionCell.h"
 #import "EWUIUtil.h"
@@ -221,7 +219,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
         EWPerson * friend = [friends objectAtIndex:number];
         EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
         viewController.canSeeFriendsDetail = YES;
-        [self.navigationController pushViewControllerWithBlur:viewController];
+        [self.navigationController pushViewController:viewController animated:YES];
     }
 
 }
