@@ -82,7 +82,6 @@ static const float duration = 0.4;
     
     if (self.type == UINavigationControllerOperationPush) {
         //hide blur view
-        >>>>>>>>> Need to hide blur biew
         UIView *tabView = [fromViewController.view viewWithTag:kBlurViewTag];
         tabView.hidden = YES;
         
