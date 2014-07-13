@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Woke": {
+            "applicationId": "p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z", 
+            "masterKey": "yTKxNzkIm79nLPyNSycVY3lz32b434bZUu0koGSD"
+        }, 
+        "_default": {
+            "link": "Woke"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.18"
+    }
+}
