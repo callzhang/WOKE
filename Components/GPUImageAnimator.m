@@ -18,6 +18,9 @@
 
 
 static const float duration = 0.3;
+static const float delay = 0.0;
+static const float zoom = 1.5;
+static const float initialDownSampling = 2;
 
 @interface GPUImageAnimator ()
 
@@ -52,11 +55,11 @@ static const float duration = 0.3;
     self.blurFilter.blurRadiusInPixels = 1;
     self.blurFilter.saturation = 1;
     self.blurFilter.rangeReductionFactor = 0;
-    self.blurFilter.downsampling = 1;
+    self.blurFilter.downsampling = initialDownSampling;
     //[self.blurFilter addTarget:self.imageView];
     
     self.brightnessFilter = [GPUImageBrightnessFilter new];
-    self.brightnessFilter.brightness = -0.4;
+    self.brightnessFilter.brightness = 0;
     [self.blurFilter addTarget:self.brightnessFilter];
     [self.brightnessFilter addTarget:self.imageView];
     
@@ -78,54 +81,52 @@ static const float duration = 0.3;
     UIViewController* toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     UIViewController* fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     toViewController.view.backgroundColor = [UIColor clearColor];
+    if ([toViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *nav = (UINavigationController *)toViewController;
+        nav.visibleViewController.view.backgroundColor = [UIColor clearColor];
+    }
     UIView* container = [transitionContext containerView];
     UIView *fromView = fromViewController.view;
-    
+    UIView *toView = toViewController.view;
     
     self.imageView.frame = container.bounds;
     self.imageView.alpha = 1;
     [container addSubview:self.imageView];
     
     if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
-//        if (self.type == kModelViewPresent) {
-//            fromView = rootViewController.view;
-//        }
-        //hide blur view
-        UIView *tabView = [fromView viewWithTag:kBlurViewTag];
-        tabView.hidden = YES;
       
         UIImage *fromViewImage = fromView.screenshot;
         
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.blurFilter];
+        //[self.blurFilter useNextFrameForImageCapture];
+        
+        //hide from view
+        [fromView removeFromSuperview];
         
         [self triggerRenderOfNextFrame];
         
         self.startTime = 0;
         self.displayLink.paused = NO;
         
-        //animation
-        UIView *toView = [self.context viewControllerForKey:UITransitionContextToViewControllerKey].view;
+        //pre animation
         [[self.context containerView] addSubview:toView];
         toView.alpha = 0;
-        toView.transform = CGAffineTransformMakeScale(1.3, 1.3);
-        [UIView animateWithDuration:0.3 delay:0.2 options:UIViewAnimationOptionTransitionNone animations:^{
-            toView.alpha = 1;
-            toView.transform = CGAffineTransformIdentity;
-        } completion:^(BOOL finished) {
-            [self.context completeTransition:YES];
-        }];
+        toView.transform = CGAffineTransformMakeScale(zoom, zoom);
+        
         
     }else if(self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
-        UIView *tabView = [toViewController.view viewWithTag:kBlurViewTag];
-        tabView.hidden = NO;
         
         [[self.context containerView] addSubview:fromView];
         
-        [UIView animateWithDuration:0.4 animations:^{
+        //remove blur image
+        UIView *blurView = [fromView viewWithTag:kBlurImageViewTag];
+        [blurView removeFromSuperview];
+        
+        [UIView animateWithDuration:duration-delay animations:^{
             
             fromView.alpha = 0;
-            fromView.transform = CGAffineTransformMakeScale(1.3, 1.3);
+            fromView.transform = CGAffineTransformMakeScale(zoom, zoom);
             
         }completion:^(BOOL finished) {
             
@@ -135,11 +136,8 @@ static const float duration = 0.3;
             
         }];
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            //hide blur view
-            UIView *tabView = [toViewController.view viewWithTag:kBlurViewTag];
-            tabView.hidden = YES;
-            
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration - 0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             UIImage *toViewImage = toViewController.view.screenshot;
             self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];
             [self.blurImage addTarget:self.blurFilter];
@@ -147,11 +145,7 @@ static const float duration = 0.3;
             self.startTime = 0;
             self.displayLink.paused = NO;
         });
-        
     }
-    
-    
-    
 }
 
 - (void)triggerRenderOfNextFrame
@@ -166,25 +160,56 @@ static const float duration = 0.3;
 - (void)updateFrame:(CADisplayLink*)link
 {
     [self updateProgress:link];
-    //self.brightnessFilter.brightness = -0.5 * self.progress;
-    self.blurFilter.downsampling = 1 + self.progress * 7;
+    self.brightnessFilter.brightness = -0.3 * self.progress;
+    self.blurFilter.downsampling = initialDownSampling + self.progress * 6;
     self.blurFilter.blurRadiusInPixels = 1+ self.progress * 8;
     [self triggerRenderOfNextFrame];
     
     if (self.interactive) {
         return;
     }
-    if (self.type == UINavigationControllerOperationPush && self.progress == 1) {
-        [self finishTransition];
-    }else if (self.type == UINavigationControllerOperationPop && self.progress == 0){
+    if ((self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) && self.progress == 1) {
+        self.displayLink.paused = YES;
+        UIViewController *toViewController = [self.context viewControllerForKey:UITransitionContextToViewControllerKey];
+        UIView *toView = toViewController.view;
         
+        //screenshot of blur image and insert to the destination view
+        UIImage *blurImage = self.brightnessFilter.imageFromCurrentFramebuffer;
+        UIImageView *blurImageView = [[UIImageView alloc] initWithFrame:toViewController.view.frame];
+        blurImageView.image = blurImage;
+        blurImageView.tag = kBlurImageViewTag;
+        if ([toViewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *nav = (UINavigationController *)toViewController;
+            UIView *presentedView = nav.visibleViewController.view;
+            
+            [presentedView addSubview:self.imageView];
+            [presentedView sendSubviewToBack:self.imageView];
+        }else{
+            [toView addSubview:self.imageView];
+            [toView sendSubviewToBack:self.imageView];
+        }
+
+        //animation
+        [UIView animateWithDuration:duration-delay delay:delay options:UIViewAnimationOptionTransitionNone animations:^{
+            
+            toView.alpha = 1;
+            toView.transform = CGAffineTransformIdentity;
+        } completion:^(BOOL finished) {
+            //=======> Present animation ended
+            
+            [self.context completeTransition:YES];
+        }];
+        
+        
+    }else if ((self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss) && self.progress == 0){
+        
+        //=======> Here is the point where the dismiss animation ended
+        
+        //unhide to view
         self.displayLink.paused = YES;
         [self.context completeTransition:YES];
         self.imageView.alpha = 0;
         
-        UIViewController* toViewController = [self.context viewControllerForKey:UITransitionContextToViewControllerKey];
-        UIView *tabView = [toViewController.view viewWithTag:kBlurViewTag];
-        tabView.hidden = NO;
     }
 }
 
@@ -200,9 +225,9 @@ static const float duration = 0.3;
     
     float progress = MAX(0, MIN((link.timestamp - self.startTime) / duration, 1));
     
-    if (self.type == UINavigationControllerOperationPush) {
+    if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
         self.progress = progress;
-    }else if (self.type == UINavigationControllerOperationPop){
+    }else if (self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
         self.progress = 1- progress;
     }
 }
@@ -227,6 +252,10 @@ static const float duration = 0.3;
 - (void)cancelInteractiveTransition
 {
     // TODO
+}
+
+- (void)animationEnded:(BOOL)transitionCompleted{
+    self.displayLink.paused = YES;
 }
 
 @end

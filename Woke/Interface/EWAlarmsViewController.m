@@ -52,11 +52,10 @@
     NSInteger selectedPersonIndex;
     NSTimer *indicatorHideTimer;
     BOOL taskScheduled;
-    NavigationControllerDelegate *navDelegate;
 }
 
-@property (nonatomic, retain) NSFetchedResultsController *fetchController;
-
+@property (nonatomic, strong) NSFetchedResultsController *fetchController;
+@property (nonatomic, strong) NavigationControllerDelegate *navDelegate;
 @end
 
 @implementation EWAlarmsViewController
@@ -66,7 +65,7 @@
 @synthesize pageView = _pageView;
 @synthesize collectionView = _collectionView;
 @synthesize fetchController;
-
+@synthesize navDelegate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -196,6 +195,13 @@
     self.youIndicator.layer.anchorPoint = CGPointMake(0.5, 0.5);
 }
 
+
+- (NavigationControllerDelegate *)navDelegate{
+    if (!navDelegate) {
+        navDelegate = [NavigationControllerDelegate new];
+    }
+    return navDelegate;
+}
 
 
 #pragma mark - Fetch Controller
@@ -638,7 +644,11 @@
     //pop up alarmScheduleView
     EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-    [self presentViewControllerWithBlurBackground:navController];
+    navController.modalPresentationStyle = UIModalPresentationCustom;
+    navController.transitioningDelegate = self.navDelegate;
+    [self presentViewController:navController animated:YES completion:^{
+        //
+    }];
     
 }
 
@@ -713,8 +723,7 @@
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
         controller.canSeeFriendsDetail = YES;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        navDelegate = [[NavigationControllerDelegate alloc] init];
-        navController.delegate = navDelegate;
+        navController.delegate = self.navDelegate;
         [self presentViewControllerWithBlurBackground:navController completion:NULL];
         [weakMenu closeMenu];
     };
@@ -742,7 +751,6 @@
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
 }
-
 
 
 #pragma mark - FetchedResultController delegate
@@ -777,6 +785,15 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
     if (cellChangeArray.count > 0)
     {
+        NSArray *changeArray;
+        NSInteger batch = ceil(cellChangeArray.count / 20);
+        if (batch > 1) {
+            changeArray = [cellChangeArray subarrayWithRange:NSMakeRange(0, 20)];
+            cellChangeArray = [[cellChangeArray subarrayWithRange:NSMakeRange(20, cellChangeArray.count - 20)] mutableCopy];
+        }else{
+            changeArray = cellChangeArray;
+            cellChangeArray = [NSMutableArray new];
+        }
         
         if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {
             // This is to prevent a bug in UICollectionView from occurring.
@@ -790,7 +807,7 @@
             
             [self.collectionView performBatchUpdates:^{
                 
-                for (NSDictionary *change in cellChangeArray)
+                for (NSDictionary *change in changeArray)
                 {
                     [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
                         
@@ -803,8 +820,14 @@
                             case NSFetchedResultsChangeDelete:
                                 [self.collectionView deleteItemsAtIndexPaths:@[obj]];
                                 break;
-                            case NSFetchedResultsChangeUpdate:
+                            case NSFetchedResultsChangeUpdate:{
+                                if ([(NSIndexPath *)obj row] == 0) {
+                                    NSLog(@"Skipped update self in collection view");
+                                    break;
+                                }
                                 [self.collectionView reloadItemsAtIndexPaths:@[obj]];
+                            }
+                                
                                 break;
                             case NSFetchedResultsChangeMove:
                                 [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
@@ -814,6 +837,7 @@
                 }
             } completion:^(BOOL finished){
                 if (finished) {
+                    //center when changed
                     static NSTimer *viewCenterTimer;
                     [viewCenterTimer invalidate];
                     viewCenterTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
@@ -821,6 +845,13 @@
                     NSLog(@"*** Update of collection view failed");
                 }
                 
+                //continue if there are still changes
+                if (cellChangeArray.count > 0) {
+                    NSLog(@"There are more changes, continue the update of collectionView");
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [self controllerDidChangeContent:self.fetchController];
+                    });
+                }
             }];
         }
     }

@@ -25,16 +25,9 @@
 
 
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController option:(EWBlurViewOptions)blurOption completion:(void (^)(void))block{
- 
- self.modalPresentationStyle = UIModalPresentationCustom;
- NavigationControllerDelegate *navDelegate = [NavigationControllerDelegate new];
- self.transitioningDelegate = navDelegate;
- 
- if ([viewController isKindOfClass:[UINavigationController class]]) {
-  UINavigationController * nav = (UINavigationController *)viewController;
-  viewController =nav.visibleViewController;
-  viewController.view.backgroundColor = [UIColor clearColor];
- }
+ viewController.modalPresentationStyle = UIModalPresentationCustom;
+ NavigationControllerDelegate *delegate = [NavigationControllerDelegate new];
+ viewController.transitioningDelegate = delegate;
  
  [self presentViewController:viewController animated:YES completion:^{
   //callback

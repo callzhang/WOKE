@@ -15,7 +15,10 @@ typedef enum{
     EWBlurViewOptionBlack
 } EWBlurViewOptions;
 
+@class NavigationControllerDelegate;
+
 @interface UIViewController (Blur)
+
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController;
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController completion:(void (^)(void))block;
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController option:(EWBlurViewOptions)blurOption completion:(void (^)(void))block;

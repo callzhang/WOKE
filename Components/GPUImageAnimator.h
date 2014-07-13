@@ -8,6 +8,7 @@
 
 #define kModelViewPresent       101
 #define kModelViewDismiss       102
+#define kBlurImageViewTag       201
 
 #import <Foundation/Foundation.h>
 
@@ -17,9 +18,7 @@
 @class GPUImageView;
 
 
-@interface GPUImageAnimator : NSObject
-<UIViewControllerAnimatedTransitioning,
-UIViewControllerInteractiveTransitioning>
+@interface GPUImageAnimator : NSObject<UIViewControllerAnimatedTransitioning,UIViewControllerInteractiveTransitioning>
 
 @property (nonatomic) BOOL interactive;
 @property (nonatomic) CGFloat progress;
