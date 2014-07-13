@@ -12,15 +12,18 @@
 #import "GPUImagePixellateFilter.h"
 #import "GPUImageView.h"
 #import "UIViewController+Blur.h"
+#import "GPUImageBrightnessFilter.h"
 
-#define ScreenShotImageViewTag  1000
-static const float duration = 0.4;
+#import "EWAppDelegate.h"
+
+
+static const float duration = 0.3;
 
 @interface GPUImageAnimator ()
 
 @property (nonatomic, strong) GPUImagePicture* blurImage;
 @property (nonatomic, strong) GPUImageiOSBlurFilter* blurFilter;
-//@property (nonatomic, strong) GPUImageOpacityFilter* alphaFilter;
+@property (nonatomic, strong) GPUImageBrightnessFilter* brightnessFilter;
 @property (nonatomic, strong) GPUImageView* imageView;
 @property (nonatomic, strong) id <UIViewControllerContextTransitioning> context;
 @property (nonatomic) NSTimeInterval startTime;
@@ -50,12 +53,12 @@ static const float duration = 0.4;
     self.blurFilter.saturation = 1;
     self.blurFilter.rangeReductionFactor = 0;
     self.blurFilter.downsampling = 1;
-    [self.blurFilter addTarget:self.imageView];
+    //[self.blurFilter addTarget:self.imageView];
     
-//    self.alphaFilter = [GPUImageOpacityFilter new];
-//    self.alphaFilter.opacity = 0;
-//    [self.blurFilter addTarget:self.alphaFilter];
-//    [self.alphaFilter addTarget:self.imageView];
+    self.brightnessFilter = [GPUImageBrightnessFilter new];
+    self.brightnessFilter.brightness = -0.4;
+    [self.blurFilter addTarget:self.brightnessFilter];
+    [self.brightnessFilter addTarget:self.imageView];
     
     
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateFrame:)];
@@ -76,27 +79,22 @@ static const float duration = 0.4;
     UIViewController* fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     toViewController.view.backgroundColor = [UIColor clearColor];
     UIView* container = [transitionContext containerView];
+    UIView *fromView = fromViewController.view;
+    
     
     self.imageView.frame = container.bounds;
     self.imageView.alpha = 1;
     [container addSubview:self.imageView];
     
-    if (self.type == UINavigationControllerOperationPush) {
+    if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
+//        if (self.type == kModelViewPresent) {
+//            fromView = rootViewController.view;
+//        }
         //hide blur view
-        UIView *tabView = [fromViewController.view viewWithTag:kBlurViewTag];
+        UIView *tabView = [fromView viewWithTag:kBlurViewTag];
         tabView.hidden = YES;
-        
-        UIView *tabView = [fromViewController.navigationController.view viewWithTag:kBlurViewTag];
-        tabView.hidden = YES;
-        
-        UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Home Bg"]];
-        [fromViewController.view addSubview:bgImageView];
-        [fromViewController.view sendSubviewToBack:bgImageView];
-        bgImageView.center = fromViewController.view.center;
       
-        UIImage *fromViewImage = fromViewController.view.screenshot;
-        
-        
+        UIImage *fromViewImage = fromView.screenshot;
         
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.blurFilter];
@@ -118,11 +116,10 @@ static const float duration = 0.4;
             [self.context completeTransition:YES];
         }];
         
-    }else if(self.type == UINavigationControllerOperationPop){
+    }else if(self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
         UIView *tabView = [toViewController.view viewWithTag:kBlurViewTag];
         tabView.hidden = NO;
         
-        UIView *fromView = fromViewController.view;
         [[self.context containerView] addSubview:fromView];
         
         [UIView animateWithDuration:0.4 animations:^{
@@ -139,6 +136,9 @@ static const float duration = 0.4;
         }];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            //hide blur view
+            UIView *tabView = [toViewController.view viewWithTag:kBlurViewTag];
+            tabView.hidden = YES;
             
             UIImage *toViewImage = toViewController.view.screenshot;
             self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];
@@ -166,7 +166,7 @@ static const float duration = 0.4;
 - (void)updateFrame:(CADisplayLink*)link
 {
     [self updateProgress:link];
-    //self.alphaFilter.opacity = self.progress;
+    //self.brightnessFilter.brightness = -0.5 * self.progress;
     self.blurFilter.downsampling = 1 + self.progress * 7;
     self.blurFilter.blurRadiusInPixels = 1+ self.progress * 8;
     [self triggerRenderOfNextFrame];
@@ -181,6 +181,10 @@ static const float duration = 0.4;
         self.displayLink.paused = YES;
         [self.context completeTransition:YES];
         self.imageView.alpha = 0;
+        
+        UIViewController* toViewController = [self.context viewControllerForKey:UITransitionContextToViewControllerKey];
+        UIView *tabView = [toViewController.view viewWithTag:kBlurViewTag];
+        tabView.hidden = NO;
     }
 }
 

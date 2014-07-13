@@ -9,7 +9,7 @@
 #import "UIViewController+Blur.h"
 #import "EWUIUtil.h"
 #import "UIView+Sreenshot.h"
-
+#import "NavigationControllerDelegate.h"
 
 @implementation UIViewController (Blur)
 
@@ -25,97 +25,32 @@
 
 
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController option:(EWBlurViewOptions)blurOption completion:(void (^)(void))block{
- //clear background
- viewController.view.backgroundColor = [UIColor clearColor];
  
- //blur toolbar
- UIToolbar *bgToolbar = [[UIToolbar alloc] initWithFrame:self.view.frame];
- bgToolbar.tag = kBlurViewTag;
- if (blurOption == EWBlurViewOptionWhite) {
-  bgToolbar.barStyle = UIBarStyleDefault;
- }else{
-  bgToolbar.barStyle = UIBarStyleBlack;
- }
+ self.modalPresentationStyle = UIModalPresentationCustom;
+ NavigationControllerDelegate *navDelegate = [NavigationControllerDelegate new];
+ self.transitioningDelegate = navDelegate;
  
- UIViewController *navC ;
  if ([viewController isKindOfClass:[UINavigationController class]]) {
   UINavigationController * nav = (UINavigationController *)viewController;
-  navC = nav;
   viewController =nav.visibleViewController;
   viewController.view.backgroundColor = [UIColor clearColor];
  }
- else
- {
-  navC = viewController;
- }
- [viewController.view addSubview:bgToolbar];
- [viewController.view sendSubviewToBack:bgToolbar];
  
- [self presentViewController:navC animated:YES completion:^{
-  
-  //get CALayer image
-  UIImage * img = self.view.screenshot;
-  
-  //get image
-  UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
-  imgView.image = img;
-  imgView.tag = kBlurImageTag;
-  
-  //   [[UINavigationBar appearance] setBackgroundColor:[UIColor clearColor]];
-  //   [[UINavigationBar appearance] setBackgroundImage:img forBarPosition:UIBarPositionTop barMetrics:UIBarMetricsDefault];
-  [viewController.view  addSubview:imgView];
-  [viewController.view  sendSubviewToBack:imgView];
-  
+ [self presentViewController:viewController animated:YES completion:^{
   //callback
   if (block) {
    block();
   }
-  
-  
  }];
  
  return;
- 
-// [viewController.view addSubview:bgToolbar];
-// [viewController.view sendSubviewToBack:bgToolbar];
-// 
-// [self presentViewController:navC animated:YES completion:^{
-//  //before get image, get rid of blur layer
-//  [self.view viewWithTag:kBlurViewTag].hidden = YES;
-//  
-//  //get CALayer image
-//  
-//  UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
-//  
-//  [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
-//  CGContextRef contextRef = UIGraphicsGetCurrentContext();
-//  [self.view.layer renderInContext:contextRef];
-//  UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
-//  UIGraphicsEndImageContext();
-//  
-//  //get image
-//  UIImageView *imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
-//  imgView.image = img;
-//  imgView.tag = kBlurImageTag;
-//  [viewController.view addSubview:imgView];
-//  [viewController.view sendSubviewToBack:imgView];
-//  
-//  //callback
-//  if (block) {
-//   block();
-//  }
-// }];
 }
 
 
 - (void)dismissBlurViewControllerWithCompletionHandler:(void(^)(void))completion{
- UIView *view = [self.view viewWithTag:kBlurViewTag];
- view.hidden = NO;
- [self.view setNeedsDisplay];
- dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-  UIView *view = [self.presentedViewController.view viewWithTag:kBlurImageTag];
-  [view removeFromSuperview];
- });
+ self.modalPresentationStyle = UIModalPresentationCustom;
+ NavigationControllerDelegate *delegate = [NavigationControllerDelegate new];
+ self.transitioningDelegate = delegate;
  [self dismissViewControllerAnimated:YES completion:completion];
 }
 

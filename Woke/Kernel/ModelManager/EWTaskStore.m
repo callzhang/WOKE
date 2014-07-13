@@ -649,13 +649,15 @@
 }
 
 + (BOOL)validateTask:(EWTaskItem *)task{
-    NSParameterAssert(task.owner || task.pastOwner);
-    if (task.completed) {
+    BOOL completed = [[NSDate date] timeIntervalSinceDate: task.time] > kMaxWakeTime || task.completed;
+    if (completed) {
         NSParameterAssert(!task.alarm);
+        NSParameterAssert(task.pastOwner);
     }else{
         NSParameterAssert(task.alarm);
+        NSParameterAssert(task.owner);
     }
-    
+    NSParameterAssert(task.time);
     return YES;
 }
 

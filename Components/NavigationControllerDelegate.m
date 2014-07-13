@@ -76,7 +76,15 @@ static NSString * PushSegueIdentifier = @"push segue identifier";
     return self.interactionController;
 }
 
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source{
+    self.animator.type = kModelViewPresent;
+    return self.animator;
+}
 
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissedZ{
+    self.animator.type = kModelViewDismiss;
+    return self.animator;
+}
 
 
 @end

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NavigationControllerDelegate : NSObject <UINavigationControllerDelegate>
+@interface NavigationControllerDelegate : NSObject <UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
 
 
 @end
