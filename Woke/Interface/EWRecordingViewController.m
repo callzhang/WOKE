@@ -31,6 +31,8 @@
 
 
 #import "UAProgressView.h"
+#define BUTTONCENTER  CGPointMake(470, EWScreenWidth/2)
+
 @interface EWRecordingViewController (){
     NSArray *personSet;
     NSURL *recordingFileUrl;
@@ -145,7 +147,18 @@
 	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateProgress:) userInfo:nil repeats:YES];
     
 }
-
+-(void)initButtonAndLabel
+{
+    self.recordBtn = [[UIButton alloc] initWithFrame:CGRectMake(BUTTONCENTER.x, BUTTONCENTER.y, 40, 40)];
+    
+    self.recordBtn.imageView.image = [UIImage imageNamed:@"Play Button"];
+    
+    self.playBtn  = [[UIButton alloc] initWithFrame:self.recordBtn.frame];
+//    self.playBtn.imageView.image = [UIButton ]
+    
+    
+    
+}
 -(void)initView{
     
     self.playBtn.enabled = NO;
