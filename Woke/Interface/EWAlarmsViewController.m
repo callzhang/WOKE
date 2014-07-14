@@ -821,7 +821,7 @@
                                 [self.collectionView deleteItemsAtIndexPaths:@[obj]];
                                 break;
                             case NSFetchedResultsChangeUpdate:{
-                                if ([(NSIndexPath *)obj row] == 0) {
+                                if ([obj isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]) {
                                     NSLog(@"Skipped update self in collection view");
                                     break;
                                 }
