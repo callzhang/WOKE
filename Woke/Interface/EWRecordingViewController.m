@@ -39,6 +39,7 @@
     AVManager *manager;
     
     BOOL  everPlayed;
+    BOOL  everRecord;
     //EWMediaItem *media;
 }
 
@@ -71,7 +72,7 @@
 {
     [super viewDidLoad];
     [self initProgressView];
-    
+    [self initButtonAndLabel];
 
     [self initView];
     //collection view
@@ -143,26 +144,30 @@
 	};
 	
 	self.progressView.progress = 0;
+	NSTimer *timer =[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateProgress:) userInfo:nil repeats:YES];
+    [timer invalidate];
 	
-	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateProgress:) userInfo:nil repeats:YES];
     
 }
 -(void)initButtonAndLabel
 {
-    self.recordBtn = [[UIButton alloc] initWithFrame:CGRectMake(BUTTONCENTER.x, BUTTONCENTER.y, 40, 40)];
-    
-    self.recordBtn.imageView.image = [UIImage imageNamed:@"Play Button"];
-    
-    self.playBtn  = [[UIButton alloc] initWithFrame:self.recordBtn.frame];
-//    self.playBtn.imageView.image = [UIButton ]
-    
+    self.playLabel.text = @"Take";
+//    self.recordBtn.hidden = YES;
+//    self.sendBtn.hidden = YES;
+//
+//    self.retakeLabel.hidden = YES;
+//    self.sendLabel.hidden = YES;
+    everPlayed = NO;
+    everRecord = NO;
+    self.recordBtn.alpha = 0.0;
+    self.sendBtn.alpha = 0.0;
+    self.sendLabel.alpha = 0.0;
+    self.retakeLabel.alpha = 0.0;
     
     
 }
 -(void)initView{
-    
-    self.playBtn.enabled = NO;
-    
+
     self.title = @"Recording";
     
     if (personSet.count == 1) {
@@ -239,6 +244,13 @@
 
 - (IBAction)play:(id)sender {
     
+    if (!everRecord || self.manager.recorder.isRecording) {
+        [self record:nil];
+        
+        
+        return ;
+    }
+    
     if (!recordingFileUrl){
         NSLog(@"Recording url empty");
         
@@ -250,12 +262,16 @@
     }
     
     if (!manager.player.isPlaying) {
-        [playBtn setTitle:@"Stop" forState:UIControlStateNormal];
+
         everPlayed = YES;
         [manager playSoundFromURL:recordingFileUrl];
+        self.playLabel.text = @"Stop";
+        [self.playBtn setImage:[UIImage imageNamed:@"Stop Button"] forState:UIControlStateNormal];
+        
     }else{
-        [playBtn setTitle:@"Play" forState:UIControlStateNormal];
-        [manager stopAllPlaying];
+        
+        self.playLabel.text = @"Play";
+        [self.playBtn setImage:[UIImage imageNamed:@"Play Button"] forState:UIControlStateNormal];     [manager stopAllPlaying];
     }
 }
 
@@ -263,9 +279,36 @@
     recordingFileUrl = [manager record];
     
     if (manager.recorder.isRecording) {
-        [recordBtn setTitle:@"Stop" forState:UIControlStateNormal];
+        if (!everRecord) {
+            // 第一次进入 直接改变
+            [self.playBtn setImage:[UIImage imageNamed:@"Stop Button"] forState:UIControlStateNormal];
+            self.playLabel.text = @"Stop";
+        }
+        else
+        {
+            [UIView animateWithDuration:1.0 animations:^(){
+                self.sendBtn.alpha = 0.0;
+                self.recordBtn.alpha = 0.0;
+                self.sendLabel.alpha = 0.0;
+                self.retakeLabel.alpha = 0.0;
+                self.playLabel.text = @"Stop";
+                
+            }];
+        }
     }else{
-        [recordBtn setTitle:@"Retake" forState:UIControlStateNormal];
+        if (!everRecord) {
+            everRecord = YES;
+        }
+        [UIView animateWithDuration:1.0 animations:^(){
+            self.sendBtn.alpha = 1.0;
+            self.recordBtn.alpha = 1.0;
+            self.sendLabel.alpha = 1.0;
+            self.retakeLabel.alpha = 1.0;
+            self.retakeLabel.text = @"Retake";
+            self.playLabel.text  = @"Playe";
+            
+        }];
+        
     }
 }
 
@@ -341,7 +384,7 @@
     }
     else{
 
-        [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+        [self dismissBlurViewControllerWithCompletionHandler:NULL];
     }
 }
 
