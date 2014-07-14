@@ -99,7 +99,7 @@
 //	self.progressView.fillOnTouch = YES;
 	
 	UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 32.0)];
-	textLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:20];
+	textLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:15];
 	textLabel.textAlignment = NSTextAlignmentCenter;
 	textLabel.textColor = self.progressView.tintColor;
 	textLabel.backgroundColor = [UIColor clearColor];
@@ -144,14 +144,14 @@
 	};
 	
 	self.progressView.progress = 0;
-	NSTimer *timer =[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateProgress:) userInfo:nil repeats:YES];
-    [timer invalidate];
-	
+    
+	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateProgress:) userInfo:nil repeats:YES];
     
 }
 -(void)initButtonAndLabel
 {
     self.playLabel.text = @"Take";
+    [self.playBtn setImage:[UIImage imageNamed:@"Record Button Red "] forState:UIControlStateNormal];
 //    self.recordBtn.hidden = YES;
 //    self.sendBtn.hidden = YES;
 //
@@ -276,12 +276,19 @@
 }
 
 - (IBAction)record:(id)sender {
+    
+    if (manager.player.isPlaying) {
+        
+        return ;
+    }
+    
+    
     recordingFileUrl = [manager record];
     
     if (manager.recorder.isRecording) {
         if (!everRecord) {
             // 第一次进入 直接改变
-            [self.playBtn setImage:[UIImage imageNamed:@"Stop Button"] forState:UIControlStateNormal];
+            [self.playBtn setImage:[UIImage imageNamed:@"Stop Button Red "] forState:UIControlStateNormal];
             self.playLabel.text = @"Stop";
         }
         else
@@ -292,6 +299,7 @@
                 self.sendLabel.alpha = 0.0;
                 self.retakeLabel.alpha = 0.0;
                 self.playLabel.text = @"Stop";
+                  [self.playBtn setImage:[UIImage imageNamed:@"Stop Button Red "] forState:UIControlStateNormal];
                 
             }];
         }
@@ -305,8 +313,8 @@
             self.sendLabel.alpha = 1.0;
             self.retakeLabel.alpha = 1.0;
             self.retakeLabel.text = @"Retake";
-            self.playLabel.text  = @"Playe";
-            
+            self.playLabel.text  = @"Play";
+            [self.playBtn setImage:[UIImage imageNamed:@"Play Button"] forState:UIControlStateNormal];
         }];
         
     }
@@ -392,19 +400,22 @@
 - (void)updateProgress:(NSTimer *)timer {
     
     if ([manager.recorder isRecording]) {
-        [self.progressView  setProgress: manager.recorder.currentTime/kMaxRecordTime];
+        
+        float progress = (float) manager.recorder.currentTime /kMaxRecordTime;
+        [self.progressView  setProgress:progress>0.999?0.999:progress];
     
     }
     if(manager.player.isPlaying)
     {
-        [self.progressView  setProgress: manager.player.currentTime/kMaxRecordTime];
+        float progress = (float) manager.player.currentTime /kMaxRecordTime;
+        [self.progressView  setProgress:progress>0.999?0.999:progress];
+   
     }
-    if (!manager.player.isPlaying&&everPlayed) {
+    if (!manager.player.isPlaying&&everPlayed&&!manager.recorder.recording) {
+        [playBtn setImage:[UIImage imageNamed:@"Play Button"] forState:UIControlStateNormal];
+//        [self.progressView  setProgress: 0];
         
-        [playBtn setTitle:@"Replay" forState:UIControlStateNormal];
-        [self.progressView  setProgress: 0];
-        
-//        [recordBtn setTitle:@"Retake" forState:UIControlStateNormal];
+        [self.playLabel setText:@"Play"];
     }
     if (!manager.recorder.isRecording && recordingFileUrl) {
         [recordBtn setTitle:@"Retake" forState:UIControlStateNormal];
