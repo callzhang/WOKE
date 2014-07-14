@@ -59,6 +59,7 @@ typedef void (^EWSavingCallback)(void);
 
 + (EWDataStore *)sharedInstance;
 
+#pragma mark - PARSE
 /**
  The main save function, it save and upload to the server
  */
@@ -103,7 +104,7 @@ typedef void (^EWSavingCallback)(void);
 /**
  The main method of server update/insert/delete.
  And save ManagedObject.
- @discussion Use this method to update server and save. Replace this method with any ManagedObjectContext save method. Concurrency is NOT supported. Please call it on main thread.
+ @discussion Please do not call this method directly. It is scheduled when you call save method.
  */
 + (void)updateToServer;
 
@@ -112,9 +113,9 @@ typedef void (^EWSavingCallback)(void);
  *
  *1. First decide create or find parse object, handle error if necessary
  *
- *2. Update PO value and relation with given MO. (-updateValueFromManagedObject:)
+ *2. Update PO value and relation with given MO. (-updateValueFromManagedObject:) If related PO doesn't exist, create a PO async, and assign the newly created related PO to the relation.
  *
- *3. Save PO in background. Save MO to exit method.
+ *3. Save PO in background.
  *
  *4. When saved, assign parseID to MO
  *
@@ -153,7 +154,7 @@ typedef void (^EWSavingCallback)(void);
  
  *1) First assign the attribute value from server object
  
- *2) Iterate through the relations described by entityDescription
+ *2) Iterate through the relations
  **   -> Delete obsolete related object.
  **   -> For each end point in relationship, To-Many or To-One, find or create MO and assign value to that relationship.
  @discussion The attributes and relationship are updated in sync.

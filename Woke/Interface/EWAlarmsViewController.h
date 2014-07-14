@@ -37,7 +37,7 @@
 @property (weak, nonatomic) IBOutlet UIPageControl *pageView;
 @property (weak, nonatomic) IBOutlet UIButton *addBtn;
 @property (weak, nonatomic) IBOutlet UIButton *actionBtn;
-@property (weak, nonatomic) IBOutlet UIImageView *background;
+//@property (weak, nonatomic) IBOutlet UIImageView *background;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *alarmloadingIndicator;
 @property (weak, nonatomic) IBOutlet UIView *youIndicator;
 @property (weak, nonatomic) IBOutlet UILabel *you;

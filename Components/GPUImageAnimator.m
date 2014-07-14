@@ -105,11 +105,11 @@ static const float initialDownSampling = 0;
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.blurFilter];
         
-        //hide from view
+        //remove from view
         [fromView removeFromSuperview];
         
+        //trigger GPU rendering
         [self triggerRenderOfNextFrame];
-        
         self.startTime = 0;
         self.displayLink.paused = NO;
         
@@ -121,26 +121,26 @@ static const float initialDownSampling = 0;
         } completion:^(BOOL finished) {
             //=======> Present animation ending
             
-            //screenshot of blur image and insert to the destination view
-            [self.brightnessFilter useNextFrameForImageCapture];
-            [self.blurImage processImage];
-            UIImage *blurImage = self.brightnessFilter.imageFromCurrentFramebuffer;
-            UIImageView *blurImageView = [[UIImageView alloc] initWithFrame:toViewController.view.frame];
-            blurImageView.image = blurImage;
-            blurImageView.tag = kBlurImageViewTag;
-            if ([toViewController isKindOfClass:[UINavigationController class]]) {
-                UINavigationController *nav = (UINavigationController *)toViewController;
-                UIView *presentedView = nav.visibleViewController.view;
-                
-                [presentedView addSubview:blurImageView];
-                [presentedView sendSubviewToBack:blurImageView];
-            }else{
-                [toView addSubview:blurImageView];
-                [toView sendSubviewToBack:blurImageView];
-            }
+//            //screenshot of blur image and insert to the destination view
+//            [self.brightnessFilter useNextFrameForImageCapture];
+//            [self.blurImage processImage];
+//            UIImage *blurImage = self.brightnessFilter.imageFromCurrentFramebuffer;
+//            UIImageView *blurImageView = [[UIImageView alloc] initWithFrame:toViewController.view.frame];
+//            blurImageView.image = blurImage;
+//            blurImageView.tag = kBlurImageViewTag;
+//            if ([toViewController isKindOfClass:[UINavigationController class]]) {
+//                UINavigationController *nav = (UINavigationController *)toViewController;
+//                UIView *presentedView = nav.visibleViewController.view;
+//                
+//                [presentedView addSubview:blurImageView];
+//                [presentedView sendSubviewToBack:blurImageView];
+//            }else{
+//                [toView addSubview:blurImageView];
+//                [toView sendSubviewToBack:blurImageView];
+//            }
             
             [self.context completeTransition:YES];
-            [self.imageView removeFromSuperview];
+            //[self.imageView removeFromSuperview];
         }];
         
         
@@ -166,8 +166,8 @@ static const float initialDownSampling = 0;
         
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            UIImage *toViewImage = toViewController.view.screenshot;
-            self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];
+            
+            self.blurImage = [[GPUImagePicture alloc] initWithImage:toView.screenshot];
             [self.blurImage addTarget:self.blurFilter];
             [self triggerRenderOfNextFrame];
             self.startTime = 0;
@@ -188,7 +188,7 @@ static const float initialDownSampling = 0;
 - (void)updateFrame:(CADisplayLink*)link
 {
     [self updateProgress:link];
-    self.brightnessFilter.gamma = 1 + 0.5 * self.progress;
+    self.brightnessFilter.gamma = 1 + 0.8 * self.progress;
     double downSampling = initialDownSampling + self.progress * 6;
     self.blurFilter.downsampling = downSampling;
     self.blurFilter.blurRadiusInPixels = 1+ self.progress * 16 / sqrt(floor(downSampling));
@@ -210,7 +210,7 @@ static const float initialDownSampling = 0;
         [self.context completeTransition:YES];
         UIView *toView = [self.context viewControllerForKey:UITransitionContextToViewControllerKey].view;
         [[self.context containerView] addSubview:toView];
-        self.imageView.alpha = 0;
+        [self.imageView removeFromSuperview];
         
     }
 }

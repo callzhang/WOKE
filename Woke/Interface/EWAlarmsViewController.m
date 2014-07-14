@@ -15,7 +15,7 @@
 #import "NSDate+Extend.h"
 #import "UIViewController+Blur.h"
 #import "EWServer.h"
-#import "NGAParallaxMotion.h"
+//#import "NGAParallaxMotion.h"
 
 // Manager
 #import "EWAlarmManager.h"
@@ -51,6 +51,7 @@
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
     NSTimer *indicatorHideTimer;
+    NSTimer *collectionUpdateTimer;
     BOOL taskScheduled;
 }
 
@@ -108,6 +109,36 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    //static UI stuff (do it once)
+    //collection view
+    _collectionView.delegate = self;
+    _collectionView.dataSource = self;
+    UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
+    [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
+    //_collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle Tile Half"]];
+    _collectionView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Home Bg"]];
+    
+    //paging
+    _scrollView.delegate = self;
+    _scrollView.pagingEnabled = YES;
+    _pageView.currentPage = 0;
+    _pageView.hidden = YES;
+    
+    
+    //add blur bar
+    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
+    blurBar.barStyle = UIBarStyleBlack;
+    [self.view insertSubview:blurBar aboveSubview:_collectionView];
+    
+    //parallax
+    //self.background.parallaxIntensity = -100;
+    //self.collectionView.parallaxIntensity = 20;
+    
+    //indicator center
+    self.youIndicator.layer.anchorPoint = CGPointMake(0.5, 0.5);
+    
+    //dynamic UI stuff
     [self initData];
     [self initView];
 }
@@ -140,13 +171,6 @@
         //fetch everyone
         dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
             [[EWPersonStore sharedInstance] everyone];
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                id <NSFetchedResultsSectionInfo> sectionInfo = self.fetchController.sections[0];
-//                if (people.count > [sectionInfo numberOfObjects]) {
-//                    NSLog(@"Updated user list to %lu", (unsigned long)people.count);
-//                    [self.fetchController performFetch:NULL];
-//                }
-//            });
         });
         
     }else{
@@ -158,41 +182,11 @@
 
 - (void)initView {
     
-    //collection view
-    _collectionView.delegate = self;
-    _collectionView.dataSource = self;
-    //_collectionView.contentInset = UIEdgeInsetsMake(200, 100, 200, 100);
-    //[_collectionView registerClass:[EWCollectionPersonCell class] forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
-    UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
-    [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
-    _collectionView.backgroundColor = [UIColor clearColor];
-    //UIImageView *bgImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Triangle_Tile"]];
-    _collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle Tile Half"]];
-    
-    //paging
-    _scrollView.delegate = self;
-    _scrollView.pagingEnabled = YES;
-    _pageView.currentPage = 0;
-    _pageView.hidden = YES;
-
-    
-    //add blur bar
-    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
-    blurBar.barStyle = UIBarStyleBlack;
-    [self.view insertSubview:blurBar aboveSubview:_collectionView];
-    
     //show loading indicator
     [self showAlarmPageLoading:YES];
     
     //load page
     [self reloadAlarmPage];
-    
-    //parallax
-    self.background.parallaxIntensity = -100;
-    //self.collectionView.parallaxIntensity = 20;
-    
-    //indicator center
-    self.youIndicator.layer.anchorPoint = CGPointMake(0.5, 0.5);
 }
 
 
@@ -785,16 +779,6 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
     if (cellChangeArray.count > 0)
     {
-        NSArray *changeArray;
-        NSInteger batch = ceil(cellChangeArray.count / 20);
-        if (batch > 1) {
-            changeArray = [cellChangeArray subarrayWithRange:NSMakeRange(0, 20)];
-            cellChangeArray = [[cellChangeArray subarrayWithRange:NSMakeRange(20, cellChangeArray.count - 20)] mutableCopy];
-        }else{
-            changeArray = cellChangeArray;
-            cellChangeArray = [NSMutableArray new];
-        }
-        
         if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {
             // This is to prevent a bug in UICollectionView from occurring.
             // The bug presents itself when inserting the first object or deleting the last object in a collection view.
@@ -805,58 +789,80 @@
             
         } else {
             
-            [self.collectionView performBatchUpdates:^{
-                
-                for (NSDictionary *change in changeArray)
-                {
-                    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
-                        
-                        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-                        switch (type)
-                        {
-                            case NSFetchedResultsChangeInsert:
-                                [self.collectionView insertItemsAtIndexPaths:@[obj]];
-                                break;
-                            case NSFetchedResultsChangeDelete:
-                                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
-                                break;
-                            case NSFetchedResultsChangeUpdate:{
-                                if ([obj isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]) {
-                                    NSLog(@"Skipped update self in collection view");
-                                    break;
-                                }
-                                [self.collectionView reloadItemsAtIndexPaths:@[obj]];
-                            }
-                                
-                                break;
-                            case NSFetchedResultsChangeMove:
-                                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
-                                break;
-                        }
-                    }];
-                }
-            } completion:^(BOOL finished){
-                if (finished) {
-                    //center when changed
-                    static NSTimer *viewCenterTimer;
-                    [viewCenterTimer invalidate];
-                    viewCenterTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
-                }else{
-                    NSLog(@"*** Update of collection view failed");
-                }
-                
-                //continue if there are still changes
-                if (cellChangeArray.count > 0) {
-                    NSLog(@"There are more changes, continue the update of collectionView");
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                        [self controllerDidChangeContent:self.fetchController];
-                    });
-                }
-            }];
+            if ([collectionUpdateTimer isValid]) {
+                [collectionUpdateTimer invalidate];
+            }
+            collectionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(performCollectionViewUpdates) userInfo:nil repeats:1];
+            NSLog(@"Updating CollectionView");
         }
     }
     
     [cellChangeArray removeAllObjects];
+}
+
+- (void)performCollectionViewUpdates{
+    //decide how many batch to update
+    NSArray *changeArray;
+    NSInteger batch = ceil(cellChangeArray.count / 20);
+    if (batch > 1) {
+        changeArray = [cellChangeArray subarrayWithRange:NSMakeRange(0, 20)];
+        cellChangeArray = [[cellChangeArray subarrayWithRange:NSMakeRange(20, cellChangeArray.count - 20)] mutableCopy];
+        
+        if ([collectionUpdateTimer isValid]) [collectionUpdateTimer invalidate];
+        collectionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(performCollectionViewUpdates) userInfo:nil repeats:1];
+        
+    }else{
+        changeArray = cellChangeArray;
+        cellChangeArray = [NSMutableArray new];
+    }
+    
+    [self.collectionView performBatchUpdates:^{
+        
+        for (NSDictionary *change in changeArray)
+        {
+            [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
+                
+                NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                switch (type)
+                {
+                    case NSFetchedResultsChangeInsert:
+                        [self.collectionView insertItemsAtIndexPaths:@[obj]];
+                        break;
+                    case NSFetchedResultsChangeDelete:
+                        [self.collectionView deleteItemsAtIndexPaths:@[obj]];
+                        break;
+                    case NSFetchedResultsChangeUpdate:{
+                        if ([obj isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]) {
+                            NSLog(@"Skipped update self in collection view");
+                            break;
+                        }
+                        [self.collectionView reloadItemsAtIndexPaths:@[obj]];
+                    }
+                        break;
+                    case NSFetchedResultsChangeMove:
+                        [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
+                        break;
+                }
+            }];
+        }
+    } completion:^(BOOL finished){
+        if (finished) {
+            //center when changed
+            static NSTimer *viewCenterTimer;
+            [viewCenterTimer invalidate];
+            viewCenterTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
+        }else{
+            NSLog(@"*** Update of collection view failed");
+        }
+        
+        //continue if there are still changes
+        if (cellChangeArray.count > 0) {
+            NSLog(@"There are more changes, continue the update of collectionView");
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self controllerDidChangeContent:self.fetchController];
+            });
+        }
+    }];
 }
 
 - (BOOL)shouldReloadCollectionViewToPreventKnownIssue {
