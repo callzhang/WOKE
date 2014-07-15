@@ -86,12 +86,14 @@
 #define kLastChecked                    @"last_checked"//stores the last checked task
 #define kSavedAlarms                    @"saved_alarms"
 
-//events
+#pragma mark - User / External events
 //App wide events
 #define kWokeNotification               @"woke"
 #define kNewBuzzNotification            @"buzz_event"
 #define kNewMediaNotification           @"media_event" //key: task & media
 #define kNewTimerNotification           @"alarm_timer"
+
+#pragma mark - Data event
 //alarm store
 #define kAlarmNewNotification           @"EWAlarmNew" //key: alarm
 #define kAlarmStateChangedNotification  @"EWAlarmStateChanged"//key: alarm
@@ -106,6 +108,9 @@
 #define kTaskDeleteNotification         @"EWTaskDelete"  //key: task
 #define kTaskTimeChangedNotification    @"EWTaskTimeChanged"  //key: task
 #define kTaskChangedNotification        @"EWTaskChanged" //key: task
+
+//UI event
+#define kBlurAnimationStartEvent        @"blur_animation"
 
 //person store
 #define kPersonLoggedIn                 @"PersonLoggedIn"

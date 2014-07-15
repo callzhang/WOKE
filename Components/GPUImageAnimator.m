@@ -20,7 +20,7 @@
 static const float duration = 0.3;
 static const float delay = 0.1;
 static const float zoom = 1.5;
-static const float initialDownSampling = 0;
+static const float initialDownSampling = 2;
 
 @interface GPUImageAnimator ()
 
@@ -102,7 +102,7 @@ static const float initialDownSampling = 0;
     if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
 		
         //pre animation toView set up
-        toView.alpha = 0.01;
+        toView.alpha = 0;
         toView.transform = CGAffineTransformMakeScale(zoom, zoom);
         [container addSubview:toView];
         
@@ -111,21 +111,18 @@ static const float initialDownSampling = 0;
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.blurFilter];
         
-        //remove from view
-        [fromView removeFromSuperview];
-        
         //trigger GPU rendering
-        [self triggerRenderOfNextFrame];
         self.startTime = 0;
         self.displayLink.paused = NO;
         
         //animation
-        [UIView animateWithDuration:duration delay:delay*2 options:UIViewAnimationOptionTransitionNone animations:^{
+        [UIView animateWithDuration:duration delay:delay*2 options:UIViewAnimationOptionCurveEaseOut animations:^{
             
             toView.alpha = 1;
             toView.transform = CGAffineTransformIdentity;
         } completion:^(BOOL finished) {
-            
+            //remove from view
+			fromView.hidden = NO;
             [self.context completeTransition:YES];
         }];
         
@@ -168,15 +165,21 @@ static const float initialDownSampling = 0;
     self.brightnessFilter.gamma = 1 + 1.2 * self.progress;
     double downSampling = initialDownSampling + self.progress * 6;
     self.blurFilter.downsampling = downSampling;
-    self.blurFilter.blurRadiusInPixels = 1+ self.progress * 12;
+    self.blurFilter.blurRadiusInPixels = 1+ self.progress * 8;
     [self triggerRenderOfNextFrame];
     
     if (self.interactive) {
         return;
     }
-    if ((self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) && self.progress == 1) {
-        
-        self.displayLink.paused = YES;
+    if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
+		UIView *fromView = [self.context viewControllerForKey:UITransitionContextFromViewControllerKey].view;
+		if (fromView.superview) {
+			[fromView removeFromSuperview];
+		}
+		
+		if (self.progress == 1) {
+			self.displayLink.paused = YES;
+		}
         
     }else if ((self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss) && self.progress == 0){
         

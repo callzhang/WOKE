@@ -110,7 +110,10 @@
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
     _collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle Tile Half"]];
-    _collectionView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Home Bg"]];
+    //UIImageView *pattern = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Triangle Tile Half"]];
+    UIImageView *background = [[UIImageView alloc] initWithFrame:_collectionView.frame ];
+    background.image = [UIImage imageNamed:@"Background"];
+    [self.view insertSubview:background belowSubview:_collectionView];
     
     //paging
     _scrollView.delegate = self;
@@ -122,7 +125,7 @@
     //add blur bar
 //    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
 //    blurBar.barStyle = UIBarStyleBlack;
-//    [self.view insertSubview:blurBar aboveSubview:_collectionView];
+//    [self.view insertSubvieØw:blurBar aboveSubview:_collectionView];
     
     //parallax
 //    self.background.parallaxIntensity = -100;
