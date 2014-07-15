@@ -11,6 +11,9 @@
 #import "UIView+Sreenshot.h"
 #import "NavigationControllerDelegate.h"
 
+
+static NavigationControllerDelegate *delegate = nil;
+
 @implementation UIViewController (Blur)
 
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController{
@@ -26,26 +29,22 @@
 
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController option:(EWBlurViewOptions)blurOption completion:(void (^)(void))block{
 	viewController.modalPresentationStyle = UIModalPresentationCustom;
-	NavigationControllerDelegate *delegate = [NavigationControllerDelegate new];
+	if (!delegate) {
+		delegate = [NavigationControllerDelegate new];
+	}
+	
 	viewController.transitioningDelegate = delegate;
+	if ([viewController isKindOfClass:[UINavigationController class]]) {
+		[(UINavigationController *)viewController setDelegate:delegate];
+	}
 	
-	
-	[self presentViewController:viewController animated:YES completion:^{
-		//callback
-		if (block) {
-			block();
-		}
-	}];
-	
+	[self presentViewController:viewController animated:YES completion:block];
 	
 	return;
 }
 
 
 - (void)dismissBlurViewControllerWithCompletionHandler:(void(^)(void))completion{
-	self.modalPresentationStyle = UIModalPresentationCustom;
-	NavigationControllerDelegate *delegate = [NavigationControllerDelegate new];
-	self.transitioningDelegate = delegate;
 	[self dismissViewControllerAnimated:YES completion:completion];
 }
 

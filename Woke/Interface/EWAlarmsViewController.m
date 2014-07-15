@@ -66,7 +66,6 @@
 @synthesize pageView = _pageView;
 @synthesize collectionView = _collectionView;
 @synthesize fetchController;
-@synthesize navDelegate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -100,12 +99,6 @@
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
-- (void)centerView{
-
-    if ([_collectionView numberOfItemsInSection:0]>0) {
-        [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
-    }
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -127,13 +120,13 @@
     
     
     //add blur bar
-    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
-    blurBar.barStyle = UIBarStyleBlack;
-    [self.view insertSubview:blurBar aboveSubview:_collectionView];
+//    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
+//    blurBar.barStyle = UIBarStyleBlack;
+//    [self.view insertSubview:blurBar aboveSubview:_collectionView];
     
     //parallax
-    //self.background.parallaxIntensity = -100;
-    //self.collectionView.parallaxIntensity = 20;
+//    self.background.parallaxIntensity = -100;
+//    self.collectionView.parallaxIntensity = 20;
     
     //indicator center
     self.youIndicator.layer.anchorPoint = CGPointMake(0.5, 0.5);
@@ -187,14 +180,6 @@
     
     //load page
     [self reloadAlarmPage];
-}
-
-
-- (NavigationControllerDelegate *)navDelegate{
-    if (!navDelegate) {
-        navDelegate = [NavigationControllerDelegate new];
-    }
-    return navDelegate;
 }
 
 
@@ -415,6 +400,18 @@
         
         [self.alarmloadingIndicator stopAnimating];
         self.addBtn.hidden = NO;
+    }
+}
+
+
+
+- (void)centerView{
+    BOOL scrolling = [self.collectionView.layer animationForKey:@"bounds"] !=nil;
+    if (scrolling) {
+        return;
+    }
+    if ([_collectionView numberOfItemsInSection:0]>0) {
+        [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
     }
 }
 
@@ -639,10 +636,7 @@
     EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
     navController.modalPresentationStyle = UIModalPresentationCustom;
-    navController.transitioningDelegate = self.navDelegate;
-    [self presentViewController:navController animated:YES completion:^{
-        //
-    }];
+    [self presentViewControllerWithBlurBackground:navController];
     
 }
 
@@ -717,9 +711,10 @@
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
         controller.canSeeFriendsDetail = YES;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        navController.delegate = self.navDelegate;
-        [self presentViewControllerWithBlurBackground:navController completion:NULL];
-        [weakMenu closeMenu];
+        
+        [weakMenu closeMenuWithCompletion:^{
+            [self presentViewControllerWithBlurBackground:navController completion:NULL];
+        }];
     };
     
     menu.toBuzzButtonBlock = ^{

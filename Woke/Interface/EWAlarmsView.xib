@@ -31,8 +31,8 @@
                         <action selector="changePage:" destination="-1" eventType="valueChanged" id="5JT-XS-3pY"/>
                     </connections>
                 </pageControl>
-                <collectionView opaque="NO" multipleTouchEnabled="YES" tag="1005" contentMode="center" alwaysBounceVertical="YES" alwaysBounceHorizontal="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" id="J19-yS-M7x">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="538"/>
+                <collectionView opaque="NO" multipleTouchEnabled="YES" tag="1005" contentMode="center" alwaysBounceVertical="YES" alwaysBounceHorizontal="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" id="J19-yS-M7x">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <collectionViewLayout key="collectionViewLayout" id="DxV-k5-PYC" customClass="EWHexagonFlowLayout"/>
                     <cells/>

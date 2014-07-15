@@ -1,14 +1,14 @@
 //
-//  GPUImageAnimator.h
-//  NavigationTransitionTest
+//  GPUBlurAnimator.h
+//  WokeAlarm
 //
-//  Created by Chris Eidhof on 9/28/13.
-//  Copyright (c) 2013 Chris Eidhof. All rights reserved.
+//  Created by Lei on 9/28/13.
+//  Copyright (c) 2013 Woke. All rights reserved.
 //
 
 #define kModelViewPresent       101
 #define kModelViewDismiss       102
-#define kBlurImageViewTag       201
+#define kGPUImageViewTag        201
 
 #import <Foundation/Foundation.h>
 

@@ -91,10 +91,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     UINib *taskNib = [UINib nibWithNibName:@"EWTaskHistoryCell" bundle:nil];
     [taskTableView registerNib:taskNib forCellReuseIdentifier:taskCellIdentifier];
     [EWUIUtil applyAlphaGradientForView:taskTableView withEndPoints:@[@0.10]];
+    //taskTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     
-    taskTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     //tab view
-    //tabView.layer.backgroundColor = [[UIColor colorWithWhite:1.0f alpha:0.5f] CGColor];
     tabView.selectedSegmentIndex = 0;//initial tab
     
     //default state
@@ -404,8 +403,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     {
         return 50;
     }
-    
-    
 }
 
 
@@ -420,11 +417,11 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         EWTaskItem *task = tasks[indexPath.section];
         UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
+        
         if (!cell) {
             
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:activitiyCellIdentifier];
             cell.textLabel.textColor = [UIColor lightGrayColor];
-         
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
         }
@@ -466,63 +463,68 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             default:
                 break;
         }
+        
+        return cell;
+        
+    }else if (tabView.selectedSegmentIndex == 0){
+        UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:profileCellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:profileCellIdentifier];
+            cell.textLabel.textColor = [UIColor whiteColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        
+        cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
+        if (indexPath.row== 1&&[person.gender isEqualToString:@"male"]) {
+            
+            cell.textLabel.text = @"People woke him up";
+        }
+        
+        switch (indexPath.row) {
+            case 0:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
+                //            NSLog(@"%ld",person.friends.count);
+                break;
+            case 1:
+            {
+                NSArray *receivedMedias = [[EWMediaStore sharedInstance] mediasForPerson:person];
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)receivedMedias.count];
+            }
+                break;
+            case 2:
+            {
+                NSArray *medias = [[EWMediaStore sharedInstance] mediaCreatedByPerson:person];
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)medias.count];
+                
+            }
+                break;
+            case 3:
+            {
+                NSDate *date = person.updatedAt;
+                cell.detailTextLabel.text = [date date2MMDD] ;
+                break;
+            }
+            case 4://next task time
+            {
+                NSDate *date = person.cachedInfo[kNextTaskTime];
+                cell.detailTextLabel.text = [[date time2HMMSS] stringByAppendingString:[date date2am]];
+                break;
+            }
+            case 5://wake-ability
+            {
+                cell.detailTextLabel.text =  [NSString stringWithFormat:@"%ld",(long) stats.wakability];
+                break;
+            }
+                
+            default:
+                break;
+        }
+        
         return cell;
     }
     
-    UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:profileCellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:profileCellIdentifier];
-        cell.textLabel.textColor = [UIColor whiteColor];
-    }
+    return nil;
     
-    cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
-    if (indexPath.row== 1&&[person.gender isEqualToString:@"male"]) {
-        
-        cell.textLabel.text = @"People woke him up";
-    }
-    
-    switch (indexPath.row) {
-        case 0:
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
-//            NSLog(@"%ld",person.friends.count);
-            break;
-        case 1:
-        {
-            NSArray *receivedMedias = [[EWMediaStore sharedInstance] mediasForPerson:person];
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)receivedMedias.count];
-        }
-            break;
-        case 2:
-        {
-            NSArray *medias = [[EWMediaStore sharedInstance] mediaCreatedByPerson:person];
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)medias.count];
-           
-        }
-             break;
-        case 3:
-        {
-            NSDate *date = person.updatedAt;
-            cell.detailTextLabel.text = [date date2MMDD] ;
-            break;
-        }
-        case 4://next task time
-        {
-            NSDate *date = person.cachedInfo[kNextTaskTime];
-            cell.detailTextLabel.text = [[date time2HMMSS] stringByAppendingString:[date date2am]];
-            break;
-        }
-        case 5://wake-ability
-        {
-            cell.detailTextLabel.text =  [NSString stringWithFormat:@"%ld",(long) stats.wakability];
-            break;
-        }
-            
-        default:
-            break;
-    }
-    
-    
-    return cell;
 }
 //change cell bg color
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -552,14 +554,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         }
         
     }
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    //选择动画
-//    [UIView  beginAnimations:nil context:NULL];
-//    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-//    [UIView setAnimationDuration:0.75];
-//    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.navigationController.view cache:NO];
-//    [UIView commitAnimations];
-    
+    //[tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {

@@ -10,21 +10,17 @@
 
 @implementation UIView (Sreenshot)
 
--(UIImage *)convertViewToImage
-{
-    UIGraphicsBeginImageContext(self.bounds.size);
-    [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
-}
-
-
 - (UIImage *)screenshot{
-    UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.opaque, 0.0);
-    CGContextRef contextRef = UIGraphicsGetCurrentContext();
-    [self.layer renderInContext:contextRef];
-    UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, self.window.screen.scale);
+    
+    /* iOS 7 */
+    if ([self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)])
+        [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
+    else /* iOS 6 */
+        [self.layer renderInContext:UIGraphicsGetCurrentContext()];
+    
+    UIImage* img = UIGraphicsGetImageFromCurrentImageContext();
+    
     UIGraphicsEndImageContext();
     
     return img;

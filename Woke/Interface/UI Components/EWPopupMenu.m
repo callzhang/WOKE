@@ -201,8 +201,11 @@
 }
 
 //close method
-- (void)closeMenu
-{
+- (void)closeMenu{
+    [self closeMenuWithCompletion:NULL];
+}
+
+- (void)closeMenuWithCompletion:(void (^)(void))block{
     
     //[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
     
@@ -254,9 +257,14 @@
          collectionView.scrollEnabled = YES;
          [self removeFromSuperview];
          
+         if (block) {
+             block();
+         }
          
      }];
 }
+
+
 
 
 //open method
