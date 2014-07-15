@@ -109,7 +109,7 @@
     _collectionView.dataSource = self;
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [_collectionView registerNib:nib forCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier];
-    //_collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle Tile Half"]];
+    _collectionView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Triangle Tile Half"]];
     _collectionView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Home Bg"]];
     
     //paging

@@ -50,7 +50,6 @@ static const float initialDownSampling = 0;
     
     self.blurFilter = [[GPUImageiOSBlurFilter alloc] init];
     self.blurFilter.blurRadiusInPixels = 1;
-    self.blurFilter.saturation = 1;
     self.blurFilter.rangeReductionFactor = 0;
     self.blurFilter.downsampling = initialDownSampling;
     //[self.blurFilter addTarget:self.imageView];
@@ -148,7 +147,6 @@ static const float initialDownSampling = 0;
 			UIImage *toViewImage = toView.screenshot;
 			self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];//take screenshot again to update the image in GPUPicture
 			[self.blurImage addTarget:self.blurFilter];
-            [self triggerRenderOfNextFrame];
             self.startTime = 0;
             self.displayLink.paused = NO;
         });
@@ -167,10 +165,10 @@ static const float initialDownSampling = 0;
 - (void)updateFrame:(CADisplayLink*)link
 {
     [self updateProgress:link];
-    self.brightnessFilter.gamma = 1 + self.progress;
+    self.brightnessFilter.gamma = 1 + 1.2 * self.progress;
     double downSampling = initialDownSampling + self.progress * 6;
     self.blurFilter.downsampling = downSampling;
-    self.blurFilter.blurRadiusInPixels = 1+ self.progress * 4;
+    self.blurFilter.blurRadiusInPixels = 1+ self.progress * 12;
     [self triggerRenderOfNextFrame];
     
     if (self.interactive) {
