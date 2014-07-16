@@ -51,8 +51,6 @@
 + (void)handlePushNotification:(NSDictionary *)notification{
     NSString *type = notification[kPushTypeKey];
     NSString *mediaID = notification[kPushMediaKey];
-    NSString *taskID = notification[kPushTaskKey];
-    NSString *personID = notification[kPushPersonKey];
     
     if (!mediaID) {
         

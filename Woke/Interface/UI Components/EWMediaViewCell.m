@@ -96,29 +96,8 @@
 
 - (IBAction)profile:(id)sender{
     EWPersonViewController *profileVC = [[EWPersonViewController alloc] initWithPerson:media.author];
-//    [self.controller presentViewControllerWithBlurBackground:profileVC];
-    
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:profileVC];
-    
-    navController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
-    [navController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    navController.navigationBar.shadowImage = [UIImage new];
-    navController.navigationBar.translucent = YES;
-    navController.view.backgroundColor = [UIColor clearColor];
-    navController.navigationBar.tintColor = [UIColor whiteColor];
-    
-    [self.controller presentViewControllerWithBlurBackground:navController completion:^(){
-       
-       
-    }];
-
-//    if([self.superview isKindOfClass:[UITableView class]]){
-//        UITableView *table = (UITableView *)self.superview;
-//        if ([table.delegate isKindOfClass:[EWWakeUpViewController class]]) {
-//            EWWakeUpViewController *presenter = (EWWakeUpViewController *)table.delegate;
-//            [presenter presentViewControllerWithBlurBackground:controller];
-//        }
-//    }
+    [self.controller presentViewControllerWithBlurBackground:navController completion:NULL];
 
 }
 

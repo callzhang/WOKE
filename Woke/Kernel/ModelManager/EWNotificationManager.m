@@ -83,10 +83,7 @@
         NSLog(@"@@@ Cannot find notification %@", notificationID);
         return;
     }
-    if (notification.completed) {
-        NSLog(@"Notification Complete %@", notificationID);
-        return;
-    }
+    
     NSDictionary *userInfo = notification.userInfo;
     [EWNotificationManager sharedInstance].notification = notification;
     
@@ -126,13 +123,22 @@
         [EWNotificationManager sharedInstance].person = person;
         
         //alert
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Friend accepted"
-                                                        message:[NSString stringWithFormat:@"%@ has accepted your friend request. View profile?", person.name]
-                                                       delegate:[EWNotificationManager sharedInstance]
-                                              cancelButtonTitle:@"No"
-                                              otherButtonTitles:@"Yes", nil];
-        alert.tag = kFriendAcceptedAlert;
-        [alert show];
+        if (notification.completed) {
+            EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
+            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+            [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
+                [rootViewController presentViewControllerWithBlurBackground:navController];
+            }];
+        }else{
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Friend accepted"
+                                                            message:[NSString stringWithFormat:@"%@ has accepted your friend request. View profile?", person.name]
+                                                           delegate:[EWNotificationManager sharedInstance]
+                                                  cancelButtonTitle:@"No"
+                                                  otherButtonTitles:@"Yes", nil];
+            alert.tag = kFriendAcceptedAlert;
+            [alert show];
+        }
+        
         
     } else if ([notification.type isEqualToString:kNotificationTypeTimer]) {
         
@@ -224,9 +230,10 @@
                 break;
             }
             case 2:{ //profile
+                EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:self.person];
+                UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
                 [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
-                    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:self.person];
-                    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+                    
                     [rootViewController presentViewControllerWithBlurBackground:navController];
                 }];
                 break;
@@ -243,9 +250,10 @@
                 break;
             
             case 1:{//view profile
+                EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:self.person];
+                UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
                 [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
-                    EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:self.person];
-                    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+                    
                     [rootViewController presentViewControllerWithBlurBackground:navController];
                 }];
             }

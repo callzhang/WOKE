@@ -66,6 +66,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 @synthesize tabView;
 
 - (EWPersonViewController *)initWithPerson:(EWPerson *)p{
+    NSParameterAssert(p);
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.person = p;
