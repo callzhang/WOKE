@@ -41,6 +41,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewDidLoad) name:kPersonLoggedIn object:nil];
         
         cellIdentifier = @"CellIdentifier";
+        [_tableView reloadData];
+        
     }
     return self;
 }
@@ -49,12 +51,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    self.navigationController.navigationBar.shadowImage = [UIImage new];
-    self.navigationController.navigationBar.translucent = YES;
-    self.navigationController.view.backgroundColor = [UIColor clearColor];
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    [self setTitle:@"Preferences"];
+
 
     
     [self initData];
@@ -64,6 +62,7 @@
 - (void)initData {
     //profile
     preference = [me.preference mutableCopy];
+    settingGroup = settingGroupPreference;
     
 }
 
@@ -71,16 +70,16 @@
     self.view.backgroundColor = [UIColor clearColor];
     
     //UISegmentedControl
-    UISegmentedControl *settingGroupController = [[UISegmentedControl alloc] initWithItems: @[@"Profile", @"Preference", @"About"]];
-    settingGroupController.selectedSegmentIndex = 0;
+//    UISegmentedControl *settingGroupController = [[UISegmentedControl alloc] initWithItems: @[@"Profile", @"Preference", @"About"]];
+//    settingGroupController.selectedSegmentIndex = 0;
     //settingGroupController.segmentedControlStyle = UISegmentedControlStyleBar;
-    [settingGroupController addTarget:self
-                               action:@selector(changeSettingGroup:)
-                     forControlEvents:UIControlEventValueChanged];
-    settingGroup = settingGroupProfile;
+//    [settingGroupController addTarget:self
+//                               action:@selector(changeSettingGroup:)
+//                     forControlEvents:UIControlEventValueChanged];
+//    settingGroup = settingGroupProfile;
     
     //navigationItem
-    self.navigationItem.titleView = settingGroupController;
+//    self.navigationItem.titleView = settingGroupController;
 //    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
 //    self.navigationController.navigationBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
 //    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
@@ -94,9 +93,13 @@
     _tableView.backgroundView = nil;
     _tableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.1];
     if ([[UIDevice currentDevice].systemVersion doubleValue]>=7.0f) {
+        
         _tableView.separatorInset = UIEdgeInsetsZero;// 这样修改，那条线就会占满
+        
     }
+    
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
     [self.view addSubview:_tableView];
 }
 
@@ -376,6 +379,7 @@
                 break;
         }
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)OnBedTimeNotificationSwitchChanged:(UISwitch *)sender{

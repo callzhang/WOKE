@@ -48,6 +48,7 @@
         
         self.detail.text = title;
     }else{
+        
         self.profilePic.image = notification.owner.profilePic;
         [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
         EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByObjectID:notification.sender];

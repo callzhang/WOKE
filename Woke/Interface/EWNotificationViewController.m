@@ -121,6 +121,8 @@
     EWNotification *notification = notifications[indexPath.row];
     if (!cell.notification || cell.notification != notification) {
         cell.notification = notification;
+
+
     }
     return cell;
 }
@@ -137,6 +139,8 @@
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    
     EWNotification *notice = notifications[indexPath.row];
     [EWNotificationManager handleNotification:notice.objectId];
     
@@ -157,6 +161,7 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
     //CGFloat alpha = indexPath.row%2?0.05:0.06;
     cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0];
+//    [self tableView:tableView cellForRowAtIndexPath:indexPath];
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section

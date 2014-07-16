@@ -9,14 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "EWPerson.h"
 #import "EWRingtoneSelectionViewController.h"
-
+#import "EWViewController.h"
 typedef enum {
     settingGroupProfile,
     settingGroupPreference,
     settingGroupAbout
 } settingGroupList;
 
-@interface EWSettingsViewController : UIViewController <EWRingtoneSelectionDelegate, UIAlertViewDelegate> {
+@interface EWSettingsViewController : EWViewController <EWRingtoneSelectionDelegate, UIAlertViewDelegate> {
     UITableView *_tableView;
     settingGroupList settingGroup;
     NSString *cellIdentifier;

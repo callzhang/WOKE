@@ -83,6 +83,10 @@
         NSLog(@"@@@ Cannot find notification %@", notificationID);
         return;
     }
+    if (notification.completed) {
+        NSLog(@"Notification Complete %@", notificationID);
+        return;
+    }
     NSDictionary *userInfo = notification.userInfo;
     [EWNotificationManager sharedInstance].notification = notification;
     

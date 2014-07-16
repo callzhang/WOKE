@@ -71,6 +71,9 @@
     NSLog(@"%@",indexPath);
    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    
+    
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -89,13 +92,13 @@
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.imageView.image = me.profilePic;
         }
-
+                  break;
         case 1: {
             cell.textLabel.text = LOCALSTR(@"Name");
             cell.detailTextLabel.text = me.name;
         }
             break;
-                    break;
+            
         case 2: {
             cell.textLabel.text = LOCALSTR(@"ID");
             cell.detailTextLabel.text = me.username;
