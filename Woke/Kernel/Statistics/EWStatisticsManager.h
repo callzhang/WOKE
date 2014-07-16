@@ -13,8 +13,11 @@
 
 @property (nonatomic, weak) EWPerson *person;
 @property (nonatomic, weak) NSArray *tasks;
-@property (nonatomic) NSNumber *aveWakeupTime;
+@property (nonatomic) NSNumber *aveWakingLength;
+@property (nonatomic) NSString *aveWakingLengthString;
+@property (nonatomic) NSString *aveWakeUpTime;
 @property (nonatomic) NSNumber *successRate;
+@property (nonatomic) NSString *successString;
 
 - (NSInteger)wakability;
 - (NSString *)wakabilityStr;

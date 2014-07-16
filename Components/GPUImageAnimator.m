@@ -110,6 +110,7 @@ static const float initialDownSampling = 2;
         UIImage *fromViewImage = fromView.screenshot;
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.blurFilter];
+		[self triggerRenderOfNextFrame];
         
         //trigger GPU rendering
         self.startTime = 0;

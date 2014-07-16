@@ -730,8 +730,10 @@
     menu.toVoiceButtonBlock = ^{
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
-        [self presentViewControllerWithBlurBackground:controller];
-        [weakMenu closeMenu];
+        
+        [weakMenu closeMenuWithCompletion:^{
+            [self presentViewControllerWithBlurBackground:controller];
+        }];
     };
     
 }

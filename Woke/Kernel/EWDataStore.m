@@ -492,6 +492,8 @@
     [[NSUserDefaults standardUserDefaults] setObject:[dic copy] forKey:kParseQueueDelete];
 }
 
+
+
 #pragma mark - Parse Server methods
 +(void)updateToServer{
     //make sure it is called on main thread
@@ -1049,7 +1051,7 @@
     //NSArray *allKeys = object.allKeys;
     //add or delete some attributes here
     [managedObjectAttributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
-        if ([attributeUploadSkipped containsObject:key]) {
+        if (key.skipUpload) {
             //NSLog(@"Key %@ does not exist on PO %@", key, object.parseClassName);
             return;//skip if not exist
         }
@@ -1187,7 +1189,7 @@
 //        }
         
         //check if changed
-        if ([attributeUploadSkipped containsObject:key]) {
+        if (key.skipUpload) {
             return;
         }
         
@@ -1412,6 +1414,12 @@
     NSDictionary *typeDic = kServerTransformTypes;
     NSString *serverType = typeDic[self];
     return serverType;
+}
+
+- (BOOL)skipUpload{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF IN %@", attributeUploadSkipped];
+    BOOL result = [predicate evaluateWithObject:self];
+    return result;
 }
 
 @end

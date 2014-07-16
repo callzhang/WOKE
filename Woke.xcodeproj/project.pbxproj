@@ -170,7 +170,6 @@
 		AB78079F18393A66007C8BFD /* EWAlarmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78078E18393A66007C8BFD /* EWAlarmManager.m */; };
 		AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079618393A66007C8BFD /* EWMediaStore.m */; };
 		AB7807A418393A66007C8BFD /* EWPersonStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079818393A66007C8BFD /* EWPersonStore.m */; };
-		AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079A18393A66007C8BFD /* EWStatsManager.m */; };
 		AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079C18393A66007C8BFD /* EWDataStore.m */; };
 		AB7807A718393A66007C8BFD /* EWTaskStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079E18393A66007C8BFD /* EWTaskStore.m */; };
 		ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */; };
@@ -451,8 +450,6 @@
 		AB78079618393A66007C8BFD /* EWMediaStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWMediaStore.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AB78079718393A66007C8BFD /* EWPersonStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EWPersonStore.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AB78079818393A66007C8BFD /* EWPersonStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWPersonStore.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		AB78079918393A66007C8BFD /* EWStatsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWStatsManager.h; sourceTree = "<group>"; };
-		AB78079A18393A66007C8BFD /* EWStatsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWStatsManager.m; sourceTree = "<group>"; };
 		AB78079B18393A66007C8BFD /* EWDataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWDataStore.h; sourceTree = "<group>"; };
 		AB78079C18393A66007C8BFD /* EWDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWDataStore.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AB78079D18393A66007C8BFD /* EWTaskStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWTaskStore.h; sourceTree = "<group>"; };
@@ -1079,8 +1076,6 @@
 				AB78079818393A66007C8BFD /* EWPersonStore.m */,
 				AB78079518393A66007C8BFD /* EWMediaStore.h */,
 				AB78079618393A66007C8BFD /* EWMediaStore.m */,
-				AB78079918393A66007C8BFD /* EWStatsManager.h */,
-				AB78079A18393A66007C8BFD /* EWStatsManager.m */,
 				AB0DF50818FE509C00CF5AB1 /* EWSocialGraphManager.h */,
 				AB0DF50918FE509C00CF5AB1 /* EWSocialGraphManager.m */,
 			);
@@ -1404,7 +1399,6 @@
 				9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */,
 				9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */,
 				9B5AF7F11965EC640002AA06 /* EWNotificationCell.m in Sources */,
-				AB7807A518393A66007C8BFD /* EWStatsManager.m in Sources */,
 				9BF297C01912F713008C136E /* EWSettingsViewController.m in Sources */,
 				AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */,
 				9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */,

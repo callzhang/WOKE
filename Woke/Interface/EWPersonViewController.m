@@ -40,7 +40,7 @@
 #import "EWActivityHeadView.h"
 #import "NavigationControllerDelegate.h"
 
-#define kProfileTableArray              @[@"Friends", @"People woke her up", @"People I woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score"]
+#define kProfileTableArray              @[@"Friends", @"People woke me up", @"People I woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score", @"Average wake up time"]
 
 
 static NSString *taskCellIdentifier = @"taskCellIdentifier";
@@ -111,8 +111,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:nil rightItem:nil];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
-    
-
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -475,30 +473,33 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         }
         
         cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
-        if (indexPath.row== 1&&[person.gender isEqualToString:@"male"]) {
-            
-            cell.textLabel.text = @"People woke him up";
-        }
+        BOOL male = [person.gender isEqualToString:@"male"] ? YES:NO;
+        
         
         switch (indexPath.row) {
-            case 0:
+            case 0://friends
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
-                //            NSLog(@"%ld",person.friends.count);
                 break;
             case 1:
             {
                 NSArray *receivedMedias = [[EWMediaStore sharedInstance] mediasForPerson:person];
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)receivedMedias.count];
+                if (!person.isMe) {
+                    cell.textLabel.text = male? @"People woke he up":@"People woke her up";
+                }
             }
                 break;
             case 2:
             {
                 NSArray *medias = [[EWMediaStore sharedInstance] mediaCreatedByPerson:person];
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)medias.count];
+                if (!person.isMe) {
+                    cell.textLabel.text = male? @"People he woke up":@"People she woke up";
+                }
                 
             }
                 break;
-            case 3:
+            case 3://last seen
             {
                 NSDate *date = person.updatedAt;
                 cell.detailTextLabel.text = [date date2MMDD] ;
@@ -512,8 +513,12 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             }
             case 5://wake-ability
             {
-                cell.detailTextLabel.text =  [NSString stringWithFormat:@"%ld",(long) stats.wakability];
+                cell.detailTextLabel.text =  stats.wakabilityStr;
                 break;
+            }
+            case 6://average wake up time
+            {
+                cell.detailTextLabel.text =  stats.aveWakingLengthString;
             }
                 
             default:

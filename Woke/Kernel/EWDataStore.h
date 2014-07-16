@@ -258,4 +258,5 @@ typedef void (^EWSavingCallback)(void);
 
 @interface NSString (Parse)
 - (NSString *)serverType;
+- (BOOL)skipUpload;
 @end

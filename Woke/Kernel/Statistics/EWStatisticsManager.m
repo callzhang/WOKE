@@ -9,60 +9,104 @@
 #import "EWStatisticsManager.h"
 #import "EWTaskItem.h"
 #import "EWTaskStore.h"
+#import "EWUIUtil.h"
+
+#define kMaxWakabilityTime      600
 
 @implementation EWStatisticsManager
 @synthesize person, tasks;
 
 - (void)setPerson:(EWPerson *)p{
     person = p;
-    tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:p];
+    tasks = p.pastTasks;
 }
 
-- (NSNumber *)aveWakeupTime{
+- (NSNumber *)aveWakingLength{
     if (tasks.count) {
         NSInteger totalTime = 0;
+        NSUInteger wakes = 0;
+        
         for (EWTaskItem *t in self.tasks) {
+            if (!t.state) continue;
+            
+            wakes++;
             NSInteger length;
             if (t.completed) {
-                length = [t.completed timeIntervalSinceDate:t.time];
+                length = MAX([t.completed timeIntervalSinceDate:t.time], kMaxWakeTime);
             }else{
                 length = kMaxWakeTime;
             }
             
-            totalTime = totalTime + length;
+            totalTime += length;
         }
-        NSInteger aveTime = totalTime / tasks.count;
-        return [NSNumber numberWithDouble:aveTime];
+        NSInteger aveTime = totalTime / wakes;
+        return [NSNumber numberWithInteger:aveTime];
     }
     return 0;
 }
 
+- (NSString *)aveWakingLengthString{
+    NSInteger aveT = self.aveWakingLength.integerValue;
+    if (aveT == 0) {
+        return @"-";
+    }
+    NSString *str = [EWUIUtil getStringFromTime:aveT];
+    return str;
+}
+
 - (NSNumber *)successRate{
     float rate = 0.0;
-    if (self.tasks) {
-        NSInteger total = tasks.count;
-        NSInteger sCount = 0;
-        for (EWTaskItem *t in tasks) {
-            if (t.completed) {
-                sCount++;
+    float wakes = 0;
+    float validTasks = 0;
+    
+    for (EWTaskItem *task in self.tasks) {
+        if (task.state == YES) {
+            validTasks++;
+            if (task.completed && [task.completed timeIntervalSinceDate:task.time] < kMaxWakeTime) {
+                wakes++;
             }
         }
-        rate = (float)sCount/total;
     }
+    rate = wakes / validTasks;
+    
     return [NSNumber numberWithFloat:rate];
 }
 
+- (NSString *)successString{
+    float rate = self.successRate.floatValue;
+    NSString *rateStr = [NSString stringWithFormat:@"%f%%", rate];
+    return rateStr;
+}
+
 - (NSInteger)wakability{
-    float aveTime = [self.aveWakeupTime floatValue];
-    NSInteger level = 10 - floor(aveTime/360);
+    NSInteger ratio = MIN(self.aveWakingLength.integerValue / kMaxWakabilityTime, 1);
+    NSInteger level = 10 - ratio*10;
     return level;
     
 }
 
 - (NSString *)wakabilityStr{
-    NSInteger level = [self wakability];
+    NSInteger level = self.wakability;
     NSString *lvString = [NSString stringWithFormat:@"%ld/10", (long)level];
     return lvString;
+}
+
+- (NSString *)aveWakeUpTime{
+    if (tasks.count) {
+        NSInteger totalTime = 0;
+        NSUInteger wakes = 0;
+        
+        for (EWTaskItem *t in self.tasks) {
+            if (t.state == NO) continue;
+            
+            wakes++;
+            totalTime += t.time.minutesFrom5am;
+        }
+        NSInteger aveTime = totalTime / wakes;
+        NSDate *time = [[NSDate date] timeByMinutesFrom5am:aveTime];
+        return time.date2String;
+    }
+    return @"-";
 }
 
 @end
