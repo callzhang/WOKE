@@ -238,7 +238,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath{
-    return NO;
+    return YES;
 }
 
 

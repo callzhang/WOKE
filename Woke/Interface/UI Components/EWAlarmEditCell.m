@@ -28,6 +28,10 @@
         [self bringSubviewToFront:self.statement];
         self.staticTextLabel.layer.borderColor = [UIColor clearColor].CGColor;
         self.staticTextLabel.layer.borderWidth = 0.0;
+        
+        self.selectedBackgroundView = [[UIView alloc] initWithFrame: self.frame];
+        self.selectedBackgroundView.backgroundColor = [UIColor clearColor];
+        
     }
     return self;
 }
