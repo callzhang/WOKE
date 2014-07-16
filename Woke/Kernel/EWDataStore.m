@@ -272,6 +272,8 @@
                 NSLog(@"MO %@(%@) has serverID, meaning it is fetched from server, skip!", MO.entity.name, [MO valueForKey:kParseObjectID]);
                 continue;
             }
+            NSLog(@"Validation");
+            [EWDataStore validateMO:MO];
             NSLog(@"+++> MO %@ inserted to queue", MO.entity.name);
             [EWDataStore appendInsertQueue:MO];
         }
@@ -291,6 +293,8 @@
             [changedKeys removeObjectsInArray:attributeUploadSkipped];
             
             if (changedKeys.count > 0) {
+                NSLog(@"Validation");
+                [EWDataStore validateMO:MO];
                 NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
                 [EWDataStore appendUpdateQueue:MO];
             }
@@ -353,6 +357,19 @@
 
 + (NSManagedObjectContext *)currentContext{
     return [NSManagedObjectContext contextForCurrentThread];
+}
+
++ (void)validateMO:(NSManagedObject *)mo{
+    NSLog(@"=== Start to validate MO %@(%@)", mo.entity.name, mo.serverID);
+    //validate MO
+    NSString *type = mo.entity.name;
+    if ([type isEqualToString:@"EWTaskItem"]) {
+        [EWTaskStore validateTask:(EWTaskItem *)mo];
+    } else if([type isEqualToString:@"EWMediaItem"]){
+        [EWMediaStore validateMedia:(EWMediaItem *)mo];
+    }else if ([type isEqualToString:@"EWPerson"]){
+        [EWPersonStore validatePerson:(EWPerson *)mo];
+    }
 }
 
 
@@ -565,15 +582,9 @@
         return;
     }
     
-    //validate MO
-    NSString *type = mo.entity.name;
-    if ([type isEqualToString:@"EWTaskItem"]) {
-        [EWTaskStore validateTask:(EWTaskItem *)mo];
-    } else if([type isEqualToString:@"EWMediaItem"]){
-        [EWMediaStore validateMedia:(EWMediaItem *)mo];
-    }else if ([type isEqualToString:@"EWPerson"]){
-        [EWPersonStore validatePerson:(EWPerson *)mo];
-    }
+    
+    //validation
+    [EWDataStore validateMO:mo];
     
     //skip if updating other PFUser
     //TODO: Set ACL for PFUser to enable public writability
