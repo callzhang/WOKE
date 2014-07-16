@@ -19,5 +19,8 @@ typedef enum{
 - (void)showNotification:(NSString *)alert WithStyle:(HUDStyle)style;
 - (void)showSuccessNotification:(NSString *)alert;
 - (void)showFailureNotification:(NSString *)alert;
+@end
+
+@interface UIView (Sreenshot)
 - (UIImage *)screenshot;
 @end

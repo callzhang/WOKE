@@ -148,7 +148,7 @@
 }
 
 - (BOOL)isOutDated{
-    if (self == nil) return YES;
+    if (self == nil) return YES;//this line doesn't work, nil will return nil directly...
     BOOL outdated = self.timeElapsed > kServerUpdateInterval;
     return outdated;
 }

@@ -431,7 +431,6 @@
             static NSTimer *alarmPagetimer;
             NSInteger nTask = me.tasks.count;
             if (nTask == 7 || nTask == 0){
-                NSLog(@"Main view observed tasks changed to %d", me.tasks.count);
                 [alarmPagetimer invalidate];
                 alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
                 if (nTask == 0){
@@ -459,6 +458,7 @@
                 }];
             }
         }
+        
     }else if ([object isKindOfClass:[EWTaskStore class]]){
         if ([EWTaskStore sharedInstance].isSchedulingTask) {
             NSLog(@"Detected %@ is scheduling", [object class]);

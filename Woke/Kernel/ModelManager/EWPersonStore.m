@@ -325,11 +325,17 @@ EWPerson *me;
 
 
 + (BOOL)validatePerson:(EWPerson *)person{
-    NSParameterAssert(person.alarms.count == 7);
-    NSParameterAssert(person.tasks.count == 7*nWeeksToScheduleTask);
+    NSParameterAssert(person.tasks.count == person.alarms.count*nWeeksToScheduleTask);
     NSParameterAssert(person.name);
     NSParameterAssert(person.profilePic);
     NSParameterAssert(person.username);
+    if (person.isMe) {
+        if(person.friends.count == 0){
+            NSString *str = @"*** Something wrong, please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.";
+            NSLog(@"*** Something wrong, please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.");
+            EWAlert(str);
+        }
+    }
     return YES;
 }
 @end

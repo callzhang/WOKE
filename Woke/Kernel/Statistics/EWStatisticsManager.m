@@ -18,7 +18,7 @@
 
 - (void)setPerson:(EWPerson *)p{
     person = p;
-    tasks = p.pastTasks;
+    tasks = p.pastTasks.allObjects;
 }
 
 - (NSNumber *)aveWakingLength{

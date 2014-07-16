@@ -17,6 +17,6 @@
 #import "MBProgressHUD.h"
 #import "UIViewController+Blur.h"
 #import "EWDataStore.h"
-#import "UIView+HUD.h"
+#import "UIView+Extend.h"
 #import <Parse/Parse.h>
 #endif

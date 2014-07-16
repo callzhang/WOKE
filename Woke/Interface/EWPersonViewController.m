@@ -29,7 +29,6 @@
 #import "EWNotificationManager.h"
 
 //view
-#import "UIView+HUD.h"
 #import "EWRecordingViewController.h"
 #import "EWLogInViewController.h"
 #import "EWTaskHistoryCell.h"
@@ -75,6 +74,27 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }
     return self;
 }
+
+
+- (void)setPerson:(EWPerson *)p{
+    //add observer to update when person updates
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePersonChange:) name:NSManagedObjectContextObjectsDidChangeNotification object:[EWDataStore currentContext]];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    person = p;
+    [self initData];
+    [self initView];
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    
+    if (!p.isMe && p.updatedAt.isOutDated) {
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [p refreshInBackgroundWithCompletion:^{
+            [self initData];
+            [self initView];
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        }];
+    }
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -202,27 +222,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
 }
 
-
-
-- (void)setPerson:(EWPerson *)p{
-    //add observer to update when person updates
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePersonChange:) name:NSManagedObjectContextObjectsDidChangeNotification object:[EWDataStore currentContext]];
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    person = p;
-    [self initData];
-    [self initView];
-    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-    
-    if (p.updatedAt.isOutDated) {
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        [p refreshInBackgroundWithCompletion:^{
-            [self initData];
-            [self initView];
-            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        }];
-    }
-    
-}
 
 #pragma mark - UI Events
 - (IBAction)extProfile:(id)sender{

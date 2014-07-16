@@ -288,7 +288,7 @@ UIViewController *rootViewController;
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
     //[NSException raise:@"Failed to regiester push token with apple" format:@"Reason: %@", err.description];
-    NSLog(@"Failed to regiester push token with apple. Error: %@", err.description);
+    NSLog(@"*** Failed to regiester push token with apple. Error: %@", err.description);
     NSString *str = [NSString stringWithFormat:@"Unable to regiester Push Notifications. Reason: %@", err.localizedDescription];
     EWAlert(str);
 }

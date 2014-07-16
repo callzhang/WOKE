@@ -56,7 +56,6 @@
 		0EB0C05919684F600061BC70 /* UAProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0C05819684F600061BC70 /* UAProgressView.m */; };
 		0ECB00A21964585A00B122EF /* EWCostumTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECB00A11964585A00B122EF /* EWCostumTextField.m */; };
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
-		185B5274190D1D82006D6FB9 /* UIView+Sreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
 		5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E39217D1C5950079D81C /* EWDeviceInfo.m */; };
@@ -176,7 +175,7 @@
 		ABB8C3061932C630001F7832 /* EWPersonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABB8C3051932C630001F7832 /* EWPersonView.xib */; };
 		ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ABBC47AA18530F35009A2E7D /* EarlyWorm.xcdatamodeld */; };
 		ABC8F96318E8890D0096C073 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC8F96218E8890D0096C073 /* MediaPlayer.framework */; };
-		ABC8F96618E92F180096C073 /* UIView+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = ABC8F96518E92F180096C073 /* UIView+HUD.m */; };
+		ABC8F96618E92F180096C073 /* UIView+Extend.m in Sources */ = {isa = PBXBuildFile; fileRef = ABC8F96518E92F180096C073 /* UIView+Extend.m */; };
 		ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAC185C054C008CD2B8 /* FTWCache.m */; };
 		ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34DAE185C054C008CD2B8 /* NSString+MD5.m */; };
 		ABD53FC6194D7D2F00BBC8DA /* _EWServerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD53FC5194D7D2F00BBC8DA /* _EWServerObject.m */; };
@@ -258,8 +257,6 @@
 		0EB0C05819684F600061BC70 /* UAProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UAProgressView.m; sourceTree = "<group>"; };
 		0ECB00A01964585A00B122EF /* EWCostumTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWCostumTextField.h; sourceTree = "<group>"; };
 		0ECB00A11964585A00B122EF /* EWCostumTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWCostumTextField.m; sourceTree = "<group>"; };
-		185B5272190D1D82006D6FB9 /* UIView+Sreenshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Sreenshot.h"; sourceTree = "<group>"; };
-		185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Sreenshot.m"; sourceTree = "<group>"; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		561ECB5117BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -459,8 +456,8 @@
 		ABB8C3051932C630001F7832 /* EWPersonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWPersonView.xib; sourceTree = "<group>"; };
 		ABBC47AB18530F35009A2E7D /* EarlyWorm.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EarlyWorm.xcdatamodel; sourceTree = "<group>"; };
 		ABC8F96218E8890D0096C073 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
-		ABC8F96418E92F180096C073 /* UIView+HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+HUD.h"; sourceTree = "<group>"; };
-		ABC8F96518E92F180096C073 /* UIView+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+HUD.m"; sourceTree = "<group>"; };
+		ABC8F96418E92F180096C073 /* UIView+Extend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Extend.h"; sourceTree = "<group>"; };
+		ABC8F96518E92F180096C073 /* UIView+Extend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Extend.m"; sourceTree = "<group>"; };
 		ABD34DAB185C054C008CD2B8 /* FTWCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTWCache.h; sourceTree = "<group>"; };
 		ABD34DAC185C054C008CD2B8 /* FTWCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTWCache.m; sourceTree = "<group>"; };
 		ABD34DAD185C054C008CD2B8 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
@@ -614,8 +611,8 @@
 		5642AF4817ACCE27000C73E8 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
-				ABC8F96418E92F180096C073 /* UIView+HUD.h */,
-				ABC8F96518E92F180096C073 /* UIView+HUD.m */,
+				ABC8F96418E92F180096C073 /* UIView+Extend.h */,
+				ABC8F96518E92F180096C073 /* UIView+Extend.m */,
 				56D997F017B425D2003EDA53 /* NSString+Extend.h */,
 				56D997F117B425D2003EDA53 /* NSString+Extend.m */,
 				ABF192A818BF135C006A4AA2 /* UIAlertView+.h */,
@@ -632,8 +629,6 @@
 				5632E38E17D1BF1A0079D81C /* EWFoundation.m */,
 				5632E39117D1C5950079D81C /* EWDeviceInfo.h */,
 				5632E39217D1C5950079D81C /* EWDeviceInfo.m */,
-				185B5272190D1D82006D6FB9 /* UIView+Sreenshot.h */,
-				185B5273190D1D82006D6FB9 /* UIView+Sreenshot.m */,
 				0ECB00A01964585A00B122EF /* EWCostumTextField.h */,
 				0ECB00A11964585A00B122EF /* EWCostumTextField.m */,
 			);
@@ -1350,7 +1345,7 @@
 				9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */,
 				AB198C941861818B008C1F15 /* EWGroupTask.m in Sources */,
 				56E0C37017B2CEC200835A6B /* EWShakingDetectorView.m in Sources */,
-				ABC8F96618E92F180096C073 /* UIView+HUD.m in Sources */,
+				ABC8F96618E92F180096C073 /* UIView+Extend.m in Sources */,
 				9BF07AC0192324F800DED2E1 /* _EWTaskItem.m in Sources */,
 				56E0C37117B2CEC200835A6B /* EWUnlockManager.m in Sources */,
 				AB7807A718393A66007C8BFD /* EWTaskStore.m in Sources */,
@@ -1372,7 +1367,6 @@
 				9BF297B41912F713008C136E /* EWFirstTimeViewController.m in Sources */,
 				AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */,
 				9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */,
-				185B5274190D1D82006D6FB9 /* UIView+Sreenshot.m in Sources */,
 				AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */,
 				ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */,
 				9BF297BD1912F713008C136E /* EWRecordingViewController.m in Sources */,
@@ -1501,8 +1495,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Derek Zhang (SRS98HY45T)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Derek Zhang (SRS98HY45T)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1528,7 +1522,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "632C890C-F1E2-4B82-A9CD-B9C2F6498798";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1542,8 +1536,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1568,7 +1562,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "632C890C-F1E2-4B82-A9CD-B9C2F6498798";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};
