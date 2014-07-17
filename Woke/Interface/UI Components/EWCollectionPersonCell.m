@@ -66,7 +66,15 @@
 }
 
 - (void)setPerson:(EWPerson *)person{
+    
+    // init label
+    self.name = [[UILabel alloc] initWithFrame:CGRectMake(0, 60, 80, 21)];
+    self.name.textAlignment = NSTextAlignmentCenter;
+    self.name.backgroundColor = [UIColor clearColor];
+    self.name.font = [UIFont systemFontOfSize:13.0];
+    self.name.textColor  = [UIColor whiteColor];
     _person = person;
+    [self addSubview:self.name];
     //init state
     self.image.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
     self.name.alpha = 0;

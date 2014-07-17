@@ -415,11 +415,11 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tabView.selectedSegmentIndex == 0) {
-        return 45;
+        return 40;
     }
     else
     {
-        return 50;
+        return 45;
     }
 }
 
@@ -436,11 +436,13 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         EWTaskItem *task = tasks[indexPath.section];
         UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
         
+        
         if (!cell) {
             
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:activitiyCellIdentifier];
             cell.textLabel.textColor = [UIColor lightGrayColor];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.textLabel.font = [UIFont systemFontOfSize:17];
             
         }
         switch (indexPath.row) {
