@@ -86,7 +86,7 @@
     NSMutableArray *tasks;
 
     //get from local cache if self or time elapsed since last update is shorter than predefined interval
-    if (person.isMe || !person.updatedAt.isOutDated) {
+    if (person.isMe || !person.isOutDated) {
         tasks = [[person.pastTasks allObjects] mutableCopy];
         [tasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
     }else{
@@ -307,7 +307,7 @@
 
 - (BOOL)checkPastTasks:(NSMutableArray *)tasks{
     //nullify old task's relation to alarm
-    BOOL isOutDated = NO;
+    BOOL taskOutDated = NO;
     NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingSeconds:-kMaxWakeTime]];
     NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
     for (EWTaskItem *t in outDatedTasks) {
@@ -317,14 +317,14 @@
         [tasks removeObject:t];
         NSLog(@"====== Task on %@ moved to past ======", [t.time date2dayString]);
         [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
-        isOutDated = YES;
+        taskOutDated = YES;
     }
     
-    if (isOutDated) {
+    if (taskOutDated) {
         [EWDataStore save];
     }
     
-    return isOutDated;
+    return taskOutDated;
 }
 
 #pragma mark - NEW

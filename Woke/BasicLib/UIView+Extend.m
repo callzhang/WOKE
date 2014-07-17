@@ -60,11 +60,18 @@
     
     /* iOS 7 */
     BOOL visible = !self.hidden && self.superview != nil;
-    if (visible && [self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)])
-        [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
-    else /* iOS 6 */
-        [self.layer renderInContext:UIGraphicsGetCurrentContext()];
+    BOOL animating = self.layer.animationKeys != nil;
+    if (visible && [self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]){
+        //only works when visible
+        if (!animating) {
+            [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
+        }else{
+            [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
+        }
     
+    }else{ /* iOS 6 */
+        [self.layer renderInContext:UIGraphicsGetCurrentContext()];
+    }
     UIImage* img = UIGraphicsGetImageFromCurrentImageContext();
     
     UIGraphicsEndImageContext();

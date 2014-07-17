@@ -86,9 +86,11 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     [self initView];
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     
-    if (!p.isMe && p.updatedAt.isOutDated) {
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    if (!p.isMe && p.isOutDated) {
+        NSLog(@"Person %@ is outdated and needs refresh in background", p.name);
+        
         [p refreshInBackgroundWithCompletion:^{
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             [self initData];
             [self initView];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
@@ -516,6 +518,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 cell.detailTextLabel.text =  stats.wakabilityStr;
                 break;
             }
+                
             case 6://average wake up time
             {
                 cell.detailTextLabel.text =  stats.aveWakingLengthString;

@@ -75,6 +75,15 @@
         context = [NSManagedObjectContext MR_defaultContext];
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:context];
+        //Observe background context saves so main context can perform merge changes
+        
+        [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:nil queue:nil usingBlock:^(NSNotification* note){
+             if (note.object != context)
+				 NSLog(@"Observed changes in background context, merge to main context!");
+                 [context performBlock:^(){
+                     [context mergeChangesFromContextDidSaveNotification:note];
+                 }];
+		}];
         //Observe context save to update the update/insert/delete queue
         //This turns out to be not possible because there are actions that need to save to local but not update to server
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addToQueueUpOnSaving:) name:NSManagedObjectContextDidSaveNotification object:context];
@@ -748,6 +757,10 @@
         NSLog(@"*** The MO %@ doesn't not has server key, please check", self.entity.name);
         return;
     }
+    if (!parseObject.isDataAvailable) {
+        NSLog(@"*** The PO %@(%@) you passed in doesn't have any data. Deleted from server?", parseObject.parseClassName, parseObject.objectId);
+        return;
+    }
     
     //download if needed
     [parseObject fetchIfNeeded];
@@ -927,8 +940,7 @@
             NSLog(@"*** The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!", self.entity.name);
         }
         
-        NSDate *updatedAt = [self valueForKey:kUpdatedDateKey];
-        BOOL outdated = updatedAt && [updatedAt isOutDated];
+        BOOL outdated = self.isOutDated;
         BOOL isPerson = [self isKindOfClass:[EWPerson class]];
         if (!outdated || !isPerson) {
             if (!outdated) NSLog(@"MO %@(%@) is not out dated, skip refresh in background", self.entity.name, self.serverID);
@@ -957,12 +969,15 @@
             [currentMO updateValueAndRelationFromParseObject:object];
             [localContext saveToPersistentStoreAndWait];
             
-            if (block) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    block();
-                });
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
                 
-            }
+                
+                if (block) {
+                    block();
+                }
+            });
+            
         });
     }
 }
@@ -982,9 +997,8 @@
             NSLog(@"*** The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!", self.entity.name);
         }
         
-        NSDate *updatedDate = [self valueForKey:kUpdatedDateKey];
-        if (updatedDate && [updatedDate isOutDated] == NO) {
-            NSLog(@"MO %@ skipped refresh because not outdated (%@)", self.entity.name, updatedDate);
+        if (!self.isOutDated) {
+            NSLog(@"MO %@ skipped refresh because not outdated (%@)", self.entity.name, [self valueForKey:kUpdatedDateKey]);
             return;
         }
         NSLog(@"===> Refreshing MO %@", self.entity.name);
@@ -1028,9 +1042,9 @@
     }];
 }
 
-- (void)shallowRefreshInBackground{
-    NSDate *updatedAt = [self valueForKey:kUpdatedDateKey];
-    if (updatedAt && !updatedAt.isOutDated) {
+- (void)refreshShallowWithCompletion:(void (^)(void))block{
+    
+    if (!self.isOutDated) {
         return;
     }
     
@@ -1042,17 +1056,59 @@
             NSLog(@"Failed to get back MO: %@", err.description);
             return ;
         }
-        PFObject *object = backMO.parseObject;
-        NSLog(@"Shallow refreshed MO %@(%@) in backgound", object.parseClassName, object.objectId);
+        
+        //Get PO from server
+        PFQuery *q = [PFQuery queryWithClassName:backMO.entity.serverClassName];
+        [q whereKey:kParseObjectID equalTo:backMO.serverID];
+        [backMO.entity.relationshipsByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
+            if (obj.isToMany && !obj.inverseRelationship) {
+                NSLog(@"Relation %@ included when fetching %@", key, backMO.entity.name);
+                [q includeKey:key];
+            }
+        }];
+        PFObject *PO = [q findObjects][0];
+        
+        //refresh MO value
+        [self assignValueFromParseObject:PO];
+        
+        //get related object parsimoniously
+        [backMO.entity.relationshipsByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
+            if (obj.isToMany) {
+                if (obj.inverseRelationship) {
+                    //PFRelation, skip
+                }else{
+                    //Pointer
+                    NSArray *relatedPOs = PO[key];
+                    NSMutableSet *relatedMOs = [backMO mutableSetValueForKey:key];
+                    for (PFObject *p in relatedPOs) {
+                        NSManagedObject *relatedMO = p.managedObject;
+                        if (![relatedMOs containsObject:relatedMO]) {
+                            [relatedMOs addObject:relatedMO];
+                        }
+                    }
+                    [backMO setValue:relatedMOs forKey:key];
+                }
+            }
+        }];
+        
+        NSLog(@"Shallow refreshed MO %@(%@) in backgound", PO.parseClassName, PO.objectId);
+        
+    }completion:^(BOOL success, NSError *error) {
+        
+        block();
+        
     }];
-    
     
 }
 
 
 - (void)assignValueFromParseObject:(PFObject *)object{
     [object fetchIfNeeded];
-    if ([self valueForKey:kParseObjectID]) {
+    if (!object.isDataAvailable) {
+        NSLog(@"*** The PO %@(%@) you passed in doesn't have any data. Deleted from server?", object.parseClassName, object.objectId);
+        return;
+    }
+    if (self.serverID) {
         NSParameterAssert([[self valueForKey:kParseObjectID] isEqualToString:object.objectId]);
     }else{
         [self setValue:object.objectId forKey:kParseObjectID];
@@ -1168,7 +1224,7 @@
     if (!date) {
         return YES;
     }
-    BOOL outdated = [date isOutDated];
+    BOOL outdated = !date.isUpToDated;
     return outdated;
 }
 
@@ -1184,7 +1240,7 @@
     NSManagedObject *mo = [EWDataStore objectForCurrentContext:managedObject];
     NSParameterAssert([mo valueForKey:kParseObjectID]);
     NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
-    if (updateAt && [self.updatedAt timeIntervalSinceDate:updateAt] > 60) {
+    if (updateAt && [self.updatedAt timeIntervalSinceDate:updateAt] > kStalelessInterval) {
         NSLog(@"@@@ Trying to update MO %@, but PO is newer! Please check the code.(%@ -> %@)", mo.entity.name, updateAt, self.updatedAt);
         return;
     }
@@ -1387,16 +1443,16 @@
         mo = [NSClassFromString(self.localClassName) MR_createEntity];
         [mo assignValueFromParseObject:self];
         NSLog(@"+++> MO created: %@ (%@)", self.localClassName, self.objectId);
+    }else{
+        NSDate *updatedMO = [mo valueForKey:kUpdatedDateKey];
+        NSDate *updatedPO = [self valueForKey:kUpdatedDateKey];
+        BOOL isServerNew = [updatedPO timeIntervalSinceDate:updatedMO] > kStalelessInterval;
+        if (mo.isOutDated || isServerNew) {
+            
+            [mo assignValueFromParseObject:self];
+            //[EWDataStore saveToLocal:mo];//mo will be saved later
+        }
     }
-    //check if need to assign value
-    NSDate *updated = [mo valueForKey:kUpdatedDateKey];
-    
-    if (!updated || [updated isEarlierThan:self.updatedAt]) {
-        
-        [mo assignValueFromParseObject:self];
-        //[EWDataStore saveToLocal:mo];
-    }
-    
     
     return mo;
 }

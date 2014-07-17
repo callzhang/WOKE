@@ -66,9 +66,9 @@
 - (NSString *)timeInString;
 
 /**
- Tells if time interval since the receiver is larger than serverUpdateInterval
+ Tells if time interval since the receiver is less than serverUpdateInterval
  */
-- (BOOL)isOutDated;
+- (BOOL)isUpToDated;
 
 /**
  In setting alarm, the interval is determined by alarmInterval. This method returns the time from the receiver with that interval.

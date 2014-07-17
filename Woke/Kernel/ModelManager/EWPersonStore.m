@@ -325,7 +325,6 @@ EWPerson *me;
 
 
 + (BOOL)validatePerson:(EWPerson *)person{
-    NSParameterAssert(person.tasks.count == person.alarms.count*nWeeksToScheduleTask);
     NSParameterAssert(person.name);
     NSParameterAssert(person.profilePic);
     NSParameterAssert(person.username);

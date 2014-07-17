@@ -129,6 +129,10 @@ static const float initialDownSampling = 2;
         
         
     }else if(self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
+		
+		//screenshot first
+		UIImage *toViewImage = toView.screenshot;
+		
         [UIView animateWithDuration:duration-delay animations:^{
             
             fromView.alpha = 0;
@@ -142,7 +146,7 @@ static const float initialDownSampling = 2;
         
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-			UIImage *toViewImage = toView.screenshot;
+			
 			self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];//take screenshot again to update the image in GPUPicture
 			[self.blurImage addTarget:self.blurFilter];
             self.startTime = 0;

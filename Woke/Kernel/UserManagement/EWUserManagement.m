@@ -106,7 +106,6 @@
             NSLog(@"[d] Run completion block.");
             completionBlock();
         });
-        
     }
 
     //fetch or create, delay 0.1s so the login view can animate

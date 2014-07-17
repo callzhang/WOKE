@@ -23,6 +23,7 @@ typedef void (^EWSavingCallback)(void);
 
 //Server update time
 #define kServerUpdateInterval            1800 //30 min
+#define kStalelessInterval               30
 
 //attribute stored on ManagedObject to identify corresponding PFObject on server
 #define kParseObjectID          @"objectId"
@@ -197,9 +198,9 @@ typedef void (^EWSavingCallback)(void);
 - (void)refreshRelatedInBackground;
 
 /**
- Update object only within it's related PO, not it's relation
+ Update object from PO for value, and related PO that is availble
  */
-- (void)shallowRefreshInBackground;
+- (void)refreshShallowWithCompletion:(void (^)(void))block;
 
 /**
  Assign only attribute values (not relation) to the ManagedObject from the Parse Object

@@ -147,10 +147,9 @@
     return HHMM;
 }
 
-- (BOOL)isOutDated{
-    if (self == nil) return YES;//this line doesn't work, nil will return nil directly...
-    BOOL outdated = self.timeElapsed > kServerUpdateInterval;
-    return outdated;
+- (BOOL)isUpToDated{
+    BOOL upToDate = self.timeElapsed < kServerUpdateInterval;
+    return upToDate;
 }
 
 - (NSDate *)nextAlarmIntervalTime{
