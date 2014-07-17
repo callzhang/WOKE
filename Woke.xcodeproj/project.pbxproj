@@ -81,6 +81,7 @@
 		9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */; };
 		9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F9718EB416700C07809 /* EWUtil.m */; };
 		9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BBA5F9918EF295200C07809 /* libz.dylib */; };
+		9BEE145619786DFC0068FC08 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BEE145519786DFC0068FC08 /* OpenGLES.framework */; };
 		9BF07AB7192324F800DED2E1 /* _EWAchievement.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AA4192324F800DED2E1 /* _EWAchievement.m */; };
 		9BF07AB8192324F800DED2E1 /* _EWAlarmItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AA6192324F800DED2E1 /* _EWAlarmItem.m */; };
 		9BF07AB9192324F800DED2E1 /* _EWGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AA8192324F800DED2E1 /* _EWGroup.m */; };
@@ -315,6 +316,7 @@
 		9BBA5F9618EB416700C07809 /* EWUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWUtil.h; sourceTree = "<group>"; };
 		9BBA5F9718EB416700C07809 /* EWUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWUtil.m; sourceTree = "<group>"; };
 		9BBA5F9918EF295200C07809 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		9BEE145519786DFC0068FC08 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		9BF07AA3192324F800DED2E1 /* _EWAchievement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EWAchievement.h; sourceTree = "<group>"; };
 		9BF07AA4192324F800DED2E1 /* _EWAchievement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EWAchievement.m; sourceTree = "<group>"; };
 		9BF07AA5192324F800DED2E1 /* _EWAlarmItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EWAlarmItem.h; sourceTree = "<group>"; };
@@ -517,6 +519,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BEE145619786DFC0068FC08 /* OpenGLES.framework in Frameworks */,
 				9BF5F778192973050074BF97 /* StoreKit.framework in Frameworks */,
 				AB245FB118CCD79D00551721 /* Security.framework in Frameworks */,
 				AB245FA818CCD59F00551721 /* QuartzCore.framework in Frameworks */,
@@ -717,6 +720,7 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9BEE145519786DFC0068FC08 /* OpenGLES.framework */,
 				9BF5F779192973A10074BF97 /* Parse.framework */,
 				9BF5F777192973050074BF97 /* StoreKit.framework */,
 				9BF5F77319291E150074BF97 /* AWSRuntime.framework */,

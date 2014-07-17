@@ -998,7 +998,7 @@
         }
         
         if (!self.isOutDated) {
-            NSLog(@"MO %@ skipped refresh because not outdated (%@)", self.entity.name, [self valueForKey:kUpdatedDateKey]);
+            NSLog(@"MO %@(%@) skipped refresh because not outdated (%@)", self.entity.name, [self valueForKey:kUpdatedDateKey], self.serverID);
             return;
         }
         NSLog(@"===> Refreshing MO %@", self.entity.name);

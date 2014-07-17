@@ -53,6 +53,25 @@
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)t{
     self = [self initWithNibName:nil bundle:nil];
     self.task = t;
+    
+    //first time loop
+    next = YES;
+    timePast = 1;
+    loopCount = kLoopMediaPlayCount;
+    
+    //notification
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
+
+    //data initialization
+    [self initData];
+    
+    //responder to remote control
+    [self prepareRemoteControlEventsListener];
+    
+    
     return self;
 }
 
@@ -62,10 +81,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //first time loop
-    next = YES;
-    timePast = 1;
-    loopCount = kLoopMediaPlayCount;
+    
     
     //origin header frame
     headerFrame = header.frame;
@@ -73,42 +89,20 @@
     //HUD
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    [self initData];
+    
     [self initView];
     
-    //notification
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     
+    //start playing
+    [self startPlayCells];
+    
 }
+
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    
-    //Active session
-    [[AVManager sharedManager] registerActiveAudioSession];
-    
-    //responder to remote control
-    [self prepareRemoteControlEventsListener];
-    
-    NSLog(@"WakeUp view did appear, preparing to play audio");
-    if ([AVManager sharedManager].player.playing) {
-        //start seeking progress bar
-        NSInteger i = [self seekCurrentCell];
-        NSLog(@"Player is already playing %ld", (long)i);
-        
-        //assign cell so the progress can be updated to cell
-        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-        [AVManager sharedManager].currentCell = cell;
-        
-    }else{
-        //play
-        [self startPlayCells];
-    }
     
     //timer updates
     timerTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(updateTimer) userInfo:nil repeats:YES];
@@ -153,6 +147,11 @@
     }
     
     
+    //load MediaViewCell
+    UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
+    //register the nib
+    [tableView_ registerNib:nib forCellReuseIdentifier:cellIdentifier];
+    
     //_shakeManager = [[EWShakeManager alloc] init];
     //_shakeManager.delegate = self;
     //[_shakeManager register];
@@ -180,11 +179,6 @@
     
     //alpha mask
     [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.2f, @0.9f]];
-
-    //load MediaViewCell
-    UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
-    //register the nib
-    [tableView_ registerNib:nib forCellReuseIdentifier:cellIdentifier];
     
     postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGRect frame =[UIScreen mainScreen].bounds;
@@ -217,8 +211,6 @@
     [self initData];
     [tableView_ reloadData];
 }
-
-
 
 
 - (void)setTask:(EWTaskItem *)t{
@@ -428,11 +420,14 @@
 
 #pragma mark - Handle player events
 - (void)startPlayCells{
+    //Active session
+    [[AVManager sharedManager] registerActiveAudioSession];
+    
     NSInteger currentPlayingCellIndex = [self seekCurrentCell];
     if (currentPlayingCellIndex < 0) {
         currentPlayingCellIndex = 0;
     }
-    if ([AVManager sharedManager].player.playing) {
+    if ([AVManager sharedManager].player.playing && [AVManager sharedManager].currentCell) {
         //AVManager has current cell means it is paused
         NSLog(@"AVManager is playing media %ld", (long)currentPlayingCellIndex);
         return;

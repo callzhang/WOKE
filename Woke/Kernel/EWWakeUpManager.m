@@ -207,6 +207,7 @@
     }
     
     BOOL isLaunchedFromLocalNotification = NO;
+    BOOL isLanchedFromRemoteNotification = NO;
     
     //get target task
     EWTaskItem *task;
@@ -220,6 +221,7 @@
             isLaunchedFromLocalNotification = YES;
             task = [[EWTaskStore sharedInstance] getTaskByLocalID:taskLocalID];
         }
+        
     }else{
         task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
     }
@@ -291,6 +293,8 @@
         NSLog(@"Entered from local notification, start wakeup view now");
         [EWWakeUpManager presentWakeUpViewWithTask:task];
         
+    }else if (isLanchedFromRemoteNotification){
+    
     }else{
         //fire an alarm
         NSLog(@"Firing alarm");
@@ -303,7 +307,7 @@
         [[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
         
         //play sounds after 30s - time for alarm
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             //present wakeupVC and paly when displayed
             [EWWakeUpManager presentWakeUpViewWithTask:task];
         });
@@ -350,7 +354,10 @@
                 [rootViewController presentViewControllerWithBlurBackground:controller];
             }
             
+            //start playing regardless
+            [controller startPlayCells];
         });
+        
         
         
     }else{

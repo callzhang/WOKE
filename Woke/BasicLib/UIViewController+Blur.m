@@ -37,9 +37,20 @@ static NavigationControllerDelegate *delegate = nil;
 		[(UINavigationController *)viewController setDelegate:delegate];
 	}
 	
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-		[self presentViewController:viewController animated:YES completion:block];
-	});
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+		//if active, show the animation
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			[self presentViewController:viewController animated:YES completion:block];
+		});
+	} else {
+		//if inactive, wait until app become active
+		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+			NSLog(@"Application did become active, start blur animation");
+			[self presentViewController:viewController animated:YES completion:block];
+			[[NSNotificationCenter defaultCenter] removeObserver:observer];
+		}];
+	}
+	
 	
 	
 	return;
