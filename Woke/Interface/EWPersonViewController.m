@@ -27,6 +27,7 @@
 #import "EWMediaStore.h"
 #import "EWStatisticsManager.h"
 #import "EWNotificationManager.h"
+#import "EWUserManagement.h"
 
 //view
 #import "EWRecordingViewController.h"
@@ -38,6 +39,7 @@
 #import "EWMyProfileViewController.h"
 #import "EWActivityHeadView.h"
 #import "NavigationControllerDelegate.h"
+#import "EWSettingsViewController.h"
 
 #define kProfileTableArray              @[@"Friends", @"People woke me up", @"People I woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score", @"Average wake up time"]
 
@@ -179,12 +181,15 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         }else{
             [self.addFriend setImage:[UIImage imageNamed:@"Add Friend Button"] forState:UIControlStateNormal];
         }
+        
     }else{//self
+        self.addFriend.hidden = YES;
         if(!person.facebook){
+            
             [self.loginBtn setTitle:@"Log in" forState:UIControlStateNormal];
-            self.addFriend.hidden = YES;
+            
         }else{
-            self.addFriend.hidden = YES;
+            
             [self.loginBtn setTitle:@"Edit" forState:UIControlStateNormal];
         }
     }
@@ -228,7 +233,10 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 #pragma mark - UI Events
 - (IBAction)extProfile:(id)sender{
-    if (person.isFriend) {
+    if (person.isMe) {
+        
+        return;
+    }else if (person.isFriend) {
         //is friend: do nothing
         return;
     } else if(person.friendWaiting){
@@ -257,15 +265,16 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 - (IBAction)login:(id)sender {
     
     if (person.facebook) {
-        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
+//        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
+//        
+//        [self.navigationController pushViewController:controller animated:YES];
         
-        [self.navigationController pushViewController:controller animated:YES];
-        
-        return;
+    }else{
+        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
+        [loginVC connect:nil];
     }
     
-    EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-    [loginVC connect:nil];
+    
 }
 
 - (IBAction)tabTapped:(UISegmentedControl *)sender {
@@ -289,7 +298,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     UIActionSheet *sheet;
     if (person.isMe) {
         
-        sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference", nil];
+        sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference", @"Log out", nil];
         if (DEV_TEST) {
             [sheet addButtonWithTitle:@"Add friend"];
         }
@@ -337,6 +346,15 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         //
     }else if ([title isEqualToString:@"Friendship history"]){
         //
+    }else if ([title isEqualToString:@"Preference"]){
+        EWSettingsViewController *prefView = [[EWSettingsViewController alloc] init];
+        [self.navigationController pushViewController:prefView animated:YES];
+    }else if ([title isEqualToString:@"Log out"]){
+        [EWUserManagement logout];
+        EWLogInViewController *loginVC = [EWLogInViewController new];
+        [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
+            [rootViewController presentViewControllerWithBlurBackground:loginVC];
+        }];
     }
         
     [self initView];
