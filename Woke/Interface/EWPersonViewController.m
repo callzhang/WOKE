@@ -265,9 +265,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 - (IBAction)login:(id)sender {
     
     if (person.facebook) {
-//        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
-//        
-//        [self.navigationController pushViewController:controller animated:YES];
+        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
+        
+        [self.navigationController pushViewController:controller animated:YES];
         
     }else{
         EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];

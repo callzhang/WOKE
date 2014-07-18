@@ -227,7 +227,7 @@ EWPerson *me;
     }
     
     //make sure the everyone is saved on main thread
-    [[NSManagedObjectContext defaultContext] performBlockAndWait:^{
+    [[NSManagedObjectContext contextForCurrentThread] performBlockAndWait:^{
         
         for (PFUser *user in people) {
             EWPerson *person = (EWPerson *)user.managedObject;
@@ -237,7 +237,7 @@ EWPerson *me;
             [EWDataStore saveToLocal:person];
             
             //test KVO
-            //[person addObserver:self forKeyPath:@"profilePic" options:NSKeyValueObservingOptionNew context:nil];
+            [person addObserver:self forKeyPath:@"profilePic" options:NSKeyValueObservingOptionNew context:nil];
         }
         
         [EWPersonStore me].score = @100;
@@ -313,7 +313,10 @@ EWPerson *me;
             me.score = @100;
         }
     }else if ([keyPath isEqualToString:@"profilePic"]){
-        NSLog(@"Profile picture changed");
+        if (!change[NSKeyValueChangeKindKey]) {
+            EWAlert(@"Profile picture missing");
+        }
+        
     }
 }
 
@@ -332,7 +335,10 @@ EWPerson *me;
         if(person.friends.count == 0){
             NSString *str = @"*** Something wrong, please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.";
             NSLog(@"*** Something wrong, please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.");
-            EWAlert(str);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                EWAlert(str);
+            });
+            
         }
     }
     return YES;

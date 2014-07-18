@@ -756,8 +756,15 @@
     NSMutableDictionary *change = [NSMutableDictionary new];
     switch(type)
     {
-        case NSFetchedResultsChangeInsert:
-            change[@(type)] = newIndexPath;
+        case NSFetchedResultsChangeInsert:{
+            __block BOOL duplicated = NO;
+            [cellChangeArray enumerateObjectsUsingBlock:^(NSDictionary *change, NSUInteger idx, BOOL *stop) {
+                if([change[@(type)] isEqual:newIndexPath]){
+                    duplicated = YES;
+                }
+            }];
+            if(!duplicated) change[@(type)] = newIndexPath;
+        }
             break;
         case NSFetchedResultsChangeDelete:
             change[@(type)] = indexPath;
@@ -777,8 +784,10 @@
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
-    if (cellChangeArray.count > 0)
-    {
+    //Lesson learned: do not update collectionView in parts, as the final count may not be equal to inserts/deletes applied partially.
+    //Also, do not delay the update, as the count may not hold when accumulated with a lot of updates.
+    
+    if (cellChangeArray.count > 0){
         if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {
             // This is to prevent a bug in UICollectionView from occurring.
             // The bug presents itself when inserting the first object or deleting the last object in a collection view.
@@ -788,82 +797,57 @@
             [self.collectionView reloadData];
             
         } else {
-            
-            if ([collectionUpdateTimer isValid]) {
-                [collectionUpdateTimer invalidate];
-            }
-            collectionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(performCollectionViewUpdates) userInfo:nil repeats:1];
             NSLog(@"Updating CollectionView");
+            
+            [self.collectionView performBatchUpdates:^{
+                
+                for (NSDictionary *change in cellChangeArray)
+                {
+                    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
+                        
+                        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                        switch (type)
+                        {
+                            case NSFetchedResultsChangeInsert:
+                                [self.collectionView insertItemsAtIndexPaths:@[obj]];
+                                break;
+                            case NSFetchedResultsChangeDelete:
+                                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
+                                break;
+                            case NSFetchedResultsChangeUpdate:{
+                                //                        if ([obj isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]) {
+                                //                            return;
+                                //                        }
+                                [self.collectionView reloadItemsAtIndexPaths:@[obj]];
+                            }
+                                break;
+                            case NSFetchedResultsChangeMove:
+                                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
+                                break;
+                        }
+                    }];
+                }
+                
+            }completion:^(BOOL finished){
+                if (finished) {
+                    //center when changed
+                    static NSTimer *viewCenterTimer;
+                    [viewCenterTimer invalidate];
+                    viewCenterTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
+                }else{
+                    NSLog(@"*** Update of collection view failed");
+                }
+                
+                
+            }];
+            
         }
+        
+        //after reload, we still need to update the view, do not clean the changeArray until updating the view.
+        [cellChangeArray removeAllObjects];
     }
-    
-    [cellChangeArray removeAllObjects];
 }
 
-- (void)performCollectionViewUpdates{
-    //decide how many batch to update
-    NSArray *changeArray;
-    NSInteger batch = ceil(cellChangeArray.count / 20);
-    if (batch > 1) {
-        changeArray = [cellChangeArray subarrayWithRange:NSMakeRange(0, 20)];
-        cellChangeArray = [[cellChangeArray subarrayWithRange:NSMakeRange(20, cellChangeArray.count - 20)] mutableCopy];
-        
-        if ([collectionUpdateTimer isValid]) [collectionUpdateTimer invalidate];
-        collectionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(performCollectionViewUpdates) userInfo:nil repeats:1];
-        
-    }else{
-        changeArray = cellChangeArray;
-        cellChangeArray = [NSMutableArray new];
-    }
-    
-    [self.collectionView performBatchUpdates:^{
-        
-        for (NSDictionary *change in changeArray)
-        {
-            [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
-                
-                NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-                switch (type)
-                {
-                    case NSFetchedResultsChangeInsert:
-                        [self.collectionView insertItemsAtIndexPaths:@[obj]];
-                        break;
-                    case NSFetchedResultsChangeDelete:
-                        [self.collectionView deleteItemsAtIndexPaths:@[obj]];
-                        break;
-                    case NSFetchedResultsChangeUpdate:{
-                        if ([obj isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]) {
-                            NSLog(@"Skipped update self in collection view");
-                            break;
-                        }
-                        [self.collectionView reloadItemsAtIndexPaths:@[obj]];
-                    }
-                        break;
-                    case NSFetchedResultsChangeMove:
-                        [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
-                        break;
-                }
-            }];
-        }
-    } completion:^(BOOL finished){
-        if (finished) {
-            //center when changed
-            static NSTimer *viewCenterTimer;
-            [viewCenterTimer invalidate];
-            viewCenterTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
-        }else{
-            NSLog(@"*** Update of collection view failed");
-        }
-        
-        //continue if there are still changes
-        if (cellChangeArray.count > 0) {
-            NSLog(@"There are more changes, continue the update of collectionView");
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self controllerDidChangeContent:self.fetchController];
-            });
-        }
-    }];
-}
 
 - (BOOL)shouldReloadCollectionViewToPreventKnownIssue {
     __block BOOL shouldReload = NO;
