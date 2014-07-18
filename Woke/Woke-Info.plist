@@ -60,6 +60,19 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>Lato-Regular.ttf</string>
+		<string>lanenar.ttf</string>
+		<string>Montserrat-Bold.ttf</string>
+		<string>Montserrat-Regular.ttf</string>
+		<string>Lato-ThinItalic.ttf</string>
+		<string>Lato-Thin.ttf</string>
+		<string>Lato-SemiboldItalic.ttf</string>
+		<string>Lato-Semibold.ttf</string>
+		<string>Lato-Medium.ttf</string>
+		<string>Lato-MediumItalic.ttf</string>
+		<string>Lato-Light.ttf</string>
+		<string>Lato-LightItalic.ttf</string>
+		<string>Lato-Heavy.ttf</string>
+		<string>Lato-HeavyItalic.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
