@@ -386,14 +386,13 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
         UIImage *img = [UIImage imageWithData:data];
-        if (img) {
+        if (img && !person.profilePic) {
             [person.managedObjectContext performBlock:^{
                 person.profilePic = img;
                 [EWDataStore save];
             }];
-
         }
-        });
+    });
     
     //update friends
     [EWUserManagement getFacebookFriends];

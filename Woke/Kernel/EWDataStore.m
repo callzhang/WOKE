@@ -281,8 +281,6 @@
                 NSLog(@"MO %@(%@) has serverID, meaning it is fetched from server, skip!", MO.entity.name, [MO valueForKey:kParseObjectID]);
                 continue;
             }
-            NSLog(@"Validation");
-            [EWDataStore validateMO:MO];
             NSLog(@"+++> MO %@ inserted to queue", MO.entity.name);
             [EWDataStore appendInsertQueue:MO];
         }
@@ -302,8 +300,6 @@
             [changedKeys removeObjectsInArray:attributeUploadSkipped];
             
             if (changedKeys.count > 0) {
-                NSLog(@"Validation");
-                [EWDataStore validateMO:MO];
                 NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
                 [EWDataStore appendUpdateQueue:MO];
             }
