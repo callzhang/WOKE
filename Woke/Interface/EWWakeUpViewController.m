@@ -177,7 +177,7 @@
     tableView_.contentInset = UIEdgeInsetsMake(20, 0, 80, 0);//the distance of the content to the frame of tableview
     
     //alpha mask
-    [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.2f, @0.9f]];
+    [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.1f, @0.9f]];
     
     postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGRect frame =[UIScreen mainScreen].bounds;
