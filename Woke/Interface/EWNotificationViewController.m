@@ -39,8 +39,6 @@
     // Data source
     notifications = [[EWNotificationManager allNotifications] mutableCopy];
     
-
-    
     //tableview
     self.tableView.delegate = self;
     self.tableView.dataSource =self;
@@ -59,8 +57,13 @@
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)];
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:doneBtn rightItem:refreshBtn];
     
-    if (notifications.count != 0) {
-        self.title = [NSString stringWithFormat:@"Notifications(%ld)",(unsigned long)notifications.count];
+    
+     NSInteger nUnread = [EWNotificationManager myNotifications].count;
+    if (nUnread != 0) {
+        
+       
+      
+        self.title = [NSString stringWithFormat:@"Notifications(%ld)",(unsigned long)nUnread];
        
         
     }

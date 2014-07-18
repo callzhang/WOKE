@@ -18,7 +18,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *time;
 @property (weak, nonatomic) IBOutlet UILabel *km;
 @property (weak, nonatomic) IBOutlet UILabel *initial;
-@property (weak, nonatomic) IBOutlet UILabel *name;
+@property (strong, nonatomic) IBOutlet UILabel *name;
 
 @property (nonatomic,strong)NSString *timeAndDistance;
 @property (nonatomic, strong) EWPerson *person;

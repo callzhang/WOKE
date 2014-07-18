@@ -12,6 +12,7 @@
 @class EWCostumTextField;
 @interface EWAlarmEditCell : UITableViewCell<EWRingtoneSelectionDelegate>
 //container
+//@property (nonatomic) BOOL alarmEnable;
 @property (nonatomic) EWTaskItem *task;
 @property (nonatomic) EWAlarmItem *alarm;
 @property (nonatomic, weak) UIViewController *presentingViewController;
@@ -34,5 +35,7 @@
 - (IBAction)hideKeyboard:(UITextField *)sender;
 - (IBAction)changeTime:(UIStepper *)sender;
 @property (strong, nonatomic) IBOutlet UIView *staticTextLabel;
+@property (strong, nonatomic) IBOutlet UILabel *willLabel;
+
 
 @end

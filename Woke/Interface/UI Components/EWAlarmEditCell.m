@@ -63,11 +63,7 @@
     //[self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
     
     self.alarmToggle.selected = task.state;
-    if (self.alarmToggle.selected) {
-        [self.alarmToggle setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
-    }else{
-        [self.alarmToggle setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
-    }
+    [self toggleAlarm:nil];
 }
 
 //Not used
@@ -101,9 +97,28 @@
 - (IBAction)toggleAlarm:(UIControl *)sender {
     sender.selected = !sender.selected;
     if (self.alarmToggle.selected) {
-        [self.alarmToggle setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
+        [UIView animateWithDuration:0.5 animations:^(){
+        self.time.enabled = YES;
+        self.AM.enabled = YES;
+        self.willLabel.enabled = YES;
+        self.statement.enabled = YES;
+        self.timeStepper.enabled = YES;
+        self.timeStepper.tintColor  = [UIColor cyanColor];
+
+        self.statement.textColor = [UIColor whiteColor];
+        [self.alarmToggle setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];}];
     }else{
+        [UIView animateWithDuration:0.5 animations:^(){
+        self.time.enabled = NO;
+        self.AM.enabled = NO;
+        self.willLabel.enabled = NO;
+        self.statement.enabled = NO;
+        self.timeStepper.enabled = NO;
+        self.timeStepper.tintColor  = [UIColor lightGrayColor];
+        self.statement.textColor = [UIColor lightGrayColor];
+        
         [self.alarmToggle setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
+        }];
     }
 }
 

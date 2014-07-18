@@ -218,6 +218,12 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 //when click one item in table, push view to detail page
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+   
+//    EWAlarmEditCell * cell =(EWAlarmEditCell *)[self tableView:tableView cellForRowAtIndexPath:indexPath];
+//    if (!cell.alarmToggle.selected) {
+//        return;
+//    }
+    
     
     [tableView beginUpdates];
     
