@@ -126,7 +126,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 150, 20)];
 //    [collectionView setAllowsMultipleSelection:YES];
     
-    [EWUIUtil applyAlphaGradientForView:collectionView withEndPoints:@[@0.05,@0.6]];
+    [EWUIUtil applyAlphaGradientForView:collectionView withEndPoints:@[@0.1, @0.8]];
     
     
     buzzButton.layer.cornerRadius = 4.0;

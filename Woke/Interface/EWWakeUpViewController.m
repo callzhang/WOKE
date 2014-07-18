@@ -65,8 +65,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
 
-    //data initialization
+    //initialization
     [self initData];
+    [self initView];
     
     //responder to remote control
     [self prepareRemoteControlEventsListener];
@@ -89,9 +90,7 @@
     //HUD
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    
     [self initView];
-    
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     
@@ -178,7 +177,7 @@
     tableView_.contentInset = UIEdgeInsetsMake(20, 0, 80, 0);//the distance of the content to the frame of tableview
     
     //alpha mask
-    [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.2f, @0.9f]];
+    [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.1f, @0.9f]];
     
     postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     CGRect frame =[UIScreen mainScreen].bounds;
@@ -435,12 +434,10 @@
     
     //get the cell
     EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
-    if (cell) {
-        [[AVManager sharedManager] playForCell:cell];
-    }else if(medias.count > 0){
+    if (!cell) {
         cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-        [[AVManager sharedManager] playForCell:cell];
     }
+    [[AVManager sharedManager] playForCell:cell];
     
 }
 
