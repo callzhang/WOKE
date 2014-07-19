@@ -95,18 +95,23 @@
             CGRect frame = self.name.frame;
             frame.origin.y += 20;
             self.name.frame = frame;
-          
         }];
     }
     
-    //time
-    NSDate *time = person.cachedInfo[kNextTaskTime];
-    if (!time) {
-        time = [[EWTaskStore sharedInstance] nextValidTaskForPerson:person].time;
+    
+    if (person.isMe) {
+        return;
     }
-    self.time.text = [time timeLeft];
-    if (self.showTime) {
-        self.time.alpha = 1;
+    
+    
+    //time
+    self.time.text = @"";
+    NSDate *time = _person.cachedInfo[kNextTaskTime];
+    if (time) {
+        self.time.text = [time timeLeft];
+        if (self.showTime) {
+            self.time.alpha = 1;
+        }
     }
     
     //distance

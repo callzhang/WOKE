@@ -660,7 +660,6 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     //Cell
-    
     EWCollectionPersonCell *cell = [_collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellPersonIdenfifier forIndexPath:indexPath];
     
     //Data
@@ -786,7 +785,7 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
     //Lesson learned: do not update collectionView in parts, as the final count may not be equal to inserts/deletes applied partially.
     //Also, do not delay the update, as the count may not hold when accumulated with a lot of updates.
-    
+    static NSDate *lastUpdated;
     if (cellChangeArray.count > 0){
         if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {
             // This is to prevent a bug in UICollectionView from occurring.
@@ -797,7 +796,13 @@
             [self.collectionView reloadData];
             
         } else {
-            NSLog(@"Updating CollectionView");
+            //prevent updating too fast
+            if(lastUpdated.timeElapsed < 0.1 && cellChangeArray.count == 1 && [cellChangeArray[0] isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]){
+                NSLog(@"Updating too fast, reload collection view instead");
+                [self.collectionView reloadData];
+            }
+            
+            NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
             
             [self.collectionView performBatchUpdates:^{
                 
@@ -838,7 +843,7 @@
                     NSLog(@"*** Update of collection view failed");
                 }
                 
-                
+                lastUpdated = [NSDate date];
             }];
             
         }

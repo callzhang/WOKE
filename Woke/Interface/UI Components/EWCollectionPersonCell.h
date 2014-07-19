@@ -27,5 +27,7 @@
 @property (nonatomic) BOOL showDistance;
 @property (nonatomic) BOOL showTime;
 - (void)applyHexagonMask;
+- (void)displayTime;
+- (void)displayDistance;
 
 @end

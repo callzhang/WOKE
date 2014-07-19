@@ -206,7 +206,7 @@
     
     //lsat seen
     NSLog(@"[1] Start last seen recurring updates");
-    [EWUserManagement updateLastSeen];
+    //[EWUserManagement updateLastSeen];
     
     //location
     NSLog(@"[2] Start location recurring update");
@@ -1233,6 +1233,8 @@
 #pragma mark - Parse Object extension
 @implementation PFObject (NSManagedObject)
 - (void)updateFromManagedObject:(NSManagedObject *)managedObject{
+	[self fetchIfNeeded];
+	
     NSManagedObject *mo = [EWDataStore objectForCurrentContext:managedObject];
     NSParameterAssert([mo valueForKey:kParseObjectID]);
     NSDate *updateAt = [mo valueForKeyPath:kUpdatedDateKey];
