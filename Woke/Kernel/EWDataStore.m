@@ -365,7 +365,6 @@
 }
 
 + (void)validateMO:(NSManagedObject *)mo{
-    NSLog(@"=== Start to validate MO %@(%@)", mo.entity.name, mo.serverID);
     //validate MO
     NSString *type = mo.entity.name;
     if ([type isEqualToString:@"EWTaskItem"]) {
@@ -1294,7 +1293,9 @@
         }else{
             //value is nil, delete PO value
             @try{
-                [self removeObjectForKey:key];
+				if ([self.allKeys containsObject:key]) {
+					[self removeObjectForKey:key];
+				}
             }
             @catch (NSError *error){
                 //

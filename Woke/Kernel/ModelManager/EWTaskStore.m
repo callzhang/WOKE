@@ -652,10 +652,24 @@
     BOOL completed = [[NSDate date] timeIntervalSinceDate: task.time] > kMaxWakeTime || task.completed;
     if (completed) {
         NSParameterAssert(!task.alarm);
-        NSParameterAssert(task.pastOwner);
+        if (task.owner) {
+            task.owner = nil;
+            NSLog(@"*** task (%@) completed, shoundn't have owner", task.serverID);
+        }
+        if (!task.pastOwner) {
+            task.pastOwner = [EWPersonStore me];
+            NSLog(@"*** task (%@) missing pastOwner", task.serverID);
+        }
     }else{
         NSParameterAssert(task.alarm);
-        NSParameterAssert(task.owner);
+        if (task.pastOwner) {
+            task.pastOwner = nil;
+            NSLog(@"*** task (%@) incomplete, shoundn't have past owner", task.serverID);
+        }
+        if (!task.owner) {
+            task.owner = [EWPersonStore me];
+            NSLog(@"*** task (%@) missing owner", task.serverID);
+        }
     }
     NSParameterAssert(task.time);
     return YES;

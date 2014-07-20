@@ -434,7 +434,7 @@
         if ([keyPath isEqualToString:@"tasks"]){
             static NSTimer *alarmPagetimer;
             NSInteger nTask = me.tasks.count;
-            if (nTask == 7 || nTask == 0){
+            if (nTask == 7*nWeeksToScheduleTask || nTask == 0){
                 [alarmPagetimer invalidate];
                 alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
                 if (nTask == 0){
@@ -772,8 +772,16 @@
         case NSFetchedResultsChangeDelete:
             change[@(type)] = indexPath;
             break;
-        case NSFetchedResultsChangeUpdate:
+        case NSFetchedResultsChangeUpdate:{
+            __block BOOL duplicated = NO;
+            [cellChangeArray enumerateObjectsUsingBlock:^(NSDictionary *change, NSUInteger idx, BOOL *stop) {
+                if([change[@(type)] isEqual:newIndexPath]){
+                    duplicated = YES;
+                }
+            }];
             change[@(type)] = indexPath;
+        }
+            
             break;
         case NSFetchedResultsChangeMove:
             change[@(type)] = @[indexPath, newIndexPath];
@@ -801,12 +809,20 @@
             
         } else {
             //prevent updating too fast
-            if(lastUpdated.timeElapsed < 0.1 && cellChangeArray.count == 1 && [cellChangeArray[0] isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]){
-                NSLog(@"Updating too fast, reload collection view instead");
-                [self.collectionView reloadData];
+            if(lastUpdated.timeElapsed < 1 && cellChangeArray.count == 1){
+                NSIndexPath *path0 = [cellChangeArray[0] objectForKey:@(NSFetchedResultsChangeUpdate)];
+                if ([path0 compare:[NSIndexPath indexPathForItem:0 inSection:0]] == NSOrderedSame) {
+                    NSLog(@"Updating too fast, reload collection view instead");
+                    [self.collectionView reloadData];
+                    [cellChangeArray removeAllObjects];
+                    return;
+                }
+                
             }
             
             NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
+            //need to record the time at the beginning
+            lastUpdated = [NSDate date];
             
             [self.collectionView performBatchUpdates:^{
                 
@@ -847,7 +863,6 @@
                     NSLog(@"*** Update of collection view failed");
                 }
                 
-                lastUpdated = [NSDate date];
             }];
             
         }

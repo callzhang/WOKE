@@ -433,11 +433,13 @@
     }
     
     //get the cell
-    EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
-    if (!cell) {
-        cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
+    if (medias.count > 0) {
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
+        if (!cell) {
+            cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
+        }
+        [[AVManager sharedManager] playForCell:cell];
     }
-    [[AVManager sharedManager] playForCell:cell];
     
 }
 

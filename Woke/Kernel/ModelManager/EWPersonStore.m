@@ -333,11 +333,7 @@ EWPerson *me;
     NSParameterAssert(person.username);
     if (person.isMe) {
         if(person.friends.count == 0){
-            NSString *str = @"*** Something wrong, please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.";
             NSLog(@"*** Something wrong, please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.");
-            dispatch_async(dispatch_get_main_queue(), ^{
-                EWAlert(str);
-            });
             
         }
     }

@@ -105,14 +105,16 @@
     
     
     //time
-    self.time.text = @"";
     NSDate *time = _person.cachedInfo[kNextTaskTime];
     if (time) {
         self.time.text = [time timeLeft];
         if (self.showTime) {
             self.time.alpha = 1;
         }
+    }else{
+        self.time.text = @"";
     }
+    
     
     //distance
     if (!_person.isMe && _person.lastLocation && me.lastLocation && !_distance) {
