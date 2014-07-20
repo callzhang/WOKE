@@ -246,7 +246,7 @@
         return;
         
         
-    }else if(alarms.count<7 || tasks.count < 7* nWeeksToScheduleTask){
+    }else if(alarms.count != 7 || tasks.count != 7* nWeeksToScheduleTask){
         //task or alarm incomplete, schedule
         //init state
         

@@ -1285,23 +1285,25 @@
             PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
             [self setObject:point forKey:key];
         }else if(value != nil){
-            
-            if (![value isEqual:self[key]] && (value || [self valueForKey:key])) {
-                NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign  to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, [self valueForKey:key], value);
+            id POHasValue = [self valueForKey:key];
+			BOOL isValueNew = NO;
+			if (POHasValue) {
+				if (![value isEqual:self[key]]) {
+					isValueNew = YES;
+				}
+			}else{
+				isValueNew = YES;
+			}
+            if (isValueNew) {
+                NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, [self valueForKey:key], value);
+				[self setObject:value forKey:key];
             }
-            [self setObject:value forKey:key];
+            
         }else{
             //value is nil, delete PO value
-            @try{
-				if ([self.allKeys containsObject:key]) {
-					[self removeObjectForKey:key];
-				}
-            }
-            @catch (NSError *error){
-                //
-            }
-            
-            //NSLog(@"Attribute %@(%@)->%@ is empty on MO, set nil to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name);
+			if ([self.allKeys containsObject:key]) {
+				[self removeObjectForKey:key];
+			}
         }
         
     }];
