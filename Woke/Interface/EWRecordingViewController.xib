@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
@@ -78,17 +78,17 @@
                         <action selector="send:" destination="-1" eventType="touchUpInside" id="dHi-jF-4Ab"/>
                     </connections>
                 </button>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Leave message to Jim" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A89-fD-bEW">
-                    <rect key="frame" x="0.0" y="210" width="320" height="21"/>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.74999999999999978" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Leave message to Jim" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A89-fD-bEW">
+                    <rect key="frame" x="0.0" y="200" width="320" height="21"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="160" translatesAutoresizingMaskIntoConstraints="NO" id="lWh-Ii-0Jm">
-                    <rect key="frame" x="80" y="240" width="160" height="22"/>
+                    <rect key="frame" x="80" y="230" width="160" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="16"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -96,15 +96,15 @@
                     <rect key="frame" x="45" y="490" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="16"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Play" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ttD-Ft-KfN">
-                    <rect key="frame" x="130.5" y="490" width="60" height="21"/>
+                    <rect key="frame" x="131" y="490" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="16"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -112,7 +112,7 @@
                     <rect key="frame" x="215" y="490" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="16"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>

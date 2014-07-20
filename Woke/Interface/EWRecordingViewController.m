@@ -82,7 +82,7 @@
     
 
     //waveform
-    [self.waveformView setWaveColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
+    [self.waveformView setWaveColor:[UIColor colorWithWhite:1.0 alpha:0.75]];
     [AVManager sharedManager].waveformView = self.waveformView;
 
     [AVManager sharedManager].playStopBtn = playBtn;
@@ -94,12 +94,12 @@
     self.progressView.tintColor = [UIColor whiteColor];
     //不显示外层
 	self.progressView.borderWidth = 0.0;
-	self.progressView.lineWidth = 2.5;
+	self.progressView.lineWidth = 1;
     
 //	self.progressView.fillOnTouch = YES;
 	
 	UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 32.0)];
-	textLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:15];
+	textLabel.font = [UIFont fontWithName:@"Lane-Narrow.ttf" size:24];
 	textLabel.textAlignment = NSTextAlignmentCenter;
 	textLabel.textColor = self.progressView.tintColor;
 	textLabel.backgroundColor = [UIColor clearColor];
@@ -167,7 +167,7 @@
     
 }
 -(void)initView{
-
+    
     self.title = @"Recording";
     
     if (personSet.count == 1) {
@@ -175,6 +175,8 @@
         
         self.wish.text = receiver.cachedInfo[kNextTaskStatement];
         
+        _detail.font = [UIFont fontWithName:@"Lato-Light.ttf" size:20];
+        _wish.font = [UIFont fontWithName:@"Lato-Light.ttf" size:16];
         
         self.detail.text = [NSString stringWithFormat:@"%@ wants to hear", receiver.name];
         EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
@@ -216,7 +218,7 @@
 #pragma mark - collection view
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
-    cell.showName = YES;
+    cell.showName = NO;
     EWPerson *receiver = personSet[indexPath.row];
     cell.person = receiver;
     return cell;
