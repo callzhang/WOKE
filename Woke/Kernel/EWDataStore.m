@@ -729,9 +729,12 @@
 - (void)updateModifiedDate:(NSNotification *)notification{
     NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
     
-    //NSLog(@"Observed %lu ManagedObject changed, updating 'UpdatedAt'.", (unsigned long)updatedObjects.count);
+    
     for (NSManagedObject *mo in updatedObjects) {
-        double interval = [[mo valueForKey:kUpdatedDateKey] timeIntervalSinceNow];
+		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
+		if (!lastUpdated) return;
+		NSLog(@"Observed %@(%@) ManagedObject changed, updating 'UpdatedAt'.", mo.entity.class, mo.serverID);
+        double interval = [lastUpdated timeIntervalSinceNow];
         if (interval < -1) {
             //update time
             [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
@@ -1225,7 +1228,7 @@
 }
 
 - (NSString *)serverID{
-    return [self valueForKeyPath:kParseObjectID];
+    return [self valueForKey:kParseObjectID];
 }
 
 @end

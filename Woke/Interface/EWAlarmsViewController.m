@@ -409,6 +409,10 @@
 
 
 - (void)centerView{
+    //根据tag值判断是否创建meun
+    if([rootViewController.view viewWithTag:kMenuTag]){
+        return;
+    }
     BOOL scrolling = [self.collectionView.layer animationForKey:@"bounds"] !=nil;
     if (scrolling) {
         return;
