@@ -451,8 +451,16 @@
             NSLog(@"@@@ ManagedObjectID not found: %@", url);
             continue;
         }
-        NSManagedObject *MO = [[EWDataStore currentContext] objectWithID:ID];
-        [set addObject:MO];
+		NSError *error;
+        NSManagedObject *MO = [[EWDataStore currentContext] existingObjectWithID:ID error:&error];
+		if (!error && MO) {
+			[set addObject:MO];
+		}else{
+			NSLog(@"*** Serious error: trying to fetch MO %@(%@) failed with error: %@", MO.entity.name, MO.objectID, error.description);
+			//remove from the queue
+			[self removeObject:MO fromQueue:queue];
+		}
+        
     }
     return [set copy];
 }
@@ -777,7 +785,7 @@
                 NSArray *relatedPOs = parseObject[key];
                 NSMutableSet *relatedMOs = [NSMutableSet new];
                 for (PFObject *PO in relatedPOs) {
-                    if ([PO allKeys].count > 0)
+                    //if ([PO allKeys].count > 0)
                     [relatedMOs addObject:PO.managedObject];
                 }
                 [self setValue:[relatedMOs copy] forKey:key];
@@ -939,17 +947,16 @@
             NSLog(@"*** The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!", self.entity.name);
         }
         
-        BOOL outdated = self.isOutDated;
+        //BOOL outdated = self.isOutDated;
         BOOL isPerson = [self isKindOfClass:[EWPerson class]];
-        if (!outdated || !isPerson) {
-            if (!outdated) NSLog(@"MO %@(%@) is not out dated, skip refresh in background", self.entity.name, self.serverID);
+        if (!isPerson) {
+            //if (!outdated) NSLog(@"MO %@(%@) is not out dated, skip refresh in background", self.entity.name, self.serverID);
             if (!isPerson) NSLog(@"MO %@(%@) is not person, skip refresh in background", self.entity.name, self.serverID);
             
             if (block) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     block();
                 });
-                
             }
             return;
         }
