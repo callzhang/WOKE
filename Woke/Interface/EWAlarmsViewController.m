@@ -820,7 +820,7 @@
                 
             }
             
-            NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
+            //NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
             //need to record the time at the beginning
             lastUpdated = [NSDate date];
             

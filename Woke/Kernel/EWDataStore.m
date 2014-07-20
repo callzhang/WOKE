@@ -79,7 +79,7 @@
         
         [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:nil queue:nil usingBlock:^(NSNotification* note){
              if (note.object != context)
-				 NSLog(@"Observed changes in background context, merge to main context!");
+				 //NSLog(@"Observed changes in background context, merge to main context!");
                  [context performBlock:^(){
                      [context mergeChangesFromContextDidSaveNotification:note];
                  }];
