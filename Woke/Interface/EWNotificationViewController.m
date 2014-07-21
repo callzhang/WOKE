@@ -162,9 +162,9 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-    //CGFloat alpha = indexPath.row%2?0.05:0.06;
+    
     cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0];
-//    [self tableView:tableView cellForRowAtIndexPath:indexPath];
+
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section

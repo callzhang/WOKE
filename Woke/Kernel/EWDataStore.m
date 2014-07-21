@@ -1058,7 +1058,7 @@
         NSError *err;
         NSManagedObject *backMO = [localContext existingObjectWithID:ID error:&err];
         if (err) {
-            NSLog(@"Failed to get back MO: %@", err.description);
+            NSLog(@"*** Failed to get back MO: %@", err.description);
             return ;
         }
         
