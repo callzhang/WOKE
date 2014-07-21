@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
+		9B56183B197DD16800D50CE8 /* moarfonts */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 9B56183C197DD16800D50CE8 /* Build configuration list for PBXAggregateTarget "moarfonts" */;
+			buildPhases = (
+				9B56183F197DD19500D50CE8 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = moarfonts;
+			productName = moarfonts;
+		};
 		AB78077018393580007C8BFD /* Mogenerator */ = {
 			isa = PBXAggregateTarget;
 			buildConfigurationList = AB78077318393580007C8BFD /* Build configuration list for PBXAggregateTarget "Mogenerator" */;
@@ -1178,6 +1189,7 @@
 			targets = (
 				568CC783178DD2C900AB1579 /* WOKE */,
 				AB78077018393580007C8BFD /* Mogenerator */,
+				9B56183B197DD16800D50CE8 /* moarfonts */,
 			);
 		};
 /* End PBXProject section */
@@ -1288,6 +1300,19 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		9B56183F197DD19500D50CE8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "mdfind -onlyin \"${SRCROOT}\" \"kMDItemContentTypeTree == public.font\" -0 | sort -z | xargs -0 /usr/local/bin/moarfonts install";
 		};
 		AB78077418393657007C8BFD /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1586,6 +1611,20 @@
 			};
 			name = Release;
 		};
+		9B56183D197DD16800D50CE8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		9B56183E197DD16800D50CE8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		AB78077118393580007C8BFD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1620,6 +1659,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		9B56183C197DD16800D50CE8 /* Build configuration list for PBXAggregateTarget "moarfonts" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9B56183D197DD16800D50CE8 /* Debug */,
+				9B56183E197DD16800D50CE8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		AB78077318393580007C8BFD /* Build configuration list for PBXAggregateTarget "Mogenerator" */ = {
 			isa = XCConfigurationList;
