@@ -10,7 +10,7 @@
 #import "TestFlight.h"
 #import "EWUIUtil.h"
 
-#define titles                  @[@"Bug report", @"Feedback"]
+#define titles                  @[@"Bug report", @"Feedback", @"Feature request"]
 #define feedbackPlaceholder     @"Please provide feedback here..."
 
 @interface EWFeedbackViewController ()

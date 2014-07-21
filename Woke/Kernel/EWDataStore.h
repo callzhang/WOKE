@@ -198,7 +198,8 @@ typedef void (^EWSavingCallback)(void);
 - (void)refreshRelatedInBackground;
 
 /**
- Update object from PO for value, and related PO that is availble
+ Update object from PO for value, and related PO that is returned as Array of pointers
+ The goal is to call server once and get as much as possible.
  */
 - (void)refreshShallowWithCompletion:(void (^)(void))block;
 

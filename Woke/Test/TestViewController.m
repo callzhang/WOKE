@@ -175,17 +175,16 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     switch (indexPath.row) {
-        case 0: {
+        case 0: {//wake up view
             [self dismissViewControllerAnimated:YES completion:^{
-                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] init];
-                controller.person = me;
+                EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:[[EWTaskStore sharedInstance] nextValidTaskForPerson:me]];
                 [rootViewController presentViewControllerWithBlurBackground:controller];
             }];
             
             break;
         }
         case 1: {
-            
+            //shake test
             TestShakeViewController *controller = [[TestShakeViewController alloc] init];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
             controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
@@ -197,6 +196,7 @@
             break;
         }
         case 2:{
+            EWAlert(@"Function unavailable now");
 //            TestSocailSDKViewController *controller = [[TestSocailSDKViewController alloc] init];
 //            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
 //            controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
@@ -206,7 +206,7 @@
             break;
         }
         case 3:{
-            
+            //local notification
             EWLocalNotificationViewController *controller = [[EWLocalNotificationViewController alloc] init];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
             controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
@@ -216,34 +216,22 @@
         case 4:{
             [EWPersonStore.sharedInstance purgeUserData];
             [self dismissViewControllerAnimated:YES completion:NULL];
-            //cannot log out yet since the background need premission to delete on server
-            /*
-            EWLogInViewController *controller = [[EWLogInViewController alloc] init];
-            
-            [[SMClient defaultClient] logoutOnSuccess:^(NSDictionary *result) {
-                [[UIAlertView alloc] initWithTitle:@"Cleaned" message:@"You have been successfully logged out and data has been purged" delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
-            } onFailure:^(NSError *error) {
-                //
-            }];
-            [self presentViewController:controller animated:YES completion:NULL];
-             */
             break;
         }
             
         case 5:{
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            //send to self a push
-            //Delay execution of my block for 10 seconds.
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [EWServer buzz:@[me]];
-            });
             
+            //send to self a push
+            [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
             //dismiss self to present popup view
-            [self dismissViewControllerAnimated:YES completion:NULL];
+            [self dismissViewControllerAnimated:YES completion:^{
+                [EWServer buzz:@[me]];
+            }];
             break;
         }
             
         case 6:{
+            //alarm timer
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             //alarm timer in 10s
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -284,7 +272,7 @@
             break;
         }
             
-        case 8:{
+        case 8:{//facebook friends get
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:me];
             graph.facebookUpdated = nil;
@@ -294,7 +282,7 @@
         }
             
             
-        case 9:{
+        case 9:{//add some notification
             
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             //create notifications

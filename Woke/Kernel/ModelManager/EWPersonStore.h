@@ -19,6 +19,8 @@
 #define kLastCheckedMe                      @"last_checked_me"
 #define kCheckMeInternal                    3600 * 24 * 7 //7 days
 
+#define kFriendsCountCache                  @"friends_count"
+
 extern EWPerson *me;
 
 @class EWMediaStore, EWPerson;
