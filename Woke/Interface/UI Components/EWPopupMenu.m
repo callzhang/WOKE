@@ -210,7 +210,7 @@
     //[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
     
     [UIView transitionWithView:cell
-                      duration:0.4
+                      duration:0.25
                        options:(/*UIViewAnimationOptionTransitionFlipFromRight | */UIViewAnimationOptionAllowAnimatedContent)
                     animations:
      ^{

@@ -216,7 +216,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }
     
     //statement
-    EWTaskItem *t = [[EWTaskStore sharedInstance] nextNth:0 validTaskForPerson:me];
+    EWTaskItem *t = [[EWTaskStore sharedInstance] nextNth:0 validTaskForPerson:person];
     if (t.statement) {
         self.statement.text = t.statement;
     }else if (t.alarm.statement){

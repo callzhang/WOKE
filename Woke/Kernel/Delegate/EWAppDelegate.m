@@ -20,7 +20,7 @@
 
 //tools
 #import "TestFlight.h"
-//#import "TestFlight+ManualSessions.h"
+#import "TestFlight+ManualSessions.h"
 #import "AVManager.h"
 #import "UIViewController+Blur.h"
 #import <Parse/Parse.h>
@@ -57,9 +57,9 @@ UIViewController *rootViewController;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     //test flight
-    //[TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
+    [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
-    //[TestFlight manuallyStartSession];
+    [TestFlight manuallyStartSession];
     
     //Parse
     [Parse setApplicationId:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
@@ -215,7 +215,7 @@ UIViewController *rootViewController;
     [[AVManager sharedManager] playSoundFromFile:@"new.caf"];
     NSLog(@"App is about to terminate");
 
-    //[TestFlight manuallyEndSession];
+    [TestFlight manuallyEndSession];
 }
 
 

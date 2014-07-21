@@ -122,9 +122,13 @@ static const float initialDownSampling = 2;
             toView.alpha = 1;
             toView.transform = CGAffineTransformIdentity;
         } completion:^(BOOL finished) {
+			//========> Present animation ended
+			
             //remove from view
 			fromView.hidden = NO;
             [self.context completeTransition:YES];
+			
+			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
         }];
         
         
@@ -201,7 +205,7 @@ static const float initialDownSampling = 2;
             [self.imageView removeFromSuperview];
         }
         
-        
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
     }
 }
 

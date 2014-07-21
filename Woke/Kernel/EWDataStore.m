@@ -455,7 +455,7 @@
 		if (!error && MO) {
 			[set addObject:MO];
 		}else{
-			NSLog(@"*** Serious error: trying to fetch MO %@(%@) failed with error: %@", MO.entity.name, MO.objectID, error.description);
+			NSLog(@"*** Serious error: trying to fetch MO (%@) failed with error: %@", str, error.description);
 			//remove from the queue
 			[self removeObject:MO fromQueue:queue];
 		}
@@ -740,9 +740,9 @@
     for (NSManagedObject *mo in updatedObjects) {
 		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
 		if (!lastUpdated) return;
-		NSLog(@"Observed %@(%@) ManagedObject changed, updating 'UpdatedAt'.", mo.entity.class, mo.serverID);
-        double interval = [lastUpdated timeIntervalSinceNow];
-        if (interval < -1) {
+		//NSLog(@"Observed %@(%@) ManagedObject changed, updating 'UpdatedAt'.", mo.entity.class, mo.serverID);
+        double interval = lastUpdated.timeElapsed;
+        if (interval > 1) {
             //update time
             [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
         }
@@ -1177,7 +1177,6 @@
             [self setValue:data forKey:attributeDescription.name];
         }
     }];
-    
 }
 
 - (void)updateEventually{
@@ -1191,7 +1190,6 @@
         NSLog(@"%s: insert %@ eventually", __func__, self.entity.name);
         [EWDataStore appendInsertQueue:self];
     }
-    
 }
 
 - (void)deleteEventually{

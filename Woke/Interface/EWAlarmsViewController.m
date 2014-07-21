@@ -22,6 +22,7 @@
 #import "EWPersonStore.h"
 #import "EWTaskStore.h"
 #import "EWNotificationManager.h"
+#import "TestFlight.h"
 
 // Model
 #import "EWPerson.h"
@@ -39,6 +40,7 @@
 #import "EWRecordingViewController.h"
 #import "EWNotificationViewController.h"
 #import "NavigationControllerDelegate.h"
+#import "EWFeedbackViewController.h"
 
 //backend
 
@@ -337,7 +339,7 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", @"Feedback", nil];
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
@@ -355,20 +357,6 @@
     [self scheduleAlarm];
 }
 
-- (IBAction)profile:(id)sender {
-    //    if (!me.facebook) {
-    //        [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-    //        EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
-    //        [loginVC loginInBackground];
-    //
-    //    }else{
-    EWPersonViewController *controller = [[EWPersonViewController alloc] init];
-    controller.person = me;
-    [self presentViewController:controller animated:YES completion:NULL];
-    //    }
-    
-    
-}
 
 - (void)OnTest {
 #ifndef CLEAR_TEST
@@ -599,6 +587,12 @@
                 [self refreshView];
             }
                 
+            case 3:{
+                EWFeedbackViewController *controller = [[EWFeedbackViewController alloc] initWithNibName:nil bundle:nil];
+                UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+                [self presentViewControllerWithBlurBackground:navController];
+            }
+                
             default:
                 break;
         }
@@ -812,12 +806,11 @@
             if(lastUpdated.timeElapsed < 1 && cellChangeArray.count == 1){
                 NSIndexPath *path0 = [cellChangeArray[0] objectForKey:@(NSFetchedResultsChangeUpdate)];
                 if ([path0 compare:[NSIndexPath indexPathForItem:0 inSection:0]] == NSOrderedSame) {
-                    NSLog(@"Updating too fast, reload collection view instead");
-                    [self.collectionView reloadData];
+                    //NSLog(@"Updating too fast, reload collection view instead");
+                    //[self.collectionView reloadData];
                     [cellChangeArray removeAllObjects];
                     return;
                 }
-                
             }
             
             //NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
