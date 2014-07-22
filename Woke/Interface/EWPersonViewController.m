@@ -323,23 +323,18 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if ([title isEqualToString:@"Add friend"]) {
         
         //friend
-        [me addFriendsObject:person];
-        [EWDataStore save];
-        [EWNotificationManager sendFriendRequestNotificationToUser:person];
+        [EWPersonStore requestFriend:person];
+        [self showSuccessNotification:@"Request sent"];
         
     }else if ([title isEqualToString:@"Unfriend"]){
         
         //unfriend
-        [me removeFriendsObject:person];
-        [person removeFriendsObject:me];
-        [EWDataStore save];
+        [EWPersonStore unfriend:person];
         [self.view showSuccessNotification:@"Unfriended"];
         
     }else if ([title isEqualToString:@"Accept friend"]){
         
-        [me addFriendsObject:person];
-        [EWDataStore save];
-        [EWNotificationManager sendFriendAcceptNotificationToUser:person];
+        [EWPersonStore acceptFriend:person];
         [self showSuccessNotification:@"Added"];
         
     }else if ([title isEqualToString:@"Send Voice Greeting"]){
@@ -509,7 +504,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 NSArray *receivedMedias = [[EWMediaStore sharedInstance] mediasForPerson:person];
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)receivedMedias.count];
                 if (!person.isMe) {
-                    cell.textLabel.text = male? @"People woke he up":@"People woke her up";
+                    cell.textLabel.text = male? @"People woke him up":@"People woke her up";
                 }
             }
                 break;

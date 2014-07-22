@@ -16,6 +16,8 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 #import "EWServer.h"
+#import "EWAlarmManager.h"
+#import "EWTaskStore.h"
 
 //View
 #import "EWLogInViewController.h"
@@ -243,6 +245,35 @@
 //    
 //}
 
+
+//Danger Zone
++ (void)purgeUserData{
+    NSLog(@"Cleaning all cache and server data");
+    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    
+    //Alarm
+    [EWAlarmManager.sharedInstance deleteAllAlarms];
+    //task
+    [EWTaskStore.sharedInstance deleteAllTasks];
+    //media
+    //[EWMediaStore.sharedInstance deleteAllMedias];
+    //check
+    [EWTaskStore.sharedInstance checkScheduledNotifications];
+    
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+    
+    [EWDataStore save];
+    //person
+    //me = nil;
+    
+    //alert
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+    //logout
+    //[EWUserManagement logout];
+    
+    
+}
 
 
 #pragma mark - location

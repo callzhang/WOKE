@@ -180,6 +180,9 @@ EWPerson *me;
         }else{
             NSLog(@"lastCheckedMe date is %@, which exceed the check interval %d, start to refresh my relation in background", lastCheckedMe.date2detailDateString, kCheckMeInternal);
         }
+        [me refreshInBackgroundWithCompletion:^{
+            [EWPersonStore updateFriendsCount];
+        }];
         [me refreshRelatedInBackground];
         [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kLastCheckedMe];
     }
@@ -261,34 +264,6 @@ EWPerson *me;
 }
 
 
-//Danger Zone
-- (void)purgeUserData{
-    NSLog(@"Cleaning all cache and server data");
-    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-
-    //Alarm
-    [EWAlarmManager.sharedInstance deleteAllAlarms];
-    //task
-    [EWTaskStore.sharedInstance deleteAllTasks];
-    //media
-    //[EWMediaStore.sharedInstance deleteAllMedias];
-    //check
-    [EWTaskStore.sharedInstance checkScheduledNotifications];
-    
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-    
-    [EWDataStore save];
-    //person
-    //me = nil;
-    
-    //alert
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alert show];
-    //logout
-    //[EWUserManagement logout];
-    
-
-}
 
 #pragma mark - Notification
 - (void)userLoggedIn:(NSNotification *)notif{
@@ -321,12 +296,58 @@ EWPerson *me;
 }
 
 #pragma mark - Friend
-- (void)requestFriend:(EWPerson *)user{
-    [me addFriendsObject:user];
-    [EWNotificationManager sharedInstance];
++ (void)requestFriend:(EWPerson *)person{
+    [me addFriendsObject:person];
+    [EWPersonStore updateFriendsCount];
+    [EWNotificationManager sendFriendRequestNotificationToUser:person];
+    
+    [EWDataStore save];
+
+}
+
++ (void)acceptFriend:(EWPerson *)person{
+    [me addFriendsObject:person];
+    [EWPersonStore updateFriendsCount];
+    [EWNotificationManager sendFriendAcceptNotificationToUser:person];
+    [EWDataStore save];
+}
+
++ (void)unfriend:(EWPerson *)person{
+    [me removeFriendsObject:person];
+    [EWPersonStore updateFriendsCount];
+    //TODO: unfriend
+    //[EWServer unfriend:user];
+    [EWDataStore save];
+}
+
++ (void)getFriendsForPerson:(EWPerson *)person{
+    NSInteger nFriend = [person.cachedInfo[kFriendsCount] integerValue];
+    if (nFriend != person.friends.count) {
+        //friend need update
+        PFQuery *q = [PFQuery queryWithClassName:@"EWPerson"];
+        [q includeKey:@"friends"];
+        PFObject *user = [q getFirstObject];
+        NSArray *friendsPO = user[@"friends"];
+        if (friendsPO.count == 0) return;
+        NSMutableSet *friends = [NSMutableSet new];
+        for (PFObject *f in friendsPO) {
+            if ([f isKindOfClass:[NSNull class]]) {
+                continue;
+            }
+            NSManagedObject *mo = f.managedObject;
+            [friends addObject:mo];
+        }
+        person.friends = [friends copy];
+    }
+    [EWDataStore save];
+}
+
++ (void)updateFriendsCount{
+    [me.cachedInfo setValue:@(me.friends.count) forKey:kFriendsCount];
 }
 
 
+#pragma mark - Validation
 + (BOOL)validatePerson:(EWPerson *)person{
     NSParameterAssert(person.name);
     NSParameterAssert(person.profilePic);

@@ -54,6 +54,9 @@
 //Handle new user
 + (void)handleNewUser;
 
+//Completely delete user data, for testing purpose
++ (void)purgeUserData;
+
 
 #pragma mark - logged in tasks
 + (void)registerLocation;

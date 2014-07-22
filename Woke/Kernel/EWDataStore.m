@@ -1014,6 +1014,9 @@
 }
 
 - (void)refreshRelatedInBackground{
+	if (![self isKindOfClass:[EWPerson class]]) {
+		return;
+	}
     
     //first try to refresh if needed
     [self refresh];

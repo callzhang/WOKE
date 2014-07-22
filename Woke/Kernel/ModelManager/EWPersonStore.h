@@ -19,7 +19,7 @@
 #define kLastCheckedMe                      @"last_checked_me"
 #define kCheckMeInternal                    3600 * 24 * 7 //7 days
 
-#define kFriendsCountCache                  @"friends_count"
+#define kFriendsCount                       @"friends_count"
 
 extern EWPerson *me;
 
@@ -42,11 +42,10 @@ extern EWPerson *me;
 - (EWPerson *)anyone;
 
 //friend
-- (void)requestFriend:(EWPerson *)user;
-- (void)acceptFriend:(EWPerson *)user;
-- (void)unfriend:(EWPerson *)user;
-
-- (void)purgeUserData;
++ (void)requestFriend:(EWPerson *)person;
++ (void)acceptFriend:(EWPerson *)person;
++ (void)unfriend:(EWPerson *)person;
++ (void)getFriendsForPerson:(EWPerson *)person;
 
 + (BOOL)validatePerson:(EWPerson *)person;
 @end
