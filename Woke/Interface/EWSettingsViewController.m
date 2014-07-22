@@ -391,8 +391,12 @@
                     //dateSelectionVC.disableBouncingWhenShowing = YES;
                     //dateSelectionVC.disableMotionEffects = YES;
 //                    [selectionVC show];
+                
                     [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
-                        
+                        NSUInteger row =[vc.picker selectedRowInComponent:0];
+                       UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
+                        self.preference[@"PrivacyLevel"] = titleLabel.text;
+                        [_tableView reloadData];
                         NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
                         
                    } andCancelHandler:^(EWSelectionViewController *vc) {
@@ -413,14 +417,21 @@
                 //You can enable or disable bouncing and motion effects
                 //dateSelectionVC.disableBouncingWhenShowing = YES;
                 //dateSelectionVC.disableMotionEffects = YES;
-                [selectionVC show];
-                //                    [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
-                //                        NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
-                //
-                //                    } andCancelHandler:^(EWSelectionViewController *vc) {
-                //                        NSLog(@"Date selection was canceled (with block)");
-                //
-                //                    }];
+    //                [selectionVC show];
+                [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
+                    NSUInteger row =[vc.picker selectedRowInComponent:0];
+                    UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
+                    
+                    self.preference[@"SleepDuration"] = [NSNumber numberWithInteger: titleLabel.text.integerValue];
+                    [_tableView reloadData];
+                   
+                    
+                    
+
+                    } andCancelHandler:^(EWSelectionViewController *vc) {
+                        NSLog(@"Date selection was canceled (with block)");
+
+                }];
 
             }
                 break;
