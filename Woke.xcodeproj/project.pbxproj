@@ -1566,7 +1566,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "632C890C-F1E2-4B82-A9CD-B9C2F6498798";
+				PROVISIONING_PROFILE = "E11044C0-DCF0-4487-AE4D-616632D264CD";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1605,7 +1605,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "F6E025E4-F95C-4C63-A813-6FCA84A3464A";
+				PROVISIONING_PROFILE = "3C7F3EB5-63F7-4254-9C4F-DBF2E3400908";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1667,6 +1667,7 @@
 				9B56183E197DD16800D50CE8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		AB78077318393580007C8BFD /* Build configuration list for PBXAggregateTarget "Mogenerator" */ = {
 			isa = XCConfigurationList;
