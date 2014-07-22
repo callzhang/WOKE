@@ -15,7 +15,7 @@
 #import "EWUserManagement.h"
 
 //backend
-
+#import "RMDateSelectionViewController.h"
 
 @interface EWSettingsViewController ()
 //@property (strong, nonatomic) NSArray *options;
@@ -359,7 +359,7 @@
                 [[[UIAlertView alloc] initWithTitle:@"Log out" message:@"Log out?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", nil] show];
                             }
                 break;
-                
+            
             default:
                 break;
         }
@@ -371,9 +371,47 @@
                 ringtoneVC.delegate = self;
                 NSArray *ringtones = ringtoneNameList;
                 ringtoneVC.selected = [ringtones indexOfObject:preference[@"DefaultTone"]];
+           
                 
                 [self.navigationController pushViewController:ringtoneVC animated:YES];
             }
+            case 1:
+                {
+                     RMDateSelectionViewController *dateSelectionVC = [RMDateSelectionViewController dateSelectionController];
+                    //You can enable or disable bouncing and motion effects
+                    //dateSelectionVC.disableBouncingWhenShowing = YES;
+                    //dateSelectionVC.disableMotionEffects = YES;
+                    
+                    [dateSelectionVC showWithSelectionHandler:^(RMDateSelectionViewController *vc, NSDate *aDate) {
+                        NSLog(@"Successfully selected date: %@ (With block)", aDate);
+                    } andCancelHandler:^(RMDateSelectionViewController *vc) {
+                        NSLog(@"Date selection was canceled (with block)");
+                    }];
+                    
+                    //You can access the actual UIDatePicker via the datePicker property
+                    dateSelectionVC.datePicker.datePickerMode = UIDatePickerModeDateAndTime;
+                    dateSelectionVC.datePicker.minuteInterval = 5;
+                    dateSelectionVC.datePicker.date = [NSDate dateWithTimeIntervalSinceReferenceDate:0];
+                }
+                break;
+            case 3:
+                {
+                     RMDateSelectionViewController *dateSelectionVC = [RMDateSelectionViewController dateSelectionController];
+                    //You can enable or disable bouncing and motion effects
+                    //dateSelectionVC.disableBouncingWhenShowing = YES;
+                    //dateSelectionVC.disableMotionEffects = YES;
+                    
+                    [dateSelectionVC showWithSelectionHandler:^(RMDateSelectionViewController *vc, NSDate *aDate) {
+                        NSLog(@"Successfully selected date: %@ (With block)", aDate);
+                    } andCancelHandler:^(RMDateSelectionViewController *vc) {
+                        NSLog(@"Date selection was canceled (with block)");
+                    }];
+                    
+                    //You can access the actual UIDatePicker via the datePicker property
+                    dateSelectionVC.datePicker.datePickerMode = UIDatePickerModeDateAndTime;
+                    dateSelectionVC.datePicker.minuteInterval = 5;
+                    dateSelectionVC.datePicker.date = [NSDate dateWithTimeIntervalSinceReferenceDate:0];
+                }
                 break;
             default:
                 break;
@@ -405,6 +443,7 @@
             
         }
     }
+
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{

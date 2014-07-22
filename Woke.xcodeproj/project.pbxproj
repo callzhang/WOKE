@@ -66,6 +66,7 @@
 		0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */; };
 		0EB0C05919684F600061BC70 /* UAProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0C05819684F600061BC70 /* UAProgressView.m */; };
 		0ECB00A21964585A00B122EF /* EWCostumTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECB00A11964585A00B122EF /* EWCostumTextField.m */; };
+		0EF8DF7A197CC8EB00B8FE23 /* RMDateSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EF8DF79197CC8EB00B8FE23 /* RMDateSelectionViewController.m */; };
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
@@ -272,6 +273,8 @@
 		0EB0C05819684F600061BC70 /* UAProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UAProgressView.m; sourceTree = "<group>"; };
 		0ECB00A01964585A00B122EF /* EWCostumTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWCostumTextField.h; sourceTree = "<group>"; };
 		0ECB00A11964585A00B122EF /* EWCostumTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWCostumTextField.m; sourceTree = "<group>"; };
+		0EF8DF78197CC8EB00B8FE23 /* RMDateSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMDateSelectionViewController.h; sourceTree = "<group>"; };
+		0EF8DF79197CC8EB00B8FE23 /* RMDateSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMDateSelectionViewController.m; sourceTree = "<group>"; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		561ECB5117BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -630,6 +633,15 @@
 			path = UAProgress;
 			sourceTree = "<group>";
 		};
+		0EF8DF77197CC8EB00B8FE23 /* RMSelectionView */ = {
+			isa = PBXGroup;
+			children = (
+				0EF8DF78197CC8EB00B8FE23 /* RMDateSelectionViewController.h */,
+				0EF8DF79197CC8EB00B8FE23 /* RMDateSelectionViewController.m */,
+			);
+			path = RMSelectionView;
+			sourceTree = "<group>";
+		};
 		5642AF4817ACCE27000C73E8 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -887,6 +899,7 @@
 		56FEA57417A5763200FC2938 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				0EF8DF77197CC8EB00B8FE23 /* RMSelectionView */,
 				9B3EC1771970DE9E00BB52AA /* GPUAnimator */,
 				0EB0C05619684F3B0061BC70 /* UAProgress */,
 				9B8A6A9C191887F400591E8A /* NGAParallaxMotion */,
@@ -1407,6 +1420,7 @@
 				9BF07AB7192324F800DED2E1 /* _EWAchievement.m in Sources */,
 				AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */,
 				ABD53FC9194D7DC900BBC8DA /* EWServerObject.m in Sources */,
+				0EF8DF7A197CC8EB00B8FE23 /* RMDateSelectionViewController.m in Sources */,
 				9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */,
 				ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */,
 				9BF297B41912F713008C136E /* EWFirstTimeViewController.m in Sources */,
@@ -1541,6 +1555,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1580,7 +1595,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (

@@ -29,7 +29,9 @@
         self.staticTextLabel.layer.borderColor = [UIColor clearColor].CGColor;
         self.staticTextLabel.layer.borderWidth = 0.0;
         
-        self.selectedBackgroundView = [[UIView alloc] initWithFrame: self.frame];
+        CGRect frame = self.frame;
+        frame.size.height -=80;
+        self.selectedBackgroundView = [[UIView alloc] initWithFrame: frame];
         self.selectedBackgroundView.backgroundColor = [UIColor clearColor];
         
     }
