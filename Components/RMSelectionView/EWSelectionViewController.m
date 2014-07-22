@@ -177,7 +177,7 @@ static NSString *_localizedSelectTitle = @"Select";
     selectionVC.picker.delegate =vc;
     selectionVC.picker.dataSource = vc;
     
-    return vc;
+    return selectionVC;
 }
 - (void)setupUIElements {
     //Instantiate elements

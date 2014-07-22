@@ -377,17 +377,18 @@
             }
             case 1:  {
                      EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
+                    selectionVC.hideNowButton = YES;
                     //You can enable or disable bouncing and motion effects
                     //dateSelectionVC.disableBouncingWhenShowing = YES;
                     //dateSelectionVC.disableMotionEffects = YES;
-                    
-                    [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
-                        NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
-                        
-                    } andCancelHandler:^(EWSelectionViewController *vc) {
-                        NSLog(@"Date selection was canceled (with block)");
-
-                    }];
+                    [selectionVC show];
+//                    [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
+//                        NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
+//                        
+//                    } andCancelHandler:^(EWSelectionViewController *vc) {
+//                        NSLog(@"Date selection was canceled (with block)");
+//
+//                    }];
             }
                 break;
             case 3:{
