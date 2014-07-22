@@ -13,11 +13,11 @@
 #import "EWFirstTimeViewController.h"
 #import "EWLogInViewController.h"
 #import "EWUserManagement.h"
-
+#import "EWSelectionViewController.h"
 //backend
+#import "RMDateSelectionViewController.h"
 
-
-@interface EWSettingsViewController ()
+@interface EWSettingsViewController ()<UIPickerViewDelegate,UIPickerViewDataSource,EWSelectionViewControllerDelegate>
 //@property (strong, nonatomic) NSArray *options;
 @property (strong, nonatomic) NSMutableDictionary *preference;
 
@@ -359,7 +359,7 @@
                 [[[UIAlertView alloc] initWithTitle:@"Log out" message:@"Log out?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", nil] show];
                             }
                 break;
-                
+            
             default:
                 break;
         }
@@ -371,9 +371,30 @@
                 ringtoneVC.delegate = self;
                 NSArray *ringtones = ringtoneNameList;
                 ringtoneVC.selected = [ringtones indexOfObject:preference[@"DefaultTone"]];
+           
                 
                 [self.navigationController pushViewController:ringtoneVC animated:YES];
             }
+            case 1:  {
+                     EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
+                    selectionVC.hideNowButton = YES;
+                    //You can enable or disable bouncing and motion effects
+                    //dateSelectionVC.disableBouncingWhenShowing = YES;
+                    //dateSelectionVC.disableMotionEffects = YES;
+                    [selectionVC show];
+//                    [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
+//                        NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
+//                        
+//                    } andCancelHandler:^(EWSelectionViewController *vc) {
+//                        NSLog(@"Date selection was canceled (with block)");
+//
+//                    }];
+            }
+                break;
+            case 3:{
+                
+            }
+            
                 break;
             default:
                 break;
@@ -405,6 +426,7 @@
             
         }
     }
+
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -412,4 +434,35 @@
     cell.textLabel.textColor = [UIColor whiteColor];
 }
 
+@end
+@implementation EWSettingsViewController (UIPickView)
+#pragma mark - PickDelegate&&DateSource 
+
+-(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+{
+    return 1;
+}
+-(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+{
+    return 2;
+}
+-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+{
+    NSString *titleString = @"";
+    switch (row) {
+        case 0:
+            titleString = @"Friends Only";
+            break;
+        case 1:
+            titleString = @"Public";
+            break;
+        default:
+            break;
+    }
+    return titleString;
+}
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
+{
+    
+}
 @end

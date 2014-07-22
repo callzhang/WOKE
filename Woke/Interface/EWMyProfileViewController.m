@@ -8,7 +8,7 @@
 
 #import "EWMyProfileViewController.h"
 #import "EWPersonStore.h"
-@interface EWMyProfileViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface EWMyProfileViewController ()<UITableViewDelegate,UITableViewDataSource,UIAlertViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *myTableView;
 @end
@@ -70,6 +70,8 @@
 {
     NSLog(@"%@",indexPath);
    
+
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     
@@ -155,5 +157,25 @@
     }else{
         [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }
+}
+
+#pragma mark - alert delegate
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex) {
+        case 0:
+            
+            break;
+        case 1:
+            
+            break;
+        case 2:
+            
+            break;
+        default:
+            
+            break;
+    }
+    [_myTableView reloadData];
 }
 @end

@@ -91,8 +91,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if (!p.isMe && p.isOutDated) {
         NSLog(@"Person %@ is outdated and needs refresh in background", p.name);
         
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [p refreshInBackgroundWithCompletion:^{
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        //[person refreshShallowWithCompletion:^{
             [person.managedObjectContext refreshObject:person mergeChanges:YES];
             [self initData];
             [self initView];

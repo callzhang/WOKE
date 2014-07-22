@@ -21,6 +21,4 @@
 #import <Parse/Parse.h>
 #import "TestFlight.h"
 #define NSLog TFLog
-
-#import "UINavigationController+StatusBarHidden.h"
 #endif

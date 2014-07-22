@@ -349,15 +349,49 @@ EWPerson *me;
 
 #pragma mark - Validation
 + (BOOL)validatePerson:(EWPerson *)person{
-    NSParameterAssert(person.name);
-    NSParameterAssert(person.profilePic);
-    NSParameterAssert(person.username);
-    if (person.isMe) {
-        if(person.friends.count == 0){
-            NSLog(@"*** Something wrong, please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.");
-            
+    if (!person.isMe) {
+        return YES;
+    }
+    BOOL good = YES;
+    BOOL needRefreshFacebook = NO;
+    if(!person.name){
+        good = NO;
+        NSString *name = [PFUser currentUser][@"name"];
+        if (name) {
+            person.name = name;
+        }else{
+            needRefreshFacebook = YES;
         }
     }
-    return YES;
+    if(!person.profilePic){
+        good = NO;
+        PFFile *pic = [PFUser currentUser][@"profilePic"];
+        UIImage *img = [UIImage imageWithData:pic.getData];
+        if (img) {
+            person.profilePic = img;
+        }else{
+            needRefreshFacebook = YES;
+        }
+    }
+    if(!person.username){
+        good = NO;
+        person.username = [PFUser currentUser].username;
+        NSLog(@"Username is missing!");
+    }
+    
+    if(person.friends.count == 0){
+        NSLog(@"*** Something wrong, please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.");
+        
+    }
+    
+    if (needRefreshFacebook) {
+        [EWUserManagement updateFacebookInfo];
+    }
+    
+    if (good) {
+        return YES;
+    }
+    
+    return NO;
 }
 @end

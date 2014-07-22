@@ -664,9 +664,10 @@
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
     
     //shallow update
-    [person refreshShallowWithCompletion:^{
-        NSLog(@"Person %@ shallow updated", person.name);
-    }];
+    //it's not a good place to update, as it will contently updating when cell is being displayed
+//    [person refreshShallowWithCompletion:^{
+//        NSLog(@"Person %@(%@) shallow updated", person.name, person.objectId);
+//    }];
     
     cell.person = person;
     

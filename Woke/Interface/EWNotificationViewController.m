@@ -19,6 +19,7 @@
 
 @interface EWNotificationViewController (){
     NSMutableArray *notifications;
+    UIActivityIndicatorView *loading;
 }
 
 @end
@@ -53,27 +54,24 @@
     //toolbar
     UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
 
-    
-    UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)];
+    loading = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    loading.hidesWhenStopped = YES;
+    UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithCustomView:loading];
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:doneBtn rightItem:refreshBtn];
     
     
      NSInteger nUnread = [EWNotificationManager myNotifications].count;
-    if (nUnread != 0) {
-        
-       
-      
+    if (nUnread != 0){
         self.title = [NSString stringWithFormat:@"Notifications(%ld)",(unsigned long)nUnread];
-       
-        
     }
-    else
-    {
+    else{
         self.title = @"Notifications";
-       
-        
     }
-
+    //refresh
+    if (me.isOutDated) {
+        [self refresh];
+    }
+    
 }
 
 - (BOOL)prefersStatusBarHidden{
@@ -98,7 +96,9 @@
 
 
 - (void)refresh{
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    //[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    [loading startAnimating];
     
     PFQuery *query = [PFQuery queryWithClassName:@"EWNotification"];
     [query whereKey:kParseObjectID notContainedIn:[me.notifications valueForKey:kParseObjectID]];
@@ -112,7 +112,9 @@
         notifications = [[EWNotificationManager allNotifications] mutableCopy];
         [self.tableView reloadData];
         
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        //[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        [loading stopAnimating];
+        
     }];
     
 }

@@ -223,12 +223,14 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 //    if (!cell.alarmToggle.selected) {
 //        return;
 //    }
-    
+    [UIView animateWithDuration:0.01 animations:^{
+           [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    }];
     
     [tableView beginUpdates];
     
     //highlight the seleted cell
-    //[tableView deselectRowAtIndexPath:indexPath animated:YES];
+ 
     
     
     

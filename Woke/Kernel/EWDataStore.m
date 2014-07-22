@@ -364,16 +364,19 @@
     return [NSManagedObjectContext contextForCurrentThread];
 }
 
-+ (void)validateMO:(NSManagedObject *)mo{
++ (BOOL)validateMO:(NSManagedObject *)mo{
     //validate MO
+	BOOL good = YES;
     NSString *type = mo.entity.name;
     if ([type isEqualToString:@"EWTaskItem"]) {
-        [EWTaskStore validateTask:(EWTaskItem *)mo];
+        good = [EWTaskStore validateTask:(EWTaskItem *)mo];
     } else if([type isEqualToString:@"EWMediaItem"]){
-        [EWMediaStore validateMedia:(EWMediaItem *)mo];
+        good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
     }else if ([type isEqualToString:@"EWPerson"]){
-        [EWPersonStore validatePerson:(EWPerson *)mo];
+        good = [EWPersonStore validatePerson:(EWPerson *)mo];
     }
+	
+	return good;
 }
 
 
@@ -596,7 +599,9 @@
     
     
     //validation
-    [EWDataStore validateMO:mo];
+    if (![EWDataStore validateMO:mo]) {
+		return;
+	}
     
     //skip if updating other PFUser
     //TODO: Set ACL for PFUser to enable public writability
@@ -976,8 +981,6 @@
             
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                
-                
                 if (block) {
                     block();
                 }
@@ -1074,7 +1077,7 @@
                 [q includeKey:key];
             }
         }];
-        PFObject *PO = [q findObjects][0];
+        PFObject *PO = [q getFirstObject];
         
         //refresh MO value
         [self assignValueFromParseObject:PO];
@@ -1087,8 +1090,19 @@
                 }else{
                     //Pointer
                     NSArray *relatedPOs = PO[key];
+					if (relatedPOs.count == 0) {
+						return;
+					}
                     NSMutableSet *relatedMOs = [backMO mutableSetValueForKey:key];
                     for (PFObject *p in relatedPOs) {
+						if ([p isKindOfClass:[NSNull class]]) {
+							[relatedMOs removeObject:p];
+							PO[key] = relatedPOs;
+							if ([PO isEqual:[PFUser currentUser]]) {
+								[PO saveInBackground];
+							}
+							continue ;
+						}
                         NSManagedObject *relatedMO = p.managedObject;
                         if (![relatedMOs containsObject:relatedMO]) {
                             [relatedMOs addObject:relatedMO];

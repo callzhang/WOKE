@@ -649,30 +649,56 @@
 }
 
 + (BOOL)validateTask:(EWTaskItem *)task{
+    BOOL good = YES;
     BOOL completed = [[NSDate date] timeIntervalSinceDate: task.time] > kMaxWakeTime || task.completed;
     if (completed) {
-        NSParameterAssert(!task.alarm);
+        //NSParameterAssert(!task.alarm);
+        
         if (task.owner) {
-            task.owner = nil;
+            //task.owner = nil;
+            good = NO;
             NSLog(@"*** task (%@) completed, shoundn't have owner", task.serverID);
         }
         if (!task.pastOwner) {
-            task.pastOwner = [EWPersonStore me];
+            //task.pastOwner = [EWPersonStore me];
+            good = NO;
             NSLog(@"*** task (%@) missing pastOwner", task.serverID);
+        }else{
+            NSParameterAssert(task.pastOwner.isMe);
         }
+        
     }else{
-        NSParameterAssert(task.alarm);
+        //NSParameterAssert(task.alarm);
         if (task.pastOwner) {
-            task.pastOwner = nil;
+            //task.pastOwner = nil;
+            good = NO;
             NSLog(@"*** task (%@) incomplete, shoundn't have past owner", task.serverID);
         }
+        
         if (!task.owner) {
-            task.owner = [EWPersonStore me];
+            //task.owner = [EWPersonStore me];
+            good = NO;
             NSLog(@"*** task (%@) missing owner", task.serverID);
+        }else{
+            NSParameterAssert(task.owner.isMe);
         }
     }
-    NSParameterAssert(task.time);
-    return YES;
+    
+    if (!task.time) {
+        good = NO;
+    }
+    
+    if (good) {
+        return YES;
+    }
+    
+    NSLog(@"Task (%@) data is corrupted, abort!", task.serverID);
+    [task deleteEntity];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[EWTaskStore sharedInstance] scheduleTasks];
+    });
+    
+    return NO;
 }
 
 @end
