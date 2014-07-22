@@ -214,7 +214,7 @@
             break;
         }
         case 4:{
-            [EWPersonStore.sharedInstance purgeUserData];
+            [EWUserManagement purgeUserData];
             [self dismissViewControllerAnimated:YES completion:NULL];
             break;
         }
