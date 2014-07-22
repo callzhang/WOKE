@@ -65,6 +65,8 @@
 		0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */; };
 		0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */; };
 		0EB0C05919684F600061BC70 /* UAProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0C05819684F600061BC70 /* UAProgressView.m */; };
+		0ECAF195197EB50100368D6B /* EWSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECAF192197EB50100368D6B /* EWSelectionViewController.m */; };
+		0ECAF196197EB50100368D6B /* RMDateSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECAF194197EB50100368D6B /* RMDateSelectionViewController.m */; };
 		0ECB00A21964585A00B122EF /* EWCostumTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECB00A11964585A00B122EF /* EWCostumTextField.m */; };
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
@@ -270,6 +272,10 @@
 		0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMyProfileViewController.xib; sourceTree = "<group>"; };
 		0EB0C05719684F600061BC70 /* UAProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UAProgressView.h; sourceTree = "<group>"; };
 		0EB0C05819684F600061BC70 /* UAProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UAProgressView.m; sourceTree = "<group>"; };
+		0ECAF191197EB50100368D6B /* EWSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSelectionViewController.h; sourceTree = "<group>"; };
+		0ECAF192197EB50100368D6B /* EWSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSelectionViewController.m; sourceTree = "<group>"; };
+		0ECAF193197EB50100368D6B /* RMDateSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMDateSelectionViewController.h; sourceTree = "<group>"; };
+		0ECAF194197EB50100368D6B /* RMDateSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMDateSelectionViewController.m; sourceTree = "<group>"; };
 		0ECB00A01964585A00B122EF /* EWCostumTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWCostumTextField.h; sourceTree = "<group>"; };
 		0ECB00A11964585A00B122EF /* EWCostumTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWCostumTextField.m; sourceTree = "<group>"; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -630,6 +636,17 @@
 			path = UAProgress;
 			sourceTree = "<group>";
 		};
+		0ECAF190197EB50100368D6B /* RMSelectionView */ = {
+			isa = PBXGroup;
+			children = (
+				0ECAF191197EB50100368D6B /* EWSelectionViewController.h */,
+				0ECAF192197EB50100368D6B /* EWSelectionViewController.m */,
+				0ECAF193197EB50100368D6B /* RMDateSelectionViewController.h */,
+				0ECAF194197EB50100368D6B /* RMDateSelectionViewController.m */,
+			);
+			path = RMSelectionView;
+			sourceTree = "<group>";
+		};
 		5642AF4817ACCE27000C73E8 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -887,6 +904,7 @@
 		56FEA57417A5763200FC2938 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				0ECAF190197EB50100368D6B /* RMSelectionView */,
 				9B3EC1771970DE9E00BB52AA /* GPUAnimator */,
 				0EB0C05619684F3B0061BC70 /* UAProgress */,
 				9B8A6A9C191887F400591E8A /* NGAParallaxMotion */,
@@ -1364,6 +1382,7 @@
 				5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */,
 				5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */,
 				AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */,
+				0ECAF195197EB50100368D6B /* EWSelectionViewController.m in Sources */,
 				9B3EC17D1970DECF00BB52AA /* NavigationControllerDelegate.m in Sources */,
 				9BF297B01912F713008C136E /* EWAlarmScheduleViewController.m in Sources */,
 				9BF07AB8192324F800DED2E1 /* _EWAlarmItem.m in Sources */,
@@ -1380,6 +1399,7 @@
 				AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */,
 				5642AF4E17ACCF90000C73E8 /* UIView+Layout.m in Sources */,
 				9BF297E31912F720008C136E /* EWAlarmPageView.m in Sources */,
+				0ECAF196197EB50100368D6B /* RMDateSelectionViewController.m in Sources */,
 				ABF192AA18BF135C006A4AA2 /* UIAlertView+.m in Sources */,
 				56F09E4617AAE0F800C5AD52 /* TestViewController.m in Sources */,
 				56E0C36517B2CC6400835A6B /* EWViewController.m in Sources */,

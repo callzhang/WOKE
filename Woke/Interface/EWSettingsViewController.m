@@ -14,10 +14,13 @@
 #import "EWLogInViewController.h"
 #import "EWUserManagement.h"
 #import "EWSelectionViewController.h"
-//backend
+
 #import "RMDateSelectionViewController.h"
 
-@interface EWSettingsViewController ()<UIPickerViewDelegate,UIPickerViewDataSource,EWSelectionViewControllerDelegate>
+@interface EWSettingsViewController ()
+{
+    NSUInteger selectedCellNum;
+}
 //@property (strong, nonatomic) NSArray *options;
 @property (strong, nonatomic) NSMutableDictionary *preference;
 
@@ -25,7 +28,9 @@
 
 @interface EWSettingsViewController (UITableView) <UITableViewDataSource, UITableViewDelegate>
 @end
+@interface EWSelectionViewController()<UIPickerViewDataSource,UIPickerViewDelegate,EWSelectionViewControllerDelegate>
 
+@end
 @implementation EWSettingsViewController
 @synthesize preference;
 
@@ -349,6 +354,8 @@
 #pragma mark - Delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    selectedCellNum = indexPath.row;
     if (settingGroup == settingGroupProfile) {
         switch ( indexPath.row) {
             case 1:
@@ -374,27 +381,59 @@
            
                 
                 [self.navigationController pushViewController:ringtoneVC animated:YES];
+                
             }
+                break;
             case 1:  {
                      EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
                     selectionVC.hideNowButton = YES;
                     //You can enable or disable bouncing and motion effects
                     //dateSelectionVC.disableBouncingWhenShowing = YES;
                     //dateSelectionVC.disableMotionEffects = YES;
-                    [selectionVC show];
-//                    [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
-//                        NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
-//                        
-//                    } andCancelHandler:^(EWSelectionViewController *vc) {
-//                        NSLog(@"Date selection was canceled (with block)");
-//
-//                    }];
+//                    [selectionVC show];
+                
+                    [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
+                        NSUInteger row =[vc.picker selectedRowInComponent:0];
+                       UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
+                        self.preference[@"PrivacyLevel"] = titleLabel.text;
+                        [_tableView reloadData];
+                        NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
+                        
+                   } andCancelHandler:^(EWSelectionViewController *vc) {
+                       
+                       NSLog(@"Date selection was canceled (with block)");
+
+                    }];
             }
                 break;
             case 3:{
                 
             }
-            
+            case 4:
+            {
+                EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
+                selectionVC.hideNowButton = YES;
+                
+                //You can enable or disable bouncing and motion effects
+                //dateSelectionVC.disableBouncingWhenShowing = YES;
+                //dateSelectionVC.disableMotionEffects = YES;
+    //                [selectionVC show];
+                [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
+                    NSUInteger row =[vc.picker selectedRowInComponent:0];
+                    UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
+                    
+                    self.preference[@"SleepDuration"] = [NSNumber numberWithInteger: titleLabel.text.integerValue];
+                    [_tableView reloadData];
+                   
+                    
+                    
+
+                    } andCancelHandler:^(EWSelectionViewController *vc) {
+                        NSLog(@"Date selection was canceled (with block)");
+
+                }];
+
+            }
                 break;
             default:
                 break;
@@ -444,25 +483,80 @@
 }
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-    return 2;
+    switch (selectedCellNum) {
+        case 1:
+            return 2;
+            break;
+        case 3:
+            return 10;
+        default:
+            break;
+    }
+    return 0;
 }
 -(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     NSString *titleString = @"";
-    switch (row) {
-        case 0:
-            titleString = @"Friends Only";
+    switch (selectedCellNum) {
+        case 1:{
+            switch (row) {
+                case 0:
+                    titleString = @"Friends Only";
+                    break;
+                case 1:
+                    titleString = @"Public";
+                    break;
+                default:
+                    break;
+            }
+        }
             break;
-        case 1:
-            titleString = @"Public";
+        case 3:{
+            titleString = [NSString stringWithFormat:@"%ld hours",row+2];
+        }
             break;
         default:
             break;
     }
+    
+
     return titleString;
 }
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
     
+}
+- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view{
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, pickerView.frame.size.width, 44)];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.backgroundColor = [UIColor clearColor];
+    label.textColor = [UIColor whiteColor];
+    label.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:18];
+    
+    NSString *titleString = @"";
+    switch (selectedCellNum) {
+        case 1:{
+            switch (row) {
+                case 0:
+                    titleString = @"Friends Only";
+                    break;
+                case 1:
+                    titleString = @"Public";
+                    break;
+                default:
+                    break;
+            }
+        }
+            break;
+        case 3:{
+            titleString = [NSString stringWithFormat:@"%ld hours",row+2];
+        }
+            break;
+        default:
+            break;
+    }
+    label.text = titleString;
+    return label; 
 }
 @end
