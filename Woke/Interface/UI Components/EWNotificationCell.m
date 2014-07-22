@@ -30,7 +30,7 @@
 - (void)setNotification:(EWNotification *)notification{
   
     //time
-    double t = notification.updatedAt.timeElapsed;
+    double t = notification.createdAt.timeElapsed;
     self.time.text = [[EWUIUtil getStringFromTime:t] stringByAppendingString:@" ago"];
     
     NSString *type = notification.type;
@@ -59,7 +59,7 @@
             
         }else if([type isEqualToString:kNotificationTypeFriendAccepted]){
             
-            self.detail.text = [NSString stringWithFormat:@"%@ has sent accepted your friend request", sender.name];
+            self.detail.text = [NSString stringWithFormat:@"%@ has accepted your friend request", sender.name];
             
         }else if (kNotificationTypeNextTaskHasMedia){
             self.detail.text = @"You have received voice(s) for tomorrow morning. To find out, wake up on time!";

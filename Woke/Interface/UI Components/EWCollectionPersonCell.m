@@ -66,7 +66,9 @@
 }
 
 - (void)setPerson:(EWPerson *)person{
-    
+    if ([self.person isEqual:person]) {
+        return;
+    }
     // init label
     self.name = [[UILabel alloc] initWithFrame:CGRectMake(0, 60, 80, 21)];
     self.name.textAlignment = NSTextAlignmentCenter;

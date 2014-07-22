@@ -216,7 +216,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }
     
     //statement
-    EWTaskItem *t = [[EWTaskStore sharedInstance] nextNth:0 validTaskForPerson:me];
+    EWTaskItem *t = [[EWTaskStore sharedInstance] nextNth:0 validTaskForPerson:person];
     if (t.statement) {
         self.statement.text = t.statement;
     }else if (t.alarm.statement){
@@ -233,21 +233,22 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 
 #pragma mark - UI Events
+//this is the button next to profile pic
 - (IBAction)extProfile:(id)sender{
     if (person.isMe) {
-        
+        //this button is hidden
         return;
     }else if (person.isFriend) {
-        //is friend: do nothing
+        //is friend: show a check sign, do nothing
         return;
     } else if(person.friendWaiting){
-        UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Accept friend", @"Send Voice Greeting", nil];
+        UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Accept friend", nil];
         [as showInView:self.view];
         return;
     }else if (person.friendPending){
         [[[UIAlertView alloc] initWithTitle:@"Friendship pending" message:@"You have already requested friendship to this person." delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil] show];
     }else{
-        UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Send Voice Greeting", nil];
+        UIActionSheet *as = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", nil];
         [as showInView:self.view];
     }
 }
