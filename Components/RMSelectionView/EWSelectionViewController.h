@@ -1,34 +1,9 @@
-//
-//  RMDateSelectionViewController.h
-//  RMDateSelectionViewController
-//
-//  Created by Roland Moers on 26.10.13.
-//  Copyright (c) 2013 Roland Moers
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including e is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-//
 
 #import <UIKit/UIKit.h>
 
-/**
- `RMDateSelectionViewController` is an iOS control for selecting a date using UIDatePicker in a UIActionSheet like fashon.
- */
 
-@class RMDateSelectionViewController;
+
+@class EWSelectionViewController;
 
 /**
  This block is called when the user selects a certain date if blocks are used.
@@ -38,16 +13,18 @@
  @param aDate The selected date.
  */
 
-typedef void (^RMDateSelectionBlock)(RMDateSelectionViewController *vc, NSDate *aDate);
+typedef void (^EWSelectionBlock)(EWSelectionViewController *vc);
 
 /**
  This block is called when the user cancels if blocks are used.
  
  @param vc The date selection view controller that just got canceled.
-  */
-typedef void (^RMDateCancelBlock)(RMDateSelectionViewController *vc);
+ */
+typedef void (^EWCancelBlock)(EWSelectionViewController *vc);
 
-@protocol RMDateSelectionViewControllerDelegate <NSObject>
+@protocol EWSelectionViewControllerDelegate <NSObject>
+
+
 
 /**
  This delegate method is called when the user selects a certain date.
@@ -56,36 +33,36 @@ typedef void (^RMDateCancelBlock)(RMDateSelectionViewController *vc);
  
  @param aDate The selected date.
  */
-- (void)dateSelectionViewController:(RMDateSelectionViewController *)vc didSelectDate:(NSDate *)aDate;
+- (void)dateSelectionViewController:(EWSelectionViewController *)vc;
 
 /**
  This delegate method is called when the user selects the cancel button or taps the darkened background (if `backgroundTapsDisabled` is set to NO).
  
  @param vc The date selection view controller that just canceled.
  */
-- (void)dateSelectionViewControllerDidCancel:(RMDateSelectionViewController *)vc;
+- (void)dateSelectionViewControllerDidCancel:(EWSelectionViewController *)vc;
 
 @optional
 
 /**
  *  This delegate is called when the now button of the date selection view controller has been pressed.
- *  
+ *
  *  Implementation of this delegate is optional. If you choose to implement it, you are responsible to do whatever should be done when the now button has been pressed. If you do not choose to implement it, the default behavior is to set the date selection control to the current date.
  *
  *  @param vc The date selection view controller whose now button has been pressed.
  */
-- (void)dateSelectionViewControllerNowButtonPressed:(RMDateSelectionViewController *)vc;
+
 
 @end
 
-@interface RMDateSelectionViewController : UIViewController
+@interface EWSelectionViewController : UIViewController
 
 /// @name Properties
 
 /**
  Will return the instance of UIDatePicker that is used.
  */
-@property (nonatomic, readonly) UIDatePicker *datePicker;
+
 @property (nonatomic,strong) UIPickerView *picker;
 
 /**
@@ -100,7 +77,7 @@ typedef void (^RMDateCancelBlock)(RMDateSelectionViewController *vc);
  
  The delegate must conform to the `RMDateSelectionViewControllerDelegate` protocol.
  */
-@property (weak) id<RMDateSelectionViewControllerDelegate> delegate;
+@property (weak) id<EWSelectionViewControllerDelegate> delegate;
 
 /**
  Used to set the text color of the buttons but not the date picker.
@@ -146,10 +123,9 @@ typedef void (^RMDateCancelBlock)(RMDateSelectionViewController *vc);
  
  @return Returns a new instance of `RMDateSelectionViewController`
  */
-+ (instancetype)dateSelectionController;
 
 /**
- Set a localized title for the select button. Default is 'Now'.
+ Set a localized title for the select button. Default is 'Now'
  */
 + (void)setLocalizedTitleForNowButton:(NSString *)newLocalizedTitle;
 
@@ -164,6 +140,14 @@ typedef void (^RMDateCancelBlock)(RMDateSelectionViewController *vc);
 + (void)setLocalizedTitleForSelectButton:(NSString *)newLocalizedTitle;
 
 /// @name Instance Methods
+
+
+
+
+
+
+-(id)initWithPickerDelegate:(id)vc;
+
 
 /**
  This shows the date selection view controller as child view controller of the root view controller of the current key window.
@@ -183,7 +167,7 @@ typedef void (^RMDateCancelBlock)(RMDateSelectionViewController *vc);
  
  @param selectionBlock The block to call when the user selects a date.
  */
-- (void)showWithSelectionHandler:(RMDateSelectionBlock)selectionBlock;
+- (void)showWithSelectionHandler:(EWSelectionBlock)selectionBlock;
 
 /**
  This shows the date selection view controller as child view controller of the root view controller of the current key window.
@@ -195,7 +179,7 @@ typedef void (^RMDateCancelBlock)(RMDateSelectionViewController *vc);
  @param selectionBlock The block to call when the user selects a date.
  @param cancelBlock The block to call when the user cancels the selection.
  */
-- (void)showWithSelectionHandler:(RMDateSelectionBlock)selectionBlock andCancelHandler:(RMDateCancelBlock)cancelBlock;
+- (void)showWithSelectionHandler:(EWSelectionBlock)selectionBlock andCancelHandler:(EWCancelBlock)cancelBlock;
 
 /**
  This shows the date selection view controller as child view controller of aViewController.
