@@ -3,8 +3,8 @@
 #import "EWSelectionViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
-#define EW_PICKER_HEIGHT_PORTRAIT 216
-#define EW_PICKER_HEIGHT_LANDSCAPE 162
+#define EW_PICKER_HEIGHT_PORTRAIT 150
+#define EW_PICKER_HEIGHT_LANDSCAPE 100
 
 
 @interface  EWSelectionViewController ()
@@ -223,14 +223,17 @@ static NSString *_localizedSelectTitle = @"Select";
     self.nowButton.clipsToBounds = YES;
     self.nowButton.translatesAutoresizingMaskIntoConstraints = NO;
     
-    self.datePickerContainer.backgroundColor = [UIColor whiteColor];
+    self.datePickerContainer.backgroundColor = [UIColor colorWithWhite:1 alpha:0.2];
     self.datePickerContainer.layer.cornerRadius = 5;
     self.datePickerContainer.translatesAutoresizingMaskIntoConstraints = NO;
     
+    self.picker.tintColor = [UIColor whiteColor];
+    self.picker.alpha =    1;
     self.picker.layer.cornerRadius = 5;
     self.picker.translatesAutoresizingMaskIntoConstraints = NO;
     
-    self.cancelAndSelectButtonContainer.backgroundColor = [UIColor whiteColor];
+    self.cancelAndSelectButtonContainer.backgroundColor = [UIColor colorWithWhite:1 alpha:0.2];
+
     self.cancelAndSelectButtonContainer.layer.cornerRadius = 5;
     self.cancelAndSelectButtonContainer.clipsToBounds = YES;
     self.cancelAndSelectButtonContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -239,14 +242,18 @@ static NSString *_localizedSelectTitle = @"Select";
     self.cancelAndSelectButtonSeperator.translatesAutoresizingMaskIntoConstraints = NO;
     
     [self.cancelButton setTitle:[EWSelectionViewController localizedTitleForCancelButton] forState:UIControlStateNormal];
-    [self.cancelButton setTitleColor:[UIColor colorWithRed:0 green:122./255. blue:1 alpha:1] forState:UIControlStateNormal];
+//    [self.cancelButton setTitleColor:[UIColor colorWithRed:0 green:122./255. blue:1 alpha:1] forState:UIControlStateNormal];
+    [self.cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    
     [self.cancelButton addTarget:self action:@selector(cancelButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     self.cancelButton.layer.cornerRadius = 5;
     self.cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.cancelButton setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
     
     [self.selectButton setTitle:[EWSelectionViewController localizedTitleForSelectButton] forState:UIControlStateNormal];
-    [self.selectButton setTitleColor:[UIColor colorWithRed:0 green:122./255. blue:1 alpha:1] forState:UIControlStateNormal];
+//    [self.selectButton setTitleColor:[UIColor colorWithRed:0 green:122./255. blue:1 alpha:1] forState:UIControlStateNormal];
+    [self.selectButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    
     [self.selectButton addTarget:self action:@selector(doneButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     self.selectButton.titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]];
     self.selectButton.layer.cornerRadius = 5;
