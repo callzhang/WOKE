@@ -806,14 +806,9 @@
             
         } else {
             //prevent updating too fast
-            if(lastUpdated.timeElapsed < 1 && cellChangeArray.count == 1){
-                NSIndexPath *path0 = [cellChangeArray[0] objectForKey:@(NSFetchedResultsChangeUpdate)];
-                if ([path0 compare:[NSIndexPath indexPathForItem:0 inSection:0]] == NSOrderedSame) {
-                    //NSLog(@"Updating too fast, reload collection view instead");
-                    //[self.collectionView reloadData];
-                    [cellChangeArray removeAllObjects];
-                    return;
-                }
+            if(lastUpdated.timeElapsed < 0.5 && cellChangeArray.count == 1){
+                [cellChangeArray removeAllObjects];
+                return;
             }
             
             //NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
