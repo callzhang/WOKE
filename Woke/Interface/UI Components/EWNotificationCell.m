@@ -18,6 +18,19 @@
 - (void)awakeFromNib
 {
     // Initialization code
+    
+    self.time = [[UILabel alloc] init];
+    [self addSubview:self.time];
+    self.time.textColor = [UIColor whiteColor];
+    self.time.backgroundColor = [UIColor clearColor];
+    self.time.font = [UIFont systemFontOfSize:12];
+    
+    self.detail = [[UILabel alloc] init];
+     self.detail.textColor = [UIColor whiteColor];
+    self.detail.backgroundColor = [UIColor clearColor];
+    [self addSubview:self.detail];
+    self.detail.font = [UIFont fontWithName:@"lato-Regular.ttf" size:14];
+    self.detail.numberOfLines = 0;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -29,6 +42,10 @@
 
 - (void)setNotification:(EWNotification *)notification{
   
+    self.detail.frame = CGRectMake(61, 8, 250, 35);
+    self.time.frame = CGRectMake(61, 47, 181, 15);
+
+
     //time
     double t = notification.createdAt.timeElapsed;
     self.time.text = [[EWUIUtil getStringFromTime:t] stringByAppendingString:@" ago"];
@@ -67,29 +84,34 @@
     }
     
     
+
+    
+    
+    CGSize fixLabelSize = [self.detail.text  sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
+    
+    self.detail.height = fixLabelSize.height;
+    
+   
+//    self.detail.backgroundColor = [UIColor whiteColor];
+   
+    CGFloat deltaHeight = self.detail.height - 35;
+    //self.detail.height += deltaHeight;®
+    self.time.y += deltaHeight;
+    self.contentView.height += deltaHeight;
+    self.height = self.contentView.height;
+    
+    
     if (notification.completed) {
         self.detail.enabled = NO;
         self.time.enabled = NO;
     }else{
         self.detail.enabled = YES;
         self.time.enabled = YES;
+       
     }
     
     
-//    self.detail.textColor = [UIColor whiteColor];
-//    CGSize fixLabelSize = [self.detail.text  sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
-//    self.detail.height = fixLabelSize.height;
-//    
-//   
-//    self.detail.backgroundColor = [UIColor whiteColor];
-//   
-//    CGFloat deltaHeight = self.detail.height - 35;
-//    //self.detail.height += deltaHeight;
-//    self.time.y += deltaHeight;
-//    self.contentView.height += deltaHeight;
-//    self.height = self.contentView.height;
-//    
-//    [self setNeedsDisplay];
+    [self setNeedsDisplay];
 }
 
 

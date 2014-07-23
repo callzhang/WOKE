@@ -73,9 +73,11 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 -(void)initView
 {
    
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
-    self.title = @"Friends";
     
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
+    [self.view bringSubviewToFront:self.tabView];
+//    self.title = @"Friends";
+    [self.navigationItem.titleView addSubview:self.tabView];
     self.view.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.hidden = NO;
@@ -210,6 +212,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
         default:
             break;
     }
+    [self.view bringSubviewToFront:self.tabView];
 }
 #pragma mark - help method
 -(void)pushControllerWithArrayNumber:(NSInteger)number

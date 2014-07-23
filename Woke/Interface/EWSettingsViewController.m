@@ -16,10 +16,11 @@
 #import "EWSelectionViewController.h"
 
 #import "RMDateSelectionViewController.h"
-
+#import "AVManager.h"
 @interface EWSettingsViewController ()
 {
     NSUInteger selectedCellNum;
+    NSArray *ringtoneList ;
 }
 //@property (strong, nonatomic) NSArray *options;
 @property (strong, nonatomic) NSMutableDictionary *preference;
@@ -68,6 +69,7 @@
     //profile
     preference = [me.preference mutableCopy];
     settingGroup = settingGroupPreference;
+   ringtoneList = ringtoneNameList
     
 }
 
@@ -374,13 +376,34 @@
     }else if (settingGroup == settingGroupPreference){
         switch (indexPath.row) {
             case 0:  {//sound selection
-                ringtoneVC = [[EWRingtoneSelectionViewController alloc] init];
-                ringtoneVC.delegate = self;
-                NSArray *ringtones = ringtoneNameList;
-                ringtoneVC.selected = [ringtones indexOfObject:preference[@"DefaultTone"]];
-           
+//                ringtoneVC = [[EWRingtoneSelectionViewController alloc] init];
+//                ringtoneVC.delegate = self;
+//                NSArray *ringtones = ringtoneNameList;
+//                ringtoneVC.selected = [ringtones indexOfObject:preference[@"DefaultTone"]];
+//           
+//                
+//                [self.navigationController pushViewController:ringtoneVC animated:YES];
                 
-                [self.navigationController pushViewController:ringtoneVC animated:YES];
+                EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
+                selectionVC.hideNowButton = YES;
+                //You can enable or disable bouncing and motion effects
+                //dateSelectionVC.disableBouncingWhenShowing = YES;
+                //dateSelectionVC.disableMotionEffects = YES;
+                //                    [selectionVC show];
+                
+                [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
+//                    NSUInteger row =[vc.picker selectedRowInComponent:0];
+//                    UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
+//                    self.preference[@"PrivacyLevel"] = titleLabel.text;
+//                    [_tableView reloadData];
+//                    NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
+                    
+                } andCancelHandler:^(EWSelectionViewController *vc) {
+                    [[AVManager sharedManager] stopAllPlaying];
+                    NSLog(@"Date selection was canceled (with block)");
+                    
+                }];
+
                 
             }
                 break;
@@ -484,6 +507,8 @@
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     switch (selectedCellNum) {
+        case 0:
+            return ringtoneList.count;
         case 1:
             return 2;
             break;
@@ -524,6 +549,16 @@
 }
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
+    switch (selectedCellNum) {
+        case 0:{
+        NSString *tone = [ringtoneList objectAtIndex:row];
+        [AVManager.sharedManager playSoundFromFile:tone];
+        }
+            break;
+            
+        default:
+            break;
+    }
     
 }
 - (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view{
@@ -536,6 +571,13 @@
     
     NSString *titleString = @"";
     switch (selectedCellNum) {
+        case 0:{
+            
+            
+            titleString = ringtoneList[row];
+
+        }
+            break;
         case 1:{
             switch (row) {
                 case 0:
