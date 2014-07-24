@@ -204,8 +204,10 @@ static const float initialDownSampling = 2;
 			[[self.context containerView] addSubview:toView];
             [self.imageView removeFromSuperview];
         }
+        if (self.type == kModelViewDismiss) {
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		}
         
-        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
     }
 }
 

@@ -82,13 +82,14 @@
     self.name.alpha = 0;
     self.selection.hidden = YES;
     self.initial.hidden = YES;
-    [self applyHexagonMask];
+    //[self applyHexagonMask];
     
     self.profile.image = person.profilePic;
     self.name.text = person.name;
     
     //If show name, the name will displayed below the cell
-    if (person.isMe) {
+    BOOL isMe = person.isMe;
+    if (isMe) {
         self.initial.hidden = NO;
         self.initial.text = @"YOU";
     }else if(self.showName){
@@ -101,7 +102,9 @@
     }
     
     
-    if (person.isMe) {
+    if (isMe) {
+        self.time.text = @"";
+        self.km.text = @"";
         return;
     }
     
@@ -128,6 +131,17 @@
         self.km.text = [NSString stringWithFormat:@"%.1fkm", _distance];
     }
     
+}
+
+
+- (void)drawRect:(CGRect)rect{
+    [EWUIUtil applyHexagonSoftMaskForView:self];
+    
+    //shadow
+    self.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.layer.shadowOffset = CGSizeMake(0, 1);
+    self.layer.shadowOpacity = 0.8;
+    self.layer.shadowRadius = 3.0;
 }
 
 @end

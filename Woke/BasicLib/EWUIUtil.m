@@ -97,6 +97,9 @@
 }
 
 + (void)applyHexagonSoftMaskForView:(UIView *)view{
+    if (view.tag == kHexEdgeTag) {
+        return;
+    }
     float originalSize = 80.0;
     CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
     UIBezierPath *hexagonPath = [EWUIUtil getHexagonSoftPath];
@@ -111,13 +114,28 @@
     hexagonMask.path = hexagonPath.CGPath;
     view.layer.mask  = hexagonMask;
     view.layer.masksToBounds = YES;
-    //view.clipsToBounds = YES;
+    view.clipsToBounds = YES;
+    view.tag = kHexMaskTag;
+    
+    
+    //doesn't work
+//    view.layer.borderColor = [UIColor whiteColor].CGColor;
+//    view.layer.borderWidth = 1.0;
     
     //stroke
-//    
-//    [[UIColor whiteColor] setStroke];
-//    hexagonPath.lineWidth = 1;
-//    [hexagonPath stroke];
+    if ([view viewWithTag:kHexEdgeTag]) {
+        return;
+    }
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, view.window.screen.scale);
+    [[UIColor colorWithWhite:1 alpha:0.8] setStroke];
+    hexagonPath.lineWidth = 1;
+    [hexagonPath stroke];
+    UIImage* img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    UIImageView *hexEdge = [[UIImageView alloc] initWithImage:img];
+    hexEdge.tag = kHexEdgeTag;
+    [view addSubview:hexEdge];
 }
 
 + (UIBezierPath *)getHexagonSoftPath{

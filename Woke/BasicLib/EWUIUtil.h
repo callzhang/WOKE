@@ -21,6 +21,9 @@
 #define EWContentWidth          EWScreenWidth
 #define EWContentHeight         (EWMainHeight - [EWUIUtil navigationBarHeight])
 
+#define kHexEdgeTag             246
+#define kHexMaskTag             287
+
 // 基本标准界面常量宏
 #define kStandardUITableViewCellHeight     44
 #define kAlarmCellHeight     80

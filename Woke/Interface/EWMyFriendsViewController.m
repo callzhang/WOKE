@@ -220,6 +220,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
         EWPersonViewController *viewController = [[EWPersonViewController alloc] initWithPerson:friend ];
         viewController.canSeeFriendsDetail = YES;
         [self.navigationController pushViewController:viewController animated:YES];
+        
     }
 
 }
