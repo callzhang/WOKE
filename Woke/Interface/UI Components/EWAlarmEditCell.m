@@ -106,7 +106,10 @@
         self.statement.enabled = YES;
         self.timeStepper.enabled = YES;
         self.timeStepper.tintColor  = [UIColor cyanColor];
-
+        if([self.statement.text  isEqual: @""])
+        {
+            
+        }
         self.statement.textColor = [UIColor whiteColor];
         [self.alarmToggle setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];}];
     }else{
@@ -118,7 +121,7 @@
         self.timeStepper.enabled = NO;
         self.timeStepper.tintColor  = [UIColor lightGrayColor];
         self.statement.textColor = [UIColor lightGrayColor];
-        
+           
         [self.alarmToggle setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
         }];
     }
