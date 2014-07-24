@@ -386,9 +386,6 @@
 
 #pragma mark - CHECK ALARM TIMER
 + (void) alarmTimerCheck{
-    NSLog(@"===========================>> Check Alarm Timer <<=============================");
-
-    
     //check time
     if (!me) return;
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
@@ -396,7 +393,7 @@
     
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
-    
+    NSLog(@"===========================>> Check Alarm Timer (%d min left) <<=============================", (NSInteger)timeLeft/60);
     if (timeLeft < kServerUpdateInterval && timeLeft > 0) {
         NSLog(@"alarmTimerCheck: About to init alart timer in %fs",timeLeft);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

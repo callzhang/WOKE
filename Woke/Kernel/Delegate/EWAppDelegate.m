@@ -135,24 +135,35 @@ UIViewController *rootViewController;
         EWAlert(@"Your device doesn't support background task. Alarm will not fire. Please change your settings.");
     }
 
-    // keep active
-    if ([myTimer isValid]) [myTimer invalidate];
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:kAlarmTimerCheckInterval target:self selector:@selector(backgroundTaskKeepAlive:) userInfo:nil repeats:YES];
-    myTimer.userInfo[@"start_date"] = [NSDate date];
-    myTimer.userInfo[@"count"] = 0;
+    //keep alive
+    [self backgroundTaskKeepAlive:nil];
+    
+    //clean badge
     application.applicationIconBadgeNumber = 0;
 }
 
 
 - (void)backgroundTaskKeepAlive:(NSTimer *)timer{
     UIApplication *application = [UIApplication sharedApplication];
+    NSMutableDictionary *userInfo;
     if (timer) {
-        NSDate *start = myTimer.userInfo[@"start_date"];
-        count = [(NSNumber *)myTimer.userInfo[@"count"] integerValue];
+        NSDate *start = timer.userInfo[@"start_date"];
+        count = [(NSNumber *)timer.userInfo[@"count"] integerValue];
         NSLog(@"Backgrounding started at %@ is checking the %ld times", start.date2detailDateString, count);
         count++;
-        myTimer.userInfo[@"count"] = [NSNumber numberWithInteger:count];
+        timer.userInfo[@"count"] = @(count);
+        userInfo = timer.userInfo;
+    }else{
+        //first time
+        userInfo = [NSMutableDictionary new];
+        userInfo[@"start_date"] = [NSDate date];
+        userInfo[@"count"] = @0;
     }
+    
+    //schedule timer
+    if ([myTimer isValid]) [myTimer invalidate];
+    NSInteger randomInterval = kAlarmTimerCheckInterval + arc4random_uniform(60);
+    myTimer = [NSTimer scheduledTimerWithTimeInterval:randomInterval target:self selector:@selector(backgroundTaskKeepAlive:) userInfo:userInfo repeats:NO];
     
     //start silent sound
     [[AVManager sharedManager] playSilentSound];
@@ -162,10 +173,14 @@ UIViewController *rootViewController;
     
     //begin a new background task
     backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        [self backgroundTaskKeepAlive:nil];
-        NSLog(@"The backgound task is renewed at (%ld)" , count);
-        
+        //[self backgroundTaskKeepAlive:nil];
+        //NSLog(@"The backgound task is renewed at (%ld)" , count);
     }];
+    
+    //check time left
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"Background time left: %f", application.backgroundTimeRemaining>999?999:application.backgroundTimeRemaining);
+    });
     
     //alarm timer check
     [EWWakeUpManager alarmTimerCheck];
