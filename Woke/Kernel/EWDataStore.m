@@ -154,7 +154,7 @@
     
     //continue upload to server if any
     NSLog(@"0. Continue uploading to server");
-    [EWDataStore updateToServer];
+    [EWDataStore resumeUploadToServer];
     
     //refresh current user
     NSLog(@"1. Register AWS push key");
@@ -458,8 +458,9 @@
 		if (!error && MO) {
 			[set addObject:MO];
 		}else{
-			NSLog(@"*** Serious error: trying to fetch MO (%@) failed with error: %@", str, error.description);
+			NSLog(@"*** Serious error: trying to fetch MO from queue %@ failed. %@", queue, error.description);
 			//remove from the queue
+			MO = [[EWDataStore currentContext] objectWithID:ID];
 			[self removeObject:MO fromQueue:queue];
 		}
         
@@ -586,6 +587,21 @@
         });
     });
 }
+
++ (void)resumeUploadToServer{
+	NSSet *workingMOs = [EWDataStore workingQueue];
+	NSSet *deletePOs = [EWDataStore deleteQueue];
+	if (workingMOs.count > 0 || deletePOs.count > 0) {
+		NSLog(@"There are %d MOs need to upload and %d MOs need to delete", workingMOs.count, deletePOs.count);
+		for (NSManagedObject *MO in workingMOs) {
+			[EWDataStore appendUpdateQueue:MO];
+			[EWDataStore removeObjectFromWorkingQueue:MO];
+		}
+		//TODO: determine update status
+		[EWDataStore updateToServer];
+	}
+}
+
 #pragma mark -
 
 

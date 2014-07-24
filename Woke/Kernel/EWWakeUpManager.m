@@ -245,7 +245,8 @@
     }
     
     //update media
-    NSArray *medias = [[EWMediaStore sharedInstance] checkMediaAssets];
+    [[EWMediaStore sharedInstance] checkMediaAssets];
+    NSArray *medias = [EWPersonStore me].mediaAssets.allObjects;
     
     //fill media from mediaAssets, if no media for task, create a pseudo media
     NSInteger nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];

@@ -45,7 +45,7 @@
 - (NSArray *)mediasForPerson:(EWPerson *)person;
 
 //Check media assets relationship
-- (NSArray *)checkMediaAssets;
+- (BOOL)checkMediaAssets;
 
 //get my task in a media
 + (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media;

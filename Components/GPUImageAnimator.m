@@ -129,7 +129,7 @@ static const float initialDownSampling = 2;
 			fromView.hidden = NO;
             [self.context completeTransition:YES];
 			
-			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+			
         }];
         
         
@@ -138,6 +138,12 @@ static const float initialDownSampling = 2;
 		//screenshot first
 		UIImage *toViewImage = toView.screenshot;
 		toView.hidden = NO;
+		
+		
+		//refresh
+		if ([toViewController respondsToSelector:@selector(refreshView)]) {
+			[toViewController performSelector:@selector(refreshView)];
+		}
 		
         [UIView animateWithDuration:duration-delay animations:^{
             
@@ -196,7 +202,7 @@ static const float initialDownSampling = 2;
         
         //=======> dismiss animation ended
         
-        //unhide to view
+        //unhide to view'
         self.displayLink.paused = YES;
         [self.context completeTransition:YES];
 		UIViewController *toViewController = [self.context viewControllerForKey:UITransitionContextToViewControllerKey];
@@ -209,14 +215,7 @@ static const float initialDownSampling = 2;
         }else if (self.type == kModelViewDismiss){
 			toView.hidden = NO;
             
-			
-			//status bar
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			
-			//refresh
-			if ([toViewController respondsToSelector:@selector(refreshView)]) {
-				[toViewController performSelector:@selector(refreshView)];
-			}
+
 		}
         
     }

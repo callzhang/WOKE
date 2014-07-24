@@ -67,7 +67,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
-    [self setEdgesForExtendedLayout:UIRectEdgeAll];
+    //[self setEdgesForExtendedLayout:UIRectEdgeAll];
     
     //schedule alarm and tasks
     //pop up alarmScheduleView

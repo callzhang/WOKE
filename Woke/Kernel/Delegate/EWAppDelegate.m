@@ -28,7 +28,7 @@
 //model
 #import "EWTaskItem.h"
 #import "EWMediaItem.h"
-#import "EWDownloadManager.h"
+#import "EWMediaStore.h"
 #import "EWServer.h"
 #import "EWUserManagement.h"
 #import "EWDataStore.h"
@@ -250,27 +250,20 @@ UIViewController *rootViewController;
     //[[AVManager sharedManager] registerAudioSession];
     [[AVManager sharedManager] playSystemSound:nil];
     
-    for (EWTaskItem *task in me.tasks) {
-        
-        //refresh
-        [[EWDataStore currentContext] refreshObject:task mergeChanges:YES];
-        
-        //check
-        if ([[EWDataStore sharedInstance].lastChecked isEarlierThan:task.updatedAt]) {
-            NSLog(@"Find task on %@ has possible updates", task.time.weekday);
-            [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
-            
-            //download
-            [[EWDownloadManager sharedInstance] downloadTask:task withCompletionHandler:NULL];
-        }
-    }
+    //check media assets
+    BOOL newMedia = [[EWMediaStore sharedInstance] checkMediaAssets];
     
     //update checked time
     [EWDataStore sharedInstance].lastChecked = [NSDate date];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"Returned background fetch handler");
-        completionHandler(UIBackgroundFetchResultNewData);
+        NSLog(@"Returned background fetch handler with %@", newMedia?@"new data":@"no data");
+        if (newMedia) {
+            completionHandler(UIBackgroundFetchResultNewData);
+        }else{
+            completionHandler(UIBackgroundFetchResultNoData);
+        }
+        
     });
     
 }
@@ -335,8 +328,8 @@ UIViewController *rootViewController;
 {
     NSLog(@"%s: APP received message and need to handle the background transfer events", __func__);
     //store the completionHandler
-    EWDownloadManager *manager = [EWDownloadManager sharedInstance];
-	manager.backgroundSessionCompletionHandler = completionHandler;
+    //EWDownloadManager *manager = [EWDownloadManager sharedInstance];
+	//manager.backgroundSessionCompletionHandler = completionHandler;
 }
 
 

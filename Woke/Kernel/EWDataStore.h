@@ -109,6 +109,11 @@ typedef void (^EWSavingCallback)(void);
  */
 + (void)updateToServer;
 
+/*
+ Resume uploading at startup.
+ **/
++ (void)resumeUploadToServer;
+
 /**
  *Update or Insert PFObject according to given ManagedObject
  *

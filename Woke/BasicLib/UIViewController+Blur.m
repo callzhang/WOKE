@@ -38,8 +38,12 @@ static NavigationControllerDelegate *delegate = nil;
 	}
 	
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+		
+		//hide status bar
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+		
 		//if active, show the animation
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 			[self presentViewController:viewController animated:YES completion:block];
 		});
 	} else {
@@ -58,7 +62,16 @@ static NavigationControllerDelegate *delegate = nil;
 
 
 - (void)dismissBlurViewControllerWithCompletionHandler:(void(^)(void))completion{
-	[self dismissViewControllerAnimated:YES completion:completion];
+	[self dismissViewControllerAnimated:YES completion:^{
+		if (completion) {
+			completion();
+		}
+		
+		//status bar
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	}];
+	
+	
 }
 
 

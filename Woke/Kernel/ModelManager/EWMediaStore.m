@@ -127,7 +127,7 @@
 }
 
 
-- (NSArray *)checkMediaAssets{
+- (BOOL)checkMediaAssets{
     PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
     [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
     [query whereKey:kParseObjectID notContainedIn:[me.mediaAssets valueForKey:kParseObjectID]];
@@ -143,7 +143,8 @@
         EWAlert(@"You got voice for your next wake up");
         [EWDataStore save];
     }
-    return [[EWPersonStore me].mediaAssets allObjects];
+    //return [[EWPersonStore me].mediaAssets allObjects];
+    return mediaPOs.count>0?YES:NO;
 }
 
 + (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media{
