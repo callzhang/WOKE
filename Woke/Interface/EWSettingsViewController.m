@@ -392,11 +392,11 @@
                 //                    [selectionVC show];
                 
                 [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
-//                    NSUInteger row =[vc.picker selectedRowInComponent:0];
-//                    UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
-//                    self.preference[@"PrivacyLevel"] = titleLabel.text;
-//                    [_tableView reloadData];
-//                    NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
+                    NSUInteger row =[vc.picker selectedRowInComponent:0];
+                    UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
+                    self.preference[@"tone"] = titleLabel.text;
+                    [_tableView reloadData];
+                 
                     
                 } andCancelHandler:^(EWSelectionViewController *vc) {
                     [[AVManager sharedManager] stopAllPlaying];
