@@ -20,6 +20,11 @@
 		<key>04FDAB52-BFF3-4BC3-9FED-69DD362102AD</key>
 		<string>../../woke</string>
 	</dict>
+	<key>IDESourceControlProjectRequiredConfigurationsDictionary</key>
+	<dict>
+		<key>04FDAB52-BFF3-4BC3-9FED-69DD362102AD</key>
+		<true/>
+	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/callzhang/WOKE.git</string>
 	<key>IDESourceControlProjectVersion</key>
