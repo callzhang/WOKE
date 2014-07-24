@@ -9,6 +9,8 @@
 #import "EWUIUtil.h"
 #import "EWAppDelegate.h"
 
+static const float originalSize = 80.0;
+
 @implementation EWUIUtil
 
 + (CGFloat)screenWidth {
@@ -77,8 +79,6 @@
 }
 
 + (void)applyHexagonMaskForView:(UIView *)view{
-    float originalSize = 80.0;
-    
     //get mask
     CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
     UIBezierPath *hexagonPath = [EWUIUtil getHexagonPath];
@@ -100,7 +100,6 @@
     if (view.tag == kHexEdgeTag) {
         return;
     }
-    float originalSize = 80.0;
     CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
     UIBezierPath *hexagonPath = [EWUIUtil getHexagonSoftPath];
     
@@ -114,8 +113,9 @@
     hexagonMask.path = hexagonPath.CGPath;
     view.layer.mask  = hexagonMask;
     view.layer.masksToBounds = YES;
-    view.clipsToBounds = YES;
+    //view.clipsToBounds = YES;
     view.tag = kHexMaskTag;
+    
     
     
     //doesn't work
@@ -136,6 +136,31 @@
     UIImageView *hexEdge = [[UIImageView alloc] initWithImage:img];
     hexEdge.tag = kHexEdgeTag;
     [view addSubview:hexEdge];
+}
+
++ (void)applyHexagonShadowToView:(UIView *)view{
+    if (view.tag == kHexShadowTag) {
+        return;
+    }
+    //scale
+    float height = view.bounds.size.height;
+    float width = view.bounds.size.width;
+    float ratio = MAX(height, width)/originalSize;
+    UIBezierPath *hexagonPath = [EWUIUtil getHexagonSoftPath];
+    [hexagonPath applyTransform:CGAffineTransformMakeScale(ratio, ratio)];
+    
+    //mask
+    CALayer *layer = view.layer;
+    CAShapeLayer *hexagonMask = [[CAShapeLayer alloc] initWithLayer:view.layer];
+    hexagonMask.path = hexagonPath.CGPath;
+    layer.mask  = hexagonMask;
+    layer.masksToBounds = NO;
+    view.tag = kHexShadowTag;
+    
+    //shadow
+    layer.shadowRadius = 3;
+    layer.shadowColor = [UIColor blackColor].CGColor;
+    layer.shadowOpacity = 0.8;
 }
 
 + (UIBezierPath *)getHexagonSoftPath{

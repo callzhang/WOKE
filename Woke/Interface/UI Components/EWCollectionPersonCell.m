@@ -135,13 +135,8 @@
 
 
 - (void)drawRect:(CGRect)rect{
-    [EWUIUtil applyHexagonSoftMaskForView:self];
-    
-    //shadow
-    self.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.layer.shadowOffset = CGSizeMake(0, 1);
-    self.layer.shadowOpacity = 0.8;
-    self.layer.shadowRadius = 3.0;
+    [EWUIUtil applyHexagonSoftMaskForView:self.image];
+    [EWUIUtil applyShadow:self.contentView];
 }
 
 @end

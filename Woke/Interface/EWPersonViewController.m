@@ -576,13 +576,13 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 controller = tempVc;
                 
                 [self.navigationController pushViewController:controller animated:YES];
-                break;
+                return;
             }
       
         }
         
     }
-    //[tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {

@@ -801,6 +801,8 @@
         } else {
             //prevent updating too fast
             if(lastUpdated.timeElapsed < 0.5 && cellChangeArray.count == 1){
+                NSDictionary *change = cellChangeArray.firstObject;
+                [self processChange:change];
                 [cellChangeArray removeAllObjects];
                 return;
             }
@@ -813,29 +815,7 @@
                 
                 for (NSDictionary *change in cellChangeArray)
                 {
-                    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
-                        
-                        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-                        switch (type)
-                        {
-                            case NSFetchedResultsChangeInsert:
-                                [self.collectionView insertItemsAtIndexPaths:@[obj]];
-                                break;
-                            case NSFetchedResultsChangeDelete:
-                                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
-                                break;
-                            case NSFetchedResultsChangeUpdate:{
-                                //                        if ([obj isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]) {
-                                //                            return;
-                                //                        }
-                                [self.collectionView reloadItemsAtIndexPaths:@[obj]];
-                            }
-                                break;
-                            case NSFetchedResultsChangeMove:
-                                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
-                                break;
-                        }
-                    }];
+                    [self processChange:change];
                 }
                 
             }completion:^(BOOL finished){
@@ -855,6 +835,32 @@
         //after reload, we still need to update the view, do not clean the changeArray until updating the view.
         [cellChangeArray removeAllObjects];
     }
+}
+
+- (void)processChange:(NSDictionary *)change{
+    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
+        
+        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+        switch (type)
+        {
+            case NSFetchedResultsChangeInsert:
+                [self.collectionView insertItemsAtIndexPaths:@[obj]];
+                break;
+            case NSFetchedResultsChangeDelete:
+                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
+                break;
+            case NSFetchedResultsChangeUpdate:{
+                //                        if ([obj isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]) {
+                //                            return;
+                //                        }
+                [self.collectionView reloadItemsAtIndexPaths:@[obj]];
+            }
+                break;
+            case NSFetchedResultsChangeMove:
+                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
+                break;
+        }
+    }];
 }
 
 

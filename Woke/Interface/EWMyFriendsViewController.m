@@ -30,7 +30,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 -(id)initWithPerson:(EWPerson *)person cellSelect:(BOOL)cellSelect
 {
     self = [self initWithPerson:person];
-    self.cellSelect = cellSelect;
+    //self.cellSelect = cellSelect;
     return self;
 }
 -(id)initWithPerson:(EWPerson *)person
@@ -38,7 +38,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.person = person;
-        self.cellSelect = YES;
+        //self.cellSelect = YES;
     }
     return self;
 }
@@ -89,7 +89,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     _friendsTableView.backgroundView = nil;
     _friendsTableView.backgroundColor = [UIColor clearColor];
     _friendsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _friendsTableView.allowsSelection = _cellSelect;
+    //_friendsTableView.allowsSelection = _cellSelect;
     _friendsTableView.hidden = YES;
     [_friendsTableView registerNib:[UINib nibWithNibName:@"EWFriendsTableCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:tableViewCellId];
     
@@ -136,11 +136,8 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-//    return;
-    if (_cellSelect) {
-        [self pushControllerWithArrayNumber:indexPath.row];
+    [self pushControllerWithArrayNumber:indexPath.row];
 
-    }
    
 }
 
@@ -182,11 +179,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     return UIEdgeInsetsMake(5, 20, 5, 10);
 }
 
--(BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    return _cellSelect;
-//    return NO;
-}
+
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [self pushControllerWithArrayNumber:indexPath.row];

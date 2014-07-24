@@ -23,6 +23,7 @@
 
 #define kHexEdgeTag             246
 #define kHexMaskTag             287
+#define kHexShadowTag           299
 
 // 基本标准界面常量宏
 #define kStandardUITableViewCellHeight     44
@@ -52,6 +53,8 @@
 + (void)addImage:(UIImage *)image toAlertView:(UIAlertView *)alert;
 
 + (void)applyHexagonSoftMaskForView:(UIView *)view;
+
++ (void)applyHexagonShadowToView:(UIView *)view;
 
 + (UIBezierPath *)getHexagonPath;
 
