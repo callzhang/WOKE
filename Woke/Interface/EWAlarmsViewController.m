@@ -72,11 +72,6 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        
-        //listen to user log in, and updates its view
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
-        [[EWPersonStore sharedInstance] addObserver:self forKeyPath:@"currentUser" options:NSKeyValueObservingOptionNew context:nil];
-        
         //initial value
         people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"]?:@[];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
@@ -84,6 +79,12 @@
         taskScheduled = NO;
     }
     return self;
+}
+
+- (void)dealloc{
+    [me removeObserver:self forKeyPath:@"tasks"];
+    [me removeObserver:self forKeyPath:@"notification"];
+    [[EWPersonStore sharedInstance] removeObserver:self forKeyPath:@"currentUser"];
 }
 
 - (void)refreshView{
@@ -104,6 +105,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    //listen to user log in, and updates its view
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
+    [[EWPersonStore sharedInstance] addObserver:self forKeyPath:@"currentUser" options:NSKeyValueObservingOptionNew context:nil];
     
     //static UI stuff (do it once)
     //collection view
@@ -116,6 +121,10 @@
     UIImageView *background = [[UIImageView alloc] initWithFrame:_collectionView.frame ];
     background.image = [UIImage imageNamed:@"Background"];
     [self.view insertSubview:background belowSubview:_collectionView];
+    
+    //alarmBarBG
+    self.alarmBarBG.layer.borderColor = [UIColor colorWithWhite:0 alpha:0.02].CGColor;
+    self.alarmBarBG.layer.borderWidth = 1;
     
     //paging
     _scrollView.delegate = self;

@@ -56,7 +56,7 @@
 //Global parameters
 #define nWeeksToScheduleTask            1
 #define nLocalNotifPerTask              5
-#define kAlarmTimerCheckInterval        150 //10 min
+#define kAlarmTimerCheckInterval        90 //10 min
 #define alarmInterval                   600 //10 min
 #define kMaxWakeTime                    3600 // 60min
 #define kMediaPlayInterval              5 //5s

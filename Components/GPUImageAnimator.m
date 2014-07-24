@@ -205,10 +205,10 @@ static const float initialDownSampling = 2;
         if (self.type == UINavigationControllerOperationPop) {
 			
 			[[self.context containerView] addSubview:toView];
-			
+			[self.imageView removeFromSuperview];
         }else if (self.type == kModelViewDismiss){
 			toView.hidden = NO;
-            [self.imageView removeFromSuperview];
+            
 			
 			//status bar
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];

@@ -84,7 +84,12 @@
     self.initial.hidden = YES;
     //[self applyHexagonMask];
     
-    self.profile.image = person.profilePic;
+    if (person.profilePic) {
+        self.profile.image = person.profilePic;
+    }else{
+        self.profile.image = [UIImage imageNamed:@"profile"];
+    }
+    
     self.name.text = person.name;
     
     //If show name, the name will displayed below the cell
@@ -136,7 +141,7 @@
 
 - (void)drawRect:(CGRect)rect{
     [EWUIUtil applyHexagonSoftMaskForView:self.image];
-    [EWUIUtil applyShadow:self.contentView];
+    //[EWUIUtil applyShadow:self.contentView];
 }
 
 @end
