@@ -96,8 +96,8 @@
     //update data and view
     [self initData];
     [self reloadAlarmPage];
-    [self centerView];
-    
+    //[self centerView];
+    [self.collectionView reloadData];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 

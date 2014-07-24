@@ -92,6 +92,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         NSLog(@"Person %@ is outdated and needs refresh in background", p.name);
         
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        });
         [p refreshInBackgroundWithCompletion:^{
         //[person refreshShallowWithCompletion:^{
             [person.managedObjectContext refreshObject:person mergeChanges:YES];
