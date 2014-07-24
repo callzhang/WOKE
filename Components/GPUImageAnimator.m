@@ -123,6 +123,7 @@ static const float initialDownSampling = 2;
             toView.transform = CGAffineTransformIdentity;
         } completion:^(BOOL finished) {
 			//========> Present animation ended
+			[self triggerRenderOfNextFrame];
 			
             //remove from view
 			fromView.hidden = NO;
@@ -136,6 +137,7 @@ static const float initialDownSampling = 2;
 		
 		//screenshot first
 		UIImage *toViewImage = toView.screenshot;
+		toView.hidden = NO;
 		
         [UIView animateWithDuration:duration-delay animations:^{
             
@@ -197,15 +199,24 @@ static const float initialDownSampling = 2;
         //unhide to view
         self.displayLink.paused = YES;
         [self.context completeTransition:YES];
-        
-        
+		UIViewController *toViewController = [self.context viewControllerForKey:UITransitionContextToViewControllerKey];
+        UIView *toView = toViewController.view;
+		
         if (self.type == UINavigationControllerOperationPop) {
-			UIView *toView = [self.context viewControllerForKey:UITransitionContextToViewControllerKey].view;
+			
 			[[self.context containerView] addSubview:toView];
+			
+        }else if (self.type == kModelViewDismiss){
+			toView.hidden = NO;
             [self.imageView removeFromSuperview];
-        }
-        if (self.type == kModelViewDismiss) {
+			
+			//status bar
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			
+			//refresh
+			if ([toViewController respondsToSelector:@selector(refreshView)]) {
+				[toViewController performSelector:@selector(refreshView)];
+			}
 		}
         
     }

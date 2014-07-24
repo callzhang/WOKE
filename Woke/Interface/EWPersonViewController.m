@@ -72,7 +72,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.person = p;
-        _canSeeFriendsDetail = YES;
         
     }
     return self;
@@ -92,6 +91,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         NSLog(@"Person %@ is outdated and needs refresh in background", p.name);
         
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        });
         [p refreshInBackgroundWithCompletion:^{
         //[person refreshShallowWithCompletion:^{
             [person.managedObjectContext refreshObject:person mergeChanges:YES];
@@ -571,7 +573,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         {
             if ([self.navigationController.viewControllers count] < kMaxPersonNavigationConnt && [person.friends count]>0) {
                 EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
-                tempVc.cellSelect =_canSeeFriendsDetail;
                 controller = tempVc;
                 
                 [self.navigationController pushViewController:controller animated:YES];

@@ -96,8 +96,8 @@
     //update data and view
     [self initData];
     [self reloadAlarmPage];
-    [self centerView];
-    
+    //[self centerView];
+    [self.collectionView reloadData];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
@@ -675,21 +675,15 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    //if me
-#ifdef DEV_TEST
     
-#else
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
     if (person.isMe) {
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
-        controller.canSeeFriendsDetail = YES;
+        //controller.canSeeFriendsDetail = YES;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        navDelegate = [[NavigationControllerDelegate alloc] init];
-        navController.delegate = navDelegate;
         [self presentViewControllerWithBlurBackground:navController completion:NULL];
         return;
     }
-#endif
     
     //get cell
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:indexPath];

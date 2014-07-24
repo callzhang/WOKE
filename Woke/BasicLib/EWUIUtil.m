@@ -239,7 +239,7 @@
         vc.navigationItem.rightBarButtonItem = rightItem;
         vc.navigationItem.leftBarButtonItem = leftItem;
         vc.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-        [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
+     
     }else{
         //not in navigation controller
         UIButton *closeBtn = [[UIButton alloc] initWithFrame:CGRectMake(260, 20, 40, 40)];

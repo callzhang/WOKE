@@ -110,7 +110,8 @@ UIViewController *rootViewController;
             [EWServer handlePushNotification:remoteNotif];
         }
     }
-
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
     return YES;
 }
 

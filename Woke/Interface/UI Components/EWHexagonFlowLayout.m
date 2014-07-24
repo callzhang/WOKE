@@ -48,6 +48,9 @@
         _attributeArray = [newAttributeArray copy];
         
         NSLog(@"CollectionView layout updated!");
+        if ([self.collectionView.delegate respondsToSelector:@selector(centerView)]) {
+            [self.collectionView.delegate performSelector:@selector(centerView)];
+        }
     }
     
     return _attributeArray;

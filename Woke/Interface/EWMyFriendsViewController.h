@@ -13,7 +13,6 @@
 -(id)initWithPerson:(EWPerson *)person cellSelect:(BOOL)cellSelect;
 -(id)initWithPerson:(EWPerson *)person;
 @property EWPerson *person;
-@property (assign,nonatomic) BOOL cellSelect;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *tabView;
 
 @property (strong, nonatomic) IBOutlet UICollectionView *friendsCollectionView;
