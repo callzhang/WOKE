@@ -64,7 +64,10 @@
     [self initData];
     [self initView];
 }
-
+-(void)viewWillDisappear:(BOOL)animated{
+    me.preference = [preference mutableCopy];
+    [EWDataStore save];
+}
 - (void)initData {
     //profile
     preference = [me.preference mutableCopy];
@@ -396,7 +399,7 @@
                     UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
                     self.preference[@"tone"] = titleLabel.text;
                     [_tableView reloadData];
-                 
+                    [[AVManager sharedManager] stopAllPlaying];
                     
                 } andCancelHandler:^(EWSelectionViewController *vc) {
                     [[AVManager sharedManager] stopAllPlaying];

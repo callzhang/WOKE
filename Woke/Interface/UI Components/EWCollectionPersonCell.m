@@ -70,11 +70,12 @@
         return;
     }
     // init label
-    self.name = [[UILabel alloc] initWithFrame:CGRectMake(0, 60, 80, 21)];
+    self.name = [[UILabel alloc] initWithFrame:CGRectMake(-20, 60, 120, 21)];
     self.name.textAlignment = NSTextAlignmentCenter;
     self.name.backgroundColor = [UIColor clearColor];
     self.name.font = [UIFont systemFontOfSize:13.0];
     self.name.textColor  = [UIColor whiteColor];
+   
     _person = person;
     [self addSubview:self.name];
     //init state

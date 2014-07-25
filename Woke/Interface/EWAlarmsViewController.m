@@ -809,15 +809,15 @@
             
         } else {
             //prevent updating too fast
-            if(lastUpdated.timeElapsed < 0.5 && cellChangeArray.count == 1){
-                NSDictionary *change = cellChangeArray.firstObject;
-                [self processChange:change];
-                [cellChangeArray removeAllObjects];
+            if(lastUpdated.timeElapsed < 0.5 ){
+//                NSDictionary *change = cellChangeArray.firstObject;
+//                [self processChange:change];
+//                [cellChangeArray removeAllObjects];
                 return;
             }
             
             //NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
-            //need to record the time at the beginning
+            //need to ®record the time at the beginning
             lastUpdated = [NSDate date];
             
             [self.collectionView performBatchUpdates:^{
