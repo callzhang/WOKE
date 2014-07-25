@@ -153,17 +153,35 @@
 }
 
 + (BOOL)validateMedia:(EWMediaItem *)media{
-    NSParameterAssert(media.type);
+    BOOL good = YES;
+    if(!media.type){
+        good = NO;
+    }
     if ([media.type isEqualToString:kMediaTypeVoice]) {
-        NSParameterAssert(media.audio);
+        if(!media.audio){
+            NSLog(@"Media %@ type voice with no audio.", media.serverID);
+            good = NO;
+        }
     }else if ([media.type isEqualToString:kMediaTypeBuzz]){
-        NSParameterAssert(media.buzzKey);
+        if(!media.buzzKey){
+            NSLog(@"Media %@ type buzz with no buzz type", media.serverID);
+            good = NO;
+        }
     }
     if (!media.receivers) {
-        NSParameterAssert(media.tasks.count > 0);
+        if(media.tasks.count == 0){
+            NSLog(@"Found media %@ with no receiver and no task.", media.serverID);
+            good = NO;
+        }
     }
     
-    return YES;
+    if (good) {
+        return good;
+    }
+    
+    [media deleteEntity];
+    
+    return good;
 }
 
 @end

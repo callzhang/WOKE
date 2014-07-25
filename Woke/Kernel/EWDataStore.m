@@ -269,7 +269,35 @@
 
 + (void)save{
     
-    NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
+    BOOL hasChanges = [EWDataStore saveAndEnqueue];
+    
+	if (hasChanges) {
+		
+        [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
+        [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
+        
+    }else{
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			NSArray *blocks = [EWDataStore sharedInstance].saveCallbacks;
+			[[EWDataStore sharedInstance].saveCallbacks removeAllObjects];
+			for (EWSavingCallback block in blocks) {
+				block();
+			}
+		});
+	}
+    
+}
+
++ (void)saveWithCompletion:(EWSavingCallback)block{
+    [[EWDataStore sharedInstance].saveCallbacks addObject:block];
+    [EWDataStore save];
+}
+
++ (BOOL)saveAndEnqueue{
+	BOOL hasChange = NO;
+	
+	NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
     NSSet *inserts = [context insertedObjects];
     NSSet *updates = [context updatedObjects];
     NSSet *deletes = [context deletedObjects];
@@ -312,52 +340,46 @@
         }
         [context saveToPersistentStoreAndWait];
         
-        if ([EWDataStore workingQueue].count > 0) {
-            NSLog(@"@@@ Executing an UPLOAD action while there are still objects in working queue (still uploading)");
-        }
-        
-        [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
-        [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
-        
+		hasChange = YES;
     }
-    
-}
-
-+ (void)saveWithCompletion:(EWSavingCallback)block{
-    [[EWDataStore sharedInstance].saveCallbacks addObject:block];
-    [EWDataStore save];
+	
+	return hasChange;
 }
 
 + (void)saveToLocal:(NSManagedObject *)mo{
     if(![NSThread isMainThread]){
+		NSLog(@"!!! Called on background context, skip!");
         [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
+		return;
     }
+	
+	//validate
+	NSString *ID = mo.serverID;
+	BOOL good = [EWDataStore validateMO:mo];
+	if (!good) {
+		NSLog(@"*** the MO you are trying to save local(%@) is corrupted, please check", ID);
+	}
+	
     //pre save check
     NSArray *updates  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
     NSArray *inserts  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
-    NSString *ID = mo.objectID.URIRepresentation.absoluteString;
+    ID = mo.objectID.URIRepresentation.absoluteString;
     NSArray *u = [updates filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
     NSArray *i = [inserts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
     if (u.count) {
-        NSLog(@"!!! The object %@ you are trying to update from PO is already in the update queue. Check your code! (%@)", mo.entity.name, ID);
+        NSLog(@"!!! The object %@ you are trying to save from PO is already in the update queue. Check your code! (%@)", mo.entity.name, ID);
     }
     if (i.count) {
-        NSLog(@"!!! The object %@ you are trying to insert from PO is already in the insert queue. Check your code! (%@)", mo.entity.name, ID);
+        NSLog(@"!!! The object %@ you are trying to save from PO is already in the insert queue. Check your code! (%@)", mo.entity.name, ID);
     }
     
-    //check if update in process
-    BOOL updating = [[EWDataStore sharedInstance].saveToServerDelayTimer isValid];
     //save to enqueue the updates
-    [EWDataStore save];
+    [EWDataStore saveAndEnqueue];
     
     //remove from the update queue
     [EWDataStore removeObjectFromInsertQueue:mo];
     [EWDataStore removeObjectFromUpdateQueue:mo];
     
-    //cancel update
-    if (!updating) {
-        [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
-    }
 }
 
 + (NSManagedObjectContext *)currentContext{

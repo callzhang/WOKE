@@ -663,8 +663,9 @@
             //task.pastOwner = [EWPersonStore me];
             good = NO;
             NSLog(@"*** task (%@) missing pastOwner", task.serverID);
-        }else{
-            NSParameterAssert(task.pastOwner.isMe);
+        }else if(!task.pastOwner.isMe){
+            //NSParameterAssert(task.pastOwner.isMe);
+            NSLog(@"*** Uploading task(%@) that is not owned by me, please check!", task.serverID);
         }
         
     }else{
@@ -679,8 +680,9 @@
             //task.owner = [EWPersonStore me];
             good = NO;
             NSLog(@"*** task (%@) missing owner", task.serverID);
-        }else{
-            NSParameterAssert(task.owner.isMe);
+        }else if(!task.owner.isMe){
+            //NSParameterAssert(task.owner.isMe);
+            NSLog(@"*** Uploading task(%@) that is not owned by me, please check!", task.serverID);
         }
     }
     
