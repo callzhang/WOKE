@@ -60,11 +60,13 @@
 
 #pragma mark - Handle Local Notification
 + (void)handleLocalNotification:(UILocalNotification *)notification{
-    NSString *type = notification.userInfo[kLocalNotificationTypeKey]?:kLocalNotificationTypeAlarmTimer;
+    NSString *type = notification.userInfo[kLocalNotificationTypeKey];
     NSLog(@"Received local notification: %@", type);
     
     if ([type isEqualToString:kLocalNotificationTypeAlarmTimer]) {
         [EWWakeUpManager handleAlarmTimerEvent:notification.userInfo];
+    }else if([type isEqualToString:kLocalNotificationTypeReactivate]){
+        NSLog(@"==================> Reactivated Woke <======================");
     }else{
         [NSException raise:@"Unexpected Local Notification Type" format:@"Detail: %@", notification];
     }

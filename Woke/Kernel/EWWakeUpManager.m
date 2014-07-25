@@ -298,7 +298,7 @@
     
     }else{
         //fire an alarm
-        NSLog(@"Firing alarm");
+        NSLog(@"=============> Firing Alarm timer notification <===============");
         UILocalNotification *alarm = [[UILocalNotification alloc] init];
         alarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
         alarm.alertAction = @"Wake up!";
