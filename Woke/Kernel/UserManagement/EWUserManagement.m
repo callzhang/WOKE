@@ -281,6 +281,12 @@
 
     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         
+        if (geoPoint.latitude == 0 && geoPoint.longitude == 0) {
+            //return if using simulator
+            return ;
+        }
+        
+        
         EWPerson *user = [EWPersonStore me];
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         user.lastLocation = location;

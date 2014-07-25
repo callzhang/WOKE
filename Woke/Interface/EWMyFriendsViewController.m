@@ -76,7 +76,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
     [self.view bringSubviewToFront:self.tabView];
-//    self.title = @"Friends";
+    self.title = @"Friends";
     [self.navigationItem.titleView addSubview:self.tabView];
     self.view.backgroundColor = [UIColor clearColor];
     _friendsCollectionView.backgroundColor = [UIColor clearColor];
@@ -95,8 +95,12 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     
     //
     if ([friends count]==1 || self.person.isMe) {
-        
         _tabView.hidden = YES;
+        [EWUIUtil applyAlphaGradientForView:_friendsCollectionView withEndPoints:@[@0.15]];
+        _friendsCollectionView.contentInset = UIEdgeInsetsMake(60, 0, 0, 0);
+    }else{
+        [EWUIUtil applyAlphaGradientForView:_friendsCollectionView withEndPoints:@[@0.25]];
+        _friendsCollectionView.contentInset = UIEdgeInsetsMake(120, 0, 0, 0);
     }
    
 }

@@ -571,7 +571,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     switch (indexPath.row) {
         case 0:
         {
-            if ([self.navigationController.viewControllers count] < kMaxPersonNavigationConnt && [person.friends count]>0) {
+            if (self.navigationController.viewControllers.count < kMaxPersonNavigationConnt && [person.friends count]>0) {
                 EWMyFriendsViewController *tempVc= [[EWMyFriendsViewController alloc] initWithPerson:person];
                 controller = tempVc;
                 

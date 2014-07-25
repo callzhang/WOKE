@@ -18,7 +18,9 @@
 #import "EWDataStore.h"
 #import "EWMediaItem.h"
 
-@interface EWAlarmPageView ()
+@interface EWAlarmPageView (){
+    NSTimer *changeTimeTimer;
+}
 
 @end
 
@@ -49,6 +51,9 @@
     }else{
         [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
     }
+    
+    //timer
+    changeTimeTimer = [NSTimer scheduledTimerWithTimeInterval:360 target:self selector:@selector(changeTimeLeftLabel) userInfo:nil repeats:YES];
 }
 
 
@@ -61,6 +66,7 @@
     @catch (NSException *exception) {
         NSLog(@"*** Alarm page unable to remove task observer: %@",exception);
     }
+    [changeTimeTimer invalidate];
 }
 
 
@@ -105,6 +111,8 @@
     if (task) {
         if (![task.objectId isEqualToString:t.objectId]) {
             [self stopObserveTask];
+        }else{
+            return;
         }
     }
     //Observer dealloc is handled by SFObservers
@@ -242,6 +250,10 @@
 
 -(void)changeTimeLeftLabel
 {
+    if (!task) {
+        return;
+    }
+    //self.timeLeftText.text = task.time.timeLeft;
     float h = ([task.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
     if (h < 0) {
         self.timeLeftText.text = @"Just alarmed";
@@ -250,6 +262,6 @@
     }else{
         self.timeLeftText.text = [task.time weekday];
     }
-
+    
 }
 @end

@@ -760,6 +760,10 @@
     
     for (NSManagedObject *mo in updatedObjects) {
 		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
+		if ([mo isKindOfClass:[EWPerson class]] && ![mo valueForKey:@"isMe"]) {
+			NSLog(@"We should not update Other user!");
+			return;
+		}
 		if (!lastUpdated) return;
 		//NSLog(@"Observed %@(%@) ManagedObject changed, updating 'UpdatedAt'.", mo.entity.class, mo.serverID);
         double interval = lastUpdated.timeElapsed;
