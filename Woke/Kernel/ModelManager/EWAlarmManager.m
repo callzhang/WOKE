@@ -49,6 +49,7 @@
     
     //add relation
     EWAlarmItem *a = [EWAlarmItem createEntity];
+    a.updatedAt = [NSDate date];
     a.owner = [EWPersonStore me];
     a.state = YES;
     a.tone = [EWPersonStore me].preference[@"DefaultTone"];

@@ -38,6 +38,7 @@
 #pragma mark - create media
 - (EWMediaItem *)createMedia{
     EWMediaItem *m = [EWMediaItem createEntity];
+    m.updatedAt = [NSDate date];
     EWPerson *user = [EWPersonStore me];
     m.author = user;
     return m;

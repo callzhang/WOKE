@@ -57,18 +57,26 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 
 -(void)initData
 {
-    if (_person) {
-        
-        NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
-        friends = [_person.friends sortedArrayUsingDescriptors:@[sd]];
-        NSMutableSet *myFriends = [me.friends mutableCopy];
-        [myFriends intersectSet:[NSSet setWithArray:friends]];
-        mutualFriends = [[myFriends allObjects] sortedArrayUsingDescriptors:@[sd]];
-        _friendsTableView.delegate = self;
-        _friendsTableView.dataSource = self;
-        _friendsCollectionView.delegate = self;
-        _friendsCollectionView.dataSource = self;
-    }
+    
+    NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    friends = [_person.friends sortedArrayUsingDescriptors:@[sd]];
+    NSMutableSet *myFriends = [me.friends mutableCopy];
+    [myFriends intersectSet:[NSSet setWithArray:friends]];
+    mutualFriends = [[myFriends allObjects] sortedArrayUsingDescriptors:@[sd]];
+    _friendsTableView.delegate = self;
+    _friendsTableView.dataSource = self;
+    _friendsCollectionView.delegate = self;
+    _friendsCollectionView.dataSource = self;
+    
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [EWPersonStore getFriendsForPerson:_person];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        });
+    });
+    
+
 }
 -(void)initView
 {

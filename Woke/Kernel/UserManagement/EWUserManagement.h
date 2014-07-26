@@ -60,7 +60,7 @@
 
 #pragma mark - logged in tasks
 + (void)registerLocation;
-+ (void)updateLastSeen;
+//+ (void)updateLastSeen;
 
 #pragma mark - facebook
 //high level stuff

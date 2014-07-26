@@ -268,6 +268,25 @@
 
 
 + (void)save{
+	NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
+    NSSet *inserts = [context insertedObjects];
+    NSSet *updates = [context updatedObjects];
+	for (NSManagedObject *MO in inserts) {
+		NSString *str = [NSString stringWithFormat:@"*** Trying to INSERT MO %@(%@) but it failed validation", MO.entity.name, MO.serverID];
+		BOOL good = [EWDataStore validateMO:MO];
+		if (!good) {
+			NSLog(@"%@", str);
+		}
+	}
+	
+	for (NSManagedObject *MO in updates) {
+		NSString *str = [NSString stringWithFormat:@"*** Trying to UPDATE MO %@(%@) but it failed validation", MO.entity.name, MO.serverID];
+		BOOL good = [EWDataStore validateMO:MO];
+		if (!good) {
+			NSLog(@"%@", str);
+		}
+	}
+		
     
     BOOL hasChanges = [EWDataStore saveAndEnqueue];
     
@@ -276,20 +295,15 @@
         [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
         [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
         
-    }else{
-		dispatch_async(dispatch_get_main_queue(), ^{
-			
-			NSArray *blocks = [EWDataStore sharedInstance].saveCallbacks;
-			[[EWDataStore sharedInstance].saveCallbacks removeAllObjects];
-			for (EWSavingCallback block in blocks) {
-				block();
-			}
-		});
-	}
+    }
     
 }
 
 + (void)saveWithCompletion:(EWSavingCallback)block{
+	if (![EWDataStore sharedInstance].context.hasChanges) {
+		block();
+		return;
+	}
     [[EWDataStore sharedInstance].saveCallbacks addObject:block];
     [EWDataStore save];
 }
@@ -347,23 +361,23 @@
 }
 
 + (void)saveToLocal:(NSManagedObject *)mo{
-    if(![NSThread isMainThread]){
-		NSLog(@"!!! Called on background context, skip!");
-        [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
-		return;
-    }
+//    if(![NSThread isMainThread]){
+//		NSLog(@"!!! Called on background context, skip!");
+//        [[NSManagedObjectContext contextForCurrentThread] saveToPersistentStoreAndWait];
+//		return;
+//    }
 	
-	//validate
-	NSString *ID = mo.serverID;
-	BOOL good = [EWDataStore validateMO:mo];
-	if (!good) {
-		NSLog(@"*** the MO you are trying to save local(%@) is corrupted, please check", ID);
-	}
+	//validate: skip because save to local is not a good place to check
+//	NSString *ID = mo.serverID;
+//	BOOL good = [EWDataStore validateMO:mo];
+//	if (!good) {
+//		return;
+//	}
 	
     //pre save check
     NSArray *updates  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
     NSArray *inserts  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
-    ID = mo.objectID.URIRepresentation.absoluteString;
+    NSString *ID = mo.objectID.URIRepresentation.absoluteString;
     NSArray *u = [updates filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
     NSArray *i = [inserts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
     if (u.count) {
@@ -389,6 +403,11 @@
 + (BOOL)validateMO:(NSManagedObject *)mo{
     //validate MO
 	BOOL good = YES;
+	
+	if (![mo valueForKey:kUpdatedDateKey]) {
+		NSLog(@"The %@(%@) you are trying to save doesn't have a updated date, skip.", mo.entity.name, mo.serverID);
+		return NO;
+	}
     NSString *type = mo.entity.name;
     if ([type isEqualToString:@"EWTaskItem"]) {
         good = [EWTaskStore validateTask:(EWTaskItem *)mo];
@@ -571,7 +590,7 @@
     [workingObjects unionSet:updatedManagedObjects];
     [workingObjects unionSet:insertedManagedObjects];
     for (NSManagedObject *mo in workingObjects) {
-        [EWDataStore appendObject:mo toQueue:kParseQueueWorking];
+		[EWDataStore appendObject:mo toQueue:kParseQueueWorking];
     }
     NSSet *workingObjectIDs = [workingObjects valueForKey:@"objectID"];
     
@@ -725,7 +744,7 @@
         
     }
     
-    //time stamp for updated date. This is very important.
+    //time stamp for updated date. This is very important, otherwise mo might seems to be outdated
     [mo setValue:[NSDate date] forKey:kUpdatedDateKey];
 
 }
@@ -777,16 +796,22 @@
 #pragma mark - KVO
 
 - (void)updateModifiedDate:(NSNotification *)notification{
+	if (![NSThread isMainThread]) {
+		return;
+	}
+	
     NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
     
-    
     for (NSManagedObject *mo in updatedObjects) {
+		
 		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
+		if (!lastUpdated) return;
+		
 		if ([mo isKindOfClass:[EWPerson class]] && ![mo valueForKey:@"isMe"]) {
 			NSLog(@"We should not update Other user!");
 			return;
 		}
-		if (!lastUpdated) return;
+		
 		//NSLog(@"Observed %@(%@) ManagedObject changed, updating 'UpdatedAt'.", mo.entity.class, mo.serverID);
         double interval = lastUpdated.timeElapsed;
         if (interval > 1) {
@@ -969,7 +994,7 @@
     if (!error) {
         NSLog(@"+++> CREATED PO %@(%@)", object.parseClassName, object.objectId);
         [self setValue:object.objectId forKey:kParseObjectID];
-        [self setValue:object.updatedAt forKeyPath:kUpdatedDateKey];
+        [self setValue:object.updatedAt forKeyPath:kUpdatedDateKey];//update MO's updatedAt
     }else{
         [self updateEventually];
         return;
@@ -1010,7 +1035,7 @@
         NSManagedObjectID *objectID = self.objectID;
         
         //save async
-        dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             NSManagedObjectContext *localContext = [EWDataStore currentContext];
             NSManagedObject *currentMO = [localContext objectWithID:objectID];
@@ -1048,7 +1073,7 @@
         }
         
         if (!self.isOutDated) {
-            NSLog(@"MO %@(%@) skipped refresh because not outdated (%@)", self.entity.name, [self valueForKey:kUpdatedDateKey], self.serverID);
+            NSLog(@"MO %@(%@) skipped refresh because up to date (%@)", self.entity.name, [self valueForKey:kUpdatedDateKey], self.serverID);
             return;
         }
         NSLog(@"===> Refreshing MO %@", self.entity.name);

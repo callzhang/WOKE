@@ -321,8 +321,9 @@ EWPerson *me;
 }
 
 + (void)getFriendsForPerson:(EWPerson *)person{
-    NSInteger nFriend = [person.cachedInfo[kFriendsCount] integerValue];
-    if (nFriend != person.friends.count) {
+    EWPerson *backPerson = [EWDataStore objectForCurrentContext:person];
+    NSArray *friends = backPerson.cachedInfo[kCachedFriends];
+    if (!friends || friends.count != backPerson.friends.count) {
         //friend need update
         PFQuery *q = [PFQuery queryWithClassName:@"EWPerson"];
         [q includeKey:@"friends"];
@@ -338,12 +339,13 @@ EWPerson *me;
             [friends addObject:mo];
         }
         person.friends = [friends copy];
+        [EWPersonStore updateFriendsCount];
+        [EWDataStore save];
     }
-    [EWDataStore save];
 }
 
 + (void)updateFriendsCount{
-    [me.cachedInfo setValue:@(me.friends.count) forKey:kFriendsCount];
+    [me.cachedInfo setValue:[me.friends valueForKey:kParseObjectID] forKey:kCachedFriends];
 }
 
 

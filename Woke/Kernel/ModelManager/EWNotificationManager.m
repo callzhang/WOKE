@@ -64,6 +64,7 @@
 #pragma mark - CREATE
 + (EWNotification *)newNotification{
     EWNotification *notice = [EWNotification createEntity];
+    notice.updatedAt = [NSDate date];
     notice.owner = me;
     notice.importance = 0;
     return notice;

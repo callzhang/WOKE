@@ -393,6 +393,9 @@
 
 
 - (void)showAlarmPageLoading:(BOOL)on{
+    if (_alarmPages.count > 0) {
+        return;
+    }
     if (on) {
         [self.alarmloadingIndicator startAnimating];
         self.addBtn.hidden = YES;

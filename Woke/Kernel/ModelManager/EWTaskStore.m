@@ -331,6 +331,7 @@
 - (EWTaskItem *)newTask{
     
     EWTaskItem *t = [EWTaskItem createEntity];
+    t.updatedAt = [NSDate date];
     //relation
     t.owner = [EWPersonStore me];
     //others

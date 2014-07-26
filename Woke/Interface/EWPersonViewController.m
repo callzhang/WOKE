@@ -87,21 +87,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     [self initView];
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     
-    if (!p.isMe && p.isOutDated) {
-        NSLog(@"Person %@ is outdated and needs refresh in background", p.name);
-        
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        });
-        [p refreshInBackgroundWithCompletion:^{
-        //[person refreshShallowWithCompletion:^{
-            [person.managedObjectContext refreshObject:person mergeChanges:YES];
-            [self initData];
-            [self initView];
-            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        }];
-    }
+    
 }
 
 
@@ -140,6 +126,25 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:nil rightItem:nil];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
+
+    if (!person.isMe && person.isOutDated) {
+        NSLog(@"Person %@ is outdated and needs refresh in background", person.name);
+        
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        });
+        [person refreshInBackgroundWithCompletion:^{
+            //[person refreshShallowWithCompletion:^{
+            [person.managedObjectContext refreshObject:person mergeChanges:YES];
+            [self initData];
+            [self initView];
+            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        }];
+    }
+
+
+
 }
 
 -(void)viewDidAppear:(BOOL)animated{

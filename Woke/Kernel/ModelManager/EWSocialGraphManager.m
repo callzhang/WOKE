@@ -54,6 +54,7 @@
 
 - (EWSocialGraph *)createSocialGraphForPerson:(EWPerson *)person{
     EWSocialGraph *sg = [EWSocialGraph createEntity];
+    sg.updatedAt = [NSDate date];
 
     //data
     sg.owner = person;

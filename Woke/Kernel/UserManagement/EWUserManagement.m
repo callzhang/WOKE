@@ -312,16 +312,6 @@
     }];
 }
 
-#pragma mark - Last seen
-+ (void)updateLastSeen{
-    
-    if (me) {
-        me.updatedAt = [NSDate date];
-        [EWDataStore save];
-    }
-}
-
-
 #pragma mark - FACEBOOK
 + (void)loginParseWithFacebookWithCompletion:(void (^)(void))block{
     if([PFUser currentUser]){
