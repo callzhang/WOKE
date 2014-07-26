@@ -47,7 +47,7 @@
 static NSString *taskCellIdentifier = @"taskCellIdentifier";
 NSString *const profileCellIdentifier = @"ProfileCell";
 NSString *const activitiyCellIdentifier = @"ActivityCell";
-@interface EWPersonViewController()
+@interface EWPersonViewController()<UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 - (void)showSuccessNotification:(NSString *)alert;
 
 @end
@@ -308,7 +308,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     UIActionSheet *sheet;
     if (person.isMe) {
         
-        sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference", @"Log out", nil];
+        sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference",@"Take Photo",@"Log out", nil];
         if (DEV_TEST) {
             [sheet addButtonWithTitle:@"Add friend"];
         }
@@ -327,7 +327,40 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 #pragma mark - Actionsheet
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
+ 
+    
     NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
+    if (actionSheet.tag == 255) {
+        
+        NSUInteger sourceType = 0;
+
+        
+        if ([title isEqualToString:@"Select From Album"]) {
+            UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+            
+            imagePickerController.delegate = self;
+            
+            imagePickerController.allowsEditing = YES;
+            
+            imagePickerController.sourceType = sourceType;
+            
+            [self presentViewController:imagePickerController animated:YES completion:^{}];
+            
+        }
+        else if([title isEqualToString:@"Take Photo"]){
+                sourceType = UIImagePickerControllerSourceTypeCamera;
+        }
+        else if([title isEqualToString:@"Cancel"]){
+            
+            return;
+        }
+    
+    
+        
+    }
+    
     if ([title isEqualToString:@"Add friend"]) {
         
         //friend
@@ -361,6 +394,26 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
             [rootViewController presentViewControllerWithBlurBackground:loginVC];
         }];
+    }
+    else if([title isEqualToString:@"Take Photo"])
+    {
+        UIActionSheet  *sheet;
+        if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+            
+        {
+            sheet  = [[UIActionSheet alloc] initWithTitle:@"Take Photo" delegate:self cancelButtonTitle:nil destructiveButtonTitle:@"Cancel" otherButtonTitles:@"Take Photo",@"Select From Album", nil];
+            
+        }
+        
+        else {
+            
+            sheet = [[UIActionSheet alloc] initWithTitle:@"Take Photo" delegate:self cancelButtonTitle:nil destructiveButtonTitle:@"Cancel" otherButtonTitles:@"Select From Album", nil];
+            
+        }
+        
+        sheet.tag = 255;
+        
+        [sheet showInView:self.view];
     }
         
     [self initView];

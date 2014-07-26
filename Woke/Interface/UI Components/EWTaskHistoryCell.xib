@@ -23,7 +23,7 @@
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="7:00 - 7:05 AM" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qtM-oy-5HT">
                         <rect key="frame" x="7" y="24" width="114" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="14"/>
+                        <fontDescription key="fontDescription" name="Lane-Narrow" family="Lane - Narrow" pointSize="14"/>
                         <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                         <nil key="highlightedColor"/>
                     </label>

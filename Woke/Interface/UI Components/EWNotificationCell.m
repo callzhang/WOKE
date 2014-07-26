@@ -53,6 +53,7 @@
     NSString *type = notification.type;
     if ([type isEqualToString:kNotificationTypeNotice]) {
         self.profilePic.image = nil;
+        self.profilePic.hidden = YES;
         NSInteger deltaX = self.detail.x - self.profilePic.x;
         self.detail.left = self.profilePic.x;
         self.detail.width += deltaX;
@@ -67,6 +68,7 @@
     }else{
         
         self.profilePic.image = notification.owner.profilePic;
+        self.profilePic.hidden = NO;
         [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
         EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByObjectID:notification.sender];
         if([type isEqualToString:kNotificationTypeFriendRequest]){
