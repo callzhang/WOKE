@@ -1530,6 +1530,7 @@
                 PFObject *inversePO = self[key];
 				if ([inversePO isKindOfClass:[EWPerson class]]) {
 					NSLog(@"*** Something wrong, we should not modify any relation with other user. MO: %@", inversePO);
+					return;
 				}
                 if (inverseRelation.isToMany) {
                     //inverse to-many relation need to be updated
