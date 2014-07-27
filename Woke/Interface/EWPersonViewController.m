@@ -292,8 +292,13 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             // person photo;
             IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photosURL];
             
+            
              browser.delegate = self;
+            browser.actionButtonTitles = @[ @"Select from local",@"Take Photo"];
+            
+            browser.actionsSheet.title = @"Upload Your Photo";
             [self presentViewController:browser animated:YES completion:nil];
+            
            
             
         }
@@ -354,34 +359,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
     
-    if (actionSheet.tag == 255) {
-        
-        NSUInteger sourceType = 0;
 
-        
-        if ([title isEqualToString:@"Select From Album"]) {
-            UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-            
-            imagePickerController.delegate = self;
-            
-            imagePickerController.allowsEditing = YES;
-            
-            imagePickerController.sourceType = sourceType;
-            
-            [self presentViewController:imagePickerController animated:YES completion:^{}];
-            
-        }
-        else if([title isEqualToString:@"Take Photo"]){
-                sourceType = UIImagePickerControllerSourceTypeCamera;
-        }
-        else if([title isEqualToString:@"Cancel"]){
-            
-            return;
-        }
-    
-    
-        
-    }
     
     if ([title isEqualToString:@"Add friend"]) {
         
@@ -714,8 +692,27 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     id <IDMPhoto> photo = [photoBrowser photoAtIndex:photoIndex];
     NSLog(@"Did dismiss actionSheet with photo index: %lu, photo caption: %@", (unsigned long)photoIndex, photo.caption);
     
-    NSString *title = [NSString stringWithFormat:@"Option %lu", buttonIndex+1];
-     [[[UIAlertView alloc] initWithTitle:title message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    
+    
+        UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+        
+        imagePickerController.delegate = self;
+        
+        imagePickerController.allowsEditing = YES;
+        
+        imagePickerController.sourceType = buttonIndex;
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]&&  imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
+        // Unsupport Camera
+        return;
+    }
+    [photoBrowser dismissViewControllerAnimated:YES completion:^(){
+    
+        [self presentViewController:imagePickerController animated:YES completion:^{}];
+    }];
+    
+    
+        
+
 }
 
 @end

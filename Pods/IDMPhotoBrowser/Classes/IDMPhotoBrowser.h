@@ -53,6 +53,8 @@
 // animation time defult .28
 @property (nonatomic) float animationDuration;
 
+@property (nonatomic, strong) UIActionSheet *actionsSheet;
+
 // Init
 - (id)initWithPhotos:(NSArray *)photosArray;
 

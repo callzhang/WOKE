@@ -72,7 +72,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 }
 
 // Private Properties
-@property (nonatomic, strong) UIActionSheet *actionsSheet;
+
 @property (nonatomic, strong) UIActivityViewController *activityViewController;
 
 // Private Methods
@@ -139,6 +139,8 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 - (id)init {
     if ((self = [super init])) {
         // Defaults
+        self.actionsSheet = [UIActionSheet new];
+        
         self.hidesBottomBarWhenPushed = YES;
         _currentPageIndex = 0;
 		_performingLayout = NO; // Reset on view did appear
@@ -1314,7 +1316,8 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
         else
         {
             // Action sheet
-            self.actionsSheet = [UIActionSheet new];
+           
+//            self.actionsSheet.title = @"Upload Your Photo";
             self.actionsSheet.delegate = self;
             for(NSString *action in _actionButtonTitles) {
                 [self.actionsSheet addButtonWithTitle:action];
