@@ -120,12 +120,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             hasChanges = YES;
         }
         //music
-        if (![cell.myMusic isEqualToString:cell.alarm.tone] && cell.myMusic != nil) {
-            NSLog(@"Music changed to %@", cell.myMusic);
-            cell.alarm.tone = cell.myMusic;
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
-            hasChanges = YES;
-        }
+
         //time
         if (![cell.myTime isEqual:cell.task.time]) {
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
@@ -136,8 +131,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             hasChanges = YES;
         }
         //statement
-        if (cell.statement.text.length && ![cell.statement.text isEqualToString:cell.task.statement]) {
-            cell.task.statement = cell.statement.text;
+        if (cell.statementText.text.length && ![cell.statementText.text isEqualToString:cell.task.statement]) {
+            cell.task.statement = cell.statementText.text;
             hasChanges = YES;
             
         }

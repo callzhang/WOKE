@@ -708,7 +708,7 @@
             n++;
         }
     }
-    NSLog(@"Cancelled %d sleep notification", n);
+    NSLog(@"Cancelled %ld sleep notification", (long)n);
     
     for (EWTaskItem *task in me.tasks) {
         NSDate *time = task.time;

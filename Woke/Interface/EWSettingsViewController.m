@@ -460,7 +460,7 @@ static const NSArray *socialLevels;
                 n++;
             }
         }
-        NSLog(@"Cancelled %d sleep notification", n);
+        NSLog(@"Cancelled %ld sleep notification", (long)n);
     }
 }
 

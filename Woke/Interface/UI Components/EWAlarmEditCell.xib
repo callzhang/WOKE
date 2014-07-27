@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
@@ -57,29 +57,18 @@
                     <view opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xpg-V1-jcy">
                         <rect key="frame" x="0.0" y="80" width="320" height="80"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="I want to hear" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1aI-LG-ZrP">
-                                <rect key="frame" x="10" y="13" width="100" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="16"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" highlighted="YES" contentHorizontalAlignment="center" contentVerticalAlignment="top" placeholder="a song about burrito" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="7Ia-xY-P8W" customClass="EWCostumTextField">
-                        <rect key="frame" x="118" y="94" width="192" height="21"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="16"/>
-                        <textInputTraits key="textInputTraits" returnKeyType="done"/>
-                        <connections>
-                            <action selector="hideKeyboard:" destination="rDh-E1-XtL" eventType="editingDidEndOnExit" id="98y-9f-MNo"/>
-                        </connections>
-                    </textField>
+                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" indicatorStyle="white" text="Lorem ipsum dolor sit er " textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="gmH-l7-xg0">
+                        <rect key="frame" x="-160" y="93" width="640" height="25"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <color key="textColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="14"/>
+                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                    </textView>
                 </subviews>
                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
             </tableViewCellContentView>
@@ -87,11 +76,10 @@
             <connections>
                 <outlet property="AM" destination="Ond-mm-R2B" id="VlF-k8-Nbx"/>
                 <outlet property="alarmToggle" destination="cZF-xc-Dzb" id="osu-Uf-qYg"/>
-                <outlet property="statement" destination="7Ia-xY-P8W" id="87r-Dh-0Bd"/>
+                <outlet property="statementText" destination="gmH-l7-xg0" id="Neu-li-ghK"/>
                 <outlet property="time" destination="Uyf-Eh-JF9" id="9df-il-C5U"/>
                 <outlet property="timeStepper" destination="ErU-mV-aag" id="Rla-V0-oc6"/>
                 <outlet property="weekday" destination="U3J-qk-8q9" id="iiT-rO-CXO"/>
-                <outlet property="willLabel" destination="1aI-LG-ZrP" id="trl-A4-mh5"/>
             </connections>
         </tableViewCell>
     </objects>
