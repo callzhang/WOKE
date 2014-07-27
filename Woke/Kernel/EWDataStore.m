@@ -405,8 +405,8 @@
 	BOOL good = YES;
 	
 	if (![mo valueForKey:kUpdatedDateKey]) {
-		NSLog(@"The %@(%@) you are trying to save doesn't have a updated date, skip.", mo.entity.name, mo.serverID);
-		return NO;
+		NSLog(@"The %@(%@) you are trying to save doesn't have a updated date!", mo.entity.name, mo.serverID);
+		//return NO;
 	}
     NSString *type = mo.entity.name;
     if ([type isEqualToString:@"EWTaskItem"]) {
@@ -801,7 +801,8 @@
 	}
 	
     NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
-    
+	NSSet *insertedObjects = notification.userInfo[NSInsertedObjectsKey];
+    //for updated mo
     for (NSManagedObject *mo in updatedObjects) {
 		
 		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
@@ -819,6 +820,20 @@
             [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
         }
     }
+	
+	//for inserted mo
+	for (NSManagedObject *mo in insertedObjects) {
+		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
+		
+		if ([mo isKindOfClass:[EWPerson class]] && ![mo valueForKey:@"isMe"]) {
+			NSLog(@"We should not update Other user!");
+			return;
+		}
+		
+		if (!lastUpdated){
+			[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
+		}
+	}
 }
 
 
@@ -1207,6 +1222,7 @@
     //NSArray *allKeys = object.allKeys;
     //add or delete some attributes here
     [managedObjectAttributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
+		key = [NSString stringWithFormat:@"%@", key];
         if (key.skipUpload) {
             //NSLog(@"Key %@ does not exist on PO %@", key, object.parseClassName);
             return;//skip if not exist

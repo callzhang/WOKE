@@ -88,6 +88,7 @@
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9B3EC17A1970DEBC00BB52AA /* GPUImageAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3EC1791970DEBC00BB52AA /* GPUImageAnimator.m */; };
 		9B3EC17D1970DECF00BB52AA /* NavigationControllerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3EC17C1970DECF00BB52AA /* NavigationControllerDelegate.m */; };
+		9B58FD3F19844E8500D13CC7 /* sleep mode.caf in Resources */ = {isa = PBXBuildFile; fileRef = 9B58FD3E19844E8500D13CC7 /* sleep mode.caf */; };
 		9B5A2F94197C53DD0076F2BD /* EWFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B5A2F92197C53DD0076F2BD /* EWFeedbackViewController.m */; };
 		9B5A2F95197C53DD0076F2BD /* EWFeedbackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B5A2F93197C53DD0076F2BD /* EWFeedbackViewController.xib */; };
 		9B5A2F98197CD4880076F2BD /* UINavigationController+StatusBarHidden.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B5A2F97197CD4880076F2BD /* UINavigationController+StatusBarHidden.m */; };
@@ -325,6 +326,7 @@
 		9B3EC1791970DEBC00BB52AA /* GPUImageAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPUImageAnimator.m; sourceTree = "<group>"; usesTabs = 1; };
 		9B3EC17B1970DECF00BB52AA /* NavigationControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationControllerDelegate.h; sourceTree = "<group>"; };
 		9B3EC17C1970DECF00BB52AA /* NavigationControllerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationControllerDelegate.m; sourceTree = "<group>"; };
+		9B58FD3E19844E8500D13CC7 /* sleep mode.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "sleep mode.caf"; sourceTree = "<group>"; };
 		9B5A2F91197C53DD0076F2BD /* EWFeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWFeedbackViewController.h; path = Woke/Interface/EWFeedbackViewController.h; sourceTree = "<group>"; };
 		9B5A2F92197C53DD0076F2BD /* EWFeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWFeedbackViewController.m; path = Woke/Interface/EWFeedbackViewController.m; sourceTree = "<group>"; };
 		9B5A2F93197C53DD0076F2BD /* EWFeedbackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWFeedbackViewController.xib; path = Woke/Interface/EWFeedbackViewController.xib; sourceTree = "<group>"; };
@@ -1088,6 +1090,7 @@
 		AB94330417C3013F00ADC702 /* Ringtone */ = {
 			isa = PBXGroup;
 			children = (
+				9B58FD3E19844E8500D13CC7 /* sleep mode.caf */,
 				AB4B837D18D2C8BA0087E654 /* tock.caf */,
 				AB4B837B18D2B9840087E654 /* new.caf */,
 				ABFECBF619075F4100DD5BDC /* bg.caf */,
@@ -1275,6 +1278,7 @@
 				ABF3FB561908B72F0017D2EF /* 1.jpg in Resources */,
 				0E591000194DF35B000AD7C4 /* Montserrat-Bold.ttf in Resources */,
 				0E590FED194DF35B000AD7C4 /* Lato-BlackItalic.ttf in Resources */,
+				9B58FD3F19844E8500D13CC7 /* sleep mode.caf in Resources */,
 				ABF3FB5C1908B72F0017D2EF /* 7.jpg in Resources */,
 				ABF3FB631908B72F0017D2EF /* 14.jpg in Resources */,
 				9BF297E11912F720008C136E /* EWAlarmEditCell.xib in Resources */,
@@ -1600,7 +1604,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Derek Zhang (SRS98HY45T)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1625,7 +1629,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "46D6F763-B17E-4EFE-8EBF-6A8038868F9B";
+				PROVISIONING_PROFILE = "379D52F1-B90B-4F76-84BB-4ECBC690235A";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
 				WRAPPER_EXTENSION = app;
 			};

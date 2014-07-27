@@ -106,4 +106,8 @@
 #pragma mark - check
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task;
 + (BOOL)validateTask:(EWTaskItem *)task;
+
+
+//sleep notification
++ (void)updateSleepNotification;
 @end

@@ -734,12 +734,16 @@
     };
     
     menu.toVoiceButtonBlock = ^{
+        if(person.isFriend || [person.preference[kSocialLevel] isEqualToString:kSocialLevelEveryone]){
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
         
         [weakMenu closeMenuWithCompletion:^{
             [self presentViewControllerWithBlurBackground:controller];
         }];
+        }else{
+            EWAlert(@"Please add me as friend before send me voice greetings.");
+        }
     };
     
 }

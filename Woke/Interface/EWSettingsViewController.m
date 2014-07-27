@@ -14,9 +14,13 @@
 #import "EWLogInViewController.h"
 #import "EWUserManagement.h"
 #import "EWSelectionViewController.h"
-
+#import "EWTaskStore.h"
 #import "RMDateSelectionViewController.h"
 #import "AVManager.h"
+
+static const NSArray *sleepDurations;
+static const NSArray *socialLevels;
+
 @interface EWSettingsViewController ()
 {
     NSUInteger selectedCellNum;
@@ -35,32 +39,13 @@
 @implementation EWSettingsViewController
 @synthesize preference;
 
-- (id)init {
-    self = [super init];
-    if (self) {
-        self.title = LOCALSTR(@"Settings");
-        self.tabBarItem.image = [UIImage imageNamed:@"pref_icon.png"];
-        
-        self.hidesBottomBarWhenPushed = NO;
-        
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewDidLoad) name:kPersonLoggedIn object:nil];
-        
-        cellIdentifier = @"CellIdentifier";
-        [_tableView reloadData];
-        
-    }
-    return self;
-}
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    sleepDurations = @[@6, @6.5, @7.5, @8, @8.5, @9, @9.5, @10, @10.5, @11, @11.5, @12];
+    socialLevels = @[kSocialLevelFriends, kSocialLevelEveryone];
     [self setTitle:@"Preferences"];
 
-
-    
     [self initData];
     [self initView];
 }
@@ -72,28 +57,14 @@
     //profile
     preference = [me.preference mutableCopy];
     settingGroup = settingGroupPreference;
-   ringtoneList = ringtoneNameList
+    ringtoneList = ringtoneNameList
     
 }
 
 - (void)initView {
     self.view.backgroundColor = [UIColor clearColor];
-    
-    //UISegmentedControl
-//    UISegmentedControl *settingGroupController = [[UISegmentedControl alloc] initWithItems: @[@"Profile", @"Preference", @"About"]];
-//    settingGroupController.selectedSegmentIndex = 0;
-    //settingGroupController.segmentedControlStyle = UISegmentedControlStyleBar;
-//    [settingGroupController addTarget:self
-//                               action:@selector(changeSettingGroup:)
-//                     forControlEvents:UIControlEventValueChanged];
-//    settingGroup = settingGroupProfile;
-    
-    //navigationItem
-//    self.navigationItem.titleView = settingGroupController;
-//    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-//    self.navigationController.navigationBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-//    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStyleDone target:self action:@selector(onDone:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"More Button"] style:UIBarButtonItemStylePlain target:self action:@selector(about:)];
     
     //TableView
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
@@ -129,10 +100,14 @@
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
+- (IBAction)about:(id)sender{
+    //
+}
+
 #pragma mark - RingtongSelectionDelegate
 - (void)ViewController:(EWRingtoneSelectionViewController *)controller didFinishSelectRingtone:(NSString *)tone{
     //set ringtone
-    preference[@"tone"] = tone;
+    preference[@"DefaultTone"] = tone;
     me.preference = preference;
     [EWDataStore save];
 }
@@ -280,28 +255,25 @@
             cell= [self makePrefCellInTableView:tableView];
             switch (indexPath.row){//options[indexPath.row]
                 case 0: {
-                    cell.textLabel.text = LOCALSTR(@"Offine Ringtone");
-                    NSArray *fileString = [preference[@"tone"] componentsSeparatedByString:@"."];
+                    cell.textLabel.text = LOCALSTR(@"Alarm sound");
+                    NSArray *fileString = [preference[@"DefaultTone"] componentsSeparatedByString:@"."];
                     NSString *file = [fileString objectAtIndex:0];
                     cell.detailTextLabel.text = file;
                     break;
                 }
                 case 1: {
-                    cell.textLabel.text = LOCALSTR(@"Who can see me");
-                    cell.detailTextLabel.text = preference[@"PrivacyLevel"];
+                    cell.textLabel.text = LOCALSTR(@"Who can send me voice");
+                    cell.detailTextLabel.text = preference[@"SocialLevel"];
                 }
                     break;
                 case 2: {
                     cell.textLabel.text = LOCALSTR(@"Bed time notification");
                     //switch
                     UISwitch *bedTimeNotifSwitch = [[UISwitch alloc] init];
-                    bedTimeNotifSwitch.tintColor = [UIColor greenColor];
-                    //                    bedTimeNotifSwitch.backgroundColor = [UIColor greenColor];
-                    bedTimeNotifSwitch.tintColor = [UIColor clearColor];
+                    bedTimeNotifSwitch.tintColor = [UIColor grayColor];
+                    bedTimeNotifSwitch.onTintColor = [UIColor greenColor];
                     bedTimeNotifSwitch.on = (BOOL)preference[@"BedTimeNotification"];
                     bedTimeNotifSwitch.tag = 3;
-                    //                    bedTimeNotifSwitch.onTintColor = kCustomGray;
-                    bedTimeNotifSwitch.onTintColor = [UIColor greenColor];
                     
                     [bedTimeNotifSwitch addTarget:self action:@selector(OnBedTimeNotificationSwitchChanged:) forControlEvents:UIControlEventValueChanged];
                     cell.accessoryView = bedTimeNotifSwitch;
@@ -397,7 +369,7 @@
                 [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
                     NSUInteger row =[vc.picker selectedRowInComponent:0];
                     UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
-                    self.preference[@"tone"] = titleLabel.text;
+                    self.preference[@"DefaultTone"] = titleLabel.text;
                     [_tableView reloadData];
                     [[AVManager sharedManager] stopAllPlaying];
                     
@@ -411,7 +383,7 @@
             }
                 break;
             case 1:  {
-                     EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
+                    EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
                     selectionVC.hideNowButton = YES;
                     //You can enable or disable bouncing and motion effects
                     //dateSelectionVC.disableBouncingWhenShowing = YES;
@@ -420,8 +392,8 @@
                 
                     [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
                         NSUInteger row =[vc.picker selectedRowInComponent:0];
-                       UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
-                        self.preference[@"PrivacyLevel"] = titleLabel.text;
+                        NSString *level = socialLevels[row];
+                        self.preference[@"SocialLevel"] = level;
                         [_tableView reloadData];
                         NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
                         
@@ -446,12 +418,15 @@
     //                [selectionVC show];
                 [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
                     NSUInteger row =[vc.picker selectedRowInComponent:0];
-                    UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
                     
-                    self.preference[@"SleepDuration"] = [NSNumber numberWithInteger: titleLabel.text.integerValue];
-                    [_tableView reloadData];
-                   
-                    
+                    float d = [(NSNumber *)sleepDurations[row] integerValue];
+                    float d0 = [(NSNumber *)self.preference[@"SleepDuration"] floatValue];
+                    if (d != d0) {
+                        NSLog(@"Sleep duration changed from %f to %f", d0, d);
+                        self.preference[@"SleepDuration"] = @(d);
+                        [_tableView reloadData];
+                        [EWTaskStore updateSleepNotification];
+                    }
                     
 
                     } andCancelHandler:^(EWSelectionViewController *vc) {
@@ -475,9 +450,17 @@
     
     //TODO: night notification
     if (sender.on == YES) {
-        //schedule night notification
+        [EWTaskStore updateSleepNotification];
     }else{
-        //cancel night notification
+        NSArray *sleeps = [UIApplication sharedApplication].scheduledLocalNotifications;
+        NSInteger n = 0;
+        for (UILocalNotification *sleep in sleeps) {
+            if ([sleep.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
+                [[UIApplication sharedApplication] cancelLocalNotification:sleep];
+                n++;
+            }
+        }
+        NSLog(@"Cancelled %d sleep notification", n);
     }
 }
 
@@ -513,43 +496,16 @@
         case 0:
             return ringtoneList.count;
         case 1:
-            return 2;
+            return socialLevels.count;
             break;
         case 3:
-            return 10;
+            return sleepDurations.count;
         default:
             break;
     }
     return 0;
 }
--(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
-{
-    NSString *titleString = @"";
-    switch (selectedCellNum) {
-        case 1:{
-            switch (row) {
-                case 0:
-                    titleString = @"Friends Only";
-                    break;
-                case 1:
-                    titleString = @"Public";
-                    break;
-                default:
-                    break;
-            }
-        }
-            break;
-        case 3:{
-            titleString = [NSString stringWithFormat:@"%ld hours",row+2];
-        }
-            break;
-        default:
-            break;
-    }
-    
 
-    return titleString;
-}
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
     switch (selectedCellNum) {
@@ -582,20 +538,11 @@
         }
             break;
         case 1:{
-            switch (row) {
-                case 0:
-                    titleString = @"Friends Only";
-                    break;
-                case 1:
-                    titleString = @"Public";
-                    break;
-                default:
-                    break;
-            }
+            titleString = socialLevels[row];
         }
             break;
         case 3:{
-            titleString = [NSString stringWithFormat:@"%ld hours",row+2];
+            titleString = [NSString stringWithFormat:@"%@ hours",sleepDurations[row]];
         }
             break;
         default:

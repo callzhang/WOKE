@@ -181,7 +181,7 @@ EWPerson *me;
             NSLog(@"lastCheckedMe date is %@, which exceed the check interval %d, start to refresh my relation in background", lastCheckedMe.date2detailDateString, kCheckMeInternal);
         }
         [me refreshInBackgroundWithCompletion:^{
-            [EWPersonStore updateFriendsCount];
+            [EWPersonStore updateCachedFriends];
         }];
         [me refreshRelatedInBackground];
         [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kLastCheckedMe];
@@ -298,7 +298,7 @@ EWPerson *me;
 #pragma mark - Friend
 + (void)requestFriend:(EWPerson *)person{
     [me addFriendsObject:person];
-    [EWPersonStore updateFriendsCount];
+    [EWPersonStore updateCachedFriends];
     [EWNotificationManager sendFriendRequestNotificationToUser:person];
     
     [EWDataStore save];
@@ -307,14 +307,14 @@ EWPerson *me;
 
 + (void)acceptFriend:(EWPerson *)person{
     [me addFriendsObject:person];
-    [EWPersonStore updateFriendsCount];
+    [EWPersonStore updateCachedFriends];
     [EWNotificationManager sendFriendAcceptNotificationToUser:person];
     [EWDataStore save];
 }
 
 + (void)unfriend:(EWPerson *)person{
     [me removeFriendsObject:person];
-    [EWPersonStore updateFriendsCount];
+    [EWPersonStore updateCachedFriends];
     //TODO: unfriend
     //[EWServer unfriend:user];
     [EWDataStore save];
@@ -339,13 +339,14 @@ EWPerson *me;
             [friends addObject:mo];
         }
         person.friends = [friends copy];
-        [EWPersonStore updateFriendsCount];
+        [EWPersonStore updateCachedFriends];
         [EWDataStore save];
     }
 }
 
-+ (void)updateFriendsCount{
-    [me.cachedInfo setValue:[me.friends valueForKey:kParseObjectID] forKey:kCachedFriends];
++ (void)updateCachedFriends{
+    NSSet *friends = [me.friends valueForKey:kParseObjectID];
+    [me.cachedInfo setValue:[friends allObjects] forKey:kCachedFriends];
 }
 
 
@@ -396,4 +397,5 @@ EWPerson *me;
     
     return NO;
 }
+
 @end

@@ -48,4 +48,6 @@ extern EWPerson *me;
 + (void)getFriendsForPerson:(EWPerson *)person;
 
 + (BOOL)validatePerson:(EWPerson *)person;
+
+
 @end

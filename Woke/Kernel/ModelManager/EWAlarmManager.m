@@ -291,9 +291,8 @@
 - (void)setSavedAlarmTime:(EWAlarmItem *)alarm{
     NSMutableArray *alarmTimes = [[self getSavedAlarmTimes] mutableCopy];
     NSInteger wkd = [alarm.time weekdayNumber];
-    NSDateComponents *comp = [[NSDateComponents alloc] init];
     NSCalendar *cal = [NSCalendar currentCalendar];
-    comp = [cal components: (NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:alarm.time];
+    NSDateComponents *comp = [cal components: (NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:alarm.time];
     double hour = comp.hour;
     double minute = comp.minute;
     double number = hour + minute/100;

@@ -225,16 +225,17 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     //statement
     EWTaskItem *t = [[EWTaskStore sharedInstance] nextNth:0 validTaskForPerson:person];
+    NSString *str;
     if (t.statement) {
-        self.statement.text = t.statement;
+        str = t.statement;
     }else if (t.alarm.statement){
-        self.statement.text = t.alarm.statement;
+        str = t.alarm.statement;
     }else if (person.statement){
-        self.statement.text = person.statement;
+        str = person.statement;
     }else{
-        self.statement.text = @"No statement written by this owner";
+        str = @"No statement written";
     }
-    
+    self.statement.text = [NSString stringWithFormat:@"\"%@\"",str];
     [self.view setNeedsDisplay];
     
 }

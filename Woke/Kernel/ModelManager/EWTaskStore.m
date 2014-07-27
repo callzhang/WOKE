@@ -704,4 +704,37 @@
     return NO;
 }
 
+
+#pragma mark - Sleep notification
++ (void)updateSleepNotification{
+    NSNumber *duration = me.preference[@"SleepDuration"];
+    NSInteger d = duration.integerValue;
+    //cancel all sleep notification first
+    NSArray *sleeps = [UIApplication sharedApplication].scheduledLocalNotifications;
+    NSInteger n = 0;
+    for (UILocalNotification *sleep in sleeps) {
+        if ([sleep.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
+            [[UIApplication sharedApplication] cancelLocalNotification:sleep];
+            n++;
+        }
+    }
+    NSLog(@"Cancelled %d sleep notification", n);
+    
+    for (EWTaskItem *task in me.tasks) {
+        NSDate *time = task.time;
+        NSDate *sleepTime = [time timeByAddingMinutes:-d*60];
+        //local notification
+        UILocalNotification *sleepNotif = [[UILocalNotification alloc] init];
+        sleepNotif.fireDate = sleepTime;
+        sleepNotif.alertBody = [NSString stringWithFormat:@"It's time to sleep (%@)", sleepTime.date2String];
+        sleepNotif.alertAction = @"Sleep";
+        sleepNotif.repeatInterval = NSWeekCalendarUnit;
+        sleepNotif.soundName = @"sleep mode";
+        sleepNotif.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
+                                kLocalNotificationTypeKey: kLocalNotificationTypeSleepTimer};
+        
+        [[UIApplication sharedApplication] scheduleLocalNotification:sleepNotif];
+        NSLog(@"Sleep notification schedule at %@", sleepNotif.fireDate.date2detailDateString);
+    }
+}
 @end
