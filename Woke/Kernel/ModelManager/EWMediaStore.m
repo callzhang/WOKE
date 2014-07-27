@@ -158,6 +158,9 @@
     if(!media.type){
         good = NO;
     }
+    if (!media.author) {
+        good = NO;
+    }
     if ([media.type isEqualToString:kMediaTypeVoice]) {
         if(!media.audio){
             NSLog(@"Media %@ type voice with no audio.", media.serverID);
@@ -175,12 +178,6 @@
             good = NO;
         }
     }
-    
-    if (good) {
-        return good;
-    }
-    
-    [media deleteEntity];
     
     return good;
 }

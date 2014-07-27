@@ -401,7 +401,7 @@
 }
 
 + (BOOL)validateMO:(NSManagedObject *)mo{
-    //validate MO
+    //validate MO, only used when uploading MO to PO
 	BOOL good = YES;
 	
 	if (![mo valueForKey:kUpdatedDateKey]) {
@@ -416,6 +416,11 @@
     }else if ([type isEqualToString:@"EWPerson"]){
         good = [EWPersonStore validatePerson:(EWPerson *)mo];
     }
+	
+	if (!good) {
+		NSLog(@"*** MO %@(%@) failed in validation, refresh from PO", mo.entity.name, mo.serverID);
+		[mo refresh];
+	}
 	
 	return good;
 }
@@ -1523,6 +1528,9 @@
                 
                 NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
                 PFObject *inversePO = self[key];
+				if ([inversePO isKindOfClass:[EWPerson class]]) {
+					NSLog(@"*** Something wrong, we should not modify any relation with other user. MO: %@", inversePO);
+				}
                 if (inverseRelation.isToMany) {
                     //inverse to-many relation need to be updated
                     [inversePO fetchIfNeeded];

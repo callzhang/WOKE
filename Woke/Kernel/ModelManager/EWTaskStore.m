@@ -691,17 +691,7 @@
         good = NO;
     }
     
-    if (good) {
-        return YES;
-    }
-    
-    NSLog(@"Task (%@) data is corrupted, abort!", task.serverID);
-    [task deleteEntity];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[EWTaskStore sharedInstance] scheduleTasks];
-    });
-    
-    return NO;
+    return good;
 }
 
 
