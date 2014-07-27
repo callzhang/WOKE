@@ -41,13 +41,17 @@
 #import "NavigationControllerDelegate.h"
 #import "EWSettingsViewController.h"
 
+
+// ImageBrowser
+#import "IDMPhotoBrowser.h"
+
 #define kProfileTableArray              @[@"Friends", @"People woke me up", @"People I woke up", @"Last Seen", @"Next wake-up time", @"Wake-ability Score", @"Average wake up time"]
 
 
 static NSString *taskCellIdentifier = @"taskCellIdentifier";
 NSString *const profileCellIdentifier = @"ProfileCell";
 NSString *const activitiyCellIdentifier = @"ActivityCell";
-@interface EWPersonViewController()<UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface EWPersonViewController()<UIImagePickerControllerDelegate,UINavigationControllerDelegate,IDMPhotoBrowserDelegate>
 - (void)showSuccessNotification:(NSString *)alert;
 
 @end
@@ -276,6 +280,23 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 - (IBAction)login:(id)sender {
     
     if (person.facebook) {
+        if (person.isMe){
+            NSMutableArray *photos = [[NSMutableArray alloc] init];
+//            NSMutableArray *thumbs = [[NSMutableArray alloc] init];
+            
+            NSArray *photosURL = @[[NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447404_786339.jpg"],
+                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447403_150958.jpg"],
+                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447412_646689.jpg"],
+                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447405_906102.jpg"]];
+            // for test
+            // person photo;
+            IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photosURL];
+            
+             browser.delegate = self;
+            [self presentViewController:browser animated:YES completion:nil];
+           
+            
+        }
 //        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
 //        
 //        [self.navigationController pushViewController:controller animated:YES];
@@ -674,6 +695,27 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }
 }
 
+#pragma mark - IDMPhotoBrowserDelegate 
 
+- (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didShowPhotoAtIndex:(NSUInteger)pageIndex
+{
+    id <IDMPhoto> photo = [photoBrowser photoAtIndex:pageIndex];
+    NSLog(@"Did show photoBrowser with photo index: %lu, photo caption: %@", (unsigned long)pageIndex, photo.caption);
+}
+
+- (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)pageIndex
+{
+    id <IDMPhoto> photo = [photoBrowser photoAtIndex:pageIndex];
+    NSLog(@"Did dismiss photoBrowser with photo index: %lu, photo caption: %@", (unsigned long)pageIndex, photo.caption);
+}
+
+- (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissActionSheetWithButtonIndex:(NSUInteger)buttonIndex photoIndex:(NSUInteger)photoIndex
+{
+    id <IDMPhoto> photo = [photoBrowser photoAtIndex:photoIndex];
+    NSLog(@"Did dismiss actionSheet with photo index: %lu, photo caption: %@", (unsigned long)photoIndex, photo.caption);
+    
+    NSString *title = [NSString stringWithFormat:@"Option %lu", buttonIndex+1];
+     [[[UIAlertView alloc] initWithTitle:title message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+}
 
 @end
