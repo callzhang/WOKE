@@ -296,7 +296,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
              browser.delegate = self;
             browser.actionButtonTitles = @[ @"Select from local",@"Take Photo"];
             
-            browser.actionsSheet.title = @"Upload Your Photo";
+            browser.actionSheetTitle = @"Upload Your Photo";
             [self presentViewController:browser animated:YES completion:nil];
             
            

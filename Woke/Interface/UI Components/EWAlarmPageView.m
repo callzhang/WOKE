@@ -108,6 +108,8 @@
 
 - (void)setTask:(EWTaskItem *)t{
     //unsubscribe previous task if possible
+    
+//    self.timeText.font = [UIFont fontWithName:@"Lane - Narrow" size:64];
     if (task) {
         if (![task.objectId isEqualToString:t.objectId]) {
             [self stopObserveTask];

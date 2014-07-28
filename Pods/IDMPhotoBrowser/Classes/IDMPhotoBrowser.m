@@ -1316,20 +1316,28 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
         else
         {
             // Action sheet
-           
-//            self.actionsSheet.title = @"Upload Your Photo";
-            self.actionsSheet.delegate = self;
-            for(NSString *action in _actionButtonTitles) {
-                [self.actionsSheet addButtonWithTitle:action];
-            }
+//            if (!_actionsSheet.delegate) {
             
-            self.actionsSheet.cancelButtonIndex = [self.actionsSheet addButtonWithTitle:IDMPhotoBrowserLocalizedStrings(@"Cancel")];
-            self.actionsSheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+            
+                self.actionsSheet = [UIActionSheet new];
+                self.actionsSheet.delegate = self;
+//                self.actionsSheet.title = title;
+                for(NSString *action in _actionButtonTitles) {
+                    [self.actionsSheet addButtonWithTitle:action];
+                }
+                
+                self.actionsSheet.cancelButtonIndex = [self.actionsSheet addButtonWithTitle:IDMPhotoBrowserLocalizedStrings(@"Cancel")];
+                self.actionsSheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+                
+//            }
+            self.actionsSheet.title = _actionSheetTitle;
+            
             
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 [_actionsSheet showFromBarButtonItem:sender animated:YES];
             } else {
                 [_actionsSheet showInView:self.view];
+
             }
         }
         

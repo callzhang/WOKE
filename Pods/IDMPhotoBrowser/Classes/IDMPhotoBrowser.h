@@ -55,6 +55,8 @@
 
 @property (nonatomic, strong) UIActionSheet *actionsSheet;
 
+@property (nonatomic, strong) NSString *actionSheetTitle;
+
 // Init
 - (id)initWithPhotos:(NSArray *)photosArray;
 
