@@ -297,6 +297,7 @@ EWPerson *me;
 
 #pragma mark - Friend
 + (void)requestFriend:(EWPerson *)person{
+    [EWPersonStore getFriendsForPerson:me];
     [me addFriendsObject:person];
     [EWPersonStore updateCachedFriends];
     [EWNotificationManager sendFriendRequestNotificationToUser:person];
@@ -306,6 +307,7 @@ EWPerson *me;
 }
 
 + (void)acceptFriend:(EWPerson *)person{
+    [EWPersonStore getFriendsForPerson:me];
     [me addFriendsObject:person];
     [EWPersonStore updateCachedFriends];
     [EWNotificationManager sendFriendAcceptNotificationToUser:person];
@@ -313,6 +315,7 @@ EWPerson *me;
 }
 
 + (void)unfriend:(EWPerson *)person{
+    [EWPersonStore getFriendsForPerson:me];
     [me removeFriendsObject:person];
     [EWPersonStore updateCachedFriends];
     //TODO: unfriend
@@ -325,11 +328,12 @@ EWPerson *me;
     NSArray *friends = backPerson.cachedInfo[kCachedFriends];
     if (!friends || friends.count != backPerson.friends.count) {
         //friend need update
-        PFQuery *q = [PFQuery queryWithClassName:@"EWPerson"];
+        PFQuery *q = [PFQuery queryWithClassName:backPerson.entity.serverClassName];
         [q includeKey:@"friends"];
+        [q whereKey:kParseObjectID equalTo:backPerson.serverID];
         PFObject *user = [q getFirstObject];
         NSArray *friendsPO = user[@"friends"];
-        if (friendsPO.count == 0) return;
+        if (friendsPO.count == 0) return;//prevent 0 friend corrupt data
         NSMutableSet *friends = [NSMutableSet new];
         for (PFObject *f in friendsPO) {
             if ([f isKindOfClass:[NSNull class]]) {
@@ -347,6 +351,7 @@ EWPerson *me;
 + (void)updateCachedFriends{
     NSSet *friends = [me.friends valueForKey:kParseObjectID];
     [me.cachedInfo setValue:[friends allObjects] forKey:kCachedFriends];
+    [EWDataStore save];
 }
 
 

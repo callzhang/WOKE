@@ -146,9 +146,10 @@ UIViewController *rootViewController;
     UIApplication *application = [UIApplication sharedApplication];
     NSMutableDictionary *userInfo;
     if (timer) {
+        NSInteger count;
         NSDate *start = timer.userInfo[@"start_date"];
         count = [(NSNumber *)timer.userInfo[@"count"] integerValue];
-        NSLog(@"Backgrounding started at %@ is checking the %ld times", start.date2detailDateString, count);
+        NSLog(@"Backgrounding started at %@ is checking the %ld times", start.date2detailDateString, (long)count);
         count++;
         timer.userInfo[@"count"] = @(count);
         userInfo = timer.userInfo;

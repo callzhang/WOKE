@@ -35,7 +35,7 @@
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
 @property (nonatomic) NSMutableDictionary *parseSaveCallbacks;
 @property (nonatomic) NSTimer *saveToServerDelayTimer;
-@property (nonatomic) NSMutableDictionary *changesDictionary;
+//@property (nonatomic) NSMutableDictionary *changesDictionary;
 @end
 
 @implementation EWDataStore
@@ -99,7 +99,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginDataCheck) name:kPersonLoggedIn object:Nil];
         
         //change dic
-        self.changesDictionary = [NSMutableDictionary new];
+        //self.changesDictionary = [NSMutableDictionary new];
         self.parseSaveCallbacks = [NSMutableDictionary dictionary];
         self.saveCallbacks = [NSMutableArray new];
     }
@@ -339,9 +339,7 @@
                 continue;
             }
             //check if updated keys are valid
-            NSMutableArray *changedKeys = MO.changedValues.allKeys.mutableCopy;
-            [changedKeys removeObjectsInArray:attributeUploadSkipped];
-            
+            NSArray *changedKeys = MO.valueToUpload;
             if (changedKeys.count > 0) {
                 NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
                 [EWDataStore appendUpdateQueue:MO];
@@ -436,27 +434,22 @@
 }
 
 + (void)appendUpdateQueue:(NSManagedObject *)mo{
-    NSManagedObjectID *objectID = mo.objectID;
-    if ([objectID isTemporaryID]) {
-        [mo.managedObjectContext obtainPermanentIDsForObjects:@[mo] error:NULL];
-        objectID = mo.objectID;
-    }
-    //Add changed attributes minus skipped ones to changes dic
-    NSString *str = objectID.URIRepresentation.absoluteString;
-    NSMutableDictionary *changeDic = [[mo changedValues] mutableCopy];
-    [changeDic removeObjectsForKeys:attributeUploadSkipped];
-    [changeDic addEntriesFromDictionary:[[EWDataStore sharedInstance].changesDictionary objectForKey:str]];
-    if (changeDic) {
-        [[EWDataStore sharedInstance].changesDictionary setObject:[changeDic copy] forKey:objectID];
-    }
-    
-    //skip if included in insert queue
-    NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueInsert];
-    if ([array containsObject:str]) {
-        NSLog(@"MO %@(%@) insertion to update queue skipped because it is contained in insert queue", mo.entity.name, [mo valueForKey:kParseObjectID]);
-        return;
-    }
-    
+	//The reason we use change dictionary was to lock the changes that were new and add it incrementally, so that at upload time we only upload changed value. It seems to be redundent at least for now.
+	
+//    NSManagedObjectID *objectID = mo.objectID;
+//    if ([objectID isTemporaryID]) {
+//        [mo.managedObjectContext obtainPermanentIDsForObjects:@[mo] error:NULL];
+//        objectID = mo.objectID;
+//    }
+//    //Add changed attributes minus skipped ones to changes dic
+//    NSString *str = objectID.URIRepresentation.absoluteString;
+//    NSMutableDictionary *changeDic = [[mo changedValues] mutableCopy];
+//    [changeDic removeObjectsForKeys:attributeUploadSkipped];
+//    [changeDic addEntriesFromDictionary:[[EWDataStore sharedInstance].changesDictionary objectForKey:str]];
+//    if (changeDic) {
+//        [[EWDataStore sharedInstance].changesDictionary setObject:[changeDic copy] forKey:str];
+//    }
+	
     //queue
     [EWDataStore appendObject:mo toQueue:kParseQueueUpdate];
 }
@@ -822,7 +815,7 @@
 		}
 		
 		//remove unnecessary changes
-		if (!mo.isChanged) {
+		if (!mo.valueToUpload) {
 			return;
 		}
 		
@@ -1320,13 +1313,13 @@
 }
 
 
-- (BOOL)isChanged{
+- (NSArray *)valueToUpload{
 	NSMutableArray *changes = self.changedValues.allKeys.mutableCopy;
 	[changes removeObjectsInArray:attributeUploadSkipped];
 	if (changes.count > 0) {
-		return YES;
+		return changes;
 	}
-	return NO;
+	return nil;
 }
 
 

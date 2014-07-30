@@ -224,9 +224,9 @@ typedef void (^EWSavingCallback)(void);
 - (void)deleteEventually;
 
 /**
- Determine if there is any change beyond those excluded.
+ Changed values beyond those excluded.
  */
-- (BOOL)isChanged;
+- (NSArray *)valueToUpload;
 
 #pragma mark - Helper methods
 /**
