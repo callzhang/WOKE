@@ -715,4 +715,60 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 }
 
+#pragma mark - Upload Photo
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+    
+    
+    NSMutableString *urlString = [NSMutableString string];
+    [urlString appendString:@"https://api.parse.com/1/"];
+    [urlString appendFormat:@"files/imagefile.jpg"];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request setHTTPMethod:@"POST"];
+    [request addValue:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z" forHTTPHeaderField:@"X-Parse-Application-Id"];
+    [request addValue:@"" forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+    [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:UIImageJPEGRepresentation(image, 0.3f)];
+    
+    NSURLResponse *response = nil;
+    NSError *error = nil;
+    
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+    NSString *fileUrl = [httpResponse allHeaderFields][@"Location"];
+    
+    NSLog(@"%@",fileUrl);
+//    imageView.image = image;
+//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
+//    NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
+//    
+//    
+//    [manager POST:@"替换成你要访问的地址"parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+//        
+//        
+//        [formData appendPartWithFileData :imageData name:@"1" fileName:@"1.png" mimeType:@"image/jpeg"];
+//        
+//        
+//    } success:^(AFHTTPRequestOperation *operation,id responseObject) {
+//        NSLog(@"Success: %@", responseObject);
+//        
+//        
+//    } failure:^(AFHTTPRequestOperation *operation,NSError *error) {
+//        NSLog(@"Error: %@", error);
+//        
+//        
+//    }];
+    
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+}
 @end
