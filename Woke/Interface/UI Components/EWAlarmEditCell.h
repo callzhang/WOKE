@@ -10,7 +10,7 @@
 #import "EWRingtoneSelectionViewController.h"
 @class EWAlarmItem, EWTaskItem;
 @class EWCostumTextField;
-@interface EWAlarmEditCell : UITableViewCell<EWRingtoneSelectionDelegate>
+@interface EWAlarmEditCell : UITableViewCell<EWRingtoneSelectionDelegate,UITextFieldDelegate>
 //container
 //@property (nonatomic) BOOL alarmEnable;
 @property (strong, nonatomic) IBOutlet UITextView *statementText;
@@ -21,6 +21,8 @@
 @property (nonatomic) NSDate *myTime;
 @property (nonatomic) NSString *myStatement;
 //@property (nonatomic) BOOL alarmOn;
+@property (strong, nonatomic) IBOutlet UITextField *statement;
+@property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 
 //outlet
 @property (weak, nonatomic) IBOutlet UIButton *alarmToggle;

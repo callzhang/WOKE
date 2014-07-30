@@ -15,7 +15,7 @@
                     <rect key="frame" x="77" y="56" width="154" height="48"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <rect key="contentStretch" x="0.49999999999999994" y="0.49999999999999994" width="1" height="1"/>
-                    <fontDescription key="fontDescription" name="Lane-Narrow" family="Lane - Narrow" pointSize="64"/>
+                    <fontDescription key="fontDescription" name="AppleSDGothicNeo-Thin" family="Apple SD Gothic Neo" pointSize="53"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
