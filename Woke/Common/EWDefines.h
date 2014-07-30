@@ -76,7 +76,8 @@
 #define defaultAlarmTimes               @[@8.00, @8.00, @8.00, @8.00, @8.00, @8.00, @8.00];
 #define kUserDefaults                   @{@"DefaultTone": @"Autumn Spring.caf", @"SleepDuration":@8.0, @"SocialLevel":kSocialLevelEveryone, @"FirstTime":@YES, @"SkipTutorial":@NO, @"buzzSound":@"default", @"BedTimeNotification":@YES};
 #define kSocialLevel                    @"SocialLevel"
-#define kSocialLevelFriends             @"Friends only"
+#define kSocialLevelFriends             @"Friends_only"
+#define kSocialLevelFriendCircle        @"Friend_Circle"
 #define kSocialLevelEveryone            @"Everyone"
 
 //user defaults key

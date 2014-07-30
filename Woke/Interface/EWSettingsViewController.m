@@ -117,13 +117,13 @@ static const NSArray *socialLevels;
 @implementation EWSettingsViewController (UITableView)
 
 
-#pragma mark - setting group change
--(void)changeSettingGroup:(id)sender{
-    settingGroup = (settingGroupList)[sender selectedSegmentIndex];
-    NSLog(@"Setting group switched to %d", settingGroup);
-    //refresh table
-    [_tableView reloadData];
-}
+//#pragma mark - setting group change
+//-(void)changeSettingGroup:(id)sender{
+//    settingGroup = (settingGroupList)[sender selectedSegmentIndex];
+//    NSLog(@"Setting group switched to %d", settingGroup);
+//    //refresh table
+//    [_tableView reloadData];
+//}
 
 #pragma mark - Cell Maker
 
@@ -419,11 +419,12 @@ static const NSArray *socialLevels;
                 [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
                     NSUInteger row =[vc.picker selectedRowInComponent:0];
                     
-                    float d = [(NSNumber *)sleepDurations[row] integerValue];
-                    float d0 = [(NSNumber *)self.preference[@"SleepDuration"] floatValue];
+                    float d = [(NSNumber *)sleepDurations[row] floatValue];
+                    float d0 = [(NSNumber *)preference[kSleepDuration] floatValue];
                     if (d != d0) {
                         NSLog(@"Sleep duration changed from %f to %f", d0, d);
-                        self.preference[@"SleepDuration"] = @(d);
+                        preference[kSleepDuration] = @(d);
+                        me.preference = preference.copy;
                         [_tableView reloadData];
                         [EWTaskStore updateSleepNotification];
                     }
@@ -444,23 +445,15 @@ static const NSArray *socialLevels;
 }
 
 - (void)OnBedTimeNotificationSwitchChanged:(UISwitch *)sender{
-    NSMutableDictionary *pref = [me.preference mutableCopy];
-    [pref setObject:@(sender.on) forKey:@"BedTimeNotification"];
-    self.preference = [pref copy];
+    [preference setObject:@(sender.on) forKey:kBedTimeNotification];
+    me.preference = preference;
+    [EWDataStore save];
     
-    //TODO: night notification
+    //schedule sleep notification
     if (sender.on == YES) {
         [EWTaskStore updateSleepNotification];
     }else{
-        NSArray *sleeps = [UIApplication sharedApplication].scheduledLocalNotifications;
-        NSInteger n = 0;
-        for (UILocalNotification *sleep in sleeps) {
-            if ([sleep.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
-                [[UIApplication sharedApplication] cancelLocalNotification:sleep];
-                n++;
-            }
-        }
-        NSLog(@"Cancelled %ld sleep notification", (long)n);
+        [EWTaskStore cancelSleepNotification];
     }
 }
 

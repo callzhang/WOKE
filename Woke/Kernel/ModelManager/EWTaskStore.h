@@ -110,4 +110,5 @@
 
 //sleep notification
 + (void)updateSleepNotification;
++ (void)cancelSleepNotification;
 @end

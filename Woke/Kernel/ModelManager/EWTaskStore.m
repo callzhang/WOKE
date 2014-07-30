@@ -727,4 +727,16 @@
         NSLog(@"Sleep notification schedule at %@", sleepNotif.fireDate.date2detailDateString);
     }
 }
+
++ (void)cancelSleepNotification{
+    NSArray *sleeps = [UIApplication sharedApplication].scheduledLocalNotifications;
+    NSInteger n = 0;
+    for (UILocalNotification *sleep in sleeps) {
+        if ([sleep.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
+            [[UIApplication sharedApplication] cancelLocalNotification:sleep];
+            n++;
+        }
+    }
+    NSLog(@"Cancelled %ld sleep notification", (long)n);
+}
 @end
