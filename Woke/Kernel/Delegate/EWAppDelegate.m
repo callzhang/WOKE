@@ -178,19 +178,20 @@ UIViewController *rootViewController;
     }];
     
     //check time left
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        double timeLeft = application.backgroundTimeRemaining;
-        NSLog(@"Background time left: %.1f", timeLeft>999?999:timeLeft);
-        if (timeLeft < 300) {
-            //alert user
-            UILocalNotification *alarm = [[UILocalNotification alloc] init];
-            alarm.alertBody = @"Woke is being deactivated. Tap here to reactivate me.";
-            alarm.alertAction = @"Reactivate";
-            alarm.userInfo = @{kLocalNotificationTypeKey: kLocalNotificationTypeReactivate};
-            [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
-            [[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
-        }
-    });
+    static UILocalNotification *reactiveAlarm;
+    if (reactiveAlarm) {
+        [[UIApplication sharedApplication] cancelLocalNotification:reactiveAlarm];
+    }
+    double timeLeft = application.backgroundTimeRemaining;
+    NSLog(@"Background time left: %.1f", timeLeft>999?999:timeLeft);
+    //alert user
+    UILocalNotification *alarm = [[UILocalNotification alloc] init];
+    alarm.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
+    alarm.alertBody = @"Woke stopped running in background. Tap here to reactivate me.";
+    alarm.alertAction = @"Activate Woke";
+    alarm.userInfo = @{kLocalNotificationTypeKey: kLocalNotificationTypeReactivate};
+    [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
+    [[AVManager sharedManager] playSoundFromFile:me.preference[@"new.caf"]];
     
     //alarm timer check
     [EWWakeUpManager alarmTimerCheck];

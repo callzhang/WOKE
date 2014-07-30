@@ -237,10 +237,14 @@
         return;
     }
     
-    if (task.completed || task.time.timeElapsed > kMaxWakeTime) {
-        task.completed = [task.time timeByAddingSeconds:kMaxWakeTime];
-        [EWDataStore save];
+    if (task.completed) {
         NSLog(@"Task has completed at %@, skip.", task.completed.date2String);
+        return;
+    }
+    if (task.time.timeElapsed > kMaxWakeTime) {
+        task.completed = [task.time dateByAddingTimeInterval:kMaxWakeTime];
+        [EWDataStore save];
+        
         return;
     }
     
@@ -394,8 +398,10 @@
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
     NSLog(@"===========================>> Check Alarm Timer (%d min left) <<=============================", (NSInteger)timeLeft/60);
-    if (timeLeft < kServerUpdateInterval && timeLeft > 0) {
-        NSLog(@"alarmTimerCheck: About to init alart timer in %fs",timeLeft);
+    static BOOL timerInitiated = NO;
+    if (timeLeft < kServerUpdateInterval && timeLeft > 0 && !timerInitiated) {
+        NSLog(@"%s: About to init alart timer in %fs", __func__, timeLeft);
+        timerInitiated = YES;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [EWWakeUpManager handleAlarmTimerEvent:nil];
         });

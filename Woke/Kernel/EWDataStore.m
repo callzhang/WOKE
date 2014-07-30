@@ -320,11 +320,12 @@
         for (NSManagedObject *MO in inserts) {
             NSString *serverID = [MO valueForKey:kParseObjectID];
             if (serverID) {
-                NSLog(@"MO %@(%@) has serverID, meaning it is fetched from server, skip!", MO.entity.name, [MO valueForKey:kParseObjectID]);
-                continue;
+                NSLog(@"MO %@(%@) has serverID, meaning it is fetched from server, please check!", MO.entity.name, [MO valueForKey:kParseObjectID]);
+                //continue;
             }
             NSLog(@"+++> MO %@ inserted to queue", MO.entity.name);
             [EWDataStore appendInsertQueue:MO];
+			hasChange = YES;
         }
         for (NSManagedObject *MO in updates) {
             //skip if updatedMO contained in insertedMOs
@@ -334,7 +335,7 @@
             
             //check if class is skipped
             if ([classSkipped containsObject:MO.entity.name] && MO.serverID != me.serverID) {
-                NSLog(@"Class %@ skipped uploading to server", MO.entity.name);
+                NSLog(@"MO %@(%@) skipped uploading to server", MO.entity.name, MO.serverID);
                 continue;
             }
             //check if updated keys are valid
@@ -344,6 +345,7 @@
             if (changedKeys.count > 0) {
                 NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
                 [EWDataStore appendUpdateQueue:MO];
+				hasChange = YES;
             }
             
         }
@@ -351,12 +353,13 @@
             NSLog(@"~~~> MO %@(%@) deleted to context", MO.entity.name, [MO valueForKey:kParseObjectID]);
             PFObject *PO = [MO getParseObjectWithError:nil];
             [EWDataStore appendDeleteQueue:PO];
+			hasChange = YES;
         }
-        [context saveToPersistentStoreAndWait];
         
-		hasChange = YES;
+        
     }
 	
+	[context saveToPersistentStoreAndWait];
 	return hasChange;
 }
 
@@ -815,6 +818,11 @@
 		
 		if ([mo isKindOfClass:[EWPerson class]] && ![mo valueForKey:@"isMe"]) {
 			NSLog(@"We should not update Other user!");
+			return;
+		}
+		
+		//remove unnecessary changes
+		if (!mo.isChanged) {
 			return;
 		}
 		
@@ -1311,6 +1319,15 @@
     }];
 }
 
+
+- (BOOL)isChanged{
+	NSMutableArray *changes = self.changedValues.allKeys.mutableCopy;
+	[changes removeObjectsInArray:attributeUploadSkipped];
+	if (changes.count > 0) {
+		return YES;
+	}
+	return NO;
+}
 
 
 #pragma mark - Helper methods

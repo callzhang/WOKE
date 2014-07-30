@@ -223,6 +223,11 @@ typedef void (^EWSavingCallback)(void);
  */
 - (void)deleteEventually;
 
+/**
+ Determine if there is any change beyond those excluded.
+ */
+- (BOOL)isChanged;
+
 #pragma mark - Helper methods
 /**
  Reflex method to search for runtime attributes
