@@ -816,7 +816,7 @@
             
         } else {
             //prevent updating too fast
-            if(lastUpdated.timeElapsed < 0.5 ){
+            if(lastUpdated.timeElapsed < 0.1 ){
 //                NSDictionary *change = cellChangeArray.firstObject;
 //                [self processChange:change];
 //                [cellChangeArray removeAllObjects];

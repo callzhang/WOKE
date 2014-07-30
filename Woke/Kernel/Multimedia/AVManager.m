@@ -57,15 +57,6 @@
         //Audio session
         //[self registerAudioSession];
         
-        //Register for remote control event
-        //[self prepareRemoteControlEventsListener];
-        
-        //playlist
-        //playlist = [[NSMutableArray alloc] init];
-        
-        //Loop
-        //self.loop = YES;
-        
     }
     return self;
 }
@@ -245,7 +236,7 @@
         file = [array firstObject];
         type = [array lastObject];
     }else {
-        NSLog(@"Wrong file name passed in");
+        NSLog(@"Wrong file name(%@) passed to play sound", fileName);
         return;
     }
     NSString *str = [[NSBundle mainBundle] pathForResource:file ofType:type];
@@ -479,7 +470,7 @@
 #if TARGET_IPHONE_SIMULATOR
     
 #else
-    NSLog(@"AVPlayer is about to play silent sound");
+    NSLog(@"Play silent sound");
     NSURL *path = [[NSBundle mainBundle] URLForResource:@"bg" withExtension:@"caf"];
     [self playAvplayerWithURL:path];
 #endif
@@ -567,7 +558,8 @@ void RouteChangeListener(	void *inClientData,
 
 #pragma mark - Background events handler
 - (void)didEnterBackground:(NSNotification *)notification{
-    NSLog(@"%s: Received background event notification", __func__);
+    //NSLog(@"%s: Received background event notification", __func__);
+    [self registerAudioSession];
 }
 
 

@@ -42,7 +42,6 @@ UIViewController *rootViewController;
 @interface EWAppDelegate(){
     EWTaskItem *taskInAction;
     NSTimer *myTimer;
-    long count;
 }
 
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
@@ -178,20 +177,20 @@ UIViewController *rootViewController;
     }];
     
     //check time left
-    static UILocalNotification *reactiveAlarm;
-    if (reactiveAlarm) {
-        [[UIApplication sharedApplication] cancelLocalNotification:reactiveAlarm];
+    static UILocalNotification *alarm;
+    if (alarm) {
+        [[UIApplication sharedApplication] cancelLocalNotification:alarm];
     }
     double timeLeft = application.backgroundTimeRemaining;
     NSLog(@"Background time left: %.1f", timeLeft>999?999:timeLeft);
     //alert user
-    UILocalNotification *alarm = [[UILocalNotification alloc] init];
+    alarm= [[UILocalNotification alloc] init];
     alarm.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
     alarm.alertBody = @"Woke stopped running in background. Tap here to reactivate me.";
     alarm.alertAction = @"Activate Woke";
     alarm.userInfo = @{kLocalNotificationTypeKey: kLocalNotificationTypeReactivate};
+    alarm.soundName = @"new.caf";
     [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
-    [[AVManager sharedManager] playSoundFromFile:me.preference[@"new.caf"]];
     
     //alarm timer check
     [EWWakeUpManager alarmTimerCheck];
@@ -202,7 +201,6 @@ UIViewController *rootViewController;
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
 
@@ -219,27 +217,19 @@ UIViewController *rootViewController;
         [myTimer invalidate];
     }
     
-    //audio session
-    [[AVManager sharedManager] registerActiveAudioSession];
-    
-    NSLog(@"Entered foreground and cleaned bgID and timer");
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    // Handle the user leaving the app while the Facebook login dialog is being shown
-    // For example: when the user presses the iOS "home" button while the login dialog is active
-    //[FBAppCall handleDidBecomeActive];
+    // This method is called to let your app know that it moved from the inactive to active state. This can occur because your app was launched by the user or the system.
     [FBAppCall handleDidBecomeActiveWithSession:[PFFacebookUtils session]];
     
     //audio session
     [[AVManager sharedManager] registerAudioSession];
-    
-    count = 0;
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     [FBSession.activeSession close];
-    [[AVManager sharedManager] playSoundFromFile:@"new.caf"];
     NSLog(@"App is about to terminate");
 
     [TestFlight manuallyEndSession];
