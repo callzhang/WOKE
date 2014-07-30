@@ -30,6 +30,7 @@ const struct EWPersonRelationships EWPersonRelationships = {
 	.groupTasks = @"groupTasks",
 	.groups = @"groups",
 	.groupsManaging = @"groupsManaging",
+	.images = @"images",
 	.mediaAssets = @"mediaAssets",
 	.medias = @"medias",
 	.notifications = @"notifications",
@@ -294,6 +295,19 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"groupsManaging"];
   
 	[self didAccessValueForKey:@"groupsManaging"];
+	return result;
+}
+	
+
+@dynamic images;
+
+	
+- (NSMutableSet*)imagesSet {
+	[self willAccessValueForKey:@"images"];
+  
+	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"images"];
+  
+	[self didAccessValueForKey:@"images"];
 	return result;
 }
 	

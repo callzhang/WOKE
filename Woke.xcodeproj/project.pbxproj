@@ -327,9 +327,9 @@
 		9B3EC17B1970DECF00BB52AA /* NavigationControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationControllerDelegate.h; sourceTree = "<group>"; };
 		9B3EC17C1970DECF00BB52AA /* NavigationControllerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationControllerDelegate.m; sourceTree = "<group>"; };
 		9B58FD3E19844E8500D13CC7 /* sleep mode.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "sleep mode.caf"; sourceTree = "<group>"; };
-		9B5A2F91197C53DD0076F2BD /* EWFeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWFeedbackViewController.h; path = Woke/Interface/EWFeedbackViewController.h; sourceTree = "<group>"; };
-		9B5A2F92197C53DD0076F2BD /* EWFeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWFeedbackViewController.m; path = Woke/Interface/EWFeedbackViewController.m; sourceTree = "<group>"; };
-		9B5A2F93197C53DD0076F2BD /* EWFeedbackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EWFeedbackViewController.xib; path = Woke/Interface/EWFeedbackViewController.xib; sourceTree = "<group>"; };
+		9B5A2F91197C53DD0076F2BD /* EWFeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFeedbackViewController.h; sourceTree = "<group>"; };
+		9B5A2F92197C53DD0076F2BD /* EWFeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFeedbackViewController.m; sourceTree = "<group>"; };
+		9B5A2F93197C53DD0076F2BD /* EWFeedbackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWFeedbackViewController.xib; sourceTree = "<group>"; };
 		9B5A2F96197CD4880076F2BD /* UINavigationController+StatusBarHidden.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UINavigationController+StatusBarHidden.h"; path = "Woke/BasicLib/UINavigationController+StatusBarHidden.h"; sourceTree = SOURCE_ROOT; };
 		9B5A2F97197CD4880076F2BD /* UINavigationController+StatusBarHidden.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+StatusBarHidden.m"; path = "Woke/BasicLib/UINavigationController+StatusBarHidden.m"; sourceTree = SOURCE_ROOT; };
 		9B5AF7EE1965EC640002AA06 /* EWNotificationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationCell.h; sourceTree = "<group>"; };
@@ -740,9 +740,6 @@
 		568CC77B178DD2C900AB1579 = {
 			isa = PBXGroup;
 			children = (
-				9B5A2F91197C53DD0076F2BD /* EWFeedbackViewController.h */,
-				9B5A2F92197C53DD0076F2BD /* EWFeedbackViewController.m */,
-				9B5A2F93197C53DD0076F2BD /* EWFeedbackViewController.xib */,
 				568CC78D178DD2C900AB1579 /* Woke */,
 				568CC786178DD2C900AB1579 /* Frameworks */,
 				568CC785178DD2C900AB1579 /* Products */,
@@ -861,6 +858,9 @@
 		56FEA55517A5763200FC2938 /* Interface */ = {
 			isa = PBXGroup;
 			children = (
+				9B5A2F91197C53DD0076F2BD /* EWFeedbackViewController.h */,
+				9B5A2F92197C53DD0076F2BD /* EWFeedbackViewController.m */,
+				9B5A2F93197C53DD0076F2BD /* EWFeedbackViewController.xib */,
 				9BF2978F1912F713008C136E /* EWAlarmScheduleView.xib */,
 				9BF297901912F713008C136E /* EWAlarmScheduleViewController.h */,
 				9BF297911912F713008C136E /* EWAlarmScheduleViewController.m */,

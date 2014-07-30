@@ -15,6 +15,7 @@
 @dynamic bgImage;
 @dynamic preference;
 @dynamic cachedInfo;
+@dynamic images;
 
 
 #pragma mark - Helper methods

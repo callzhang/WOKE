@@ -18,6 +18,7 @@
 @property (nonatomic, strong) UIImage *bgImage;
 @property (nonatomic, strong) NSDictionary *preference;
 @property (nonatomic, strong) NSDictionary *cachedInfo;
+@property (nonatomic, strong) NSDictionary *images;
 
 - (BOOL)isMe;
 - (BOOL)isFriend;
