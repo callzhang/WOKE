@@ -21,13 +21,29 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         self.contentView.backgroundColor = [UIColor clearColor];
-        self.statementText.textColor = [UIColor whiteColor];
-        self.statementText.backgroundColor = [UIColor clearColor];
-         self.statementText.scrollEnabled = YES;
-        self.statementText.showsHorizontalScrollIndicator = YES;
-        self.statementText.showsVerticalScrollIndicator = NO;
+       
         
-
+       
+        self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 80, 320, 50)];
+        self.scrollView.contentSize  = CGSizeMake(320, 50);
+        self.statement = [[EWCostumTextField alloc] initWithFrame:CGRectMake(30, 20, 300, 20)];
+        self.statement.font = [UIFont fontWithName:@"Lato-Regular.ttf" size:14];
+        self.statement.placeholder = @"I want to hear (a song about burrito...) ";
+    
+        self.statement.delegate = self;
+        
+        self.statement.clearButtonMode = UITextFieldViewModeAlways;
+           self.statement.adjustsFontSizeToFitWidth = YES;
+         self.statement.leftViewMode = UITextFieldViewModeAlways;
+        self.scrollView.backgroundColor = [UIColor blackColor];
+        self.scrollView.alpha = 0.3;
+        self.statement.textColor = [UIColor whiteColor];
+        self.statement.tintColor = [UIColor whiteColor];
+        self.statement.enablesReturnKeyAutomatically = YES;
+        self.statement.returnKeyType = UIReturnKeyDone;
+        [self.scrollView addSubview:self.statement];
+        [self.contentView addSubview:self.scrollView];
+//        self.scrollView.scrollEnabled = NO;
         
         CGRect frame = self.frame;
         frame.size.height -=80;
@@ -42,7 +58,7 @@
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
-//    [self hideKeyboard:self.statementText];
+    [self hideKeyboard:self.statement];
     // Configure the view for the selected state
 }
 
@@ -56,10 +72,10 @@
     myStatement = self.task.statement;
     
     if (myStatement == nil || [myStatement isEqualToString:@""] ) {
-        self.statementText.text = @"I want to hear a funny song about burrito";
+        self.statement.text = @"I want to hear a funny song about burrito...";
     }
     else
-        self.statementText.text = myStatement;
+        self.statement.text = myStatement;
     
     
     //view
@@ -89,10 +105,10 @@
     self.AM.text = [myTime date2am];
     self.weekday.text = [myTime weekday];
     if (myStatement == nil || [myStatement isEqualToString:@""] ) {
-       self.statementText.text = @"I want to hear a funny song about burrito";
+       self.statement.text = @"I want to hear a funny song about burrito...";
     }
     else
-         self.statementText.text = myStatement;
+         self.statement.text = myStatement;
     //NSString *alarmState = alarmOn ? @"ON":@"OFF";
     //[self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
     
@@ -112,21 +128,21 @@
         self.time.enabled = YES;
         self.AM.enabled = YES;
        
-        self.statementText.editable = YES;
+       
         self.timeStepper.enabled = YES;
         self.timeStepper.tintColor  = [UIColor cyanColor];
-  
-        self.statementText.textColor = [UIColor whiteColor];
+            [self.statement setEnabled:YES];
+        self.statement.textColor = [UIColor whiteColor];
         [self.alarmToggle setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];}];
     }else{
         [UIView animateWithDuration:0.5 animations:^(){
         self.time.enabled = NO;
         self.AM.enabled = NO;
         
-        self.statementText.editable = NO;
+            [self.statement setEnabled:NO];
         self.timeStepper.enabled = NO;
         self.timeStepper.tintColor  = [UIColor lightGrayColor];
-        self.statementText.textColor = [UIColor lightGrayColor];
+        self.statement.textColor = [UIColor lightGrayColor];
            
         [self.alarmToggle setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
         }];
@@ -162,5 +178,9 @@
  
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
+}
 
 @end

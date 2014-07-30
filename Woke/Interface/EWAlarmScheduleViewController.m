@@ -131,7 +131,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             hasChanges = YES;
         }
         //statement
-        if (cell.statementText.text.length && ![cell.statementText.text isEqualToString:cell.task.statement]) {
+        if (cell.statement.text.length && ![cell.statement.text isEqualToString:cell.task.statement]) {
             cell.task.statement = cell.statementText.text;
             hasChanges = YES;
             
@@ -244,6 +244,12 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     return YES;
 }
 
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    NSIndexPath *path = [NSIndexPath indexPathForRow:selected inSection:0];
+    EWAlarmEditCell *cell = [self.tableView cellForRowAtIndexPath:path];
+    [cell hideKeyboard:cell.statement];
+}
 
 
 
