@@ -284,13 +284,21 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             NSMutableArray *photos = [[NSMutableArray alloc] init];
 //            NSMutableArray *thumbs = [[NSMutableArray alloc] init];
             
-            NSArray *photosURL = @[[NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447404_786339.jpg"],
-                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447403_150958.jpg"],
-                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447412_646689.jpg"],
-                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447405_906102.jpg"]];
+//            NSArray *photosURL = @[[NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447404_786339.jpg"],
+//                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447403_150958.jpg"],
+//                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447412_646689.jpg"],
+//                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447405_906102.jpg"]];
+            NSMutableArray *urlArray = [[person.images allObjects] mutableCopy];
+            
+            if (!urlArray) {
+                person.images = [[NSMutableSet alloc] init];
+                urlArray = [[NSMutableArray alloc] init];
+            }
+            
+            [urlArray addObject:person.profilePic];
             // for test
             // person photo;
-            IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photosURL];
+            IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:urlArray];
             
             
              browser.delegate = self;
@@ -718,31 +726,46 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 #pragma mark - Upload Photo
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     
-    
-    NSMutableString *urlString = [NSMutableString string];
-    [urlString appendString:@"https://api.parse.com/1/"];
-    [urlString appendFormat:@"files/imagefile.jpg"];
-    
-    NSURL *url = [NSURL URLWithString:urlString];
-    
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    [request setHTTPMethod:@"POST"];
-    [request addValue:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z" forHTTPHeaderField:@"X-Parse-Application-Id"];
-    [request addValue:@"" forHTTPHeaderField:@"X-Parse-REST-API-Key"];
-    [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
-    [request setHTTPBody:UIImageJPEGRepresentation(image, 0.3f)];
-    
-    NSURLResponse *response = nil;
-    NSError *error = nil;
-    
-    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-    NSString *fileUrl = [httpResponse allHeaderFields][@"Location"];
-    
-    NSLog(@"%@",fileUrl);
+    [picker dismissViewControllerAnimated:YES completion:^(){
+     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+        
+        
+        NSMutableString *urlString = [NSMutableString string];
+        [urlString appendString:@"https://api.parse.com/1/"];
+        [urlString appendFormat:@"files/imagefile.jpg"];
+        
+        NSURL *url = [NSURL URLWithString:urlString];
+        
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+        [request setHTTPMethod:@"POST"];
+        [request addValue:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z" forHTTPHeaderField:@"X-Parse-Application-Id"];
+        [request addValue:@"lGJTP5XCAq0O3gDyjjRjYtWui6pAJxdyDSTPXzkL" forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+        [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPBody:UIImageJPEGRepresentation(image, 0.3f)];
+        
+        NSURLResponse *response = nil;
+        NSError *error = nil;
+        
+       
+        
+        [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+        NSString *fileUrl = [httpResponse allHeaderFields][@"Location"];
+        
+        NSLog(@"%@",fileUrl);
+        
+        [person.images addObject:fileUrl];
+        [EWDataStore save];
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Upload Success" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        
+    }];
+   
 //    imageView.image = image;
 //    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
 //    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
@@ -765,7 +788,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 //        
 //    }];
     
-    [picker dismissViewControllerAnimated:YES completion:NULL];
+   
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

@@ -90,6 +90,11 @@ caption = _caption;
             IDMPhoto *photo = [IDMPhoto photoWithURL:[NSURL URLWithString:url]];
             [photos addObject:photo];
         }
+        else if ([url isKindOfClass:[UIImage class]])
+        {
+            IDMPhoto *photo = [IDMPhoto photoWithImage:url];
+            [photos addObject:photo];
+        }
     }
     
     return photos;
