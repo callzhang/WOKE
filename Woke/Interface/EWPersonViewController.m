@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
 
+//#define X-Parse-REST-API-Key @""
+
 #import "EWPersonViewController.h"
 // Util
 #import "EWUIUtil.h"
@@ -52,6 +54,8 @@ static NSString *taskCellIdentifier = @"taskCellIdentifier";
 NSString *const profileCellIdentifier = @"ProfileCell";
 NSString *const activitiyCellIdentifier = @"ActivityCell";
 @interface EWPersonViewController()<UIImagePickerControllerDelegate,UINavigationControllerDelegate,IDMPhotoBrowserDelegate>
+
+@property (strong,nonatomic)NSMutableArray *photos;
 - (void)showSuccessNotification:(NSString *)alert;
 
 @end
@@ -98,7 +102,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
      profileItemsArray = kProfileTableArray;
-    
+
     //login event
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn) name:kPersonLoggedIn object:nil];
     
@@ -168,6 +172,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
         stats = [[EWStatisticsManager alloc] init];
         stats.person = person;
+        _photos = [[NSMutableArray alloc] init];
+        [_photos addObjectsFromArray:person.images];
     }
 }
 
@@ -183,7 +189,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     
     if (!person.isMe) {//other user
-        self.loginBtn.hidden = YES;
+        [self.loginBtn setTitle:@"" forState:UIControlStateNormal];
+//        self.loginBtn.hidden = YES;
+        
         if (person.isFriend) {
             [self.addFriend setImage:[UIImage imageNamed:@"FriendedIcon"] forState:UIControlStateNormal];
         }else if (person.friendWaiting){
@@ -279,45 +287,41 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 - (IBAction)login:(id)sender {
     
-    if (person.facebook) {
-        if (person.isMe){
-            NSMutableArray *photos = [[NSMutableArray alloc] init];
-//            NSMutableArray *thumbs = [[NSMutableArray alloc] init];
-            
-//            NSArray *photosURL = @[[NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447404_786339.jpg"],
-//                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447403_150958.jpg"],
-//                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447412_646689.jpg"],
-//                [NSURL URLWithString:@"http://storage.slide.news.sina.com.cn/slidenews/1_t5000/2014_30/53109_447405_906102.jpg"]];
-            NSMutableArray *urlArray = [[person.images allObjects] mutableCopy];
-            
-            if (!urlArray) {
-                person.images = [[NSMutableSet alloc] init];
-                urlArray = [[NSMutableArray alloc] init];
-            }
-            
-            [urlArray addObject:person.profilePic];
-            // for test
-            // person photo;
-            IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:urlArray];
-            
-            
-             browser.delegate = self;
-            browser.actionButtonTitles = @[ @"Select from local",@"Take Photo"];
-            
-            browser.actionSheetTitle = @"Upload Your Photo";
-            [self presentViewController:browser animated:YES completion:nil];
-            
-           
-            
-        }
-//        EWMyProfileViewController *controller = [[EWMyProfileViewController alloc] init];
-//        
-//        [self.navigationController pushViewController:controller animated:YES];
-        
-    }else{
+    if (!me.facebook) {
         EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
         [loginVC connect:nil];
+        return;
+        
     }
+    
+    NSMutableArray *urlArray = [person.images mutableCopy];
+    
+    if (!urlArray) {
+        //                person.images = [[NSMutableSet alloc] init];
+        urlArray = [[NSMutableArray alloc] init];
+    }
+    
+    [urlArray addObject:person.profilePic];
+    // for test
+    // person photo;
+    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:urlArray];
+    
+    browser.delegate = self;
+    
+    if (person.isMe) {
+        
+        browser.actionButtonTitles = @[ @"Select from local",@"Take Photo"];
+        
+        browser.actionSheetTitle = @"Upload Your Photo";
+     
+    }else{
+        
+        browser.displayActionButton = NO;
+        
+    }
+    
+    [self presentViewController:browser animated:YES completion:nil];
+    
     
     
 }
@@ -724,6 +728,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 }
 
 #pragma mark - Upload Photo
+
+
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     
@@ -757,7 +763,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         NSLog(@"%@",fileUrl);
         
-        [person.images addObject:fileUrl];
+        [_photos addObject:fileUrl];
+        person.images = _photos;
         [EWDataStore save];
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         
