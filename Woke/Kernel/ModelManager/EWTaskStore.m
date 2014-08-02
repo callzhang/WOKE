@@ -700,7 +700,7 @@
 #pragma mark - Sleep notification
 + (void)updateSleepNotification{
     NSNumber *duration = me.preference[@"SleepDuration"];
-    NSInteger d = duration.integerValue;
+    float d = duration.floatValue;
     //cancel all sleep notification first
     NSArray *sleeps = [UIApplication sharedApplication].scheduledLocalNotifications;
     NSInteger n = 0;
@@ -714,7 +714,7 @@
     
     for (EWTaskItem *task in me.tasks) {
         NSDate *time = task.time;
-        NSDate *sleepTime = [time timeByAddingMinutes:-d*60];
+        NSDate *sleepTime = [time dateByAddingTimeInterval:-d*3600];
         //local notification
         UILocalNotification *sleepNotif = [[UILocalNotification alloc] init];
         sleepNotif.fireDate = sleepTime;
