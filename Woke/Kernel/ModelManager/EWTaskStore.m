@@ -540,7 +540,7 @@
     //check missing
     for (unsigned i=0; i<nLocalNotifPerTask; i++) {
         //get time
-        NSDate *time_i = [task.time timeByAddingSeconds: i * 60];
+        NSDate *time_i = [task.time dateByAddingTimeInterval: i * 60];
         BOOL foundMatchingLocalNotif = NO;
         for (UILocalNotification *notification in notifications) {
             if ([time_i isEqualToDate:notification.fireDate]) {
@@ -585,11 +585,18 @@
     
     //delete remaining
     if (notifications.count > 0) {
-        NSLog(@"Unmatched tasks deleted (%@) ", task.time.date2detailDateString);
         for (UILocalNotification *ln in notifications) {
-            [[UIApplication sharedApplication] cancelLocalNotification:ln];
+            if ([ln.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeAlarmTimer]) {
+                
+                NSLog(@"Unmatched alarm notification deleted (%@) ", ln.fireDate.date2detailDateString);
+                [[UIApplication sharedApplication] cancelLocalNotification:ln];
+            }
+            
         }
     }
+    
+    //schedule sleep timer
+    [EWTaskStore scheduleSleepNotificationForTask:task];
     
 }
 
@@ -699,35 +706,44 @@
 
 #pragma mark - Sleep notification
 + (void)updateSleepNotification{
-    NSNumber *duration = me.preference[@"SleepDuration"];
-    float d = duration.floatValue;
     //cancel all sleep notification first
-    NSArray *sleeps = [UIApplication sharedApplication].scheduledLocalNotifications;
-    NSInteger n = 0;
-    for (UILocalNotification *sleep in sleeps) {
-        if ([sleep.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
-            [[UIApplication sharedApplication] cancelLocalNotification:sleep];
-            n++;
-        }
-    }
-    NSLog(@"Cancelled %ld sleep notification", (long)n);
+    [EWTaskStore cancelSleepNotification];
     
     for (EWTaskItem *task in me.tasks) {
-        NSDate *time = task.time;
-        NSDate *sleepTime = [time dateByAddingTimeInterval:-d*3600];
-        //local notification
-        UILocalNotification *sleepNotif = [[UILocalNotification alloc] init];
-        sleepNotif.fireDate = sleepTime;
-        sleepNotif.alertBody = [NSString stringWithFormat:@"It's time to sleep (%@)", sleepTime.date2String];
-        sleepNotif.alertAction = @"Sleep";
-        sleepNotif.repeatInterval = NSWeekCalendarUnit;
-        sleepNotif.soundName = @"sleep mode";
-        sleepNotif.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
-                                kLocalNotificationTypeKey: kLocalNotificationTypeSleepTimer};
-        
-        [[UIApplication sharedApplication] scheduleLocalNotification:sleepNotif];
-        NSLog(@"Sleep notification schedule at %@", sleepNotif.fireDate.date2detailDateString);
+        [EWTaskStore scheduleSleepNotificationForTask:task];
     }
+}
+
++ (void)scheduleSleepNotificationForTask:(EWTaskItem *)task{
+    NSNumber *duration = me.preference[@"SleepDuration"];
+    float d = duration.floatValue;
+    NSDate *sleepTime = [task.time dateByAddingTimeInterval:-d*3600];
+    
+    //cancel if no change
+    NSArray *notifs = [[EWTaskStore sharedInstance] localNotificationForTask:task];
+    for (UILocalNotification *notif in notifs) {
+        if ([notif.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
+            if ([notif.fireDate isEqualToDate:sleepTime]) {
+                //nothing to do
+                return;
+            }else{
+                [[UIApplication sharedApplication] cancelLocalNotification:notif];
+            }
+        }
+    }
+    
+    //local notification
+    UILocalNotification *sleepNotif = [[UILocalNotification alloc] init];
+    sleepNotif.fireDate = sleepTime;
+    sleepNotif.alertBody = [NSString stringWithFormat:@"It's time to sleep (%@)", sleepTime.date2String];
+    sleepNotif.alertAction = @"Sleep";
+    sleepNotif.repeatInterval = NSWeekCalendarUnit;
+    sleepNotif.soundName = @"sleep mode";
+    sleepNotif.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
+                            kLocalNotificationTypeKey: kLocalNotificationTypeSleepTimer};
+    
+    [[UIApplication sharedApplication] scheduleLocalNotification:sleepNotif];
+    NSLog(@"Sleep notification schedule at %@", sleepNotif.fireDate.date2detailDateString);
 }
 
 + (void)cancelSleepNotification{

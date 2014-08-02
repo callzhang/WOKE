@@ -245,6 +245,7 @@
     
     //stop music
     [[AVManager sharedManager] stopAllPlaying];
+    [AVManager sharedManager].media = nil;
     
     //release the pointer in wakeUpManager
     [EWWakeUpManager woke];
