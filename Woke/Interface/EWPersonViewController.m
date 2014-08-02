@@ -755,8 +755,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         NSURLResponse *response = nil;
         NSError *error = nil;
         
-       
-        
         [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
         
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
@@ -768,11 +766,10 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         person.images = _photos;
         [EWDataStore save];
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        
-       [self.view showSuccessNotification:@"Uploaded"];
-        
+
+        [self.view showSuccessNotification:@"Uploaded"];
+
     }];
-   
 //    imageView.image = image;
 //    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
 //    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
