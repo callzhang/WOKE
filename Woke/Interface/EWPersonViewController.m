@@ -754,8 +754,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         NSURLResponse *response = nil;
         NSError *error = nil;
         
-       
-        
         [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
         
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
@@ -768,8 +766,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [EWDataStore save];
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Upload Success" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
+        [self.view showSuccessNotification:@"Uploaded"];
+        
         
     }];
    
