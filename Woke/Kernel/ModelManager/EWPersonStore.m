@@ -226,11 +226,12 @@ EWPerson *me;
     
     if (error) {
         NSLog(@"*** Failed to fetch everyone.");
+        //TODO
         return nil;
     }
     
     //make sure the everyone is saved on main thread
-    [[NSManagedObjectContext contextForCurrentThread] performBlockAndWait:^{
+    [[NSManagedObjectContext defaultContext] performBlockAndWait:^{
         
         for (PFUser *user in people) {
             EWPerson *person = (EWPerson *)user.managedObject;
@@ -238,9 +239,6 @@ EWPerson *me;
             person.score = [NSNumber numberWithFloat:score];
             [allPerson addObject:person];
             [EWDataStore saveToLocal:person];
-            
-            //test KVO
-            [person addObserver:self forKeyPath:@"profilePic" options:NSKeyValueObservingOptionNew context:nil];
         }
         
         [EWPersonStore me].score = @100;
@@ -249,9 +247,10 @@ EWPerson *me;
         everyone = [allPerson copy];
         timeEveryoneChecked = [NSDate date];
         
+        [EWDataStore save];
     }];
     
-    [EWDataStore save];
+    
     
     return everyone;
 }

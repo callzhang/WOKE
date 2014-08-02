@@ -123,8 +123,8 @@
     [self.view insertSubview:background belowSubview:_collectionView];
     
     //alarmBarBG
-    self.alarmBarBG.layer.borderColor = [UIColor colorWithWhite:0 alpha:0.02].CGColor;
-    self.alarmBarBG.layer.borderWidth = 1;
+    //self.alarmBarBG.layer.borderColor = [UIColor colorWithWhite:0 alpha:0.02].CGColor;
+    //self.alarmBarBG.layer.borderWidth = 1;
     
     //paging
     _scrollView.delegate = self;
@@ -134,9 +134,9 @@
     
     
     //add blur bar
-//    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 478, 320, 90)];
-//    blurBar.barStyle = UIBarStyleBlack;
-//    [self.view insertSubvieØw:blurBar aboveSubview:_collectionView];
+    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
+    blurBar.barStyle = UIBarStyleBlack;
+    [self.alarmBar insertSubview:blurBar belowSubview:self.scrollView];
     
     //parallax
 //    self.background.parallaxIntensity = -100;

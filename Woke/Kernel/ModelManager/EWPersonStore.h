@@ -10,7 +10,7 @@
 #import "EWDataStore.h"
 #import "EWPerson.h"
 
-#define everyoneCheckTimeOut            3600 //1hr
+#define everyoneCheckTimeOut            600 //10min
 #define numberOfRelevantUsers           @100 //number of relevant users returned
 #define radiusOfRelevantUsers           @-1  //search radius in kilometers for relevant users
 #define kDefaultUsername                    @"New User"
@@ -30,7 +30,7 @@ extern EWPerson *me;
 /**
  Possible people that are relevant, fetched from server(TODO)
  */
-@property (nonatomic, strong) NSArray *everyone;
+@property NSArray *everyone;
 @property EWPerson *currentUser;
 + (EWPerson *)me;
 + (EWPersonStore *)sharedInstance;

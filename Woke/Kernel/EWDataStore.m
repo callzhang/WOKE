@@ -1056,7 +1056,7 @@
         NSManagedObjectID *objectID = self.objectID;
         
         //save async
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
             
             NSManagedObjectContext *localContext = [EWDataStore currentContext];
             NSManagedObject *currentMO = [localContext objectWithID:objectID];
@@ -1252,7 +1252,13 @@
                     [NSException raise:@"Server class not handled" format:@"Check your code!"];
                 }
             }else{
-                [self setValue:parseValue forKey:key];
+				@try {
+					[self setValue:parseValue forKey:key];
+				}
+				@catch (NSException *exception) {
+					NSLog(@"***Failed to set value for key %@ on MO %@(%@)", key, self.entity.name, self.serverID);
+				}
+                
             }
         }else{
             //parse value empty, delete
