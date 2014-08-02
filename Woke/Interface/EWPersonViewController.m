@@ -717,11 +717,12 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         // Unsupport Camera
         return;
     }
-    [photoBrowser dismissViewControllerAnimated:YES completion:^(){
     
-        [self presentViewController:imagePickerController animated:YES completion:^{}];
-    }];
+    [photoBrowser presentViewController:imagePickerController animated:YES completion:^{}];
     
+//    [photoBrowser dismissViewControllerAnimated:YES completion:^(){
+//    }];
+//    
     
         
 
@@ -768,8 +769,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [EWDataStore save];
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Upload Success" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
+       [self.view showSuccessNotification:@"Uploaded"];
         
     }];
    
