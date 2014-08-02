@@ -916,6 +916,16 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 	return nil;
 }
 
+-(void)addPhotoInBrowser:(NSString *)photo
+{
+    NSURL *url = [NSURL URLWithString:photo];
+    IDMPhoto *idmPhoto = [IDMPhoto photoWithURL:url];
+    [_photos addObject:idmPhoto];
+    [self reloadData];
+//    [self - (void)setInitialPageIndex:(NSUInteger)index;]
+}
+
+
 - (void)loadAdjacentPhotosIfNecessary:(id<IDMPhoto>)photo {
     IDMZoomingScrollView *page = [self pageDisplayingPhoto:photo];
     if (page) {

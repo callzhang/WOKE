@@ -56,6 +56,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 @interface EWPersonViewController()<UIImagePickerControllerDelegate,UINavigationControllerDelegate,IDMPhotoBrowserDelegate>
 
 @property (strong,nonatomic)NSMutableArray *photos;
+@property (strong,nonatomic)IDMPhotoBrowser *photoBrower;
 - (void)showSuccessNotification:(NSString *)alert;
 
 @end
@@ -304,23 +305,24 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     [urlArray addObject:person.profilePic];
     // for test
     // person photo;
-    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:urlArray];
+  
+    _photoBrower = [[IDMPhotoBrowser alloc] initWithPhotoURLs:urlArray];
     
-    browser.delegate = self;
+    _photoBrower.delegate = self;
     
     if (person.isMe) {
         
-        browser.actionButtonTitles = @[ @"Select from local",@"Take Photo"];
+        _photoBrower.actionButtonTitles = @[ @"Select from local",@"Take Photo"];
         
-        browser.actionSheetTitle = @"Upload Your Photo";
+        _photoBrower.actionSheetTitle = @"Upload Your Photo";
      
     }else{
         
-        browser.displayActionButton = NO;
+        _photoBrower.displayActionButton = NO;
         
     }
     
-    [self presentViewController:browser animated:YES completion:nil];
+    [self presentViewController:_photoBrower animated:YES completion:nil];
     
     
     
@@ -735,7 +737,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 {
     
     [picker dismissViewControllerAnimated:YES completion:^(){
-     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+     [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
         UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
         
         
@@ -765,9 +767,17 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [_photos addObject:fileUrl];
         person.images = _photos;
         [EWDataStore save];
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
 
-        [self.view showSuccessNotification:@"Uploaded"];
+        [_photoBrower.view showSuccessNotification:@"Uploaded"];
+        
+        [UIView animateWithDuration:0 delay:0.6 options:UIViewAnimationOptionLayoutSubviews animations:^(){
+            
+        [_photoBrower dismissViewControllerAnimated:NO completion:nil];
+            
+        } completion:^(BOOL finished){[self login:nil];}];
+      
+        
 
     }];
 //    imageView.image = image;

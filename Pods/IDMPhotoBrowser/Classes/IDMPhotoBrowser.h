@@ -78,6 +78,9 @@
 // Get IDMPhoto at index
 - (id<IDMPhoto>)photoAtIndex:(NSUInteger)index;
 
+// add a photo in browser
+-(void)addPhotoInBrowser:(id)photo;
+
 // Change Sender View
 //- (void)setSenderViewForAnimation:(UIView*)senderView;
 
