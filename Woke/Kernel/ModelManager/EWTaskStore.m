@@ -629,8 +629,10 @@
     
     for (UILocalNotification *aNotif in allNotification) {
 
-        NSLog(@"===== Deleted Local Notif (%@) =====", aNotif.fireDate.date2detailDateString);
-        [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
+        if ([aNotif.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeAlarmTimer]) {
+            NSLog(@"===== Deleted Local Notif (%@) =====", aNotif.fireDate.date2detailDateString);
+            [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
+        }
 
     }
     
