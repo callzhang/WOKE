@@ -738,7 +738,7 @@
     sleepNotif.alertBody = [NSString stringWithFormat:@"It's time to sleep (%@)", sleepTime.date2String];
     sleepNotif.alertAction = @"Sleep";
     sleepNotif.repeatInterval = NSWeekCalendarUnit;
-    sleepNotif.soundName = @"sleep mode";
+    sleepNotif.soundName = @"sleep mode.caf";
     sleepNotif.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
                             kLocalNotificationTypeKey: kLocalNotificationTypeSleepTimer};
     
