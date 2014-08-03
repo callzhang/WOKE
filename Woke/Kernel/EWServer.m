@@ -67,7 +67,11 @@
         [EWWakeUpManager handleAlarmTimerEvent:notification.userInfo];
     }else if([type isEqualToString:kLocalNotificationTypeReactivate]){
         NSLog(@"==================> Reactivated Woke <======================");
-    }else{
+        EWAlert(@"You brought me back to life!");
+    }else if ([type isEqualToString:kLocalNotificationTypeSleepTimer]){
+        EWAlert(@"Entering sleep mode...");
+    }
+    else{
         [NSException raise:@"Unexpected Local Notification Type" format:@"Detail: %@", notification];
     }
 

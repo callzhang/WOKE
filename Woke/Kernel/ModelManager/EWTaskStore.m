@@ -735,7 +735,7 @@
     //local notification
     UILocalNotification *sleepNotif = [[UILocalNotification alloc] init];
     sleepNotif.fireDate = sleepTime;
-    sleepNotif.alertBody = [NSString stringWithFormat:@"It's time to sleep (%@)", sleepTime.date2String];
+    sleepNotif.alertBody = [NSString stringWithFormat:@"It's time to sleep, press here to enter sleep mode (%@)", sleepTime.date2String];
     sleepNotif.alertAction = @"Sleep";
     sleepNotif.repeatInterval = NSWeekCalendarUnit;
     sleepNotif.soundName = @"sleep mode.caf";
