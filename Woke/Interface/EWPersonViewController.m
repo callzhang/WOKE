@@ -167,6 +167,10 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [self initView];
     }
 }
+-(void)viewDidDisappear:(BOOL)animated
+{
+
+}
 
 - (void)initData {
     if (person) {
@@ -729,6 +733,30 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
 
 }
+-(void)photoBrowser:(IDMPhotoBrowser *)photoBrowser detelePhotoAtIndexPath:(NSInteger)path
+{
+    
+    [_photos removeObjectAtIndex:path];
+    [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
+    
+    [photoBrowser reloadData];
+    
+
+    
+     [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
+    
+     [_photoBrower.view showSuccessNotification:@"Deleted"];
+}
+
+
+-(void)didDisAppearePhotoBrowser
+{
+    if (person.isMe) {
+        // 结束时候保存一次
+        me.images = _photos;
+        [EWDataStore save];
+    }
+}
 
 #pragma mark - Upload Photo
 
@@ -764,18 +792,19 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         NSLog(@"%@",fileUrl);
         
-        [_photos addObject:fileUrl];
-        person.images = _photos;
-        [EWDataStore save];
+        [_photos insertObject:fileUrl atIndex:0];
+   
         [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
 
         [_photoBrower.view showSuccessNotification:@"Uploaded"];
         
-        [UIView animateWithDuration:0 delay:0.6 options:UIViewAnimationOptionLayoutSubviews animations:^(){
-            
-        [_photoBrower dismissViewControllerAnimated:NO completion:nil];
-            
-        } completion:^(BOOL finished){[self login:nil];}];
+        [_photoBrower addPhotoInBrowser:fileUrl];
+        
+//        [UIView animateWithDuration:0 delay:0.6 options:UIViewAnimationOptionLayoutSubviews animations:^(){
+//            
+//        [_photoBrower dismissViewControllerAnimated:NO completion:nil];
+//            
+//        } completion:^(BOOL finished){[self login:nil];}];
       
         
 

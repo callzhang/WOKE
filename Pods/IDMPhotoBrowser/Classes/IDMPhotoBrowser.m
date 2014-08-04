@@ -37,6 +37,8 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     // Buttons
     UIButton *_doneButton;
     
+    UIButton *_deleteButton;
+    
 	// Toolbar
 	UIToolbar *_toolbar;
 	UIBarButtonItem *_previousButton, *_nextButton, *_actionButton;
@@ -561,6 +563,20 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
         _doneButton.contentMode = UIViewContentModeScaleAspectFit;
     }
     
+    
+    _deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_deleteButton setFrame: [self frameForDeleteButtonAtOrientation:currentOrientation]];
+    [_deleteButton setTitleColor:[UIColor colorWithWhite:0.9 alpha:0.9] forState:UIControlStateNormal|UIControlStateHighlighted];
+    [_deleteButton setTitle:IDMPhotoBrowserLocalizedStrings(@"delete") forState:UIControlStateNormal];
+    [_deleteButton.titleLabel setFont:[UIFont boldSystemFontOfSize:11.0f]];
+    [_deleteButton setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:0.5]];
+    _deleteButton.layer.cornerRadius = 3.0f;
+    _deleteButton.layer.borderColor = [UIColor colorWithWhite:0.9 alpha:0.9].CGColor;
+    _deleteButton.layer.borderWidth = 1.0f;
+    [_deleteButton setAlpha:1.0f];
+    [_deleteButton addTarget:self action:@selector(deleteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
     UIImage *leftButtonImage = (_leftArrowImage == nil) ?
     [UIImage imageNamed:@"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowLeft.png"]          : _leftArrowImage;
     
@@ -771,7 +787,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     // Close button
     if(_displayDoneButton && !self.navigationController.navigationBar)
         [self.view addSubview:_doneButton];
-    
+        [self.view addSubview:_deleteButton];
     // Toolbar items & navigation
     UIBarButtonItem *fixedLeftSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                                     target:self action:nil];
@@ -919,12 +935,21 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 -(void)addPhotoInBrowser:(NSString *)photo
 {
     NSURL *url = [NSURL URLWithString:photo];
+    
     IDMPhoto *idmPhoto = [IDMPhoto photoWithURL:url];
-    [_photos addObject:idmPhoto];
+    [_photos insertObject:idmPhoto atIndex:0];
+    
+    [self setInitialPageIndex:0];
+    
     [self reloadData];
+    
+    
 //    [self - (void)setInitialPageIndex:(NSUInteger)index;]
 }
-
+-(void)removePhotoInBrowser
+{
+    [_photos removeObjectAtIndex:0];
+}
 
 - (void)loadAdjacentPhotosIfNecessary:(id<IDMPhoto>)photo {
     IDMZoomingScrollView *page = [self pageDisplayingPhoto:photo];
@@ -1050,6 +1075,9 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 - (void)configurePage:(IDMZoomingScrollView *)page forIndex:(NSUInteger)index {
 	page.frame = [self frameForPageAtIndex:index];
     page.tag = PAGE_INDEX_TAG_OFFSET + index;
+    if (page.photo) {
+        page.photo = nil;
+    }
     page.photo = [self photoAtIndex:index];
     
     __block __weak IDMPhoto *photo = (IDMPhoto*)page.photo;
@@ -1134,6 +1162,16 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     // if ([self isLandscape:orientation]) screenWidth = screenBound.size.height;
     
     return CGRectMake(screenWidth - 75, 30, 55, 26);
+}
+
+//
+- (CGRect)frameForDeleteButtonAtOrientation:(UIInterfaceOrientation)orientation {
+    CGRect screenBound = self.view.bounds;
+    CGFloat screenWidth = screenBound.size.width;
+    
+    // if ([self isLandscape:orientation]) screenWidth = screenBound.size.height;
+    
+    return CGRectMake( 50, 30, 55, 26);
 }
 
 - (CGRect)frameForCaptionView:(IDMCaptionView *)captionView atIndex:(NSUInteger)index {
@@ -1245,6 +1283,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
         [self.navigationController.navigationBar setAlpha:alpha];
         [_toolbar setAlpha:alpha];
         [_doneButton setAlpha:alpha];
+        [_deleteButton setAlpha:alpha];
         for (UIView *v in captionViews) v.alpha = alpha;
     } completion:^(BOOL finished) {}];
 	
@@ -1301,6 +1340,28 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
         [self prepareForClosePhotoBrowser];
         [self dismissPhotoBrowserAnimated:YES];
     }
+}
+-(void)deleteButtonPressed:(id)sender
+{
+    if (_currentPageIndex != [_photos count]-1) {
+        
+        [_photos removeObjectAtIndex:_currentPageIndex];
+        if ([self.delegate respondsToSelector:@selector(photoBrowser:detelePhotoAtIndexPath:)]) {
+            
+            [self.delegate photoBrowser:self detelePhotoAtIndexPath:_currentPageIndex];
+        }
+        
+
+    }
+    else{
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:@"Can't delete your profile" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        
+        [alert show];
+        
+    }
+    
+    
+//    [self reloadData];
 }
 
 - (void)actionButtonPressed:(id)sender {
@@ -1390,5 +1451,10 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
         [SVProgressHUD dismiss];
     }
 }
-
+-(void)viewDidDisappear:(BOOL)animated
+{
+    if ([self.delegate respondsToSelector:@selector(didDisAppearePhotoBrowser)]) {
+        [self.delegate didDisAppearePhotoBrowser];
+    }
+}
 @end
