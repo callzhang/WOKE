@@ -573,8 +573,8 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     _deleteButton.layer.cornerRadius = 3.0f;
     _deleteButton.layer.borderColor = [UIColor colorWithWhite:0.9 alpha:0.9].CGColor;
     _deleteButton.layer.borderWidth = 1.0f;
-    [_deleteButton setAlpha:1.0f];
-    [_deleteButton addTarget:self action:@selector(deleteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [_deleteButton setAlpha:0.0f];
+//    [_deleteButton addTarget:self action:@selector(deleteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     
     
     UIImage *leftButtonImage = (_leftArrowImage == nil) ?
@@ -770,13 +770,23 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 
 - (void)performLayout {
     // Setup
+
+//    [[self.view subviews ]enumerateObjectsUsingBlock:^(UIView *obj,NSUInteger idx,BOOL *stop)
+//    {
+//        [obj removeFromSuperview];
+//    }];
+//    
     _performingLayout = YES;
     NSUInteger numberOfPhotos = [self numberOfPhotos];
     
 	// Setup pages
     [_visiblePages removeAllObjects];
     [_recycledPages removeAllObjects];
-    
+    [[_pagingScrollView subviews] enumerateObjectsUsingBlock:^(UIView *obj,NSUInteger idx,BOOL *stop)
+        {
+            [obj removeFromSuperview];
+        }];
+
     // Toolbar
     if (_displayToolbar) {
         [self.view addSubview:_toolbar];
@@ -943,6 +953,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     
     [self reloadData];
     
+    [self jumpToPageAtIndex:0];
     
 //    [self - (void)setInitialPageIndex:(NSUInteger)index;]
 }
@@ -1283,7 +1294,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
         [self.navigationController.navigationBar setAlpha:alpha];
         [_toolbar setAlpha:alpha];
         [_doneButton setAlpha:alpha];
-        [_deleteButton setAlpha:alpha];
+//        [_deleteButton setAlpha:alpha];
         for (UIView *v in captionViews) v.alpha = alpha;
     } completion:^(BOOL finished) {}];
 	

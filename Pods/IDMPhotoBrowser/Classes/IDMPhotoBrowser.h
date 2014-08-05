@@ -85,6 +85,8 @@
 // add a photo in browser
 -(void)addPhotoInBrowser:(id)photo;
 
+// delete a photo in browser
+-(void)deleteButtonPressed:(id)sender;
 // Change Sender View
 //- (void)setSenderViewForAnimation:(UIView*)senderView;
 

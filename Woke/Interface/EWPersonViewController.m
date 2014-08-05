@@ -316,9 +316,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     if (person.isMe) {
         
-        _photoBrower.actionButtonTitles = @[ @"Select from local",@"Take Photo"];
+        _photoBrower.actionButtonTitles = @[@"Select from local",@"Take Photo",@"delete this image"];
         
-        _photoBrower.actionSheetTitle = @"Upload Your Photo";
+//        _photoBrower.actionSheetTitle = @"Upload Your Photo";
      
     }else{
         
@@ -710,7 +710,13 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     id <IDMPhoto> photo = [photoBrowser photoAtIndex:photoIndex];
     NSLog(@"Did dismiss actionSheet with photo index: %lu, photo caption: %@", (unsigned long)photoIndex, photo.caption);
     
-    
+    if (photoIndex == 0) {
+        
+        [photoBrowser deleteButtonPressed:nil];
+        
+        
+        return ;
+    }
     
         UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
         
@@ -718,7 +724,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         imagePickerController.allowsEditing = YES;
         
-        imagePickerController.sourceType = buttonIndex;
+        imagePickerController.sourceType = buttonIndex-1;
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]&&  imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Unsupport Camera
         return;
