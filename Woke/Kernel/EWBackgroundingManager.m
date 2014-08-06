@@ -94,9 +94,12 @@
 - (void)didbecomeActive{
     // This method is called to let your app know that it moved from the inactive to active state. This can occur because your app was launched by the user or the system.
     //resume backgrounding
-    UILocalNotification *notif = [[UILocalNotification alloc] init];
-    notif.alertBody = @"Woke become active!";
-    [[UIApplication sharedApplication] scheduleLocalNotification:notif];
+    UIApplication *app = [UIApplication sharedApplication];
+    if (app.applicationState != UIApplicationStateActive) {
+        UILocalNotification *notif = [[UILocalNotification alloc] init];
+        notif.alertBody = @"Woke become active!";
+        [app scheduleLocalNotification:notif];
+    }
     
     if (self.sleeping) {
         [self startSleep];
