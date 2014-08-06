@@ -9,6 +9,8 @@
 #import "EWSleepViewController.h"
 #import "EWBackgroundingManager.h"
 #import "AVManager.h"
+#import "EWTaskStore.h"
+#import "EWPersonStore.h"
 
 @interface EWSleepViewController (){
     NSTimer *timer;
@@ -55,6 +57,7 @@
 - (void)updateTimer:(NSTimer *)timer{
     NSDate *t = [NSDate date];
     self.timeLabel.text = t.date2String;
-    self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", t.timeLeft];
+    NSDate *wakeTime = [[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:me];
+    self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", wakeTime.timeLeft];
 }
 @end
