@@ -99,6 +99,9 @@
 		9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F9718EB416700C07809 /* EWUtil.m */; };
 		9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BBA5F9918EF295200C07809 /* libz.dylib */; };
 		9BEE145619786DFC0068FC08 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BEE145519786DFC0068FC08 /* OpenGLES.framework */; };
+		9BEEAF641992B227008E6F34 /* EWBackgroundingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEEAF631992B227008E6F34 /* EWBackgroundingManager.m */; };
+		9BEEAF681992C75E008E6F34 /* EWSleepViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEEAF661992C75E008E6F34 /* EWSleepViewController.m */; };
+		9BEEAF691992C75E008E6F34 /* EWSleepViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BEEAF671992C75E008E6F34 /* EWSleepViewController.xib */; };
 		9BF07AB7192324F800DED2E1 /* _EWAchievement.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AA4192324F800DED2E1 /* _EWAchievement.m */; };
 		9BF07AB8192324F800DED2E1 /* _EWAlarmItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AA6192324F800DED2E1 /* _EWAlarmItem.m */; };
 		9BF07AB9192324F800DED2E1 /* _EWGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AA8192324F800DED2E1 /* _EWGroup.m */; };
@@ -344,6 +347,11 @@
 		9BBA5F9718EB416700C07809 /* EWUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWUtil.m; sourceTree = "<group>"; };
 		9BBA5F9918EF295200C07809 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		9BEE145519786DFC0068FC08 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		9BEEAF621992B227008E6F34 /* EWBackgroundingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWBackgroundingManager.h; sourceTree = "<group>"; };
+		9BEEAF631992B227008E6F34 /* EWBackgroundingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWBackgroundingManager.m; sourceTree = "<group>"; };
+		9BEEAF651992C75E008E6F34 /* EWSleepViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSleepViewController.h; sourceTree = "<group>"; };
+		9BEEAF661992C75E008E6F34 /* EWSleepViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSleepViewController.m; sourceTree = "<group>"; };
+		9BEEAF671992C75E008E6F34 /* EWSleepViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWSleepViewController.xib; sourceTree = "<group>"; };
 		9BF07AA3192324F800DED2E1 /* _EWAchievement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EWAchievement.h; sourceTree = "<group>"; };
 		9BF07AA4192324F800DED2E1 /* _EWAchievement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EWAchievement.m; sourceTree = "<group>"; };
 		9BF07AA5192324F800DED2E1 /* _EWAlarmItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EWAlarmItem.h; sourceTree = "<group>"; };
@@ -854,6 +862,9 @@
 		56FEA55517A5763200FC2938 /* Interface */ = {
 			isa = PBXGroup;
 			children = (
+				9BEEAF651992C75E008E6F34 /* EWSleepViewController.h */,
+				9BEEAF661992C75E008E6F34 /* EWSleepViewController.m */,
+				9BEEAF671992C75E008E6F34 /* EWSleepViewController.xib */,
 				9B5A2F91197C53DD0076F2BD /* EWFeedbackViewController.h */,
 				9B5A2F92197C53DD0076F2BD /* EWFeedbackViewController.m */,
 				9B5A2F93197C53DD0076F2BD /* EWFeedbackViewController.xib */,
@@ -917,6 +928,8 @@
 		56FEA57B17A5763200FC2938 /* Kernel */ = {
 			isa = PBXGroup;
 			children = (
+				9BEEAF621992B227008E6F34 /* EWBackgroundingManager.h */,
+				9BEEAF631992B227008E6F34 /* EWBackgroundingManager.m */,
 				56FEA57917A5763200FC2938 /* EWDefines.h */,
 				5642AF4917ACCE48000C73E8 /* EWUIUtil.h */,
 				5642AF4A17ACCE48000C73E8 /* EWUIUtil.m */,
@@ -1172,7 +1185,7 @@
 			attributes = {
 				CLASSPREFIX = EW;
 				LastUpgradeCheck = 0460;
-				ORGANIZATIONNAME = Shens;
+				ORGANIZATIONNAME = WokeAlarm.com;
 				TargetAttributes = {
 					568CC783178DD2C900AB1579 = {
 						DevelopmentTeam = SDR7T9YB58;
@@ -1217,6 +1230,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E590FF4194DF35B000AD7C4 /* Lato-Italic.ttf in Resources */,
+				9BEEAF691992C75E008E6F34 /* EWSleepViewController.xib in Resources */,
 				0E590FF2194DF35B000AD7C4 /* Lato-Heavy.ttf in Resources */,
 				0E590FEF194DF35B000AD7C4 /* Lato-BoldItalic.ttf in Resources */,
 				9BF297E51912F720008C136E /* EWCollectionPersonCell.xib in Resources */,
@@ -1426,6 +1440,7 @@
 				AB29C4CB18DEBCE700C0A141 /* UIViewController+Blur.m in Sources */,
 				9BF07AB7192324F800DED2E1 /* _EWAchievement.m in Sources */,
 				AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */,
+				9BEEAF641992B227008E6F34 /* EWBackgroundingManager.m in Sources */,
 				ABD53FC9194D7DC900BBC8DA /* EWServerObject.m in Sources */,
 				9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */,
 				ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */,
@@ -1439,6 +1454,7 @@
 				9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */,
 				5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */,
 				AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */,
+				9BEEAF681992C75E008E6F34 /* EWSleepViewController.m in Sources */,
 				9BF297E41912F720008C136E /* EWCollectionPersonCell.m in Sources */,
 				AB198C951861818B008C1F15 /* EWMediaItem.m in Sources */,
 				AB3ACDC4190387C10066CF3F /* EWNotification.m in Sources */,

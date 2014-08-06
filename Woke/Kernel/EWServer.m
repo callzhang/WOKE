@@ -72,9 +72,9 @@
         EWAlert(@"Entering sleep mode...");
     }
     else{
-        [NSException raise:@"Unexpected Local Notification Type" format:@"Detail: %@", notification];
+        NSString *str = [NSString stringWithFormat:@"Unexpected Local Notification Type. Detail: %@", notification];
+        EWAlert(str);
     }
-
 
 }
 
@@ -86,8 +86,6 @@
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     });
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-    
-    
     
     for (EWPerson *person in users) {
         //get next wake up time

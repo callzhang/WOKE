@@ -208,7 +208,7 @@
     BOOL newTask = NO;
     
     //Check task from server if not desired number
-    if (tasks.count != 7 * nWeeksToScheduleTask) {
+    if (tasks.count != 7 * nWeeksToScheduleTask && !self.lastChecked.isUpToDated) {
         //cannot check my task from server, which will cause checking / schedule cycle
         NSLog(@"My task count is %lu, checking from server!", (unsigned long)tasks.count);
         //this approach is a last resort to fetch task by owner
@@ -298,7 +298,7 @@
     }
     
     //last checked
-    [EWDataStore sharedInstance].lastChecked = [NSDate date];
+    self.lastChecked = [NSDate date];
     
     self.isSchedulingTask = NO;
     return goodTasks;

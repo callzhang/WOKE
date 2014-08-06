@@ -41,6 +41,7 @@
 #import "EWNotificationViewController.h"
 #import "NavigationControllerDelegate.h"
 #import "EWFeedbackViewController.h"
+#import "EWSleepViewController.h"
 
 //backend
 
@@ -348,7 +349,7 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", @"Feedback", nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", @"Feedback", @"Start Sleeping", nil];
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
@@ -603,6 +604,11 @@
                 EWFeedbackViewController *controller = [[EWFeedbackViewController alloc] initWithNibName:nil bundle:nil];
                 UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
                 [self presentViewControllerWithBlurBackground:navController];
+            }
+            case 4:{
+                //sleep
+                EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
+                [self presentViewControllerWithBlurBackground:controller];
             }
                 
             default:

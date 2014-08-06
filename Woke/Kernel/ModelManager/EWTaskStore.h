@@ -18,6 +18,7 @@
 
 @interface EWTaskStore : NSObject <NSKeyedArchiverDelegate>
 @property BOOL isSchedulingTask;
+@property NSDate *lastChecked;//last checked task with server
 
 #pragma mark - Search Task
 /**
