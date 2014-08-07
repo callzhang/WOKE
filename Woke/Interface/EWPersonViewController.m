@@ -306,7 +306,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         urlArray = [[NSMutableArray alloc] init];
     }
     
-    [urlArray addObject:person.profilePic];
+    [urlArray insertObject:person.profilePic atIndex:0];
     // for test
     // person photo;
   
@@ -710,7 +710,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     id <IDMPhoto> photo = [photoBrowser photoAtIndex:photoIndex];
     NSLog(@"Did dismiss actionSheet with photo index: %lu, photo caption: %@", (unsigned long)photoIndex, photo.caption);
     
-    if (photoIndex == 0) {
+    if (buttonIndex == 2) {
         
         [photoBrowser deleteButtonPressed:nil];
         
@@ -724,7 +724,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         imagePickerController.allowsEditing = YES;
         
-        imagePickerController.sourceType = buttonIndex-1;
+        imagePickerController.sourceType = buttonIndex;
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]&&  imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Unsupport Camera
         return;
@@ -759,8 +759,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 {
     if (person.isMe) {
         // 结束时候保存一次
-        me.images = _photos;
-        [EWDataStore save];
+        
     }
 }
 
@@ -800,6 +799,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         [_photos insertObject:fileUrl atIndex:0];
    
+        me.images = _photos;
+        [EWDataStore save];
+        
         [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
 
         [_photoBrower.view showSuccessNotification:@"Uploaded"];
