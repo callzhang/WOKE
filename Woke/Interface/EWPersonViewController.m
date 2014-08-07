@@ -353,7 +353,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     UIActionSheet *sheet;
     if (person.isMe) {
         
-        sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference",@"Take Photo",@"Log out", nil];
+        sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference",@"Log out", nil];
         if (DEV_TEST) {
             [sheet addButtonWithTitle:@"Add friend"];
         }
