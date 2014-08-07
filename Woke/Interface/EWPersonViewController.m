@@ -316,7 +316,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     if (person.isMe) {
         
-        _photoBrower.actionButtonTitles = @[@"Select from local",@"Take Photo",@"delete this image"];
+        _photoBrower.actionButtonTitles = @[@"Uplode from library",@"Upload from taking photo",@"delete this image"];
         
 //        _photoBrower.actionSheetTitle = @"Upload Your Photo";
      

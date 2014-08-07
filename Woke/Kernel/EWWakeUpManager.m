@@ -276,6 +276,7 @@
     }
     
     //add fake media is needed
+    //  need  update  get from server
     nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
     if (nVoice == 0) {
         //need to create some voice

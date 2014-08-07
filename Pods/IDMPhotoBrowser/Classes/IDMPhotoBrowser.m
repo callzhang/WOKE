@@ -504,7 +504,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 
 - (void)viewDidLoad {
     // Transition animation
-    [self performPresentAnimation];
+//    [self performPresentAnimation];
     
     /*if(!_senderViewForAnimation) // Default presentation (withoung animation) {
         if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7")) // ios 7 or greater
