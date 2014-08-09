@@ -15,7 +15,12 @@
 #import "UIImageView+AFNetworking.h"
 #import "MBProgressHUD.h"
 #import "EWUserManagement.h"
+
+
 #define WhyFaceBook @"Lorem ipsum dolor sit amet,\nconsectertur adipisicing elit,sed do\neiusmod tempor incididunt ut\n labore et dolore magna aliqua Ut enim ad minim veniam."
+
+
+
 @interface EWLogInViewController ()
 
 @end
@@ -99,6 +104,9 @@
     //[self.indicator startAnimating];
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     
+    //
+    
+      
     //leaving
     [self dismissViewControllerAnimated:YES completion:NULL];
     

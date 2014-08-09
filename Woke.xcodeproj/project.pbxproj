@@ -62,6 +62,8 @@
 		0EABB2A81956884300C45788 /* EWMyFriendsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EABB2A61956884300C45788 /* EWMyFriendsViewController.xib */; };
 		0EAD6FB7195A62EC00DDB052 /* EWFriendsTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD6FB5195A62EC00DDB052 /* EWFriendsTableCell.m */; };
 		0EAD6FB8195A62EC00DDB052 /* EWFriendsTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */; };
+		0EAD75D61995C26F00186860 /* MYBlurIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD75D31995C26F00186860 /* MYBlurIntroductionView.m */; };
+		0EAD75D71995C26F00186860 /* MYIntroductionPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD75D51995C26F00186860 /* MYIntroductionPanel.m */; };
 		0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */; };
 		0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */; };
 		0EB0C05919684F600061BC70 /* UAProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0C05819684F600061BC70 /* UAProgressView.m */; };
@@ -271,6 +273,10 @@
 		0EAD6FB4195A62EC00DDB052 /* EWFriendsTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFriendsTableCell.h; sourceTree = "<group>"; };
 		0EAD6FB5195A62EC00DDB052 /* EWFriendsTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFriendsTableCell.m; sourceTree = "<group>"; };
 		0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWFriendsTableCell.xib; sourceTree = "<group>"; };
+		0EAD75D21995C26F00186860 /* MYBlurIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MYBlurIntroductionView.h; path = MYBlurIntroductionView/MYBlurIntroductionView.h; sourceTree = "<group>"; };
+		0EAD75D31995C26F00186860 /* MYBlurIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MYBlurIntroductionView.m; path = MYBlurIntroductionView/MYBlurIntroductionView.m; sourceTree = "<group>"; };
+		0EAD75D41995C26F00186860 /* MYIntroductionPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MYIntroductionPanel.h; path = MYBlurIntroductionView/MYIntroductionPanel.h; sourceTree = "<group>"; };
+		0EAD75D51995C26F00186860 /* MYIntroductionPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MYIntroductionPanel.m; path = MYBlurIntroductionView/MYIntroductionPanel.m; sourceTree = "<group>"; };
 		0EB02D02195F1C7700ECACED /* EWMyProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMyProfileViewController.h; sourceTree = "<group>"; };
 		0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMyProfileViewController.m; sourceTree = "<group>"; };
 		0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMyProfileViewController.xib; sourceTree = "<group>"; };
@@ -635,6 +641,17 @@
 			path = Montserrat;
 			sourceTree = "<group>";
 		};
+		0EAD75D81995C27D00186860 /* MYBlurIntroductionView */ = {
+			isa = PBXGroup;
+			children = (
+				0EAD75D21995C26F00186860 /* MYBlurIntroductionView.h */,
+				0EAD75D31995C26F00186860 /* MYBlurIntroductionView.m */,
+				0EAD75D41995C26F00186860 /* MYIntroductionPanel.h */,
+				0EAD75D51995C26F00186860 /* MYIntroductionPanel.m */,
+			);
+			name = MYBlurIntroductionView;
+			sourceTree = "<group>";
+		};
 		0EB0C05619684F3B0061BC70 /* UAProgress */ = {
 			isa = PBXGroup;
 			children = (
@@ -913,6 +930,7 @@
 		56FEA57417A5763200FC2938 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				0EAD75D81995C27D00186860 /* MYBlurIntroductionView */,
 				0ECAF190197EB50100368D6B /* RMSelectionView */,
 				9B3EC1771970DE9E00BB52AA /* GPUAnimator */,
 				0EB0C05619684F3B0061BC70 /* UAProgress */,
@@ -1392,6 +1410,7 @@
 				ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */,
 				9BF297EA1912F720008C136E /* EWPopupMenu.m in Sources */,
 				AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */,
+				0EAD75D61995C26F00186860 /* MYBlurIntroductionView.m in Sources */,
 				9B5A2F98197CD4880076F2BD /* UINavigationController+StatusBarHidden.m in Sources */,
 				5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */,
 				5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */,
@@ -1470,6 +1489,7 @@
 				AB7807A418393A66007C8BFD /* EWPersonStore.m in Sources */,
 				ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */,
 				9BF07ABA192324F800DED2E1 /* _EWGroupTask.m in Sources */,
+				0EAD75D71995C26F00186860 /* MYIntroductionPanel.m in Sources */,
 				0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */,
 				9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */,
 				9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */,

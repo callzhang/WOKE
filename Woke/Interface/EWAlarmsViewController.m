@@ -9,6 +9,7 @@
 #import "EWAlarmsViewController.h"
 
 // Util
+#import "EWUtil.h"
 #import "EWUIUtil.h"
 #import "EWAppDelegate.h"
 #import "NSString+Extend.h"
@@ -190,11 +191,15 @@
 
 - (void)initView {
     
+    [EWUIUtil addFirstTimeTutorialInViewController:self];
     //show loading indicator
     [self showAlarmPageLoading:YES];
     
+    
     //load page
     [self reloadAlarmPage];
+    
+    
 }
 
 
