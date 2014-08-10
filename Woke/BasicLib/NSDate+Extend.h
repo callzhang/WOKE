@@ -40,6 +40,9 @@
  return YYYYMMddHHmmssSSSS
  */
 - (NSString *)date2numberLongString;
+
+//
+-(NSString *)dateToParseDateString;
 /**
  Compares two dates
  */

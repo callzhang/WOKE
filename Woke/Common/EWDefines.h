@@ -165,4 +165,8 @@
 //Navgation Controller
 #define kMaxPersonNavigationConnt       6
 
-
+// Parse Code
+#define  kParsePushUrl   @"https://api.parse.com/1/push"
+#define  kParseUploadUrl @"https://api.parse.com/1/"
+#define  kParseApplicationId @"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
+#define  kParseRestAPIId  @"lGJTP5XCAq0O3gDyjjRjYtWui6pAJxdyDSTPXzkL"

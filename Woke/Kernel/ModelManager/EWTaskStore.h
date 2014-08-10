@@ -112,4 +112,13 @@
 //sleep notification
 + (void)updateSleepNotification;
 + (void)cancelSleepNotification;
+
+
+/*
+ Use REST to create a notification on server
+ 
+ when person is in his sleep mode
+ */
+
++ (void)scheduleNotificationOnServer;
 @end

@@ -775,15 +775,15 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         
         NSMutableString *urlString = [NSMutableString string];
-        [urlString appendString:@"https://api.parse.com/1/"];
+        [urlString appendString:kParseUploadUrl];
         [urlString appendFormat:@"files/imagefile.jpg"];
         
         NSURL *url = [NSURL URLWithString:urlString];
         
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         [request setHTTPMethod:@"POST"];
-        [request addValue:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z" forHTTPHeaderField:@"X-Parse-Application-Id"];
-        [request addValue:@"lGJTP5XCAq0O3gDyjjRjYtWui6pAJxdyDSTPXzkL" forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+        [request addValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
+        [request addValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
         [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
         [request setHTTPBody:UIImagePNGRepresentation(image)];
         
