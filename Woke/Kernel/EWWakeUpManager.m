@@ -51,26 +51,21 @@
 + (void)handlePushNotification:(NSDictionary *)notification{
     NSString *type = notification[kPushTypeKey];
     NSString *mediaID = notification[kPushMediaKey];
+    NSString *taskID = notification[kPushTaskKey];
     
-    if (!mediaID) {
-        
-        NSLog(@"Push doesn't have media ID, abort!");
-        return;
-    }
+//    if (!mediaID) {
+//        NSLog(@"Push doesn't have media ID, abort!");
+//        return;
+//    }
 
     
     EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
-//    EWPerson *person;
-//    if (!personID) {
-//        personID = media.author.username;
-//        person = media.author;
-//    }
     
     
     if ([type isEqualToString:kPushTypeBuzzKey]) {
         // ============== Buzz ===============
-        
+        NSParameterAssert(mediaID);
         NSLog(@"Received buzz from %@", media.author.name);
         
         //sound
@@ -130,6 +125,7 @@
         
     }else if ([type isEqualToString:kPushTypeMediaKey]){
         // ============== Media ================
+        NSParameterAssert(mediaID);
         NSLog(@"Received voice type push");
         
 
@@ -179,6 +175,15 @@
         
     }else if([type isEqualToString:kPushTypeTimerKey]){
         // ============== Timer ================
+        //TODO: test if the push is correct
+        //first find the task ID
+        //then test if the tesk time is matched, also the task should not be completed
+        //also make sure it's not too early or too late
+        if (![taskID isEqualToString:task.objectId]) {
+            NSLog(@"Task from push is not the next task");
+            return;
+        }
+        //...
         
         [EWWakeUpManager handleAlarmTimerEvent:notification];
         

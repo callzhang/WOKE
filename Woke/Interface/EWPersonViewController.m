@@ -785,7 +785,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [request addValue:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z" forHTTPHeaderField:@"X-Parse-Application-Id"];
         [request addValue:@"lGJTP5XCAq0O3gDyjjRjYtWui6pAJxdyDSTPXzkL" forHTTPHeaderField:@"X-Parse-REST-API-Key"];
         [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
-        [request setHTTPBody:UIImageJPEGRepresentation(image, 0.3f)];
+        [request setHTTPBody:UIImagePNGRepresentation(image)];
         
         NSURLResponse *response = nil;
         NSError *error = nil;
