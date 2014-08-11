@@ -33,8 +33,9 @@
 
 @interface EWDataStore()
 @property NSManagedObjectContext *context; //the main context(private), only expose 'currentContext' as a class method
-@property (nonatomic) NSMutableDictionary *parseSaveCallbacks;
+@property NSMutableDictionary *parseSaveCallbacks;
 @property (nonatomic) NSTimer *saveToServerDelayTimer;
+@property NSMutableArray *saveToLocalItems;
 //@property (nonatomic) NSMutableDictionary *changesDictionary;
 @end
 
@@ -74,16 +75,19 @@
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
         context = [NSManagedObjectContext MR_defaultContext];
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextObjectsDidChangeNotification object:context];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextWillSaveNotification object:context];
         //Observe background context saves so main context can perform merge changes
-        
-        [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:nil queue:nil usingBlock:^(NSNotification* note){
-             if (note.object != context)
-				 //NSLog(@"Observed changes in background context, merge to main context!");
-                 [context performBlock:^(){
-                     [context mergeChangesFromContextDidSaveNotification:note];
-                 }];
-		}];
+        //We don't need to merge child context change to main context
+		//It will cause errors when main and child context access same MO
+//        [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:context queue:nil usingBlock:^(NSNotification* note){
+//			
+//             if (note.object != context)
+//				 //NSLog(@"Observed changes in background context, merge to main context!");
+//                 [context performBlock:^(){
+//                     [context mergeChangesFromContextDidSaveNotification:note];
+//                 }];
+//		}];
+		
         //Observe context save to update the update/insert/delete queue
         //This turns out to be not possible because there are actions that need to save to local but not update to server
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addToQueueUpOnSaving:) name:NSManagedObjectContextDidSaveNotification object:context];
@@ -99,9 +103,9 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginDataCheck) name:kPersonLoggedIn object:Nil];
         
         //change dic
-        //self.changesDictionary = [NSMutableDictionary new];
         self.parseSaveCallbacks = [NSMutableDictionary dictionary];
         self.saveCallbacks = [NSMutableArray new];
+		self.saveToLocalItems = [NSMutableArray new];
     }
     return self;
 }
@@ -169,7 +173,7 @@
     [EWTaskStore.sharedInstance checkScheduledNotifications];
     
     NSLog(@"4. Check my unread media");
-    [[EWMediaStore sharedInstance] checkMediaAssets];
+    [[EWMediaStore sharedInstance] checkMediaAssetsInBackground];
     
     //updating facebook friends
     NSLog(@"5. Updating facebook friends");
@@ -272,10 +276,10 @@
     NSSet *inserts = [context insertedObjects];
     NSSet *updates = [context updatedObjects];
 	for (NSManagedObject *MO in inserts) {
-		NSString *str = [NSString stringWithFormat:@"*** Trying to INSERT MO %@(%@) but it failed validation", MO.entity.name, MO.serverID];
+		NSString *str = [NSString stringWithFormat:@"*** Trying to INSERT MO %@(%@) but it failed validation", MO.entity.name, MO.objectID];
 		BOOL good = [EWDataStore validateMO:MO];
 		if (!good) {
-			NSLog(@"%@", str);
+			EWAlert(str);
 		}
 	}
 	
@@ -283,7 +287,7 @@
 		NSString *str = [NSString stringWithFormat:@"*** Trying to UPDATE MO %@(%@) but it failed validation", MO.entity.name, MO.serverID];
 		BOOL good = [EWDataStore validateMO:MO];
 		if (!good) {
-			NSLog(@"%@", str);
+			EWAlert(str);
 		}
 	}
 		
@@ -318,6 +322,11 @@
     
     if (inserts.count || updates.count || deletes.count) {
         for (NSManagedObject *MO in inserts) {
+			//skip if marked as save to local
+			if ([[EWDataStore sharedInstance].saveToLocalItems containsObject:MO]) {
+				continue;
+			}
+			
             NSString *serverID = [MO valueForKey:kParseObjectID];
             if (serverID) {
                 NSLog(@"MO %@(%@) has serverID, meaning it is fetched from server, please check!", MO.entity.name, [MO valueForKey:kParseObjectID]);
@@ -328,6 +337,11 @@
 			hasChange = YES;
         }
         for (NSManagedObject *MO in updates) {
+			//skip if marked as save to local
+			if ([[EWDataStore sharedInstance].saveToLocalItems containsObject:MO]) {
+				continue;
+			}
+			
             //skip if updatedMO contained in insertedMOs
             if ([inserts containsObject:MO] && MO.serverID) {
                 continue;
@@ -368,7 +382,7 @@
 //		return;
 //    }
 	
-	//validate: skip because save to local is not a good place to check
+	//validate: skip validation because save to local is not a good place to check
 //	NSString *ID = mo.serverID;
 //	BOOL good = [EWDataStore validateMO:mo];
 //	if (!good) {
@@ -382,14 +396,19 @@
     NSArray *u = [updates filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
     NSArray *i = [inserts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
     if (u.count) {
-        NSLog(@"!!! The object %@ you are trying to save from PO is already in the update queue. Check your code! (%@)", mo.entity.name, ID);
+        NSLog(@"!!! %@(%@) save to local is already in the UPDATE queue. Check your code! ", mo.entity.name, ID);
     }
     if (i.count) {
-        NSLog(@"!!! The object %@ you are trying to save from PO is already in the insert queue. Check your code! (%@)", mo.entity.name, ID);
+        NSLog(@"!!! %@(%@) save to local is already in the INSERT queue. Check your code!", mo.entity.name, ID);
     }
-    
+	
+	//mark MO as save to local
+	
+	[[EWDataStore sharedInstance].saveToLocalItems addObject:mo];
+
     //save to enqueue the updates
     [EWDataStore saveAndEnqueue];
+	[[EWDataStore sharedInstance].saveToLocalItems removeObject:mo];
     
     //remove from the update queue
     [EWDataStore removeObjectFromInsertQueue:mo];
@@ -406,7 +425,7 @@
 	BOOL good = YES;
 	
 	if (![mo valueForKey:kUpdatedDateKey]) {
-		NSLog(@"The %@(%@) you are trying to save doesn't have a updated date!", mo.entity.name, mo.serverID);
+		NSLog(@"The %@(%@) you are trying to validate doesn't have a updated date!", mo.entity.name, mo.serverID);
 		//return NO;
 	}
     NSString *type = mo.entity.name;
@@ -434,22 +453,6 @@
 }
 
 + (void)appendUpdateQueue:(NSManagedObject *)mo{
-	//The reason we use change dictionary was to lock the changes that were new and add it incrementally, so that at upload time we only upload changed value. It seems to be redundent at least for now.
-	
-//    NSManagedObjectID *objectID = mo.objectID;
-//    if ([objectID isTemporaryID]) {
-//        [mo.managedObjectContext obtainPermanentIDsForObjects:@[mo] error:NULL];
-//        objectID = mo.objectID;
-//    }
-//    //Add changed attributes minus skipped ones to changes dic
-//    NSString *str = objectID.URIRepresentation.absoluteString;
-//    NSMutableDictionary *changeDic = [[mo changedValues] mutableCopy];
-//    [changeDic removeObjectsForKeys:attributeUploadSkipped];
-//    [changeDic addEntriesFromDictionary:[[EWDataStore sharedInstance].changesDictionary objectForKey:str]];
-//    if (changeDic) {
-//        [[EWDataStore sharedInstance].changesDictionary setObject:[changeDic copy] forKey:str];
-//    }
-	
     //queue
     [EWDataStore appendObject:mo toQueue:kParseQueueUpdate];
 }
@@ -487,12 +490,16 @@
 //queue functions
 + (NSSet *)getObjectFromQueue:(NSString *)queue{
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:queue];
+	NSMutableArray *validMOs = [array mutableCopy];
     NSMutableSet *set = [NSMutableSet new];
     for (NSString *str in array) {
         NSURL *url = [NSURL URLWithString:str];
         NSManagedObjectID *ID = [[EWDataStore currentContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
         if (!ID) {
             NSLog(@"@@@ ManagedObjectID not found: %@", url);
+			//remove from queue
+			[validMOs removeObject:str];
+			[[NSUserDefaults standardUserDefaults] setObject:[validMOs copy] forKey:queue];
             continue;
         }
 		NSError *error;
@@ -522,7 +529,10 @@
     if (![set containsObject:str]) {
         [set addObject:str];
         [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:queue];
-        NSLog(@"MO %@(%@) add to %@", mo.entity.name, mo.serverID, queue);
+        NSLog(@"MO %@(%@) added to %@", mo.entity.name, mo.serverID, queue);
+		if (!mo.serverID && ![queue isEqualToString:kParseQueueInsert]) {
+			NSLog(@"*** unkonwn mo updated: %@", mo);
+		}
     }
     
 }
@@ -634,11 +644,17 @@
 	NSSet *workingMOs = [EWDataStore workingQueue];
 	NSSet *deletePOs = [EWDataStore deleteQueue];
 	if (workingMOs.count > 0 || deletePOs.count > 0) {
-		NSLog(@"There are %d MOs need to upload and %d MOs need to delete", workingMOs.count, deletePOs.count);
+		NSLog(@"There are %d MOs need to upload or %d MOs need to delete", workingMOs.count, deletePOs.count);
 		for (NSManagedObject *MO in workingMOs) {
-			[EWDataStore appendUpdateQueue:MO];
+			if (MO.serverID) {
+				[EWDataStore appendUpdateQueue:MO];
+			}else{
+				[EWDataStore appendInsertQueue:MO];
+			}
+			
 			[EWDataStore removeObjectFromWorkingQueue:MO];
 		}
+		NSParameterAssert([EWDataStore workingQueue].count == 0);
 		//TODO: determine update status
 		[EWDataStore updateToServer];
 	}
@@ -658,6 +674,7 @@
     
     //validation
     if (![EWDataStore validateMO:mo]) {
+		NSLog(@"!!! Validation failed for %@(%@), skip upload. Detail: \n%@", mo.entity.name, mo.serverID, mo);
 		return;
 	}
     
@@ -798,19 +815,23 @@
 
 - (void)updateModifiedDate:(NSNotification *)notification{
 	if (![NSThread isMainThread]) {
+		NSParameterAssert([NSThread isMainThread]);
 		return;
 	}
 	
-    NSSet *updatedObjects = notification.userInfo[NSUpdatedObjectsKey];
-	NSSet *insertedObjects = notification.userInfo[NSInsertedObjectsKey];
+	NSSet *updatedObjects = context.updatedObjects;
+	NSSet *insertedObjects = context.insertedObjects;
+	
+	
     //for updated mo
     for (NSManagedObject *mo in updatedObjects) {
 		
 		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
+		//if last updated doesn't exist, 
 		if (!lastUpdated) return;
 		
-		if ([mo isKindOfClass:[EWPerson class]] && ![mo valueForKey:@"isMe"]) {
-			NSLog(@"We should not update Other user!");
+		//skip if marked save to local
+		if ([self.saveToLocalItems containsObject:mo]) {
 			return;
 		}
 		
@@ -829,12 +850,19 @@
 	
 	//for inserted mo
 	for (NSManagedObject *mo in insertedObjects) {
-		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
-		
-		if ([mo isKindOfClass:[EWPerson class]] && ![mo valueForKey:@"isMe"]) {
-			NSLog(@"We should not update Other user!");
+		//Potential bug: CoreData could not fulfill a fault for mo
+		//First test MO exist
+		if (![context existingObjectWithID:mo.objectID error:NULL]) {
+			NSLog(@"*** MO you are trying to modify doesn't exist in the sqlite: %@", mo.objectID);
 			return;
 		}
+		
+		//skip if marked save to local
+		if ([self.saveToLocalItems containsObject:mo]) {
+			return;
+		}
+		
+		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
 		
 		if (!lastUpdated){
 			[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
