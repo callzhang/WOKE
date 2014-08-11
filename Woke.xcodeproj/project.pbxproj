@@ -66,7 +66,13 @@
 		0EAD75D71995C26F00186860 /* MYIntroductionPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD75D51995C26F00186860 /* MYIntroductionPanel.m */; };
 		0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */; };
 		0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */; };
+		0EB02D871998FF320031D2DD /* New-Version_03.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D861998FF310031D2DD /* New-Version_03.png */; };
+		0EB02D89199900A20031D2DD /* New-Version_03-02.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D88199900A20031D2DD /* New-Version_03-02.png */; };
 		0EB0C05919684F600061BC70 /* UAProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0C05819684F600061BC70 /* UAProgressView.m */; };
+		0EB0D3251998F5F50031D2DD /* EWFirstTimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0D3231998F5F50031D2DD /* EWFirstTimeViewController.m */; };
+		0EB0D3261998F5F50031D2DD /* EWFirstTimeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EB0D3241998F5F50031D2DD /* EWFirstTimeViewController.xib */; };
+		0EB0D32C1998FBF10031D2DD /* New-Version_03-04.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB0D3291998FBF10031D2DD /* New-Version_03-04.png */; };
+		0EB0D32D1998FBF10031D2DD /* New-Version_03-05.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB0D32A1998FBF10031D2DD /* New-Version_03-05.png */; };
 		0ECAF195197EB50100368D6B /* EWSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECAF192197EB50100368D6B /* EWSelectionViewController.m */; };
 		0ECAF196197EB50100368D6B /* RMDateSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECAF194197EB50100368D6B /* RMDateSelectionViewController.m */; };
 		0ECB00A21964585A00B122EF /* EWCostumTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECB00A11964585A00B122EF /* EWCostumTextField.m */; };
@@ -118,8 +124,6 @@
 		9BF297B01912F713008C136E /* EWAlarmScheduleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297911912F713008C136E /* EWAlarmScheduleViewController.m */; };
 		9BF297B11912F713008C136E /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297921912F713008C136E /* EWAlarmsView.xib */; };
 		9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297941912F713008C136E /* EWAlarmsViewController.m */; };
-		9BF297B41912F713008C136E /* EWFirstTimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297981912F713008C136E /* EWFirstTimeViewController.m */; };
-		9BF297B51912F713008C136E /* EWFirstTimeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297991912F713008C136E /* EWFirstTimeViewController.xib */; };
 		9BF297B61912F713008C136E /* EWLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2979B1912F713008C136E /* EWLogInViewController.m */; };
 		9BF297B71912F713008C136E /* EWLogInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2979C1912F713008C136E /* EWLogInViewController.xib */; };
 		9BF297B81912F713008C136E /* EWNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2979E1912F713008C136E /* EWNotificationViewController.m */; };
@@ -280,8 +284,15 @@
 		0EB02D02195F1C7700ECACED /* EWMyProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMyProfileViewController.h; sourceTree = "<group>"; };
 		0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMyProfileViewController.m; sourceTree = "<group>"; };
 		0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMyProfileViewController.xib; sourceTree = "<group>"; };
+		0EB02D861998FF310031D2DD /* New-Version_03.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "New-Version_03.png"; sourceTree = "<group>"; };
+		0EB02D88199900A20031D2DD /* New-Version_03-02.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "New-Version_03-02.png"; sourceTree = "<group>"; };
 		0EB0C05719684F600061BC70 /* UAProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UAProgressView.h; sourceTree = "<group>"; };
 		0EB0C05819684F600061BC70 /* UAProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UAProgressView.m; sourceTree = "<group>"; };
+		0EB0D3221998F5F50031D2DD /* EWFirstTimeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFirstTimeViewController.h; sourceTree = "<group>"; };
+		0EB0D3231998F5F50031D2DD /* EWFirstTimeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFirstTimeViewController.m; sourceTree = "<group>"; };
+		0EB0D3241998F5F50031D2DD /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWFirstTimeViewController.xib; sourceTree = "<group>"; };
+		0EB0D3291998FBF10031D2DD /* New-Version_03-04.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "New-Version_03-04.png"; sourceTree = "<group>"; };
+		0EB0D32A1998FBF10031D2DD /* New-Version_03-05.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "New-Version_03-05.png"; sourceTree = "<group>"; };
 		0ECAF191197EB50100368D6B /* EWSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSelectionViewController.h; sourceTree = "<group>"; };
 		0ECAF192197EB50100368D6B /* EWSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSelectionViewController.m; sourceTree = "<group>"; };
 		0ECAF193197EB50100368D6B /* RMDateSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMDateSelectionViewController.h; sourceTree = "<group>"; };
@@ -384,9 +395,6 @@
 		9BF297921912F713008C136E /* EWAlarmsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWAlarmsView.xib; sourceTree = "<group>"; };
 		9BF297931912F713008C136E /* EWAlarmsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarmsViewController.h; sourceTree = "<group>"; };
 		9BF297941912F713008C136E /* EWAlarmsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWAlarmsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		9BF297971912F713008C136E /* EWFirstTimeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFirstTimeViewController.h; sourceTree = "<group>"; };
-		9BF297981912F713008C136E /* EWFirstTimeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFirstTimeViewController.m; sourceTree = "<group>"; };
-		9BF297991912F713008C136E /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWFirstTimeViewController.xib; sourceTree = "<group>"; };
 		9BF2979A1912F713008C136E /* EWLogInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWLogInViewController.h; sourceTree = "<group>"; };
 		9BF2979B1912F713008C136E /* EWLogInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWLogInViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		9BF2979C1912F713008C136E /* EWLogInViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWLogInViewController.xib; sourceTree = "<group>"; };
@@ -661,6 +669,17 @@
 			path = UAProgress;
 			sourceTree = "<group>";
 		};
+		0EB0D3271998FBCC0031D2DD /* FirstTimeImage */ = {
+			isa = PBXGroup;
+			children = (
+				0EB02D88199900A20031D2DD /* New-Version_03-02.png */,
+				0EB02D861998FF310031D2DD /* New-Version_03.png */,
+				0EB0D3291998FBF10031D2DD /* New-Version_03-04.png */,
+				0EB0D32A1998FBF10031D2DD /* New-Version_03-05.png */,
+			);
+			name = FirstTimeImage;
+			sourceTree = "<group>";
+		};
 		0ECAF190197EB50100368D6B /* RMSelectionView */ = {
 			isa = PBXGroup;
 			children = (
@@ -703,6 +722,7 @@
 		565DF60D17A40420000D9DA9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0EB0D3271998FBCC0031D2DD /* FirstTimeImage */,
 				0E590FCF194DF35B000AD7C4 /* Fonts */,
 				AB44569F17E6A59E0077FE45 /* Profile picture */,
 				AB44569E17E6A5870077FE45 /* Voice Message */,
@@ -891,9 +911,6 @@
 				9BF297921912F713008C136E /* EWAlarmsView.xib */,
 				9BF297931912F713008C136E /* EWAlarmsViewController.h */,
 				9BF297941912F713008C136E /* EWAlarmsViewController.m */,
-				9BF297971912F713008C136E /* EWFirstTimeViewController.h */,
-				9BF297981912F713008C136E /* EWFirstTimeViewController.m */,
-				9BF297991912F713008C136E /* EWFirstTimeViewController.xib */,
 				9BF2979A1912F713008C136E /* EWLogInViewController.h */,
 				9BF2979B1912F713008C136E /* EWLogInViewController.m */,
 				9BF2979C1912F713008C136E /* EWLogInViewController.xib */,
@@ -922,6 +939,9 @@
 				0EB02D02195F1C7700ECACED /* EWMyProfileViewController.h */,
 				0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */,
 				0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */,
+				0EB0D3221998F5F50031D2DD /* EWFirstTimeViewController.h */,
+				0EB0D3231998F5F50031D2DD /* EWFirstTimeViewController.m */,
+				0EB0D3241998F5F50031D2DD /* EWFirstTimeViewController.xib */,
 				9BF297C31912F71F008C136E /* UI Components */,
 			);
 			path = Interface;
@@ -1229,6 +1249,7 @@
 				en,
 				"zh-Hans",
 				"zh-Hant",
+				Base,
 			);
 			mainGroup = 568CC77B178DD2C900AB1579;
 			productRefGroup = 568CC785178DD2C900AB1579 /* Products */;
@@ -1257,6 +1278,7 @@
 				0E590FF0194DF35B000AD7C4 /* Lato-Hairline.ttf in Resources */,
 				ABF3FB611908B72F0017D2EF /* 12.jpg in Resources */,
 				0EAD6FB8195A62EC00DDB052 /* EWFriendsTableCell.xib in Resources */,
+				0EB0D32C1998FBF10031D2DD /* New-Version_03-04.png in Resources */,
 				9BF297B71912F713008C136E /* EWLogInViewController.xib in Resources */,
 				ABF3FB551908B72F0017D2EF /* 0.jpg in Resources */,
 				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
@@ -1266,6 +1288,7 @@
 				0EABB2A81956884300C45788 /* EWMyFriendsViewController.xib in Resources */,
 				ABF3FB621908B72F0017D2EF /* 13.jpg in Resources */,
 				9BF297BE1912F713008C136E /* EWRecordingViewController.xib in Resources */,
+				0EB0D3261998F5F50031D2DD /* EWFirstTimeViewController.xib in Resources */,
 				9BF297AF1912F713008C136E /* EWAlarmScheduleView.xib in Resources */,
 				ABFCB2DA186E956900355781 /* Autumn Spring.caf in Resources */,
 				0E590FF9194DF35B000AD7C4 /* Lato-Regular.ttf in Resources */,
@@ -1280,6 +1303,7 @@
 				9BF297E91912F720008C136E /* EWMediaViewCell.xib in Resources */,
 				0E590FF6194DF35B000AD7C4 /* Lato-LightItalic.ttf in Resources */,
 				9B5A2F95197C53DD0076F2BD /* EWFeedbackViewController.xib in Resources */,
+				0EB02D89199900A20031D2DD /* New-Version_03-02.png in Resources */,
 				0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */,
 				ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */,
 				0E590FFE194DF35B000AD7C4 /* OFL.txt in Resources */,
@@ -1291,7 +1315,6 @@
 				9BF297BB1912F713008C136E /* EWPostWakeUpView.xib in Resources */,
 				ABF3FB591908B72F0017D2EF /* 4.jpg in Resources */,
 				0E590FFC194DF35B000AD7C4 /* Lato-Thin.ttf in Resources */,
-				9BF297B51912F713008C136E /* EWFirstTimeViewController.xib in Resources */,
 				0E590FEC194DF35B000AD7C4 /* Lato-Black.ttf in Resources */,
 				9BF297EF1912F720008C136E /* EWTextFieldCell.xib in Resources */,
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
@@ -1308,8 +1331,10 @@
 				0E590FED194DF35B000AD7C4 /* Lato-BlackItalic.ttf in Resources */,
 				9B58FD3F19844E8500D13CC7 /* sleep mode.caf in Resources */,
 				ABF3FB5C1908B72F0017D2EF /* 7.jpg in Resources */,
+				0EB02D871998FF320031D2DD /* New-Version_03.png in Resources */,
 				ABF3FB631908B72F0017D2EF /* 14.jpg in Resources */,
 				9BF297E11912F720008C136E /* EWAlarmEditCell.xib in Resources */,
+				0EB0D32D1998FBF10031D2DD /* New-Version_03-05.png in Resources */,
 				0E590FF5194DF35B000AD7C4 /* Lato-Light.ttf in Resources */,
 				ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */,
 				9BF297B91912F713008C136E /* EWNotificationViewController.xib in Resources */,
@@ -1412,6 +1437,7 @@
 				AB7807A318393A66007C8BFD /* EWMediaStore.m in Sources */,
 				0EAD75D61995C26F00186860 /* MYBlurIntroductionView.m in Sources */,
 				9B5A2F98197CD4880076F2BD /* UINavigationController+StatusBarHidden.m in Sources */,
+				0EB0D3251998F5F50031D2DD /* EWFirstTimeViewController.m in Sources */,
 				5642AF5117ACDA4C000C73E8 /* TestShakeViewController.m in Sources */,
 				5642AF4B17ACCE48000C73E8 /* EWUIUtil.m in Sources */,
 				AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */,
@@ -1463,7 +1489,6 @@
 				ABD53FC9194D7DC900BBC8DA /* EWServerObject.m in Sources */,
 				9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */,
 				ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */,
-				9BF297B41912F713008C136E /* EWFirstTimeViewController.m in Sources */,
 				AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */,
 				9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */,
 				AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */,
@@ -1604,6 +1629,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Components",
 					"$(PROJECT_DIR)/Pods/Parse",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Connection",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Core",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/GooglePlusSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/Pinterest.embeddedframework",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/QQConnectSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/RenRenSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/UI",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1613,6 +1647,31 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/codegangsta",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/go-sql-driver",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/martini-contrib",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/nu7hatch",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/zx9597446",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/labix.org/v2/mgo",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/labix.org/v2",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/alipay",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/SinaWeiboSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/TencentWeiboSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/WeChatSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/YiXinSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/xmpp/Vendor/libidn",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ZBar",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/BuildProductsPath/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/IntermediateBuildFilesPath/UninstalledProducts",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UnityIOSProject/Assets/Plugins/IOS",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/BuildProductsPath/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/IntermediateBuildFilesPath/UninstalledProducts",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UnityIOSProject/Assets/Plugins/IOS",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UnityIOSProject/Assets/Plugins/IOS",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -1644,6 +1703,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Components",
 					"$(PROJECT_DIR)/Pods/Parse",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Connection",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Core",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/GooglePlusSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/Pinterest.embeddedframework",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/QQConnectSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/RenRenSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/UI",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1653,6 +1721,31 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/codegangsta",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/go-sql-driver",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/martini-contrib",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/nu7hatch",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/zx9597446",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/labix.org/v2/mgo",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/labix.org/v2",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/alipay",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/SinaWeiboSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/TencentWeiboSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/WeChatSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/YiXinSDK",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/xmpp/Vendor/libidn",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ZBar",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/BuildProductsPath/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/IntermediateBuildFilesPath/UninstalledProducts",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UnityIOSProject/Assets/Plugins/IOS",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/BuildProductsPath/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/IntermediateBuildFilesPath/UninstalledProducts",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UnityIOSProject/Assets/Plugins/IOS",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
+					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UnityIOSProject/Assets/Plugins/IOS",
 				);
 				OTHER_LDFLAGS = (
 					"-\"lxml2\"",

@@ -1,20 +1,13 @@
 //
 //  EWFirstTimeViewController.h
-//  EarlyWorm
+//  Woke
 //
-//  Created by Lei on 11/12/13.
-//  Copyright (c) 2013 Shens. All rights reserved.
+//  Created by mq on 14-8-11.
+//  Copyright (c) 2014年 WokeAlarm.com. All rights reserved.
 //
 
 #import "EWViewController.h"
-#import "MBProgressHUD.h"
 
-
-
-@interface EWFirstTimeViewController : EWViewController <MBProgressHUDDelegate>{
-    MBProgressHUD *refreshHUD;
-}
-
-- (IBAction)start:(id)sender;
+@interface EWFirstTimeViewController : UIViewController
 
 @end

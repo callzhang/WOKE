@@ -1,17 +1,19 @@
 //
 //  EWFirstTimeViewController.m
-//  EarlyWorm
+//  Woke
 //
-//  Created by Lei on 11/12/13.
-//  Copyright (c) 2013 Lei Zhang. All rights reserved.
+//  Created by mq on 14-8-11.
+//  Copyright (c) 2014年 WokeAlarm.com. All rights reserved.
 //
-// This class handles user login and data initilization
+
+#import "EWUIUtil.h"
+#import "EWUserManagement.h"
+#import "../../Components/MYBlurIntroductionView/MYBlurIntroductionView.h"
+#import "../../Components/MYBlurIntroductionView/MYIntroductionPanel.h"
 
 #import "EWFirstTimeViewController.h"
-#import "EWDataStore.h"
 
-
-@interface EWFirstTimeViewController ()
+@interface EWFirstTimeViewController ()<MYIntroductionDelegate>
 
 @end
 
@@ -28,12 +30,59 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-    refreshHUD = [[MBProgressHUD alloc] initWithView:self.view];
-    [self.view addSubview:refreshHUD];
-    refreshHUD.delegate = self;
     
+    [super viewDidLoad];
+    
+    
+    
+        //Create the introduction view and set its delegate
+        MYBlurIntroductionView *introductionView = [[MYBlurIntroductionView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        introductionView.delegate = self;
+        introductionView.BackgroundImageView.image = [UIImage imageNamed:@"Background.png"];
+        //introductionView.LanguageDirection = MYLanguageDirectionRightToLeft;
+        //Create stock panel with header
+        //    UIView *headerView = [[NSBundle mainBundle] loadNibNamed:@"TestHeader" owner:nil options:nil][0];
+     
+        
+        
+        MYIntroductionPanel *panel1 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Welcome to MYBlurIntroductionView" description:@"MYBlurIntroductionView is a powerful platform for building app introductions and tutorials. Built on the MYIntroductionView core, this revamped version has been reengineered for beauty and greater developer control." image:[UIImage imageNamed:@"New-Version_03.png"]];
+        
+        //Create stock panel with image
+        MYIntroductionPanel *panel2 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-02.png"]];
+        
+            MYIntroductionPanel *panel3 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-04.png"]];
+                MYIntroductionPanel *panel4 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-05.png"]];
+        //        MYIntroductionPanel *panel3 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, vc.view.frame.size.width, vc.view.frame.size.height) nibNamed:@"TestPanel3"];
+        
+        //Add custom attributes
+        //        panel3.PanelTitle = @"Test Title";
+        //        panel3.PanelDescription = @"This is a test panel description to test out the new animations on a custom nib";
+        
+        //Rebuild panel with new attributes
+        //        [panel3 buildPanelWithFrame:CGRectMake(0, 0, vc.view.frame.size.width, vc.view.frame.size.height)];
+        //    //Feel free to customize your introduction view here
+        //
+        //    //Add panels to an array
+        NSArray *panels = @[panel1, panel2,panel3,panel4];
+        //
+        //    //Build the introduction with desired panels
+        [introductionView buildIntroductionWithPanels:panels];
+    
+//        [introductionView ]
+        [self.view addSubview:introductionView];
+        [self.view bringSubviewToFront:introductionView];
+        
+        [EWUtil setFirstTimeLoginOver];
+    
+//     [EWUtil setFirstTimeLoginOver];
+    // Do any additional setup after loading the view from its nib.
+    
+}
+-(void)introduction:(MYBlurIntroductionView *)introductionView didFinishWithType:(MYFinishType)finishType
+{
+    [self dismissViewControllerAnimated:NO completion:^(){
+        [EWUserManagement login];
+    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -41,40 +90,5 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-- (void)viewDidAppear:(BOOL)animated{
-    
-}
-
-#pragma mark - UI action
-- (IBAction)start:(id)sender {
-    [refreshHUD show:YES];
-    [self.view setNeedsDisplay];
-    //=======init view=========
-    NSLog(@"User logged in, start init");
-    //User defaults
-    //[EWDataStore.sharedInstance registerDefaultOptions];
-    
-    //[EWDataStore.sharedInstance initData];
-    
-    //[EWDataStore.sharedInstance check];
-    
-    [refreshHUD hide:YES];
-    [self dismissViewControllerAnimated:YES completion:^{
-        //[self finishLogin];
-    }];
-}
-
-#pragma mart - login & logout
-- (void)finishLogin{
-    NSDictionary *option = @{@"firstTime": @"NO"};
-   [[NSUserDefaults standardUserDefaults] registerDefaults:option];
-}
-
--(void)finishLogout{
-    NSDictionary *option = @{@"firstTime": @"YES"};
-    [[NSUserDefaults standardUserDefaults] registerDefaults:option];
-}
-
 
 @end

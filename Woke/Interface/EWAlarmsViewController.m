@@ -191,7 +191,7 @@
 
 - (void)initView {
     
-    [EWUIUtil addFirstTimeTutorialInViewController:self];
+//    [EWUIUtil addFirstTimeTutorialInViewController:self];
     //show loading indicator
     [self showAlarmPageLoading:YES];
     
