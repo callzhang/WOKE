@@ -131,9 +131,9 @@
 - (BOOL)checkMediaAssets{
     PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
     [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
-    [query whereKey:kParseObjectID notContainedIn:[me.mediaAssets valueForKey:kParseObjectID]];
+    NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
+    [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
     NSArray *mediaPOs = [query findObjects];
-    mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT objectId IN %@", kParseObjectID, [me.mediaAssets valueForKey:kParseObjectID]]];
     for (PFObject *po in mediaPOs) {
         EWMediaItem *mo = (EWMediaItem *)po.managedObject;
         [mo refresh];
@@ -144,8 +144,29 @@
         EWAlert(@"You got voice for your next wake up");
         [EWDataStore save];
     }
+    
     //return [[EWPersonStore me].mediaAssets allObjects];
     return mediaPOs.count>0?YES:NO;
+}
+
+- (void)checkMediaAssetsInBackground{
+    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
+    [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
+    NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
+    [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *mediaPOs, NSError *error) {
+        mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, localAssetIDs]];
+        for (PFObject *po in mediaPOs) {
+            EWMediaItem *mo = (EWMediaItem *)po.managedObject;
+            [mo refresh];
+            //relationship
+            [mo removeReceiversObject:me];
+            [me addMediaAssetsObject:mo];
+            NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
+            EWAlert(@"You got voice for your next wake up");
+            [EWDataStore save];
+        }
+    }];
 }
 
 + (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media{

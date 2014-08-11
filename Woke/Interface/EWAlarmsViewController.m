@@ -191,7 +191,6 @@
 
 - (void)initView {
     
-    [EWUIUtil addFirstTimeTutorialInViewController:self];
     //show loading indicator
     [self showAlarmPageLoading:YES];
     
@@ -584,69 +583,32 @@
 
 #pragma mark - UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
+    NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
     if (actionSheet.tag == kOptionsAlert) {
         //main action
-        switch (buttonIndex) {
-            case 0:{//Preference
-                EWSettingsViewController *controller = [[EWSettingsViewController alloc] initWithNibName:nil bundle:nil];
-                UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
-                [self presentViewControllerWithBlurBackground:nav];
-                break;
-            }
-                
-            case 1:{ //test view
-                TestViewController *controller = [[TestViewController alloc] init];
-                [self presentViewControllerWithBlurBackground:controller];
-                
-                break;
-            }
-                
-            case 2:{
-                [self refreshView];
-            }
-                
-            case 3:{
-                EWFeedbackViewController *controller = [[EWFeedbackViewController alloc] initWithNibName:nil bundle:nil];
-                UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-                [self presentViewControllerWithBlurBackground:navController];
-            }
-            case 4:{
-                //sleep
-                EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
-                [self presentViewControllerWithBlurBackground:controller];
-            }
-                
-            default:
-                break;
+        //@"Preferences", @"Test sheet", @"Refresh", @"Feedback", @"Start Sleeping"
+        if ([title isEqualToString:@"Preference"]) {
+            EWSettingsViewController *controller = [[EWSettingsViewController alloc] initWithNibName:nil bundle:nil];
+            UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
+            [self presentViewControllerWithBlurBackground:nav];
+        }else if([title isEqualToString:@"Test sheet"]){
+            TestViewController *controller = [[TestViewController alloc] init];
+            [self presentViewControllerWithBlurBackground:controller];
+        }else if([title isEqualToString:@"Refresh"]){
+            [self refreshView];
+        }else if([title isEqualToString:@"Feedback"]){
+            EWFeedbackViewController *controller = [[EWFeedbackViewController alloc] initWithNibName:nil bundle:nil];
+            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+            [self presentViewControllerWithBlurBackground:navController];
+        }else if([title isEqualToString:@"Start Sleeping"]){
+            EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
+            [self presentViewControllerWithBlurBackground:controller];
         }
         
-    }else if (actionSheet.tag == kCollectionViewCellAlert){
-        //person cell action sheet
-        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
-        switch (buttonIndex) {
-            case 0:{
-                
-                EWPersonViewController *controller = [[EWPersonViewController alloc] initWithNibName:nil bundle:nil];
-                controller.person = person;
-                [self presentViewControllerWithBlurBackground:controller];
-                
-                break;
-            }
-            case 1:{
-                [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-                [EWServer buzz:@[person]];
-                
-                break;
-            }
-            case 2:{
-                EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
-                [self presentViewControllerWithBlurBackground:controller];
-                break;
-            }
-                
-            default:
-                break;
-        }
+    }else{
+        EWAlert(@"Unknown alert sheet");
     }
     
 }
@@ -827,12 +789,9 @@
             
         } else {
             //prevent updating too fast
-            if(lastUpdated.timeElapsed < 0.1 ){
-//                NSDictionary *change = cellChangeArray.firstObject;
-//                [self processChange:change];
-//                [cellChangeArray removeAllObjects];
-                return;
-            }
+//            if(lastUpdated.timeElapsed < 0.1 ){
+//                return;
+//            }
             
             //NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
             //need to ®record the time at the beginning

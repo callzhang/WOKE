@@ -88,8 +88,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 
 - (void)setPerson:(EWPerson *)p{
-    //add observer to update when person updates
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePersonChange:) name:NSManagedObjectContextObjectsDidChangeNotification object:[EWDataStore currentContext]];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     person = p;
     [self initData];
@@ -508,7 +506,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     //static NSString *CellIdentifier = @"cell";
   
     if (tabView.selectedSegmentIndex == 1) {
-          NSLog(@"%ld,%ld",(long)indexPath.section,(long)indexPath.row);
         
         EWTaskItem *task = tasks[indexPath.section];
         UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
