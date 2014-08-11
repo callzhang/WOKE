@@ -21,4 +21,6 @@
 + (NSDictionary *)timeFromNumber:(double)number;
 + (double)numberFromTime:(NSDictionary *)dic;
 + (BOOL) isMultitaskingSupported;
++ (BOOL) isFirstTimeLogin;
++ (void) setFirstTimeLoginOver;
 @end

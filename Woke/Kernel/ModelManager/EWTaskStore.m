@@ -15,7 +15,8 @@
 #import "EWAlarmManager.h"
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
-
+#import "EWPersonStore.h"
+#import "AFNetworking.h"
 
 @implementation EWTaskStore
 
@@ -756,5 +757,63 @@
         }
     }
     NSLog(@"Cancelled %ld sleep notification", (long)n);
+}
+
++(void)scheduleNotificationOnServer
+{
+//    NSMutableString *urlString = [NSMutableString string];
+//    [urlString appendString:kParsePushUrl];
+////    [urlString appendFormat:@"files/imagefile.jpg"];
+//    
+//    NSURL *url = [NSURL URLWithString:urlString];
+//    
+//    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+//    [request setHTTPMethod:@"POST"];
+//    [request addValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
+//    [request addValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+//    
+//    [request addValue:@"Content-Type: application/json" forHTTPHeaderField:@"Content-Type"];
+////    [request]
+//    
+//    NSDictionary *dic = @{@"where":@{kUsername:me.name},@"push_time":me.cachedInfo[kNextTaskTime],@"data":@{@"alert":@"It is time to get up"} };
+//    NSMutableData *data = [[NSMutableData alloc] init];
+//    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+//    [archiver encodeObject:dic forKey:@"Some Key Value"];
+//    [archiver finishEncoding];
+//    
+////    NSData *data =
+//    [request setHTTPBody:data];
+//    NSURLResponse *response = nil;
+//    NSError *error = nil;
+//    
+//    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+//    
+//    NSLog(@"%@" , response);
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+   
+    [manager.requestSerializer setValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
+    [manager.requestSerializer setValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    
+    NSDictionary *dic = @{@"where":@{kUsername:me.name},@"push_time":[NSNumber numberWithDouble:[[NSDate new] timeIntervalSince1970]+60],@"data":@{@"alert":@"It is time to get up"}};
+    
+    [manager POST:kParsePushUrl parameters:dic
+         success:^(AFHTTPRequestOperation *operation,id responseObject) {
+             
+             NSLog(@"Success: %@", responseObject);
+             
+             
+         }failure:^(AFHTTPRequestOperation *operation,NSError *error) {
+             
+             NSLog(@"Error: %@", error);
+             
+         }];
+    
+    
+
+    
+    
 }
 @end

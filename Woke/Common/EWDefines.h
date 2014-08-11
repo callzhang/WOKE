@@ -28,10 +28,15 @@
 // Keys
 #define kParseKeyDevelopment            @"4757c535-5583-46f9-8a55-3b8276d96f06"
 #define kParseKeyProduction             @""
+#define kParsePushUrl                   @"https://api.parse.com/1/push"
+#define kParseUploadUrl                 @"https://api.parse.com/1/"
+#define kParseApplicationId             @"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
+#define kParseRestAPIId                 @"lGJTP5XCAq0O3gDyjjRjYtWui6pAJxdyDSTPXzkL"
 #define AWS_ACCESS_KEY_ID               @"AKIAIB2BXKRPL3FCWJYA"
 #define AWS_SECRET_KEY                  @"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"
 #define AWS_SNS_APP_ARN                 @"arn:aws:sns:us-west-2:260520558889:app/APNS_SANDBOX/Woke_Dev"
 #define TESTFLIGHT_ACCESS_KEY           @"e1ffe70a-26bf-4db0-91c8-eb2d1d362cb3"
+
 
 // 开关宏
 /*
@@ -158,11 +163,9 @@
 //Notification types
 #define kNotificationTypeFriendRequest      @"friendship_request"
 #define kNotificationTypeFriendAccepted     @"friendship_accepted"
-#define kNotificationTypeTimer              @"timer"
+#define kNotificationTypeTimer              @"timer"//not used for now
 #define kNotificationTypeNotice             @"notice"
 #define kNotificationTypeNextTaskHasMedia   @"task_has_media"
 
 //Navgation Controller
 #define kMaxPersonNavigationConnt       6
-
-

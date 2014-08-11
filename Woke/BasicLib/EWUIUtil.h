@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "EWUtil.h"
 // 基本界面常量宏
 #define kTabBarHeight           49
 
@@ -67,4 +67,6 @@
 + (void)addTransparantNavigationBarToViewController:(UIViewController *)vc withLeftItem:(UIBarButtonItem *)leftItem rightItem:(UIBarButtonItem *)rightItem;
 
 + (NSString *)getStringFromTime:(float)time;
+
++ (void)addFirstTimeTutorialInViewController: (UIViewController * )vc;
 @end

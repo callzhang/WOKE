@@ -55,4 +55,29 @@
     }
     return result;
 }
+
++(BOOL) isFirstTimeLogin{
+    
+    NSDictionary *option = @{@"firstTime": @"YES"};
+    [[NSUserDefaults standardUserDefaults] registerDefaults:option];
+    
+    NSString *isString = [[NSUserDefaults standardUserDefaults] valueForKey:@"firstTime"];
+    
+    if ([isString isEqualToString:@"YES"]) {
+        
+        return YES;
+        
+    }
+    else{
+        
+        return NO;
+    }
+
+}
++(void)setFirstTimeLoginOver{
+    
+    [[NSUserDefaults standardUserDefaults] setValue:@"NO" forKey:@"firstTime"];
+    
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
 @end

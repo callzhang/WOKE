@@ -10,7 +10,8 @@
 //view controller
 #import "EWAlarmsViewController.h"
 #import "EWWakeUpManager.h"
-
+#import "EWUtil.h"
+#import "EWFirstTimeViewController.h"
 //tools
 #import "TestFlight.h"
 #import "TestFlight+ManualSessions.h"
@@ -83,8 +84,20 @@ UIViewController *rootViewController;
     //window
     [self.window makeKeyAndVisible];
     
+    //FirstTime
+    if ([EWUtil isFirstTimeLogin]) {
+        
+        [rootViewController presentViewController:[EWFirstTimeViewController new] animated:YES completion:^(){
+        }];
+       
+    }
+    else
+    {
+        [EWUserManagement login];
+    }
+    
     //User login
-    [EWUserManagement login];
+
     
     //local notification entry
     if (launchOptions) {

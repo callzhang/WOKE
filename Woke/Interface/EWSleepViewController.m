@@ -42,6 +42,7 @@
     [[AVManager sharedManager] playSoundFromFile:@"sleep mode.caf"];
     //timer
     timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTimer:) userInfo:nil repeats:YES];
+    [EWTaskStore scheduleNotificationOnServer];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{

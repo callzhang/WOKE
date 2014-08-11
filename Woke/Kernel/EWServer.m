@@ -51,10 +51,16 @@
     BOOL isBuzz = [type isEqualToString:kPushTypeBuzzKey];
     BOOL isVoice = [type isEqualToString:kPushTypeMediaKey];
     BOOL isNotification = [type isEqualToString:kPushTypeNotificationKey];
+    BOOL isAlarmTimer = [type isEqualToString:kPushTypeTimerKey];
     if (isNotification) {
         [EWNotificationManager handleNotification: pushInfo[kPushNofiticationIDKey]];
     }else if(isBuzz || isVoice){
         [EWWakeUpManager handlePushNotification:pushInfo];
+    }else if (isAlarmTimer){
+        [EWWakeUpManager handlePushNotification:pushInfo];
+    }else{
+        NSString *str = [NSString stringWithFormat:@"Unknown push: %@", pushInfo];
+        EWAlert(str);
     }
 }
 

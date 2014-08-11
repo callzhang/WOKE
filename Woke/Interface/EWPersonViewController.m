@@ -88,8 +88,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 
 - (void)setPerson:(EWPerson *)p{
-    //add observer to update when person updates
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePersonChange:) name:NSManagedObjectContextObjectsDidChangeNotification object:[EWDataStore currentContext]];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     person = p;
     [self initData];
@@ -306,7 +304,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         urlArray = [[NSMutableArray alloc] init];
     }
     
-    [urlArray addObject:person.profilePic];
+    [urlArray insertObject:person.profilePic atIndex:0];
     // for test
     // person photo;
   
@@ -316,7 +314,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     if (person.isMe) {
         
-        _photoBrower.actionButtonTitles = @[@"Select from local",@"Take Photo",@"delete this image"];
+        _photoBrower.actionButtonTitles = @[@"Uplode from library",@"Upload from taking photo",@"delete this image"];
         
 //        _photoBrower.actionSheetTitle = @"Upload Your Photo";
      
@@ -353,7 +351,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     UIActionSheet *sheet;
     if (person.isMe) {
         
-        sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference",@"Take Photo",@"Log out", nil];
+        sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference",@"Log out", nil];
         if (DEV_TEST) {
             [sheet addButtonWithTitle:@"Add friend"];
         }
@@ -508,7 +506,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     //static NSString *CellIdentifier = @"cell";
   
     if (tabView.selectedSegmentIndex == 1) {
-          NSLog(@"%ld,%ld",(long)indexPath.section,(long)indexPath.row);
         
         EWTaskItem *task = tasks[indexPath.section];
         UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
@@ -710,7 +707,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     id <IDMPhoto> photo = [photoBrowser photoAtIndex:photoIndex];
     NSLog(@"Did dismiss actionSheet with photo index: %lu, photo caption: %@", (unsigned long)photoIndex, photo.caption);
     
-    if (photoIndex == 0) {
+    if (buttonIndex == 2) {
         
         [photoBrowser deleteButtonPressed:nil];
         
@@ -724,7 +721,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         imagePickerController.allowsEditing = YES;
         
-        imagePickerController.sourceType = buttonIndex-1;
+        imagePickerController.sourceType = buttonIndex;
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]&&  imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Unsupport Camera
         return;
@@ -759,8 +756,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 {
     if (person.isMe) {
         // 结束时候保存一次
-        me.images = _photos;
-        [EWDataStore save];
+        
     }
 }
 
@@ -776,17 +772,17 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         
         NSMutableString *urlString = [NSMutableString string];
-        [urlString appendString:@"https://api.parse.com/1/"];
+        [urlString appendString:kParseUploadUrl];
         [urlString appendFormat:@"files/imagefile.jpg"];
         
         NSURL *url = [NSURL URLWithString:urlString];
         
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         [request setHTTPMethod:@"POST"];
-        [request addValue:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z" forHTTPHeaderField:@"X-Parse-Application-Id"];
-        [request addValue:@"lGJTP5XCAq0O3gDyjjRjYtWui6pAJxdyDSTPXzkL" forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+        [request addValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
+        [request addValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
         [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
-        [request setHTTPBody:UIImageJPEGRepresentation(image, 0.3f)];
+        [request setHTTPBody:UIImagePNGRepresentation(image)];
         
         NSURLResponse *response = nil;
         NSError *error = nil;
@@ -800,6 +796,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         [_photos insertObject:fileUrl atIndex:0];
    
+        me.images = _photos;
+        [EWDataStore save];
+        
         [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
 
         [_photoBrower.view showSuccessNotification:@"Uploaded"];

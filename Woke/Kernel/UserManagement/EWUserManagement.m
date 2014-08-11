@@ -10,6 +10,8 @@
 #import "EWDataStore.h"
 #import "EWAppDelegate.h"
 #import "EWDownloadManager.h"
+#import "EWUtil.h"
+#import "EWFirstTimeViewController.h"
 @import CoreLocation;
 
 //model
@@ -48,6 +50,7 @@
 
 + (void)login{
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+
     
     if ([PFUser currentUser]) {
         //user already logged in

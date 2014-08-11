@@ -8,6 +8,9 @@
 
 #import "EWUIUtil.h"
 #import "EWAppDelegate.h"
+#import "../../Components/MYBlurIntroductionView/MYBlurIntroductionView.h"
+#import "../../Components/MYBlurIntroductionView/MYIntroductionPanel.h"
+
 
 static const float originalSize = 80.0;
 
@@ -293,6 +296,49 @@ static const float originalSize = 80.0;
         timeStr = [NSString stringWithFormat:@"%ld seconds",(long)seconds];
     }
         return timeStr;
+}
+
+
++ (void)addFirstTimeTutorialInViewController: (UIViewController * )vc{
+    
+    if ([EWUtil isFirstTimeLogin]) {
+        //Create the introduction view and set its delegate
+        MYBlurIntroductionView *introductionView = [[MYBlurIntroductionView alloc] initWithFrame:CGRectMake(0, 0, vc.view.frame.size.width, vc.view.frame.size.height)];
+        //    introductionView.delegate = rootViewController;
+        introductionView.BackgroundImageView.image = [UIImage imageNamed:@"background.png"];
+        //introductionView.LanguageDirection = MYLanguageDirectionRightToLeft;
+        //Create stock panel with header
+        //    UIView *headerView = [[NSBundle mainBundle] loadNibNamed:@"TestHeader" owner:nil options:nil][0];
+        UIView *headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
+        headView.backgroundColor = [UIColor redColor];
+        
+        
+        MYIntroductionPanel *panel1 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, vc.view.frame.size.width, vc.view.frame.size.height) title:@"Welcome to MYBlurIntroductionView" description:@"MYBlurIntroductionView is a powerful platform for building app introductions and tutorials. Built on the MYIntroductionView core, this revamped version has been reengineered for beauty and greater developer control." image:[UIImage imageNamed:@"HeaderImage.png"] header:headView];
+        
+        //Create stock panel with image
+        MYIntroductionPanel *panel2 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, vc.view.frame.size.width, vc.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"background.png"]];
+        
+//        MYIntroductionPanel *panel3 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, vc.view.frame.size.width, vc.view.frame.size.height) nibNamed:@"TestPanel3"];
+        
+        //Add custom attributes
+//        panel3.PanelTitle = @"Test Title";
+//        panel3.PanelDescription = @"This is a test panel description to test out the new animations on a custom nib";
+        
+        //Rebuild panel with new attributes
+//        [panel3 buildPanelWithFrame:CGRectMake(0, 0, vc.view.frame.size.width, vc.view.frame.size.height)];
+        //    //Feel free to customize your introduction view here
+        //
+        //    //Add panels to an array
+            NSArray *panels = @[panel1, panel2];
+        //
+        //    //Build the introduction with desired panels
+        [introductionView buildIntroductionWithPanels:panels];
+        
+        [vc.view addSubview:introductionView];
+        [vc.view bringSubviewToFront:introductionView];
+        
+        [EWUtil setFirstTimeLoginOver];
+    }
 }
 
 @end
