@@ -112,6 +112,12 @@ UIViewController *rootViewController;
             [EWServer handlePushNotification:remoteNotif];
         }
     }
+    //remove reactive local notifç
+    for (UILocalNotification *n in application.scheduledLocalNotifications) {
+        if ([n.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeReactivate]) {
+            [application cancelLocalNotification:n];
+        }
+    }
     
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
     return YES;

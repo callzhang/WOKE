@@ -47,10 +47,8 @@
         
         _attributeArray = [newAttributeArray copy];
         
-        NSLog(@"CollectionView layout updated!");
-        if ([self.collectionView.delegate respondsToSelector:@selector(centerView)]) {
-            [self.collectionView.delegate performSelector:@selector(centerView)];
-        }
+        NSLog(@"CollectionView layout updated! Notification sent!");
+        [[NSNotificationCenter defaultCenter] postNotificationName:kHexagonStructureChange object:nil];
     }
     
     return _attributeArray;

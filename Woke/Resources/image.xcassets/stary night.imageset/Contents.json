@@ -2,12 +2,13 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x"
+      "scale" : "1x",
+      "filename" : "stary night.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "stary night.png"
+      "filename" : "stary night@2.png"
     }
   ],
   "info" : {

@@ -451,6 +451,18 @@
     [p play];
 }
 
+- (void)endInterruptionWithFlags:(NSUInteger)flags{
+    if (flags) {
+        if (AVAudioSessionInterruptionOptionShouldResume) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                UILocalNotification *n = [UILocalNotification new];
+                n.alertBody = @"Woke is active";
+                [[UIApplication sharedApplication] scheduleLocalNotification:n];
+            });
+        }
+    }
+}
+
 #pragma mark - AVPlayer (used to play sound and keep the audio capability open)
 - (void)playAvplayerWithURL:(NSURL *)url{
     if (AVPlayerUpdateTimer) {

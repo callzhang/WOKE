@@ -99,7 +99,6 @@
     //update data and view
     [self initData];
     [self reloadAlarmPage];
-    //[self centerView];
     [self.collectionView reloadData];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
@@ -111,6 +110,11 @@
     //listen to user log in, and updates its view
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
     [[EWPersonStore sharedInstance] addObserver:self forKeyPath:@"currentUser" options:NSKeyValueObservingOptionNew context:nil];
+    
+    //listen to hex structure change
+    [[NSNotificationCenter defaultCenter] addObserverForName:kHexagonStructureChange object:nil queue:nil usingBlock:^(NSNotification *note) {
+        [self centerView];
+    }];
     
     //static UI stuff (do it once)
     //collection view
@@ -154,7 +158,7 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self centerView];
+    //[self centerView];
 
 }
 
@@ -809,10 +813,7 @@
                 
             }completion:^(BOOL finished){
                 if (finished) {
-                    //center when changed
-                    static NSTimer *viewCenterTimer;
-                    [viewCenterTimer invalidate];
-                    viewCenterTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(centerView) userInfo:nil repeats:NO];
+                    
                 }else{
                     NSLog(@"*** Update of collection view failed");
                 }
