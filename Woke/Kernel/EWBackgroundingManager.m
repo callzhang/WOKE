@@ -73,6 +73,8 @@
 - (void)enterForeground{
     if (!self.sleeping) {
         [self endSleep];
+    }else{
+        [self startSleep];
     }
 }
 
@@ -100,6 +102,7 @@
         UILocalNotification *notif = [[UILocalNotification alloc] init];
         notif.alertBody = @"Woke become active!";
         [app scheduleLocalNotification:notif];
+
     }
     
     if (self.sleeping) {

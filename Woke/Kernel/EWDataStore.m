@@ -9,14 +9,12 @@
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
 #import "EWPersonStore.h"
-#import "EWDownloadManager.h"
-#import "EWAlarmManager.h"
-#import "EWTaskStore.h"
 #import "EWMediaStore.h"
-#import "EWMediaItem.h"
-#import "NSString+MD5.h"
+#import "EWTaskStore.h"
+#import "EWAlarmManager.h"
 #import "EWWakeUpManager.h"
 #import "EWServer.h"
+#import "EWTaskItem.h"
 
 #define MR_LOGGING_ENABLED 0
 #import <MagicalRecord/CoreData+MagicalRecord.h>
@@ -76,6 +74,14 @@
         context = [NSManagedObjectContext MR_defaultContext];
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextWillSaveNotification object:context];
+		[[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextObjectsDidChangeNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+			//check task only
+			if ([note.object isKindOfClass:[EWTaskStore class]]) {
+				EWTaskItem *task = note.object;
+				BOOL good = [EWTaskStore validateTask:task];
+				NSParameterAssert(good);
+			}
+		}];
         //Observe background context saves so main context can perform merge changes
         //We don't need to merge child context change to main context
 		//It will cause errors when main and child context access same MO
@@ -272,25 +278,25 @@
 
 
 + (void)save{
-	NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
-    NSSet *inserts = [context insertedObjects];
-    NSSet *updates = [context updatedObjects];
-	for (NSManagedObject *MO in inserts) {
-		NSString *str = [NSString stringWithFormat:@"*** Trying to INSERT MO %@(%@) but it failed validation", MO.entity.name, MO.objectID];
-		BOOL good = [EWDataStore validateMO:MO];
-		if (!good) {
-			EWAlert(str);
-		}
-	}
-	
-	for (NSManagedObject *MO in updates) {
-		NSString *str = [NSString stringWithFormat:@"*** Trying to UPDATE MO %@(%@) but it failed validation", MO.entity.name, MO.serverID];
-		BOOL good = [EWDataStore validateMO:MO];
-		if (!good) {
-			EWAlert(str);
-		}
-	}
-		
+//	NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
+//    NSSet *inserts = [context insertedObjects];
+//    NSSet *updates = [context updatedObjects];
+//	for (NSManagedObject *MO in inserts) {
+//		NSString *str = [NSString stringWithFormat:@"*** Trying to INSERT MO %@(%@) but it failed validation", MO.entity.name, MO.objectID];
+//		BOOL good = [EWDataStore validateMO:MO];
+//		if (!good) {
+//			EWAlert(str);
+//		}
+//	}
+//	
+//	for (NSManagedObject *MO in updates) {
+//		NSString *str = [NSString stringWithFormat:@"*** Trying to UPDATE MO %@(%@) but it failed validation", MO.entity.name, MO.serverID];
+//		BOOL good = [EWDataStore validateMO:MO];
+//		if (!good) {
+//			EWAlert(str);
+//		}
+//	}
+//		
     
     BOOL hasChanges = [EWDataStore saveAndEnqueue];
     
@@ -343,9 +349,15 @@
 			}
 			
             //skip if updatedMO contained in insertedMOs
-            if ([inserts containsObject:MO] && MO.serverID) {
+            if ([inserts containsObject:MO]) {
                 continue;
             }
+			
+			//move to inserts if no serverID
+			if (!MO.serverID) {
+				[EWDataStore appendInsertQueue:MO];
+				continue;
+			}
             
             //check if class is skipped
             if ([classSkipped containsObject:MO.entity.name] && MO.serverID != me.serverID) {
@@ -423,11 +435,12 @@
 + (BOOL)validateMO:(NSManagedObject *)mo{
     //validate MO, only used when uploading MO to PO
 	BOOL good = YES;
+//	
+//	if (![mo valueForKey:kUpdatedDateKey]) {
+//		NSLog(@"The %@(%@) you are trying to validate doesn't have a updated date!", mo.entity.name, mo.serverID);
+//		return NO;
+//	}
 	
-	if (![mo valueForKey:kUpdatedDateKey]) {
-		NSLog(@"The %@(%@) you are trying to validate doesn't have a updated date!", mo.entity.name, mo.serverID);
-		//return NO;
-	}
     NSString *type = mo.entity.name;
     if ([type isEqualToString:@"EWTaskItem"]) {
         good = [EWTaskStore validateTask:(EWTaskItem *)mo];
@@ -821,35 +834,10 @@
 	
 	NSSet *updatedObjects = context.updatedObjects;
 	NSSet *insertedObjects = context.insertedObjects;
-	
+	NSSet *objects = [updatedObjects setByAddingObjectsFromSet:insertedObjects];
 	
     //for updated mo
-    for (NSManagedObject *mo in updatedObjects) {
-		
-		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
-		//if last updated doesn't exist, 
-		if (!lastUpdated) return;
-		
-		//skip if marked save to local
-		if ([self.saveToLocalItems containsObject:mo]) {
-			return;
-		}
-		
-		//remove unnecessary changes
-		if (!mo.valueToUpload) {
-			return;
-		}
-		
-		//NSLog(@"Observed %@(%@) ManagedObject changed, updating 'UpdatedAt'.", mo.entity.class, mo.serverID);
-        double interval = lastUpdated.timeElapsed;
-        if (interval > 1) {
-            //update time
-            [mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
-        }
-    }
-	
-	//for inserted mo
-	for (NSManagedObject *mo in insertedObjects) {
+    for (NSManagedObject *mo in objects) {
 		//Potential bug: CoreData could not fulfill a fault for mo
 		//First test MO exist
 		if (![context existingObjectWithID:mo.objectID error:NULL]) {
@@ -857,17 +845,30 @@
 			return;
 		}
 		
+		//>>>>>validate
+		BOOL good = [EWDataStore validateMO:mo];
+		NSParameterAssert(good);
+		
+		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
+	
 		//skip if marked save to local
 		if ([self.saveToLocalItems containsObject:mo]) {
 			return;
 		}
 		
-		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
-		
-		if (!lastUpdated){
-			[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
+		if ([updatedObjects containsObject:mo]) {
+			//if last updated doesn't exist,
+			if (!lastUpdated) return;
+			
+			//remove unnecessary changes
+			if (!mo.valueToUpload) {
+				return;
+			}
 		}
-	}
+		
+		[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
+    }
+	
 }
 
 

@@ -14,8 +14,9 @@
 #import <AVFoundation/AVAudioPlayer.h>
 #import "EWDataStore.h"
 #import "EWMediaSlider.h"
-#import "EWDownloadManager.h"
+//#import "EWDownloadManager.h"
 #import "EWMediaStore.h"
+#import "EWBackgroundingManager.h"
 
 @import MediaPlayer;
 
@@ -455,9 +456,20 @@
     if (flags) {
         if (AVAudioSessionInterruptionOptionShouldResume) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                UILocalNotification *n = [UILocalNotification new];
-                n.alertBody = @"Woke is active";
-                [[UIApplication sharedApplication] scheduleLocalNotification:n];
+                
+                
+                EWBackgroundingManager *manager = [EWBackgroundingManager sharedInstance];
+                if (manager.sleeping == YES) {
+                    UILocalNotification *n = [UILocalNotification new];
+                    n.alertBody = @"Woke is active";
+                    [[UIApplication sharedApplication] scheduleLocalNotification:n];
+                }
+                
+                [manager backgroundKeepAlive:NULL];
+                
+#ifdef DEV_TEST
+                [[AVManager sharedManager] playSoundFromFile:@"Sunny Afternoon.caf"];
+#endif
             });
         }
     }
@@ -474,6 +486,9 @@
     avplayer = [AVPlayer playerWithPlayerItem:item];
     [avplayer setActionAtItemEnd:AVPlayerActionAtItemEndNone];
     avplayer.volume = 1.0;
+    if (avplayer.status != AVPlayerStatusReadyToPlay) {
+        NSLog(@"!!! AV player not ready to play.");
+    }
     //[avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
     [avplayer play];
 }

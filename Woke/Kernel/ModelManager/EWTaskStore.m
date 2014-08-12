@@ -661,18 +661,22 @@
 
 + (BOOL)validateTask:(EWTaskItem *)task{
     BOOL good = YES;
+    
+    
     BOOL completed = [[NSDate date] timeIntervalSinceDate: task.time] > kMaxWakeTime || task.completed;
     if (completed) {
-        //NSParameterAssert(!task.alarm);
+        if(task.alarm){
+            task.alarm = nil;
+        }
         
         if (task.owner) {
-            //task.owner = nil;
-            good = NO;
+            task.owner = nil;
+            //good = NO;
             NSLog(@"*** task (%@) completed, shoundn't have owner", task.serverID);
         }
         if (!task.pastOwner) {
-            //task.pastOwner = [EWPersonStore me];
-            good = NO;
+            task.pastOwner = [EWPersonStore me];
+            //good = NO;
             NSLog(@"*** task (%@) missing pastOwner", task.serverID);
         }else if(!task.pastOwner.isMe){
             //NSParameterAssert(task.pastOwner.isMe);
@@ -681,14 +685,19 @@
         
     }else{
         //NSParameterAssert(task.alarm);
-        if (task.pastOwner) {
-            //task.pastOwner = nil;
+        
+        if (!task.alarm) {
             good = NO;
+        }
+        
+        if (task.pastOwner) {
+            task.pastOwner = nil;
+            //good = NO;
             NSLog(@"*** task (%@) incomplete, shoundn't have past owner", task.serverID);
         }
         
         if (!task.owner) {
-            //task.owner = [EWPersonStore me];
+            task.owner = task.alarm.owner;
             good = NO;
             NSLog(@"*** task (%@) missing owner", task.serverID);
         }else if(!task.owner.isMe){
