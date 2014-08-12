@@ -458,6 +458,7 @@
                 }
             }else{
                 [self showAlarmPageLoading:YES];
+                [[EWTaskStore sharedInstance] scheduleTasks];
             }
             
         }else if ([keyPath isEqualToString:@"notifications"]){

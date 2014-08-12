@@ -450,7 +450,7 @@
         good = [EWPersonStore validatePerson:(EWPerson *)mo];
     }
 	
-	if (!good) {
+	if (!good && mo.serverID) {
 		NSLog(@"*** MO %@(%@) failed in validation, refresh from PO", mo.entity.name, mo.serverID);
 		[mo refresh];
 	}
@@ -852,7 +852,8 @@
 			return;
 		}
 		
-		if ([updatedObjects containsObject:mo]) {
+		//additional check for updated object
+		if ([updatedObjects containsObject:mo] && ![insertedObjects containsObject:mo]) {
 			//if last updated doesn't exist,
 			if (!lastUpdated) return;
 			
@@ -1028,7 +1029,17 @@
     
     if (parseObjectId) {
         PFObject *object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
-        [object fetchIfNeeded];
+        [object fetchIfNeeded:err];
+		if (err) {
+			if ((*err).code == kPFErrorObjectNotFound) {
+				NSLog(@"*** PO(%@) doesn't exist on server", self.serverID);
+				[self setValue:nil forKeyPath:kParseObjectID];
+			}else{
+				NSLog(@"*** Failed to get PO(%@) from server. %@", self.serverID, *err);
+			}
+			
+			return nil;
+		}
         return object;
     }else{
         NSLog(@"!!! ParseObjectID not exist, upload first!");
@@ -1286,7 +1297,7 @@
 					[self setValue:parseValue forKey:key];
 				}
 				@catch (NSException *exception) {
-					NSLog(@"***Failed to set value for key %@ on MO %@(%@)", key, self.entity.name, self.serverID);
+					NSLog(@"*** Failed to set value for key %@ on MO %@(%@)", key, self.entity.name, self.serverID);
 				}
                 
             }
@@ -1391,7 +1402,11 @@
 #pragma mark - Parse Object extension
 @implementation PFObject (NSManagedObject)
 - (void)updateFromManagedObject:(NSManagedObject *)managedObject{
-	[self fetchIfNeeded];
+	NSError *err;
+	[self fetchIfNeeded:&err];
+	if (err) {
+		NSLog(@"Trying to upload");
+	}
 	
     NSManagedObject *mo = [EWDataStore objectForCurrentContext:managedObject];
     NSParameterAssert([mo valueForKey:kParseObjectID]);
@@ -1434,7 +1449,13 @@
             PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
             [self setObject:point forKey:key];
         }else if(value != nil){
-            id POHasValue = [self valueForKey:key];
+            id POHasValue;
+			@try {
+				POHasValue = [self valueForKey:key];
+			}
+			@catch (NSException *exception) {
+				NSLog(@"*** PO %@(%@) failed to get key: %@. Detail: %@", self.parseClassName, self.objectId, key, self);
+			}
 			BOOL isValueNew = NO;
 			if (POHasValue) {
 				if (![value isEqual:self[key]]) {

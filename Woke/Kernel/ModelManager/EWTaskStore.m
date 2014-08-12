@@ -190,7 +190,7 @@
 //schedule new task in the future
 - (NSArray *)scheduleTasks{
     if (self.isSchedulingTask) {
-        NSLog(@"@@@ It is already checking task, skip!");
+        NSLog(@"It is already checking task, skip!");
         return nil;
     }
     
@@ -688,6 +688,7 @@
         
         if (!task.alarm) {
             good = NO;
+            NSLog(@"*** task (%@) missing alarm", task.serverID);
         }
         
         if (task.pastOwner) {
@@ -698,7 +699,7 @@
         
         if (!task.owner) {
             task.owner = task.alarm.owner;
-            good = NO;
+            //good = NO;
             NSLog(@"*** task (%@) missing owner", task.serverID);
         }else if(!task.owner.isMe){
             //NSParameterAssert(task.owner.isMe);
@@ -708,6 +709,10 @@
     
     if (!task.time) {
         good = NO;
+    }
+    
+    if (!good) {
+        [[EWTaskStore sharedInstance] removeTask:task];
     }
     
     return good;
