@@ -181,7 +181,7 @@
         //->Link
         NSString *title = notification.userInfo[@"title"];
         NSString *body = notification.userInfo[@"content"];
-        NSString *link = notification.userInfo[@"link"];
+        //NSString *link = notification.userInfo[@"link"];
         [[[UIAlertView alloc] initWithTitle:title
                                     message:[NSString stringWithFormat:@"%@\n", body]
                                    delegate:[EWNotificationManager sharedInstance]

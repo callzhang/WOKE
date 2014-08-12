@@ -845,10 +845,6 @@
 			return;
 		}
 		
-		//>>>>>validate
-		BOOL good = [EWDataStore validateMO:mo];
-		NSParameterAssert(good);
-		
 		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
 	
 		//skip if marked save to local
@@ -865,6 +861,11 @@
 				return;
 			}
 		}
+		
+		
+		//>>>>>validate
+		BOOL good = [EWDataStore validateMO:mo];
+		NSParameterAssert(good);
 		
 		[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
     }
