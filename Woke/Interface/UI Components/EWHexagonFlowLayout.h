@@ -2,6 +2,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define kHexagonStructureChange         @"hexagon_structure_change"
+
 @interface EWHexagonFlowLayout : UICollectionViewFlowLayout
 @property (nonatomic) NSArray *attributeArray;
 @property (nonatomic) NSInteger itemsPerRow;

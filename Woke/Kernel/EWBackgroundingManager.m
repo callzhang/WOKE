@@ -73,6 +73,8 @@
 - (void)enterForeground{
     if (!self.sleeping) {
         [self endSleep];
+    }else{
+        [self startSleep];
     }
 }
 
@@ -93,12 +95,14 @@
 
 - (void)didbecomeActive{
     // This method is called to let your app know that it moved from the inactive to active state. This can occur because your app was launched by the user or the system.
+    
     //resume backgrounding
     UIApplication *app = [UIApplication sharedApplication];
     if (app.applicationState != UIApplicationStateActive) {
         UILocalNotification *notif = [[UILocalNotification alloc] init];
         notif.alertBody = @"Woke become active!";
         [app scheduleLocalNotification:notif];
+
     }
     
     if (self.sleeping) {
@@ -155,7 +159,7 @@
     //schedule timer
     if ([backgroundingtimer isValid]) [backgroundingtimer invalidate];
     NSInteger randomInterval = kAlarmTimerCheckInterval + arc4random_uniform(60);
-    backgroundingtimer = [NSTimer scheduledTimerWithTimeInterval:randomInterval target:self selector:@selector(backgroundTaskKeepAlive:) userInfo:userInfo repeats:NO];
+    backgroundingtimer = [NSTimer scheduledTimerWithTimeInterval:randomInterval target:self selector:@selector(backgroundKeepAlive:) userInfo:userInfo repeats:NO];
     
     //start silent sound
     [[AVManager sharedManager] playSilentSound];
@@ -169,16 +173,17 @@
     }];
     
     //check time left
+    double timeLeft = application.backgroundTimeRemaining;
+    NSLog(@"Background time left: %.1f", timeLeft>999?999:timeLeft);
+    
+    //alert user
     if (backgroundingFailNotification) {
         [[UIApplication sharedApplication] cancelLocalNotification:backgroundingFailNotification];
     }
-    double timeLeft = application.backgroundTimeRemaining;
-    NSLog(@"Background time left: %.1f", timeLeft>999?999:timeLeft);
-    //alert user
     backgroundingFailNotification= [[UILocalNotification alloc] init];
     backgroundingFailNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:200];
-    backgroundingFailNotification.alertBody = @"Woke stopped running in background. Tap here to reactivate me.";
-    backgroundingFailNotification.alertAction = @"Activate Woke";
+    backgroundingFailNotification.alertBody = @"Woke stopped running in background. Tap here to reactivate it.";
+    backgroundingFailNotification.alertAction = @"Activate";
     backgroundingFailNotification.userInfo = @{kLocalNotificationTypeKey: kLocalNotificationTypeReactivate};
     backgroundingFailNotification.soundName = @"new.caf";
     [[UIApplication sharedApplication] scheduleLocalNotification:backgroundingFailNotification];

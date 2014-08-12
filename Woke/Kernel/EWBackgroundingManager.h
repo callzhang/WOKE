@@ -17,4 +17,6 @@
 + (BOOL)supportBackground;
 - (void)startSleep;
 - (void)endSleep;
+
+- (void)backgroundKeepAlive:(NSTimer *)timer;
 @end

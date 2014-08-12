@@ -78,8 +78,7 @@
         EWAlert(@"Entering sleep mode...");
     }
     else{
-        NSString *str = [NSString stringWithFormat:@"Unexpected Local Notification Type. Detail: %@", notification];
-        EWAlert(str);
+        NSLog(@"Unexpected Local Notification Type. Detail: %@", notification);
     }
 
 }
