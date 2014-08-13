@@ -42,8 +42,7 @@
 #import "EWActivityHeadView.h"
 #import "NavigationControllerDelegate.h"
 #import "EWSettingsViewController.h"
-
-
+#import "GKImagePicker.h"
 // ImageBrowser
 #import "IDMPhotoBrowser.h"
 
@@ -53,8 +52,8 @@
 static NSString *taskCellIdentifier = @"taskCellIdentifier";
 NSString *const profileCellIdentifier = @"ProfileCell";
 NSString *const activitiyCellIdentifier = @"ActivityCell";
-@interface EWPersonViewController()<UIImagePickerControllerDelegate,UINavigationControllerDelegate,IDMPhotoBrowserDelegate>
-
+@interface EWPersonViewController()<GKImagePickerDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,IDMPhotoBrowserDelegate>
+@property (strong,nonatomic)GKImagePicker *imagePicker;
 @property (strong,nonatomic)NSMutableArray *photos;
 @property (strong,nonatomic)IDMPhotoBrowser *photoBrower;
 - (void)showSuccessNotification:(NSString *)alert;
@@ -314,7 +313,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     if (person.isMe) {
         
-        _photoBrower.actionButtonTitles = @[@"Uplode from library",@"Upload from taking photo",@"delete this image"];
+        _photoBrower.actionButtonTitles = @[@"Uplode from library",@"Upload from taking photo",@"delete this image",@"Set this as profile"];
         
 //        _photoBrower.actionSheetTitle = @"Upload Your Photo";
      
@@ -714,20 +713,25 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         return ;
     }
-    
-        UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+    if (buttonIndex == 3){
+        UIImage *image = [photoBrowser photoAtIndex:photoIndex].underlyingImage;
+        me.profilePic = image;
+        [photoBrowser.view showSuccessNotification:@"Success"];
         
-        imagePickerController.delegate = self;
-        
-        imagePickerController.allowsEditing = YES;
-        
-        imagePickerController.sourceType = buttonIndex;
-    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]&&  imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
-        // Unsupport Camera
         return;
+        
     }
     
-    [photoBrowser presentViewController:imagePickerController animated:YES completion:^{}];
+        _imagePicker = [[GKImagePicker alloc] init];
+        _imagePicker.cropSize = CGSizeMake(self.view.frame.size.height-100, self.view.frame.size.width-100);
+        _imagePicker.delegate = self;
+        _imagePicker.resizeableCropArea = YES;
+//        imagePicker.imagePickerController.allowsEditing = YES;
+//    
+        _imagePicker.imagePickerController.sourceType = buttonIndex;
+
+    
+    [photoBrowser presentViewController:_imagePicker.imagePickerController animated:YES completion:^{}];
     
 //    [photoBrowser dismissViewControllerAnimated:YES completion:^(){
 //    }];
@@ -767,6 +771,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 {
     
     [picker dismissViewControllerAnimated:YES completion:^(){
+        
      [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
         UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
         
@@ -794,7 +799,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         NSLog(@"%@",fileUrl);
         
-        [_photos insertObject:fileUrl atIndex:0];
+        [_photos addObject:fileUrl];
    
         me.images = _photos;
         [EWDataStore save];
@@ -841,5 +846,57 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:NULL];
+}
+-(void)imagePickerDidCancel:(GKImagePicker *)imagePicker
+{
+    [_imagePicker.imagePickerController dismissViewControllerAnimated:YES completion:^(){
+    }];
+
+}
+-(void)imagePicker:(GKImagePicker *)imagePicker pickedImage:(UIImage *)image
+{
+    [_imagePicker.imagePickerController dismissViewControllerAnimated:YES completion:^(){
+    
+        [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
+        
+        
+        
+        NSMutableString *urlString = [NSMutableString string];
+        [urlString appendString:kParseUploadUrl];
+        [urlString appendFormat:@"files/imagefile.jpg"];
+        
+        NSURL *url = [NSURL URLWithString:urlString];
+        
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+        [request setHTTPMethod:@"POST"];
+        [request addValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
+        [request addValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+        [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPBody:UIImagePNGRepresentation(image)];
+        
+        NSURLResponse *response = nil;
+        NSError *error = nil;
+        
+        [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+        NSString *fileUrl = [httpResponse allHeaderFields][@"Location"];
+        
+        NSLog(@"%@",fileUrl);
+        
+        [_photos addObject:fileUrl];
+        
+        me.images = _photos;
+        [EWDataStore save];
+        
+        [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
+        
+        [_photoBrower.view showSuccessNotification:@"Uploaded"];
+        
+        [_photoBrower addPhotoInBrowser:fileUrl];
+
+    
+    }];
+    
 }
 @end

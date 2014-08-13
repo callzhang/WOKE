@@ -64,6 +64,20 @@
 		0EAD6FB8195A62EC00DDB052 /* EWFriendsTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EAD6FB6195A62EC00DDB052 /* EWFriendsTableCell.xib */; };
 		0EAD75D61995C26F00186860 /* MYBlurIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD75D31995C26F00186860 /* MYBlurIntroductionView.m */; };
 		0EAD75D71995C26F00186860 /* MYIntroductionPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD75D51995C26F00186860 /* MYIntroductionPanel.m */; };
+		0EAE5C91199A3F7400AED01B /* GKCropBorderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAE5C7D199A3F7400AED01B /* GKCropBorderView.m */; };
+		0EAE5C92199A3F7400AED01B /* GKImageCropOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAE5C7F199A3F7400AED01B /* GKImageCropOverlayView.m */; };
+		0EAE5C93199A3F7400AED01B /* GKImageCropView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAE5C81199A3F7400AED01B /* GKImageCropView.m */; };
+		0EAE5C94199A3F7400AED01B /* GKImageCropViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAE5C83199A3F7400AED01B /* GKImageCropViewController.m */; };
+		0EAE5C95199A3F7400AED01B /* GKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAE5C85199A3F7400AED01B /* GKImagePicker.m */; };
+		0EAE5C96199A3F7400AED01B /* GKResizeableCropOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAE5C87199A3F7400AED01B /* GKResizeableCropOverlayView.m */; };
+		0EAE5C97199A3F7400AED01B /* PLCameraSheetButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EAE5C89199A3F7400AED01B /* PLCameraSheetButton.png */; };
+		0EAE5C98199A3F7400AED01B /* PLCameraSheetButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EAE5C8A199A3F7400AED01B /* PLCameraSheetButton@2x.png */; };
+		0EAE5C99199A3F7400AED01B /* PLCameraSheetButtonPressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EAE5C8B199A3F7400AED01B /* PLCameraSheetButtonPressed.png */; };
+		0EAE5C9A199A3F7400AED01B /* PLCameraSheetButtonPressed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EAE5C8C199A3F7400AED01B /* PLCameraSheetButtonPressed@2x.png */; };
+		0EAE5C9B199A3F7400AED01B /* PLCameraSheetDoneButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EAE5C8D199A3F7400AED01B /* PLCameraSheetDoneButton.png */; };
+		0EAE5C9C199A3F7400AED01B /* PLCameraSheetDoneButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EAE5C8E199A3F7400AED01B /* PLCameraSheetDoneButton@2x.png */; };
+		0EAE5C9D199A3F7400AED01B /* PLCameraSheetDoneButtonPressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EAE5C8F199A3F7400AED01B /* PLCameraSheetDoneButtonPressed.png */; };
+		0EAE5C9E199A3F7400AED01B /* PLCameraSheetDoneButtonPressed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EAE5C90199A3F7400AED01B /* PLCameraSheetDoneButtonPressed@2x.png */; };
 		0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */; };
 		0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */; };
 		0EB02D871998FF320031D2DD /* New-Version_03.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D861998FF310031D2DD /* New-Version_03.png */; };
@@ -281,6 +295,26 @@
 		0EAD75D31995C26F00186860 /* MYBlurIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MYBlurIntroductionView.m; path = MYBlurIntroductionView/MYBlurIntroductionView.m; sourceTree = "<group>"; };
 		0EAD75D41995C26F00186860 /* MYIntroductionPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MYIntroductionPanel.h; path = MYBlurIntroductionView/MYIntroductionPanel.h; sourceTree = "<group>"; };
 		0EAD75D51995C26F00186860 /* MYIntroductionPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MYIntroductionPanel.m; path = MYBlurIntroductionView/MYIntroductionPanel.m; sourceTree = "<group>"; };
+		0EAE5C7C199A3F7400AED01B /* GKCropBorderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GKCropBorderView.h; sourceTree = "<group>"; };
+		0EAE5C7D199A3F7400AED01B /* GKCropBorderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GKCropBorderView.m; sourceTree = "<group>"; };
+		0EAE5C7E199A3F7400AED01B /* GKImageCropOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GKImageCropOverlayView.h; sourceTree = "<group>"; };
+		0EAE5C7F199A3F7400AED01B /* GKImageCropOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GKImageCropOverlayView.m; sourceTree = "<group>"; };
+		0EAE5C80199A3F7400AED01B /* GKImageCropView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GKImageCropView.h; sourceTree = "<group>"; };
+		0EAE5C81199A3F7400AED01B /* GKImageCropView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GKImageCropView.m; sourceTree = "<group>"; };
+		0EAE5C82199A3F7400AED01B /* GKImageCropViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GKImageCropViewController.h; sourceTree = "<group>"; };
+		0EAE5C83199A3F7400AED01B /* GKImageCropViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GKImageCropViewController.m; sourceTree = "<group>"; };
+		0EAE5C84199A3F7400AED01B /* GKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GKImagePicker.h; sourceTree = "<group>"; };
+		0EAE5C85199A3F7400AED01B /* GKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GKImagePicker.m; sourceTree = "<group>"; };
+		0EAE5C86199A3F7400AED01B /* GKResizeableCropOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GKResizeableCropOverlayView.h; sourceTree = "<group>"; };
+		0EAE5C87199A3F7400AED01B /* GKResizeableCropOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GKResizeableCropOverlayView.m; sourceTree = "<group>"; };
+		0EAE5C89199A3F7400AED01B /* PLCameraSheetButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PLCameraSheetButton.png; sourceTree = "<group>"; };
+		0EAE5C8A199A3F7400AED01B /* PLCameraSheetButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PLCameraSheetButton@2x.png"; sourceTree = "<group>"; };
+		0EAE5C8B199A3F7400AED01B /* PLCameraSheetButtonPressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PLCameraSheetButtonPressed.png; sourceTree = "<group>"; };
+		0EAE5C8C199A3F7400AED01B /* PLCameraSheetButtonPressed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PLCameraSheetButtonPressed@2x.png"; sourceTree = "<group>"; };
+		0EAE5C8D199A3F7400AED01B /* PLCameraSheetDoneButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PLCameraSheetDoneButton.png; sourceTree = "<group>"; };
+		0EAE5C8E199A3F7400AED01B /* PLCameraSheetDoneButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PLCameraSheetDoneButton@2x.png"; sourceTree = "<group>"; };
+		0EAE5C8F199A3F7400AED01B /* PLCameraSheetDoneButtonPressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PLCameraSheetDoneButtonPressed.png; sourceTree = "<group>"; };
+		0EAE5C90199A3F7400AED01B /* PLCameraSheetDoneButtonPressed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PLCameraSheetDoneButtonPressed@2x.png"; sourceTree = "<group>"; };
 		0EB02D02195F1C7700ECACED /* EWMyProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMyProfileViewController.h; sourceTree = "<group>"; };
 		0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMyProfileViewController.m; sourceTree = "<group>"; };
 		0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMyProfileViewController.xib; sourceTree = "<group>"; };
@@ -660,6 +694,51 @@
 			name = MYBlurIntroductionView;
 			sourceTree = "<group>";
 		};
+		0EAE5C7A199A3F5200AED01B /* GKPickerView */ = {
+			isa = PBXGroup;
+			children = (
+				0EAE5C7B199A3F7400AED01B /* GKClasses */,
+				0EAE5C88199A3F7400AED01B /* GKImages */,
+			);
+			name = GKPickerView;
+			sourceTree = "<group>";
+		};
+		0EAE5C7B199A3F7400AED01B /* GKClasses */ = {
+			isa = PBXGroup;
+			children = (
+				0EAE5C7C199A3F7400AED01B /* GKCropBorderView.h */,
+				0EAE5C7D199A3F7400AED01B /* GKCropBorderView.m */,
+				0EAE5C7E199A3F7400AED01B /* GKImageCropOverlayView.h */,
+				0EAE5C7F199A3F7400AED01B /* GKImageCropOverlayView.m */,
+				0EAE5C80199A3F7400AED01B /* GKImageCropView.h */,
+				0EAE5C81199A3F7400AED01B /* GKImageCropView.m */,
+				0EAE5C82199A3F7400AED01B /* GKImageCropViewController.h */,
+				0EAE5C83199A3F7400AED01B /* GKImageCropViewController.m */,
+				0EAE5C84199A3F7400AED01B /* GKImagePicker.h */,
+				0EAE5C85199A3F7400AED01B /* GKImagePicker.m */,
+				0EAE5C86199A3F7400AED01B /* GKResizeableCropOverlayView.h */,
+				0EAE5C87199A3F7400AED01B /* GKResizeableCropOverlayView.m */,
+			);
+			name = GKClasses;
+			path = GCPickerView/GKClasses;
+			sourceTree = "<group>";
+		};
+		0EAE5C88199A3F7400AED01B /* GKImages */ = {
+			isa = PBXGroup;
+			children = (
+				0EAE5C89199A3F7400AED01B /* PLCameraSheetButton.png */,
+				0EAE5C8A199A3F7400AED01B /* PLCameraSheetButton@2x.png */,
+				0EAE5C8B199A3F7400AED01B /* PLCameraSheetButtonPressed.png */,
+				0EAE5C8C199A3F7400AED01B /* PLCameraSheetButtonPressed@2x.png */,
+				0EAE5C8D199A3F7400AED01B /* PLCameraSheetDoneButton.png */,
+				0EAE5C8E199A3F7400AED01B /* PLCameraSheetDoneButton@2x.png */,
+				0EAE5C8F199A3F7400AED01B /* PLCameraSheetDoneButtonPressed.png */,
+				0EAE5C90199A3F7400AED01B /* PLCameraSheetDoneButtonPressed@2x.png */,
+			);
+			name = GKImages;
+			path = GCPickerView/GKImages;
+			sourceTree = "<group>";
+		};
 		0EB0C05619684F3B0061BC70 /* UAProgress */ = {
 			isa = PBXGroup;
 			children = (
@@ -950,6 +1029,7 @@
 		56FEA57417A5763200FC2938 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				0EAE5C7A199A3F5200AED01B /* GKPickerView */,
 				0EAD75D81995C27D00186860 /* MYBlurIntroductionView */,
 				0ECAF190197EB50100368D6B /* RMSelectionView */,
 				9B3EC1771970DE9E00BB52AA /* GPUAnimator */,
@@ -1286,6 +1366,7 @@
 				ABF3FB5B1908B72F0017D2EF /* 6.jpg in Resources */,
 				AB4B837E18D2C8BA0087E654 /* tock.caf in Resources */,
 				0EABB2A81956884300C45788 /* EWMyFriendsViewController.xib in Resources */,
+				0EAE5C9A199A3F7400AED01B /* PLCameraSheetButtonPressed@2x.png in Resources */,
 				ABF3FB621908B72F0017D2EF /* 13.jpg in Resources */,
 				9BF297BE1912F713008C136E /* EWRecordingViewController.xib in Resources */,
 				0EB0D3261998F5F50031D2DD /* EWFirstTimeViewController.xib in Resources */,
@@ -1300,11 +1381,14 @@
 				0E590FF1194DF35B000AD7C4 /* Lato-HairlineItalic.ttf in Resources */,
 				ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */,
 				ABF3FB571908B72F0017D2EF /* 2.jpg in Resources */,
+				0EAE5C9E199A3F7400AED01B /* PLCameraSheetDoneButtonPressed@2x.png in Resources */,
 				9BF297E91912F720008C136E /* EWMediaViewCell.xib in Resources */,
 				0E590FF6194DF35B000AD7C4 /* Lato-LightItalic.ttf in Resources */,
 				9B5A2F95197C53DD0076F2BD /* EWFeedbackViewController.xib in Resources */,
 				0EB02D89199900A20031D2DD /* New-Version_03-02.png in Resources */,
 				0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */,
+				0EAE5C9B199A3F7400AED01B /* PLCameraSheetDoneButton.png in Resources */,
+				0EAE5C9D199A3F7400AED01B /* PLCameraSheetDoneButtonPressed.png in Resources */,
 				ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */,
 				0E590FFE194DF35B000AD7C4 /* OFL.txt in Resources */,
 				ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */,
@@ -1312,6 +1396,7 @@
 				AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */,
 				ABFECBF719075F4200DD5BDC /* bg.caf in Resources */,
 				0E590FF8194DF35B000AD7C4 /* Lato-MediumItalic.ttf in Resources */,
+				0EAE5C9C199A3F7400AED01B /* PLCameraSheetDoneButton@2x.png in Resources */,
 				9BF297BB1912F713008C136E /* EWPostWakeUpView.xib in Resources */,
 				ABF3FB591908B72F0017D2EF /* 4.jpg in Resources */,
 				0E590FFC194DF35B000AD7C4 /* Lato-Thin.ttf in Resources */,
@@ -1339,7 +1424,9 @@
 				ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */,
 				9BF297B91912F713008C136E /* EWNotificationViewController.xib in Resources */,
 				0E590FFB194DF35B000AD7C4 /* Lato-SemiboldItalic.ttf in Resources */,
+				0EAE5C99199A3F7400AED01B /* PLCameraSheetButtonPressed.png in Resources */,
 				ABF3FB5A1908B72F0017D2EF /* 5.jpg in Resources */,
+				0EAE5C98199A3F7400AED01B /* PLCameraSheetButton@2x.png in Resources */,
 				ABEEA96817E027E90035DF4A /* vm5.m4a in Resources */,
 				0E591001194DF35B000AD7C4 /* Montserrat-Regular.ttf in Resources */,
 				ABF3FB581908B72F0017D2EF /* 3.jpg in Resources */,
@@ -1352,6 +1439,7 @@
 				9B5AF7F21965EC640002AA06 /* EWNotificationCell.xib in Resources */,
 				ABFCB2E4186E957100355781 /* Drive.caf in Resources */,
 				0E590FEB194DF35B000AD7C4 /* lanenar.ttf in Resources */,
+				0EAE5C97199A3F7400AED01B /* PLCameraSheetButton.png in Resources */,
 				ABF3FB5E1908B72F0017D2EF /* 9.jpg in Resources */,
 				0E590FFD194DF35B000AD7C4 /* Lato-ThinItalic.ttf in Resources */,
 				9BF297E21912F720008C136E /* EWAlarmPage.xib in Resources */,
@@ -1448,6 +1536,7 @@
 				9B3EC17A1970DEBC00BB52AA /* GPUImageAnimator.m in Sources */,
 				AB207E69182FFFB60076D93F /* MBProgressHUD.m in Sources */,
 				9BF297C21912F713008C136E /* EWWakeUpViewController.m in Sources */,
+				0EAE5C91199A3F7400AED01B /* GKCropBorderView.m in Sources */,
 				9BF297BA1912F713008C136E /* EWPersonViewController.m in Sources */,
 				5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */,
 				9BF07AB9192324F800DED2E1 /* _EWGroup.m in Sources */,
@@ -1489,15 +1578,19 @@
 				ABD53FC9194D7DC900BBC8DA /* EWServerObject.m in Sources */,
 				9BF297EE1912F720008C136E /* EWTextFieldCell.m in Sources */,
 				ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */,
+				0EAE5C93199A3F7400AED01B /* GKImageCropView.m in Sources */,
 				AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */,
 				9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */,
 				AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */,
 				ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */,
 				9BF297BD1912F713008C136E /* EWRecordingViewController.m in Sources */,
+				0EAE5C94199A3F7400AED01B /* GKImageCropViewController.m in Sources */,
+				0EAE5C96199A3F7400AED01B /* GKResizeableCropOverlayView.m in Sources */,
 				AB207E5E182F4D9E0076D93F /* ImageViewController.m in Sources */,
 				9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */,
 				5632E39317D1C5950079D81C /* EWDeviceInfo.m in Sources */,
 				AB198C921861818B008C1F15 /* EWAlarmItem.m in Sources */,
+				0EAE5C95199A3F7400AED01B /* GKImagePicker.m in Sources */,
 				9BEEAF681992C75E008E6F34 /* EWSleepViewController.m in Sources */,
 				9BF297E41912F720008C136E /* EWCollectionPersonCell.m in Sources */,
 				AB198C951861818B008C1F15 /* EWMediaItem.m in Sources */,
@@ -1515,6 +1608,7 @@
 				ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */,
 				9BF07ABA192324F800DED2E1 /* _EWGroupTask.m in Sources */,
 				0EAD75D71995C26F00186860 /* MYIntroductionPanel.m in Sources */,
+				0EAE5C92199A3F7400AED01B /* GKImageCropOverlayView.m in Sources */,
 				0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */,
 				9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */,
 				9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */,

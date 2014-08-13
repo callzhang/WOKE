@@ -947,7 +947,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     NSURL *url = [NSURL URLWithString:photo];
     
     IDMPhoto *idmPhoto = [IDMPhoto photoWithURL:url];
-    [_photos insertObject:idmPhoto atIndex:0];
+    [_photos addObject:idmPhoto];
     
     [self setInitialPageIndex:0];
     
