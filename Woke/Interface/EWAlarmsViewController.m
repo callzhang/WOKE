@@ -690,10 +690,9 @@
     
     //create button block
     menu.toProfileButtonBlock = ^{
-        
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
-        controller.canSeeFriendsDetail = YES;
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
         
         [weakMenu closeMenuWithCompletion:^{

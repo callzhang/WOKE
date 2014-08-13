@@ -80,7 +80,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.person = p;
-        
     }
     return self;
 }

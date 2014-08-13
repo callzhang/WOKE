@@ -83,21 +83,20 @@
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
     //because the pastTask is not a static relationship, i.e. the set of past tasks need to be updated timely, we try to pull data from Query first and save them to person
+    //get from local cache if self or time elapsed since last update is shorter than predefined interval
     
     NSMutableArray *tasks;
+    tasks = [[person.pastTasks allObjects] mutableCopy];
+    [tasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
 
-    //get from local cache if self or time elapsed since last update is shorter than predefined interval
-    if (person.isMe || !person.isOutDated) {
-        tasks = [[person.pastTasks allObjects] mutableCopy];
-        [tasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
-    }else{
+    if(!person.isMe && person.isOutDated &&[EWDataStore isReachable]){
         //get from server
         NSLog(@"Fetch past task from server for %@", person.name);
         PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
-        [query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
+        //[query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
         [query whereKey:@"state" equalTo:@YES];
         PFUser *user = [PFUser objectWithoutDataWithClassName:@"PFUser" objectId:person.objectId];
-        [query whereKey:@"owner" equalTo:user];
+        [query whereKey:@"pastOwner" equalTo:user];
         [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]];
         query.limit = 10;
         tasks = [[query findObjects] mutableCopy];
@@ -110,7 +109,7 @@
     }
     
     
-    return tasks;
+    return [tasks copy];
 }
 
 #pragma mark - Next task
@@ -587,16 +586,14 @@
         }
     }
     
-    //delete remaining
-    if (notifications.count > 0) {
-        for (UILocalNotification *ln in notifications) {
-            if ([ln.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeAlarmTimer]) {
-                
-                NSLog(@"Unmatched alarm notification deleted (%@) ", ln.fireDate.date2detailDateString);
-                [[UIApplication sharedApplication] cancelLocalNotification:ln];
-            }
+    //delete remaining alarm timer
+    for (UILocalNotification *ln in notifications) {
+        if ([ln.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeAlarmTimer]) {
             
+            NSLog(@"Unmatched alarm notification deleted (%@) ", ln.fireDate.date2detailDateString);
+            [[UIApplication sharedApplication] cancelLocalNotification:ln];
         }
+        
     }
     
     //schedule sleep timer
@@ -768,6 +765,7 @@
     //local notification
     UILocalNotification *sleepNotif = [[UILocalNotification alloc] init];
     sleepNotif.fireDate = sleepTime;
+    sleepNotif.timeZone = [NSTimeZone systemTimeZone];
     sleepNotif.alertBody = [NSString stringWithFormat:@"It's time to sleep, press here to enter sleep mode (%@)", sleepTime.date2String];
     sleepNotif.alertAction = @"Sleep";
     sleepNotif.repeatInterval = NSWeekCalendarUnit;
@@ -791,36 +789,7 @@
     NSLog(@"Cancelled %ld sleep notification", (long)n);
 }
 
-+(void)scheduleNotificationOnServer
-{
-//    NSMutableString *urlString = [NSMutableString string];
-//    [urlString appendString:kParsePushUrl];
-////    [urlString appendFormat:@"files/imagefile.jpg"];
-//    
-//    NSURL *url = [NSURL URLWithString:urlString];
-//    
-//    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-//    [request setHTTPMethod:@"POST"];
-//    [request addValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
-//    [request addValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
-//    
-//    [request addValue:@"Content-Type: application/json" forHTTPHeaderField:@"Content-Type"];
-////    [request]
-//    
-//    NSDictionary *dic = @{@"where":@{kUsername:me.name},@"push_time":me.cachedInfo[kNextTaskTime],@"data":@{@"alert":@"It is time to get up"} };
-//    NSMutableData *data = [[NSMutableData alloc] init];
-//    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-//    [archiver encodeObject:dic forKey:@"Some Key Value"];
-//    [archiver finishEncoding];
-//    
-////    NSData *data =
-//    [request setHTTPBody:data];
-//    NSURLResponse *response = nil;
-//    NSError *error = nil;
-//    
-//    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-//    
-//    NSLog(@"%@" , response);
++(void)scheduleNotificationOnServer{
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
@@ -829,7 +798,11 @@
     [manager.requestSerializer setValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     
-    NSDictionary *dic = @{@"where":@{kUsername:me.name},@"push_time":[NSNumber numberWithDouble:[[NSDate new] timeIntervalSince1970]+60],@"data":@{@"alert":@"It is time to get up"}};
+    NSDictionary *dic = @{@"where":@{kUsername:me.name},
+                          @"push_time":[NSNumber numberWithDouble:[[NSDate new] timeIntervalSince1970]+60],
+                          @"data":@{@"alert":@"Time to get up"},
+                          @"content-available":@1,
+                          kPushTypeKey: kPushTypeTimerKey};
     
     [manager POST:kParsePushUrl parameters:dic
          success:^(AFHTTPRequestOperation *operation,id responseObject) {

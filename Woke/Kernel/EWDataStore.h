@@ -51,6 +51,9 @@ typedef void (^EWSavingCallback)(void);
 @property NSMutableArray *saveCallbacks;
 @property Reachability *reachability;
 
+#pragma mark - Connectivity
++ (BOOL)isReachable;
+
 #pragma mark - Queue
 + (NSSet *) updateQueue;
 + (NSSet *) insertQueue;

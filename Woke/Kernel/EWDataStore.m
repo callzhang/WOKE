@@ -161,6 +161,11 @@
     }
 }
 
+#pragma mark - connectivity
++ (BOOL)isReachable{
+	return [EWDataStore sharedInstance].reachability.isReachable;
+}
+
 #pragma mark - Login Check
 - (void)loginDataCheck{
     NSLog(@"=== [%s] Logged in, performing login tasks.===", __func__);
@@ -417,20 +422,21 @@
 //	}
 	
     //pre save check
-    NSArray *updates  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
-    NSArray *inserts  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
-    NSString *ID = mo.objectID.URIRepresentation.absoluteString;
-    NSArray *u = [updates filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
-    NSArray *i = [inserts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
-    if (u.count) {
-        NSLog(@"!!! %@(%@) save to local is already in the UPDATE queue. Check your code! ", mo.entity.name, ID);
-    }
-    if (i.count) {
-        NSLog(@"!!! %@(%@) save to local is already in the INSERT queue. Check your code!", mo.entity.name, ID);
-    }
-	
+	if (![mo.serverID isEqualToString:me.serverID]) {
+		NSArray *updates  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
+		NSArray *inserts  = [[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueUpdate];
+		NSString *ID = mo.objectID.URIRepresentation.absoluteString;
+		NSArray *u = [updates filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
+		NSArray *i = [inserts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF == %@", ID]];
+		if (u.count) {
+			NSLog(@"!!! %@(%@) save to local is already in the UPDATE queue. Check your code! ", mo.entity.name, ID);
+		}
+		if (i.count) {
+			NSLog(@"!!! %@(%@) save to local is already in the INSERT queue. Check your code!", mo.entity.name, ID);
+		}
+	}
+    
 	//mark MO as save to local
-	
 	[[EWDataStore sharedInstance].saveToLocalItems addObject:mo];
 
     //save to enqueue the updates
@@ -618,8 +624,9 @@
     }
 	
 	//determin network reachability
-	if (![EWDataStore sharedInstance].reachability.isReachable) {
+	if (!EWDataStore.isReachable) {
 		NSLog(@"Network not reachable, skip uploading");
+		return;
 	}
     
     NSLog(@"Start update to server");
@@ -1033,9 +1040,10 @@
 }
 
 - (PFObject *)parseObject{
-	if (![EWDataStore sharedInstance].reachability.isReachable) {
-		return nil;
-	}
+//	if (![EWDataStore sharedInstance].reachability.isReachable) {
+//		NSLog(@"Network not reachable, skip getting PO");
+//		return nil;
+//	}
 	
 	NSError *err;
     PFObject *object = [self getParseObjectWithError:&err];
@@ -1053,7 +1061,7 @@
     if (parseObjectId) {
         PFObject *object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
         [object fetchIfNeeded:err];
-		if (!object) {
+		if (!object.isDataAvailable && *err) {
 			if ((*err).code == kPFErrorObjectNotFound) {
 				NSLog(@"*** PO %@(%@) doesn't exist on server", self.entity.serverClassName, self.serverID);
 				[self setValue:nil forKeyPath:kParseObjectID];
@@ -1093,6 +1101,7 @@
 	
 	//network check
 	if (![EWDataStore sharedInstance].reachability.isReachable) {
+		NSLog(@"Network not reachable, skip refreshing.");
 		//refresh later
 		[self refreshEventually];
 		if (block) {
@@ -1155,6 +1164,7 @@
 
 - (void)refresh{
     if (![EWDataStore sharedInstance].reachability.isReachable) {
+		NSLog(@"Network not reachable, refresh later.");
 		//refresh later
 		[self refreshEventually];
 		return;
@@ -1188,6 +1198,13 @@
 }
 
 - (void)refreshRelatedInBackground{
+	if (![EWDataStore sharedInstance].reachability.isReachable) {
+		NSLog(@"Network not reachable, refresh later.");
+		//refresh later
+		[self refreshEventually];
+		return;
+	}
+	
 	if (![self isKindOfClass:[EWPerson class]]) {
 		return;
 	}
@@ -1225,7 +1242,13 @@
 }
 
 - (void)refreshShallowWithCompletion:(void (^)(void))block{
-    
+    if (![EWDataStore sharedInstance].reachability.isReachable) {
+		NSLog(@"Network not reachable, refresh later.");
+		//refresh later
+		[self refreshEventually];
+		return;
+	}
+	
     if (!self.isOutDated) {
         return;
     }

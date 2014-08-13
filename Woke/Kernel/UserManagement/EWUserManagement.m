@@ -70,7 +70,6 @@
                     [EWUserManagement showLoginPanel];
                     
                 }else{
-                    EWAlert(@"Failed to login Facebook");
                     NSLog(@"Failed to login facebook, error: %@", error.description);
                     //[EWUserManagement showLoginPanel];
                     [self handleFacebookException:error];
@@ -570,10 +569,18 @@
             // Here we will handle all other errors with a generic error message.
             // We recommend you check our Handling Errors guide for more information
             // https://developers.facebook.com/docs/ios/errors/
+            
+            // Clear this token
+            [FBSession.activeSession closeAndClearTokenInformation];
         } else if (error.code == 5){
-            NSLog(@"Error %@", error.description);
-            alertTitle = @"Somethong went wrong";
-            alertText = @"Operation couldn't be finished. We appologize for this. It may caused by weak internet connection.";
+            if (![EWDataStore sharedInstance].reachability.isReachable) {
+                NSLog(@"No connection: %@", error.description);
+            }else{
+                
+                NSLog(@"Error %@", error.description);
+                alertTitle = @"Something went wrong";
+                alertText = @"Operation couldn't be finished. We appologize for this. It may caused by weak internet connection.";
+            }
         } else {
             //Get more error information from the error
             NSDictionary *errorInformation = [[[error.userInfo objectForKey:@"com.facebook.sdk:ParsedJSONResponseKey"] objectForKey:@"body"] objectForKey:@"error"];
@@ -583,10 +590,13 @@
             alertText = [NSString stringWithFormat:@"Please retry. \n\n If the problem persists contact us and mention this error code: %@", [errorInformation objectForKey:@"message"]];
             //[self showMessage:alertText withTitle:alertTitle];
             NSLog(@"Failed to login fb: %@", error.description);
+            
+            // Clear this token
+            [FBSession.activeSession closeAndClearTokenInformation];
         }
     }
-    // Clear this token
-    [FBSession.activeSession closeAndClearTokenInformation];
+    
+    if (!alertTitle) return;
     
     UIAlertView *alertView = [[UIAlertView alloc]
                               initWithTitle:alertTitle
