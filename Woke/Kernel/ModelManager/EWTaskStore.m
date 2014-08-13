@@ -215,10 +215,11 @@
         //this approach is a last resort to fetch task by owner
         PFQuery *taskQuery= [PFQuery queryWithClassName:@"EWTaskItem"];
         [taskQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
+        [taskQuery whereKey:kParseObjectID notContainedIn:[tasks valueForKey:kParseObjectID]];
         NSArray *objects = [taskQuery findObjects];
         for (PFObject *t in objects) {
             EWTaskItem *task = (EWTaskItem *)t.managedObject;
-            task.owner = me;
+            [task refresh];
             if (![tasks containsObject:task]) {
                 [tasks addObject:task];
                 newTask = YES;
@@ -251,7 +252,7 @@
                 if ([t.time isEqualToDate:time]) {
                     //find the task, move to good task
                     [goodTasks addObject:t];
-                    [tasks removeObject:t];
+                    //[tasks removeObject:t];
                     if (!t.alarm) {
                         t.alarm = a;
                         newTask = YES;
@@ -278,6 +279,8 @@
             }
         }
     }
+    
+    [tasks removeObjectsInArray:goodTasks];
    
     //check data integrety
     if (tasks.count > 0) {

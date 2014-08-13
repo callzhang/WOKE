@@ -11,10 +11,8 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-//#import <AWSRuntime/AWSRuntime.h>
 #import <Parse/Parse.h>
-//#import <AWSSNS/AWSSNS.h>
-
+#import "Reachability.h"
 
 
 @class EWPerson;
@@ -38,6 +36,7 @@ typedef void (^EWSavingCallback)(void);
 #define kParseQueueUpdate       @"parse_queue_update"
 #define kParseQueueDelete       @"parse_queue_delete"
 #define kParseQueueWorking      @"parse_queue_working"
+#define kParseQueueRefresh      @"parse_queue_refresh"
 #define kUserID                 @"user_object_id"
 #define kUsername               @"username"
 
@@ -48,8 +47,8 @@ typedef void (^EWSavingCallback)(void);
 @property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in serial
 @property (nonatomic, retain) NSTimer *serverUpdateTimer;
 @property (nonatomic, retain) NSDate *lastChecked;//The date that last sync with server
-@property (nonatomic, retain) NSMutableArray *saveCallbacks;
-
+@property NSMutableArray *saveCallbacks;
+@property Reachability *reachability;
 
 #pragma mark - Queue
 + (NSSet *) updateQueue;
@@ -67,29 +66,6 @@ typedef void (^EWSavingCallback)(void);
 + (void)save;
 + (void)saveWithCompletion:(EWSavingCallback)block;
 + (void)saveToLocal:(NSManagedObject *)mo;
-
-
-#pragma mark - data
-///**
-// get Amazon S3 storage data with key from StackMob backend
-// */
-//+ (NSData *)getRemoteDataWithKey:(NSString *)key;
-//
-///**
-// *Get local cached file path for url. If not cached, dispatch a download URLSession
-// @param key: the normal string url, not MD5 value
-// */
-//+ (NSString *)localPathForKey:(NSString *)key;
-//
-///**
-// Update the data for key. Create object if not cached.
-// */
-//+ (void)updateCacheForKey:(NSString *)key withData:(NSData *)data;
-//
-////check cache data
-//+ (NSDate *)lastModifiedDateForObjectAtKey:(NSString *)key;
-////deletion
-//+ (void)deleteCacheForKey:(NSString *)key;
 
 /**
  * Register the server update process, which will run periodically to sync with server data

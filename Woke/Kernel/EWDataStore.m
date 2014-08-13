@@ -95,8 +95,23 @@
 //		}];
 		
         //Observe context save to update the update/insert/delete queue
-        //This turns out to be not possible because there are actions that need to save to local but not update to server
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addToQueueUpOnSaving:) name:NSManagedObjectContextDidSaveNotification object:context];
+		
+		//Reachability
+		self.reachability = [Reachability reachabilityForInternetConnection];
+		self.reachability.reachableBlock = ^(Reachability *reachability) {
+			NSLog(@"Network is reachable. Start upload.");
+			//in background thread
+			[EWDataStore resumeUploadToServer];
+			
+			//resume refresh MO
+			NSSet *MOs = [EWDataStore getObjectFromQueue:kParseQueueRefresh];
+			for (NSManagedObject *MO in MOs) {
+				[MO refreshInBackgroundWithCompletion:^{
+					NSLog(@"%@(%@) refreshed after network resumed.", MO.entity.name, MO.serverID);
+				}];
+			}
+		};
         
         //facebook
         [PFFacebookUtils initializeFacebook];
@@ -374,7 +389,7 @@
             
         }
         for (NSManagedObject *MO in deletes) {
-            NSLog(@"~~~> MO %@(%@) deleted to context", MO.entity.name, [MO valueForKey:kParseObjectID]);
+            NSLog(@"~~~> MO %@(%@) deleted from context", MO.entity.name, [MO valueForKey:kParseObjectID]);
             PFObject *PO = [MO getParseObjectWithError:nil];
             [EWDataStore appendDeleteQueue:PO];
 			hasChange = YES;
@@ -435,11 +450,11 @@
 + (BOOL)validateMO:(NSManagedObject *)mo{
     //validate MO, only used when uploading MO to PO
 	BOOL good = YES;
-//	
-//	if (![mo valueForKey:kUpdatedDateKey]) {
-//		NSLog(@"The %@(%@) you are trying to validate doesn't have a updated date!", mo.entity.name, mo.serverID);
-//		return NO;
-//	}
+	
+	if (![mo valueForKey:kUpdatedDateKey]) {
+		NSLog(@"The %@(%@) you are trying to validate haven't been downloaded fully. Skip validating.", mo.entity.name, mo.serverID);
+		return YES;
+	}
 	
     NSString *type = mo.entity.name;
     if ([type isEqualToString:@"EWTaskItem"]) {
@@ -601,6 +616,11 @@
         [EWDataStore save];
         return;
     }
+	
+	//determin network reachability
+	if (![EWDataStore sharedInstance].reachability.isReachable) {
+		NSLog(@"Network not reachable, skip uploading");
+	}
     
     NSLog(@"Start update to server");
     
@@ -714,27 +734,31 @@
         if (!object) {
             //TODO: handle error
             if ([err code] == kPFErrorObjectNotFound) {
-                NSLog(@"PO couldn't be found %@!", mo.entity.serverClassName);
+                NSLog(@"PO %@ couldn't be found!", mo.entity.serverClassName);
                 // Now also check for connection errors:
                 //delete ParseID from MO
-                NSManagedObjectID *ID = mo.objectID;
-                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                    NSManagedObject *localMO = [localContext objectWithID:ID];
-                    [localContext deleteObject:localMO];
-                    NSLog(@"MO %@ deleted", mo.entity.name);
-                }];
+//                NSManagedObjectID *ID = mo.objectID;
+//                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+//                    NSManagedObject *localMO = [localContext objectWithID:ID];
+//                    [localContext deleteObject:localMO];
+//                    NSLog(@"MO %@ deleted", mo.entity.name);
+//                }];
             } else if ([err code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
                 [mo updateEventually];
+				return;
             } else if (err) {
                 NSLog(@"*** Error in getting related parse object from MO (%@). \n Error: %@", mo.entity.name, [err userInfo][@"error"]);
                 [mo updateEventually];
+				return;
             }
             
-            return;
+            
         }
         
-    } else {
+    }
+	
+	if (!object) {
         //insert
         object = [PFObject objectWithClassName:mo.entity.serverClassName];
 
@@ -916,14 +940,7 @@
             }
             
             //Fetch PFRelation for normal relation
-            PFRelation *toManyRelation;
-            //@try{
-                toManyRelation = [parseObject relationForKey:key];
-//            }
-//            @catch (NSException *exception) {
-//                NSLog(@"Failed to assign value of key: %@ from Parse Object %@ to ManagedObject %@ \n Error: %@", key, parseObject, self, exception.description);
-//                return;
-//            }
+            PFRelation *toManyRelation = [parseObject relationForKey:key];
             if (!toManyRelation){
                 [self setValue:nil forKey:key];
                 return;
@@ -1016,8 +1033,14 @@
 }
 
 - (PFObject *)parseObject{
-    PFObject *object = [self getParseObjectWithError:nil];
-    
+	if (![EWDataStore sharedInstance].reachability.isReachable) {
+		return nil;
+	}
+	
+	NSError *err;
+    PFObject *object = [self getParseObjectWithError:&err];
+    if (err) return nil;
+	
     //update value
     [self assignValueFromParseObject:object];
     
@@ -1025,14 +1048,14 @@
 }
 
 - (PFObject *)getParseObjectWithError:(NSError **)err{
-    NSString *parseObjectId = [self valueForKey:kParseObjectID];
+    NSString *parseObjectId = self.serverID;
     
     if (parseObjectId) {
         PFObject *object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
         [object fetchIfNeeded:err];
-		if (err) {
+		if (!object) {
 			if ((*err).code == kPFErrorObjectNotFound) {
-				NSLog(@"*** PO(%@) doesn't exist on server", self.serverID);
+				NSLog(@"*** PO %@(%@) doesn't exist on server", self.entity.serverClassName, self.serverID);
 				[self setValue:nil forKeyPath:kParseObjectID];
 			}else{
 				NSLog(@"*** Failed to get PO(%@) from server. %@", self.serverID, *err);
@@ -1067,6 +1090,17 @@
 
 - (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
     NSParameterAssert([NSThread isMainThread]);
+	
+	//network check
+	if (![EWDataStore sharedInstance].reachability.isReachable) {
+		//refresh later
+		[self refreshEventually];
+		if (block) {
+            block();
+        }
+		return;
+	}
+	
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
     if (!parseObjectId) {
         NSLog(@"+++> Insert MO %@ from refresh", self.entity.name);
@@ -1120,9 +1154,13 @@
 }
 
 - (void)refresh{
-    //NSParameterAssert([NSThread isMainThread]);
+    if (![EWDataStore sharedInstance].reachability.isReachable) {
+		//refresh later
+		[self refreshEventually];
+		return;
+	}
     
-    NSString *parseObjectId = [self valueForKey:kParseObjectID];
+    NSString *parseObjectId = self.serverID;
     
     if (!parseObjectId) {
         //NSParameterAssert([self isInserted]);
@@ -1143,6 +1181,10 @@
         [self updateValueAndRelationFromParseObject:object];
         [EWDataStore saveToLocal:self];
     }
+}
+
+- (void)refreshEventually{
+	[EWDataStore appendObject:self toQueue:kParseQueueRefresh];
 }
 
 - (void)refreshRelatedInBackground{
@@ -1333,8 +1375,8 @@
 }
 
 - (void)updateEventually{
-    BOOL hasParseObjectLinked = !![self valueForKey:kParseObjectID];
-    if (hasParseObjectLinked) {
+	
+    if (self.serverID) {
         //update
         NSLog(@"%s: updated %@ eventually", __func__, self.entity.name);
         [EWDataStore appendUpdateQueue:self];
@@ -1346,12 +1388,9 @@
 }
 
 - (void)deleteEventually{
-    PFObject *po = self.parseObject;
-    if (!po) {
-        return;
-    }
+    PFObject *po = [PFObject objectWithoutDataWithClassName:self.entity.name objectId:self.serverID];
     NSLog(@"%s: delete %@ eventually", __func__, self.entity.name);
-    [EWDataStore appendDeleteQueue:self.parseObject];
+    [EWDataStore appendDeleteQueue:po];
 
     //delete
     [self.managedObjectContext performBlock:^{
@@ -1404,8 +1443,16 @@
 - (void)updateFromManagedObject:(NSManagedObject *)managedObject{
 	NSError *err;
 	[self fetchIfNeeded:&err];
-	if (err) {
-		NSLog(@"Trying to upload");
+	if (err && self.objectId) {
+		if (err.code == kPFErrorObjectNotFound) {
+			NSLog(@"PO %@(%@) not found on server!", self.parseClassName, self.objectId);
+			[managedObject setValue:nil forKeyPath:kParseObjectID];
+		}else{
+			NSLog(@"Trying to upload but PO error fetching: %@. Skip!", err.description);
+		}
+		
+		[managedObject updateEventually];
+		return;
 	}
 	
     NSManagedObject *mo = [EWDataStore objectForCurrentContext:managedObject];
@@ -1449,25 +1496,7 @@
             PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
             [self setObject:point forKey:key];
         }else if(value != nil){
-            id POHasValue;
-			@try {
-				POHasValue = [self valueForKey:key];
-			}
-			@catch (NSException *exception) {
-				NSLog(@"*** PO %@(%@) failed to get key: %@. Detail: %@", self.parseClassName, self.objectId, key, self);
-			}
-			BOOL isValueNew = NO;
-			if (POHasValue) {
-				if (![value isEqual:self[key]]) {
-					isValueNew = YES;
-				}
-			}else{
-				isValueNew = YES;
-			}
-            if (isValueNew) {
-                NSLog(@"Attribute %@(%@)->%@ is changed from %@ to %@ on MO, assign to PO", mo.entity.name, [mo valueForKey:kParseObjectID], obj.name, [self valueForKey:key], value);
-				[self setObject:value forKey:key];
-            }
+			[self setObject:value forKey:key];
             
         }else{
             //value is nil, delete PO value
@@ -1589,7 +1618,7 @@
             }
         }else{
             //empty relationship, delete PO relationship
-            if (self[key]) {
+            if ([self valueForKey:key]) {
                 NSParameterAssert(!obj.isToMany);
                 NSLog(@"Empty relationship on MO %@(%@) -> %@, delete PO relation.", managedObject.entity.name, self.objectId, obj.name);
                 

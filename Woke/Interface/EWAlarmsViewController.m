@@ -458,7 +458,7 @@
                 }
             }else{
                 [self showAlarmPageLoading:YES];
-                [[EWTaskStore sharedInstance] scheduleTasks];
+                //[[EWTaskStore sharedInstance] scheduleTasks];
             }
             
         }else if ([keyPath isEqualToString:@"notifications"]){
@@ -597,7 +597,7 @@
     if (actionSheet.tag == kOptionsAlert) {
         //main action
         //@"Preferences", @"Test sheet", @"Refresh", @"Feedback", @"Start Sleeping"
-        if ([title isEqualToString:@"Preference"]) {
+        if ([title isEqualToString:@"Preferences"]) {
             EWSettingsViewController *controller = [[EWSettingsViewController alloc] initWithNibName:nil bundle:nil];
             UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
             [self presentViewControllerWithBlurBackground:nav];
