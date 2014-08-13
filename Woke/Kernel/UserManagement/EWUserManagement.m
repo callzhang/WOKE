@@ -215,6 +215,12 @@
         [EWUserManagement showLoginPanel];
     };
     
+    //remove all queue
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueDelete];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueInsert];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueUpdate];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueWorking];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueRefresh];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedOut object:self userInfo:nil];
     

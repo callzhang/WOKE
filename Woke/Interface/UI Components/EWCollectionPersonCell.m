@@ -111,7 +111,10 @@
     if (isMe) {
         self.time.text = @"";
         self.km.text = @"";
+        self.showTime = NO;
         return;
+    }else{
+        self.showTime = YES;
     }
     
     

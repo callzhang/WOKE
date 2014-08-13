@@ -40,6 +40,8 @@
     [super viewDidAppear:animated];
     //sound
     [[AVManager sharedManager] playSoundFromFile:@"sleep mode.caf"];
+    //time
+    [self updateTimer:nil];
     //timer
     timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTimer:) userInfo:nil repeats:YES];
     [EWTaskStore scheduleNotificationOnServer];
@@ -60,5 +62,7 @@
     self.timeLabel.text = t.date2String;
     NSDate *wakeTime = [[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:me];
     self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", wakeTime.timeLeft];
+    NSDate *alarmtime = me.preference[kNextTaskTime];
+    self.alarmTime.text = [NSString stringWithFormat:@"Alarm %@", alarmtime.date2String];
 }
 @end

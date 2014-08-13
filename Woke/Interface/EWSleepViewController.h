@@ -12,5 +12,6 @@
 - (IBAction)cancel:(id)sender;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLeftLabel;
+@property (weak, nonatomic) IBOutlet UILabel *alarmTime;
 
 @end

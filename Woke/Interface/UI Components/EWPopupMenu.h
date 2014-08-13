@@ -30,6 +30,6 @@ typedef void(^voiceButtonBlock)(void);
 - (instancetype)initWithCell:(EWCollectionPersonCell *)cell;
 - (void)closeMenu;
 - (void)closeMenuWithCompletion:(void (^)(void))block;
-+ (void)flipCell:(EWCollectionPersonCell *)cell completion:(void (^)(void))block;
+//+ (void)flipCell:(EWCollectionPersonCell *)cell completion:(void (^)(void))block;
 
 @end

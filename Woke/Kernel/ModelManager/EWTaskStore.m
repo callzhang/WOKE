@@ -665,8 +665,7 @@
 + (BOOL)validateTask:(EWTaskItem *)task{
     BOOL good = YES;
     
-    
-    BOOL completed = [[NSDate date] timeIntervalSinceDate: task.time] > kMaxWakeTime || task.completed;
+    BOOL completed = task.completed || [[NSDate date] timeIntervalSinceDate: task.time] > kMaxWakeTime;
     if (completed) {
         if(task.alarm){
             task.alarm = nil;
@@ -680,7 +679,7 @@
         if (!task.pastOwner) {
             task.pastOwner = [EWPersonStore me];
             //good = NO;
-            NSLog(@"*** task (%@) missing pastOwner", task.serverID);
+            NSLog(@"*** task missing pastOwner: %@", task);
         }else if(!task.pastOwner.isMe){
             //NSParameterAssert(task.pastOwner.isMe);
             NSLog(@"*** Uploading task(%@) that is not owned by me, please check!", task.serverID);
@@ -690,8 +689,15 @@
         //NSParameterAssert(task.alarm);
         
         if (!task.alarm) {
-            good = NO;
-            NSLog(@"*** task (%@) missing alarm", task.serverID);
+            PFObject *PO = task.parseObject;
+            PFObject *aPO = PO[@"alarm"];
+            if (aPO) {
+                task.alarm = (EWAlarmItem *)aPO.managedObject;
+            }else{
+                good = NO;
+                NSLog(@"*** task (%@) missing alarm", task.serverID);
+            }
+            
         }
         
         if (task.pastOwner) {
@@ -706,16 +712,25 @@
             NSLog(@"*** task (%@) missing owner", task.serverID);
         }else if(!task.owner.isMe){
             //NSParameterAssert(task.owner.isMe);
-            NSLog(@"*** Uploading task(%@) that is not owned by me, please check!", task.serverID);
+            NSLog(@"*** validation task(%@) that is not owned by me, please check!", task.serverID);
         }
     }
     
     if (!task.time) {
-        good = NO;
+        PFObject *PO = task.parseObject;
+        if (PO[@"time"]) {
+            task.time = PO[@"time"];
+        }else{
+            good = NO;
+            NSLog(@"*** task missing time: %@", task);
+        }
+        
     }
     
     if (!good) {
-        [[EWTaskStore sharedInstance] removeTask:task];
+        if (task.updatedAt.timeElapsed > kStalelessInterval) {
+            [[EWTaskStore sharedInstance] removeTask:task];
+        }
     }
     
     return good;

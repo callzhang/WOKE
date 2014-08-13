@@ -287,7 +287,7 @@ EWPerson *me;
             me.score = @100;
         }
     }else if ([keyPath isEqualToString:@"profilePic"]){
-        if (!change[NSKeyValueChangeKindKey]) {
+        if (![object valueForKey:@"profilePic"]) {
             EWAlert(@"Profile picture missing");
         }
         

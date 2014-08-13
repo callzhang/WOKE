@@ -318,7 +318,7 @@
 	if (hasChanges) {
 		
         [[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
-        [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
+        [EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:kUploadLag target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
         
     }
     

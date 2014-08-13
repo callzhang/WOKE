@@ -214,7 +214,8 @@
                     animations:
      ^{
          //me
-         if (cell.person.isMe) {
+         BOOL isMe = cell.person.isMe;
+         if (isMe) {
              cell.initial.alpha = 1;
          }
          
@@ -266,42 +267,42 @@
 
 
 
-//open method
-+ (void)flipCell:(EWCollectionPersonCell *)cell completion:(void (^)(void))block{
-    if (cell.isSelected == YES) {
-        //back to initial state
-        [UIView transitionWithView:cell
-                          duration:0.4
-                           options:(/*UIViewAnimationOptionTransitionFlipFromLeft | */UIViewAnimationOptionAllowAnimatedContent)
-                        animations:^{
-            //cell.white.alpha = 0.8;
-            //cell.distance.alpha = 1;
-            cell.time.alpha = 1;
-            cell.initial.alpha = 0;
-        } completion:^(BOOL finished) {
-            if (block) {
-                block();
-            }
-        }];
-        [UIView animateWithDuration:0.4 animations:^{
-            
-        }];
-    }else{
-        
-        [UIView transitionWithView:cell
-                          duration:0.4
-                           options:(/*UIViewAnimationOptionTransitionFlipFromRight | */UIViewAnimationOptionAllowAnimatedContent)
-                        animations:
-         ^{
-             cell.selected = YES;
-             cell.time.alpha = 0;
-             cell.initial.alpha = 1;
-        } completion:^(BOOL finished) {
-            if (block) {
-                block();
-            }
-        }];
-    }
-}
+////open method
+//+ (void)flipCell:(EWCollectionPersonCell *)cell completion:(void (^)(void))block{
+//    if (cell.isSelected == YES) {
+//        //back to initial state
+//        [UIView transitionWithView:cell
+//                          duration:0.4
+//                           options:(/*UIViewAnimationOptionTransitionFlipFromLeft | */UIViewAnimationOptionAllowAnimatedContent)
+//                        animations:^{
+//            //cell.white.alpha = 0.8;
+//            //cell.distance.alpha = 1;
+//            cell.time.alpha = 1;
+//            cell.initial.alpha = 0;
+//        } completion:^(BOOL finished) {
+//            if (block) {
+//                block();
+//            }
+//        }];
+//        [UIView animateWithDuration:0.4 animations:^{
+//            
+//        }];
+//    }else{
+//        
+//        [UIView transitionWithView:cell
+//                          duration:0.4
+//                           options:(/*UIViewAnimationOptionTransitionFlipFromRight | */UIViewAnimationOptionAllowAnimatedContent)
+//                        animations:
+//         ^{
+//             cell.selected = YES;
+//             cell.time.alpha = 0;
+//             cell.initial.alpha = 1;
+//        } completion:^(BOOL finished) {
+//            if (block) {
+//                block();
+//            }
+//        }];
+//    }
+//}
 
 @end

@@ -28,6 +28,7 @@
 #import "EWAppDelegate.h"
 #import "AVManager.h"
 #import "UIAlertView+.h"
+#import "EWSleepViewController.h"
 
 //Tool
 #import "EWUIUtil.h"
@@ -75,7 +76,18 @@
         NSLog(@"==================> Reactivated Woke <======================");
         EWAlert(@"You brought me back to life!");
     }else if ([type isEqualToString:kLocalNotificationTypeSleepTimer]){
-        EWAlert(@"Entering sleep mode...");
+        NSLog(@"Entering sleep mode...");
+        if (me) {
+            //logged in enter sleep mode
+            EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
+            [rootViewController presentViewControllerWithBlurBackground:controller];
+        }else{
+            [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
+                EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
+                [rootViewController presentViewControllerWithBlurBackground:controller];
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kPersonLoggedIn object:nil];
+            }];
+        }
     }
     else{
         NSLog(@"Unexpected Local Notification Type. Detail: %@", notification);

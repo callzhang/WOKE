@@ -15,7 +15,7 @@
 - (NSString *)date2String {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     
-    [formatter setDateFormat:@"HH:mm a"];
+    [formatter setDateFormat:@"hh:mm a"];
 
     NSString *string = [formatter stringFromDate:self];
     return string;
