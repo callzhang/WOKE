@@ -86,23 +86,13 @@
 }
 
 - (void)initView {
-    self.title = @"Test";
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(OnBack)];
-    CGRect tableFrame = self.view.frame;
+    self.title = @"Test Sheet";
     
-    //title view
-    if (self.navigationController == nil) {
-        //header view
-        UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(30, 30, 18, 30)];
-        [backBtn setImage:[UIImage imageNamed:@"BackButton"] forState:UIControlStateNormal];
-        [backBtn addTarget:self action:@selector(OnBack) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:backBtn];
-        
-        tableFrame.origin.y += MADEL_HEADER_HEIGHT;
-        tableFrame.size.height -= MADEL_HEADER_HEIGHT;
-    }
+    [EWUIUtil addTransparantNavigationBarToViewController:self
+                                             withLeftItem:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnBack)]
+                                                rightItem:nil];
     
-    _tableView = [[UITableView alloc] initWithFrame:tableFrame];
+    _tableView = [[UITableView alloc] initWithFrame:self.view.frame];
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.backgroundColor = [UIColor clearColor];

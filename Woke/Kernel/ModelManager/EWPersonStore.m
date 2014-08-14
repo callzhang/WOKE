@@ -333,23 +333,28 @@ EWPerson *me;
         PFObject *user = [q getFirstObject];
         NSArray *friendsPO = user[@"friends"];
         if (friendsPO.count == 0) return;//prevent 0 friend corrupt data
-        NSMutableSet *friends = [NSMutableSet new];
+        NSMutableSet *friendsMO = [NSMutableSet new];
         for (PFObject *f in friendsPO) {
             if ([f isKindOfClass:[NSNull class]]) {
                 continue;
             }
             NSManagedObject *mo = f.managedObject;
-            [friends addObject:mo];
+            [friendsMO addObject:mo];
         }
-        person.friends = [friends copy];
-        [EWPersonStore updateCachedFriends];
+        backPerson.friends = [friendsMO copy];
+        if ([backPerson.serverID isEqualToString: PFUser.currentUser.objectId ]) {
+            [EWPersonStore updateCachedFriends];
+        }
         [EWDataStore save];
     }
 }
 
 + (void)updateCachedFriends{
-    NSSet *friends = [me.friends valueForKey:kParseObjectID];
-    [me.cachedInfo setValue:[friends allObjects] forKey:kCachedFriends];
+    EWPerson *backPerson = (EWPerson *)PFUser.currentUser.managedObject;
+    NSSet *friends = [backPerson.friends valueForKey:kParseObjectID];
+    NSMutableDictionary *cache = me.cachedInfo.mutableCopy;
+    cache[kCachedFriends] = friends.allObjects;
+    backPerson.cachedInfo = [cache copy];
     [EWDataStore save];
 }
 
@@ -362,7 +367,6 @@ EWPerson *me;
     BOOL good = YES;
     BOOL needRefreshFacebook = NO;
     if(!person.name){
-        good = NO;
         NSString *name = [PFUser currentUser][@"name"];
         if (name) {
             person.name = name;
@@ -371,7 +375,6 @@ EWPerson *me;
         }
     }
     if(!person.profilePic){
-        good = NO;
         PFFile *pic = [PFUser currentUser][@"profilePic"];
         UIImage *img = [UIImage imageWithData:pic.getData];
         if (img) {
@@ -381,13 +384,12 @@ EWPerson *me;
         }
     }
     if(!person.username){
-        good = NO;
         person.username = [PFUser currentUser].username;
         NSLog(@"Username is missing!");
     }
     
     if(person.friends.count == 0){
-        NSLog(@"*** Something wrong, please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.");
+        NSLog(@"*** Please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.");
         
     }
     
@@ -395,11 +397,7 @@ EWPerson *me;
         [EWUserManagement updateFacebookInfo];
     }
     
-    if (good) {
-        return YES;
-    }
-    
-    return NO;
+    return good;
 }
 
 @end

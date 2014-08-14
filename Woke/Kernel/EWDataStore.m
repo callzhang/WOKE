@@ -15,12 +15,11 @@
 #import "EWWakeUpManager.h"
 #import "EWServer.h"
 #import "EWTaskItem.h"
+#import "EWMediaItem.h"
 
 #define MR_LOGGING_ENABLED 0
 #import <MagicalRecord/CoreData+MagicalRecord.h>
 
-//Util
-#import "FTWCache.h"
 
 #pragma mark - 
 #define kServerTransformTypes               @{@"CLLocation": @"PFGeoPoint"} //localType: serverType
@@ -316,7 +315,8 @@
 //			EWAlert(str);
 //		}
 //	}
-//		
+//
+	
     
     BOOL hasChanges = [EWDataStore saveAndEnqueue];
     
@@ -342,11 +342,18 @@
 	BOOL hasChange = NO;
 	
 	NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
+	if (![NSThread isMainThread]) {
+		//background thread, save only
+		[context saveToPersistentStoreAndWait];
+		return NO;
+	}
+	
     NSSet *inserts = [context insertedObjects];
     NSSet *updates = [context updatedObjects];
     NSSet *deletes = [context deletedObjects];
     
     if (inserts.count || updates.count || deletes.count) {
+		
         for (NSManagedObject *MO in inserts) {
 			//skip if marked as save to local
 			if ([[EWDataStore sharedInstance].saveToLocalItems containsObject:MO]) {
@@ -362,6 +369,8 @@
             [EWDataStore appendInsertQueue:MO];
 			hasChange = YES;
         }
+		
+		
         for (NSManagedObject *MO in updates) {
 			//skip if marked as save to local
 			if ([[EWDataStore sharedInstance].saveToLocalItems containsObject:MO]) {
@@ -376,6 +385,12 @@
 			//move to inserts if no serverID
 			if (!MO.serverID) {
 				[EWDataStore appendInsertQueue:MO];
+				continue;
+			}
+			
+			//skip if MO doesn't have updatedAt
+			if (![MO valueForKey:kUpdatedDateKey]) {
+				NSLog(@"!!! MO %@(%@) doesn't have updatedAt, skip upload.", MO.entity.name, MO.serverID);
 				continue;
 			}
             
@@ -393,14 +408,13 @@
             }
             
         }
+		
         for (NSManagedObject *MO in deletes) {
             NSLog(@"~~~> MO %@(%@) deleted from context", MO.entity.name, [MO valueForKey:kParseObjectID]);
             PFObject *PO = [MO getParseObjectWithError:nil];
             [EWDataStore appendDeleteQueue:PO];
 			hasChange = YES;
         }
-        
-        
     }
 	
 	[context saveToPersistentStoreAndWait];
@@ -552,6 +566,12 @@
 }
 
 + (void)appendObject:(NSManagedObject *)mo toQueue:(NSString *)queue{
+	//check owner
+	if(![EWDataStore checkAccess:mo] && ![queue isEqualToString:kParseQueueRefresh]){
+		NSLog(@"*** MO %@(%@) doesn't owned by me, skip adding to %@", mo.entity.name, mo.serverID, queue);
+		return;
+	}
+	
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:queue];
     NSMutableSet *set = [[NSMutableSet setWithArray:array] mutableCopy]?:[NSMutableSet new];
     NSManagedObjectID *objectID = mo.objectID;
@@ -609,6 +629,32 @@
     NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy];
     [dic removeObjectForKey:object.objectId];
     [[NSUserDefaults standardUserDefaults] setObject:[dic copy] forKey:kParseQueueDelete];
+}
+
++ (BOOL)checkAccess:(NSManagedObject *)mo{
+	EWPerson *p;
+	if ([mo isKindOfClass:[EWPerson class]]) {
+		p = (EWPerson *)mo;
+	}else if ([mo isKindOfClass:[EWTaskItem class]]){
+		EWTaskItem *t = (EWTaskItem *)mo;
+		p = t.owner?t.owner:t.pastOwner;
+	}else if ([mo isKindOfClass:[EWMediaItem class]]){
+		EWMediaItem *m = (EWMediaItem *)mo;
+		p = m.author;
+	}
+	if (p.isMe){
+		return YES;
+	}
+	return NO;
+//	if (!mo.serverID) {
+//		return YES;
+//	}
+//	PFObject *po = mo.parseObject;
+//	BOOL read = [po.ACL getReadAccessForUser:[PFUser currentUser]];
+//	if (read || !po.ACL) {
+//		return YES;
+//	}
+//	return NO;
 }
 
 
@@ -687,8 +733,10 @@
 		NSLog(@"There are %d MOs need to upload or %d MOs need to delete", workingMOs.count, deletePOs.count);
 		for (NSManagedObject *MO in workingMOs) {
 			if (MO.serverID) {
+				NSLog(@"MO %@(%@) resumed to UPDATE queue", MO.entity.name, MO.serverID);
 				[EWDataStore appendUpdateQueue:MO];
 			}else{
+				NSLog(@"MO %@(%@) resumed to INSERT queue", MO.entity.name, MO.serverID);
 				[EWDataStore appendInsertQueue:MO];
 			}
 			

@@ -20,11 +20,12 @@
 
 static const NSArray *sleepDurations;
 static const NSArray *socialLevels;
+static const NSArray *pref;
 
 @interface EWSettingsViewController ()
 {
     NSUInteger selectedCellNum;
-    NSArray *ringtoneList ;
+    NSArray *ringtoneList;
 }
 //@property (strong, nonatomic) NSArray *options;
 @property (strong, nonatomic) NSMutableDictionary *preference;
@@ -44,6 +45,8 @@ static const NSArray *socialLevels;
     [super viewDidLoad];
     sleepDurations = @[@6, @6.5, @7.5, @8, @8.5, @9, @9.5, @10, @10.5, @11, @11.5, @12];
     socialLevels = @[kSocialLevelFriends, kSocialLevelEveryone];
+    pref = @[@"Alarm sound", @"Who can send me voice", @"Bed time notification", @"Sleep duration", @"Privacy", @"Log out"];
+    
     [self setTitle:@"Preferences"];
 
     [self initData];
@@ -187,7 +190,7 @@ static const NSArray *socialLevels;
             return 8;
             break;
         case settingGroupPreference:
-            return 4;
+            return pref.count;
             break;
         default: //settingGroupAbout
             return 1;
@@ -253,21 +256,20 @@ static const NSArray *socialLevels;
             break;
         case settingGroupPreference: {
             cell= [self makePrefCellInTableView:tableView];
-            switch (indexPath.row){//options[indexPath.row]
+            cell.textLabel.text = LOCALSTR(pref[indexPath.row]);
+            switch (indexPath.row){
                 case 0: {
-                    cell.textLabel.text = LOCALSTR(@"Alarm sound");
+                    
                     NSArray *fileString = [preference[@"DefaultTone"] componentsSeparatedByString:@"."];
                     NSString *file = [fileString objectAtIndex:0];
                     cell.detailTextLabel.text = file;
                     break;
                 }
                 case 1: {
-                    cell.textLabel.text = LOCALSTR(@"Who can send me voice");
                     cell.detailTextLabel.text = preference[@"SocialLevel"];
                 }
                     break;
                 case 2: {
-                    cell.textLabel.text = LOCALSTR(@"Bed time notification");
                     //switch
                     UISwitch *bedTimeNotifSwitch = [[UISwitch alloc] init];
                     bedTimeNotifSwitch.tintColor = [UIColor grayColor];
@@ -283,22 +285,16 @@ static const NSArray *socialLevels;
                                     }
                     break;
                 case 3: {
-                    cell.textLabel.text = LOCALSTR(@"Sleep duration");
                     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ hours", preference[@"SleepDuration"]];
                     
                                     }
                     break;
                 case 4: {
-                    
-                    cell.textLabel.text = LOCALSTR(@"Download connection");
-                    cell.detailTextLabel.text = preference[@"DownloadConnection"];
-
-                }
-                    break;
-                case 5: {
-                    cell.textLabel.text = LOCALSTR(@"Privacy");
                     cell.detailTextLabel.text = preference[@"PrivacyLevel"];
                 }
+                    break;
+                    
+                case 5:
                     break;
                 default:
                     break;
@@ -435,6 +431,11 @@ static const NSArray *socialLevels;
 
                 }];
 
+            }
+                break;
+                
+            case 5:{
+                [[[UIAlertView alloc] initWithTitle:@"Log out" message:@"Do you want to log out?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Log out", nil] show];
             }
                 break;
             default:

@@ -674,9 +674,9 @@
             NSLog(@"*** task (%@) completed, shoundn't have owner", task.serverID);
         }
         if (!task.pastOwner) {
+            NSLog(@"*** task missing pastOwner: %@", task);
             task.pastOwner = [EWPersonStore me];
             //good = NO;
-            NSLog(@"*** task missing pastOwner: %@", task);
         }else if(!task.pastOwner.isMe){
             //NSParameterAssert(task.pastOwner.isMe);
             NSLog(@"*** Uploading task(%@) that is not owned by me, please check!", task.serverID);

@@ -603,7 +603,8 @@
             [self presentViewControllerWithBlurBackground:nav];
         }else if([title isEqualToString:@"Test sheet"]){
             TestViewController *controller = [[TestViewController alloc] init];
-            [self presentViewControllerWithBlurBackground:controller];
+            UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
+            [self presentViewControllerWithBlurBackground:nav];
         }else if([title isEqualToString:@"Refresh"]){
             [self refreshView];
         }else if([title isEqualToString:@"Feedback"]){

@@ -188,10 +188,7 @@
             
         }
         
-        
-        
     }];
-
 }
 
 + (void)logout{
@@ -220,6 +217,7 @@
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueUpdate];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueWorking];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueRefresh];
+    NSLog(@"Cleaned local queue");
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedOut object:self userInfo:nil];
     
@@ -558,6 +556,7 @@
         
         // If the user cancelled login, do nothing
         if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryUserCancelled) {
+            [EWUserManagement showLoginPanel];
             NSLog(@"User cancelled login");
             
             // Handle session closures that happen outside of the app

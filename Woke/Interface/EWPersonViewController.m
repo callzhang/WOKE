@@ -502,8 +502,71 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 - (UITableViewCell *)tableView:(UITableView *)table cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     //static NSString *CellIdentifier = @"cell";
-  
-    if (tabView.selectedSegmentIndex == 1) {
+    if (tabView.selectedSegmentIndex == 0){
+        UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:profileCellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:profileCellIdentifier];
+            cell.textLabel.textColor = [UIColor whiteColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        
+        cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
+        BOOL male = [person.gender isEqualToString:@"male"] ? YES:NO;
+        
+        
+        switch (indexPath.row) {
+            case 0://friends
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                break;
+            case 1:
+            {
+                NSArray *receivedMedias = [[EWMediaStore sharedInstance] mediasForPerson:person];
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)receivedMedias.count];
+                if (!person.isMe) {
+                    cell.textLabel.text = male? @"People woke him up":@"People woke her up";
+                }
+            }
+                break;
+            case 2:
+            {
+                NSArray *medias = [[EWMediaStore sharedInstance] mediaCreatedByPerson:person];
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)medias.count];
+                if (!person.isMe) {
+                    cell.textLabel.text = male? @"People he woke up":@"People she woke up";
+                }
+                
+            }
+                break;
+            case 3://last seen
+            {
+                NSDate *date = person.updatedAt;
+                cell.detailTextLabel.text = [date date2MMDD] ;
+                break;
+            }
+            case 4://next task time
+            {
+                NSDate *date = person.cachedInfo[kNextTaskTime];
+                cell.detailTextLabel.text = [[date time2HMMSS] stringByAppendingString:[date date2am]];
+                break;
+            }
+            case 5://wake-ability
+            {
+                cell.detailTextLabel.text =  stats.wakabilityStr;
+                break;
+            }
+                
+            case 6://average wake up time
+            {
+                cell.detailTextLabel.text =  stats.aveWakingLengthString;
+            }
+                
+            default:
+                break;
+        }
+        
+        return cell;
+    }else if (tabView.selectedSegmentIndex == 1) {
         
         EWTaskItem *task = tasks[indexPath.section];
         UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
@@ -558,71 +621,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         return cell;
         
-    }else if (tabView.selectedSegmentIndex == 0){
-        UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:profileCellIdentifier];
-        if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:profileCellIdentifier];
-            cell.textLabel.textColor = [UIColor whiteColor];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        }
-        
-        cell.textLabel.text = [profileItemsArray objectAtIndex:indexPath.row];
-        BOOL male = [person.gender isEqualToString:@"male"] ? YES:NO;
-        
-        
-        switch (indexPath.row) {
-            case 0://friends
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)person.friends.count];
-                break;
-            case 1:
-            {
-                NSArray *receivedMedias = [[EWMediaStore sharedInstance] mediasForPerson:person];
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)receivedMedias.count];
-                if (!person.isMe) {
-                    cell.textLabel.text = male? @"People woke him up":@"People woke her up";
-                }
-            }
-                break;
-            case 2:
-            {
-                NSArray *medias = [[EWMediaStore sharedInstance] mediaCreatedByPerson:person];
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)medias.count];
-                if (!person.isMe) {
-                    cell.textLabel.text = male? @"People he woke up":@"People she woke up";
-                }
-                
-            }
-                break;
-            case 3://last seen
-            {
-                NSDate *date = person.updatedAt;
-                cell.detailTextLabel.text = [date date2MMDD] ;
-                break;
-            }
-            case 4://next task time
-            {
-                NSDate *date = person.cachedInfo[kNextTaskTime];
-                cell.detailTextLabel.text = [[date time2HMMSS] stringByAppendingString:[date date2am]];
-                break;
-            }
-            case 5://wake-ability
-            {
-                cell.detailTextLabel.text =  stats.wakabilityStr;
-                break;
-            }
-                
-            case 6://average wake up time
-            {
-                cell.detailTextLabel.text =  stats.aveWakingLengthString;
-            }
-                
-            default:
-                break;
-        }
-        
-        return cell;
     }
-    
     return nil;
     
 }
