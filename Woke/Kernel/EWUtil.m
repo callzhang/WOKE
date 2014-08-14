@@ -80,4 +80,32 @@
     
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
++(NSString *)uploadImageToParseREST:(UIImage *)uploadImage
+{
+    
+    NSMutableString *urlString = [NSMutableString string];
+    [urlString appendString:kParseUploadUrl];
+    [urlString appendFormat:@"files/imagefile.jpg"];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request setHTTPMethod:@"POST"];
+    [request addValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
+    [request addValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+    [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:UIImagePNGRepresentation(uploadImage)];
+    
+    NSURLResponse *response = nil;
+    NSError *error = nil;
+    
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+    NSString *fileUrl = [httpResponse allHeaderFields][@"Location"];
+    
+    NSLog(@"%@",fileUrl);
+    return fileUrl;
+
+}
 @end

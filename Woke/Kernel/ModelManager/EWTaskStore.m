@@ -799,7 +799,7 @@
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     
     NSDictionary *dic = @{@"where":@{kUsername:me.name},
-                          @"push_time":[NSNumber numberWithDouble:[[NSDate new] timeIntervalSince1970]+60],
+                          @"push_time":[NSNumber numberWithDouble:[[[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:me] timeIntervalSince1970] ],
                           @"data":@{@"alert":@"Time to get up"},
                           @"content-available":@1,
                           kPushTypeKey: kPushTypeTimerKey};

@@ -1354,7 +1354,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 }
 -(void)deleteButtonPressed:(id)sender
 {
-    if (_currentPageIndex != [_photos count]-1) {
+    if (_currentPageIndex != 0) {
         
         [_photos removeObjectAtIndex:_currentPageIndex];
         if ([self.delegate respondsToSelector:@selector(photoBrowser:detelePhotoAtIndexPath:)]) {
