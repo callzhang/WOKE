@@ -362,8 +362,10 @@ EWPerson *me;
 #pragma mark - Validation
 + (BOOL)validatePerson:(EWPerson *)person{
     if (!person.isMe) {
-        return YES;
+        NSLog(@"Skip updating other PFUser: %@", person);
+        return NO;
     }
+    
     BOOL good = YES;
     BOOL needRefreshFacebook = NO;
     if(!person.name){

@@ -203,4 +203,16 @@
     return good;
 }
 
++ (void)createACLForMedia:(EWMediaItem *)media{
+    NSSet *receivers = media.receivers;
+    PFObject *m = media.parseObject;
+    PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
+    for (EWPerson *p in receivers) {
+        [acl setReadAccess:YES forUser:(PFUser *)p.parseObject];
+        [acl setReadAccess:YES forUser:(PFUser *)p.parseObject];
+        
+    }
+    m.ACL = acl;
+    NSLog(@"ACL created for media(%@) with access for %@", media.objectId, [receivers valueForKey:kParseObjectID]);
+}
 @end

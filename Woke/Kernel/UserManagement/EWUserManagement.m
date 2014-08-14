@@ -288,8 +288,9 @@
     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         
         if (geoPoint.latitude == 0 && geoPoint.longitude == 0) {
-            //return if using simulator
-            return ;
+            //NYC coordinate if on simulator
+            geoPoint.latitude = 40.732019;
+            geoPoint.longitude = -73.992684;
         }
         
         

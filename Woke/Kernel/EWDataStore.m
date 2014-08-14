@@ -632,6 +632,16 @@
 }
 
 + (BOOL)checkAccess:(NSManagedObject *)mo{
+	if (!mo.serverID) {
+		return YES;
+	}
+	PFObject *po = mo.parseObject;
+	if (po.ACL != nil) {
+		BOOL read = [po.ACL getReadAccessForUser:[PFUser currentUser]];
+		return read;
+	}
+	
+	//if ACL not exist, use class by class method to determine
 	EWPerson *p;
 	if ([mo isKindOfClass:[EWPerson class]]) {
 		p = (EWPerson *)mo;
@@ -641,20 +651,13 @@
 	}else if ([mo isKindOfClass:[EWMediaItem class]]){
 		EWMediaItem *m = (EWMediaItem *)mo;
 		p = m.author;
+	}else{
+		return YES;
 	}
 	if (p.isMe){
 		return YES;
 	}
 	return NO;
-//	if (!mo.serverID) {
-//		return YES;
-//	}
-//	PFObject *po = mo.parseObject;
-//	BOOL read = [po.ACL getReadAccessForUser:[PFUser currentUser]];
-//	if (read || !po.ACL) {
-//		return YES;
-//	}
-//	return NO;
 }
 
 
@@ -767,15 +770,6 @@
 	}
     
     //skip if updating other PFUser
-    //TODO: Set ACL for PFUser to enable public writability
-    if ([mo isKindOfClass:[EWPerson class]]) {
-        if (![(EWPerson *)mo isMe]) {
-            NSLog(@"Skip updating other PFUser: %@", [(EWPerson *)mo name]);
-            [EWDataStore removeObjectFromWorkingQueue:mo];
-            return;
-        }
-    }
-    
     //make sure the value is the latest from store
     [mo.managedObjectContext refreshObject:mo mergeChanges:NO];
     
@@ -828,6 +822,10 @@
         }
         
     }
+	
+	
+    //Set ACL for Media to enable public writability
+    [mo createACL];
     
     //==========set Parse value/relation and callback block===========
     [object updateFromManagedObject:mo];
@@ -1505,6 +1503,12 @@
 
 - (NSString *)serverID{
     return [self valueForKey:kParseObjectID];
+}
+
+- (void)createACL{
+	if ([self isKindOfClass:[EWMediaItem class]]) {
+		[EWMediaStore createACLForMedia:(EWMediaItem *)self];
+	}
 }
 
 @end

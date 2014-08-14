@@ -54,4 +54,7 @@
 
 //Validation
 + (BOOL)validateMedia:(EWMediaItem *)media;
+
+//ACL
++ (void)createACLForMedia:(EWMediaItem *)media;
 @end

@@ -222,6 +222,9 @@ typedef void (^EWSavingCallback)(void);
 //Parse objectId
 - (NSString *)serverID;
 
+//ACL
+- (void)createACL;
+
 @end
 
 #pragma mark - Parse Object extension
