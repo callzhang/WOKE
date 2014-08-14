@@ -65,6 +65,18 @@
     return media;
 }
 
+- (EWMediaItem *)getWokeVoice{
+    PFQuery *q = [PFQuery queryWithClassName:@"EWMediaItem"];
+    [q whereKey:@"author" equalTo:@"woke"];
+    [q whereKey:kParseObjectID notContainedIn:me.cachedInfo[kWokeVoiceReceived]];
+    PFObject *voice = [q getFirstObject];
+    if (voice) {
+        EWMediaItem *media = (EWMediaItem *)voice.managedObject;
+        return media;
+    }
+    return nil;
+}
+
 - (EWMediaItem *)createBuzzMedia{
     EWMediaItem *media = [self createMedia];
     media.type = kMediaTypeBuzz;

@@ -12,6 +12,7 @@
 #import "EWPersonStore.h"
 
 #define buzzSounds                      @{@"default": @"buzz.caf"};
+#define kWokeVoiceReceived              @"woke_voice_received"//the ramdom voice alraddy received, stored in cache
 
 @class EWMediaItem;
 @interface EWMediaStore : NSObject //EWStore
@@ -25,7 +26,6 @@
 
 //add
 - (EWMediaItem *)createMedia;
-- (EWMediaItem *)createPseudoMedia;
 - (EWMediaItem *)createBuzzMedia;
 
 //delete
@@ -47,6 +47,9 @@
 //Check media assets relationship
 - (BOOL)checkMediaAssets;
 - (void)checkMediaAssetsInBackground;
+
+//get ramdom voice
+- (EWMediaItem *)getWokeVoice;
 
 //get my task in a media
 + (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media;

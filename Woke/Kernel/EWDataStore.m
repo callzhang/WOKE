@@ -16,6 +16,7 @@
 #import "EWServer.h"
 #import "EWTaskItem.h"
 #import "EWMediaItem.h"
+#import "EWNotification.h"
 
 #define MR_LOGGING_ENABLED 0
 #import <MagicalRecord/CoreData+MagicalRecord.h>
@@ -467,11 +468,13 @@
     return [NSManagedObjectContext contextForCurrentThread];
 }
 
+#pragma mark - Core Data Tools
+
 + (BOOL)validateMO:(NSManagedObject *)mo{
     //validate MO, only used when uploading MO to PO
 	BOOL good = YES;
 	
-	if (![mo valueForKey:kUpdatedDateKey]) {
+	if (![mo valueForKey:kUpdatedDateKey] && mo.serverID) {
 		NSLog(@"The %@(%@) you are trying to validate haven't been downloaded fully. Skip validating.", mo.entity.name, mo.serverID);
 		return YES;
 	}
@@ -509,6 +512,41 @@
     }
 	
 	return good;
+}
+
+
+
++ (BOOL)checkAccess:(NSManagedObject *)mo{
+	if (!mo.serverID) {
+		return YES;
+	}
+	
+	//if ACL not exist, use class by class method to determine
+	EWPerson *p;
+	if ([mo respondsToSelector:@selector(owner)]) {
+		p = [mo valueForKey:@"owner"];
+	}else{
+		if ([mo isKindOfClass:[EWPerson class]]) {
+			p = (EWPerson *)mo;
+		}else if ([mo isKindOfClass:[EWMediaItem class]]){
+			//only media has special acl
+			PFObject *po = mo.parseObject;
+			if (po.ACL != nil) {
+				BOOL write = [po.ACL getWriteAccessForUser:[PFUser currentUser]];
+				return write;
+			}
+			
+			EWMediaItem *m = (EWMediaItem *)mo;
+			p = m.author;
+		}else{
+			return YES;
+		}
+	}
+	
+	if (p.isMe){
+		return YES;
+	}
+	return NO;
 }
 
 
@@ -624,6 +662,13 @@
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:queue];
 }
 
++ (BOOL)contains:(NSManagedObject *)mo inQueue:(NSString *)queue{
+	NSMutableArray *array = [[[NSUserDefaults standardUserDefaults] valueForKey:queue] mutableCopy];
+	NSString *str = mo.objectID.URIRepresentation.absoluteString;
+	BOOL contain = [array containsObject:str];
+	return contain;
+}
+
 //DeletedQueue underlying is a dictionary of objectId:className
 + (NSSet *)deleteQueue{
     NSDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy];
@@ -647,38 +692,6 @@
     NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy];
     [dic removeObjectForKey:object.objectId];
     [[NSUserDefaults standardUserDefaults] setObject:[dic copy] forKey:kParseQueueDelete];
-}
-
-+ (BOOL)checkAccess:(NSManagedObject *)mo{
-	if (!mo.serverID) {
-		return YES;
-	}
-	
-	
-	//if ACL not exist, use class by class method to determine
-	EWPerson *p;
-	if ([mo isKindOfClass:[EWPerson class]]) {
-		p = (EWPerson *)mo;
-	}else if ([mo isKindOfClass:[EWTaskItem class]]){
-		EWTaskItem *t = (EWTaskItem *)mo;
-		p = t.owner?t.owner:t.pastOwner;
-	}else if ([mo isKindOfClass:[EWMediaItem class]]){
-		//only media has special acl
-		PFObject *po = mo.parseObject;
-		if (po.ACL != nil) {
-			BOOL read = [po.ACL getReadAccessForUser:[PFUser currentUser]];
-			return read;
-		}
-		
-		EWMediaItem *m = (EWMediaItem *)mo;
-		p = m.author;
-	}else{
-		return YES;
-	}
-	if (p.isMe){
-		return YES;
-	}
-	return NO;
 }
 
 
@@ -760,7 +773,7 @@
 				NSLog(@"MO %@(%@) resumed to UPDATE queue", MO.entity.name, MO.serverID);
 				[EWDataStore appendUpdateQueue:MO];
 			}else{
-				NSLog(@"MO %@(%@) resumed to INSERT queue", MO.entity.name, MO.serverID);
+				NSLog(@"MO %@(%@) resumed to INSERT queue", MO.entity.name, MO.objectID);
 				[EWDataStore appendInsertQueue:MO];
 			}
 			
@@ -851,12 +864,6 @@
 
     [object save:&error];
     if (!error) {
-        
-        if (parseObjectId) {
-            NSLog(@"---------> PO updated to server: %@(%@)", mo.entity.serverClassName, [mo valueForKey:kParseObjectID]);
-        }else{
-            NSLog(@"=========> PO created: %@(%@)", mo.entity.serverClassName,[mo valueForKey:kParseObjectID]);
-        }
         
         //assign connection between MO and PO
         [EWDataStore performSaveCallbacksWithParseObject:object andManagedObjectID:mo.objectID];
@@ -1568,8 +1575,8 @@
         //there could have some optimization that checks if value equals to PFFile value, and thus save some network calls. But in order to compare there will be another network call to fetch, the the comparison is redundant.
         if ([value isKindOfClass:[NSData class]]) {
             //data
-            PFFile *dataFile = [PFFile fileWithData:value];
-            //[dataFile saveInBackground];
+			NSString *fileName = [NSString stringWithFormat:@"%@.m4a", [EWPersonStore me].name];
+            PFFile *dataFile = [PFFile fileWithName:fileName data:value];
             [self setObject:dataFile forKey:key];
         }else if ([value isKindOfClass:[UIImage class]]){
             //image
@@ -1586,6 +1593,7 @@
         }else{
             //value is nil, delete PO value
 			if ([self.allKeys containsObject:key]) {
+				NSLog(@"!!! Data %@ empty on MO %@(%@), please check!", key, mo.entity.name, mo.serverID);
 				[self removeObjectForKey:key];
 			}
         }
@@ -1702,9 +1710,9 @@
                 }
             }
         }else{
-            //empty relationship, delete PO relationship
+            //empty related object, delete PO relationship
             if ([self valueForKey:key]) {
-                NSParameterAssert(!obj.isToMany);
+                NSParameterAssert(!obj.isToMany);//relation cannot be to-many, as it's always has value
                 NSLog(@"Empty relationship on MO %@(%@) -> %@, delete PO relation.", managedObject.entity.name, self.objectId, obj.name);
                 
                 NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
@@ -1718,7 +1726,7 @@
                     [inversePO fetchIfNeeded];
                     PFRelation *inversePFRelation = inversePO[inverseRelation.name];
                     [inversePFRelation removeObject:self];
-                    [inversePO save];
+                    [inversePO save:nil];
                     NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
                 }else{
                     //to-one

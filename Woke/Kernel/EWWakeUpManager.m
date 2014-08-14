@@ -281,14 +281,12 @@
     }
     
     //add fake media is needed
-    //  need  update  get from server
     nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
     if (nVoice == 0) {
         //need to create some voice
-        EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
+        EWMediaItem *media = [[EWMediaStore sharedInstance] getWokeVoice];
         [task addMediasObject:media];
     }
-    //TODO: need to get some data from server (Simin)
     
     //save
     [EWDataStore save];
