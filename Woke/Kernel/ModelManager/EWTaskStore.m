@@ -634,14 +634,16 @@
         [allNotification removeObjectsInArray:notifs];
     }
     
-    
     for (UILocalNotification *aNotif in allNotification) {
 
-        if ([aNotif.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeAlarmTimer]) {
-            NSLog(@"===== Deleted Local Notif (%@) =====", aNotif.fireDate.date2detailDateString);
-            [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
-        }
-
+        NSLog(@"===== Deleted %@ (%@) =====", aNotif.userInfo[kLocalNotificationTypeKey], aNotif.fireDate.date2detailDateString);
+        [[UIApplication sharedApplication] cancelLocalNotification:aNotif];
+    
+    }
+    
+    if (allNotification.count > 0) {
+        //make sure the redundent notif didn't block
+        [self checkScheduledNotifications];
     }
     
 }
@@ -727,6 +729,8 @@
     if (!good) {
         if (task.updatedAt.timeElapsed > kStalelessInterval) {
             [[EWTaskStore sharedInstance] removeTask:task];
+        }else{
+            [task refreshInBackgroundWithCompletion:nil];
         }
     }
     

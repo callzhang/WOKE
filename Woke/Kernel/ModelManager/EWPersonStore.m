@@ -362,8 +362,8 @@ EWPerson *me;
 #pragma mark - Validation
 + (BOOL)validatePerson:(EWPerson *)person{
     if (!person.isMe) {
-        NSLog(@"Skip updating other PFUser: %@", person);
-        return NO;
+        NSLog(@"Skip updating other PFUser: %@", person.name);
+        return YES;
     }
     
     BOOL good = YES;

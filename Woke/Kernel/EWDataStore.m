@@ -72,7 +72,7 @@
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
         context = [NSManagedObjectContext MR_defaultContext];
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextWillSaveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextWillSaveNotification object:context];
 		[[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextObjectsDidChangeNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
 			//check task only
 			if ([note.object isKindOfClass:[EWTaskStore class]]) {
@@ -81,17 +81,17 @@
 				NSParameterAssert(good);
 			}
 		}];
-        //Observe background context saves so main context can perform merge changes
+        //Observe background context saves so main context can perform save
         //We don't need to merge child context change to main context
 		//It will cause errors when main and child context access same MO
-//        [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:context queue:nil usingBlock:^(NSNotification* note){
-//			
-//             if (note.object != context)
-//				 //NSLog(@"Observed changes in background context, merge to main context!");
-//                 [context performBlock:^(){
-//                     [context mergeChangesFromContextDidSaveNotification:note];
-//                 }];
-//		}];
+        [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:context queue:nil usingBlock:^(NSNotification* note){
+			
+             if (note.object != context)
+				 //NSLog(@"Observed changes in background context, merge to main context!");
+                 [context performBlock:^(){
+                     [context saveToPersistentStoreAndWait];
+                 }];
+		}];
 		
         //Observe context save to update the update/insert/delete queue
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addToQueueUpOnSaving:) name:NSManagedObjectContextDidSaveNotification object:context];
@@ -479,16 +479,34 @@
     NSString *type = mo.entity.name;
     if ([type isEqualToString:@"EWTaskItem"]) {
         good = [EWTaskStore validateTask:(EWTaskItem *)mo];
+		if (!good) {
+			[mo refresh];
+			good = [EWTaskStore validateTask:(EWTaskItem *)mo];
+			
+			if (!good) {
+				NSLog(@"*** %@(%@) failed in validation => delete!", mo.entity.name, mo.serverID);
+				[mo deleteEntity];
+			}
+			
+		}
     } else if([type isEqualToString:@"EWMediaItem"]){
         good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
+		if (!good) {
+			[mo refresh];
+			good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
+		
+			if (!good) {
+				NSLog(@"*** %@(%@) failed in validation => delete!", mo.entity.name, mo.serverID);
+				[mo deleteEntity];
+			}
+		}
     }else if ([type isEqualToString:@"EWPerson"]){
         good = [EWPersonStore validatePerson:(EWPerson *)mo];
+		if (!good) {
+			[mo refresh];
+			good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
+		}
     }
-	
-	if (!good && mo.serverID) {
-		NSLog(@"*** MO %@(%@) failed in validation, refresh from PO", mo.entity.name, mo.serverID);
-		[mo refresh];
-	}
 	
 	return good;
 }
@@ -635,11 +653,7 @@
 	if (!mo.serverID) {
 		return YES;
 	}
-	PFObject *po = mo.parseObject;
-	if (po.ACL != nil) {
-		BOOL read = [po.ACL getReadAccessForUser:[PFUser currentUser]];
-		return read;
-	}
+	
 	
 	//if ACL not exist, use class by class method to determine
 	EWPerson *p;
@@ -649,6 +663,13 @@
 		EWTaskItem *t = (EWTaskItem *)mo;
 		p = t.owner?t.owner:t.pastOwner;
 	}else if ([mo isKindOfClass:[EWMediaItem class]]){
+		//only media has special acl
+		PFObject *po = mo.parseObject;
+		if (po.ACL != nil) {
+			BOOL read = [po.ACL getReadAccessForUser:[PFUser currentUser]];
+			return read;
+		}
+		
 		EWMediaItem *m = (EWMediaItem *)mo;
 		p = m.author;
 	}else{
@@ -937,7 +958,7 @@
 		
 		//Pre-save validate
 		BOOL good = [EWDataStore validateMO:mo];
-		if (!good) {
+		if (!good && [mo valueForKey:@"isMe"]) {
 			NSLog(@"Validation failed on saving %@", mo);
 		}
 		
@@ -1142,8 +1163,6 @@
 
 
 - (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
-    NSParameterAssert([NSThread isMainThread]);
-	
 	//network check
 	if (![EWDataStore sharedInstance].reachability.isReachable) {
 		NSLog(@"Network not reachable, skip refreshing.");
@@ -1219,18 +1238,16 @@
     
     if (!parseObjectId) {
         //NSParameterAssert([self isInserted]);
-        NSLog(@"+++> Insert MO %@ from refresh", self.entity.name);
-        [self updateEventually];
-        [EWDataStore save];
+        NSLog(@"!!! The MO %@(%@) trying to refresh doesn't have servreID, skip! %@", self.entity.name, self.serverID, self);
     }else{
         if ([self hasChanges]) {
             NSLog(@"*** The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!", self.entity.name);
         }
         
-        if (!self.isOutDated) {
-            NSLog(@"MO %@(%@) skipped refresh because up to date (%@)", self.entity.name, [self valueForKey:kUpdatedDateKey], self.serverID);
-            return;
-        }
+//        if (!self.isOutDated) {
+//            NSLog(@"MO %@(%@) skipped refresh because up to date (%@)", self.entity.name, [self valueForKey:kUpdatedDateKey], self.serverID);
+//            return;
+//        }
         NSLog(@"===> Refreshing MO %@", self.entity.name);
         PFObject *object = [self parseObject];
         [self updateValueAndRelationFromParseObject:object];
