@@ -23,4 +23,5 @@
 + (BOOL) isMultitaskingSupported;
 + (BOOL) isFirstTimeLogin;
 + (void) setFirstTimeLoginOver;
++ (NSString *) uploadImageToParseREST:(UIImage *)uploadImage;
 @end

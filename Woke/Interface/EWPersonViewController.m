@@ -713,8 +713,17 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }
     if (buttonIndex == 3){
         UIImage *image = [photoBrowser photoAtIndex:photoIndex].underlyingImage;
+        // upload my profile and move to first place
+        NSString *fileUrl = [EWUtil uploadImageToParseREST:me.profilePic];
+        [_photos insertObject:fileUrl atIndex:0];
+        // set my profile
         me.profilePic = image;
-        [photoBrowser.view showSuccessNotification:@"Success"];
+        
+        // delete original pic in array;
+        [_photos removeObjectAtIndex:photoIndex];
+        
+//        [EWDataStore save];
+        [photoBrowser.view showSuccessNotification:@"Success,Reopen To See"];
         
         return;
         
@@ -758,7 +767,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 {
     if (person.isMe) {
         // 结束时候保存一次
-        
+          [EWDataStore save];
     }
 }
 
@@ -773,34 +782,12 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
      [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
         UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
         
-        
-        NSMutableString *urlString = [NSMutableString string];
-        [urlString appendString:kParseUploadUrl];
-        [urlString appendFormat:@"files/imagefile.jpg"];
-        
-        NSURL *url = [NSURL URLWithString:urlString];
-        
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-        [request setHTTPMethod:@"POST"];
-        [request addValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
-        [request addValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
-        [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
-        [request setHTTPBody:UIImagePNGRepresentation(image)];
-        
-        NSURLResponse *response = nil;
-        NSError *error = nil;
-        
-        [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-        
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-        NSString *fileUrl = [httpResponse allHeaderFields][@"Location"];
-        
-        NSLog(@"%@",fileUrl);
-        
+        NSString *fileUrl = [EWUtil uploadImageToParseREST:image];
+          
         [_photos addObject:fileUrl];
    
         me.images = _photos;
-        [EWDataStore save];
+//        [EWDataStore save];
         
         [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
 
@@ -885,7 +872,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [_photos addObject:fileUrl];
         
         me.images = _photos;
-        [EWDataStore save];
+//        [EWDataStore save];
         
         [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
         
