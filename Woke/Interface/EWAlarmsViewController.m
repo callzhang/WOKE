@@ -791,9 +791,9 @@
             
         } else {
             //prevent updating too fast
-//            if(lastUpdated.timeElapsed < 0.1 ){
-//                return;
-//            }
+            if(lastUpdated.timeElapsed < 0.1 ){
+                return;
+            }
             
             //NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
             //need to ®record the time at the beginning

@@ -72,7 +72,7 @@
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
         context = [NSManagedObjectContext MR_defaultContext];
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextWillSaveNotification object:context];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextWillSaveNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextObjectsDidChangeNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
 			//check task only
 			if ([note.object isKindOfClass:[EWTaskStore class]]) {
@@ -823,9 +823,6 @@
         
     }
 	
-	
-    //Set ACL for Media to enable public writability
-    [mo createACL];
     
     //==========set Parse value/relation and callback block===========
     [object updateFromManagedObject:mo];
@@ -902,15 +899,12 @@
 
 
 #pragma mark - KVO
-
+//observe all context, but only modify updatedAt on main thread
 - (void)updateModifiedDate:(NSNotification *)notification{
-	if (![NSThread isMainThread]) {
-		NSParameterAssert([NSThread isMainThread]);
-		return;
-	}
 	
-	NSSet *updatedObjects = context.updatedObjects;
-	NSSet *insertedObjects = context.insertedObjects;
+	
+	NSSet *updatedObjects = [EWDataStore currentContext].updatedObjects;
+	NSSet *insertedObjects = [EWDataStore currentContext].insertedObjects;
 	NSSet *objects = [updatedObjects setByAddingObjectsFromSet:insertedObjects];
 	
     //for updated mo
@@ -941,11 +935,16 @@
 		}
 		
 		
-		//>>>>>validate
+		//Pre-save validate
 		BOOL good = [EWDataStore validateMO:mo];
-		NSParameterAssert(good);
+		if (!good) {
+			NSLog(@"Validation failed on saving %@", mo);
+		}
 		
-		[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
+		if ([NSThread isMainThread]) {
+			//only update date on main thread
+			[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
+		}
     }
 	
 }
@@ -1382,8 +1381,8 @@
     [managedObjectAttributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
 		key = [NSString stringWithFormat:@"%@", key];
         if (key.skipUpload) {
-            //NSLog(@"Key %@ does not exist on PO %@", key, object.parseClassName);
-            return;//skip if not exist
+			//skip the updatedAt
+            return;
         }
         id parseValue = [object objectForKey:key];
         
@@ -1503,12 +1502,6 @@
 
 - (NSString *)serverID{
     return [self valueForKey:kParseObjectID];
-}
-
-- (void)createACL{
-	if ([self isKindOfClass:[EWMediaItem class]]) {
-		[EWMediaStore createACLForMedia:(EWMediaItem *)self];
-	}
 }
 
 @end

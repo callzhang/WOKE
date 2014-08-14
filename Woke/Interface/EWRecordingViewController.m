@@ -353,7 +353,7 @@
         [EWDataStore saveWithCompletion:^{
             
             //set ACL
-            PFACL *acl = [PFACL ACL];
+            PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
             PFObject *object = media.parseObject;
             for (NSString *userID in [personSet valueForKey:kParseObjectID]) {
                 [acl setReadAccess:YES forUserId:userID];
