@@ -121,10 +121,11 @@
         //watch for login event
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginDataCheck) name:kPersonLoggedIn object:Nil];
         
-        //change dic
+        //initial property
         self.parseSaveCallbacks = [NSMutableDictionary dictionary];
         self.saveCallbacks = [NSMutableArray new];
 		self.saveToLocalItems = [NSMutableArray new];
+		self.serverObjectPool = [NSMutableDictionary new];
     }
     return self;
 }
@@ -533,9 +534,8 @@
 				BOOL write = [po.ACL getWriteAccessForUser:[PFUser currentUser]];
 				return write;
 			}
-			
-			EWMediaItem *m = (EWMediaItem *)mo;
-			p = m.author;
+			//TODO: need update ACL check
+			return YES;
 		}else{
 			return YES;
 		}
@@ -963,7 +963,7 @@
 		
 		//Pre-save validate
 		BOOL good = [EWDataStore validateMO:mo];
-		if (!good && [mo valueForKey:@"isMe"]) {
+		if (!good && [mo.serverID isEqualToString:me.objectId]) {
 			NSLog(@"Validation failed on saving %@", mo);
 		}
 		
@@ -1130,8 +1130,17 @@
     NSString *parseObjectId = self.serverID;
     
     if (parseObjectId) {
-        PFObject *object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
-        [object fetchIfNeeded:err];
+		//try to find PO in the pool first
+		PFObject *object = [[EWDataStore sharedInstance].serverObjectPool valueForKey:parseObjectId];
+		if (!object || !object.isDataAvailable || !object.isNewerThanMO) {
+			//fetch from server if not found
+			//or if PO doesn't have data avaiable
+			//or if PO is older than MO
+			object = [PFObject objectWithoutDataWithClassName:self.entity.serverClassName objectId:parseObjectId];
+			[object fetchIfNeeded:err];
+			[[EWDataStore sharedInstance].serverObjectPool setObject:object forKey:parseObjectId];
+		}
+        
 		if (!object.isDataAvailable && *err) {
 			if ((*err).code == kPFErrorObjectNotFound) {
 				NSLog(@"*** PO %@(%@) doesn't exist on server", self.entity.serverClassName, self.serverID);
@@ -1760,6 +1769,23 @@
     }
     
     return mo;
+}
+
+- (BOOL)isNewerThanMO{
+	NSDate *updatedPO = [self valueForKey:kUpdatedDateKey];
+	NSDate *updatedMO = [self.managedObject valueForKey:kUpdatedDateKey];
+	if (updatedPO && updatedMO) {
+		if ([updatedPO isEarlierThan:updatedMO]) {
+			return NO;
+		}else{
+			return YES;
+		}
+	}else if (updatedMO){
+		return NO;
+	}else if (updatedPO){
+		return YES;
+	}
+	return NO;
 }
 
 - (NSString *)localClassName{

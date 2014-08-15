@@ -34,8 +34,8 @@ EWPerson *me;
 @end
 
 @implementation EWPersonStore
-@synthesize everyone;
 @synthesize currentUser;
+@synthesize everyone;
 
 +(EWPersonStore *)sharedInstance{
     static EWPersonStore *sharedPersonStore_ = nil;
@@ -250,9 +250,11 @@ EWPerson *me;
         [EWDataStore save];
     }];
     
-    
-    
     return everyone;
+}
+
+- (void)setEveryone:(NSArray *)e{
+    everyone = e;
 }
 
 - (EWPerson *)anyone{

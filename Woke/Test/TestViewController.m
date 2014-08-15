@@ -247,7 +247,7 @@
                     [EWDataStore save];
                 }else{
                     //voice
-                    EWMediaItem *media = [[EWMediaStore sharedInstance] createPseudoMedia];
+                    EWMediaItem *media = [[EWMediaStore sharedInstance] getWokeVoice];
                     //[task addMediasObject:media];
                     [media addTasksObject:task];
                     [EWDataStore save];

@@ -354,11 +354,18 @@
             
             //set ACL
             PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
-            PFObject *object = media.parseObject;
-            for (NSString *userID in [personSet valueForKey:kParseObjectID]) {
-                [acl setReadAccess:YES forUserId:userID];
-                [acl setWriteAccess:YES forUserId:userID];
+            if ([me.objectId isEqualToString:WokeUserID]) {
+                //if WOKE, set public
+                [acl setPublicReadAccess:YES];
+                [acl setPublicWriteAccess:YES];
+            }else{
+                for (NSString *userID in [personSet valueForKey:kParseObjectID]) {
+                    [acl setReadAccess:YES forUserId:userID];
+                    [acl setWriteAccess:YES forUserId:userID];
+                }
             }
+            
+            PFObject *object = media.parseObject;
             [object setACL:acl];
             [object saveInBackground];
             

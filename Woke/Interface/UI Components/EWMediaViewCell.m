@@ -96,6 +96,9 @@
 
 
 - (IBAction)profile:(id)sender{
+    if (!media.author) {
+        return;
+    }
     EWPersonViewController *profileVC = [[EWPersonViewController alloc] initWithPerson:media.author];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:profileVC];
     [self.controller presentViewControllerWithBlurBackground:navController completion:NULL];

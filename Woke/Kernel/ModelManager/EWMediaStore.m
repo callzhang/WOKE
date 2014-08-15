@@ -67,11 +67,21 @@
 
 - (EWMediaItem *)getWokeVoice{
     PFQuery *q = [PFQuery queryWithClassName:@"EWMediaItem"];
-    [q whereKey:@"author" equalTo:@"woke"];
-    [q whereKey:kParseObjectID notContainedIn:me.cachedInfo[kWokeVoiceReceived]];
+    [q whereKey:@"author" equalTo:[PFQuery getUserObjectWithId:WokeUserID]];
+    NSArray *mediasFromWoke = me.cachedInfo[kWokeVoiceReceived]?:[NSArray new];
+    [q whereKey:kParseObjectID notContainedIn:mediasFromWoke];
     PFObject *voice = [q getFirstObject];
     if (voice) {
         EWMediaItem *media = (EWMediaItem *)voice.managedObject;
+        [media refresh];
+        //save
+        NSMutableDictionary *cache = [me.cachedInfo mutableCopy];
+        NSMutableArray *voices = [mediasFromWoke mutableCopy];
+        [voices addObject:media.objectId];
+        [cache setObject:voices forKey:kWokeVoiceReceived];
+        me.cachedInfo = [cache copy];
+        [EWDataStore save];
+        
         return media;
     }
     return nil;
@@ -150,8 +160,8 @@
         EWMediaItem *mo = (EWMediaItem *)po.managedObject;
         [mo refresh];
         //relationship
-        [mo removeReceiversObject:me];
-        [me addMediaAssetsObject:mo];
+        [mo removeReceiversObject:me];//remove from the receiver list
+        [me addMediaAssetsObject:mo];//add to my media asset list
         NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
         EWAlert(@"You got voice for your next wake up");
         [EWDataStore save];

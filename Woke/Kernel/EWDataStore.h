@@ -50,6 +50,7 @@ typedef void (^EWSavingCallback)(void);
 @property (nonatomic, retain) NSDate *lastChecked;//The date that last sync with server
 @property NSMutableArray *saveCallbacks;
 @property Reachability *reachability;
+@property NSMutableDictionary *serverObjectPool
 
 #pragma mark - Connectivity
 + (BOOL)isReachable;
@@ -240,7 +241,7 @@ typedef void (^EWSavingCallback)(void);
  The ManagedObject will only update attributes but not relations
  */
 - (NSManagedObject *)managedObject;
-
+- (BOOL)isNewerThanMO;
 - (NSString *)localClassName;
 @end
 
