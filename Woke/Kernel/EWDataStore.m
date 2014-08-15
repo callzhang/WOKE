@@ -63,10 +63,12 @@
         coredata_queue = dispatch_queue_create("com.wokealarm.datastore.coreDataQueue", DISPATCH_QUEUE_SERIAL);
         
         //server: enable alert when offline
-        [Parse offlineMessagesEnabled:YES];
-#ifdef DEV_TEST
         [Parse errorMessagesEnabled:YES];
-#endif
+        
+        //Access Control: enable public read access while disabling public write access.
+        PFACL *defaultACL = [PFACL ACL];
+        [defaultACL setPublicReadAccess:YES];
+        [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
         
         //core data
         //[MagicalRecord setLoggingMask:MagicalRecordLoggingMaskError];
@@ -115,10 +117,6 @@
         
         //facebook
         [PFFacebookUtils initializeFacebook];
-        
-        //cache policy
-        //network chenge policy
-        //refesh failure behavior
 
         //watch for login event
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginDataCheck) name:kPersonLoggedIn object:Nil];

@@ -22,7 +22,7 @@ typedef void (^EWSavingCallback)(void);
 //Server update time
 #define kServerUpdateInterval            1800 //30 min
 #define kStalelessInterval               30
-#define kUploadLag                       20
+#define kUploadLag                       10
 
 //attribute stored on ManagedObject to identify corresponding PFObject on server
 #define kParseObjectID          @"objectId"
