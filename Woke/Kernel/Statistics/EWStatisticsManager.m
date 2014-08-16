@@ -226,7 +226,21 @@
 }
 
 + (void)updateCacheWithFriendsAdded:(NSArray *)friendIDs{
-    //TODO
+    NSMutableDictionary *cache = me.cachedInfo.mutableCopy;
+    NSMutableDictionary *activity = [cache[kActivitiesCache] mutableCopy]?:[NSMutableDictionary new];
+    NSMutableDictionary *friendsActivityDic = [activity[kFriended] mutableCopy] ?:[NSMutableDictionary new];
+    NSString *dateKey = [NSDate date].date2YYMMDDString;
+    NSArray *friendedArray = friendsActivityDic[dateKey]?:[NSArray new];
+    NSMutableSet *friendedSet = [NSMutableSet setWithArray:friendedArray];;
+    
+    [friendedSet addObjectsFromArray:friendIDs];
+    
+    friendsActivityDic[dateKey] = [friendedSet allObjects];
+    activity[kFriended] = [friendsActivityDic copy];
+    cache[kActivitiesCache] = [activity copy];
+    me.cachedInfo = [cache copy];
+    
+    [EWDataStore save];
 }
 
 @end

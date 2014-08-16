@@ -20,7 +20,7 @@
 #import "EWUserManagement.h"
 #import "EWNotificationManager.h"
 #import "EWNotification.h"
-
+#import "EWStatisticsManager.h"
 
 
 //===========the global shortcut to currentUser ===========
@@ -257,6 +257,7 @@ EWPerson *me;
     everyone = e;
 }
 
+
 - (EWPerson *)anyone{
     
     NSInteger i = arc4random_uniform((uint16_t)self.everyone.count);
@@ -312,6 +313,10 @@ EWPerson *me;
     [me addFriendsObject:person];
     [EWPersonStore updateCachedFriends];
     [EWNotificationManager sendFriendAcceptNotificationToUser:person];
+    
+    //update cache
+    [EWStatisticsManager updateCacheWithFriendsAdded:@[person.serverID]];
+    
     [EWDataStore save];
 }
 

@@ -1449,21 +1449,22 @@
 
 
 - (void)setPFFile:(PFFile *)file forPropertyDescription:(NSAttributeDescription *)attributeDescription{
-    
-    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-        if (error || !data) {
-            NSLog(@"@@@ Failed to download PFFile: %@", error.description);
-            return;
-        }
-        NSString *className = [self getPropertyClassByName:attributeDescription.name];
-        if ([className isEqualToString:@"UIImage"]) {
-            UIImage *img = [UIImage imageWithData:data];
-            [self setValue:img forKey:attributeDescription.name];
-        }
-        else{
-            [self setValue:data forKey:attributeDescription.name];
-        }
-    }];
+	NSError *error;
+    NSData *data = [file getData:&error];
+    //[file getDataWithBlock:^(NSData *data, NSError *error) {
+	if (error || !data) {
+		NSLog(@"@@@ Failed to download PFFile: %@", error.description);
+		return;
+	}
+	NSString *className = [self getPropertyClassByName:attributeDescription.name];
+	if ([className isEqualToString:@"UIImage"]) {
+		UIImage *img = [UIImage imageWithData:data];
+		[self setValue:img forKey:attributeDescription.name];
+	}
+	else{
+		[self setValue:data forKey:attributeDescription.name];
+	}
+    //}];
 }
 
 - (void)updateEventually{
@@ -1640,7 +1641,7 @@
                 
                 //related managedObject that needs to add
                 for (NSManagedObject *relatedManagedObject in relatedManagedObjects) {
-                    NSString *parseID = [relatedManagedObject valueForKey:kParseObjectID];
+                    NSString *parseID = relatedManagedObject .serverID;
                     if (parseID) {
                         //the pfobject already exists, need to inspect PFRelation to determin add or remove
                         
@@ -1680,10 +1681,9 @@
             } else {
                 //TO-One relation
                 NSManagedObject *relatedManagedObject = [mo valueForKey:key];
-                NSString *parseID = [relatedManagedObject valueForKey:kParseObjectID];
+                NSString *parseID = relatedManagedObject.serverID;
                 if (parseID) {
-                    NSString *parseClass = relatedManagedObject.entity.serverClassName;
-                    PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:parseClass objectId:parseID];
+                    PFObject *relatedParseObject = relatedManagedObject.parseObject;
                     [self setObject:relatedParseObject forKey:key];
                 }else{
                     //MO doesn't have parse id, save to parse

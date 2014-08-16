@@ -18,6 +18,7 @@
 #import "EWAppDelegate.h"
 #import "EWWakeUpManager.h"
 #import "EWServer.h"
+#import "EWStatisticsManager.h"
 
 #define kNextTaskHasMediaAlert      1011
 #define kFriendRequestAlert         1012
@@ -122,6 +123,9 @@
         EWPerson *person = [[EWPersonStore sharedInstance] getPersonByObjectID:personID];
         //EWPerson *person = notification.owner;
         [EWNotificationManager sharedInstance].person = person;
+        
+        //update cache
+        [EWStatisticsManager updateCacheWithFriendsAdded:@[person.serverID]];
         
         //alert
         if (notification.completed) {

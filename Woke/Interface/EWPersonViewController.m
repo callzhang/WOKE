@@ -91,8 +91,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     [self initData];
     [self initView];
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-    
-    
 }
 
 
@@ -170,7 +168,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 - (void)initData {
     if (person) {
-        tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
+        //tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
         stats = [[EWStatisticsManager alloc] init];
         stats.person = person;
         _photos = [[NSMutableArray alloc] init];
