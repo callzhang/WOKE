@@ -75,6 +75,13 @@
     return str;
 }
 
+- (NSString *)date2YYMMDDString{
+    NSDateFormatter *parseFormatter = [[NSDateFormatter alloc] init];
+    parseFormatter.timeZone = [NSTimeZone defaultTimeZone];
+    parseFormatter.dateFormat = @"YYYYMMdd";
+    return [parseFormatter stringFromDate:self];
+}
+
 - (NSString *)date2numberDateString{
     NSDateFormatter *parseFormatter = [[NSDateFormatter alloc] init];
     parseFormatter.timeZone = [NSTimeZone defaultTimeZone];

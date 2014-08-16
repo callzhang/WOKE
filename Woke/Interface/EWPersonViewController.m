@@ -567,7 +567,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         return cell;
     }else if (tabView.selectedSegmentIndex == 1) {
-        
+        //activities
         EWTaskItem *task = tasks[indexPath.section];
         UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
         

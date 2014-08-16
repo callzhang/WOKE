@@ -50,7 +50,7 @@ typedef void (^EWSavingCallback)(void);
 @property (nonatomic, retain) NSDate *lastChecked;//The date that last sync with server
 @property NSMutableArray *saveCallbacks;
 @property Reachability *reachability;
-@property NSMutableDictionary *serverObjectPool
+@property NSMutableDictionary *serverObjectPool;
 
 #pragma mark - Connectivity
 + (BOOL)isReachable;

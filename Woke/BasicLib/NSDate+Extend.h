@@ -32,6 +32,11 @@
  Returns Weekday and date
  */
 - (NSString *)date2dayString;
+
+/**
+ Returns string YYMMDD
+ */
+- (NSString *)date2YYMMDDString;
 /**
  return YYYYMMddHHmm
  */

@@ -17,6 +17,7 @@
 #import "EWUserManagement.h"
 #import "EWPersonStore.h"
 #import "AFNetworking.h"
+#import "EWStatisticsManager.h"
 
 @implementation EWTaskStore
 
@@ -324,6 +325,9 @@
     }
     
     if (taskOutDated) {
+        //update cached activities
+        [EWStatisticsManager updateTaskActivityCache];
+        
         [EWDataStore save];
     }
     
@@ -820,9 +824,6 @@
              
          }];
     
-    
-
-    
-    
 }
+
 @end

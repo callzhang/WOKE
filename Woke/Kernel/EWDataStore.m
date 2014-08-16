@@ -76,23 +76,16 @@
         context = [NSManagedObjectContext MR_defaultContext];
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateModifiedDate:) name:NSManagedObjectContextWillSaveNotification object:context];
-		[[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextObjectsDidChangeNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-			//check task only
-			if ([note.object isKindOfClass:[EWTaskStore class]]) {
-				EWTaskItem *task = note.object;
-				BOOL good = [EWTaskStore validateTask:task];
-				NSParameterAssert(good);
-			}
-		}];
+
         //Observe background context saves so main context can perform save
         //We don't need to merge child context change to main context
 		//It will cause errors when main and child context access same MO
         [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:context queue:nil usingBlock:^(NSNotification* note){
-			
-             if (note.object != context)
+			NSManagedObjectContext *currentContext = (NSManagedObjectContext *)note.object;
+             if (currentContext.parentContext == context)
 				 //NSLog(@"Observed changes in background context, merge to main context!");
                  [context performBlock:^(){
-                     [context saveToPersistentStoreAndWait];
+                     [EWDataStore save];
                  }];
 		}];
 		
