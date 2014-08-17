@@ -30,7 +30,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedTaskStore_ = [[EWTaskStore alloc] init];
-        //Watch allAlarm change
+        //Watch Alarm change
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskTime:) name:kAlarmTimeChangedNotification object:nil];
         //watch alarm state change
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskState:) name:kAlarmStateChangedNotification object:nil];
@@ -38,12 +38,12 @@
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateNotifTone:) name:kAlarmToneChangedNotification object:nil];
         //watch for new alarm
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(scheduleTasks) name:kAlarmChangedNotification object:nil];
-        //watch media change
-        [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskMedia:) name:kNewMediaNotification object:nil];
         //watch alarm deletion
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(alarmRemoved:) name:kAlarmDeleteNotification object:nil];
         //task state change
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskState:) name:kTaskStateChangedNotification object:nil];
+        //watch media change
+        [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskMedia:) name:kNewMediaNotification object:nil];
     });
     return sharedTaskStore_;
 }
@@ -392,9 +392,12 @@
             if (t.state == YES) {
                 //schedule local notif
                 [self scheduleNotificationForTask:t];
+                [self updateNextTaskTime];
+                [self scheduleNotificationForTask:t];
             } else {
                 //cancel local notif
                 [self cancelNotificationForTask:t];
+                [self updateNextTaskTime];
             }
             
             //notification
@@ -498,7 +501,7 @@
     }
 }*/
 
-//Update next task time
+//Update next task time in cache
 - (void)updateNextTaskTime{
     EWTaskItem *task = [self nextValidTaskForPerson:me];
     NSMutableDictionary *cache = [me.cachedInfo mutableCopy];
@@ -509,9 +512,6 @@
         [cache setValue:task.time forKey:kNextTaskTime];
         [cache setValue:task.statement forKeyPath:kNextTaskStatement];
         me.cachedInfo = [cache copy];
-        
-        //schedule on server
-        [EWTaskStore scheduleNotificationOnServerWithTimer:task.time];
         
         NSLog(@"Saved next task time: %@ to cacheInfo", task.time.date2detailDateString);
         [EWDataStore save];
