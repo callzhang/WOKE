@@ -120,5 +120,5 @@
  when person is in his sleep mode
  */
 
-+ (void)scheduleNotificationOnServer;
++ (void)scheduleNotificationOnServerWithTimer:(NSDate *)scheduleTime;
 @end
