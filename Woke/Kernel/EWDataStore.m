@@ -1766,7 +1766,8 @@
 
 - (BOOL)isNewerThanMO{
 	NSDate *updatedPO = [self valueForKey:kUpdatedDateKey];
-	NSDate *updatedMO = [self.managedObject valueForKey:kUpdatedDateKey];
+	NSManagedObject *mo = [NSClassFromString(self.localClassName) MR_findFirstByAttribute:kParseObjectID withValue:self.objectId];
+	NSDate *updatedMO = [mo valueForKey:kUpdatedDateKey];
 	if (updatedPO && updatedMO) {
 		if ([updatedPO isEarlierThan:updatedMO]) {
 			return NO;

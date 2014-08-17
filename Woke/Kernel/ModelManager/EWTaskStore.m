@@ -807,6 +807,9 @@
     NSLog(@"Cancelled %ld sleep notification", (long)n);
 }
 
+
+#pragma mark - Schedule Alarm Timer
+
 + (void)scheduleNotificationOnServerWithTimer:(NSDate *)scheduleTime{
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
