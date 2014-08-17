@@ -8,8 +8,10 @@
 //  This class serves as the basic file input/output class that handles file namagement and memory management
 
 #import "EWUtil.h"
-//#import "ASIdentifierManager.h"
 #import <AdSupport/ASIdentifierManager.h>
+#import "LoggerCommon.h"
+#import "LoggerClient.h"
+//#import "LoggerClient.m"
 
 @implementation EWUtil
 
@@ -80,6 +82,7 @@
     
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
+
 +(NSString *)uploadImageToParseREST:(UIImage *)uploadImage
 {
     
@@ -108,4 +111,27 @@
     return fileUrl;
 
 }
+
+
+#pragma mark - Logging
+void EWLog(NSString *format, ...){
+    
+    
+    va_list args;
+    va_start(args, format);
+    NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+    //dispatch to NSLog
+    TFLog(@"%@", str);
+    
+    NSString *symbol = [str substringToIndex:3];
+    static const NSArray *symbolList;
+    symbolList = @[@"***", @"!!!"];//error, warning
+    NSInteger level = [symbolList indexOfObject:symbol];
+    level = level != NSNotFound ? level : 3;
+    if (level <= EW_DEBUG_LEVEL) {
+        LogMessage(@"Woke", level, @"%@", str);
+    }
+}
+
 @end

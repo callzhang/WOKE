@@ -20,5 +20,5 @@
 #import "UIView+Extend.h"
 #import <Parse/Parse.h>
 #import "TestFlight.h"
-#define NSLog TFLog
+
 #endif

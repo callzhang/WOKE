@@ -251,7 +251,7 @@
 + (NSManagedObject *)objectForCurrentContext:(NSManagedObject *)obj{
     
     if (obj == nil) {
-        NSLog(@"Passed in nil to get current MO");
+        NSLog(@"!!! Passed in nil to get current MO");
         return nil;
     }
     

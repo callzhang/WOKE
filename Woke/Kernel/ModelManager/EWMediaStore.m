@@ -139,7 +139,7 @@
 
 
 - (void)deleteAllMedias{
-#ifdef DEV_TEST
+#ifdef DEBUG
     NSLog(@"*** Delete all medias");
     NSArray *medias = [self mediaCreatedByPerson:me];
     for (EWMediaItem *m in medias) {

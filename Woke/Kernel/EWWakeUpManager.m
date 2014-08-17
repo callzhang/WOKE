@@ -73,7 +73,7 @@
         NSDictionary *sounds = buzzSounds;
         NSString *buzzSound = sounds[buzzSoundName];
         
-#ifdef DEV_TEST
+#ifdef DEBUG
         EWPerson *sender = media.author;
         //alert
         [[[UIAlertView alloc] initWithTitle:@"Buzz 来啦" message:[NSString stringWithFormat:@"Got a buzz from %@. This message will not display in release.", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -168,7 +168,7 @@
             
         }
         
-#ifdef DEV_TEST
+#ifdef DEBUG
         [[[UIAlertView alloc] initWithTitle:@"Voice来啦" message:@"收到一条神秘的语音."  delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 #endif
         

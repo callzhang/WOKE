@@ -24,4 +24,6 @@
 + (BOOL) isFirstTimeLogin;
 + (void) setFirstTimeLoginOver;
 + (NSString *) uploadImageToParseREST:(UIImage *)uploadImage;
+
+void EWLog(NSString *format,...);
 @end

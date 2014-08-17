@@ -13,17 +13,17 @@
 #define iPhone5 ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO)
 #define iOS7 ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0)
 
-#define kAppName            @"Woke"
-#define kAppVersion         @"0.6.0"
+#define kAppName                        @"Woke"
+#define kAppVersion                     @"0.7.0"
+//#define DEBUG                           1
+#define BACKGROUND_TEST
+#define EW_DEBUG_LEVEL                  3
 
-#define UserInfo           @"userInfo"
+#define kCustomWhite                    EWSTR2COLOR(@"#F5F5F5")
+#define kCustomGray                     EWSTR2COLOR(@"48494B")
+#define kColorMediumGray                EWSTR2COLOR(@"7e7e7e")
+#define kCustomLightGray                EWSTR2COLOR(@"#DDDDDD")
 
-#define kCustomWhite        EWSTR2COLOR(@"#F5F5F5")
-#define kCustomGray         EWSTR2COLOR(@"48494B")
-#define kColorMediumGray    EWSTR2COLOR(@"7e7e7e")
-#define kCustomLightGray    EWSTR2COLOR(@"#DDDDDD")
-
-#define MADEL_HEADER_HEIGHT             70.0;
 
 // Keys
 #define kParseKeyDevelopment            @"4757c535-5583-46f9-8a55-3b8276d96f06"
@@ -38,24 +38,21 @@
 #define TESTFLIGHT_ACCESS_KEY           @"e1ffe70a-26bf-4db0-91c8-eb2d1d362cb3"
 #define WokeUserID                      @"CvCaWauseD"
 
-// 开关宏
-/*
- *  在测试代码外包上 "ifndef DEV_TEST" 开关
- */
 
-#define DEV_TEST                        1
-#define BACKGROUND_TEST                 1
+
 
 // 任务宏
 
-#define LOCALSTR(x)     NSLocalizedString(x,nil)
-#define EWAlert(str)    [[[UIAlertView alloc] initWithTitle:@"Alert" message:str delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+#define LOCALSTR(x)                     NSLocalizedString(x,nil)
+#define EWAlert(str)                    [[[UIAlertView alloc] initWithTitle:@"Alert" message:str delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
-#define UIColorFromHex(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+#define UIColorFromHex(rgbValue)        [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
-#define TICK   NSDate *startTime = [NSDate date];
-#define TOCK   NSLog(@"Time: %f", -[startTime timeIntervalSinceNow]);
+#define TICK                            NSDate *startTime = [NSDate date];
+#define TOCK                            NSLog(@"Time: %f", -[startTime timeIntervalSinceNow]);
 
+#define NSLog   EWLog
+//#define NSLog TFLog
 //#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 //Global parameters
@@ -69,9 +66,6 @@
 #define kSocialGraphUpdateInterval      3600*24*7
 #define kMaxVoicePerTask                3
 #define kLoopMediaPlayCount             100
-
-#define autoGroupIndentifier @"wakeUpTogetherGroup"
-#define autoGroupStatement @"Wake up together with people around you."
 
 //DEFAULT DATA
 #define ringtoneNameList                @[@"Autumn Spring.caf", @"Daybreak.caf", @"Drive.caf", @"Parisian Dream.caf", @"Sunny Afternoon.caf", @"Tropical Delight.caf"];

@@ -161,10 +161,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [self initView];
     }
 }
--(void)viewDidDisappear:(BOOL)animated
-{
 
-}
 
 - (void)initData {
     if (person) {
@@ -348,7 +345,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if (person.isMe) {
         
         sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference",@"Log out", nil];
-        if (DEV_TEST) {
+        if (DEBUG) {
             [sheet addButtonWithTitle:@"Add friend"];
         }
     }else{

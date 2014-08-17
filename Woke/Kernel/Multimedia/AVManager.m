@@ -467,7 +467,7 @@
                 
                 [manager backgroundKeepAlive:NULL];
                 
-#ifdef DEV_TEST
+#ifdef DEBUG
                 [[AVManager sharedManager] playSoundFromFile:@"Sunny Afternoon.caf"];
 #endif
             });
