@@ -223,6 +223,9 @@
             if (![tasks containsObject:task]) {
                 [tasks addObject:task];
                 newTask = YES;
+                // add schedule notification
+                [EWTaskStore scheduleNotificationOnServerWithTimer:task.time];
+                
                 NSLog(@"New task found from server: %@(%@)", task.time.weekday, t.objectId);
             }
         }
@@ -274,6 +277,8 @@
                 [goodTasks addObject:t];
                 //localNotif
                 [self scheduleNotificationForTask:t];
+                // remote notification
+                [EWTaskStore scheduleNotificationOnServerWithTimer:t.time];
                 //prepare to broadcast
                 newTask = YES;
             }
@@ -428,7 +433,8 @@
             //Notification
             //[[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:t userInfo:@{@"task": t}];
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskTimeChangedNotification object:t userInfo:@{@"task": t}];
-            
+            // schedule on server
+            [EWTaskStore scheduleNotificationOnServerWithTimer:t.time];
         }
     }
     [self updateNextTaskTime];
@@ -503,6 +509,10 @@
         [cache setValue:task.time forKey:kNextTaskTime];
         [cache setValue:task.statement forKeyPath:kNextTaskStatement];
         me.cachedInfo = [cache copy];
+        
+        //schedule on server
+        [EWTaskStore scheduleNotificationOnServerWithTimer:task.time];
+        
         NSLog(@"Saved next task time: %@ to cacheInfo", task.time.date2detailDateString);
         [EWDataStore save];
     }
@@ -797,7 +807,7 @@
     NSLog(@"Cancelled %ld sleep notification", (long)n);
 }
 
-+(void)scheduleNotificationOnServer{
++ (void)scheduleNotificationOnServerWithTimer:(NSDate *)scheduleTime{
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
@@ -807,10 +817,11 @@
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     
     NSDictionary *dic = @{@"where":@{kUsername:me.name},
-                          @"push_time":[NSNumber numberWithDouble:[[[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:me] timeIntervalSince1970] ],
-                          @"data":@{@"alert":@"Time to get up"},
-                          @"content-available":@1,
-                          kPushTypeKey: kPushTypeTimerKey};
+                          @"push_time":[NSNumber numberWithDouble:[scheduleTime timeIntervalSince1970] ],
+                          @"data":@{@"alert":@"Time to get up",
+                                    @"content-available":@1,
+                                    kPushTypeKey: kPushTypeTimerKey},
+                         };
     
     [manager POST:kParsePushUrl parameters:dic
          success:^(AFHTTPRequestOperation *operation,id responseObject) {
