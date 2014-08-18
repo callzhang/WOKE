@@ -1432,22 +1432,25 @@
 
 
 - (void)setPFFile:(PFFile *)file forPropertyDescription:(NSAttributeDescription *)attributeDescription{
-	NSError *error;
-    NSData *data = [file getData:&error];
-    //[file getDataWithBlock:^(NSData *data, NSError *error) {
-	if (error || !data) {
-		NSLog(@"@@@ Failed to download PFFile: %@", error.description);
-		return;
-	}
-	NSString *className = [self getPropertyClassByName:attributeDescription.name];
-	if ([className isEqualToString:@"UIImage"]) {
-		UIImage *img = [UIImage imageWithData:data];
-		[self setValue:img forKey:attributeDescription.name];
-	}
-	else{
-		[self setValue:data forKey:attributeDescription.name];
-	}
-    //}];
+	[MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+		NSError *error;
+		NSData *data = [file getData:&error];
+		//[file getDataWithBlock:^(NSData *data, NSError *error) {
+		if (error || !data) {
+			NSLog(@"@@@ Failed to download PFFile: %@", error.description);
+			return;
+		}
+		NSManagedObject *localSelf = [localContext objectWithID:self.objectID];
+		NSString *className = [localSelf getPropertyClassByName:attributeDescription.name];
+		if ([className isEqualToString:@"UIImage"]) {
+			UIImage *img = [UIImage imageWithData:data];
+			[localSelf setValue:img forKey:attributeDescription.name];
+		}
+		else{
+			[localSelf setValue:data forKey:attributeDescription.name];
+		}
+
+	}];
 }
 
 - (void)updateEventually{
