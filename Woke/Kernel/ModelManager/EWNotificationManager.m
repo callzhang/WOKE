@@ -64,6 +64,8 @@
 
 #pragma mark - CREATE
 + (EWNotification *)newNotification{
+    
+    NSParameterAssert([NSThread isMainThread]);
     EWNotification *notice = [EWNotification createEntity];
     notice.updatedAt = [NSDate date];
     notice.owner = me;
@@ -205,7 +207,8 @@
         //get from server
         PFQuery *q = [PFQuery queryWithClassName:@"EWNotification"];
         [q whereKey:kParseObjectID equalTo:notificationID];
-        notification = (EWNotification *)[[q getFirstObject] managedObject];
+        q.cachePolicy = kPFCachePolicyCacheElseNetwork;
+        notification = (EWNotification *)[[q getFirstObject] managedObjectInContext:nil];
         [notification refresh];
     }
     return notification;
@@ -295,10 +298,9 @@
 }
 
 + (void)deleteNotification:(EWNotification *)notice{
-    EWNotification *notification = [EWDataStore objectForCurrentContext:notice];
-    [[EWDataStore currentContext] deleteObject:notification];
+    [notice.managedObjectContext deleteObject:notice];
     [EWDataStore save];
-    NSLog(@"Notification of type %@ deleted", notification.type);
+    NSLog(@"Notification of type %@ deleted", notice.type);
     
 }
 

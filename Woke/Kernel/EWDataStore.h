@@ -37,7 +37,7 @@ typedef void (^EWSavingCallback)(void);
 #define kParseQueueUpdate       @"parse_queue_update"
 #define kParseQueueDelete       @"parse_queue_delete"
 #define kParseQueueWorking      @"parse_queue_working"
-#define kParseQueueRefresh      @"parse_queue_refresh"
+#define kParseQueueRefresh      @"parse_queue_refresh"//queue for refresh
 #define kUserID                 @"user_object_id"
 #define kUsername               @"username"
 
@@ -45,10 +45,10 @@ typedef void (^EWSavingCallback)(void);
 //@property (nonatomic, retain) AmazonSNSClient *snsClient;
 @property (nonatomic, retain) NSManagedObjectModel *model;
 @property (nonatomic, retain) dispatch_queue_t dispatch_queue;//Task dispatch queue runs in serial
-@property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in serial
+@property (nonatomic, retain) dispatch_queue_t coredata_queue;//coredata queue runs in concurrent
 @property (nonatomic, retain) NSTimer *serverUpdateTimer;
 @property (nonatomic, retain) NSDate *lastChecked;//The date that last sync with server
-@property NSMutableArray *saveCallbacks;
+@property NSMutableArray *saveCallbacks; //MO save callback
 @property Reachability *reachability;
 @property NSMutableDictionary *serverObjectPool;
 
@@ -64,13 +64,7 @@ typedef void (^EWSavingCallback)(void);
 
 + (EWDataStore *)sharedInstance;
 
-#pragma mark - PARSE
-/**
- The main save function, it save and upload to the server
- */
-+ (void)save;
-+ (void)saveWithCompletion:(EWSavingCallback)block;
-+ (void)saveToLocal:(NSManagedObject *)mo;
+
 
 /**
  * Register the server update process, which will run periodically to sync with server data
@@ -78,11 +72,17 @@ typedef void (^EWSavingCallback)(void);
 - (void)registerServerUpdateService;
 
 #pragma mark - CoreData
-+ (NSManagedObjectContext *)currentContext;
-+ (id)objectForCurrentContext:(NSManagedObject *)obj;
-
++ (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context withID:(NSManagedObjectID *)objectID ;
++ (NSManagedObjectContext *)mainContext;
 
 #pragma mark - Parse Server methods
+/**
+ The main save function, it save and upload to the server
+ */
++ (void)save;
++ (void)saveWithCompletion:(EWSavingCallback)block;
++ (void)saveToLocal:(NSManagedObject *)mo;
+
 /**
  The main method of server update/insert/delete.
  And save ManagedObject.
@@ -108,7 +108,7 @@ typedef void (^EWSavingCallback)(void);
  *
  *5. Perform save callback block for this PO
  */
-+ (void)updateParseObjectFromManagedObjectID:(NSManagedObjectID *)managedObjectID;
++ (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject;
 
 /**
  Find or delete ManagedObject by Entity and by Server Object
@@ -240,7 +240,7 @@ typedef void (^EWSavingCallback)(void);
 /**
  The ManagedObject will only update attributes but not relations
  */
-- (NSManagedObject *)managedObject;
+- (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context;
 - (BOOL)isNewerThanMO;
 - (NSString *)localClassName;
 @end

@@ -71,7 +71,9 @@
  
  When new tasks created, notification of kTaskNewNotification is sent and causes main alarmVC to refresh its task page view
  */
+- (NSArray *)scheduleTasksInContext:(NSManagedObjectContext *)context;
 - (NSArray *)scheduleTasks;
+- (void)scheduleTasksInBackground;
 
 #pragma mark - KVO
 - (void)updateTaskState:(NSNotification *)notif;
@@ -120,5 +122,7 @@
  when person is in his sleep mode
  */
 
+
 + (void)scheduleNotificationOnServerWithTimer:(EWTaskItem *)task;
+
 @end

@@ -172,57 +172,63 @@
 
 #pragma mark - Update Activity
 + (void)updateTaskActivityCache{
-    NSArray *tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:me];
-    NSMutableDictionary *cache = me.cachedInfo.mutableCopy;
-    NSMutableDictionary *activity = [cache[kTaskActivityCache] mutableCopy]?:[NSMutableDictionary new];
     
-    for (NSInteger i =0; i<tasks.count; i++) {
-        //start from the newest task
-        EWTaskItem *task = tasks[i];
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        EWPerson *localMe = [EWPersonStore meInContext:localContext];
+        NSArray *tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:localMe];
+        NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
+        NSMutableDictionary *activity = [cache[kTaskActivityCache] mutableCopy]?:[NSMutableDictionary new];
         
-        NSDate *wakeTime;
-        NSArray *wokeBy;
-        NSArray *wokeTo;
-        
-        
-        if (task.completed && [task.completed timeIntervalSinceDate:task.time] < kMaxWakeTime) {
-            wakeTime = task.completed;
-        }
-        else{
-            wakeTime = [task.time dateByAddingTimeInterval:kMaxWakeTime];
-        }
-        
-        NSDate *eod = task.time.endOfDay;
-        NSDate *bod = task.time.beginingOfDay;
-        
-        
-        NSSet *myMedias = me.medias;
-        NSMutableArray *myMediasTasks = [NSMutableArray new];
-        for (EWMediaItem *m in myMedias) {
-            for (EWTaskItem *t in m.tasks) {
-                if ([t.time isEarlierThan:eod] && [bod isEarlierThan:t.time]) {
-                    [myMediasTasks addObject:t];
+        for (NSInteger i =0; i<tasks.count; i++) {
+            //start from the newest task
+            EWTaskItem *task = tasks[i];
+            
+            NSDate *wakeTime;
+            NSArray *wokeBy;
+            NSArray *wokeTo;
+            
+            
+            if (task.completed && [task.completed timeIntervalSinceDate:task.time] < kMaxWakeTime) {
+                wakeTime = task.completed;
+            }
+            else{
+                wakeTime = [task.time dateByAddingTimeInterval:kMaxWakeTime];
+            }
+            
+            NSDate *eod = task.time.endOfDay;
+            NSDate *bod = task.time.beginingOfDay;
+            
+            
+            NSSet *myMedias = me.medias;
+            NSMutableArray *myMediasTasks = [NSMutableArray new];
+            for (EWMediaItem *m in myMedias) {
+                for (EWTaskItem *t in m.tasks) {
+                    if ([t.time isEarlierThan:eod] && [bod isEarlierThan:t.time]) {
+                        [myMediasTasks addObject:t];
+                    }
                 }
             }
+            
+            wokeBy = (NSArray *)[task.medias valueForKeyPath:@"author.objectId"];
+            wokeTo = (NSArray *)[myMediasTasks valueForKeyPath:@"owner.objectId"];
+            
+            NSDictionary *taskActivity = @{kTaskState: @(task.state),
+                                           kTaskTime: task.time,
+                                           kWokeTime: @(!!task.completed),
+                                           kWokeBy: wokeBy.count?wokeBy:[NSNull null],
+                                           kWokeTo: wokeTo.count?wokeTo:[NSNull null]};
+            
+            NSString *dateKey = task.time.date2YYMMDDString;
+            activity[dateKey] = taskActivity;
         }
         
-        wokeBy = (NSArray *)[task.medias valueForKeyPath:@"author.objectId"];
-        wokeTo = (NSArray *)[myMediasTasks valueForKeyPath:@"owner.objectId"];
-        
-        NSDictionary *taskActivity = @{kTaskState: @(task.state),
-                                       kTaskTime: task.time,
-                                       kWokeTime: task.completed,
-                                       kWokeBy: wokeBy,
-                                       kWokeTo: wokeTo};
-        
-        NSString *dateKey = task.time.date2YYMMDDString;
-        activity[dateKey] = taskActivity;
-    }
+        cache[kTaskActivityCache] = [activity copy];
+        localMe.cachedInfo = [cache copy];
+
+    } completion:^(BOOL success, NSError *error) {
+        //
+    }];
     
-    cache[kTaskActivityCache] = [activity copy];
-    me.cachedInfo = [cache copy];
-    
-    [EWDataStore save];
 }
 
 + (void)updateCacheWithFriendsAdded:(NSArray *)friendIDs{

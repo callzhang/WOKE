@@ -28,7 +28,7 @@
 // Search
 - (NSArray *)alarmsForUser:(EWPerson *)user;
 + (NSArray *)myAlarms;
-- (EWAlarmItem *)nextAlarm;
+//- (EWAlarmItem *)nextAlarm;
 - (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm;
 
 // change

@@ -293,21 +293,21 @@
             geoPoint.longitude = -73.992684;
         }
         
-        
-        EWPerson *user = [EWPersonStore me];
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-        user.lastLocation = location;
+        
         NSLog(@"Get user location with lat: %f, lon: %f", geoPoint.latitude, geoPoint.longitude);
         
         //reverse search address
         CLGeocoder *geoloc = [[CLGeocoder alloc] init];
         [geoloc reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
-            //NSLog(@"Found placemarks: %@, error", placemarks);
+            
+            me.lastLocation = location;
+            
             if (error == nil && [placemarks count] > 0) {
                 CLPlacemark *placemark = [placemarks lastObject];
                 //get info
-                user.city = placemark.locality;
-                user.region = placemark.country;
+                me.city = placemark.locality;
+                me.region = placemark.country;
             } else {
                 NSLog(@"%@", error.debugDescription);
             }
@@ -386,53 +386,50 @@
 
 //after fb login, fetch user managed object
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
-    //get me first
-    EWPerson *person = [EWPersonStore me];
-    NSParameterAssert(person);
-    
-    //name
-    if ([person.name isEqualToString:kDefaultUsername] || person.name.length == 0) {
-        person.name = user.name;
-    }
-    //email
-    if (!person.email) person.email = user[@"email"];
-    
-    //birthday format: "01/21/1984";
-    if (!person.birthday) {
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        formatter.dateFormat = @"mm/dd/yyyy";
-        person.birthday = [formatter dateFromString:user[@"birthday"]];
-    }
-    //facebook link
-    person.facebook = user.id;
-    //gender
-    person.gender = user[@"gender"];
-    //city
-    person.city = user.location[@"name"];
-    //preference
-    if(!person.preference){
-        //new user
-        person.preference = kUserDefaults;
-    }
-    //download profile picture if needed
-    //profile pic, async download, need to assign img to person before leave
-    NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        EWPerson *person = [EWPersonStore meInContext:localContext];
+
+        NSParameterAssert(person);
+        
+        //name
+        if ([person.name isEqualToString:kDefaultUsername] || person.name.length == 0) {
+            person.name = user.name;
+        }
+        //email
+        if (!person.email) person.email = user[@"email"];
+        
+        //birthday format: "01/21/1984";
+        if (!person.birthday) {
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            formatter.dateFormat = @"mm/dd/yyyy";
+            person.birthday = [formatter dateFromString:user[@"birthday"]];
+        }
+        //facebook link
+        person.facebook = user.id;
+        //gender
+        person.gender = user[@"gender"];
+        //city
+        person.city = user.location[@"name"];
+        //preference
+        if(!person.preference){
+            //new user
+            person.preference = kUserDefaults;
+        }
+        //download profile picture if needed
+        //profile pic, async download, need to assign img to person before leave
+        NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
+        
         NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
         UIImage *img = [UIImage imageWithData:data];
         if (img && !person.profilePic) {
-            [person.managedObjectContext performBlock:^{
-                person.profilePic = img;
-                [EWDataStore save];
-            }];
+            person.profilePic = img;
         }
-    });
+        
+    }completion:^(BOOL success, NSError *error) {
+        //update friends
+        [EWUserManagement getFacebookFriends];
+    }];
     
-    //update friends
-    [EWUserManagement getFacebookFriends];
-    
-    //save
-    [EWDataStore save];
 }
 
 + (void)getFacebookFriends{
@@ -459,16 +456,22 @@
         
         //get social graph of current user
         //if not, create one
-        EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWPersonStore me]];
-        //skip if checked within a week
-        if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
-            NSLog(@"Facebook friends check skipped.");
-            return;
-        }
+        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+            EWPerson *localMe = [EWPersonStore meInContext:localContext];
+            EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:localMe];
+            //skip if checked within a week
+            if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
+                NSLog(@"Facebook friends check skipped.");
+                return;
+            }
+            
+            //get the data
+            __block NSMutableDictionary *friends = [NSMutableDictionary new];
+            [EWUserManagement getFacebookFriendsWithPath:@"/me/friends" withReturnData:friends];
+        } completion:^(BOOL success, NSError *error) {
+            //
+        }];
         
-        //get the data
-        __block NSMutableDictionary *friends = [NSMutableDictionary new];
-        [EWUserManagement getFacebookFriendsWithPath:@"/me/friends" withReturnData:friends];
     }
 
 }

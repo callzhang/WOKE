@@ -105,9 +105,9 @@
     [query whereKey:@"owner" equalTo:[PFUser currentUser]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         for (PFObject *PO in objects) {
-            EWNotification *notification = (EWNotification *)PO.managedObject;
+            EWNotification *notification = (EWNotification *)[PO managedObjectInContext:[EWDataStore mainContext]];
             NSLog(@"Found new notification %@(%@)", notification.type, notification.objectId);
-            notification.owner = [EWPersonStore me];
+            notification.owner = me;
         }
         notifications = [[EWNotificationManager allNotifications] mutableCopy];
         [self.tableView reloadData];

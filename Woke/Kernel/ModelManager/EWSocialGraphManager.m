@@ -26,7 +26,6 @@
 }
 
 + (EWSocialGraph *)mySocialGraph{
-    EWPerson *me = [EWPersonStore me];
     EWSocialGraph *sg = me.socialGraph;
     if (!sg) {
         sg = [[EWSocialGraphManager sharedInstance] createSocialGraphForPerson:me];
@@ -39,7 +38,7 @@
         return person.socialGraph;
     }
     
-    if ([person.username isEqualToString:me.username]) {
+    if (person.isMe) {
         //need to create one for self
         EWSocialGraph *graph = [self createSocialGraphForPerson:person];
         return graph;
@@ -53,7 +52,7 @@
 
 
 - (EWSocialGraph *)createSocialGraphForPerson:(EWPerson *)person{
-    EWSocialGraph *sg = [EWSocialGraph createEntity];
+    EWSocialGraph *sg = [EWSocialGraph createInContext:person.managedObjectContext];
     sg.updatedAt = [NSDate date];
 
     //data

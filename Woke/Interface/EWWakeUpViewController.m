@@ -253,8 +253,10 @@
     //set wakeup time
     if ([task.time isEarlierThan:[NSDate date]]) {
         task.completed = [NSDate date];
-        [EWDataStore save];
+    }else{
+        task.completed = [task.time dateByAddingTimeInterval:kMaxWakeTime];
     }
+    [EWDataStore save];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self scrollViewDidScroll:self.tableView];//prevent header move

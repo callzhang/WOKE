@@ -49,6 +49,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //data
     [self initData];
+    
+    
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 }
 
 - (BOOL)prefersStatusBarHidden{
@@ -74,12 +77,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     if (alarms.count != 7 || tasks.count != 7) {
         NSLog(@"%s: Need to check the data", __func__);
         
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        
-        
         alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];//initial alarm
         tasks = [[EWTaskStore sharedInstance] scheduleTasks];
-        
         
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         
@@ -136,12 +135,13 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             hasChanges = YES;
             
         }
-        //save
-        [EWDataStore save];
         
         if (hasChanges) {
             [[EWTaskStore sharedInstance] updateNextTaskTime];
         }
+        
+        //save
+        [EWDataStore save];
     }
     
     

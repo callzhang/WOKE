@@ -52,12 +52,9 @@ EWPerson *me;
 
 #pragma mark - ME
 //Current User MO at background thread
-+ (EWPerson *)me{
-    if ([NSThread isMainThread]) {
-        return me;
-    }else{
-        return [EWDataStore objectForCurrentContext:me];
-    }
++ (EWPerson *)meInContext:(NSManagedObjectContext *)context{
+    EWPerson *localMe = (EWPerson *)[context objectWithID:me.objectID];
+    return localMe;
 }
 
 - (EWPerson *)currentUser{
@@ -72,9 +69,9 @@ EWPerson *me;
 
 #pragma mark - CREATE USER
 -(EWPerson *)createPersonWithParseObject:(PFUser *)user{
-    EWPerson *newUser = (EWPerson *)[user managedObject];
+    EWPerson *newUser = (EWPerson *)[user managedObjectInContext:[EWDataStore mainContext]];
     newUser.username = user.username;
-    newUser.profilePic = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];
+    newUser.profilePic = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];//TODO: new user profile
     newUser.name = kDefaultUsername;
     newUser.preference = kUserDefaults;
     newUser.cachedInfo = [NSDictionary new];
@@ -90,6 +87,7 @@ EWPerson *me;
 }
 
 -(EWPerson *)getPersonByObjectID:(NSString *)ID{
+    NSParameterAssert([NSThread isMainThread]);
     //ID is username
     if(!ID) return nil;
     EWPerson *person = [EWPerson findFirstByAttribute:@"objectId" withValue:ID];
@@ -103,6 +101,7 @@ EWPerson *me;
             PFQuery *query = [PFUser query];
             [query whereKey:kParseObjectID equalTo:ID];
             [query includeKey:@"friends"];
+            query.cachePolicy = kPFCachePolicyCacheElseNetwork;
             NSError *error;
             user = [query findObjects:&error].firstObject;
             if (error || !user) {
@@ -116,11 +115,11 @@ EWPerson *me;
             person = [self createPersonWithParseObject:user];
             NSLog(@"New user %@ data has CREATED", person.name);
         }else{
-            person = (EWPerson *)[user managedObject];
+            person = (EWPerson *)[user managedObjectInContext:[EWDataStore mainContext]];
             NSLog(@"Person created from PO");
             //assign user
             for (PFUser *friendPO in user[@"friends"]) {
-                EWPerson *friend = (EWPerson *)friendPO.managedObject;
+                EWPerson *friend = (EWPerson *)[friendPO managedObjectInContext:[EWDataStore mainContext]];
                 [person addFriendsObject:friend];
             }
         }
@@ -129,47 +128,46 @@ EWPerson *me;
         NSLog(@"Me %@ data has FETCHED", person.name);
     }
     
-    
     return person;
 }
 
-//DEPRECIATED
--(EWPerson *)getPersonByID:(NSString *)ID{
-    //ID is username
-    if(!ID) return nil;
-    EWPerson *person = [EWPerson findFirstByAttribute:@"username" withValue:ID];
-    
-    if (!person){
-        //First find user on server
-        PFUser *user;
-        if ([[PFUser currentUser].username isEqualToString:ID]) {
-            user = [PFUser currentUser];
-        }else{
-            PFQuery *query = [PFUser query];
-            [query whereKey:kUsername equalTo:ID];
-            NSError *error;
-            user = [query findObjects:&error].firstObject;
-            if (error) {
-                NSLog(@"Failed to find user with ID %@. Reason:%@", ID, error.description);
-            }
-        }
-        
-        if (user.isNew) {
-            person = [self createPersonWithParseObject:user];
-            NSLog(@"Current user %@ data has CREATED", person.name);
-        }else{
-            person = (EWPerson *)[user managedObject];
-            NSLog(@"Person created from PO");
-        }
-        
-        
-    }else{
-        NSLog(@"Me %@ data has FETCHED", person.name);
-    }
-    
-
-    return person;
-}
+////DEPRECIATED
+//-(EWPerson *)getPersonByID:(NSString *)ID{
+//    //ID is username
+//    if(!ID) return nil;
+//    EWPerson *person = [EWPerson findFirstByAttribute:@"username" withValue:ID];
+//    
+//    if (!person){
+//        //First find user on server
+//        PFUser *user;
+//        if ([[PFUser currentUser].username isEqualToString:ID]) {
+//            user = [PFUser currentUser];
+//        }else{
+//            PFQuery *query = [PFUser query];
+//            [query whereKey:kUsername equalTo:ID];
+//            NSError *error;
+//            user = [query findObjects:&error].firstObject;
+//            if (error) {
+//                NSLog(@"Failed to find user with ID %@. Reason:%@", ID, error.description);
+//            }
+//        }
+//        
+//        if (user.isNew) {
+//            person = [self createPersonWithParseObject:user];
+//            NSLog(@"Current user %@ data has CREATED", person.name);
+//        }else{
+//            person = (EWPerson *)[user managedObject];
+//            NSLog(@"Person created from PO");
+//        }
+//        
+//        
+//    }else{
+//        NSLog(@"Me %@ data has FETCHED", person.name);
+//    }
+//    
+//
+//    return person;
+//}
 
 //check my relation, used for new installation with existing user
 + (void)updateMe{
@@ -231,23 +229,23 @@ EWPerson *me;
     }
     
     //make sure the everyone is saved on main thread
-    [[NSManagedObjectContext defaultContext] performBlockAndWait:^{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
         for (PFUser *user in people) {
-            EWPerson *person = (EWPerson *)user.managedObject;
+            EWPerson *person = (EWPerson *)[user managedObjectInContext:localContext];
             float score = 99 - [people indexOfObject:user];
             person.score = [NSNumber numberWithFloat:score];
             [allPerson addObject:person];
             [EWDataStore saveToLocal:person];
         }
         
-        [EWPersonStore me].score = @100;
+        EWPerson *localMe = [EWPersonStore meInContext:localContext];
+        localMe.score = @100;
         NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
         
         everyone = [allPerson copy];
         timeEveryoneChecked = [NSDate date];
         
-        [EWDataStore save];
     }];
     
     return everyone;
@@ -330,39 +328,42 @@ EWPerson *me;
 }
 
 + (void)getFriendsForPerson:(EWPerson *)person{
-    EWPerson *backPerson = [EWDataStore objectForCurrentContext:person];
-    NSArray *friends = backPerson.cachedInfo[kCachedFriends];
-    if (!friends || friends.count != backPerson.friends.count) {
-        //friend need update
-        PFQuery *q = [PFQuery queryWithClassName:backPerson.entity.serverClassName];
-        [q includeKey:@"friends"];
-        [q whereKey:kParseObjectID equalTo:backPerson.serverID];
-        PFObject *user = [q getFirstObject];
-        NSArray *friendsPO = user[@"friends"];
-        if (friendsPO.count == 0) return;//prevent 0 friend corrupt data
-        NSMutableSet *friendsMO = [NSMutableSet new];
-        for (PFObject *f in friendsPO) {
-            if ([f isKindOfClass:[NSNull class]]) {
-                continue;
+    NSManagedObjectID *personID = person.objectID;
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        EWPerson *backPerson = (EWPerson *)[localContext objectWithID:personID];
+        NSArray *friends = backPerson.cachedInfo[kCachedFriends];
+        if (!friends || friends.count != backPerson.friends.count) {
+            //friend need update
+            PFQuery *q = [PFQuery queryWithClassName:backPerson.entity.serverClassName];
+            [q includeKey:@"friends"];
+            [q whereKey:kParseObjectID equalTo:backPerson.serverID];
+            PFObject *user = [q getFirstObject];
+            NSArray *friendsPO = user[@"friends"];
+            if (friendsPO.count == 0) return;//prevent 0 friend corrupt data
+            NSMutableSet *friendsMO = [NSMutableSet new];
+            for (PFObject *f in friendsPO) {
+                if ([f isKindOfClass:[NSNull class]]) {
+                    continue;
+                }
+                NSManagedObject *mo = [f managedObjectInContext:localContext];
+                [friendsMO addObject:mo];
             }
-            NSManagedObject *mo = f.managedObject;
-            [friendsMO addObject:mo];
+            backPerson.friends = [friendsMO copy];
+            if ([backPerson.serverID isEqualToString: PFUser.currentUser.objectId ]) {
+                [EWPersonStore updateCachedFriends];
+            }
         }
-        backPerson.friends = [friendsMO copy];
-        if ([backPerson.serverID isEqualToString: PFUser.currentUser.objectId ]) {
-            [EWPersonStore updateCachedFriends];
-        }
-        [EWDataStore save];
-    }
+    }];
 }
 
 + (void)updateCachedFriends{
-    EWPerson *backPerson = (EWPerson *)PFUser.currentUser.managedObject;
-    NSSet *friends = [backPerson.friends valueForKey:kParseObjectID];
-    NSMutableDictionary *cache = me.cachedInfo.mutableCopy;
-    cache[kCachedFriends] = friends.allObjects;
-    backPerson.cachedInfo = [cache copy];
-    [EWDataStore save];
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        EWPerson *localMe = [EWPersonStore meInContext:localContext];
+        NSSet *friends = [localMe.friends valueForKey:kParseObjectID];
+        NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
+        cache[kCachedFriends] = friends.allObjects;
+        localMe.cachedInfo = [cache copy];
+    }];
 }
 
 

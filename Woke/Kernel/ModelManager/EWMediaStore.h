@@ -51,8 +51,6 @@
 //get ramdom voice
 - (EWMediaItem *)getWokeVoice;
 
-//get my task in a media
-+ (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media;
 
 
 //Validation

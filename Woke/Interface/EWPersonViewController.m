@@ -161,10 +161,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [self initView];
     }
 }
--(void)viewDidDisappear:(BOOL)animated
-{
 
-}
 
 - (void)initData {
     if (person) {
@@ -348,7 +345,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if (person.isMe) {
         
         sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference",@"Log out", nil];
-        if (DEV_TEST) {
+        if (DEBUG) {
             [sheet addButtonWithTitle:@"Add friend"];
         }
     }else{
@@ -598,7 +595,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 NSDate *eod = task.time.endOfDay;
                 NSDate *bod = task.time.beginingOfDay;
                 
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"author == %@", [EWPersonStore me]];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"author == %@", me];
                 NSArray *myMedias = [EWMediaItem findAllWithPredicate:predicate];
                 NSMutableArray *myTasks = [NSMutableArray new];
                 for (EWMediaItem *m in myMedias) {
@@ -765,7 +762,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 {
     if (person.isMe) {
         // 结束时候保存一次
-          [EWDataStore save];
+        [EWDataStore save];
     }
 }
 
