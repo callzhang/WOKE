@@ -158,10 +158,11 @@
             if (![me.mediaAssets containsObject:media]) {
                 [me addMediaAssetsObject:media];
                 
-                EWTaskItem *myTask = [EWMediaStore myTaskInMedia:media];
-                if (myTask) {
+                NSSet *tasks = [media.tasks filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owner = %@", me]];
+                for (EWTaskItem *task in tasks) {
+                    
                     //need to move to media pool
-                    [media removeTasksObject:myTask];
+                    [media removeTasksObject:task];
                     [EWDataStore save];
                 }
             }
@@ -177,7 +178,8 @@
         // ============== Timer ================
         //TODO: test if the push is correct
         //first find the task ID
-        //then test if the tesk time is matched, also the task should not be completed
+        //then test if the tesk time is matched
+        //also the task should not be completed
         //also make sure it's not too early or too late
         if (![taskID isEqualToString:task.objectId]) {
             NSLog(@"Task from push is not the next task");
@@ -206,6 +208,7 @@
 }
 
 + (void)handleAlarmTimerEvent:(NSDictionary *)info{
+    NSParameterAssert([NSThread isMainThread]);
     if ([EWWakeUpManager sharedInstance].isWakingUp) {
         NSLog(@"WakeUpManager is already handling alaerm timer, skip");
         return;
@@ -255,7 +258,7 @@
     
     //update media
     [[EWMediaStore sharedInstance] checkMediaAssets];
-    NSArray *medias = [EWPersonStore me].mediaAssets.allObjects;
+    NSArray *medias = me.mediaAssets.allObjects;
     
     //fill media from mediaAssets, if no media for task, create a pseudo media
     NSInteger nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
@@ -267,7 +270,7 @@
             //find media to add
             [task addMediasObject: media];
             //remove media from mediaAssets
-            [[EWPersonStore me] removeMediaAssetsObject:media];            
+            [me removeMediaAssetsObject:media];
             
             if ([media.type isEqualToString: kMediaTypeVoice]) {
                 

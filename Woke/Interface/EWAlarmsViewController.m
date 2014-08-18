@@ -229,7 +229,7 @@
     
     //controller
     fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
-                                                          managedObjectContext:[EWDataStore currentContext]
+                                                          managedObjectContext:[EWDataStore mainContext]
                                                             sectionNameKeyPath:nil
                                                                      cacheName:@"com.wokealarm.fetchControllerCache"];
     fetchController.delegate = self;
@@ -273,8 +273,8 @@
         //task or alarm incomplete, schedule
         //init state
         
-        alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];
-        tasks = [[EWTaskStore sharedInstance] scheduleTasks];
+        alarms = [[EWAlarmManager sharedInstance] alarmsForUser:me];
+        tasks = [[EWTaskStore sharedInstance] getTasksByPerson:me];
         return;
     }
     

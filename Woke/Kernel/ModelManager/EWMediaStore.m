@@ -13,6 +13,7 @@
 #import "EWTaskStore.h"
 #import "EWTaskItem.h"
 #import "EWUserManagement.h"
+#import "EWDataStore.h"
 
 @implementation EWMediaStore
 //@synthesize context, model;
@@ -31,16 +32,17 @@
 
 
 - (NSArray *)myMedias{
-    return [self mediasForPerson:[EWPersonStore me]];
+    NSParameterAssert([NSThread isMainThread]);
+    return [self mediasForPerson:me];
 }
 
 
 #pragma mark - create media
 - (EWMediaItem *)createMedia{
+    NSParameterAssert([NSThread isMainThread]);
     EWMediaItem *m = [EWMediaItem createEntity];
     m.updatedAt = [NSDate date];
-    EWPerson *user = [EWPersonStore me];
-    m.author = user;
+    m.author = me;
     return m;
 }
 
@@ -72,7 +74,7 @@
     [q whereKey:kParseObjectID notContainedIn:mediasFromWoke];
     PFObject *voice = [q getFirstObject];
     if (voice) {
-        EWMediaItem *media = (EWMediaItem *)voice.managedObject;
+        EWMediaItem *media = (EWMediaItem *)[voice managedObjectInContext:nil];
         [media refresh];
         //save
         NSMutableDictionary *cache = [me.cachedInfo mutableCopy];
@@ -103,7 +105,7 @@
         [query whereKey:kParseObjectID equalTo:mediaID];
         [query includeKey:@"receivers"];
         PFObject *object = [query getFirstObject];
-        media = (EWMediaItem *)[object managedObject];
+        media = (EWMediaItem *)[object managedObjectInContext:nil];
         [media refresh];
     }
     return media;
@@ -133,7 +135,7 @@
 #pragma mark - DELETE
 - (void)deleteMedia:(EWMediaItem *)mi{
 
-    [[EWDataStore currentContext] deleteObject:mi];
+    [mi.managedObjectContext deleteObject:mi];
     [EWDataStore save];
 }
 
@@ -143,7 +145,7 @@
     NSLog(@"*** Delete all medias");
     NSArray *medias = [self mediaCreatedByPerson:me];
     for (EWMediaItem *m in medias) {
-        [[EWDataStore currentContext] deleteObject:m];
+        [m.managedObjectContext deleteObject:m];
     }
     [EWDataStore save];
 #endif
@@ -151,43 +153,58 @@
 
 
 - (BOOL)checkMediaAssets{
-    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
-    [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
-    NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
-    [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
-    NSArray *mediaPOs = [query findObjects];
-    for (PFObject *po in mediaPOs) {
-        EWMediaItem *mo = (EWMediaItem *)po.managedObject;
-        [mo refresh];
-        //relationship
-        [mo removeReceiversObject:me];//remove from the receiver list
-        [me addMediaAssetsObject:mo];//add to my media asset list
-        NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
-        EWAlert(@"You got voice for your next wake up");
+    //NSParameterAssert([NSThread isMainThread]);
+    __block NSArray *mediaPOs;
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
+        [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
+        EWPerson *localMe = [EWPersonStore meInContext:localContext];
+        NSSet *localAssetIDs = [localMe.mediaAssets valueForKey:kParseObjectID];
+        [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
+        mediaPOs = [query findObjects];
+        NSManagedObjectID *myID = localMe.objectID;
+        
+        for (PFObject *po in mediaPOs) {
+            EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:localContext];
+            [mo refresh];
+            //relationship
+            EWPerson *localMe = (EWPerson *)[localContext objectWithID:myID];
+            [mo removeReceiversObject:localMe];//remove from the receiver list
+            [localMe addMediaAssetsObject:mo];//add to my media asset list
+            NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
+            EWAlert(@"You got voice for your next wake up");
+        }
+    }];
+    
+    if (mediaPOs.count > 0) {
         [EWDataStore save];
+        return YES;
     }
     
-    //return [[EWPersonStore me].mediaAssets allObjects];
-    return mediaPOs.count>0?YES:NO;
+    return NO;
 }
 
 - (void)checkMediaAssetsInBackground{
-    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
-    [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
-    NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
-    [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *mediaPOs, NSError *error) {
-        mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, localAssetIDs]];
-        for (PFObject *po in mediaPOs) {
-            EWMediaItem *mo = (EWMediaItem *)po.managedObject;
-            [mo refresh];
-            //relationship
-            [mo removeReceiversObject:me];
-            [me addMediaAssetsObject:mo];
-            NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
-            EWAlert(@"You got voice for your next wake up");
-            [EWDataStore save];
-        }
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
+        [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
+        NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
+        [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *mediaPOs, NSError *error) {
+            mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, localAssetIDs]];
+            for (PFObject *po in mediaPOs) {
+                EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:localContext];
+                [mo refresh];
+                //relationship
+                [mo removeReceiversObject:me];
+                [me addMediaAssetsObject:mo];
+                NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
+                EWAlert(@"You got voice for your next wake up");
+                
+            }
+        }];
+    } completion:^(BOOL success, NSError *error) {
+        [EWDataStore save];
     }];
 }
 

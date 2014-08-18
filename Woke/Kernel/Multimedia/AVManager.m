@@ -171,7 +171,8 @@
 
 
 - (void)playMedia:(EWMediaItem *)mi{
-    media = [EWDataStore objectForCurrentContext:mi];
+    NSParameterAssert([NSThread isMainThread]);
+    media = (EWMediaItem *)[[EWDataStore mainContext] objectWithID:mi.objectID];
     if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
         
         [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];

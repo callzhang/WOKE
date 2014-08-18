@@ -28,7 +28,7 @@
 
 + (EWAlarmManager *)sharedInstance {
     //make sure core data stuff is always on main thread
-    NSParameterAssert([NSThread isMainThread]);
+    //NSParameterAssert([NSThread isMainThread]);
     static EWAlarmManager *manager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -45,23 +45,22 @@
 #pragma mark - NEW
 //add new alarm, save, add to current user, save user
 - (EWAlarmItem *)newAlarm{
+    NSParameterAssert([NSThread isMainThread]);
     NSLog(@"Create new Alarm");
     
     //add relation
     EWAlarmItem *a = [EWAlarmItem createEntity];
     a.updatedAt = [NSDate date];
-    a.owner = [EWPersonStore me];
+    a.owner = me;
     a.state = YES;
-    a.tone = [EWPersonStore me].preference[@"DefaultTone"];
+    a.tone = me.preference[@"DefaultTone"];
     
-    //[EWDataStore save];
     return a;
 }
 
 #pragma mark - SEARCH
 - (NSArray *)alarmsForUser:(EWPerson *)user{
-    EWPerson *person = [EWDataStore objectForCurrentContext:user];
-    NSMutableArray *alarms = [[person.alarms allObjects] mutableCopy];
+    NSMutableArray *alarms = [[user.alarms allObjects] mutableCopy];
     
     NSComparator alarmComparator = ^NSComparisonResult(id obj1, id obj2) {
         NSInteger wkd1 = [(EWAlarmItem *)obj1 time].weekdayNumber;
@@ -83,22 +82,23 @@
 }
 
 + (NSArray *)myAlarms{
+    NSParameterAssert([NSThread isMainThread]);
     return [[EWAlarmManager sharedInstance] alarmsForUser:me];
 }
 
-- (EWAlarmItem *)nextAlarm{
-    EWAlarmItem *nextA;
-    NSArray *alarms = [self alarmsForUser:[EWPersonStore me]];
-    //determine if the day need to be next week
-    NSInteger dow = [[NSDate date] weekdayNumber];
-    EWAlarmItem *a = alarms[dow];
-    if ([a.time isEarlierThan:[NSDate date]]) {
-        nextA = alarms[(dow+1)%7];
-    }else{
-        nextA = alarms[dow%7];
-    }
-    return nextA;
-}
+//- (EWAlarmItem *)nextAlarm{
+//    EWAlarmItem *nextA;
+//    NSArray *alarms = [self alarmsForUser:[EWPersonStore me]];
+//    //determine if the day need to be next week
+//    NSInteger dow = [[NSDate date] weekdayNumber];
+//    EWAlarmItem *a = alarms[dow];
+//    if ([a.time isEarlierThan:[NSDate date]]) {
+//        nextA = alarms[(dow+1)%7];
+//    }else{
+//        nextA = alarms[dow%7];
+//    }
+//    return nextA;
+//}
 
 - (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm{
     if (alarm.tasks.count == 0) {
@@ -120,6 +120,7 @@
 
 //schedule according to alarms array. If array is empty, schedule according to default template.
 - (NSArray *)scheduleAlarm{
+    NSParameterAssert([NSThread isMainThread]);
     if (self.isSchedulingAlarm) {
         NSLog(@"Skip scheduling alarm because it is scheduling already!");
         return nil;
@@ -127,7 +128,7 @@
     
     
     //get alarms
-    NSMutableArray *alarms = [[self alarmsForUser:[EWPersonStore me]] mutableCopy];
+    NSMutableArray *alarms = [[self alarmsForUser:me] mutableCopy];
     
     
     BOOL hasChange = NO;
@@ -142,7 +143,7 @@
         NSArray *objects = [alarmQuery findObjects];
         
         for (PFObject *a in objects) {
-            EWAlarmItem *alarm = (EWAlarmItem *)a.managedObject;
+            EWAlarmItem *alarm = (EWAlarmItem *)[a managedObjectInContext:[EWDataStore mainContext]];;
             alarm.owner = me;
             if (![alarms containsObject:alarm]) {
                 [alarms addObject:alarm];
@@ -189,8 +190,7 @@
         //check tone
         if (!a.tone) {
             NSLog(@"Tone not set");
-            EWPerson *p = [EWPersonStore me];
-            a.tone = p.preference[@"DefaultTone"];
+            a.tone = me.preference[@"DefaultTone"];
         }
         
         //fill that day to the new alarm array
@@ -257,25 +257,26 @@
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:nil];
-    [[EWDataStore currentContext] deleteObject:alarm];
+    [alarm.managedObjectContext deleteObject:alarm];
     [EWDataStore save];
     
 
 }
 
 - (void)deleteAllAlarms{
-    NSArray *alarms = [self alarmsForUser:[EWPersonStore me]];
+    NSArray *alarmIDs = [me.alarms valueForKey:@"objectID"];
     
     //notification
     //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarms userInfo:@{@"alarms": alarms}];
     
     //delete
-    for (EWAlarmItem *alarm in alarms) {
-        [self removeAlarm:alarm];
-    }
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        for (EWAlarmItemID *alarmID in alarmIDs) {
+            EWAlarmItem *alarm = [EWAlarmItem findFirstByAttribute:@"objectID" withValue:alarmID inContext:localContext];
+            [self removeAlarm:alarm];
+        }
+    }];
     
-    //save
-    [EWDataStore save];
 }
 
 

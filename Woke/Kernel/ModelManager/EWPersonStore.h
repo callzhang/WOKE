@@ -32,11 +32,11 @@ extern EWPerson *me;
  */
 @property NSArray *everyone;
 @property EWPerson *currentUser;
-+ (EWPerson *)me;
++ (EWPerson *)meInContext:(NSManagedObjectContext *)context;
 + (EWPersonStore *)sharedInstance;
 - (EWPerson *)createPersonWithParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByObjectID:(NSString *)ID;
-- (EWPerson *)getPersonByID:(NSString *)ID;
+//- (EWPerson *)getPersonByID:(NSString *)ID;
 + (void)updateMe;
 
 - (EWPerson *)anyone;

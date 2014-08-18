@@ -595,7 +595,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 NSDate *eod = task.time.endOfDay;
                 NSDate *bod = task.time.beginingOfDay;
                 
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"author == %@", [EWPersonStore me]];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"author == %@", me];
                 NSArray *myMedias = [EWMediaItem findAllWithPredicate:predicate];
                 NSMutableArray *myTasks = [NSMutableArray new];
                 for (EWMediaItem *m in myMedias) {
@@ -762,7 +762,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 {
     if (person.isMe) {
         // 结束时候保存一次
-          [EWDataStore save];
+        [EWDataStore save];
     }
 }
 

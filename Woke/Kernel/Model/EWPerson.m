@@ -21,8 +21,8 @@
 #pragma mark - Helper methods
 - (BOOL)isMe{
     BOOL isme = NO;
-    if ([EWPersonStore me]) {
-        isme = [self.username isEqualToString:[EWPersonStore me].username];
+    if (me) {
+        isme = [self.username isEqualToString:me.username];
     }
     return isme;
 }
