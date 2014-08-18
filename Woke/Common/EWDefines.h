@@ -51,7 +51,7 @@
 #define TICK                            NSDate *startTime = [NSDate date];
 #define TOCK                            NSLog(@"Time: %f", -[startTime timeIntervalSinceNow]);
 
-#define NSLog   EWLog
+//#define NSLog   EWLog
 //#define NSLog TFLog
 //#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
