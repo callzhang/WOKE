@@ -818,6 +818,7 @@
     
     NSDictionary *dic = @{@"where":@{kUsername:me.name},
                           @"push_time":[NSNumber numberWithDouble:[scheduleTime timeIntervalSince1970] ],
+                          @"push_time":[NSNumber numberWithDouble:[task.time timeIntervalSince1970] ],
                           @"data":@{@"alert":@"Time to get up",
                                     @"content-available":@1,
                                     kPushTypeKey: kPushTypeTimerKey},

@@ -207,7 +207,7 @@
 
 + (void)handleAlarmTimerEvent:(NSDictionary *)info{
     if ([EWWakeUpManager sharedInstance].isWakingUp) {
-        NSLog(@"WakeUpManager is already handling alaerm timer, skip");
+        NSLog(@"WakeUpManager is already handling alarm timer, skip");
         return;
     }
     
@@ -243,6 +243,7 @@
     }
     
     if (task.completed) {
+        // task completed
         NSLog(@"Task has completed at %@, skip.", task.completed.date2String);
         return;
     }
@@ -401,7 +402,7 @@
     
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
-    NSLog(@"===========================>> Check Alarm Timer (%d min left) <<=============================", (NSInteger)timeLeft/60);
+    NSLog(@"===========================>> Check Alarm Timer (%ld min left) <<=============================", (NSInteger)timeLeft/60);
     static BOOL timerInitiated = NO;
     if (timeLeft < kServerUpdateInterval && timeLeft > 0 && !timerInitiated) {
         NSLog(@"%s: About to init alart timer in %fs", __func__, timeLeft);

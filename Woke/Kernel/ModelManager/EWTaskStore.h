@@ -120,5 +120,5 @@
  when person is in his sleep mode
  */
 
-+ (void)scheduleNotificationOnServerWithTimer:(NSDate *)scheduleTime;
++ (void)scheduleNotificationOnServerWithTimer:(EWTaskItem *)task;
 @end
