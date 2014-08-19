@@ -330,6 +330,11 @@
 		
 		
         for (NSManagedObject *MO in updates) {
+			if (!MO.serverID) {
+				NSLog(@"!!! The mo trying to update has no serverID: %@", MO);
+				continue;
+			}
+			
 			//skip if marked as save to local
 			if ([[EWDataStore sharedInstance].saveToLocalItems containsObject:MO]) {
 				continue;
@@ -354,7 +359,7 @@
             
             //check if class is skipped
             if ([classSkipped containsObject:MO.entity.name] && MO.serverID != me.serverID) {
-                NSLog(@"MO %@(%@) skipped uploading to server by definition", MO.entity.name, MO.serverID);
+                //NSLog(@"MO %@(%@) skipped uploading to server by definition", MO.entity.name, MO.serverID);
                 continue;
             }
             //check if updated keys are valid
@@ -584,9 +589,7 @@
         [set addObject:str];
         [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:queue];
         NSLog(@"MO %@(%@) added to %@", mo.entity.name, mo.serverID, queue);
-		if (!mo.serverID && ![queue isEqualToString:kParseQueueInsert]) {
-			NSLog(@"*** unkonwn mo updated: %@", mo);
-		}
+		
     }
     
 }
@@ -965,7 +968,7 @@
                 NSArray *relatedPOs = parseObject[key];
                 NSMutableSet *relatedMOs = [NSMutableSet new];
                 for (PFObject *PO in relatedPOs) {
-                    //if ([PO allKeys].count > 0)
+                    if ([PO isKindOfClass:[NSNull class]]) continue;
                     [relatedMOs addObject: [PO managedObjectInContext:localContext]];
                 }
                 [self setValue:[relatedMOs copy] forKey:key];

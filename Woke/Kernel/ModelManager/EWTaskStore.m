@@ -851,9 +851,7 @@
 + (void)scheduleNotificationOnServerWithTask:(EWTaskItem *)task{
     if (!task.time || !task.objectId) {
         NSLog(@"*** The Task on %@ (%@) you passed in doesn't have time or objectId", task.time.weekday, task.objectId);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[EWTaskStore sharedInstance] scheduleTasksInContext:task.managedObjectContext];
-        });
+        [[EWTaskStore sharedInstance] scheduleTasksInBackground];
         return;
     }
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
