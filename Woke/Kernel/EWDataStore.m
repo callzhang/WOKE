@@ -82,13 +82,15 @@
         //We don't need to merge child context change to main context
 		//It will cause errors when main and child context access same MO
 		[[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:context queue:nil usingBlock:^(NSNotification *note) {
-			[EWDataStore save];
+			
+			[[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
+			[EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:kUploadLag target:[EWDataStore class] selector:@selector(updateToServer) userInfo:nil repeats:NO];
 		}];
 		
 		//Reachability
 		self.reachability = [Reachability reachabilityForInternetConnection];
 		self.reachability.reachableBlock = ^(Reachability *reachability) {
-			NSLog(@"Network is reachable. Start upload.");
+			NSLog(@"====== Network is reachable. Start upload. ======");
 			//in background thread
 			[EWDataStore resumeUploadToServer];
 			
@@ -287,12 +289,9 @@
 + (void)save{
 	NSParameterAssert([NSThread isMainThread]);
     //BOOL hasChanges = [EWDataStore saveAndEnqueueInContext:[EWDataStore mainContext]];
-    [[EWDataStore mainContext] saveToPersistentStoreAndWait];
-		
-	[[EWDataStore sharedInstance].saveToServerDelayTimer invalidate];
-	[EWDataStore sharedInstance].saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:kUploadLag target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
-
-    
+	if ([EWDataStore mainContext].hasChanges) {
+		[[EWDataStore mainContext] saveToPersistentStoreAndWait];
+	}
 }
 
 + (void)saveWithCompletion:(EWSavingCallback)block{
@@ -306,12 +305,6 @@
 
 + (BOOL)enqueueChangesInContext:(NSManagedObjectContext *)context{
 	BOOL hasChange = NO;
-	
-	if (![NSThread isMainThread]) {
-		//background thread, save only
-		[context saveToPersistentStoreAndWait];
-		return NO;
-	}
 	
     NSSet *inserts = [context insertedObjects];
     NSSet *updates = [context updatedObjects];
@@ -355,13 +348,13 @@
 			
 			//skip if MO doesn't have updatedAt
 			if (![MO valueForKey:kUpdatedDateKey]) {
-				NSLog(@"!!! MO %@(%@) doesn't have updatedAt, skip upload.", MO.entity.name, MO.serverID);
+				NSLog(@"!!! MO %@(%@) doesn't have updatedAt, skip enqueue.", MO.entity.name, MO.serverID);
 				continue;
 			}
             
             //check if class is skipped
             if ([classSkipped containsObject:MO.entity.name] && MO.serverID != me.serverID) {
-                NSLog(@"MO %@(%@) skipped uploading to server", MO.entity.name, MO.serverID);
+                NSLog(@"MO %@(%@) skipped uploading to server by definition", MO.entity.name, MO.serverID);
                 continue;
             }
             //check if updated keys are valid
@@ -382,6 +375,7 @@
         }
     }
 	
+
 	//[context saveToPersistentStoreAndWait];
 	return hasChange;
 }
@@ -408,12 +402,12 @@
 
     //save to enqueue the updates
     [EWDataStore enqueueChangesInContext:mo.managedObjectContext];
-	[mo.managedObjectContext saveToPersistentStoreAndWait];
 	[[EWDataStore sharedInstance].saveToLocalItems removeObject:mo];
     
     //remove from the update queue
     [EWDataStore removeObjectFromInsertQueue:mo];
     [EWDataStore removeObjectFromUpdateQueue:mo];
+
     
 }
 
@@ -705,13 +699,18 @@
 		
         //completion block
         dispatch_async(dispatch_get_main_queue(), ^{
-            for (EWSavingCallback block in callbacks){
-                block();
-            }
-			
-			//clean
-			[EWDataStore sharedInstance].saveCallbacks = [NSMutableArray new];
+			if (callbacks.count) {
+				NSLog(@"=========== Start upload completion block (%d) =============", callbacks.count);
+				for (EWSavingCallback block in callbacks){
+					block();
+				}
+				
+				//clean
+				[EWDataStore sharedInstance].saveCallbacks = [NSMutableArray new];
+			}
         });
+		
+		NSLog(@"=========== Finished uploading to saver ===============");
 	}];
     
 }
@@ -887,14 +886,14 @@
 		//First test MO exist
 		if (![localContext existingObjectWithID:mo.objectID error:NULL]) {
 			NSLog(@"*** MO you are trying to modify doesn't exist in the sqlite: %@", mo.objectID);
-			return;
+			break;
 		}
 		
 		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
 	
 		//skip if marked save to local
 		if ([self.saveToLocalItems containsObject:mo]) {
-			return;
+			break;
 		}
 		
 		//additional check for updated object
@@ -903,9 +902,10 @@
 			if (!lastUpdated) return;
 			
 			//remove unnecessary changes
-			if (!mo.valueToUpload) {
-				return;
-			}
+			//skip this step as when save is made from back context to main context, the mo doesn't have changed values any more
+//			if (!mo.valueToUpload) {
+//				break;
+//			}
 		}
 		
 		
@@ -1098,7 +1098,7 @@
 			q.cachePolicy = kPFCachePolicyCacheElseNetwork;
 			[self.entity.relationshipsByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
 				if (obj.isToMany && !obj.inverseRelationship) {
-					NSLog(@"Relation %@ included when fetching %@", key, self.entity.name);
+					//NSLog(@"Relation %@ included when fetching %@", key, self.entity.name);
 					[q includeKey:key];
 				}
 			}];

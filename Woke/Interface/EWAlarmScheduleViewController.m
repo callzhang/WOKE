@@ -51,7 +51,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [self initData];
     
     
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 }
 
 - (BOOL)prefersStatusBarHidden{
@@ -76,6 +75,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     //pop up alarmScheduleView
     if (alarms.count != 7 || tasks.count != 7) {
         NSLog(@"%s: Need to check the data", __func__);
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         
         alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];//initial alarm
         tasks = [[EWTaskStore sharedInstance] scheduleTasks];

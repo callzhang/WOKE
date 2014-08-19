@@ -9,7 +9,7 @@
 
 #import "EWUtil.h"
 #import <AdSupport/ASIdentifierManager.h>
-
+#import <NSLogger/NSLogger.h>
 //#import "LoggerClient.m"
 
 @implementation EWUtil
@@ -129,7 +129,7 @@ void EWLog(NSString *format, ...){
     NSInteger level = [symbolList indexOfObject:symbol];
     level = level != NSNotFound ? level : 3;
     if (level <= EW_DEBUG_LEVEL) {
-        //LogMessageF(__FILE__,__LINE__,__FUNCTION__, @"Woke", level, @"%@", str);
+        LogMessageF(__FILE__,__LINE__,__FUNCTION__, @"Woke", level, @"%@", str);
     }
 }
 

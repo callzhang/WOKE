@@ -62,7 +62,7 @@
     self.timeLabel.text = t.date2String;
     NSDate *wakeTime = [[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:me];
     self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", wakeTime.timeLeft];
-    NSDate *alarmtime = me.preference[kNextTaskTime];
+    NSDate *alarmtime = me.preference[kNextTaskTime]?:[[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
     self.alarmTime.text = [NSString stringWithFormat:@"Alarm %@", alarmtime.date2String];
 }
 @end

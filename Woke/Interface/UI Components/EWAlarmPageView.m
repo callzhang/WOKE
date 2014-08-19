@@ -72,7 +72,6 @@
 
 #pragma mark - UI actions
 - (IBAction)editAlarm:(id)sender {
-    NSLog(@"Edit task: %@", task.time.date2detailDateString);
     [self.delegate scheduleAlarm];
 }
 

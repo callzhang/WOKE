@@ -191,7 +191,7 @@
 }
 
 #pragma mark - SCHEDULE
-- (NSArray *)scheduleTask{
+- (NSArray *)scheduleTasks{
     NSParameterAssert([NSThread isMainThread]);
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         [self scheduleTasksInContext:localContext];
@@ -782,7 +782,7 @@
         if (task.updatedAt.timeElapsed > kStalelessInterval) {
             [[EWTaskStore sharedInstance] removeTask:task];
         }else{
-            [task refreshInBackgroundWithCompletion:nil];
+            [[EWTaskStore sharedInstance] scheduleTasksInBackground];
         }
     }
     
