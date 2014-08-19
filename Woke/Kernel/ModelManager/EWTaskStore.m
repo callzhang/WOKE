@@ -331,7 +331,7 @@
         
         [[EWDataStore sharedInstance].saveCallbacks addObject:^{
             for (NSManagedObjectID *taskID in newTaskIDs) {
-                EWTaskItem *task = (EWTaskItem *)[[EWDataStore mainContext] objectWithID:taskID];
+                EWTaskItem *task = (EWTaskItem *)[[EWDataStore mainContext] existingObjectWithID:taskID error:NULL];
                 // remote notification
                 [EWTaskStore scheduleNotificationOnServerWithTask:task];
             }
@@ -553,7 +553,7 @@
     NSLog(@"Task on %@ deleted", task.time.date2detailDateString);
     [self cancelNotificationForTask:task];
     [task.managedObjectContext deleteObject:task];
-    [EWDataStore save];
+    [task.managedObjectContext saveToPersistentStoreAndWait];
     [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:task userInfo:@{kLocalTaskKey: task}];
 }
 

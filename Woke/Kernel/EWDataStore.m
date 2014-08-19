@@ -408,6 +408,7 @@
 
     //save to enqueue the updates
     [EWDataStore enqueueChangesInContext:mo.managedObjectContext];
+	[mo.managedObjectContext saveToPersistentStoreAndWait];
 	[[EWDataStore sharedInstance].saveToLocalItems removeObject:mo];
     
     //remove from the update queue
@@ -682,7 +683,7 @@
     [EWDataStore clearQueue:kParseQueueUpdate];
     
     
-    NSLog(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ \n ==============================", [insertedManagedObjects valueForKeyPath:@"entity.name"], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
+    NSLog(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ ", [insertedManagedObjects valueForKeyPath:@"entity.name"], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
     
     
     NSArray *callbacks = [[EWDataStore sharedInstance].saveCallbacks copy];
