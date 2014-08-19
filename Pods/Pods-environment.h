@@ -126,3 +126,15 @@
 #define COCOAPODS_VERSION_MINOR_Weibo 4
 #define COCOAPODS_VERSION_PATCH_Weibo 2
 
+// apptentive-ios
+#define COCOAPODS_POD_AVAILABLE_apptentive_ios
+#define COCOAPODS_VERSION_MAJOR_apptentive_ios 1
+#define COCOAPODS_VERSION_MINOR_apptentive_ios 5
+#define COCOAPODS_VERSION_PATCH_apptentive_ios 4
+
+// apptentive-ios/arc-files
+#define COCOAPODS_POD_AVAILABLE_apptentive_ios_arc_files
+#define COCOAPODS_VERSION_MAJOR_apptentive_ios_arc_files 1
+#define COCOAPODS_VERSION_MINOR_apptentive_ios_arc_files 5
+#define COCOAPODS_VERSION_PATCH_apptentive_ios_arc_files 4
+

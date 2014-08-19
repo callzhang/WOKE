@@ -13,3 +13,4 @@ pod 'MagicalRecord', '~> 2.2'#, :git => 'https://github.com/magicalpanda/Magical
 pod 'Reachability'
 #pod 'SFObservers'
 pod 'IDMPhotoBrowser'
+pod 'apptentive-ios'
