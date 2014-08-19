@@ -323,7 +323,7 @@
                 NSLog(@"MO %@(%@) has serverID, meaning it is fetched from server, please check!", MO.entity.name, [MO valueForKey:kParseObjectID]);
                 //continue;
             }
-            NSLog(@"+++> MO %@ inserted to queue", MO.entity.name);
+            //NSLog(@"+++> MO %@ inserted to queue", MO.entity.name);
             [EWDataStore appendInsertQueue:MO];
 			hasChange = YES;
         }
@@ -351,21 +351,21 @@
 				continue;
 			}
 			
+            //check if class is skipped
+            if ([classSkipped containsObject:MO.entity.name] && MO.serverID != me.serverID) {
+                //NSLog(@"MO %@(%@) skipped uploading to server by definition", MO.entity.name, MO.serverID);
+                continue;
+            }
+			
 			//skip if MO doesn't have updatedAt
 			if (![MO valueForKey:kUpdatedDateKey]) {
 				NSLog(@"!!! MO %@(%@) doesn't have updatedAt, skip enqueue.", MO.entity.name, MO.serverID);
 				continue;
 			}
             
-            //check if class is skipped
-            if ([classSkipped containsObject:MO.entity.name] && MO.serverID != me.serverID) {
-                //NSLog(@"MO %@(%@) skipped uploading to server by definition", MO.entity.name, MO.serverID);
-                continue;
-            }
             //check if updated keys are valid
-            NSArray *changedKeys = MO.valueToUpload;
+            NSArray *changedKeys = MO.changedKeys;
             if (changedKeys.count > 0) {
-                NSLog(@"===> MO %@(%@) updated to queue with changes: %@", MO.entity.name, [MO valueForKey:kParseObjectID], changedKeys);
                 [EWDataStore appendUpdateQueue:MO];
 				hasChange = YES;
             }
@@ -588,7 +588,11 @@
     if (![set containsObject:str]) {
         [set addObject:str];
         [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:queue];
-        NSLog(@"MO %@(%@) added to %@", mo.entity.name, mo.serverID, queue);
+		if ([queue isEqualToString:kParseQueueInsert]) {
+			NSLog(@"+++> MO %@(%@) INSERTED to queue", mo.entity.name, mo.objectID);
+		}else if([queue isEqualToString:kParseQueueUpdate]){
+			NSLog(@"===> MO %@(%@) UPDATED to queue with changes: %@", mo.entity.name, [mo valueForKey:kParseObjectID], mo.changedKeys);
+		}
 		
     }
     
@@ -906,7 +910,7 @@
 			
 			//remove unnecessary changes
 			//skip this step as when save is made from back context to main context, the mo doesn't have changed values any more
-//			if (!mo.valueToUpload) {
+//			if (!mo.changedKeys) {
 //				break;
 //			}
 		}
@@ -1444,7 +1448,7 @@
 			NSLog(@"@@@ Failed to download PFFile: %@", error.description);
 			return;
 		}
-		NSManagedObject *localSelf = [localContext objectWithID:self.objectID];
+		NSManagedObject *localSelf = [self MR_inContext:localContext];
 		NSString *className = [localSelf getPropertyClassByName:attributeDescription.name];
 		if ([className isEqualToString:@"UIImage"]) {
 			UIImage *img = [UIImage imageWithData:data];
@@ -1455,6 +1459,7 @@
 		}
 
 	}];
+	
 }
 
 - (void)updateEventually{
@@ -1482,7 +1487,7 @@
 }
 
 
-- (NSArray *)valueToUpload{
+- (NSArray *)changedKeys{
 	NSMutableArray *changes = self.changedValues.allKeys.mutableCopy;
 	[changes removeObjectsInArray:attributeUploadSkipped];
 	if (changes.count > 0) {
@@ -1740,6 +1745,7 @@
     if (!mo) {
         //if managedObject not exist, create it locally
         mo = [NSClassFromString(self.localClassName) MR_createInContext:context];
+		[EWDataStore saveToLocal:mo];//save to local first
         [mo assignValueFromParseObject:self];
         NSLog(@"+++> MO created: %@ (%@)", self.localClassName, self.objectId);
     }else{

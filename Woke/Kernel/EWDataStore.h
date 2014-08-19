@@ -205,9 +205,9 @@ typedef void (^EWSavingCallback)(void);
 - (void)deleteEventually;
 
 /**
- Changed values beyond those excluded.
+ Changed keys beyond those excluded.
  */
-- (NSArray *)valueToUpload;
+- (NSArray *)changedKeys;
 
 #pragma mark - Helper methods
 /**
