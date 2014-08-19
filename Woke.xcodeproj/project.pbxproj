@@ -32,6 +32,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0E47B6C719A3BBDF002E48A8 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E47B6C619A3BBDF002E48A8 /* libTestFlight.a */; };
 		0E590FEB194DF35B000AD7C4 /* lanenar.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FD1194DF35B000AD7C4 /* lanenar.ttf */; };
 		0E590FEC194DF35B000AD7C4 /* Lato-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FD3194DF35B000AD7C4 /* Lato-Black.ttf */; };
 		0E590FED194DF35B000AD7C4 /* Lato-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FD4194DF35B000AD7C4 /* Lato-BlackItalic.ttf */; };
@@ -257,6 +258,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E47B6C619A3BBDF002E48A8 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = Pods/TestFlightSDK/libTestFlight.a; sourceTree = "<group>"; };
 		0E590FD1194DF35B000AD7C4 /* lanenar.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = lanenar.ttf; sourceTree = "<group>"; };
 		0E590FD3194DF35B000AD7C4 /* Lato-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lato-Black.ttf"; sourceTree = "<group>"; };
 		0E590FD4194DF35B000AD7C4 /* Lato-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lato-BlackItalic.ttf"; sourceTree = "<group>"; };
@@ -600,10 +602,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E47B6C719A3BBDF002E48A8 /* libTestFlight.a in Frameworks */,
+				AB245FA818CCD59F00551721 /* QuartzCore.framework in Frameworks */,
 				9BEE145619786DFC0068FC08 /* OpenGLES.framework in Frameworks */,
 				9BF5F778192973050074BF97 /* StoreKit.framework in Frameworks */,
 				AB245FB118CCD79D00551721 /* Security.framework in Frameworks */,
-				AB245FA818CCD59F00551721 /* QuartzCore.framework in Frameworks */,
 				AB245FA718CCD59700551721 /* CoreGraphics.framework in Frameworks */,
 				ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */,
 				AB245FA918CCD5B300551721 /* AVFoundation.framework in Frameworks */,
@@ -880,6 +883,7 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0E47B6C619A3BBDF002E48A8 /* libTestFlight.a */,
 				9BEE145519786DFC0068FC08 /* OpenGLES.framework */,
 				9BF5F779192973A10074BF97 /* Parse.framework */,
 				9BF5F777192973050074BF97 /* StoreKit.framework */,
@@ -1766,6 +1770,7 @@
 					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UnityIOSProject/Assets/Plugins/IOS",
 					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
 					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UnityIOSProject/Assets/Plugins/IOS",
+					"$(PROJECT_DIR)/Pods/TestFlightSDK",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -1840,6 +1845,7 @@
 					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UnityIOSProject/Assets/Plugins/IOS",
 					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
 					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UnityIOSProject/Assets/Plugins/IOS",
+					"$(PROJECT_DIR)/Pods/TestFlightSDK",
 				);
 				OTHER_LDFLAGS = (
 					"-\"lxml2\"",

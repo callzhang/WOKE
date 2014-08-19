@@ -5,19 +5,19 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>A462E5CD-6210-4428-83C2-0BF990BE2D39</string>
+	<string>4A2289E1-96DD-4F7F-AC3E-B9C31AA8EC2D</string>
 	<key>IDESourceControlProjectName</key>
 	<string>Woke</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>04FDAB52-BFF3-4BC3-9FED-69DD362102AD</key>
+		<key>7D39BA10-AC43-438E-A130-6D021D486DEC</key>
 		<string>https://github.com/callzhang/WOKE.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>Woke.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>04FDAB52-BFF3-4BC3-9FED-69DD362102AD</key>
+		<key>7D39BA10-AC43-438E-A130-6D021D486DEC</key>
 		<string>..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
@@ -25,14 +25,14 @@
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>04FDAB52-BFF3-4BC3-9FED-69DD362102AD</string>
+	<string>7D39BA10-AC43-438E-A130-6D021D486DEC</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>04FDAB52-BFF3-4BC3-9FED-69DD362102AD</string>
+			<string>7D39BA10-AC43-438E-A130-6D021D486DEC</string>
 			<key>IDESourceControlWCCName</key>
 			<string>WOKE</string>
 		</dict>

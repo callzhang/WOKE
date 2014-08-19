@@ -26,7 +26,7 @@
 #import "EWDataStore.h"
 #import "EWBackgroundingManager.h"
 
-
+#import "ATConnect.h"
 //global view for HUD
 UIViewController *rootViewController;
 
@@ -47,6 +47,8 @@ UIViewController *rootViewController;
     [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     [TestFlight manuallyStartSession];
+    // appetitive
+    [ATConnect sharedConnection].apiKey = @"61c58f4a6f819d0f209606bdf5e9eeadabfc73529dba358cd079df0dc6dd1102";
     
     //Parse
     [Parse setApplicationId:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
