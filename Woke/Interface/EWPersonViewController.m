@@ -605,13 +605,20 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 break;
                 
             case 1:{
-                cell.textLabel.text = [NSString stringWithFormat:@"Helped by %ld people", (unsigned long)[activity[kWokeBy] count]];
+                NSArray *wokeBy = activity[kWokeBy];
+                if ([wokeBy isEqual: @0]) {
+                    wokeBy = [NSArray new];
+                }
+                cell.textLabel.text = [NSString stringWithFormat:@"Helped by %ld people", (unsigned long)[wokeBy count]];
             }
                 break;
             case 2:{
                 //advanced query
-                
-                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %lu people",(unsigned long)[activity[kWokeTo] count]];
+                NSArray *wokeTo = activity[kWokeBy];
+                if ([wokeTo isEqual: @0]) {
+                    wokeTo = [NSArray new];
+                }
+                cell.textLabel.text = [NSString stringWithFormat:@"Woke up %lu people",(unsigned long)[wokeTo count]];
 
                 break;
             }

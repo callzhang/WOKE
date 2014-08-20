@@ -215,8 +215,8 @@
             NSDictionary *taskActivity = @{kTaskState: @(task.state),
                                            kTaskTime: task.time,
                                            kWokeTime: wakeTime,
-                                           kWokeBy: wokeBy.count?wokeBy:0,
-                                           kWokeTo: wokeTo.count?wokeTo:0};
+                                           kWokeBy: wokeBy.count?wokeBy:@0,
+                                           kWokeTo: wokeTo.count?wokeTo:@0};
             
             NSString *dateKey = task.time.date2YYMMDDString;
             activity[dateKey] = taskActivity;
