@@ -1727,15 +1727,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Components",
 					"$(PROJECT_DIR)/Pods/Parse",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Connection",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Core",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/GooglePlusSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/Pinterest.embeddedframework",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/QQConnectSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/RenRenSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/UI",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1745,31 +1736,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/codegangsta",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/go-sql-driver",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/martini-contrib",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/nu7hatch",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/zx9597446",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/labix.org/v2/mgo",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/labix.org/v2",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/alipay",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/SinaWeiboSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/TencentWeiboSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/WeChatSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/YiXinSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/xmpp/Vendor/libidn",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ZBar",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/BuildProductsPath/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/IntermediateBuildFilesPath/UninstalledProducts",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UnityIOSProject/Assets/Plugins/IOS",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/BuildProductsPath/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/IntermediateBuildFilesPath/UninstalledProducts",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UnityIOSProject/Assets/Plugins/IOS",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UnityIOSProject/Assets/Plugins/IOS",
 					"$(PROJECT_DIR)/Pods/TestFlightSDK",
 				);
 				ONLY_ACTIVE_ARCH = YES;
@@ -1781,7 +1747,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "379D52F1-B90B-4F76-84BB-4ECBC690235A";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ $(PROJECT_DIR)/Pods/TestFlightSDK";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1802,15 +1768,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Components",
 					"$(PROJECT_DIR)/Pods/Parse",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Connection",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Core",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/GooglePlusSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/Pinterest.embeddedframework",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/QQConnectSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/RenRenSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/UI",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Woke/Woke-Prefix.pch";
@@ -1820,31 +1777,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/codegangsta",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/go-sql-driver",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/martini-contrib",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/nu7hatch",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/github.com/zx9597446",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/labix.org/v2/mgo",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64/labix.org/v2",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/go/pkg/linux_amd64",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/alipay",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/SinaWeiboSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/TencentWeiboSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/WeChatSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ShareSDK/Extend/YiXinSDK",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/xmpp/Vendor/libidn",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/loveiparty/loveiparty/OpenSourceFrameWork/ZBar",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/BuildProductsPath/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/IntermediateBuildFilesPath/UninstalledProducts",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_GameCenter/UnityIOSProject/Assets/Plugins/IOS",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/BuildProductsPath/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/ArchiveIntermediates/UGameManager/IntermediateBuildFilesPath/UninstalledProducts",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_IAP/UnityIOSProject/Assets/Plugins/IOS",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UGameManager/DerivedData/UGameManager/Build/Products/Release-iphoneos",
-					"$(PROJECT_DIR)/Woke/Resources/Desktop/Unity3D手机游戏开发-金玺曾-ISBN-9787302325550-配书光盘/chapter09_TestIOSPlugin/UnityIOSProject/Assets/Plugins/IOS",
 					"$(PROJECT_DIR)/Pods/TestFlightSDK",
 				);
 				OTHER_LDFLAGS = (
@@ -1855,7 +1787,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "379D52F1-B90B-4F76-84BB-4ECBC690235A";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ $(PROJECT_DIR)/Pods/TestFlightSDK";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
