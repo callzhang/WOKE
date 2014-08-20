@@ -350,7 +350,7 @@
     if ([(id)delegate respondsToSelector:@selector(introduction:didFinishWithType:)]) {
         [delegate introduction:self didFinishWithType:MYFinishTypeSkipButton];
     }
-    [self hideWithFadeOutDuration:0.3];
+//    [self hideWithFadeOutDuration:0.3];
 }
 
 -(void)hideWithFadeOutDuration:(CGFloat)duration{
