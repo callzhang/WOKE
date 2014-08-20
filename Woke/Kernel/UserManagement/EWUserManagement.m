@@ -91,11 +91,14 @@
 
 
 + (void)showLoginPanel{
-    NSLog(@"Display login panel");
-    EWLogInViewController *loginVC = [[EWLogInViewController alloc] initWithNibName:nil bundle:nil];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [rootViewController presentViewController:loginVC animated:YES completion:NULL];
-    });
+
+//    EWLogInViewController *loginVC = [[EWLogInViewController alloc] initWithNibName:nil bundle:nil];
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [rootViewController presentViewController:loginVC animated:YES completion:NULL];
+//    });
+    
+    [rootViewController presentViewController:[EWFirstTimeViewController new] animated:YES completion:^(){
+    }];
     
 }
 
@@ -117,7 +120,6 @@
     //save me
     [EWPersonStore sharedInstance].currentUser = person;
     me.score = @100;
-    [EWDataStore saveToLocal:me];
     
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     

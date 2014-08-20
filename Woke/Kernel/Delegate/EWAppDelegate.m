@@ -86,17 +86,8 @@ UIViewController *rootViewController;
     //window
     [self.window makeKeyAndVisible];
     
-    //FirstTime
-    if ([EWUtil isFirstTimeLogin]) {
-        
-        [rootViewController presentViewController:[EWFirstTimeViewController new] animated:YES completion:^(){
-        }];
-       
-    }
-    else
-    {
-        [EWUserManagement login];
-    }
+
+    [EWUserManagement login];
     
     //User login
 
