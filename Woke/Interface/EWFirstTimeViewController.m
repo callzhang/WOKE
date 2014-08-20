@@ -7,6 +7,7 @@
 //
 
 #import "EWUIUtil.h"
+#import "EWAppDelegate.h"
 #import "EWUserManagement.h"
 #import "../../Components/MYBlurIntroductionView/MYBlurIntroductionView.h"
 #import "../../Components/MYBlurIntroductionView/MYIntroductionPanel.h"
@@ -16,6 +17,7 @@
 @interface EWFirstTimeViewController ()<MYIntroductionDelegate>
 {
     MYBlurIntroductionView *introductionView;
+    int  _lastIndex ;
 }
 @end
 
@@ -52,10 +54,20 @@
         //Create stock panel with image
         MYIntroductionPanel *panel2 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-02.png"]];
         
+<<<<<<< HEAD
         MYIntroductionPanel *panel3 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-04.png"]];
         MYIntroductionPanel *panel4 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-05.png"]];
         MYIntroductionPanel *panel5 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) nibNamed:@"EWLogInViewController"];
+=======
+            MYIntroductionPanel *panel3 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-04.png"]];
+                MYIntroductionPanel *panel4 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-05.png"]];
+        MYIntroductionPanel *panel5 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) nibNamed:@"LoginView"];
+>>>>>>> FETCH_HEAD
     
+    UIButton *loginButton = (UIButton *)[panel5 viewWithTag:99];
+    [loginButton addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
+    UIButton *alertButton = (UIButton *)[panel5 viewWithTag:98];
+    [alertButton addTarget:self action:@selector(whyFacebookAlert:) forControlEvents:UIControlEventTouchUpInside];
         //Add custom attributes
         //        panel3.PanelTitle = @"Test Title";
         //        panel3.PanelDescription = @"This is a test panel description to test out the new animations on a custom nib";
@@ -66,6 +78,7 @@
         //
         //    //Add panels to an array
         NSArray *panels = @[panel1, panel2,panel3,panel4,panel5];
+        _lastIndex = [panels count] - 1;
         //
         //    //Build the introduction with desired panels
         [introductionView buildIntroductionWithPanels:panels];
@@ -82,13 +95,43 @@
 }
 -(void)introduction:(MYBlurIntroductionView *)introductionView didFinishWithType:(MYFinishType)finishType
 {
-//    [self dismissViewControllerAnimated:NO completion:^(){
-//        [EWUserManagement login];
-//    }];
+    [self didPressSkipButton];
 }
+
 -(void)didPressSkipButton
 {
-    [introductionView changeToPanelAtIndex:4];
+    [introductionView changeToPanelAtIndex:_lastIndex];
+    [introductionView.RightSkipButton setHidden:YES];
+    [introductionView.PageControl setHidden:YES];
+}
+-(void)introduction:(MYBlurIntroductionView *)introductionView didChangeToPanel:(MYIntroductionPanel *)panel withIndex:(NSInteger)panelIndex
+{
+    if (panelIndex == _lastIndex) {
+        [self didPressSkipButton];
+    }
+}
+#pragma mark - ButtonPressed
+-(void)login:(id)sender
+{
+    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    
+    //
+    
+    
+    //leaving
+    [self dismissViewControllerAnimated:YES completion:NULL];
+    
+    [EWUserManagement loginParseWithFacebookWithCompletion:^{
+        //update UI
+//        [self updateView];//notification also used
+        
+        
+    }];
+
+}
+-(void)whyFacebookAlert:(id)sender
+{
+    
 }
 
 - (void)didReceiveMemoryWarning
