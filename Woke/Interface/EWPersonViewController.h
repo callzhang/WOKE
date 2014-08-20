@@ -14,7 +14,7 @@
 @class EWStatisticsManager;
 
 @interface EWPersonViewController : UIViewController<UIAlertViewDelegate, UIActionSheetDelegate> {
-    NSArray *tasks;
+    //NSArray *tasks;
     EWStatisticsManager *stats;
     NSArray *profileItemsArray;
    

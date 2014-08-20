@@ -11,13 +11,14 @@
 
 #define kMaxWakabilityTime      600
 
-
+//stats
 #define kStatsCache         @"stats_cache"
 #define kAveWakeLength      @"ave_wake_length"
 #define kAveWakeTime        @"ave_wake_time"
 #define kSuccessRate        @"ave_success_rate"
 #define kWakeability        @"wakeability"
 
+//task activity
 #define kTaskActivityCache  @"task_activity_cache"
 #define kTaskState          @"state"
 #define kTaskTime           @"time"
@@ -25,6 +26,7 @@
 #define kWokeBy             @"woke_by"
 #define kWokeTo             @"woke_to"
 
+//activities
 #define kActivitiesCache    @"activities_cache"
 #define kFriended           @"friended"
 #define kChallengesFinished @"challenges_finished"
@@ -43,7 +45,7 @@
 @property (nonatomic) NSNumber *wakability;
 @property (nonatomic) NSString *wakabilityStr;
 
-+ (void)updateTaskActivityCache;
++ (void)updateTaskActivityCacheWithCompletion:(void (^)(void))block;
 + (void)updateCacheWithFriendsAdded:(NSArray *)friendIDs;
 
 @end
