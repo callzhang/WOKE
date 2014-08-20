@@ -247,8 +247,9 @@
             if (![tasks containsObject:task]) {
                 [tasks addObject:task];
                 [newTask addObject:task];
+                
                 // add schedule notification
-                [EWTaskStore scheduleNotificationOnServerWithTask:task];
+                [EWTaskStore scheduleNotificationOnServerWithTimer:task];
                 
                 NSLog(@"New task found from server: %@(%@)", task.time.weekday, t.objectId);
             }
@@ -333,7 +334,7 @@
             for (NSManagedObjectID *taskID in newTaskIDs) {
                 EWTaskItem *task = (EWTaskItem *)[[EWDataStore mainContext] existingObjectWithID:taskID error:NULL];
                 // remote notification
-                [EWTaskStore scheduleNotificationOnServerWithTask:task];
+                [EWTaskStore scheduleNotificationOnServerWithTimer:task];
             }
         }];
     }
@@ -466,7 +467,7 @@
             //[[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:t userInfo:@{@"task": t}];
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskTimeChangedNotification object:t userInfo:@{@"task": t}];
             // schedule on server
-            [EWTaskStore scheduleNotificationOnServerWithTask:t];
+            [EWTaskStore scheduleNotificationOnServerWithTimer:t];
         }
     }
     [self updateNextTaskTime];
@@ -848,12 +849,17 @@
 
 #pragma mark - Schedule Alarm Timer
 
-+ (void)scheduleNotificationOnServerWithTask:(EWTaskItem *)task{
++ (void)scheduleNotificationOnServerWithTimer:(EWTaskItem *)task;{
     if (!task.time || !task.objectId) {
         NSLog(@"*** The Task on %@ (%@) you passed in doesn't have time or objectId", task.time.weekday, task.objectId);
         [[EWTaskStore sharedInstance] scheduleTasksInBackground];
         return;
     }
+    if ([[task time] timeIntervalSinceNow] < 0) {
+        // task outDate
+        return;
+    }
+    
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
    
@@ -866,9 +872,9 @@
 
                           @"push_time":[NSNumber numberWithDouble:[task.time timeIntervalSince1970] ],
                           @"data":@{@"alert":@"Time to get up",
-                                    @"content-available":@1,
-                                    kPushTypeKey: kPushTypeTimerKey,
-                                    kPushTaskKey: task.objectId},
+                                   @"content-available":@1,
+                                   kPushTypeKey: kPushTypeTimerKey,
+                                  kPushTaskKey: task.objectId},
                          };
     
     [manager POST:kParsePushUrl parameters:dic

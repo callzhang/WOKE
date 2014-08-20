@@ -44,7 +44,7 @@
     [self updateTimer:nil];
     //timer
     timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTimer:) userInfo:nil repeats:YES];
-    //[EWTaskStore scheduleNotificationOnServer];
+    [EWTaskStore scheduleNotificationOnServerWithTimer:[[EWTaskStore sharedInstance] nextValidTaskForPerson:me]];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -62,7 +62,9 @@
     self.timeLabel.text = t.date2String;
     NSDate *wakeTime = [[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:me];
     self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", wakeTime.timeLeft];
-    NSDate *alarmtime = me.preference[kNextTaskTime]?:[[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+//    NSDate *alarmtime = me.preference[kNextTaskTime]?:[[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+    
+    NSDate *alarmtime = me.preference[kNextTaskTime]?:wakeTime;
     self.alarmTime.text = [NSString stringWithFormat:@"Alarm %@", alarmtime.date2String];
 }
 @end

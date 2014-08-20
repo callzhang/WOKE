@@ -14,7 +14,9 @@
 #import "EWFirstTimeViewController.h"
 
 @interface EWFirstTimeViewController ()<MYIntroductionDelegate>
-
+{
+    MYBlurIntroductionView *introductionView;
+}
 @end
 
 @implementation EWFirstTimeViewController
@@ -36,7 +38,7 @@
     
     
         //Create the introduction view and set its delegate
-        MYBlurIntroductionView *introductionView = [[MYBlurIntroductionView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        introductionView = [[MYBlurIntroductionView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
         introductionView.delegate = self;
         introductionView.BackgroundImageView.image = [UIImage imageNamed:@"Background.png"];
         //introductionView.LanguageDirection = MYLanguageDirectionRightToLeft;
@@ -52,8 +54,8 @@
         
             MYIntroductionPanel *panel3 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-04.png"]];
                 MYIntroductionPanel *panel4 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"New-Version_03-05.png"]];
-        //        MYIntroductionPanel *panel3 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, vc.view.frame.size.width, vc.view.frame.size.height) nibNamed:@"TestPanel3"];
-        
+        MYIntroductionPanel *panel5 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) nibNamed:@"EWLogInViewController"];
+    
         //Add custom attributes
         //        panel3.PanelTitle = @"Test Title";
         //        panel3.PanelDescription = @"This is a test panel description to test out the new animations on a custom nib";
@@ -63,7 +65,7 @@
         //    //Feel free to customize your introduction view here
         //
         //    //Add panels to an array
-        NSArray *panels = @[panel1, panel2,panel3,panel4];
+        NSArray *panels = @[panel1, panel2,panel3,panel4,panel5];
         //
         //    //Build the introduction with desired panels
         [introductionView buildIntroductionWithPanels:panels];
@@ -80,9 +82,13 @@
 }
 -(void)introduction:(MYBlurIntroductionView *)introductionView didFinishWithType:(MYFinishType)finishType
 {
-    [self dismissViewControllerAnimated:NO completion:^(){
-        [EWUserManagement login];
-    }];
+//    [self dismissViewControllerAnimated:NO completion:^(){
+//        [EWUserManagement login];
+//    }];
+}
+-(void)didPressSkipButton
+{
+    [introductionView changeToPanelAtIndex:4];
 }
 
 - (void)didReceiveMemoryWarning
