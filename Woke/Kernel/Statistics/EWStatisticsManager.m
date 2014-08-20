@@ -171,11 +171,11 @@
 
 
 #pragma mark - Update Activity
-+ (void)updateTaskActivityCache{
++ (void)updateTaskActivityCacheWithCompletion:(void (^)(void))block{
     
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *localMe = [EWPersonStore meInContext:localContext];
-        NSArray *tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:localMe];
+        NSArray *tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:localMe];//newest on top
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
         NSMutableDictionary *activity = [cache[kTaskActivityCache] mutableCopy]?:[NSMutableDictionary new];
         
@@ -214,9 +214,9 @@
             
             NSDictionary *taskActivity = @{kTaskState: @(task.state),
                                            kTaskTime: task.time,
-                                           kWokeTime: @(!!task.completed),
-                                           kWokeBy: wokeBy.count?wokeBy:[NSNull null],
-                                           kWokeTo: wokeTo.count?wokeTo:[NSNull null]};
+                                           kWokeTime: wakeTime,
+                                           kWokeBy: wokeBy.count?wokeBy:@0,
+                                           kWokeTo: wokeTo.count?wokeTo:@0};
             
             NSString *dateKey = task.time.date2YYMMDDString;
             activity[dateKey] = taskActivity;
@@ -226,7 +226,10 @@
         localMe.cachedInfo = [cache copy];
 
     } completion:^(BOOL success, NSError *error) {
-        //
+        NSLog(@"Finished updating task activity cache");
+        if (block) {
+            block();
+        }
     }];
     
 }

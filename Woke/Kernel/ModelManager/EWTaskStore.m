@@ -364,7 +364,7 @@
     
     if (taskOutDated) {
         //update cached activities
-        [EWStatisticsManager updateTaskActivityCache];
+        [EWStatisticsManager updateTaskActivityCacheWithCompletion:NULL];
     }
     
     return taskOutDated;
@@ -532,7 +532,7 @@
 
 //Update next task time in cache
 - (void)updateNextTaskTime{
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         EWPerson *localMe = [EWPersonStore meInContext:localContext];
         EWTaskItem *task = [self nextValidTaskForPerson:localMe];
         NSMutableDictionary *cache = [localMe.cachedInfo mutableCopy]?:[NSMutableDictionary new];
