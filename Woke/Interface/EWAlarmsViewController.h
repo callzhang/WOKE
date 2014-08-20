@@ -10,7 +10,7 @@
 #import "EWCollectionPersonCell.h"
 #import "EWPopupMenu.h"
 #import "EWHexagonFlowLayout.h"
-
+#import "ATConnect.h"
 #define kCollectionViewCellAlert    1001
 #define kOptionsAlert               1002
 #define kMenuTag                    1003

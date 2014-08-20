@@ -360,7 +360,7 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", @"Feedback", @"Start Sleeping", nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", @"Feedback", @"Start Sleeping",@"TestFeedback", nil];
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
@@ -614,6 +614,14 @@
         }else if([title isEqualToString:@"Start Sleeping"]){
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
             [self presentViewControllerWithBlurBackground:controller];
+        }
+        else if([title isEqualToString:@"TestFeedback"])
+        {
+            [[ATConnect sharedConnection] presentMessageCenterFromViewController:self];
+            
+            /*
+            [[ATConnect sharedConnection] engage:@"test_event" fromViewController:self];
+             */
         }
         
     }else{

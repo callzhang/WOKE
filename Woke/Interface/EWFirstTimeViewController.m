@@ -81,7 +81,7 @@
         [self.view addSubview:introductionView];
         [self.view bringSubviewToFront:introductionView];
         
-//        [EWUtil setFirstTimeLoginOver];
+        [EWUtil setFirstTimeLoginOver];
     
 //     [EWUtil setFirstTimeLoginOver];
     // Do any additional setup after loading the view from its nib.
