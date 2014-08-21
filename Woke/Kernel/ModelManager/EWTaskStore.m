@@ -360,7 +360,7 @@
                 [query whereKey:@"pastOwner" equalTo:user];
                 [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]];
                 tasks = [[query findObjects] mutableCopy];
-                >>>>>>> task has not result <<<<<<<<
+//                >>>>>>> task has not result <<<<<<<<
                 //assign back to person.tasks
                 for (PFObject *task in tasks) {
                     EWTaskItem *taskMO = (EWTaskItem *)[task managedObjectInContext:localContext];
