@@ -74,6 +74,7 @@
 - (NSArray *)scheduleTasksInContext:(NSManagedObjectContext *)context;
 - (NSArray *)scheduleTasks;
 - (void)scheduleTasksInBackground;
+- (BOOL)checkPastTasks;
 
 #pragma mark - KVO
 - (void)updateTaskState:(NSNotification *)notif;

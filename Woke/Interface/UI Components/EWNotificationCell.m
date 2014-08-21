@@ -47,8 +47,7 @@
 
 
     //time
-    double t = notification.createdAt.timeElapsed;
-    self.time.text = [[EWUIUtil getStringFromTime:t] stringByAppendingString:@" ago"];
+    self.time.text = [notification.createdAt.timeElapsedString stringByAppendingString:@" ago"];
     
     NSString *type = notification.type;
     if ([type isEqualToString:kNotificationTypeNotice]) {
@@ -61,8 +60,8 @@
         self.time.width += deltaX;
         
         NSString *title = notification.userInfo[@"title"];
-        NSString *body = notification.userInfo[@"content"];
-        NSString *link = notification.userInfo[@"link"];
+        //NSString *body = notification.userInfo[@"content"];
+        //NSString *link = notification.userInfo[@"link"];
         
         self.detail.text = title;
     }else{

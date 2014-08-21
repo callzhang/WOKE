@@ -120,6 +120,9 @@
     //save me
     [EWPersonStore sharedInstance].currentUser = person;
     me.score = @100;
+    NSMutableDictionary *cache = me.cachedInfo.mutableCopy;
+    [cache removeObjectForKey:@"task_activity_cache"];
+    me.cachedInfo = cache.copy;
     
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     

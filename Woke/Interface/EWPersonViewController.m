@@ -541,7 +541,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             case 3://last seen
             {
                 NSDate *date = person.updatedAt;
-                cell.detailTextLabel.text = [date date2MMDD] ;
+                cell.detailTextLabel.text = date.timeElapsedString;
                 break;
             }
             case 4://next task time
@@ -569,7 +569,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }else if (tabView.selectedSegmentIndex == 1) {
         //activities
         NSArray *dates = _taskActivity.allKeys;
-        NSDictionary *activity = _taskActivity[dates[indexPath.row]];
+        dates = [dates sortedArrayUsingSelector:@selector(compare:)];
+        NSDictionary *activity = _taskActivity[dates[indexPath.section]];
         
         UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
         
@@ -592,7 +593,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 float elapsed = [completed timeIntervalSinceDate:time];
                 if (completed && elapsed < kMaxWakeTime) {
                     
-                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ (%@)", time.date2String, [EWUIUtil getStringFromTime:elapsed]];
+                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ (%@)", time.date2String, completed.timeElapsedString];
                 }
                 else
                 {

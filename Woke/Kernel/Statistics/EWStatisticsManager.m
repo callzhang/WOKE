@@ -86,7 +86,7 @@
     if (aveT == 0) {
         return @"-";
     }
-    NSString *str = [EWUIUtil getStringFromTime:aveT];
+    NSString *str = [NSDate getStringFromTime:aveT];
     return str;
 }
 
@@ -173,10 +173,11 @@
 #pragma mark - Update Activity
 + (void)updateTaskActivityCacheWithCompletion:(void (^)(void))block{
     //test
-    return;
+    //return;
     
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *localMe = [EWPersonStore meInContext:localContext];
+        [[EWTaskStore sharedInstance] checkPastTasks];
         NSArray *tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:localMe];//newest on top
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
         NSMutableDictionary *activity = [cache[kTaskActivityCache] mutableCopy]?:[NSMutableDictionary new];
@@ -242,6 +243,8 @@
         
         cache[kTaskActivityCache] = [activity copy];
         localMe.cachedInfo = [cache copy];
+        
+        NSLog(@"Task activity cache: %@", activity);
 
     } completion:^(BOOL success, NSError *error) {
         NSLog(@"Finished updating task activity cache");

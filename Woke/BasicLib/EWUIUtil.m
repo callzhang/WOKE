@@ -278,26 +278,6 @@ static const float originalSize = 80.0;
     
 }
 
-+ (NSString *)getStringFromTime:(float)time{
-    
-    NSString *timeStr;
-    NSInteger t = (NSInteger)time;
-    NSInteger hours = floor(t / 3600);
-    NSInteger minutes = floor((t % 3600)/60);
-    NSInteger seconds = t % 60;
-    
-    if (hours > 10) {
-        timeStr = [NSString stringWithFormat:@"%.1f hours",time/3600];
-    }else if (hours > 0){
-        timeStr = [NSString stringWithFormat:@"%ld hours",(long)hours];
-    }else if(minutes > 0){
-        timeStr = [NSString stringWithFormat:@"%ld minutes",(long)minutes];
-    }else{
-        timeStr = [NSString stringWithFormat:@"%ld seconds",(long)seconds];
-    }
-        return timeStr;
-}
-
 
 + (void)addFirstTimeTutorialInViewController: (UIViewController * )vc{
     

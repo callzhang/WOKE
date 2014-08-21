@@ -132,7 +132,10 @@
  Time elapsed since last update
  */
 - (double)timeElapsed;
+- (NSString *)timeElapsedString;
 
 - (NSDate *)beginingOfDay;
 - (NSDate *)endOfDay;
+
++ (NSString *)getStringFromTime:(float)time;
 @end

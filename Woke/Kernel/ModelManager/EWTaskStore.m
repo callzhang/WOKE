@@ -64,10 +64,10 @@
     //filter
     //[tasks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"time >= %@", [[NSDate date] timeByAddingMinutes:-kMaxWakeTime]]];
     //check past task
-    if ([person isMe]) {
-        //check past task, move it to pastTasks and remove it from the array
-        [self checkPastTasks:tasks];
-    }
+//    if ([person isMe]) {
+//        //check past task, move it to pastTasks and remove it from the array
+//        [self checkPastTasks:tasks];
+//    }
     
     //sort
     return [tasks sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES]]];
@@ -88,31 +88,6 @@
     }
     NSMutableArray *tasks = [[person.pastTasks allObjects] mutableCopy];
     [tasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
-//    EWTaskItem *latestTask = tasks.firstObject;
-//    if (latestTask.time.timeElapsed > 3600*24) {
-//        //we should not query other's past task
-//        if(person.isMe &&[EWDataStore isReachable]){
-//            //get from server
-//            NSLog(@"Fetch past task from server for %@", person.name);
-//            PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
-//            //[query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
-//            [query whereKey:@"state" equalTo:@YES];
-//            PFUser *user = [PFUser objectWithoutDataWithClassName:@"PFUser" objectId:person.objectId];
-//            [query whereKey:@"pastOwner" equalTo:user];
-//            [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]];
-//            query.limit = 10;
-//            tasks = [[query findObjects] mutableCopy];
-//            //assign back to person.tasks
-//            for (PFObject *task in tasks) {
-//                EWTaskItem *taskMO = (EWTaskItem *)[task managedObjectInContext:person.managedObjectContext];
-//                [person addPastTasksObject:taskMO];
-//            }
-//            [EWDataStore save];
-//        }
-//    }
-    
-
-    
     
     return [tasks copy];
 }
@@ -263,7 +238,7 @@
     }
 
     //FIRST check past tasks
-    BOOL hasOutDatedTask = [self checkPastTasks:tasks];
+    BOOL hasOutDatedTask = [self checkPastTasks];
     
     //for each alarm, find matching task, or create new task
     NSMutableArray *goodTasks = [NSMutableArray new];
@@ -347,25 +322,63 @@
 }
 
 
-- (BOOL)checkPastTasks:(NSMutableArray *)tasks{
-    //nullify old task's relation to alarm
-    BOOL taskOutDated = NO;
-    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingSeconds:-kMaxWakeTime]];
-    NSArray *outDatedTasks = [tasks filteredArrayUsingPredicate:old];
-    for (EWTaskItem *t in outDatedTasks) {
-        t.alarm = nil;
-        t.owner = nil;
-        t.pastOwner = [EWPersonStore meInContext:t.managedObjectContext];
-        [tasks removeObject:t];
-        NSLog(@"====== Task on %@ moved to past ======", [t.time date2dayString]);
-        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
-        taskOutDated = YES;
-    }
+- (BOOL)checkPastTasks{
+    __block BOOL taskOutDated = NO;
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        EWPerson *localMe = [me inContext:localContext];
+        NSMutableSet *tasks = localMe.tasks.mutableCopy;
+        
+        //nullify old task's relation to alarm
+        BOOL taskOutDated = NO;
+        NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingSeconds:-kMaxWakeTime]];
+        NSSet *outDatedTasks = [tasks filteredSetUsingPredicate:old];
+        for (EWTaskItem *t in outDatedTasks) {
+            t.alarm = nil;
+            t.owner = nil;
+            t.pastOwner = [EWPersonStore meInContext:t.managedObjectContext];
+            [tasks removeObject:t];
+            NSLog(@"====== Task on %@ moved to past ======", [t.time date2dayString]);
+            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
+            taskOutDated = YES;
+        }
+        
+        //check on server
+        NSMutableArray *pastTasks = [[localMe.pastTasks allObjects] mutableCopy];
+        [pastTasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
+        EWTaskItem *latestTask = pastTasks.firstObject;
+        if (latestTask.time.timeElapsed > 3600*24) {
+            //we should not query other's past task
+            if([EWDataStore isReachable]){
+                //get from server
+                NSLog(@"Fetch past task from server for %@", localMe.name);
+                PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
+                //[query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
+                //[query whereKey:@"state" equalTo:@YES];
+                [query whereKey:kParseObjectID notContainedIn:[pastTasks valueForKey:kParseObjectID]];
+                PFUser *user = [PFUser objectWithoutDataWithClassName:@"PFUser" objectId:localMe.objectId];
+                [query whereKey:@"pastOwner" equalTo:user];
+                [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]];
+                tasks = [[query findObjects] mutableCopy];
+                >>>>>>> task has not result <<<<<<<<
+                //assign back to person.tasks
+                for (PFObject *task in tasks) {
+                    EWTaskItem *taskMO = (EWTaskItem *)[task managedObjectInContext:localContext];
+                    [localMe addPastTasksObject:taskMO];
+                    taskOutDated = YES;
+                    NSLog(@"!!! Task found on server: %@", taskMO.time.date2dayString);
+                }
+            }
+        }
+        
+        
+        if (taskOutDated) {
+            //update cached activities
+            [EWStatisticsManager updateTaskActivityCacheWithCompletion:NULL];
+        }
+
+    }];
     
-    if (taskOutDated) {
-        //update cached activities
-        [EWStatisticsManager updateTaskActivityCacheWithCompletion:NULL];
-    }
     
     return taskOutDated;
 }

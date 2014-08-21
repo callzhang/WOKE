@@ -66,7 +66,7 @@
 
 + (void)addTransparantNavigationBarToViewController:(UIViewController *)vc withLeftItem:(UIBarButtonItem *)leftItem rightItem:(UIBarButtonItem *)rightItem;
 
-+ (NSString *)getStringFromTime:(float)time;
+//+ (NSString *)getStringFromTime:(float)time;
 
 + (void)addFirstTimeTutorialInViewController: (UIViewController * )vc;
 @end

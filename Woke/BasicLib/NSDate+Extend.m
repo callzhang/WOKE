@@ -62,7 +62,7 @@
 - (NSString *)date2dayString{
     NSDateFormatter *parseFormatter = [[NSDateFormatter alloc] init];
     parseFormatter.timeZone = [NSTimeZone defaultTimeZone];
-    parseFormatter.dateFormat = @"EEE, dd MMM yyyy";
+    parseFormatter.dateFormat = @"EEE, MM/dd/yy";
     return [parseFormatter stringFromDate:self];
 
 }
@@ -226,7 +226,27 @@
         return @"";
     }
     
-    return [EWUIUtil getStringFromTime:left];
+    return [NSDate getStringFromTime:left];
+}
+
++ (NSString *)getStringFromTime:(float)time{
+    
+    NSString *timeStr;
+    NSInteger t = abs((NSInteger)time);
+    float hours = time / 3600;
+    float minutes = floor((t % 3600)/60);
+    float seconds = t % 60;
+    
+    if (hours > 10) {
+        timeStr = [NSString stringWithFormat:@"%d hours", (NSInteger)hours];
+    }else if (hours >= 1){
+        timeStr = [NSString stringWithFormat:@"%.1f hours", hours];
+    }else if(minutes >= 1){
+        timeStr = [NSString stringWithFormat:@"%ld minutes",(long)minutes];
+    }else{
+        timeStr = [NSString stringWithFormat:@"%ld seconds",(long)seconds];
+    }
+    return timeStr;
 }
 
 
@@ -245,6 +265,11 @@
     return t;
     
 }
+
+- (NSString *)timeElapsedString{
+    return [NSDate getStringFromTime:self.timeElapsed];
+}
+
 
 - (NSDate *)beginingOfDay{
     NSCalendar *cal = [NSCalendar currentCalendar];

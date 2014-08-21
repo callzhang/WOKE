@@ -474,18 +474,17 @@
 	EWPerson *p;
 	if ([mo respondsToSelector:@selector(owner)]) {
 		p = [mo valueForKey:@"owner"];
+	}else if ([mo respondsToSelector:@selector(author)]){
+		//check author
+		p = [mo valueForKey:@"author"];
+
+	}else if ([mo isKindOfClass:[EWPerson class]]) {
+		p = (EWPerson *)mo;
 	}else{
-		if ([mo isKindOfClass:[EWPerson class]]) {
-			p = (EWPerson *)mo;
-		}else if ([mo isKindOfClass:[EWMediaItem class]]){
-			//only media has special acl
-			PFObject *po = mo.parseObject;
-			if (po.ACL != nil) {
-				BOOL write = [po.ACL getWriteAccessForUser:[PFUser currentUser]];
-				return write;
-			}
-			//TODO: need update ACL check
-			return YES;
+		PFObject *po = [mo getParseObjectWithError:NULL];
+		if (po.ACL != nil) {
+			BOOL write = [po.ACL getWriteAccessForUser:[PFUser currentUser]];
+			return write;
 		}else{
 			return YES;
 		}
@@ -695,6 +694,10 @@
 		for (NSManagedObjectID *ID in workingObjectIDs) {
 			NSError *error;
 			NSManagedObject *localMO = [localContext existingObjectWithID:ID error:&error];
+			if (!localMO && error) {
+				NSLog(@"Error getting MO (%@) for uploading: %@", ID, error.description);
+				continue;
+			}
             [EWDataStore updateParseObjectFromManagedObject:localMO];
         }
         
