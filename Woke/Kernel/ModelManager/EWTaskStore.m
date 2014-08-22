@@ -324,8 +324,13 @@
 
 - (BOOL)checkPastTasks{
     __block BOOL taskOutDated = NO;
+    static NSDate *lastPastTaskChecked;
+    if (lastPastTaskChecked && lastPastTaskChecked.timeElapsed > kTaskUpdateInterval) {
+        return taskOutDated;
+    }
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
+        //First get outdated current task and move to past
         EWPerson *localMe = [me inContext:localContext];
         NSMutableSet *tasks = localMe.tasks.mutableCopy;
         
@@ -364,6 +369,7 @@
                 //assign back to person.tasks
                 for (PFObject *task in tasks) {
                     EWTaskItem *taskMO = (EWTaskItem *)[task managedObjectInContext:localContext];
+                    [taskMO refresh];
                     [localMe addPastTasksObject:taskMO];
                     taskOutDated = YES;
                     NSLog(@"!!! Task found on server: %@", taskMO.time.date2dayString);
@@ -378,7 +384,7 @@
         }
 
     }];
-    
+    lastPastTaskChecked = [NSDate date];
     
     return taskOutDated;
 }
@@ -866,7 +872,7 @@
 
 + (void)scheduleNotificationOnServerWithTimer:(EWTaskItem *)task;{
     if (!task.time || !task.objectId) {
-        NSLog(@"*** The Task on %@ (%@) you passed in doesn't have time or objectId", task.time.weekday, task.objectId);
+        NSLog(@"*** The Task for schedule push doesn't have time or objectId: %@", task);
         [[EWTaskStore sharedInstance] scheduleTasksInBackground];
         return;
     }

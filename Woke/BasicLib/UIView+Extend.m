@@ -59,17 +59,19 @@
     UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, self.window.screen.scale);
     
     /* iOS 7 */
-    BOOL visible = !self.hidden && self.superview != nil;
+    //BOOL visible = !self.hidden && self.superview != nil;
     BOOL animating = self.layer.animationKeys != nil;
-    if (visible && [self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]){
+    BOOL success = YES;
+    if ([self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]){
         //only works when visible
         if (!animating) {
-            [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
+            success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
         }else{
-            [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
+            success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
         }
     
-    }else{ /* iOS 6 */
+    }
+    if(!success){ /* iOS 6 */
         [self.layer renderInContext:UIGraphicsGetCurrentContext()];
     }
     UIImage* img = UIGraphicsGetImageFromCurrentImageContext();

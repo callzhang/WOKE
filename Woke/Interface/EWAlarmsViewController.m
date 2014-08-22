@@ -116,6 +116,12 @@
         [self centerView];
     }];
     
+    //listen to navigation pop event
+    [[NSNotificationCenter defaultCenter] addObserverForName:kWillShowMainView object:nil queue:nil usingBlock:^(NSNotification *note) {
+        [self viewWillAppear:YES];
+        [self.collectionView reloadData];
+    }];
+    
     //static UI stuff (do it once)
     //collection view
     _collectionView.delegate = self;
@@ -156,11 +162,6 @@
     [self initView];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    //[self centerView];
-
-}
 
 - (void)initData {
     

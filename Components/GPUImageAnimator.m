@@ -136,8 +136,13 @@ static const float initialDownSampling = 2;
     }else if(self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
 		
 		//screenshot first
+		//[[NSNotificationCenter defaultCenter] postNotificationName:kWillShowMainView object:nil userInfo:nil];
+		
+		if (self.type == kModelViewDismiss) {
+			[[self.context containerView] addSubview:toView];
+			toView.alpha = 0;
+		}
 		UIImage *toViewImage = toView.screenshot;
-		toView.hidden = NO;
 		
 		
 		//refresh
@@ -209,13 +214,10 @@ static const float initialDownSampling = 2;
         UIView *toView = toViewController.view;
 		
         if (self.type == UINavigationControllerOperationPop) {
-			
-			[[self.context containerView] addSubview:toView];
 			[self.imageView removeFromSuperview];
         }else if (self.type == kModelViewDismiss){
+			toView.alpha = 1;
 			toView.hidden = NO;
-            
-
 		}
         
     }
@@ -263,6 +265,9 @@ static const float initialDownSampling = 2;
 }
 
 - (void)animationEnded:(BOOL)transitionCompleted{
+	if (self.type == kModelViewPresent) {
+		[self triggerRenderOfNextFrame];
+	}
     self.displayLink.paused = YES;
 }
 

@@ -280,7 +280,7 @@
 }
 
 + (NSManagedObjectContext *)mainContext{
-	NSParameterAssert([NSThread isMainThread]);
+	//NSParameterAssert([NSThread isMainThread]);
 	return [EWDataStore sharedInstance].context;
 }
 
@@ -367,7 +367,9 @@
             if (changedKeys.count > 0) {
                 [EWDataStore appendUpdateQueue:MO];
 				hasChange = YES;
-            }
+            }else{
+				NSLog(@"!!! No changed keys for MO %@", MO.objectID);
+			}
             
         }
 		
@@ -883,6 +885,10 @@
 #pragma mark - KVO
 //observe all context, but only modify updatedAt on main thread
 - (void)preSaveAction:(NSNotification *)notification{
+	if (![NSThread isMainThread]) {
+		NSLog(@"Skip pre-save check on background thread");
+	}
+	
 	NSManagedObjectContext *localContext = (NSManagedObjectContext *)[notification object];
 	
 	NSSet *updatedObjects = localContext.updatedObjects;
@@ -895,40 +901,45 @@
 		//First test MO exist
 		if (![localContext existingObjectWithID:mo.objectID error:NULL]) {
 			NSLog(@"*** MO you are trying to modify doesn't exist in the sqlite: %@", mo.objectID);
-			break;
+			continue;
 		}
 		
 		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
 	
 		//skip if marked save to local
 		if ([self.saveToLocalItems containsObject:mo]) {
-			break;
+			continue;
 		}
 		
 		//additional check for updated object
 		if ([updatedObjects containsObject:mo] && ![insertedObjects containsObject:mo]) {
 			//if last updated doesn't exist,
-			if (!lastUpdated) return;
+			if (!lastUpdated) continue;
 			
 			//remove unnecessary changes
 			//skip this step as when save is made from back context to main context, the mo doesn't have changed values any more
-//			if (!mo.changedKeys) {
-//				break;
-//			}
+			NSArray *changed = mo.changedKeys;
+			if (changed) {
+				NSLog(@"MO %@ changed key: %@", mo.objectID, changed);
+			}
 		}
 		
 		
 		//Pre-save validate
 		BOOL good = [EWDataStore validateMO:mo];
-		if (!good && [mo.serverID isEqualToString:me.objectId]) {
-			NSLog(@"Validation failed on saving %@", mo);
+		if (!good) {
+			NSLog(@"!!! Validation failed on saving %@", mo);
+			continue;
 		}
 		
-		if ([NSThread isMainThread]) {
-			//only update date on main thread
-			[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
+		BOOL mine = [EWDataStore checkAccess:mo];
+		if (!mine) {
+			NSLog(@"!!! Skip updating other's object %@", mo);
+			continue;
 		}
 		
+		//only update date on main thread
+		[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
     }
 	
 		

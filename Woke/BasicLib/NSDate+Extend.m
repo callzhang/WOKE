@@ -232,12 +232,17 @@
 + (NSString *)getStringFromTime:(float)time{
     
     NSString *timeStr;
-    NSInteger t = abs((NSInteger)time);
-    float hours = time / 3600;
+    NSInteger t = (NSInteger)time;
+    float days = time / 3600 / 24;
+    float hours = (t % (3600*24)) / 3600;
     float minutes = floor((t % 3600)/60);
     float seconds = t % 60;
     
-    if (hours > 10) {
+    if (days >=2) {
+        timeStr = [NSString stringWithFormat:@"%d days", (NSInteger)days];
+    }else if (days >=1) {
+        timeStr = [NSString stringWithFormat:@"1 day %d hours", (NSInteger)hours];
+    }else if (hours > 10) {
         timeStr = [NSString stringWithFormat:@"%d hours", (NSInteger)hours];
     }else if (hours >= 1){
         timeStr = [NSString stringWithFormat:@"%.1f hours", hours];
