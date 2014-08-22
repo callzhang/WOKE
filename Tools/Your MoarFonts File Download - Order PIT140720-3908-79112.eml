@@ -1,0 +1,56 @@
+Delivered-To: derek.designer@gmail.com
+Received: by 10.140.88.211 with SMTP id t77csp61979qgd;
+        Sat, 19 Jul 2014 20:04:52 -0700 (PDT)
+X-Received: by 10.224.92.83 with SMTP id q19mr24939172qam.29.1405825492444;
+        Sat, 19 Jul 2014 20:04:52 -0700 (PDT)
+Return-Path: <0000014751baa33c-ce294ca4-b32a-4734-ada3-6a77a4ad7066-000000@amazonses.com>
+Received: from a9-151.smtp-out.amazonses.com (a9-151.smtp-out.amazonses.com. [54.240.9.151])
+        by mx.google.com with ESMTPS id t2si18748345qcq.34.2014.07.19.20.04.52
+        for <derek.designer@gmail.com>
+        (version=TLSv1 cipher=ECDHE-RSA-RC4-SHA bits=128/128);
+        Sat, 19 Jul 2014 20:04:52 -0700 (PDT)
+Received-SPF: pass (google.com: domain of 0000014751baa33c-ce294ca4-b32a-4734-ada3-6a77a4ad7066-000000@amazonses.com designates 54.240.9.151 as permitted sender) client-ip=54.240.9.151;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of 0000014751baa33c-ce294ca4-b32a-4734-ada3-6a77a4ad7066-000000@amazonses.com designates 54.240.9.151 as permitted sender) smtp.mail=0000014751baa33c-ce294ca4-b32a-4734-ada3-6a77a4ad7066-000000@amazonses.com;
+       dkim=pass header.i=@fastspring.com
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=iwn6hytdfbmqcwk6trp2inibbszzcaj6; d=fastspring.com; t=1405825491;
+	h=Date:From:Reply-To:To:Message-ID:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=APCJseSmVlJiAnMqv0zldSqq5GdwHefIiysVrjl1A2c=;
+	b=fno9/G7obzBbNrTbFTygRb/eX12UwcPeS+5TfrAriOvcApkG2BrI+5QxGlr6x2ep
+	mew9DJVLKMVpJIyFE8ehbQoDIYuqBK/4IiD+oN5s7bc7//O/7Q+m6zKVEKUKhNTA8zE
+	7DzlojYqdNnYIMHsjJHF3YoXDVSjAWdxa8s9KjWQ=
+Date: Sun, 20 Jul 2014 03:04:51 +0000
+From: MoarFonts Support <mailer@fastspring.com>
+Reply-To: cedric.luthi+moarfonts@gmail.com
+To: Lei Zhang <derek.designer@gmail.com>
+Message-ID: <0000014751baa33c-ce294ca4-b32a-4734-ada3-6a77a4ad7066-000000@email.amazonses.com>
+Subject: Your MoarFonts File Download - Order PIT140720-3908-79112
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SES-Outgoing: 2014.07.20-54.240.9.151
+
+Dear Lei Zhang,
+
+Thank you for your order. You may download MoarFonts using the following UR=
+L:
+
+https://sites.fastspring.com/pitaya/order/dl/PIT140720-3908-77120F
+
+I suggest you to install the moarfonts binary into /usr/local/bin by enteri=
+ng the following commands in the terminal:
+sudo mkdir -p /usr/local/bin
+sudo cp ~/Downloads/moarfonts /usr/local/bin
+
+or if the moarfonts binary was not automatically unzipped:
+sudo mkdir -p /usr/local/bin
+sudo unzip -d /usr/local/bin ~/Downloads/moarfonts-1.0.1.zip
+
+
+Don=E2=80=99t forget to check usage instructions on http://pitaya.ch/moarfo=
+nts/
+
+Kind regards,
+
+C=C3=A9dric Luthi

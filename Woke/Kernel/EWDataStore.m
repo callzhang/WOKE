@@ -17,7 +17,6 @@
 #import "EWTaskItem.h"
 #import "EWMediaItem.h"
 #import "EWNotification.h"
-
 #define MR_LOGGING_ENABLED 0
 #import <MagicalRecord/CoreData+MagicalRecord.h>
 
@@ -71,8 +70,8 @@
         [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
         
         //core data
-        //[MagicalRecord setLoggingMask:MagicalRecordLoggingMaskError];
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
+		//[MagicalRecord setLoggingMask:MagicalRecordLoggingMaskError];
         context = [NSManagedObjectContext defaultContext];
 		
         //observe context change to update the modifiedData of that MO. (Only observe the main context)

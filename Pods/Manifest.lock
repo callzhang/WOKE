@@ -28,9 +28,9 @@ PODS:
     - AFNetworking (~> 2.2.3)
     - DACircularProgress (~> 2.2)
     - SVProgressHUD (~> 1.0)
-  - MagicalRecord (2.2):
+  - MagicalRecord (2.3.0-beta.3):
     - MagicalRecord/Core
-  - MagicalRecord/Core (2.2)
+  - MagicalRecord/Core (2.3.0-beta.3)
   - NSLogger (1.2)
   - Parse (1.2.19):
     - Facebook-iOS-SDK (~> 3.11)
@@ -46,13 +46,17 @@ DEPENDENCIES:
   - Facebook-iOS-SDK
   - GPUImage
   - IDMPhotoBrowser
-  - MagicalRecord (~> 2.2)
+  - MagicalRecord (from `https://github.com/magicalpanda/MagicalRecord`)
   - NSLogger
   - Parse
   - Reachability
   - Reveal-iOS-SDK
   - TestFlightSDK
   - Weibo
+
+EXTERNAL SOURCES:
+  MagicalRecord:
+    :git: https://github.com/magicalpanda/MagicalRecord
 
 SPEC CHECKSUMS:
   AFNetworking: 47947303319594706f48a55185ea95a95159ab94
@@ -61,7 +65,7 @@ SPEC CHECKSUMS:
   Facebook-iOS-SDK: bc0d0bdf14f64cb7f4d49f8f17d445f49c40d342
   GPUImage: ac2bde5f4dbea02a81ced6313964cec1f2043ca9
   IDMPhotoBrowser: d691bcdf470553e165f8eb982c5cd8e9a58bcdef
-  MagicalRecord: 2b471584fc9e3137f3d0a56967917baa4979e224
+  MagicalRecord: 23dfe0350eab4767cc1ce7d247af4e4cd54ee72c
   NSLogger: 3df5dca5dcbf99fe1e5c54931e44880f6e7eb089
   Parse: ffebaecaddd32cb52671010f81567c298ff93d04
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
