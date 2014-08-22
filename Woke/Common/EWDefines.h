@@ -163,3 +163,6 @@
 
 //Navgation Controller
 #define kMaxPersonNavigationConnt       6
+
+//Cached Info
+#define kCachedFriends                      @"friends"

@@ -730,7 +730,7 @@
 + (BOOL)validateTask:(EWTaskItem *)task{
     BOOL good = YES;
     
-    BOOL completed = task.completed || [[NSDate date] timeIntervalSinceDate: task.time] > kMaxWakeTime;
+    BOOL completed = task.completed || task.time.timeElapsed > kMaxWakeTime;
     if (completed) {
         if(task.alarm){
             task.alarm = nil;
@@ -773,8 +773,10 @@
         
         if (!task.owner) {
             task.owner = task.alarm.owner;
-            //good = NO;
-            NSLog(@"*** task (%@) missing owner", task.serverID);
+            if (!task.owner) {
+                
+                NSLog(@"*** task (%@) missing owner", task.serverID);
+            }
         }else if(!task.owner.isMe){
             //NSParameterAssert(task.owner.isMe);
             NSLog(@"*** validation task(%@) that is not owned by me, please check!", task.serverID);

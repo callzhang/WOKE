@@ -40,12 +40,12 @@
 
 //request pending
 - (BOOL)friendPending{
-    return [me.friends containsObject:self];
+    return [me.cachedInfo[kCachedFriends] containsObject:self.objectId];
 }
 
 //wait for friend acceptance
 - (BOOL)friendWaiting{
-    return [self.friends containsObject:me];
+    return [self.cachedInfo[kCachedFriends] containsObject:me.objectId];
 }
 
 - (NSString *)genderObjectiveCaseString{

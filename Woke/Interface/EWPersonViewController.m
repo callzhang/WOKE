@@ -52,7 +52,9 @@
 NSString *const taskCellIdentifier = @"taskCellIdentifier";
 NSString *const profileCellIdentifier = @"ProfileCell";
 NSString *const activitiyCellIdentifier = @"ActivityCell";
-@interface EWPersonViewController()<GKImagePickerDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,IDMPhotoBrowserDelegate>
+@interface EWPersonViewController()<GKImagePickerDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,IDMPhotoBrowserDelegate>{
+    NSArray *dates;
+}
 @property (strong,nonatomic)GKImagePicker *imagePicker;
 @property (strong,nonatomic)NSMutableArray *photos;
 @property (strong,nonatomic)IDMPhotoBrowser *photoBrower;
@@ -85,13 +87,13 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 }
 
 
-//- (void)setPerson:(EWPerson *)p{
-//    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-//    person = p;
-//    [self initData];
-//    [self initView];
-//    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-//}
+- (void)setPerson:(EWPerson *)p{
+    //[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    person = p;
+    //[self initData];
+    //[self initView];
+    //[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+}
 
 
 - (void)viewDidLoad {
@@ -141,11 +143,10 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         });
-        [person refreshInBackgroundWithCompletion:^{
+        [person refreshShallowWithCompletion:^{
             //[person refreshShallowWithCompletion:^{
             [person.managedObjectContext refreshObject:person mergeChanges:YES];
-            [self initData];
-            [self initView];
+            [self refresh];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         }];
     }
@@ -172,9 +173,21 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if (person) {
         //tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:person];
         _taskActivity = person.cachedInfo[kTaskActivityCache];
+        dates = _taskActivity.allKeys;
+        dates = [dates sortedArrayUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
+            NSInteger n1 = [obj1 integerValue];
+            NSInteger n2 = [obj2 integerValue];
+            return n1 < n2;
+        }];
         if (!_taskActivity) {
             [EWStatisticsManager updateTaskActivityCacheWithCompletion:^{
                 _taskActivity = person.cachedInfo[kTaskActivityCache];
+                dates = _taskActivity.allKeys;
+                dates = [dates sortedArrayUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
+                    NSInteger n1 = [obj1 integerValue];
+                    NSInteger n2 = [obj2 integerValue];
+                    return n1 < n2;
+                }];
                 [taskTableView reloadData];
             }];
         }
@@ -568,12 +581,10 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         return cell;
     }else if (tabView.selectedSegmentIndex == 1) {
         //activities
-        NSArray *dates = _taskActivity.allKeys;
-        dates = [dates sortedArrayUsingSelector:@selector(compare:)];
+        
         NSDictionary *activity = _taskActivity[dates[indexPath.section]];
         
         UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:activitiyCellIdentifier];
-        
         
         if (!cell) {
             
@@ -593,7 +604,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 float elapsed = [completed timeIntervalSinceDate:time];
                 if (completed && elapsed < kMaxWakeTime) {
                     
-                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ (%@)", time.date2String, completed.timeElapsedString];
+                    cell.textLabel.text = [NSString stringWithFormat:@"Woke up at %@ (%@)", completed.date2String, completed.timeElapsedString];
                 }
                 else
                 {
@@ -675,7 +686,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
     }else if (tabView.selectedSegmentIndex == 1){
         
-        NSArray *dates = _taskActivity.allKeys;
         NSDictionary *activity = _taskActivity[dates[section]];
         NSDate *time = activity[kTaskTime];
         
