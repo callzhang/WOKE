@@ -35,7 +35,20 @@
     }
     return self;
 }
-
+-(id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        
+        _motionManager  = [[CMMotionManager alloc] init];
+        
+        _motionManager.accelerometerUpdateInterval = 0.1f;
+        
+        
+        // Initialization code
+    }
+    return self;
+}
 -(BOOL)isShakeSupported
 {
     if ([self.motionManager isAccelerometerAvailable]) {

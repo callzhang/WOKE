@@ -8,6 +8,7 @@
             <connections>
                 <outlet property="AM" destination="7mb-gk-SRu" id="ot5-EU-QI0"/>
                 <outlet property="header" destination="RrM-Sd-7WE" id="An8-fB-nvf"/>
+                <outlet property="shakeProgress" destination="peF-mC-eit" id="tmO-me-ZXh"/>
                 <outlet property="tableView" destination="zOY-lf-mXY" id="Jcn-Xa-jP9"/>
                 <outlet property="timeDescription" destination="aFX-Ij-HLO" id="T0K-yv-VTq"/>
                 <outlet property="timer" destination="OzV-SY-syv" id="yEf-bm-7PI"/>
@@ -60,6 +61,10 @@
                     </subviews>
                     <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="0.14999999999999999" colorSpace="calibratedRGB"/>
                 </view>
+                <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" fixedFrame="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="peF-mC-eit" customClass="EWShakeProgressView">
+                    <rect key="frame" x="85" y="529" width="150" height="2"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </progressView>
             </subviews>
             <color key="backgroundColor" red="0.48559622819999998" green="0.5963714255" blue="0.78003427930000002" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>

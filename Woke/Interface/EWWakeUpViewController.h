@@ -5,7 +5,7 @@
 //  Created by Lei Zhang on 7/28/13.
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
-
+#import "EWShakeProgressView.h"
 #import <UIKit/UIKit.h>
 @class EWPerson, EWMediaItem, EWTaskItem;
 
@@ -20,6 +20,7 @@
 @property (nonatomic, weak) EWPerson *person;
 @property (nonatomic, weak) EWTaskItem *task;
 @property (strong, nonatomic) IBOutlet UILabel *timeDescription;
+@property (strong, nonatomic) IBOutlet EWShakeProgressView *shakeProgress;
 
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
 //- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;

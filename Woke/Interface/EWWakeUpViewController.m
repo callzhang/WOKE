@@ -187,7 +187,18 @@
     [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"AlarmViewBar"] forState:UIControlStateNormal];
     [postWakeUpVCBtn setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
     [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
+    
     [self.view addSubview:postWakeUpVCBtn];
+    
+    if ([self.shakeProgress isShakeSupported]) {
+        // need  update
+        [self.shakeProgress startUpdateProgressBarWithProgressingHandler:nil CompleteHandler:nil];
+    }
+    else{
+        // use button to getup!;
+        
+    }
+    
 }
 
 
