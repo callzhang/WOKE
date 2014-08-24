@@ -166,3 +166,10 @@
 
 //Cached Info
 #define kCachedFriends                      @"friends"
+
+
+// ATConnect
+#define kLoginSuccess           @"login_success"
+#define kWakeupSuccess          @"wake_success"
+#define kRecordVoiceSuccess     @"record_success"
+

@@ -28,6 +28,7 @@
 //Util
 #import "EWUtil.h"
 #import "UIImageView+AFNetworking.h"
+#import "ATConnect.h"
 
 //social network
 #import "EWSocialGraph.h"
@@ -112,6 +113,8 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             NSLog(@"[d] Run completion block.");
             completionBlock();
+            
+            [[ATConnect sharedConnection] engage:@"login_success" fromViewController:rootViewController];
         });
     }
 

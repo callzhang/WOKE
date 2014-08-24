@@ -23,6 +23,7 @@
 #import "EWServer.h"
 
 
+
 //UI
 #import "EWWakeUpViewController.h"
 
@@ -390,6 +391,8 @@
     [EWWakeUpManager sharedInstance].controller = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:kWokeNotification object:nil];
     [EWWakeUpManager sharedInstance].isWakingUp = NO;
+    
+    
     //TODO: something to do in the future
     //notify friends and challengers
     //update history stats

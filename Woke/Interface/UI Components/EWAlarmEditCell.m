@@ -28,7 +28,7 @@
         self.scrollView.contentSize  = CGSizeMake(320, 50);
         self.statement = [[EWCostumTextField alloc] initWithFrame:CGRectMake(30, 20, 300, 20)];
         self.statement.font = [UIFont fontWithName:@"Lato-Regular.ttf" size:14];
-        self.statement.placeholder = @"I want to hear (a song about burrito...) ";
+//        self.statement.placeholder = @"I want to hear (a song about burrito...) ";
     
         self.statement.delegate = self;
         

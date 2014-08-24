@@ -20,6 +20,9 @@
 #import "EWMediaSlider.h"
 #import "EWWakeUpManager.h"
 
+
+#import "ATConnect.h"
+#import "EWDefines.h"
 //test
 #import "EWPostWakeUpViewController.h"
 
@@ -179,14 +182,7 @@
     //alpha mask
     [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.1f, @0.9f]];
     
-    postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGRect frame =[UIScreen mainScreen].bounds;
-    frame.origin.y = frame.size.height-80 ;
-    frame.size.height = 80;
-    postWakeUpVCBtn.frame = frame;
-    [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"AlarmViewBar"] forState:UIControlStateNormal];
-    [postWakeUpVCBtn setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
-    [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
+
     
     [self.view addSubview:postWakeUpVCBtn];
     
@@ -204,6 +200,15 @@
     }
     else{
         // use button to getup!;
+        
+        postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        CGRect frame =[UIScreen mainScreen].bounds;
+        frame.origin.y = frame.size.height-80 ;
+        frame.size.height = 80;
+        postWakeUpVCBtn.frame = frame;
+        [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"AlarmViewBar"] forState:UIControlStateNormal];
+        [postWakeUpVCBtn setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
+        [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
         
     }
     
@@ -268,6 +273,8 @@
     
     //release the pointer in wakeUpManager
     [EWWakeUpManager woke];
+    
+    [[ATConnect sharedConnection] engage:kWakeupSuccess fromViewController:self];
     
     //set wakeup time
     if ([task.time isEarlierThan:[NSDate date]]) {
@@ -421,7 +428,11 @@
 //    self.timer.frame = f;
 //    self.timer.center = c;
     
-    
+    if (!postWakeUpVCBtn) {
+        
+        return;
+        
+    }
     
     //footer
     CGRect footerFrame = postWakeUpVCBtn.frame;

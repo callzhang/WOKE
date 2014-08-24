@@ -16,7 +16,7 @@
 #import "SCSiriWaveformView.h"
 #import "EWUIUtil.h"
 #import "EWTaskStore.h"
-
+#import "EWDefines.h"
 //object
 #import "EWTaskItem.h"
 #import "EWTaskStore.h"
@@ -28,7 +28,7 @@
 //backend
 #import "EWDataStore.h"
 #import "EWServer.h"
-
+#import "ATConnect.h"
 
 #import "UAProgressView.h"
 #define BUTTONCENTER  CGPointMake(470, EWScreenWidth/2)
@@ -324,6 +324,8 @@
 
 - (IBAction)send:(id)sender {
     if (recordingFileUrl) {
+        
+        
         //finished recording, prepare for data
         NSError *err;
         NSData *recordData = [NSData dataWithContentsOfFile:[recordingFileUrl path] options:0 error:&err];
@@ -335,7 +337,7 @@
         //save data to task
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         
-        
+        [[ATConnect sharedConnection] engage:kRecordVoiceSuccess fromViewController:self];
         
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
         media.author = me;
