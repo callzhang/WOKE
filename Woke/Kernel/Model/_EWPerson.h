@@ -285,9 +285,9 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSOrderedSet *alarms;
+@property (nonatomic, strong) NSSet *alarms;
 
-- (NSMutableOrderedSet*)alarmsSet;
+- (NSMutableSet*)alarmsSet;
 
 
 
@@ -369,9 +369,9 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSOrderedSet *tasks;
+@property (nonatomic, strong) NSSet *tasks;
 
-- (NSMutableOrderedSet*)tasksSet;
+- (NSMutableSet*)tasksSet;
 
 
 
@@ -393,8 +393,8 @@ extern const struct EWPersonFetchedProperties {
 - (void)addAchievementsObject:(EWAchievement*)value_;
 - (void)removeAchievementsObject:(EWAchievement*)value_;
 
-- (void)addAlarms:(NSOrderedSet*)value_;
-- (void)removeAlarms:(NSOrderedSet*)value_;
+- (void)addAlarms:(NSSet*)value_;
+- (void)removeAlarms:(NSSet*)value_;
 - (void)addAlarmsObject:(EWAlarmItem*)value_;
 - (void)removeAlarmsObject:(EWAlarmItem*)value_;
 
@@ -448,8 +448,8 @@ extern const struct EWPersonFetchedProperties {
 - (void)addSentMessagesObject:(EWMessage*)value_;
 - (void)removeSentMessagesObject:(EWMessage*)value_;
 
-- (void)addTasks:(NSOrderedSet*)value_;
-- (void)removeTasks:(NSOrderedSet*)value_;
+- (void)addTasks:(NSSet*)value_;
+- (void)removeTasks:(NSSet*)value_;
 - (void)addTasksObject:(EWTaskItem*)value_;
 - (void)removeTasksObject:(EWTaskItem*)value_;
 
@@ -580,8 +580,8 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSMutableOrderedSet*)primitiveAlarms;
-- (void)setPrimitiveAlarms:(NSMutableOrderedSet*)value;
+- (NSMutableSet*)primitiveAlarms;
+- (void)setPrimitiveAlarms:(NSMutableSet*)value;
 
 
 
@@ -640,8 +640,8 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSMutableOrderedSet*)primitiveTasks;
-- (void)setPrimitiveTasks:(NSMutableOrderedSet*)value;
+- (NSMutableSet*)primitiveTasks;
+- (void)setPrimitiveTasks:(NSMutableSet*)value;
 
 
 

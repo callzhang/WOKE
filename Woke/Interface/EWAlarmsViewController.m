@@ -283,8 +283,8 @@
         //task or alarm incomplete, schedule
         //init state
         
-        alarms = [[EWAlarmManager sharedInstance] alarmsForUser:me];
-        tasks = [[EWTaskStore sharedInstance] getTasksByPerson:me];
+        alarms = [[EWAlarmManager sharedInstance] scheduleAlarm];
+        tasks = [[EWTaskStore sharedInstance] scheduleTasks];
         return;
     }
     

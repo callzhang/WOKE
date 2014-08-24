@@ -91,7 +91,7 @@
         <attribute name="username" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="weibo" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="achievements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWAchievement" inverseName="owner" inverseEntity="EWAchievement" syncable="YES"/>
-        <relationship name="alarms" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="EWAlarmItem" inverseName="owner" inverseEntity="EWAlarmItem" syncable="YES"/>
+        <relationship name="alarms" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWAlarmItem" inverseName="owner" inverseEntity="EWAlarmItem" syncable="YES"/>
         <relationship name="friends" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="member" inverseEntity="EWGroup" syncable="YES"/>
         <relationship name="groupsManaging" optional="YES" toMany="YES" minCount="1" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="admin" inverseEntity="EWGroup" syncable="YES"/>
@@ -103,7 +103,7 @@
         <relationship name="receivedMessages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMessage" inverseName="recipient" inverseEntity="EWMessage" syncable="YES"/>
         <relationship name="sentMessages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMessage" inverseName="sender" inverseEntity="EWMessage" syncable="YES"/>
         <relationship name="socialGraph" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWSocialGraph" inverseName="owner" inverseEntity="EWSocialGraph" syncable="YES"/>
-        <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="EWTaskItem" inverseName="owner" inverseEntity="EWTaskItem" syncable="YES"/>
+        <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWTaskItem" inverseName="owner" inverseEntity="EWTaskItem" syncable="YES"/>
         <relationship name="tasksHelped" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWTaskItem" syncable="YES"/>
     </entity>
     <entity name="EWServerObject" representedClassName="EWServerObject" isAbstract="YES" syncable="YES">
@@ -140,7 +140,7 @@
         <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="268"/>
         <element name="EWMessage" positionX="0" positionY="0" width="128" height="150"/>
         <element name="EWNotification" positionX="9" positionY="153" width="128" height="148"/>
-        <element name="EWPerson" positionX="0" positionY="0" width="128" height="538"/>
+        <element name="EWPerson" positionX="0" positionY="0" width="128" height="540"/>
         <element name="EWServerObject" positionX="9" positionY="153" width="128" height="88"/>
         <element name="EWSocialGraph" positionX="9" positionY="153" width="128" height="148"/>
         <element name="EWTaskItem" positionX="0" positionY="0" width="128" height="195"/>

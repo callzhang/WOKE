@@ -312,6 +312,11 @@
     if (inserts.count || updates.count || deletes.count) {
 		
         for (NSManagedObject *MO in inserts) {
+			//check if it's our guy
+			if (![MO isKindOfClass:[EWServerObject class]]) {
+				continue;
+			}
+			
 			//skip if marked as save to local
 			if ([[EWDataStore sharedInstance].saveToLocalItems containsObject:MO]) {
 				continue;
@@ -329,8 +334,12 @@
 		
 		
         for (NSManagedObject *MO in updates) {
-			if (!MO.serverID) {
-				NSLog(@"!!! The mo trying to update has no serverID: %@", MO);
+			//check if it's our guy
+			if (![MO isKindOfClass:[EWServerObject class]]) {
+				continue;
+			}
+			if (![EWDataStore validateMO:MO]) {
+				NSLog(@"!!! The mo trying to update failed validation: %@", MO);
 				continue;
 			}
 			
@@ -366,14 +375,17 @@
             NSArray *changedKeys = MO.changedKeys;
             if (changedKeys.count > 0) {
 				hasChange = YES;
-            }else{
-				NSLog(@"!!! No changed keys for MO %@", MO.objectID);
-			}
-            
-			[EWDataStore appendUpdateQueue:MO];
+				NSLog(@"MO %@(%@) enqueued with changed keys: %@", MO.entity.name, MO.serverID, changedKeys);
+            }
+            [EWDataStore appendUpdateQueue:MO];
+
         }
 		
         for (NSManagedObject *MO in deletes) {
+			//check if it's our guy
+			if (![MO isKindOfClass:[EWServerObject class]]) {
+				continue;
+			}
             NSLog(@"~~~> MO %@(%@) deleted from context", MO.entity.name, [MO valueForKey:kParseObjectID]);
             PFObject *PO = [MO getParseObjectWithError:nil];
             [EWDataStore appendDeleteQueue:PO];
@@ -883,7 +895,7 @@
 
 
 #pragma mark - KVO
-//observe all context, but only modify updatedAt on main thread
+//observe main context
 - (void)preSaveAction:(NSNotification *)notification{
 	if (![NSThread isMainThread]) {
 		NSLog(@"Skip pre-save check on background thread");
@@ -897,7 +909,10 @@
 	
     //for updated mo
     for (NSManagedObject *mo in objects) {
-		//Potential bug: CoreData could not fulfill a fault for mo
+		//check if it's our guy
+		if (![mo isKindOfClass:[EWServerObject class]]) {
+			continue;
+		}
 		//First test MO exist
 		if (![localContext existingObjectWithID:mo.objectID error:NULL]) {
 			NSLog(@"*** MO you are trying to modify doesn't exist in the sqlite: %@", mo.objectID);
@@ -938,14 +953,14 @@
 			continue;
 		}
 		
-		//only update date on main thread
+		//change updatedAt
 		[mo setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
     }
 	
 		
-	if (localContext == [EWDataStore mainContext]) {
+	//if (localContext == [EWDataStore mainContext]) {
 		[EWDataStore enqueueChangesInContext:localContext];
-	}
+	//}
 }
 
 
@@ -1210,31 +1225,13 @@
             
             return;
         }
-        
-        NSManagedObjectID *objectID = self.objectID;
-        
-        //save async
-//        dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-//			NSManagedObjectContext *localContext = [EWDataStore currentContext];
-//            NSManagedObject *currentMO = [localContext objectWithID:objectID];
-//            
-//            NSLog(@"===> Refreshing %@ (%@) in background", self.entity.name, [self valueForKey:kParseObjectID]);
-//            
-//            PFObject *object = currentMO.parseObject;
-//            [currentMO updateValueAndRelationFromParseObject:object];
-//            [localContext saveToPersistentStoreAndWait];
-//            
-//            
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                if (block) {
-//                    block();
-//                }
-//            });
-//
-//        });
 		
 		[MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-			NSManagedObject *currentMO = [localContext objectWithID:objectID];
+			NSManagedObject *currentMO = [self MR_inContext:localContext];
+			if (!currentMO) {
+				NSLog(@"Failed to obtain object from database: %@", self);
+				return;
+			}
 			NSLog(@"Refreshing %@ (%@) in background", self.entity.name, [self valueForKey:kParseObjectID]);
 			
 			PFObject *object = currentMO.parseObject;
