@@ -192,8 +192,12 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             }];
         }
         stats.person = person;
-        _photos = [[NSMutableArray alloc] init];
-        [_photos addObjectsFromArray:person.images];
+        
+        if (!_photos) {
+            _photos = [[NSMutableArray alloc] init];
+            [_photos addObjectsFromArray:person.images];
+        }
+        
     }
 }
 
@@ -777,6 +781,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 }
 -(void)photoBrowser:(IDMPhotoBrowser *)photoBrowser detelePhotoAtIndexPath:(NSInteger)path
 {
+    [photoBrowser setInitialPageIndex:0];
     
     [_photos removeObjectAtIndex:path-1];
     
@@ -797,6 +802,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 {
     if (person.isMe) {
         // 结束时候保存一次
+        me.images = _photos;
         [EWDataStore save];
     }
 }

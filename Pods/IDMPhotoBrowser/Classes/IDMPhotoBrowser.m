@@ -897,6 +897,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 
 - (void)reloadData {
     // Get data
+    
     [self releaseAllUnderlyingPhotos];
     
     // Update
@@ -1361,7 +1362,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
             
             [self.delegate photoBrowser:self detelePhotoAtIndexPath:_currentPageIndex];
         }
-        
+        [self jumpToPageAtIndex:0];
 
     }
     else{
