@@ -190,9 +190,17 @@
     
     [self.view addSubview:postWakeUpVCBtn];
     
+//    id _self = (weak)self;
+    
     if ([self.shakeProgress isShakeSupported]) {
         // need  update
-        [self.shakeProgress startUpdateProgressBarWithProgressingHandler:nil CompleteHandler:nil];
+        [self.shakeProgress startUpdateProgressBarWithProgressingHandler:^(){
+            NSLog(@"Progressing");
+        } CompleteHandler:^(){
+            
+            [self presentPostWakeUpVC];
+        
+        }];
     }
     else{
         // use button to getup!;

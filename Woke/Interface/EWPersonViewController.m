@@ -778,7 +778,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 -(void)photoBrowser:(IDMPhotoBrowser *)photoBrowser detelePhotoAtIndexPath:(NSInteger)path
 {
     
-    [_photos removeObjectAtIndex:path];
+    [_photos removeObjectAtIndex:path-1];
+    
+    
     [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
     
     [photoBrowser reloadData];

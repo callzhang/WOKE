@@ -68,13 +68,23 @@
         [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData *accelerometerData, NSError *error){
             
             NSLog(@"%f %f %f",accelerometerData.acceleration.x , accelerometerData.acceleration.y , accelerometerData.acceleration.z);
+            
+            double x = accelerometerData.acceleration.x;
+            double y = accelerometerData.acceleration.y;
+            double z = accelerometerData.acceleration.z;
+            if (x*x +y*y+ z*z < 1) {
+                return ;
+            }
             if (self.progress < 1) {
                 
-                self.progress += 0.1f;
                 
-                [self setProgress:self.progress animated:YES];
+                [self setProgress:self.progress+0.005f animated:YES];
                 
-                progressHandler();
+                if (progressHandler) {
+                    
+                    progressHandler();
+                    
+                }
         
                 
             }
@@ -82,7 +92,13 @@
                 
                 [self.motionManager stopAccelerometerUpdates];
                 
-                successProgressHandler();
+                if (successProgressHandler) {
+                    
+                    successProgressHandler();
+                    
+
+                }
+                NSLog(@"compeled");
                 
             }
             
