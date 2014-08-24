@@ -392,7 +392,7 @@
 #pragma mark - NEW
 - (EWTaskItem *)newTaskInContext:(NSManagedObjectContext *)context{
     
-    EWTaskItem *t = [EWTaskItem createInContext:context];
+    EWTaskItem *t = [EWTaskItem createEntityInContext:context];
     t.updatedAt = [NSDate date];
     //relation
     t.owner = [EWPersonStore meInContext:context];

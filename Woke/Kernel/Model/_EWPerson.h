@@ -13,6 +13,7 @@ extern const struct EWPersonAttributes {
 	__unsafe_unretained NSString *facebook;
 	__unsafe_unretained NSString *gender;
 	__unsafe_unretained NSString *history;
+	__unsafe_unretained NSString *images;
 	__unsafe_unretained NSString *lastLocation;
 	__unsafe_unretained NSString *name;
 	__unsafe_unretained NSString *preference;
@@ -31,7 +32,6 @@ extern const struct EWPersonRelationships {
 	__unsafe_unretained NSString *groupTasks;
 	__unsafe_unretained NSString *groups;
 	__unsafe_unretained NSString *groupsManaging;
-	__unsafe_unretained NSString *images;
 	__unsafe_unretained NSString *mediaAssets;
 	__unsafe_unretained NSString *medias;
 	__unsafe_unretained NSString *notifications;
@@ -52,7 +52,6 @@ extern const struct EWPersonFetchedProperties {
 @class EWGroupTask;
 @class EWGroup;
 @class EWGroup;
-@class EWImage;
 @class EWMediaItem;
 @class EWMediaItem;
 @class EWNotification;
@@ -70,6 +69,7 @@ extern const struct EWPersonFetchedProperties {
 
 
 
+@class NSObject;
 @class NSObject;
 @class NSObject;
 
@@ -169,6 +169,16 @@ extern const struct EWPersonFetchedProperties {
 
 
 //- (BOOL)validateHistory:(id*)value_ error:(NSError**)error_;
+
+
+
+
+
+@property (nonatomic, strong) id images;
+
+
+
+//- (BOOL)validateImages:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -275,9 +285,9 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSSet *alarms;
+@property (nonatomic, strong) NSOrderedSet *alarms;
 
-- (NSMutableSet*)alarmsSet;
+- (NSMutableOrderedSet*)alarmsSet;
 
 
 
@@ -306,13 +316,6 @@ extern const struct EWPersonFetchedProperties {
 @property (nonatomic, strong) NSSet *groupsManaging;
 
 - (NSMutableSet*)groupsManagingSet;
-
-
-
-
-@property (nonatomic, strong) NSSet *images;
-
-- (NSMutableSet*)imagesSet;
 
 
 
@@ -366,9 +369,9 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSSet *tasks;
+@property (nonatomic, strong) NSOrderedSet *tasks;
 
-- (NSMutableSet*)tasksSet;
+- (NSMutableOrderedSet*)tasksSet;
 
 
 
@@ -390,8 +393,8 @@ extern const struct EWPersonFetchedProperties {
 - (void)addAchievementsObject:(EWAchievement*)value_;
 - (void)removeAchievementsObject:(EWAchievement*)value_;
 
-- (void)addAlarms:(NSSet*)value_;
-- (void)removeAlarms:(NSSet*)value_;
+- (void)addAlarms:(NSOrderedSet*)value_;
+- (void)removeAlarms:(NSOrderedSet*)value_;
 - (void)addAlarmsObject:(EWAlarmItem*)value_;
 - (void)removeAlarmsObject:(EWAlarmItem*)value_;
 
@@ -414,11 +417,6 @@ extern const struct EWPersonFetchedProperties {
 - (void)removeGroupsManaging:(NSSet*)value_;
 - (void)addGroupsManagingObject:(EWGroup*)value_;
 - (void)removeGroupsManagingObject:(EWGroup*)value_;
-
-- (void)addImages:(NSSet*)value_;
-- (void)removeImages:(NSSet*)value_;
-- (void)addImagesObject:(EWImage*)value_;
-- (void)removeImagesObject:(EWImage*)value_;
 
 - (void)addMediaAssets:(NSSet*)value_;
 - (void)removeMediaAssets:(NSSet*)value_;
@@ -450,8 +448,8 @@ extern const struct EWPersonFetchedProperties {
 - (void)addSentMessagesObject:(EWMessage*)value_;
 - (void)removeSentMessagesObject:(EWMessage*)value_;
 
-- (void)addTasks:(NSSet*)value_;
-- (void)removeTasks:(NSSet*)value_;
+- (void)addTasks:(NSOrderedSet*)value_;
+- (void)removeTasks:(NSOrderedSet*)value_;
 - (void)addTasksObject:(EWTaskItem*)value_;
 - (void)removeTasksObject:(EWTaskItem*)value_;
 
@@ -509,6 +507,12 @@ extern const struct EWPersonFetchedProperties {
 
 - (id)primitiveHistory;
 - (void)setPrimitiveHistory:(id)value;
+
+
+
+
+- (id)primitiveImages;
+- (void)setPrimitiveImages:(id)value;
 
 
 
@@ -576,8 +580,8 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSMutableSet*)primitiveAlarms;
-- (void)setPrimitiveAlarms:(NSMutableSet*)value;
+- (NSMutableOrderedSet*)primitiveAlarms;
+- (void)setPrimitiveAlarms:(NSMutableOrderedSet*)value;
 
 
 
@@ -598,11 +602,6 @@ extern const struct EWPersonFetchedProperties {
 
 - (NSMutableSet*)primitiveGroupsManaging;
 - (void)setPrimitiveGroupsManaging:(NSMutableSet*)value;
-
-
-
-- (NSMutableSet*)primitiveImages;
-- (void)setPrimitiveImages:(NSMutableSet*)value;
 
 
 
@@ -641,8 +640,8 @@ extern const struct EWPersonFetchedProperties {
 
 
 
-- (NSMutableSet*)primitiveTasks;
-- (void)setPrimitiveTasks:(NSMutableSet*)value;
+- (NSMutableOrderedSet*)primitiveTasks;
+- (void)setPrimitiveTasks:(NSMutableOrderedSet*)value;
 
 
 

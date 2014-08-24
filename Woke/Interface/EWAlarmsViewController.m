@@ -167,14 +167,23 @@
     
     //init alarm page container
     if (me) {
+        //get alarm and task first
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskStore myTasks];
-        if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
-            NSLog(@"%s: Alarm(%ld) and Task(%ld)", __func__, (long)alarms.count, (long)tasks.count);
-            alarms = nil;
-            tasks = nil;
+        
+        
+        if (alarms.count != 7){
+            [[EWAlarmManager sharedInstance] scheduleAlarm];
+        }
+        
+        if (tasks.count != 7 * nWeeksToScheduleTask) {
+            NSLog(@"Alarm(%ld) and Task(%ld)", (long)alarms.count, (long)tasks.count);
+            [[EWTaskStore sharedInstance] scheduleTasksInBackground];
             
-        }else{
+        }
+        
+        if (alarms.count == 7 && tasks.count == 7*nWeeksToScheduleTask) {
+            
             //alarmPages
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
             for (EWAlarmPageView *view in _scrollView.subviews) {
@@ -183,9 +192,9 @@
         }
         
         //fetch everyone
-        dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-            [[EWPersonStore sharedInstance] everyone];
-        });
+        [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:^{
+            //
+        }];
         
     }else{
         alarms = nil;

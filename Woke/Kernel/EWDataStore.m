@@ -302,7 +302,7 @@
     [EWDataStore save];
 }
 
-+ (BOOL)enqueueChangesInContext:(NSManagedObjectContext *)context{
++ (void)enqueueChangesInContext:(NSManagedObjectContext *)context{
 	BOOL hasChange = NO;
 	
     NSSet *inserts = [context insertedObjects];
@@ -365,12 +365,12 @@
             //check if updated keys are valid
             NSArray *changedKeys = MO.changedKeys;
             if (changedKeys.count > 0) {
-                [EWDataStore appendUpdateQueue:MO];
 				hasChange = YES;
             }else{
 				NSLog(@"!!! No changed keys for MO %@", MO.objectID);
 			}
             
+			[EWDataStore appendUpdateQueue:MO];
         }
 		
         for (NSManagedObject *MO in deletes) {
@@ -383,7 +383,7 @@
 	
 
 	//[context saveToPersistentStoreAndWait];
-	return hasChange;
+	//return hasChange;
 }
 
 + (void)saveToLocal:(NSManagedObject *)mo{
@@ -904,7 +904,6 @@
 			continue;
 		}
 		
-		NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
 	
 		//skip if marked save to local
 		if ([self.saveToLocalItems containsObject:mo]) {
@@ -913,7 +912,8 @@
 		
 		//additional check for updated object
 		if ([updatedObjects containsObject:mo] && ![insertedObjects containsObject:mo]) {
-			//if last updated doesn't exist,
+			NSDate *lastUpdated = [mo valueForKey:kUpdatedDateKey];
+			//if last updated doesn't exist, skip
 			if (!lastUpdated) continue;
 			
 			//remove unnecessary changes

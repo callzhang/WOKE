@@ -189,18 +189,36 @@ EWPerson *me;
 
 
 - (NSArray *)everyone{
-    if (everyone && [[NSDate date] timeIntervalSinceDate:timeEveryoneChecked] < everyoneCheckTimeOut && everyone.count != 0) {
-        return everyone;
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        [self getEveryoneInContext:localContext];
+    }];
+    
+    NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:[EWDataStore mainContext]];
+    return allPerson;
+    
+}
+
+- (void)getEveryoneInBackgroundWithCompletion:(void (^)(void))block{
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        [self getEveryoneInContext:localContext];
+    }completion:^(BOOL success, NSError *error) {
+        block();
+    }];
+}
+
+- (void)getEveryoneInContext:(NSManagedObjectContext *)context{
+    if (everyone && timeEveryoneChecked.timeElapsed < everyoneCheckTimeOut && everyone.count != 0) {
+        return;
     }
     //fetch from sever
     NSMutableArray *allPerson = [NSMutableArray new];
     NSString *parseObjectId = [me valueForKey:kParseObjectID];
     NSError *error;
     NSArray *list = [PFCloud callFunction:@"getRelevantUsers"
-           withParameters:@{@"objectId": parseObjectId,
-                            @"topk" : numberOfRelevantUsers,
-                            @"radius" : radiusOfRelevantUsers}
-                    error:&error];
+                           withParameters:@{@"objectId": parseObjectId,
+                                            @"topk" : numberOfRelevantUsers,
+                                            @"radius" : radiusOfRelevantUsers}
+                                    error:&error];
     
     if (error && list.count == 0) {
         NSLog(@"*** Failed to get friends list: %@", error.description);
@@ -225,30 +243,31 @@ EWPerson *me;
     if (error) {
         NSLog(@"*** Failed to fetch everyone.");
         //TODO
-        return nil;
+        return;
     }
     
-    //make sure the everyone is saved on main thread
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        for (PFUser *user in people) {
-            EWPerson *person = (EWPerson *)[user managedObjectInContext:localContext];
-            float score = 99 - [people indexOfObject:user];
-            person.score = [NSNumber numberWithFloat:score];
-            [allPerson addObject:person];
-            [EWDataStore saveToLocal:person];
-        }
-        
-        EWPerson *localMe = [EWPersonStore meInContext:localContext];
-        localMe.score = @100;
-        NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
-        
-        everyone = [allPerson copy];
-        timeEveryoneChecked = [NSDate date];
-        
-    }];
+    //make sure the rest of people's score is revert back to 0
+    NSArray *otherLocalPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [people valueForKey:kParseObjectID]] inContext:context];
+    NSLog(@"%d person's score changed to 0", otherLocalPerson.count);
+    for (EWPerson *person in otherLocalPerson) {
+        person.score = 0;
+    }
+    //change the returned people's score
+    for (PFUser *user in people) {
+        EWPerson *person = (EWPerson *)[user managedObjectInContext:context];
+        float score = 99 - [people indexOfObject:user];
+        person.score = [NSNumber numberWithFloat:score];
+        [allPerson addObject:person];
+        [EWDataStore saveToLocal:person];
+    }
     
-    return everyone;
+    EWPerson *localMe = [EWPersonStore meInContext:context];
+    localMe.score = @100;
+    NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
+    
+    everyone = [allPerson copy];
+    timeEveryoneChecked = [NSDate date];
+    
 }
 
 - (void)setEveryone:(NSArray *)e{

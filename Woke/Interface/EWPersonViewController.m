@@ -179,7 +179,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             NSInteger n2 = [obj2 integerValue];
             return n1 < n2;
         }];
-        if (!_taskActivity) {
+        if (!_taskActivity && person.isMe) {
             [EWStatisticsManager updateTaskActivityCacheWithCompletion:^{
                 _taskActivity = person.cachedInfo[kTaskActivityCache];
                 dates = _taskActivity.allKeys;
