@@ -286,8 +286,8 @@
 		0E590FE8194DF35B000AD7C4 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Bold.ttf"; sourceTree = "<group>"; };
 		0E590FE9194DF35B000AD7C4 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Regular.ttf"; sourceTree = "<group>"; };
 		0E590FEA194DF35B000AD7C4 /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
-		0E9BE0DD19A73CAB00E17108 /* EWShakeProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWShakeProgressView.h; sourceTree = "<group>"; };
-		0E9BE0DE19A73CAB00E17108 /* EWShakeProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWShakeProgressView.m; sourceTree = "<group>"; };
+		0E9BE0DD19A73CAB00E17108 /* EWShakeProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWShakeProgressView.h; sourceTree = "<group>"; usesTabs = 1; };
+		0E9BE0DE19A73CAB00E17108 /* EWShakeProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWShakeProgressView.m; sourceTree = "<group>"; usesTabs = 1; };
 		0E9BE0E019A782AB00E17108 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		0EA8ACD71965BA0000EEDCF4 /* EWActivityHeadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWActivityHeadView.h; sourceTree = "<group>"; };
 		0EA8ACD81965BA0000EEDCF4 /* EWActivityHeadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWActivityHeadView.m; sourceTree = "<group>"; };

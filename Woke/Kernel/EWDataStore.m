@@ -1459,7 +1459,7 @@
         }
     }];
     
-    [EWDataStore saveToLocal:self];
+    //[EWDataStore saveToLocal:self];
 }
 
 

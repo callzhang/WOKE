@@ -67,39 +67,30 @@
         
         [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData *accelerometerData, NSError *error){
             
-            NSLog(@"%f %f %f",accelerometerData.acceleration.x , accelerometerData.acceleration.y , accelerometerData.acceleration.z);
+            //NSLog(@"%f %f %f",accelerometerData.acceleration.x , accelerometerData.acceleration.y , accelerometerData.acceleration.z);
             
             double x = accelerometerData.acceleration.x;
             double y = accelerometerData.acceleration.y;
             double z = accelerometerData.acceleration.z;
-            if (x*x +y*y+ z*z < 1) {
-                return ;
-            }
+            double strength = log(x*x +y*y+ z*z) * kMotionStrengthModifier - kMotionThrethold;
+            
             if (self.progress < 1) {
                 
                 
-                [self setProgress:self.progress+0.005f animated:YES];
+                [self setProgress:(self.progress + strength) animated:YES];
                 
                 if (progressHandler) {
-                    
                     progressHandler();
-                    
                 }
-        
                 
-            }
-            else{
+            }else{
                 
                 [self.motionManager stopAccelerometerUpdates];
                 
                 if (successProgressHandler) {
-                    
                     successProgressHandler();
-                    
-
                 }
-                NSLog(@"compeled");
-                
+                NSLog(@"Shake Compeled");
             }
             
             
@@ -108,7 +99,7 @@
     }
     else {
         
-        NSLog(@"AccelerometerAvailable is not available.");
+        NSLog(@"Accelerometer is not available.");
         
     }
 

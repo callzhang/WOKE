@@ -147,7 +147,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
                 return NSOrderedSame;
             }
         }];
-        
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         //refresh
         [collectionView reloadData];
     }];

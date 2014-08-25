@@ -39,17 +39,13 @@
     NSTimer *timerTimer;
     NSUInteger timePast;
 }
-@property (nonatomic, strong) EWShakeManager *shakeManager;
 @end
 
-// ShakeManager 代理定义，实现在底部
-@interface EWWakeUpViewController (EWShakeManager) <EWShakeManagerDelegate>
-@end
+
 
 @implementation EWWakeUpViewController
 @synthesize tableView = tableView_;
 @synthesize timer, header;
-@synthesize shakeManager = _shakeManager;
 @synthesize person, task;
 
 
@@ -190,6 +186,7 @@
     
     if ([self.shakeProgress isShakeSupported]) {
         // need  update
+        self.shakeProgress.progress = 0;
         [self.shakeProgress startUpdateProgressBarWithProgressingHandler:^(){
             NSLog(@"Progressing");
         } CompleteHandler:^(){
@@ -221,7 +218,6 @@
 }
 
 - (void)dealloc {
-    [_shakeManager unregister];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
@@ -665,19 +661,3 @@
 
 
 
-
-
-
-@implementation EWWakeUpViewController (EWShakeManager)
-
-- (UIView *)currentView {
-    return self.view;
-}
-
-- (void)EWShakeManagerDidShaked {
-    // TODO: Shake 之后做什么：
-    // 解锁
-}
-
-
-@end

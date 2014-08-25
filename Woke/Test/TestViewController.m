@@ -166,7 +166,7 @@
     
     switch (indexPath.row) {
         case 0: {//wake up view
-            [self dismissViewControllerAnimated:YES completion:^{
+            [rootViewController dismissViewControllerAnimated:YES completion:^{
                 EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:[[EWTaskStore sharedInstance] nextValidTaskForPerson:me]];
                 [rootViewController presentViewControllerWithBlurBackground:controller];
             }];

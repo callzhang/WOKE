@@ -627,7 +627,11 @@
             }
         }
         if (!foundMatchingLocalNotif) {
-            //time_i need to be alarmed
+            
+            //make task objectID perminent
+            if (task.objectID.isTemporaryID) {
+                [task.managedObjectContext obtainPermanentIDsForObjects:@[task] error:NULL];
+            }
             //schedule
             UILocalNotification *localNotif = [[UILocalNotification alloc] init];
             EWAlarmItem *alarm = task.alarm;
