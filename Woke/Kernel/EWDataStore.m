@@ -519,6 +519,17 @@
 //	return NO;
 }
 
++ (NSManagedObject *)getManagedObjectByStringID:(NSString *)stringID{
+	NSParameterAssert([NSThread isMainThread]);
+	NSManagedObjectID *ID = [[EWDataStore mainContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:stringID]];
+	NSError *err;
+	NSManagedObject *MO = [[EWDataStore mainContext] existingObjectWithID:ID error:&err];
+	if (!MO && err) {
+		NSLog(@"*** Failed to get the MO from store: %@", err.description);
+	}
+	return MO;
+}
+
 
 #pragma mark - Server Updating Queue methods
 //update queue
@@ -673,6 +684,9 @@
 	return object;
 }
 
++ (void)setCachedParseObject:(PFObject *)PO{
+	[[EWDataStore sharedInstance].serverObjectPool setObject:PO forKey:PO.objectId];
+}
 
 #pragma mark - ============== Parse Server methods ==============
 +(void)updateToServer{
@@ -997,7 +1011,7 @@
 	NSManagedObjectContext *localContext = self.managedObjectContext;
     
     //download
-    [parseObject fetch];
+    [parseObject fetchIfNeeded];
     
     //Assign attributes
     [self assignValueFromParseObject:parseObject];
@@ -1758,7 +1772,9 @@
 }
 
 - (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context{
-
+	if (!context) {
+		context = [EWDataStore mainContext];
+	}
     NSManagedObject *mo = [NSClassFromString(self.localClassName) MR_findFirstByAttribute:kParseObjectID withValue:self.objectId inContext:context];
     
     if (!mo) {

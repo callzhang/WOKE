@@ -228,7 +228,7 @@
             task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         }else if (taskLocalID){
             isLaunchedFromLocalNotification = YES;
-            task = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:taskLocalID];
+            task = (EWTaskItem *)[EWDataStore getManagedObjectByStringID:taskLocalID];
         }
         
     }else{
@@ -237,7 +237,7 @@
     
     NSLog(@"Start handle timer event");
     if (!task) {
-        NSLog(@"%s No task found for next task, abord", __func__);
+        NSLog(@"*** %s No task found for next task, abord", __func__);
         return;
     }
     
@@ -285,7 +285,7 @@
         }
     }
     
-    //add fake media is needed
+    //add Woke media is needed
     nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
     if (nVoice == 0) {
         //need to create some voice

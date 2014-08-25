@@ -75,6 +75,7 @@ typedef void (^EWSavingCallback)(void);
 + (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context withID:(NSManagedObjectID *)objectID ;
 + (NSManagedObjectContext *)mainContext;
 + (BOOL)validateMO:(NSManagedObject *)mo;
++ (NSManagedObject *)getManagedObjectByStringID:(NSString *)stringID;
 
 #pragma mark - Parse Server methods
 /**
@@ -131,6 +132,8 @@ typedef void (^EWSavingCallback)(void);
  */
 + (void)addSaveCallback:(PFObjectResultBlock)callback forManagedObjectID:(NSManagedObjectID *)objectID;
 
++ (PFObject *)getCachedParseObjectForID:(NSString *)parseID;
++ (void)setCachedParseObject:(PFObject *)PO;
 @end
 
 

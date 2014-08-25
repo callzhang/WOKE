@@ -150,20 +150,19 @@
     EWTaskItem *task = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:taskID];
     
     if (!task) {
-        PFQuery *q = [PFQuery queryWithClassName:@"EWTaskItem"];
-        [q whereKey:kParseObjectID equalTo:taskID];
-        PFObject *PO = [q getFirstObject];
+        PFObject *PO = [EWDataStore getCachedParseObjectForID:taskID];
+        if (!PO) {
+            PFQuery *q = [PFQuery queryWithClassName:@"EWTaskItem"];
+            [q whereKey:kParseObjectID equalTo:taskID];
+            PO = [q getFirstObject];
+        }
+        
         task = (EWTaskItem *)[PO managedObjectInContext:nil];
         [task refreshInBackgroundWithCompletion:NULL];
     }
     return task;
 }
-//
-//- (EWTaskItem *)getTaskByLocalID:(NSString *)localID{
-//    NSManagedObjectID *taskID = [[NSManagedObjectContext contextForCurrentThread].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:localID]];
-//    EWTaskItem *task = (EWTaskItem *)[[NSManagedObjectContext contextForCurrentThread] objectWithID:taskID];
-//    return task;
-//}
+
 
 #pragma mark - SCHEDULE
 - (NSArray *)scheduleTasks{

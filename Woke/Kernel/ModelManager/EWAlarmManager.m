@@ -259,24 +259,21 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:nil];
     [alarm.managedObjectContext deleteObject:alarm];
     [EWDataStore save];
-    
-
 }
 
 - (void)deleteAllAlarms{
-    NSArray *alarmIDs = [me.alarms valueForKey:@"objectID"];
+    //NSArray *alarmIDs = [me.alarms valueForKey:@"objectID"];
     
     //notification
     //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarms userInfo:@{@"alarms": alarms}];
     
     //delete
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-        for (EWAlarmItemID *alarmID in alarmIDs) {
-            EWAlarmItem *alarm = [EWAlarmItem findFirstByAttribute:@"objectID" withValue:alarmID inContext:localContext];
-            [self removeAlarm:alarm];
+        for (EWAlarmItem *alarm in me.alarms) {
+            EWAlarmItem *localAlarm = [alarm inContext:localContext];
+            [self removeAlarm:localAlarm];
         }
     }];
-    
 }
 
 

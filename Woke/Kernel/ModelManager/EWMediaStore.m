@@ -74,6 +74,7 @@
     [q whereKey:kParseObjectID notContainedIn:mediasFromWoke];
     PFObject *voice = [q getFirstObject];
     if (voice) {
+        [EWDataStore setCachedParseObject:voice];
         EWMediaItem *media = (EWMediaItem *)[voice managedObjectInContext:nil];
         [media refresh];
         //save
