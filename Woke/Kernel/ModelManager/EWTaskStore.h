@@ -63,7 +63,7 @@
  */
 - (NSArray *)pastTasksByPerson:(EWPerson *)person;
 - (EWTaskItem *)getTaskByID:(NSString *)taskID;
-- (EWTaskItem *)getTaskByLocalID:(NSString *)localID;
+//- (EWTaskItem *)getTaskByLocalID:(NSString *)localID;
 
 #pragma mark - Schedule
 /**

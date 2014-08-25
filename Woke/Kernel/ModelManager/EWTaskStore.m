@@ -158,12 +158,12 @@
     }
     return task;
 }
-
-- (EWTaskItem *)getTaskByLocalID:(NSString *)localID{
-    NSManagedObjectID *taskID = [[NSManagedObjectContext contextForCurrentThread].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:localID]];
-    EWTaskItem *task = (EWTaskItem *)[[NSManagedObjectContext contextForCurrentThread] objectWithID:taskID];
-    return task;
-}
+//
+//- (EWTaskItem *)getTaskByLocalID:(NSString *)localID{
+//    NSManagedObjectID *taskID = [[NSManagedObjectContext contextForCurrentThread].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:localID]];
+//    EWTaskItem *task = (EWTaskItem *)[[NSManagedObjectContext contextForCurrentThread] objectWithID:taskID];
+//    return task;
+//}
 
 #pragma mark - SCHEDULE
 - (NSArray *)scheduleTasks{
@@ -219,7 +219,10 @@
         for (PFObject *t in objects) {
             EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:context];
             [task refresh];
-            if (![tasks containsObject:task]) {
+            BOOL good = [EWDataStore validateMO:task];
+            if (!good) {
+                [task deleteEventually];
+            }else if (![tasks containsObject:task]) {
                 [tasks addObject:task];
                 [newTask addObject:task];
                 
@@ -353,7 +356,7 @@
         [pastTasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
         EWTaskItem *latestTask = pastTasks.firstObject;
         if (latestTask.time.timeElapsed > 3600*24) {
-            //we should not query other's past task
+            NSLog(@"Checking past tasks but the latest task is outdated: %@", latestTask.time);
             if([EWDataStore isReachable]){
                 //get from server
                 NSLog(@"Fetch past task from server for %@", localMe.name);

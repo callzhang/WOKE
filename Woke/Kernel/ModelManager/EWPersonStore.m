@@ -131,43 +131,10 @@ EWPerson *me;
     return person;
 }
 
-////DEPRECIATED
-//-(EWPerson *)getPersonByID:(NSString *)ID{
-//    //ID is username
-//    if(!ID) return nil;
-//    EWPerson *person = [EWPerson findFirstByAttribute:@"username" withValue:ID];
-//    
-//    if (!person){
-//        //First find user on server
-//        PFUser *user;
-//        if ([[PFUser currentUser].username isEqualToString:ID]) {
-//            user = [PFUser currentUser];
-//        }else{
-//            PFQuery *query = [PFUser query];
-//            [query whereKey:kUsername equalTo:ID];
-//            NSError *error;
-//            user = [query findObjects:&error].firstObject;
-//            if (error) {
-//                NSLog(@"Failed to find user with ID %@. Reason:%@", ID, error.description);
-//            }
-//        }
-//        
-//        if (user.isNew) {
-//            person = [self createPersonWithParseObject:user];
-//            NSLog(@"Current user %@ data has CREATED", person.name);
-//        }else{
-//            person = (EWPerson *)[user managedObject];
-//            NSLog(@"Person created from PO");
-//        }
-//        
-//        
-//    }else{
-//        NSLog(@"Me %@ data has FETCHED", person.name);
-//    }
-//    
-//
-//    return person;
-//}
+- (void)refreshPersonInBackgroundWithCompletion:(void (^)(void))block{
+    
+}
+
 
 //check my relation, used for new installation with existing user
 + (void)updateMe{
@@ -194,6 +161,7 @@ EWPerson *me;
     }];
     
     NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:[EWDataStore mainContext]];
+    allPerson = [allPerson sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO]]];
     return allPerson;
     
 }
@@ -251,6 +219,7 @@ EWPerson *me;
     NSLog(@"%d person's score changed to 0", otherLocalPerson.count);
     for (EWPerson *person in otherLocalPerson) {
         person.score = 0;
+        [EWDataStore saveToLocal:person];
     }
     //change the returned people's score
     for (PFUser *user in people) {
@@ -389,7 +358,7 @@ EWPerson *me;
 #pragma mark - Validation
 + (BOOL)validatePerson:(EWPerson *)person{
     if (!person.isMe) {
-        NSLog(@"Skip updating other PFUser: %@", person.name);
+        NSLog(@"Skip validate other PFUser: %@", person.name);
         return YES;
     }
     

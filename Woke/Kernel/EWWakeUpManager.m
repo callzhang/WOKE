@@ -227,7 +227,7 @@
             task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         }else if (taskLocalID){
             isLaunchedFromLocalNotification = YES;
-            task = [[EWTaskStore sharedInstance] getTaskByLocalID:taskLocalID];
+            task = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:taskLocalID];
         }
         
     }else{
@@ -307,7 +307,7 @@
         [EWWakeUpManager presentWakeUpViewWithTask:task];
         
     }else if (isLanchedFromRemoteNotification){
-    
+        
     }else{
         //fire an alarm
         NSLog(@"=============> Firing Alarm timer notification <===============");

@@ -16,6 +16,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "EWAppDelegate.h"
 #import "EWRecordingViewController.h"
+#import "EWTaskStore.h"
 
 #import "EWUIUtil.h"
 NSString * const selectAllCellId = @"selectAllCellId";
@@ -38,7 +39,6 @@ NSString * const selectAllCellId = @"selectAllCellId";
 @property(nonatomic,strong)NSMutableSet * selectedPersonSet;
 
 //init views and data
--(void)initViews;
 -(void)initData;
 
 //click action
@@ -77,32 +77,6 @@ NSString * const selectAllCellId = @"selectAllCellId";
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    [self initData];
-    [self initViews];
-    
-}
-
-- (void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self initData];
-        [collectionView reloadData];
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-    });
-}
-
-#pragma mark -
-#pragma mark - init views and data
-
--(void)initData
-{
-    //take the cached value or a new value
-    personArray = [[EWPersonStore sharedInstance] everyone];
-}
-
--(void)initViews
-{
     
     UICollectionViewFlowLayout *flowLayout=[[UICollectionViewFlowLayout alloc] init];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -124,7 +98,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
     collectionView.delegate = self;
     collectionView.backgroundColor = [UIColor clearColor];
     [collectionView setContentInset:UIEdgeInsetsMake(20, 20, 150, 20)];
-//    [collectionView setAllowsMultipleSelection:YES];
+    //    [collectionView setAllowsMultipleSelection:YES];
     
     [EWUIUtil applyAlphaGradientForView:collectionView withEndPoints:@[@0.1, @0.8]];
     
@@ -142,6 +116,41 @@ NSString * const selectAllCellId = @"selectAllCellId";
     voiceMessageButton.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.3].CGColor;
     voiceMessageButton.layer.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2].CGColor;
     voiceMessageButton.imageEdgeInsets = UIEdgeInsetsMake(10, 5, 10, 5);
+
+    //data
+    [self initData];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    //[self initData];
+    //[collectionView reloadData];
+}
+
+#pragma mark -
+#pragma mark - init views and data
+
+-(void)initData
+{
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    //take the cached value or a new value
+    [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:^{
+        NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:[EWDataStore mainContext]];
+        personArray = [allPerson sortedArrayUsingComparator:^NSComparisonResult(EWPerson *obj1, EWPerson *obj2) {
+            NSDate *time1 = obj1.cachedInfo[kNextTaskTime]?:[NSDate date];
+            NSDate *time2 = obj2.cachedInfo[kNextTaskTime]?:[NSDate date];
+            if ([time1 isEarlierThan:time2]) {
+                return NSOrderedAscending;
+            }else if ([time2 isEarlierThan:time1]){
+                return NSOrderedDescending;
+            }else{
+                return NSOrderedSame;
+            }
+        }];
+        
+        //refresh
+        [collectionView reloadData];
+    }];
 }
 
 

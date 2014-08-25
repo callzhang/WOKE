@@ -87,13 +87,13 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 }
 
 
-- (void)setPerson:(EWPerson *)p{
-    //[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    person = p;
-    //[self initData];
-    //[self initView];
-    //[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-}
+//- (void)setPerson:(EWPerson *)p{
+//    //[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+//    person = p;
+//    [self initData];
+//    [self initView];
+//    //[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+//}
 
 
 - (void)viewDidLoad {
@@ -126,7 +126,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     self.location.text = @"";
     self.statement.text = @"";
     
-    [taskTableView reloadData];
+    [self initData];
+    [self initView];
     
 }
 
@@ -139,35 +140,14 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if (!person.isMe && person.isOutDated) {
         NSLog(@"Person %@ is outdated and needs refresh in background", person.name);
         
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        });
+
         [person refreshShallowWithCompletion:^{
-            //[person refreshShallowWithCompletion:^{
-            [person.managedObjectContext refreshObject:person mergeChanges:YES];
-            [self refresh];
-            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+            [self initData];
+            [self initView];
         }];
     }
 }
 
--(void)viewDidAppear:(BOOL)animated{
-    
-    [super viewDidAppear:animated];
-    
-    if (person) {
-
-        [self initData];
-        [self initView];
-    }
-}
-
-
-- (void)refresh{
-    [self initData];
-    [self initView];
-}
 
 - (void)initData {
     if (person) {

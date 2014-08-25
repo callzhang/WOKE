@@ -294,7 +294,6 @@
     //determine if scroll need flash
     bool flash = NO;
     if ([_alarmPages[0] isEqual: @NO]){
-        NSLog(@"First time, need flash scroll");
         flash = YES;
     }
     
@@ -458,7 +457,7 @@
             NSInteger nTask = me.tasks.count;
             if (nTask == 7*nWeeksToScheduleTask || nTask == 0){
                 [alarmPagetimer invalidate];
-                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
+                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
                 if (nTask == 0){
                     if (taskScheduled) {
                         [self showAlarmPageLoading:NO];
