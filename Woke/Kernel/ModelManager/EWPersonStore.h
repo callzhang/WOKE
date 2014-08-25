@@ -35,7 +35,8 @@ extern EWPerson *me;
 + (EWPersonStore *)sharedInstance;
 - (EWPerson *)createPersonWithParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByObjectID:(NSString *)ID;
-//- (EWPerson *)getPersonByID:(NSString *)ID;
+- (void)getEveryoneInBackgroundWithCompletion:(void (^)(void))block;
+- (void)refreshPersonInBackgroundWithCompletion:(void (^)(void))block; 
 + (void)updateMe;
 
 - (EWPerson *)anyone;

@@ -74,6 +74,7 @@ typedef void (^EWSavingCallback)(void);
 #pragma mark - CoreData
 + (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context withID:(NSManagedObjectID *)objectID ;
 + (NSManagedObjectContext *)mainContext;
++ (BOOL)validateMO:(NSManagedObject *)mo;
 
 #pragma mark - Parse Server methods
 /**

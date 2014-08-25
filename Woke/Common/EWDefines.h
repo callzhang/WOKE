@@ -111,7 +111,7 @@
 #define kTaskChangedNotification        @"EWTaskChanged" //key: task
 
 //UI event
-#define kBlurAnimationStartEvent        @"blur_animation"
+#define kWillShowMainView               @"will_show_main_view"//notify main view to reload view
 
 //person store
 #define kPersonLoggedIn                 @"PersonLoggedIn"

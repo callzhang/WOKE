@@ -50,7 +50,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     //data
     [self initData];
     
-    
+    //add task delete observer
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:[EWDataStore mainContext] queue:nil usingBlock:^(NSNotification *note) {
+        [self initData];
+        [self.tableView reloadData];
+    }];
 }
 
 - (BOOL)prefersStatusBarHidden{
@@ -63,13 +67,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     tasks = [EWTaskStore myTasks];
     alarmCells = [[NSMutableArray alloc] initWithCapacity:7];
     selected = 99;
-}
-
-#pragma mark - View life cycle
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    
-    //[self setEdgesForExtendedLayout:UIRectEdgeAll];
     
     //schedule alarm and tasks
     //pop up alarmScheduleView
@@ -86,19 +83,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         [_tableView reloadData];
         
     }
-
-}
-
-//refrash data after edited
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [_tableView reloadData];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)save{

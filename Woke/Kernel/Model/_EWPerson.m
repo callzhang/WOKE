@@ -12,6 +12,7 @@ const struct EWPersonAttributes EWPersonAttributes = {
 	.facebook = @"facebook",
 	.gender = @"gender",
 	.history = @"history",
+	.images = @"images",
 	.lastLocation = @"lastLocation",
 	.name = @"name",
 	.preference = @"preference",
@@ -30,7 +31,6 @@ const struct EWPersonRelationships EWPersonRelationships = {
 	.groupTasks = @"groupTasks",
 	.groups = @"groups",
 	.groupsManaging = @"groupsManaging",
-	.images = @"images",
 	.mediaAssets = @"mediaAssets",
 	.medias = @"medias",
 	.notifications = @"notifications",
@@ -139,6 +139,13 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 
 
+@dynamic images;
+
+
+
+
+
+
 @dynamic lastLocation;
 
 
@@ -237,10 +244,10 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 @dynamic alarms;
 
 	
-- (NSMutableSet*)alarmsSet {
+- (NSMutableOrderedSet*)alarmsSet {
 	[self willAccessValueForKey:@"alarms"];
   
-	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"alarms"];
+	NSMutableOrderedSet *result = (NSMutableOrderedSet*)[self mutableOrderedSetValueForKey:@"alarms"];
   
 	[self didAccessValueForKey:@"alarms"];
 	return result;
@@ -295,19 +302,6 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"groupsManaging"];
   
 	[self didAccessValueForKey:@"groupsManaging"];
-	return result;
-}
-	
-
-@dynamic images;
-
-	
-- (NSMutableSet*)imagesSet {
-	[self willAccessValueForKey:@"images"];
-  
-	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"images"];
-  
-	[self didAccessValueForKey:@"images"];
 	return result;
 }
 	
@@ -397,10 +391,10 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 @dynamic tasks;
 
 	
-- (NSMutableSet*)tasksSet {
+- (NSMutableOrderedSet*)tasksSet {
 	[self willAccessValueForKey:@"tasks"];
   
-	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"tasks"];
+	NSMutableOrderedSet *result = (NSMutableOrderedSet*)[self mutableOrderedSetValueForKey:@"tasks"];
   
 	[self didAccessValueForKey:@"tasks"];
 	return result;

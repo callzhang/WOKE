@@ -116,6 +116,12 @@
         [self centerView];
     }];
     
+    //listen to navigation pop event
+    [[NSNotificationCenter defaultCenter] addObserverForName:kWillShowMainView object:nil queue:nil usingBlock:^(NSNotification *note) {
+        [self viewWillAppear:YES];
+        [self.collectionView reloadData];
+    }];
+    
     //static UI stuff (do it once)
     //collection view
     _collectionView.delegate = self;
@@ -156,24 +162,28 @@
     [self initView];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    //[self centerView];
-
-}
 
 - (void)initData {
     
     //init alarm page container
     if (me) {
+        //get alarm and task first
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskStore myTasks];
-        if (alarms.count != 7 || tasks.count != 7 * nWeeksToScheduleTask) {
-            NSLog(@"%s: Alarm(%ld) and Task(%ld)", __func__, (long)alarms.count, (long)tasks.count);
-            alarms = nil;
-            tasks = nil;
+        
+        
+        if (alarms.count != 7){
+            [[EWAlarmManager sharedInstance] scheduleAlarm];
+        }
+        
+        if (tasks.count != 7 * nWeeksToScheduleTask) {
+            NSLog(@"Alarm(%ld) and Task(%ld)", (long)alarms.count, (long)tasks.count);
+            [[EWTaskStore sharedInstance] scheduleTasksInBackground];
             
-        }else{
+        }
+        
+        if (alarms.count == 7 && tasks.count == 7*nWeeksToScheduleTask) {
+            
             //alarmPages
             _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
             for (EWAlarmPageView *view in _scrollView.subviews) {
@@ -182,9 +192,9 @@
         }
         
         //fetch everyone
-        dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-            [[EWPersonStore sharedInstance] everyone];
-        });
+        [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:^{
+            //
+        }];
         
     }else{
         alarms = nil;
@@ -273,8 +283,8 @@
         //task or alarm incomplete, schedule
         //init state
         
-        alarms = [[EWAlarmManager sharedInstance] alarmsForUser:me];
-        tasks = [[EWTaskStore sharedInstance] getTasksByPerson:me];
+        alarms = [[EWAlarmManager sharedInstance] scheduleAlarm];
+        tasks = [[EWTaskStore sharedInstance] scheduleTasks];
         return;
     }
     
@@ -284,7 +294,6 @@
     //determine if scroll need flash
     bool flash = NO;
     if ([_alarmPages[0] isEqual: @NO]){
-        NSLog(@"First time, need flash scroll");
         flash = YES;
     }
     
@@ -448,7 +457,7 @@
             NSInteger nTask = me.tasks.count;
             if (nTask == 7*nWeeksToScheduleTask || nTask == 0){
                 [alarmPagetimer invalidate];
-                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
+                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
                 if (nTask == 0){
                     if (taskScheduled) {
                         [self showAlarmPageLoading:NO];

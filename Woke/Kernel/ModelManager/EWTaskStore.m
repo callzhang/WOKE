@@ -158,12 +158,12 @@
     }
     return task;
 }
-
-- (EWTaskItem *)getTaskByLocalID:(NSString *)localID{
-    NSManagedObjectID *taskID = [[NSManagedObjectContext contextForCurrentThread].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:localID]];
-    EWTaskItem *task = (EWTaskItem *)[[NSManagedObjectContext contextForCurrentThread] objectWithID:taskID];
-    return task;
-}
+//
+//- (EWTaskItem *)getTaskByLocalID:(NSString *)localID{
+//    NSManagedObjectID *taskID = [[NSManagedObjectContext contextForCurrentThread].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:localID]];
+//    EWTaskItem *task = (EWTaskItem *)[[NSManagedObjectContext contextForCurrentThread] objectWithID:taskID];
+//    return task;
+//}
 
 #pragma mark - SCHEDULE
 - (NSArray *)scheduleTasks{
@@ -219,7 +219,10 @@
         for (PFObject *t in objects) {
             EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:context];
             [task refresh];
-            if (![tasks containsObject:task]) {
+            BOOL good = [EWDataStore validateMO:task];
+            if (!good) {
+                [task deleteEventually];
+            }else if (![tasks containsObject:task]) {
                 [tasks addObject:task];
                 [newTask addObject:task];
                 
@@ -324,8 +327,13 @@
 
 - (BOOL)checkPastTasks{
     __block BOOL taskOutDated = NO;
+    static NSDate *lastPastTaskChecked;
+    if (lastPastTaskChecked && lastPastTaskChecked.timeElapsed > kTaskUpdateInterval) {
+        return taskOutDated;
+    }
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
+        //First get outdated current task and move to past
         EWPerson *localMe = [me inContext:localContext];
         NSMutableSet *tasks = localMe.tasks.mutableCopy;
         
@@ -348,7 +356,7 @@
         [pastTasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
         EWTaskItem *latestTask = pastTasks.firstObject;
         if (latestTask.time.timeElapsed > 3600*24) {
-            //we should not query other's past task
+            NSLog(@"Checking past tasks but the latest task is outdated: %@", latestTask.time);
             if([EWDataStore isReachable]){
                 //get from server
                 NSLog(@"Fetch past task from server for %@", localMe.name);
@@ -364,6 +372,7 @@
                 //assign back to person.tasks
                 for (PFObject *task in tasks) {
                     EWTaskItem *taskMO = (EWTaskItem *)[task managedObjectInContext:localContext];
+                    [taskMO refresh];
                     [localMe addPastTasksObject:taskMO];
                     taskOutDated = YES;
                     NSLog(@"!!! Task found on server: %@", taskMO.time.date2dayString);
@@ -378,7 +387,7 @@
         }
 
     }];
-    
+    lastPastTaskChecked = [NSDate date];
     
     return taskOutDated;
 }
@@ -386,7 +395,7 @@
 #pragma mark - NEW
 - (EWTaskItem *)newTaskInContext:(NSManagedObjectContext *)context{
     
-    EWTaskItem *t = [EWTaskItem createInContext:context];
+    EWTaskItem *t = [EWTaskItem createEntityInContext:context];
     t.updatedAt = [NSDate date];
     //relation
     t.owner = [EWPersonStore meInContext:context];
@@ -866,7 +875,7 @@
 
 + (void)scheduleNotificationOnServerWithTimer:(EWTaskItem *)task;{
     if (!task.time || !task.objectId) {
-        NSLog(@"*** The Task on %@ (%@) you passed in doesn't have time or objectId", task.time.weekday, task.objectId);
+        NSLog(@"*** The Task for schedule push doesn't have time or objectId: %@", task);
         [[EWTaskStore sharedInstance] scheduleTasksInBackground];
         return;
     }
