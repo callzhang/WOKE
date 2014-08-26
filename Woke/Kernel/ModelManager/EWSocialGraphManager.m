@@ -52,7 +52,7 @@
 
 
 - (EWSocialGraph *)createSocialGraphForPerson:(EWPerson *)person{
-    EWSocialGraph *sg = [EWSocialGraph createInContext:person.managedObjectContext];
+    EWSocialGraph *sg = [EWSocialGraph createEntityInContext:person.managedObjectContext];
     sg.updatedAt = [NSDate date];
 
     //data

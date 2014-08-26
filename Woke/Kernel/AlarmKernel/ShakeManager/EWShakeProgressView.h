@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #define kMotionStrengthModifier     0.1
-#define kMotionThrethold            0.1
+#define kMotionThrethold            0.2
 
 
 typedef void (^SuccessProgressHandler)(void);

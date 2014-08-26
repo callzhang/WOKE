@@ -36,6 +36,7 @@
     [[UIColor colorWithWhite:0.5 alpha:1] setFill];
 //    rect.origin.x = rect.origin.x+rect.size.width/2 - self.placeholder.length*4;
     [[self placeholder] drawInRect:rect withFont:[UIFont systemFontOfSize:17]];
+    //[[self placeholder] drawInRect:rect withAttributes:nil];
 }
 
 @end
