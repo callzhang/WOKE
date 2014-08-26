@@ -26,4 +26,6 @@
 + (NSString *) uploadImageToParseREST:(UIImage *)uploadImage;
 
 void EWLog(NSString *format,...);
+
++ (NSArray *)readContactsEmailsFromAddressBooks;
 @end

@@ -10,6 +10,9 @@
 #import "EWUtil.h"
 #import <AdSupport/ASIdentifierManager.h>
 #import <NSLogger/NSLogger.h>
+
+#import <AddressBook/AddressBook.h>
+#import <AddressBookUI/AddressBookUI.h>
 //#import "LoggerClient.m"
 
 @implementation EWUtil
@@ -132,5 +135,44 @@ void EWLog(NSString *format, ...){
         LogMessageF(__FILE__,__LINE__,__FUNCTION__, @"Woke", level, @"%@", str);
     }
 }
++(NSArray *)readContactsEmailsFromAddressBooks
+{
+    
+    NSMutableArray * friendsEmails = [[NSMutableArray alloc] init];
+    
+    ABAddressBookRef addressBook = ABAddressBookCreate();
+    CFArrayRef results = ABAddressBookCopyArrayOfAllPeople(addressBook);
+    for(int i = 0; i < CFArrayGetCount(results); i++)
+    {
+        ABRecordRef person = CFArrayGetValueAtIndex(results, i);
+        //读取firstname
+//        NSString *personName = (__bridge NSString*)ABRecordCopyValue(person, kABPersonFirstNameProperty);
+//        //读取lastname
+//        NSString *lastname = (__bridge NSString*)ABRecordCopyValue(person, kABPersonLastNameProperty);
+//       
+//        //读取middlename
+//        NSString *middlename = (__bridge NSString*)ABRecordCopyValue(person, kABPersonMiddleNameProperty);
 
+        
+        //获取email多值
+        ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
+        long emailcount = ABMultiValueGetCount(email);
+        for (int x = 0; x < emailcount; x++)
+        {
+            //获取email Label
+//            NSString* emailLabel = (__bridge NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(email, x));
+            //获取email值
+            NSString* emailContent = (__bridge NSString*)ABMultiValueCopyValueAtIndex(email, x);
+            [friendsEmails addObject:emailContent];
+
+        }
+    }
+//
+    CFRelease(results);
+    CFRelease(addressBook);
+    
+    return [friendsEmails copy];
+}
+    
+    
 @end
