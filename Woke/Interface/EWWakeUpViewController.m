@@ -427,7 +427,7 @@
 //    self.timer.frame = f;
 //    self.timer.center = c;
     
-    if (!_wakeupButton) {
+    if (!wakeupButton) {
         
         return;
         
