@@ -69,7 +69,7 @@ EWPerson *me;
 
 #pragma mark - CREATE USER
 -(EWPerson *)createPersonWithParseObject:(PFUser *)user{
-    EWPerson *newUser = (EWPerson *)[user managedObjectInContext:[EWDataStore mainContext]];
+    EWPerson *newUser = (EWPerson *)[user managedObjectInContext:mainContext];
     newUser.username = user.username;
     newUser.profilePic = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];//TODO: new user profile
     newUser.name = kDefaultUsername;
@@ -115,11 +115,11 @@ EWPerson *me;
             person = [self createPersonWithParseObject:user];
             NSLog(@"New user %@ data has CREATED", person.name);
         }else{
-            person = (EWPerson *)[user managedObjectInContext:[EWDataStore mainContext]];
+            person = (EWPerson *)[user managedObjectInContext:mainContext];
             NSLog(@"Person created from PO");
             //assign user
             for (PFUser *friendPO in user[@"friends"]) {
-                EWPerson *friend = (EWPerson *)[friendPO managedObjectInContext:[EWDataStore mainContext]];
+                EWPerson *friend = (EWPerson *)[friendPO managedObjectInContext:mainContext];
                 [person addFriendsObject:friend];
             }
         }
@@ -160,7 +160,7 @@ EWPerson *me;
         [self getEveryoneInContext:localContext];
     }];
     
-    NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:[EWDataStore mainContext]];
+    NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:mainContext];
     allPerson = [allPerson sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO]]];
     return allPerson;
     

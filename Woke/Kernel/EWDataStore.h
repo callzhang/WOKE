@@ -14,7 +14,7 @@
 #import <Parse/Parse.h>
 #import "Reachability.h"
 
-
+extern NSManagedObjectContext *mainContext;
 @class EWPerson;
 typedef void (^EWSavingCallback)(void);
 
@@ -73,7 +73,7 @@ typedef void (^EWSavingCallback)(void);
 
 #pragma mark - CoreData
 + (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context withID:(NSManagedObjectID *)objectID ;
-+ (NSManagedObjectContext *)mainContext;
+//+ (NSManagedObjectContext *)mainContext;
 + (BOOL)validateMO:(NSManagedObject *)mo;
 + (NSManagedObject *)getManagedObjectByStringID:(NSString *)stringID;
 

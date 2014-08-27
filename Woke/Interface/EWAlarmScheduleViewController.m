@@ -51,7 +51,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [self initData];
     
     //add task delete observer
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:[EWDataStore mainContext] queue:nil usingBlock:^(NSNotification *note) {
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:mainContext queue:nil usingBlock:^(NSNotification *note) {
         [self initData];
         [self.tableView reloadData];
     }];

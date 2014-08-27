@@ -143,7 +143,7 @@
         NSArray *objects = [alarmQuery findObjects];
         
         for (PFObject *a in objects) {
-            EWAlarmItem *alarm = (EWAlarmItem *)[a managedObjectInContext:[EWDataStore mainContext]];;
+            EWAlarmItem *alarm = (EWAlarmItem *)[a managedObjectInContext:mainContext];;
             alarm.owner = me;
             if (![alarms containsObject:alarm]) {
                 [alarms addObject:alarm];

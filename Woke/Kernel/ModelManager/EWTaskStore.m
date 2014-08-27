@@ -309,7 +309,7 @@
         
         [[EWDataStore sharedInstance].saveCallbacks addObject:^{
             for (NSManagedObjectID *taskID in newTaskIDs) {
-                EWTaskItem *task = (EWTaskItem *)[[EWDataStore mainContext] existingObjectWithID:taskID error:NULL];
+                EWTaskItem *task = (EWTaskItem *)[mainContext existingObjectWithID:taskID error:NULL];
                 // remote notification
                 [EWTaskStore scheduleNotificationOnServerWithTimer:task];
             }
@@ -585,7 +585,7 @@
         for (EWTaskItem *t in [self getTasksByPerson:[EWPersonStore meInContext:localContext]]) {
             //post notification
             dispatch_async(dispatch_get_main_queue(), ^{
-                EWTaskItem *task = (EWTaskItem *)[[EWDataStore mainContext] objectWithID:t.objectID];
+                EWTaskItem *task = (EWTaskItem *)[mainContext objectWithID:t.objectID];
                 [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:task userInfo:@{kLocalTaskKey: t}];
             });
             

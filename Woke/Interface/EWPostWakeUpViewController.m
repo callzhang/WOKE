@@ -135,7 +135,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //take the cached value or a new value
     [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:^{
-        NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:[EWDataStore mainContext]];
+        NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:mainContext];
         personArray = [allPerson sortedArrayUsingComparator:^NSComparisonResult(EWPerson *obj1, EWPerson *obj2) {
             NSDate *time1 = obj1.cachedInfo[kNextTaskTime]?:[NSDate date];
             NSDate *time2 = obj2.cachedInfo[kNextTaskTime]?:[NSDate date];

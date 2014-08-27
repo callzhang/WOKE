@@ -239,7 +239,7 @@
     
     //controller
     fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
-                                                          managedObjectContext:[EWDataStore mainContext]
+                                                          managedObjectContext:mainContext
                                                             sectionNameKeyPath:nil
                                                                      cacheName:@"com.wokealarm.fetchControllerCache"];
     fetchController.delegate = self;

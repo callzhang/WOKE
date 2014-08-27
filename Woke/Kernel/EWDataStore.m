@@ -71,6 +71,7 @@
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
 		[MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelError];
         context = [NSManagedObjectContext defaultContext];
+		mainContext = context;
 		
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preSaveAction:) name:NSManagedObjectContextWillSaveNotification object:context];
@@ -277,17 +278,11 @@
     return obj;
 }
 
-+ (NSManagedObjectContext *)mainContext{
-	//NSParameterAssert([NSThread isMainThread]);
-	return [EWDataStore sharedInstance].context;
-}
-
-
 + (void)save{
 	NSParameterAssert([NSThread isMainThread]);
-    //BOOL hasChanges = [EWDataStore saveAndEnqueueInContext:[EWDataStore mainContext]];
-	if ([EWDataStore mainContext].hasChanges) {
-		[[EWDataStore mainContext] saveToPersistentStoreAndWait];
+    //BOOL hasChanges = [EWDataStore saveAndEnqueueInContext:mainContext];
+	if (mainContext.hasChanges) {
+		[mainContext saveToPersistentStoreAndWait];
 	}
 }
 
@@ -537,9 +532,9 @@
 
 + (NSManagedObject *)getManagedObjectByStringID:(NSString *)stringID{
 	NSParameterAssert([NSThread isMainThread]);
-	NSManagedObjectID *ID = [[EWDataStore mainContext].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:stringID]];
+	NSManagedObjectID *ID = [mainContext.persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:stringID]];
 	NSError *err;
-	NSManagedObject *MO = [[EWDataStore mainContext] existingObjectWithID:ID error:&err];
+	NSManagedObject *MO = [mainContext existingObjectWithID:ID error:&err];
 	if (!MO && err) {
 		NSLog(@"*** Failed to get the MO from store: %@", err.description);
 	}
@@ -708,7 +703,7 @@
 +(void)updateToServer{
     //make sure it is called on main thread
     NSParameterAssert([NSThread isMainThread]);
-    if([[EWDataStore mainContext] hasChanges]){
+    if([mainContext hasChanges]){
         NSLog(@"There is still some change when updating to server, save and do it later");
         [EWDataStore save];
         return;
@@ -998,7 +993,7 @@
     }
 	
 		
-	//if (localContext == [EWDataStore mainContext]) {
+	//if (localContext == mainContext) {
 		[EWDataStore enqueueChangesInContext:localContext];
 	//}
 }
@@ -1787,7 +1782,7 @@
 
 - (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context{
 	if (!context) {
-		context = [EWDataStore mainContext];
+		context = mainContext;
 	}
     NSManagedObject *mo = [NSClassFromString(self.localClassName) MR_findFirstByAttribute:kParseObjectID withValue:self.objectId inContext:context];
     
