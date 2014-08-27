@@ -17,8 +17,6 @@
 #import "EWTaskItem.h"
 #import "EWMediaItem.h"
 #import "EWNotification.h"
-#define MR_LOGGING_ENABLED 0
-#import <MagicalRecord/CoreData+MagicalRecord.h>
 
 
 #pragma mark - 
@@ -71,7 +69,7 @@
         
         //core data
         [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
-		//[MagicalRecord setLoggingMask:MagicalRecordLoggingMaskError];
+		[MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelError];
         context = [NSManagedObjectContext defaultContext];
 		
         //observe context change to update the modifiedData of that MO. (Only observe the main context)
@@ -389,7 +387,8 @@
 				continue;
 			}
             NSLog(@"~~~> MO %@(%@) deleted from context", MO.entity.name, [MO valueForKey:kParseObjectID]);
-            PFObject *PO = [MO getParseObjectWithError:nil];
+            PFObject *PO = [PFObject objectWithoutDataWithClassName:MO.entity.serverClassName objectId:MO.serverID];
+			[[EWDataStore sharedInstance].serverObjectPool removeObjectForKey:MO.serverID];
             [EWDataStore appendDeleteQueue:PO];
 			hasChange = YES;
         }
@@ -436,6 +435,13 @@
 
 + (BOOL)validateMO:(NSManagedObject *)mo{
     //validate MO, only used when uploading MO to PO
+	BOOL good = [EWDataStore validateMO:mo andTryToFix:NO];
+	
+	return good;
+}
+
++ (BOOL)validateMO:(NSManagedObject *)mo andTryToFix:(BOOL)tryFix{
+	//validate MO, only used when uploading MO to PO
 	BOOL good = YES;
 	
 	if (![mo valueForKey:kUpdatedDateKey] && mo.serverID) {
@@ -447,6 +453,9 @@
     if ([type isEqualToString:@"EWTaskItem"]) {
         good = [EWTaskStore validateTask:(EWTaskItem *)mo];
 		if (!good) {
+			if (!tryFix) {
+				return NO;
+			}
 			[mo refresh];
 			good = [EWTaskStore validateTask:(EWTaskItem *)mo];
 			
@@ -459,9 +468,12 @@
     } else if([type isEqualToString:@"EWMediaItem"]){
         good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
 		if (!good) {
+			if (!tryFix) {
+				return NO;
+			}
 			[mo refresh];
 			good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
-		
+			
 			if (!good) {
 				NSLog(@"*** %@(%@) failed in validation => delete!", mo.entity.name, mo.serverID);
 				[mo deleteEntity];
@@ -470,12 +482,16 @@
     }else if ([type isEqualToString:@"EWPerson"]){
         good = [EWPersonStore validatePerson:(EWPerson *)mo];
 		if (!good) {
+			if (!tryFix) {
+				return NO;
+			}
 			[mo refresh];
 			good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
 		}
     }
 	
 	return good;
+
 }
 
 
@@ -605,7 +621,7 @@
 
 + (void)appendObject:(NSManagedObject *)mo toQueue:(NSString *)queue{
 	//check owner
-	if(![queue isEqualToString:kParseQueueRefresh] && ![EWDataStore checkAccess:mo]){
+	if(![queue isEqualToString:kParseQueueRefresh]/* && ![EWDataStore checkAccess:mo]*/){
 		NSLog(@"*** MO %@(%@) doesn't owned by me, skip adding to %@", mo.entity.name, mo.serverID, queue);
 		return;
 	}
@@ -1230,8 +1246,8 @@
             block();
         }
     }else{
-        if ([self hasChanges]) {
-            NSLog(@"!!! The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!", self.entity.name);
+        if ([self changedKeys]) {
+            NSLog(@"!!! The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.changedKeys);
         }
         
 		
@@ -1267,8 +1283,8 @@
         //NSParameterAssert([self isInserted]);
         NSLog(@"!!! The MO %@(%@) trying to refresh doesn't have servreID, skip! %@", self.entity.name, self.serverID, self);
     }else{
-        if ([self hasChanges]) {
-            NSLog(@"*** The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!", self.entity.name);
+        if ([self changedKeys]) {
+            NSLog(@"*** The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.changedKeys);
         }
         
         NSLog(@"===> Refreshing MO %@", self.entity.name);

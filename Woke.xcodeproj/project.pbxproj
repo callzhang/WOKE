@@ -32,6 +32,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0E01D7BD19AC657D0034570A /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E01D7BC19AC657C0034570A /* AddressBook.framework */; };
+		0E01D7BF19AC65880034570A /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E01D7BE19AC65880034570A /* AddressBookUI.framework */; };
 		0E47B6C719A3BBDF002E48A8 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E47B6C619A3BBDF002E48A8 /* libTestFlight.a */; };
 		0E590FEB194DF35B000AD7C4 /* lanenar.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FD1194DF35B000AD7C4 /* lanenar.ttf */; };
 		0E590FEC194DF35B000AD7C4 /* Lato-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FD3194DF35B000AD7C4 /* Lato-Black.ttf */; };
@@ -261,6 +263,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E01D7BC19AC657C0034570A /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		0E01D7BE19AC65880034570A /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		0E47B6C619A3BBDF002E48A8 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = Pods/TestFlightSDK/libTestFlight.a; sourceTree = "<group>"; };
 		0E590FD1194DF35B000AD7C4 /* lanenar.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = lanenar.ttf; sourceTree = "<group>"; };
 		0E590FD3194DF35B000AD7C4 /* Lato-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lato-Black.ttf"; sourceTree = "<group>"; };
@@ -609,6 +613,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E01D7BF19AC65880034570A /* AddressBookUI.framework in Frameworks */,
+				0E01D7BD19AC657D0034570A /* AddressBook.framework in Frameworks */,
 				0E9BE0E119A782AB00E17108 /* CoreMotion.framework in Frameworks */,
 				0E47B6C719A3BBDF002E48A8 /* libTestFlight.a in Frameworks */,
 				AB245FA818CCD59F00551721 /* QuartzCore.framework in Frameworks */,
@@ -891,6 +897,8 @@
 		568CC786178DD2C900AB1579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0E01D7BE19AC65880034570A /* AddressBookUI.framework */,
+				0E01D7BC19AC657C0034570A /* AddressBook.framework */,
 				0E9BE0E019A782AB00E17108 /* CoreMotion.framework */,
 				0E47B6C619A3BBDF002E48A8 /* libTestFlight.a */,
 				9BEE145519786DFC0068FC08 /* OpenGLES.framework */,
