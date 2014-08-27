@@ -907,7 +907,6 @@
 }
 
 
-
 + (void)performSaveCallbacksWithParseObject:(PFObject *)parseObject andManagedObjectID:(NSManagedObjectID *)managedObjectID{
     NSArray *saveCallbacks = [[[EWDataStore sharedInstance] parseSaveCallbacks] objectForKey:managedObjectID];
     if (saveCallbacks) {
@@ -918,7 +917,6 @@
         [[EWDataStore sharedInstance].parseSaveCallbacks removeObjectForKey:managedObjectID];
     }
 }
-
 
 #pragma mark - KVO
 //observe main context

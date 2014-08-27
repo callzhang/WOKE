@@ -35,7 +35,6 @@
     BOOL next;
     NSInteger loopCount;
     CGRect headerFrame;
-    UIButton * postWakeUpVCBtn;
     NSTimer *timerTimer;
     NSUInteger timePast;
 }
@@ -47,7 +46,7 @@
 @synthesize tableView = tableView_;
 @synthesize timer, header;
 @synthesize person, task;
-
+@synthesize footer;
 
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)t{
     self = [self initWithNibName:nil bundle:nil];
@@ -63,10 +62,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
-
-    //initialization
-    [self initData];
-    [self initView];
     
     //responder to remote control
     [self prepareRemoteControlEventsListener];
@@ -89,6 +84,7 @@
     //HUD
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
+    [self initView];
     [self initView];
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
@@ -178,37 +174,44 @@
     //alpha mask
     [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.1f, @0.9f]];
     
-
-    
-    [self.view addSubview:postWakeUpVCBtn];
-    
-//    id _self = (weak)self;
     
     if ([self.shakeProgress isShakeSupported]) {
         // need  update
         self.shakeProgress.progress = 0;
-        [self.shakeProgress startUpdateProgressBarWithProgressingHandler:^(){
-            NSLog(@"Progressing");
-        } CompleteHandler:^(){
-            
-            [self presentPostWakeUpVC];
-        
-        }];
+        self.shakeProgress.alpha = 0;
     }
-    else{
-        // use button to getup!;
-        
-        postWakeUpVCBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        CGRect frame =[UIScreen mainScreen].bounds;
-        frame.origin.y = frame.size.height-80 ;
-        frame.size.height = 80;
-        postWakeUpVCBtn.frame = frame;
-        [postWakeUpVCBtn setBackgroundImage:[UIImage imageNamed:@"AlarmViewBar"] forState:UIControlStateNormal];
-        [postWakeUpVCBtn setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
-        [postWakeUpVCBtn addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
-        
-    }
+
+    // use button to getup!;
+    footer.top = [UIScreen mainScreen].bounds.size.height;
+    [self.wakeupButton setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
+    [self.wakeupButton addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
+
     
+}
+
+- (void)presentShakeProgressBar{
+    [_wakeupButton removeTarget:self action:@selector(presentShakeProgressBar) forControlEvents:UIControlEventTouchUpInside];
+    
+    [_wakeupButton setTitle:@"" forState:UIControlStateNormal];
+    [UIView animateWithDuration:0.5 animations:^{
+        //show bar
+        _shakeProgress.alpha = 1;
+    } completion:^(BOOL finished) {
+        //start motion detect
+        [_shakeProgress startUpdateProgressBarWithProgressingHandler:^{
+            
+        } CompleteHandler:^{
+            
+            //show
+            [UIView animateWithDuration:0.5 animations:^{
+                _shakeProgress.alpha = 0;
+            } completion:^(BOOL finished) {
+                
+                [_wakeupButton setTitle:@"Wake up others" forState:UIControlStateNormal];
+                [_wakeupButton addTarget:self action:@selector(presentWakeUpView) forControlEvents:UIControlEventTouchUpInside];
+            }];
+        }];
+    }];
 }
 
 
@@ -424,14 +427,14 @@
 //    self.timer.frame = f;
 //    self.timer.center = c;
     
-    if (!postWakeUpVCBtn) {
+    if (!wakeupButton) {
         
         return;
         
     }
     
     //footer
-    CGRect footerFrame = postWakeUpVCBtn.frame;
+    CGRect footerFrame = wakeupButton.frame;
     if (scrollView.contentSize.height < 1) {
         //init phrase
         footerFrame.origin.y = self.view.frame.size.height - footerFrame.size.height;
@@ -441,7 +444,7 @@
         footerFrame.origin.y = MAX(bottomPoint.y, self.view.frame.size.height - footerFrame.size.height) ;
     }
     
-    postWakeUpVCBtn.frame = footerFrame;
+    wakeupButton.frame = footerFrame;
     
 }
 

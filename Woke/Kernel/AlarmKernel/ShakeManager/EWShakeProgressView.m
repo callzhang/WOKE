@@ -64,7 +64,7 @@
 {
     
     if ([self isShakeSupported]) {
-        
+        //TODO: sound
         [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData *accelerometerData, NSError *error){
             
             //NSLog(@"%f %f %f",accelerometerData.acceleration.x , accelerometerData.acceleration.y , accelerometerData.acceleration.z);
@@ -73,7 +73,7 @@
             double y = accelerometerData.acceleration.y;
             double z = accelerometerData.acceleration.z;
             double strength = log(x*x +y*y+ z*z) * kMotionStrengthModifier - kMotionThrethold;
-            
+            //TODO: Viberation
             if (self.progress < 1) {
                 
                 
@@ -84,7 +84,7 @@
                 }
                 
             }else{
-                
+                //TODO: sound
                 [self.motionManager stopAccelerometerUpdates];
                 
                 if (successProgressHandler) {
@@ -100,7 +100,9 @@
     else {
         
         NSLog(@"Accelerometer is not available.");
-        
+        if (successProgressHandler) {
+			successProgressHandler();
+		}
     }
 
     

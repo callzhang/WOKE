@@ -16,6 +16,8 @@
 @property (weak, nonatomic) IBOutlet UIView *header;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *seconds;
+@property (weak, nonatomic) IBOutlet UIView *footer;
+@property (weak, nonatomic) IBOutlet UIButton *wakeupButton;
 
 @property (nonatomic, weak) EWPerson *person;
 @property (nonatomic, weak) EWTaskItem *task;
