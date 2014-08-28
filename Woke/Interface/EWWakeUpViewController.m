@@ -107,9 +107,7 @@
     [self.view setNeedsDisplay];
     
     //pre download everyone for postWakeUpVC
-    dispatch_async([EWDataStore sharedInstance].dispatch_queue, ^{
-        [[EWPersonStore sharedInstance] everyone];
-    });
+    [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{

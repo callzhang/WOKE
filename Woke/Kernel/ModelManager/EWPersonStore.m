@@ -162,8 +162,8 @@ EWPerson *me;
     }];
     
     NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:mainContext];
-    allPerson = [allPerson sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO]]];
-    return allPerson;
+    everyone = [allPerson sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO]]];
+    return everyone;
     
 }
 
@@ -172,6 +172,8 @@ EWPerson *me;
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         [self getEveryoneInContext:localContext];
     }completion:^(BOOL success, NSError *error) {
+        NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:mainContext];
+        everyone = [allPerson sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO]]];
         block();
     }];
 }
@@ -236,7 +238,6 @@ EWPerson *me;
     localMe.score = @100;
     NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
     
-    everyone = [allPerson copy];
     timeEveryoneChecked = [NSDate date];
     
 }
