@@ -166,8 +166,12 @@
 
 #pragma mark - SCHEDULE
 - (NSArray *)scheduleTasks{
+    if (self.isSchedulingTask) {
+        NSLog(@"It is already checking task, skip!");
+        return nil;
+    }
     NSParameterAssert([NSThread isMainThread]);
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         [self scheduleTasksInContext:localContext];
     }];
     NSArray *myTasks = [self getTasksByPerson:me];
@@ -176,7 +180,11 @@
 
 
 - (void)scheduleTasksInBackground{
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    if (self.isSchedulingTask) {
+        NSLog(@"It is already checking task, skip!");
+        return;
+    }
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         [self scheduleTasksInContext:localContext];
     }];
 }
@@ -327,10 +335,10 @@
 - (BOOL)checkPastTasks{
     __block BOOL taskOutDated = NO;
     static NSDate *lastPastTaskChecked;
-    if (lastPastTaskChecked && lastPastTaskChecked.timeElapsed > kTaskUpdateInterval) {
+    if (lastPastTaskChecked && lastPastTaskChecked.timeElapsed < kTaskUpdateInterval) {
         return taskOutDated;
     }
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
         //First get outdated current task and move to past
         EWPerson *localMe = [me inContext:localContext];
@@ -553,7 +561,7 @@
 
 //Update next task time in cache
 - (void)updateNextTaskTime{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         EWPerson *localMe = [EWPersonStore meInContext:localContext];
         EWTaskItem *task = [self nextValidTaskForPerson:localMe];
         NSMutableDictionary *cache = [localMe.cachedInfo mutableCopy]?:[NSMutableDictionary new];
@@ -581,7 +589,7 @@
 
 - (void)deleteAllTasks{
     NSLog(@"*** Deleting all tasks");
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         for (EWTaskItem *t in [self getTasksByPerson:[EWPersonStore meInContext:localContext]]) {
             //post notification
             dispatch_async(dispatch_get_main_queue(), ^{

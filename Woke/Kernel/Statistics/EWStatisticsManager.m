@@ -175,7 +175,7 @@
     //test
     //return;
     
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *localMe = [EWPersonStore meInContext:localContext];
         [[EWTaskStore sharedInstance] checkPastTasks];
         NSArray *tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:localMe];//newest on top

@@ -156,7 +156,8 @@ EWPerson *me;
 
 
 - (NSArray *)everyone{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    NSParameterAssert([NSThread isMainThread]);
+    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         [self getEveryoneInContext:localContext];
     }];
     
@@ -167,7 +168,8 @@ EWPerson *me;
 }
 
 - (void)getEveryoneInBackgroundWithCompletion:(void (^)(void))block{
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    NSParameterAssert([NSThread isMainThread]);
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         [self getEveryoneInContext:localContext];
     }completion:^(BOOL success, NSError *error) {
         block();
@@ -316,9 +318,8 @@ EWPerson *me;
 }
 
 + (void)getFriendsForPerson:(EWPerson *)person{
-    NSManagedObjectID *personID = person.objectID;
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        EWPerson *backPerson = (EWPerson *)[localContext objectWithID:personID];
+    [person.managedObjectContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        EWPerson *backPerson = [person inContext:localContext];
         NSArray *friends = backPerson.cachedInfo[kCachedFriends];
         if (!friends || friends.count != backPerson.friends.count) {
             //friend need update
@@ -345,7 +346,7 @@ EWPerson *me;
 }
 
 + (void)updateCachedFriends{
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *localMe = [EWPersonStore meInContext:localContext];
         NSSet *friends = [localMe.friends valueForKey:kParseObjectID];
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;

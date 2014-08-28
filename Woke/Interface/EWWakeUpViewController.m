@@ -427,14 +427,14 @@
 //    self.timer.frame = f;
 //    self.timer.center = c;
     
-    if (!wakeupButton) {
+    if (!footer) {
         
         return;
         
     }
     
     //footer
-    CGRect footerFrame = wakeupButton.frame;
+    CGRect footerFrame = footer.frame;
     if (scrollView.contentSize.height < 1) {
         //init phrase
         footerFrame.origin.y = self.view.frame.size.height - footerFrame.size.height;
@@ -444,7 +444,7 @@
         footerFrame.origin.y = MAX(bottomPoint.y, self.view.frame.size.height - footerFrame.size.height) ;
     }
     
-    wakeupButton.frame = footerFrame;
+    footer.frame = footerFrame;
     
 }
 

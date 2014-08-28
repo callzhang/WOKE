@@ -51,6 +51,7 @@ typedef void (^EWSavingCallback)(void);
 @property NSMutableArray *saveCallbacks; //MO save callback
 @property Reachability *reachability;
 @property NSMutableDictionary *serverObjectPool;
+@property NSMutableDictionary *changeRecords;
 
 #pragma mark - Connectivity
 + (BOOL)isReachable;

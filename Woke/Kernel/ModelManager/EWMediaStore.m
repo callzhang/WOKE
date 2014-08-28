@@ -156,7 +156,7 @@
 - (BOOL)checkMediaAssets{
     //NSParameterAssert([NSThread isMainThread]);
     __block NSArray *mediaPOs;
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
         [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
         EWPerson *localMe = [EWPersonStore meInContext:localContext];
@@ -186,26 +186,23 @@
 }
 
 - (void)checkMediaAssetsInBackground{
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
         [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
         NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
         [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
-        [query findObjectsInBackgroundWithBlock:^(NSArray *mediaPOs, NSError *error) {
-            mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, localAssetIDs]];
-            for (PFObject *po in mediaPOs) {
-                EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:localContext];
-                [mo refresh];
-                //relationship
-                [mo removeReceiversObject:me];
-                [me addMediaAssetsObject:mo];
-                NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
-                EWAlert(@"You got voice for your next wake up");
-                
-            }
-        }];
-    } completion:^(BOOL success, NSError *error) {
-        [EWDataStore save];
+        NSArray *mediaPOs = [query findObjects];
+        mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, localAssetIDs]];
+        for (PFObject *po in mediaPOs) {
+            EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:localContext];
+            [mo refresh];
+            //relationship
+            [mo removeReceiversObject:me];
+            [me addMediaAssetsObject:mo];
+            NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
+            EWAlert(@"You got voice for your next wake up");
+            
+        }
     }];
 }
 

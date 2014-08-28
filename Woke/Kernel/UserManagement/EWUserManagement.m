@@ -394,7 +394,7 @@
 
 //after fb login, fetch user managed object
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *person = [EWPersonStore meInContext:localContext];
 
         NSParameterAssert(person);
@@ -464,7 +464,7 @@
         
         //get social graph of current user
         //if not, create one
-        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
             EWPerson *localMe = [EWPersonStore meInContext:localContext];
             EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:localMe];
             //skip if checked within a week

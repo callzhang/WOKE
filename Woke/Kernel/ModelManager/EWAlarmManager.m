@@ -268,7 +268,7 @@
     //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarms userInfo:@{@"alarms": alarms}];
     
     //delete
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         for (EWAlarmItem *alarm in me.alarms) {
             EWAlarmItem *localAlarm = [alarm inContext:localContext];
             [self removeAlarm:localAlarm];
