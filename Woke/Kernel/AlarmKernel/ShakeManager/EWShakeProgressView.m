@@ -72,12 +72,21 @@
             double x = accelerometerData.acceleration.x;
             double y = accelerometerData.acceleration.y;
             double z = accelerometerData.acceleration.z;
-            double strength = log(x*x +y*y+ z*z) * kMotionStrengthModifier - kMotionThrethold;
+			
+			
+			double strength = log(x*x +y*y+ z*z) * kMotionStrengthModifier - kMotionThrethold;
+			
+			
+			if(fabsf(accelerometerData.acceleration.x)>2.0||fabsf(accelerometerData.acceleration.y>2.0)||fabsf(accelerometerData.acceleration.z)>2.0)
+			{
+				NSLog(@"检测到晃动");
+			}
+			
+//            double strength = sqrt(x*x +y*y+ z*z) * kMotionStrengthModifier;
             //TODO: Viberation
             if (self.progress < 1) {
                 
                 AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-				
                 [self setProgress:(self.progress + strength) animated:YES];
                 
                 if (progressHandler) {
