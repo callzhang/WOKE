@@ -18,11 +18,12 @@
 @property (weak, nonatomic) IBOutlet UILabel *seconds;
 @property (weak, nonatomic) IBOutlet UIView *footer;
 @property (weak, nonatomic) IBOutlet UIButton *wakeupButton;
+@property (strong, nonatomic) IBOutlet UILabel *timeDescription;
+@property (strong, nonatomic) IBOutlet EWShakeProgressView *shakeProgress;
+
 
 @property (nonatomic, weak) EWPerson *person;
 @property (nonatomic, weak) EWTaskItem *task;
-@property (strong, nonatomic) IBOutlet UILabel *timeDescription;
-@property (strong, nonatomic) IBOutlet EWShakeProgressView *shakeProgress;
 
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
 //- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;

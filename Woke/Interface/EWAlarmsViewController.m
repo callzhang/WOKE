@@ -162,6 +162,11 @@
     [self initView];
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    NSLog(@"Main view will disappear");
+}
+
 
 - (void)initData {
     

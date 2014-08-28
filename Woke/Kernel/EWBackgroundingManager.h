@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+const BOOL BACKGROUNDING_ALL_TIME = 1;
+
 @class EWTaskItem;
 
 @interface EWBackgroundingManager : NSObject
@@ -15,8 +17,8 @@
 
 + (EWBackgroundingManager *)sharedInstance;
 + (BOOL)supportBackground;
-- (void)startSleep;
-- (void)endSleep;
+- (void)startBackgrounding;
+- (void)endBackgrounding;
 
 - (void)backgroundKeepAlive:(NSTimer *)timer;
 @end

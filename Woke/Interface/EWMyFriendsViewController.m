@@ -58,11 +58,8 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
 -(void)initData
 {
     
-    NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
-    friends = [_person.friends sortedArrayUsingDescriptors:@[sd]];
-    NSMutableSet *myFriends = [me.friends mutableCopy];
-    [myFriends intersectSet:[NSSet setWithArray:friends]];
-    mutualFriends = [[myFriends allObjects] sortedArrayUsingDescriptors:@[sd]];
+    //NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    
     _friendsTableView.delegate = self;
     _friendsTableView.dataSource = self;
     _friendsCollectionView.delegate = self;
@@ -72,6 +69,10 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [EWPersonStore getFriendsForPerson:_person];
         dispatch_async(dispatch_get_main_queue(), ^{
+            friends = [_person.friends allObjects];
+            NSMutableSet *myFriends = [me.friends mutableCopy];
+            [myFriends intersectSet:[NSSet setWithArray:friends]];
+            mutualFriends = [myFriends allObjects];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         });
     });

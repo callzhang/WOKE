@@ -63,7 +63,7 @@
 }
 
 #pragma mark - Audio Sessions
-//register the normal audio session
+//register the BACKGROUNDING audio session
 - (void)registerAudioSession{
     //deactivated first
     [[AVAudioSession sharedInstance] setActive:NO error:NULL];
@@ -91,7 +91,7 @@
     [self playSilentSound];
 }
 
-//register the playing session
+//register the ACTIVE playing session
 - (void)registerActiveAudioSession{
     //deactivated first
     [[AVAudioSession sharedInstance] setActive:NO error:NULL];
@@ -189,7 +189,7 @@
         
     }else{
         NSLog(@"Unknown type of media, skip");
-        [self playSoundFromFile:@"Silence04s.caf"];
+        [self playSoundFromFile:kSilentSound];
         
     }
     
@@ -466,11 +466,9 @@
                     [[UIApplication sharedApplication] scheduleLocalNotification:n];
                 }
                 
+                [self registerAudioSession];
                 [manager backgroundKeepAlive:NULL];
                 
-#ifdef DEBUG
-                [[AVManager sharedManager] playSoundFromFile:@"Sunny Afternoon.caf"];
-#endif
             });
         }
     }
@@ -495,9 +493,7 @@
 }
 
 - (void)playSilentSound{
-#if TARGET_IPHONE_SIMULATOR
-    
-#else
+#if !TARGET_IPHONE_SIMULATOR
     NSLog(@"Play silent sound");
     NSURL *path = [[NSBundle mainBundle] URLForResource:@"bg" withExtension:@"caf"];
     [self playAvplayerWithURL:path];

@@ -21,6 +21,8 @@
 #import "EWDefines.h"
 #import "SCSiriWaveformView.h"
 
+#define kSilentSound            @"Silence04s.caf"
+
 @class EWMediaViewCell, EWTaskItem, EWMediaItem, EWMediaSlider;
 
 @interface AVManager : UIResponder <AVAudioPlayerDelegate, AVAudioRecorderDelegate, AVAudioSessionDelegate>

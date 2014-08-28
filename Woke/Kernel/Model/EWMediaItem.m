@@ -121,17 +121,5 @@
 }
 
 
-//#pragma mark - Data
-//- (void)prepareAudio{
-//    if (!self.audio) {
-//        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
-//        dispatch_async(queue, ^{
-//            NSLog(@"Downloading audio from internet: %@", self.audio);
-//        });
-//    }
-//    
-//}
-
-
 
 @end

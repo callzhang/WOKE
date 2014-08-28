@@ -360,7 +360,6 @@ EWPerson *me;
 #pragma mark - Validation
 + (BOOL)validatePerson:(EWPerson *)person{
     if (!person.isMe) {
-        NSLog(@"Skip validate other PFUser: %@", person.name);
         return YES;
     }
     

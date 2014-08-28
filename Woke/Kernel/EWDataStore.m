@@ -23,7 +23,7 @@
 #define kServerTransformTypes               @{@"CLLocation": @"PFGeoPoint"} //localType: serverType
 #define kServerTransformClasses             @{@"EWPerson": @"_User"} //localClass: serverClass
 #define kUserClass                          @"EWPerson"
-#define classSkipped                        @[@"EWPerson"]
+//#define classSkipped                        @[@"EWPerson"]
 #define attributeUploadSkipped              @[kParseObjectID, kUpdatedDateKey, @"score"]
 
 //============ Global shortcut to main context ===========
@@ -357,19 +357,16 @@ NSManagedObjectContext *mainContext;
 				NSLog(@"MO %@(%@) enqueued with changed keys: %@", MO.entity.name, MO.serverID, changedKeys);
 				
 				//add changed keys to record
-				NSMutableSet *changed = [[[EWDataStore sharedInstance].changeRecords objectForKey:MO.serverID] mutableCopy]?:[NSMutableSet new];
-				[changed setByAddingObjectsFromArray:changedKeys];
-				[[EWDataStore sharedInstance].changeRecords setObject:[changed copy] forKey:MO.serverID];
+				NSSet *changed = [[EWDataStore sharedInstance].changeRecords objectForKey:MO.serverID] ?:[NSSet new];
+				changed = [changed setByAddingObjectsFromArray:changedKeys];
+				[[EWDataStore sharedInstance].changeRecords setObject:changed forKey:MO.serverID];
 				
 				//add to queue
 				[EWDataStore appendUpdateQueue:MO];
 				
 				//change updatedAt
 				[MO setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
-            }else{
-				NSLog(@"!!! MO %@(%@) doesn't have changed values, skip enqueue.", MO.entity.name, MO.serverID);
-				
-			}
+            }
 		}
 		
 		
@@ -817,8 +814,9 @@ NSManagedObjectContext *mainContext;
         if (!object) {
             if ([error code] == kPFErrorObjectNotFound) {
                 NSLog(@"PO %@ couldn't be found!", managedObject.entity.serverClassName);
-				[managedObject deleteEntityInContext:managedObject.managedObjectContext];
-				return;
+				//[managedObject deleteEntityInContext:managedObject.managedObjectContext];
+				//return;
+				//here we should not return, instead we should create the PO because that's the intention of the process.
             } else if ([error code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
                 [managedObject updateEventually];

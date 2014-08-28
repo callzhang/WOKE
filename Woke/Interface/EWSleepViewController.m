@@ -33,7 +33,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    [[EWBackgroundingManager sharedInstance] startSleep];
+    [[EWBackgroundingManager sharedInstance] startBackgrounding];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -54,7 +54,7 @@
 
 - (IBAction)cancel:(id)sender {
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
-    [[EWBackgroundingManager sharedInstance] endSleep];
+    [[EWBackgroundingManager sharedInstance] endBackgrounding];
 }
 
 - (void)updateTimer:(NSTimer *)timer{

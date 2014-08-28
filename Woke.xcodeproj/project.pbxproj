@@ -85,13 +85,9 @@
 		0EAE5C9E199A3F7400AED01B /* PLCameraSheetDoneButtonPressed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EAE5C90199A3F7400AED01B /* PLCameraSheetDoneButtonPressed@2x.png */; };
 		0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */; };
 		0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */; };
-		0EB02D871998FF320031D2DD /* New-Version_03.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D861998FF310031D2DD /* New-Version_03.png */; };
-		0EB02D89199900A20031D2DD /* New-Version_03-02.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB02D88199900A20031D2DD /* New-Version_03-02.png */; };
 		0EB0C05919684F600061BC70 /* UAProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0C05819684F600061BC70 /* UAProgressView.m */; };
 		0EB0D3251998F5F50031D2DD /* EWFirstTimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0D3231998F5F50031D2DD /* EWFirstTimeViewController.m */; };
 		0EB0D3261998F5F50031D2DD /* EWFirstTimeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EB0D3241998F5F50031D2DD /* EWFirstTimeViewController.xib */; };
-		0EB0D32C1998FBF10031D2DD /* New-Version_03-04.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB0D3291998FBF10031D2DD /* New-Version_03-04.png */; };
-		0EB0D32D1998FBF10031D2DD /* New-Version_03-05.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB0D32A1998FBF10031D2DD /* New-Version_03-05.png */; };
 		0ECAF195197EB50100368D6B /* EWSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECAF192197EB50100368D6B /* EWSelectionViewController.m */; };
 		0ECAF196197EB50100368D6B /* RMDateSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECAF194197EB50100368D6B /* RMDateSelectionViewController.m */; };
 		0ECB00A21964585A00B122EF /* EWCostumTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECB00A11964585A00B122EF /* EWCostumTextField.m */; };
@@ -331,15 +327,11 @@
 		0EB02D02195F1C7700ECACED /* EWMyProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMyProfileViewController.h; sourceTree = "<group>"; };
 		0EB02D03195F1C7700ECACED /* EWMyProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMyProfileViewController.m; sourceTree = "<group>"; };
 		0EB02D04195F1C7700ECACED /* EWMyProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMyProfileViewController.xib; sourceTree = "<group>"; };
-		0EB02D861998FF310031D2DD /* New-Version_03.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "New-Version_03.png"; sourceTree = "<group>"; };
-		0EB02D88199900A20031D2DD /* New-Version_03-02.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "New-Version_03-02.png"; sourceTree = "<group>"; };
 		0EB0C05719684F600061BC70 /* UAProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UAProgressView.h; sourceTree = "<group>"; };
 		0EB0C05819684F600061BC70 /* UAProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UAProgressView.m; sourceTree = "<group>"; };
 		0EB0D3221998F5F50031D2DD /* EWFirstTimeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWFirstTimeViewController.h; sourceTree = "<group>"; };
 		0EB0D3231998F5F50031D2DD /* EWFirstTimeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWFirstTimeViewController.m; sourceTree = "<group>"; };
 		0EB0D3241998F5F50031D2DD /* EWFirstTimeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWFirstTimeViewController.xib; sourceTree = "<group>"; };
-		0EB0D3291998FBF10031D2DD /* New-Version_03-04.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "New-Version_03-04.png"; sourceTree = "<group>"; };
-		0EB0D32A1998FBF10031D2DD /* New-Version_03-05.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "New-Version_03-05.png"; sourceTree = "<group>"; };
 		0ECAF191197EB50100368D6B /* EWSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSelectionViewController.h; sourceTree = "<group>"; };
 		0ECAF192197EB50100368D6B /* EWSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSelectionViewController.m; sourceTree = "<group>"; };
 		0ECAF193197EB50100368D6B /* RMDateSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMDateSelectionViewController.h; sourceTree = "<group>"; };
@@ -768,17 +760,6 @@
 			path = UAProgress;
 			sourceTree = "<group>";
 		};
-		0EB0D3271998FBCC0031D2DD /* FirstTimeImage */ = {
-			isa = PBXGroup;
-			children = (
-				0EB02D88199900A20031D2DD /* New-Version_03-02.png */,
-				0EB02D861998FF310031D2DD /* New-Version_03.png */,
-				0EB0D3291998FBF10031D2DD /* New-Version_03-04.png */,
-				0EB0D32A1998FBF10031D2DD /* New-Version_03-05.png */,
-			);
-			name = FirstTimeImage;
-			sourceTree = "<group>";
-		};
 		0ECAF190197EB50100368D6B /* RMSelectionView */ = {
 			isa = PBXGroup;
 			children = (
@@ -823,7 +804,6 @@
 		565DF60D17A40420000D9DA9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0EB0D3271998FBCC0031D2DD /* FirstTimeImage */,
 				0E590FCF194DF35B000AD7C4 /* Fonts */,
 				AB44569F17E6A59E0077FE45 /* Profile picture */,
 				AB44569E17E6A5870077FE45 /* Voice Message */,
@@ -1387,7 +1367,6 @@
 				0E590FF0194DF35B000AD7C4 /* Lato-Hairline.ttf in Resources */,
 				ABF3FB611908B72F0017D2EF /* 12.jpg in Resources */,
 				0EAD6FB8195A62EC00DDB052 /* EWFriendsTableCell.xib in Resources */,
-				0EB0D32C1998FBF10031D2DD /* New-Version_03-04.png in Resources */,
 				9BF297B71912F713008C136E /* EWLogInViewController.xib in Resources */,
 				ABF3FB551908B72F0017D2EF /* 0.jpg in Resources */,
 				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
@@ -1414,7 +1393,6 @@
 				9BF297E91912F720008C136E /* EWMediaViewCell.xib in Resources */,
 				0E590FF6194DF35B000AD7C4 /* Lato-LightItalic.ttf in Resources */,
 				9B5A2F95197C53DD0076F2BD /* EWFeedbackViewController.xib in Resources */,
-				0EB02D89199900A20031D2DD /* New-Version_03-02.png in Resources */,
 				0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */,
 				0EAE5C9B199A3F7400AED01B /* PLCameraSheetDoneButton.png in Resources */,
 				0EAE5C9D199A3F7400AED01B /* PLCameraSheetDoneButtonPressed.png in Resources */,
@@ -1446,10 +1424,8 @@
 				0E590FED194DF35B000AD7C4 /* Lato-BlackItalic.ttf in Resources */,
 				9B58FD3F19844E8500D13CC7 /* sleep mode.caf in Resources */,
 				ABF3FB5C1908B72F0017D2EF /* 7.jpg in Resources */,
-				0EB02D871998FF320031D2DD /* New-Version_03.png in Resources */,
 				ABF3FB631908B72F0017D2EF /* 14.jpg in Resources */,
 				9BF297E11912F720008C136E /* EWAlarmEditCell.xib in Resources */,
-				0EB0D32D1998FBF10031D2DD /* New-Version_03-05.png in Resources */,
 				0E590FF5194DF35B000AD7C4 /* Lato-Light.ttf in Resources */,
 				ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */,
 				9BF297B91912F713008C136E /* EWNotificationViewController.xib in Resources */,

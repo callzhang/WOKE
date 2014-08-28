@@ -37,9 +37,13 @@
 - (id)init{
     self = [super init];
     if (self) {
+        //enter background
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enterForeground) name:UIApplicationDidBecomeActiveNotification object:nil];
+        //enter foreground
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
+        //resign active
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+        //become active
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didbecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     }
     
@@ -65,16 +69,16 @@
 }
 
 - (void)enterBackground{
-    if (self.sleeping) {
-        [self startSleep];
+    if (self.sleeping || BACKGROUNDING_ALL_TIME) {
+        [self startBackgrounding];
     }
 }
 
 - (void)enterForeground{
-    if (!self.sleeping) {
-        [self endSleep];
+    if (!self.sleeping && !BACKGROUNDING_ALL_TIME) {
+        [self endBackgrounding];
     }else{
-        [self startSleep];
+        //[self startBackgrounding];
     }
 }
 
@@ -102,21 +106,21 @@
         UILocalNotification *notif = [[UILocalNotification alloc] init];
         notif.alertBody = @"Woke become active!";
         [app scheduleLocalNotification:notif];
-
     }
     
-    if (self.sleeping) {
-        [self startSleep];
+    if (self.sleeping || BACKGROUNDING_ALL_TIME) {
+        [self startBackgrounding];
     }
 }
 
-- (void)startSleep{
+- (void)startBackgrounding{
     self.sleeping = YES;
+    [[AVManager sharedManager] registerAudioSession];
     [self backgroundKeepAlive:nil];
     NSLog(@"Start Sleep");
 }
 
-- (void)endSleep{
+- (void)endBackgrounding{
     NSLog(@"End Sleep");
     self.sleeping = NO;
     
