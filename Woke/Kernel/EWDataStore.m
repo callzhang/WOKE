@@ -328,19 +328,21 @@ NSManagedObjectContext *mainContext;
 		//Pre-save validate
 		BOOL good = [EWDataStore validateMO:MO];
 		if (!good) {
-			NSLog(@"!!! Validation failed on saving %@", MO);
+			NSLog(@"!!! Validation failed on saving %@", MO.objectID);
 			continue;
 		}
 		
 		BOOL mine = [EWDataStore checkAccess:MO];
 		if (!mine) {
-			NSLog(@"!!! Skip updating other's object %@", MO);
+			NSLog(@"!!! Skip updating other's object %@", MO.objectID);
 			continue;
 		}
 		
 		if ([insertedObjects containsObject:MO]) {
 			//enqueue to insertQueue
 			[EWDataStore appendInsertQueue:MO];
+			//change updatedAt
+			[MO setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
 			continue;
 		}
 		
@@ -600,11 +602,11 @@ NSManagedObjectContext *mainContext;
 }
 
 + (void)appendObject:(NSManagedObject *)mo toQueue:(NSString *)queue{
-	//check owner
-	if(![queue isEqualToString:kParseQueueRefresh]/* && ![EWDataStore checkAccess:mo]*/){
-		NSLog(@"*** MO %@(%@) doesn't owned by me, skip adding to %@", mo.entity.name, mo.serverID, queue);
-		return;
-	}
+//	//check owner
+//	if(![queue isEqualToString:kParseQueueRefresh]/* && ![EWDataStore checkAccess:mo]*/){
+//		NSLog(@"*** MO %@(%@) doesn't owned by me, skip adding to %@", mo.entity.name, mo.serverID, queue);
+//		return;
+//	}
 	
     NSArray *array = [[NSUserDefaults standardUserDefaults] valueForKey:queue];
     NSMutableSet *set = [[NSMutableSet setWithArray:array] mutableCopy]?:[NSMutableSet new];
@@ -739,6 +741,7 @@ NSManagedObjectContext *mainContext;
         }
 		
 	} completion:^(BOOL success, NSError *error) {
+		[EWDataStore sharedInstance].changeRecords = [NSMutableDictionary new];
 		
         //completion block
 		if (callbacks.count) {
