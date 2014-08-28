@@ -173,6 +173,26 @@ void EWLog(NSString *format, ...){
     
     return [friendsEmails copy];
 }
+
+
++(void)searchForFriendsOnServer
+{
+    PFQuery *q = [PFQuery queryWithClassName:@"User"];
     
+    [q whereKey:@"email" containedIn:[EWUtil readContactsEmailsFromAddressBooks]];
+    
+    [q findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            
+            // push  notification;
+            
+            
+        } else {
+            // Log details of the failure
+            NSLog(@"Error: %@ %@", error, [error userInfo]);
+        }
+    }];
+
+}
     
 @end
