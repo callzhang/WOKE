@@ -96,6 +96,7 @@
 -(void)didPressSkipButton
 {
     [introductionView changeToPanelAtIndex:_lastIndex];
+    [introductionView.MasterScrollView setScrollEnabled:NO ];
     [introductionView.RightSkipButton setHidden:YES];
     [introductionView.PageControl setHidden:YES];
 }

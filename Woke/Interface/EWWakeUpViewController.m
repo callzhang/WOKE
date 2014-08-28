@@ -108,6 +108,7 @@
     
     //pre download everyone for postWakeUpVC
     [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -177,13 +178,19 @@
         // need  update
         self.shakeProgress.progress = 0;
         self.shakeProgress.alpha = 0;
+        [self presentShakeProgressBar];
+        
+    }
+    else
+    {
+        // use button to getup!;
+        footer.top = [UIScreen mainScreen].bounds.size.height;
+        [self.wakeupButton setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
+        [self.wakeupButton addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
+
     }
 
-    // use button to getup!;
-    footer.top = [UIScreen mainScreen].bounds.size.height;
-    [self.wakeupButton setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
-    [self.wakeupButton addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
-
+    
     
 }
 

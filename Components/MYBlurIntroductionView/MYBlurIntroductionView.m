@@ -194,7 +194,7 @@
             if ([(id)delegate respondsToSelector:@selector(introduction:didFinishWithType:)]) {
                 [delegate introduction:self didFinishWithType:MYFinishTypeSwipeOut];
             }
-            [self removeFromSuperview];
+//            [self removeFromSuperview];
         }
         else {
             //Assign the last page to be the previous current page
@@ -234,7 +234,7 @@
             if ([(id)delegate respondsToSelector:@selector(introduction:didFinishWithType:)]) {
                 [delegate introduction:self didFinishWithType:MYFinishTypeSwipeOut];
             }
-            [self removeFromSuperview];
+//            [self removeFromSuperview];
         }
         else {
             //Update Page Control
@@ -355,14 +355,14 @@
 
 -(void)hideWithFadeOutDuration:(CGFloat)duration{
     //Fade out
-    [UIView animateWithDuration:duration animations:^{
-        self.alpha = 0;
-    } completion:^(BOOL finished){
-        if (finished) {
-            [self removeFromSuperview];
-        }
-        
-    }];
+//    [UIView animateWithDuration:duration animations:^{
+//        self.alpha = 0;
+//    } completion:^(BOOL finished){
+//        if (finished) {
+//            [self removeFromSuperview];
+//        }
+//        
+//    }];
 }
 
 -(void)changeToPanelAtIndex:(NSInteger)index{
@@ -398,6 +398,7 @@
         }
     }
     else {
+        
         NSLog(@"The index: %d is out of range for Panels array[0...%d]", index, Panels.count-1);
     }
 }

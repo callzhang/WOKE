@@ -76,7 +76,8 @@
             //TODO: Viberation
             if (self.progress < 1) {
                 
-                
+                AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+				
                 [self setProgress:(self.progress + strength) animated:YES];
                 
                 if (progressHandler) {
