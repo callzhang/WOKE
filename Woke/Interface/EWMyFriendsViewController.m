@@ -73,6 +73,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
             NSMutableSet *myFriends = [me.friends mutableCopy];
             [myFriends intersectSet:[NSSet setWithArray:friends]];
             mutualFriends = [myFriends allObjects];
+            [_friendsCollectionView reloadData];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         });
     });

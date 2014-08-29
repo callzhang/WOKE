@@ -4,6 +4,7 @@
 //
 //  This class manages Core Data related properties and functions, such as context and model.
 //  It also manages backend: StockMob related and Push notification registration
+//  https://www.draw.io/?#G0B8EqrGjPaSeTczJtNEQ1dER3Rjg
 //
 //  Created by Lei on 8/29/13.
 //  Copyright (c) 2013 Shens. All rights reserved.

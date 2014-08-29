@@ -56,7 +56,7 @@
     NSInteger selectedPersonIndex;
     NSTimer *indicatorHideTimer;
     NSTimer *collectionUpdateTimer;
-    BOOL taskScheduled;
+    //BOOL taskScheduled;
 }
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchController;
@@ -65,7 +65,7 @@
 
 @implementation EWAlarmsViewController
 
-@synthesize alarms, tasks, people; //data source
+@synthesize alarms, tasks; //data source
 @synthesize scrollView = _scrollView;
 @synthesize pageView = _pageView;
 @synthesize collectionView = _collectionView;
@@ -75,10 +75,10 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         //initial value
-        people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"]?:@[];
+        //people = [[NSUserDefaults standardUserDefaults] objectForKey:@"peopleList"]?:@[];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
         cellChangeArray = [NSMutableArray new];
-        taskScheduled = NO;
+        //taskScheduled = NO;
     }
     return self;
 }
@@ -89,12 +89,9 @@
     [[EWPersonStore sharedInstance] removeObserver:self forKeyPath:@"currentUser"];
 }
 
+
+#pragma mark - View lifecycle
 - (void)refreshView{
-    //add observer to myTasks
-    [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
-    //listen to schedule signal
-    [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
-    [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
     
     //update data and view
     [self initData];
@@ -260,6 +257,72 @@
 }
 
 
+
+#pragma mark - KVO & Notification
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    
+    if ([object isKindOfClass:[EWPersonStore class]]) {
+        if (me) {
+            //user login listeners
+            [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+            [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
+            
+            //listen to schedule signal
+            [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
+            
+            [self refreshView];
+            [NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(refreshView) userInfo:nil repeats:YES];
+        }
+    }else if ([object isKindOfClass:[EWPerson class]]) {
+        
+        if ([keyPath isEqualToString:@"tasks"]){
+            static NSTimer *alarmPagetimer;
+            NSInteger nTask = me.tasks.count;
+            if (nTask == 7*nWeeksToScheduleTask || nTask == 0){
+                [alarmPagetimer invalidate];
+                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
+                if (nTask == 0){
+                    if ([EWTaskStore sharedInstance].isSchedulingTask) {
+                        [self showAlarmPageLoading:NO];
+                    }else{
+                        [self showAlarmPageLoading:YES];
+                    }
+                }
+            }else{
+                [self showAlarmPageLoading:YES];
+                //[[EWTaskStore sharedInstance] scheduleTasks];
+            }
+            
+        }else if ([keyPath isEqualToString:@"notifications"]){
+            //notification count
+            NSInteger nUnread = [EWNotificationManager myNotifications].count;
+            [self.notificationBtn setTitle:[NSString stringWithFormat:@"%ld", (long)nUnread] forState:UIControlStateNormal];
+            if (nUnread == 0) {
+                [UIView animateWithDuration:0.5 animations:^{
+                    self.notificationBtn.alpha = 0.1;
+                }];
+            }else{
+                [UIView animateWithDuration:0.5 animations:^{
+                    self.notificationBtn.alpha = 1;
+                }];
+            }
+        }
+        
+    }else if ([object isKindOfClass:[EWTaskStore class]]){
+        if ([EWTaskStore sharedInstance].isSchedulingTask) {
+            NSLog(@"Detected %@ is scheduling", [object class]);
+            [self showAlarmPageLoading:YES];
+            //taskScheduled = NO;
+        }else{
+            NSLog(@"%@ finished scheduling", [object class]);
+            [self showAlarmPageLoading:NO];
+            //taskScheduled = YES;
+        }
+    }else{
+        NSLog(@"@@@ Unhandled observation: %@", [object class]);
+    }
+    
+}
 
 #pragma mark - ScrollView
 - (void)reloadAlarmPage {
@@ -448,62 +511,6 @@
     }
 }
 
-#pragma mark - KVO & Notification
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    
-    if ([object isKindOfClass:[EWPersonStore class]]) {
-        if (me) {
-            [self refreshView];
-        }
-    }else if ([object isKindOfClass:[EWPerson class]]) {
-        
-        if ([keyPath isEqualToString:@"tasks"]){
-            static NSTimer *alarmPagetimer;
-            NSInteger nTask = me.tasks.count;
-            if (nTask == 7*nWeeksToScheduleTask || nTask == 0){
-                [alarmPagetimer invalidate];
-                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
-                if (nTask == 0){
-                    if (taskScheduled) {
-                        [self showAlarmPageLoading:NO];
-                    }else{
-                        [self showAlarmPageLoading:YES];
-                    }
-                }
-            }else{
-                [self showAlarmPageLoading:YES];
-                //[[EWTaskStore sharedInstance] scheduleTasks];
-            }
-            
-        }else if ([keyPath isEqualToString:@"notifications"]){
-            //notification count
-            NSInteger nUnread = [EWNotificationManager myNotifications].count;
-            [self.notificationBtn setTitle:[NSString stringWithFormat:@"%ld", (long)nUnread] forState:UIControlStateNormal];
-            if (nUnread == 0) {
-                [UIView animateWithDuration:0.5 animations:^{
-                    self.notificationBtn.alpha = 0.1;
-                }];
-            }else{
-                [UIView animateWithDuration:0.5 animations:^{
-                    self.notificationBtn.alpha = 1;
-                }];
-            }
-        }
-        
-    }else if ([object isKindOfClass:[EWTaskStore class]]){
-        if ([EWTaskStore sharedInstance].isSchedulingTask) {
-            NSLog(@"Detected %@ is scheduling", [object class]);
-            [self showAlarmPageLoading:YES];
-            taskScheduled = NO;
-        }else{
-            NSLog(@"%@ finished scheduling", [object class]);
-            [self showAlarmPageLoading:NO];
-            taskScheduled = YES;
-        }
-    }else{
-        NSLog(@"@@@ Unhandled observation: %@", [object class]);
-    }
-}
 
 
 #pragma mark - UIScrollViewDelegate

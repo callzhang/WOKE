@@ -97,7 +97,7 @@ static const float initialDownSampling = 2;
 	}
 	
 	[self.brightnessFilter removeAllTargets];
-    [self.brightnessFilter addTarget:self.imageView];
+	[self.brightnessFilter addTarget:self.imageView];
     
     if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
 		
@@ -117,38 +117,31 @@ static const float initialDownSampling = 2;
         self.displayLink.paused = NO;
         
         //animation
-        [UIView animateWithDuration:duration delay:delay*2 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        [UIView animateWithDuration:duration delay:delay*2+0.2 options:UIViewAnimationOptionCurveEaseOut animations:^{
             
             toView.alpha = 1;
             toView.transform = CGAffineTransformIdentity;
         } completion:^(BOOL finished) {
 			//========> Present animation ended
-			[self triggerRenderOfNextFrame];
+			//[self triggerRenderOfNextFrame];
 			
             //remove from view
-			fromView.hidden = NO;
-            [self.context completeTransition:YES];
-			
-			
+			//fromView.hidden = NO;
+            //[self.context completeTransition:YES];
         }];
         
         
     }else if(self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
 		
-		//screenshot first
-		//[[NSNotificationCenter defaultCenter] postNotificationName:kWillShowMainView object:nil userInfo:nil];
-		
+		UIImage *toViewImage;
 		if (self.type == kModelViewDismiss) {
 			[[self.context containerView] addSubview:toView];
+			toViewImage = toView.screenshot;
 			toView.alpha = 0;
+		}else{
+			toViewImage = toView.screenshot;
 		}
-		UIImage *toViewImage = toView.screenshot;
 		
-		
-		//refresh
-		if ([toViewController respondsToSelector:@selector(refreshView)]) {
-			[toViewController performSelector:@selector(refreshView)];
-		}
 		
         [UIView animateWithDuration:duration-delay animations:^{
             
@@ -193,16 +186,20 @@ static const float initialDownSampling = 2;
     if (self.interactive) {
         return;
     }
-    if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
+	
+	
+    if ((self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent)) {
 		UIView *fromView = [self.context viewControllerForKey:UITransitionContextFromViewControllerKey].view;
 		if (fromView.superview) {
+			//remove here to reduce the gap between the removal of from view and the display of GPU image
 			[fromView removeFromSuperview];
 		}
-		
+			
 		if (self.progress == 1) {
 			self.displayLink.paused = YES;
+			[self.context completeTransition:YES];
 		}
-        
+		
     }else if ((self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss) && self.progress == 0){
         
         //=======> dismiss animation ended
@@ -210,10 +207,10 @@ static const float initialDownSampling = 2;
         //unhide to view'
         self.displayLink.paused = YES;
         [self.context completeTransition:YES];
-		UIViewController *toViewController = [self.context viewControllerForKey:UITransitionContextToViewControllerKey];
-        UIView *toView = toViewController.view;
+		UIView *toView = [self.context viewControllerForKey:UITransitionContextToViewControllerKey].view;
 		
         if (self.type == UINavigationControllerOperationPop) {
+			[[self.context containerView] addSubview:toView];
 			[self.imageView removeFromSuperview];
         }else if (self.type == kModelViewDismiss){
 			toView.alpha = 1;

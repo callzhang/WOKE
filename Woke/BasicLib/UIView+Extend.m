@@ -64,16 +64,17 @@
     BOOL success = YES;
     if ([self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]){
         //only works when visible
-        if (!animating) {
-            success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
-        }else{
+        //if (!animating) {
+        //    success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
+        //}else{
             success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
-        }
+        //}
     
     }
     if(!success){ /* iOS 6 */
         [self.layer renderInContext:UIGraphicsGetCurrentContext()];
     }
+    
     UIImage* img = UIGraphicsGetImageFromCurrentImageContext();
     
     UIGraphicsEndImageContext();

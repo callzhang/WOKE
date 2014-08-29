@@ -319,31 +319,28 @@ EWPerson *me;
 }
 
 + (void)getFriendsForPerson:(EWPerson *)person{
-    [person.managedObjectContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        EWPerson *backPerson = [person inContext:localContext];
-        NSArray *friends = backPerson.cachedInfo[kCachedFriends];
-        if (!friends || friends.count != backPerson.friends.count) {
-            //friend need update
-            PFQuery *q = [PFQuery queryWithClassName:backPerson.entity.serverClassName];
-            [q includeKey:@"friends"];
-            [q whereKey:kParseObjectID equalTo:backPerson.serverID];
-            PFObject *user = [q getFirstObject];
-            NSArray *friendsPO = user[@"friends"];
-            if (friendsPO.count == 0) return;//prevent 0 friend corrupt data
-            NSMutableSet *friendsMO = [NSMutableSet new];
-            for (PFObject *f in friendsPO) {
-                if ([f isKindOfClass:[NSNull class]]) {
-                    continue;
-                }
-                NSManagedObject *mo = [f managedObjectInContext:localContext];
-                [friendsMO addObject:mo];
+    NSArray *friends = person.cachedInfo[kCachedFriends];
+    if (!friends || friends.count != person.friends.count) {
+        //friend need update
+        PFQuery *q = [PFQuery queryWithClassName:person.entity.serverClassName];
+        [q includeKey:@"friends"];
+        [q whereKey:kParseObjectID equalTo:person.serverID];
+        PFObject *user = [q getFirstObject];
+        NSArray *friendsPO = user[@"friends"];
+        if (friendsPO.count == 0) return;//prevent 0 friend corrupt data
+        NSMutableSet *friendsMO = [NSMutableSet new];
+        for (PFObject *f in friendsPO) {
+            if ([f isKindOfClass:[NSNull class]]) {
+                continue;
             }
-            backPerson.friends = [friendsMO copy];
-            if ([backPerson.serverID isEqualToString: PFUser.currentUser.objectId ]) {
-                [EWPersonStore updateCachedFriends];
-            }
+            NSManagedObject *mo = [f managedObjectInContext:person.managedObjectContext];
+            [friendsMO addObject:mo];
         }
-    }];
+        person.friends = [friendsMO copy];
+        if ([person.serverID isEqualToString: PFUser.currentUser.objectId ]) {
+            [EWPersonStore updateCachedFriends];
+        }
+    }
 }
 
 + (void)updateCachedFriends{

@@ -30,7 +30,7 @@
 
 @property (nonatomic) NSArray *alarms;
 @property (nonatomic) NSArray *tasks;
-@property (nonatomic) NSArray *people;//array of person IDs
+//@property (nonatomic) NSArray *people;//array of person IDs
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
