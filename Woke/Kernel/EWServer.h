@@ -76,4 +76,13 @@
 + (void)registerPushNotificationWithToken:(NSData *)deviceToken;
 
 
++ (void)searchForFriendsOnServer;
+
++(void)publishOpenGraphUsingAPICalls;
+
++(void)publishOpenGraphUsingShareDialog;
+
++(void)makeRequestToPostStory;
+
+
 @end

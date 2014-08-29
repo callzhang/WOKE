@@ -265,4 +265,147 @@
     [currentInstallation saveInBackground];
 }
 
+
++(void)searchForFriendsOnServer
+{
+    PFQuery *q = [PFQuery queryWithClassName:@"User"];
+    
+    [q whereKey:@"email" containedIn:[EWUtil readContactsEmailsFromAddressBooks]];
+    
+    [q findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            
+            // push  notification;
+            
+            
+        } else {
+            // Log details of the failure
+            NSLog(@"Error: %@ %@", error, [error userInfo]);
+        }
+    }];
+    
+}
+
++(void)publishOpenGraphUsingAPICalls{
+    
+    // We will post a story on behalf of the user
+    // These are the permissions we need:
+    NSArray *permissionsNeeded = @[@"publish_actions"];
+    
+    // Request the permissions the user currently has
+    [FBRequestConnection startWithGraphPath:@"/me/permissions"
+                          completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                              if (!error){
+                                  NSDictionary *currentPermissions= [(NSArray *)[result data] objectAtIndex:0];
+                                  NSLog(@"current permissions %@", currentPermissions);
+                                  NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
+                                  
+                                  // Check if all the permissions we need are present in the user's current permissions
+                                  // If they are not present add them to the permissions to be requested
+                                  for (NSString *permission in permissionsNeeded){
+                                      if (![currentPermissions objectForKey:permission]){
+                                          [requestPermissions addObject:permission];
+                                      }
+                                  }
+                                  
+                                  // If we have permissions to request
+                                  if ([requestPermissions count] > 0){
+                                      // Ask for the missing permissions
+                                      [FBSession.activeSession requestNewPublishPermissions:requestPermissions
+                                                                            defaultAudience:FBSessionDefaultAudienceFriends
+                                                                          completionHandler:^(FBSession *session, NSError *error) {
+                                                                              if (!error) {
+                                                                                  // Permission granted
+                                                                                  NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
+                                                                                  // We can request the user information
+                                                        
+                                                        //upload a graph and form a OG story
+                                                                                  
+                                                                              } else {
+                                                                                  // An error occurred, we need to handle the error
+                                                                                  // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+                                                                                  NSLog(@"error %@", error.description);
+                                                                              }
+                                                                          }];
+                                  } else {
+                                      // Permissions are present
+                                      // We can request the user information
+                                      
+                                      
+                                       //upload a graph and form a OG story
+                                  }
+                                  
+                              } else {
+                                  // An error occurred, we need to handle the error
+                                  // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+                                  NSLog(@"error %@", error.description);
+                              }
+                          }];
+
+    
+    
+}
+
+
+
+
++(void)publishOpenGraphUsingShareDialog
+{
+    //All objects and action types in your code must be lowercase.
+    // Create a object
+    id<FBGraphObject> object =
+    [FBGraphObject openGraphObjectForPostWithType:@"fbogsamplesd:dish"
+                                            title:@"Roasted pumpkin seeds"
+                                            image:@"http://i.imgur.com/g3Qc1HN.png"
+                                              url:@"http://example.com/roasted_pumpkin_seeds"
+                                      description:@"Crunchy pumpkin seeds roasted in butter and lightly salted."];
+    
+    
+    
+    // Create an action
+    id<FBOpenGraphAction> action = (id<FBOpenGraphAction>)[FBGraphObject graphObject];
+    
+    // Link the object to the action
+    [action setObject:object forKey:@"dish"];
+    
+    
+    
+//    // Tag one or multiple users using the users' ids
+//    [action setTags:@[<user-ids>];
+//     
+//     // Tag a place using the place's id
+//     id<FBGraphPlace> place = (id<FBGraphPlace>)[FBGraphObject graphObject];
+//     [place setId:@"141887372509674"]; // Facebook Seattle
+//     [action setPlace:place];
+    
+//    
+//    FBOpenGraphActionParams *params = [[FBOpenGraphActionParams alloc] init];
+//    params.action = action;
+//    params.actionType = @"fbogsamplesd:eat";
+//    
+//    // If the Facebook app is installed and we can present the share dialog
+//    if([FBDialogs canPresentShareDialogWithOpenGraphActionParams:params]) {
+//        // Show the share dialog
+//        [FBDialogs presentShareDialogWithOpenGraphAction:action
+//                                              actionType:@"fbogsamplesd:eat"
+//                                     previewPropertyName:@"dish"
+//                                                 handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
+//                                                     if(error) {
+//                                                         // There was an error
+//                                                         NSLog([NSString stringWithFormat:@"Error publishing story: %@", error.description]);
+//                                                     } else {
+//                                                         // Success
+//                                                         NSLog(@"result %@", results);
+//                                                     }
+//                                                 }];
+//        
+//        // If the Facebook app is NOT installed and we can't present the share dialog
+//    } else {
+//        // FALLBACK GOES HERE
+//    }
+    
+}
+
+
+
 @end
