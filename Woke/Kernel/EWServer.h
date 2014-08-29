@@ -84,5 +84,5 @@
 
 +(void)makeRequestToPostStory;
 
-
++(void)updatingStatusInFacebook:(NSString *)status;
 @end

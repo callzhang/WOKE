@@ -407,5 +407,23 @@
 }
 
 
-
++(void)updatingStatusInFacebook:(NSString *)status
+{
+    // NOTE: pre-filling fields associated with Facebook posts,
+    // unless the user manually generated the content earlier in the workflow of your app,
+    // can be against the Platform policies: https://developers.facebook.com/policy
+    
+    [FBRequestConnection startForPostStatusUpdate:status
+                                completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                                    if (!error) {
+                                        // Status update posted successfully to Facebook
+                                        NSLog(@"result: %@", result);
+                                        
+                                    } else {
+                                        // An error occurred, we need to handle the error
+                                        // See: https://developers.facebook.com/docs/ios/errors
+                                        NSLog(@"%@", error.description);
+                                    }
+                                }];
+}
 @end
