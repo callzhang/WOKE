@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-const BOOL BACKGROUNDING_ALL_TIME = 1;
+
 
 @class EWTaskItem;
 

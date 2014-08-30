@@ -13,6 +13,8 @@
 #import "EWWakeUpManager.h"
 #import "AVManager.h"
 
+const BOOL BACKGROUNDING_ALL_TIME = 1;
+
 
 @interface EWBackgroundingManager(){
     NSTimer *backgroundingtimer;
