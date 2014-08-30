@@ -78,11 +78,15 @@
 
 + (void)searchForFriendsOnServer;
 
-+(void)publishOpenGraphUsingAPICalls;
++(void)publishOpenGraphUsingAPICallsWithObjectId:(NSString *)objectId;
 
-+(void)publishOpenGraphUsingShareDialog;
++(void)publishOpenGraphUsingShareDialog;// un wirte
 
 +(void)makeRequestToPostStory;
 
 +(void)updatingStatusInFacebook:(NSString *)status;
+
++(void)uploadOGStoryWithPhoto:(UIImage *)image;// use this to update a OG story 
+
++(void)makeRequestToPostStoryWithId:(NSString *)objectId;
 @end
