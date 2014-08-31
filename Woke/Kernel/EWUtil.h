@@ -29,5 +29,5 @@ void EWLog(NSString *format,...);
 
 + (NSArray *)readContactsEmailsFromAddressBooks;
 
-+ (void)searchForFriendsOnServer;
+
 @end

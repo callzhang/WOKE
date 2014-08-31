@@ -13,6 +13,8 @@
 #import "EWWakeUpManager.h"
 #import "AVManager.h"
 
+const BOOL BACKGROUNDING_ALL_TIME = 1;
+
 
 const BOOL BACKGROUNDING_FROM_START = YES;
 

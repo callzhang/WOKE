@@ -265,4 +265,218 @@
     [currentInstallation saveInBackground];
 }
 
+
++(void)searchForFriendsOnServer
+{
+    PFQuery *q = [PFQuery queryWithClassName:@"User"];
+    
+    [q whereKey:@"email" containedIn:[EWUtil readContactsEmailsFromAddressBooks]];
+    
+    [q findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            
+            // push  notification;
+            
+            
+        } else {
+            // Log details of the failure
+            NSLog(@"Error: %@ %@", error, [error userInfo]);
+        }
+    }];
+    
+}
+
++(void)publishOpenGraphUsingAPICallsWithObjectId:(NSString *)objectId{
+    
+    // We will post a story on behalf of the user
+    // These are the permissions we need:
+    NSArray *permissionsNeeded = @[@"publish_actions"];
+    
+    // Request the permissions the user currently has
+    [FBRequestConnection startWithGraphPath:@"/me/permissions"
+                          completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                              if (!error){
+                                  NSDictionary *currentPermissions= [(NSArray *)[result data] objectAtIndex:0];
+                                  NSLog(@"current permissions %@", currentPermissions);
+                                  NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
+                                  
+                                  // Check if all the permissions we need are present in the user's current permissions
+                                  // If they are not present add them to the permissions to be requested
+                                  for (NSString *permission in permissionsNeeded){
+                                      if (![currentPermissions objectForKey:permission]){
+                                          [requestPermissions addObject:permission];
+                                      }
+                                  }
+                                  
+                                  // If we have permissions to request
+                                  if ([requestPermissions count] > 0){
+                                      // Ask for the missing permissions
+                                      [FBSession.activeSession requestNewPublishPermissions:requestPermissions
+                                                                            defaultAudience:FBSessionDefaultAudienceFriends
+                                                                          completionHandler:^(FBSession *session, NSError *error) {
+                                                                              if (!error) {
+                                                                                  // Permission granted
+                                                                                  NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
+                                                                                  // We can request the user information
+                                                          [EWServer makeRequestToPostStoryWithId:objectId];
+                                                        //upload a graph and form a OG story
+                                                                                  
+                                                                              } else {
+                                                                                  // An error occurred, we need to handle the error
+                                                                                  // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+                                                                                  NSLog(@"error %@", error.description);
+                                                                              }
+                                                                          }];
+                                  } else {
+                                      // Permissions are present
+                                      // We can request the user information
+                                      
+                                      [EWServer makeRequestToPostStoryWithId:objectId];
+                                       //upload a graph and form a OG story
+                                  }
+                                  
+                              } else {
+                                  // An error occurred, we need to handle the error
+                                  // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+                                  NSLog(@"error %@", error.description);
+                              }
+                          }];
+
+    
+    
+}
+
+
+
+
+
+
+
++(void)updatingStatusInFacebook:(NSString *)status
+{
+    // NOTE: pre-filling fields associated with Facebook posts,
+    // unless the user manually generated the content earlier in the workflow of your app,
+    // can be against the Platform policies: https://developers.facebook.com/policy
+    
+    [FBRequestConnection startForPostStatusUpdate:status
+                                completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                                    if (!error) {
+                                        // Status update posted successfully to Facebook
+                                        NSLog(@"result: %@", result);
+                                        
+                                    } else {
+                                        // An error occurred, we need to handle the error
+                                        // See: https://developers.facebook.com/docs/ios/errors
+                                        NSLog(@"%@", error.description);
+                                    }
+                                }];
+}
+
++(void)uploadOGStoryWithPhoto:(UIImage *)image
+
+{
+    
+    [FBRequestConnection startForUploadStagingResourceWithImage:image completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        __block NSString *alertText;
+        __block NSString *alertTitle;
+        if(!error) {
+            
+            NSLog(@"Successfuly staged image with staged URI: %@", [result objectForKey:@"uri"]);
+            
+            // Package image inside a dictionary, inside an array like we'll need it for the object
+            NSArray *image = @[@{@"url": [result objectForKey:@"uri"], @"user_generated" : @"true" }];
+            
+            // Create an object
+            NSMutableDictionary<FBOpenGraphObject> *place = [FBGraphObject openGraphObjectForPost];
+            
+            // specify that this Open Graph object will be posted to Facebook
+            place.provisionedForPost = YES;
+            
+            // Add the standard object properties
+            place[@"og"] = @{ @"title":@"mytitle", @"type":@"restaurant.restaurant", @"description":@"my description", @"image":image };
+            
+            // Add the properties restaurant inherits from place
+            place[@"place"] = @{ @"location" : @{ @"longitude": @"-58.381667", @"latitude":@"-34.603333"} };
+            
+            // Add the properties particular to the type restaurant.restaurant
+            place[@"restaurant"] = @{@"category": @[@"Mexican"],
+                                          @"contact_info": @{@"street_address": @"123 Some st",
+                                                             @"locality": @"Menlo Park",
+                                                             @"region": @"CA",
+                                                             @"phone_number": @"555-555-555",
+                                                             @"website": @"http://www.example.com"}};
+            
+            // Make the Graph API request to post the object
+            FBRequest *request = [FBRequest requestForPostWithGraphPath:@"me/objects/restaurant.restaurant"
+                                                            graphObject:@{@"object":place}];
+            [request startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                if (!error) {
+                    // Success! Include your code to handle the results here
+                    NSLog(@"result: %@", result);
+                   NSString *  _objectID = [result objectForKey:@"id"];
+                    alertTitle = @"Object successfully created";
+                    alertText = [NSString stringWithFormat:@"An object with id %@ has been created", _objectID];
+                    [[[UIAlertView alloc] initWithTitle:alertTitle
+                                                message:alertText
+                                               delegate:self
+                                      cancelButtonTitle:@"OK!"
+                                      otherButtonTitles:nil] show];
+                    
+                } else {
+                    // An error occurred, we need to handle the error
+                    // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+                    NSLog(@"error %@", error.description);
+                }
+            }];
+        } else {
+            // An error occurred, we need to handle the error
+            // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+            NSLog(@"error %@", error.description);
+        }
+    }];
+
+}
+
++(void)makeRequestToPostStoryWithId:(NSString *)objectId
+{
+    if(!objectId){
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:@"Please tap the \"Post an object\" button first to create an object, then you can click on this button to like it."
+                                   delegate:self
+                          cancelButtonTitle:@"OK!"
+                          otherButtonTitles:nil] show];
+    } else {
+        // Create a like action
+        id<FBOpenGraphAction> action = (id<FBOpenGraphAction>)[FBGraphObject graphObject];
+        
+        // Link that like action to the restaurant object that we have created
+        [action setObject:objectId forKey:@"object"];
+        
+        // Post the action to Facebook
+        [FBRequestConnection startForPostWithGraphPath:@"me/og.likes"
+                                           graphObject:action
+                                     completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                                         __block NSString *alertText;
+                                         __block NSString *alertTitle;
+                                         if (!error) {
+                                             // Success, the restaurant has been liked
+                                             NSLog(@"Posted OG action, id: %@", [result objectForKey:@"id"]);
+                                             alertText = [NSString stringWithFormat:@"Posted OG action, id: %@", [result objectForKey:@"id"]];
+                                             alertTitle = @"Success";
+                                             [[[UIAlertView alloc] initWithTitle:alertTitle
+                                                                         message:alertText
+                                                                        delegate:self
+                                                               cancelButtonTitle:@"OK!"
+                                                               otherButtonTitles:nil] show];
+                                         } else {
+                                             // An error occurred, we need to handle the error
+                                             // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+                                             NSLog(@"error %@", error.description);
+                                         }
+                                     }];
+        
+    }
+}
+
+
 @end
