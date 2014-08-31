@@ -18,6 +18,7 @@
 @implementation EWUtil
 
 + (NSString *)UUID{
+    
     NSString *uuid = [[NSUUID UUID] UUIDString];
     
     return uuid;
@@ -172,6 +173,7 @@ void EWLog(NSString *format, ...){
     CFRelease(addressBook);
     
     return [friendsEmails copy];
+    
 }
 
 

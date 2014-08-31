@@ -476,6 +476,18 @@
                                      }];
         
     }
+    
+    
+    NSMutableDictionary<FBGraphObject> *action = [FBGraphObject graphObject];
+    action[@"people"] = @"http://samples.ogp.me/978378285511479";
+    
+    [FBRequestConnection startForPostWithGraphPath:@"me/woke_alarm:woke"
+                                       graphObject:action
+                                 completionHandler:^(FBRequestConnection *connection,
+                                                     id result,
+                                                     NSError *error) {
+                                     // handle the result
+                                 }];
 }
 
 
