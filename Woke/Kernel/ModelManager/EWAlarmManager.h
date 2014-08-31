@@ -49,6 +49,6 @@
 
 //UTIL
 - (NSDictionary *)getSavedAlarmTime:(EWAlarmItem *)alarm;
-- (void)setSavedAlarmTime:(EWAlarmItem *)alarm;
+- (void)setSavedAlarmTimes;
 
 @end

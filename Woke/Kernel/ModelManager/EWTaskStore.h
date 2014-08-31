@@ -17,7 +17,7 @@
 #define kTaskUpdateInterval         3600 * 24
 
 @interface EWTaskStore : NSObject <NSKeyedArchiverDelegate>
-@property BOOL isSchedulingTask;
+@property (atomic) BOOL isSchedulingTask;
 @property NSDate *lastChecked;//last checked task with server
 
 #pragma mark - Search Task
@@ -88,7 +88,7 @@
 - (void)deleteAllTasks;//debug only
 
 #pragma mark - local Notification
-/**
+/**Store sharedInstance] getTasksByPerson:localPerson]
  Schedule local notifications for task
  1. Find all scheduled notif
  2. Find all time-matched notif

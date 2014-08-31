@@ -176,7 +176,7 @@
     //return;
     
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        EWPerson *localMe = [EWPersonStore meInContext:localContext];
+        EWPerson *localMe = [me inContext:localContext];
         [[EWTaskStore sharedInstance] checkPastTasks];
         NSArray *tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:localMe];//newest on top
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;

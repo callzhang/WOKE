@@ -8,6 +8,7 @@
 
 #import "NavigationControllerDelegate.h"
 #import "GPUImageAnimator.h"
+#import "AVManager.h"
 
 static NSString * PushSegueIdentifier = @"push segue identifier";
 
@@ -61,6 +62,7 @@ static NSString * PushSegueIdentifier = @"push segue identifier";
 
 - (id<UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC
 {
+    [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
     if (operation == UINavigationControllerOperationPush) {
         self.animator.type = UINavigationControllerOperationPush;
         return self.animator;

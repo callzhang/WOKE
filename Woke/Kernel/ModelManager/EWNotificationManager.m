@@ -105,7 +105,7 @@
         //EWPerson *person = notification.owner;
         
         NSString *personID = notification.sender;
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByObjectID:personID];
+        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:personID];
         [EWNotificationManager sharedInstance].person = person;
         
         //TODO: add image to alert
@@ -122,7 +122,7 @@
     } else if ([notification.type isEqualToString:kNotificationTypeFriendAccepted]) {
         
         NSString *personID = notification.sender;
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByObjectID:personID];
+        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:personID];
         //EWPerson *person = notification.owner;
         [EWNotificationManager sharedInstance].person = person;
         

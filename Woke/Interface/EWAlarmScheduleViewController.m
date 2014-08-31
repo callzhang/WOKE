@@ -74,8 +74,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         NSLog(@"%s: Need to check the data", __func__);
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         
-        alarms = [[EWAlarmManager sharedInstance] scheduleNewAlarms];//initial alarm
-        tasks = [[EWTaskStore sharedInstance] scheduleTasks];
+        alarms = [EWAlarmManager myAlarms];//initial alarm
+        tasks = [EWTaskStore myTasks];
         
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         
@@ -87,47 +87,54 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)save{
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    for (EWAlarmEditCell *cell in alarmCells) {
-        
-        BOOL hasChanges = NO;
-        
-        if (!cell || !cell.alarm || !cell.task) {
-            NSLog(@"*** Skip setting alarm because cell, alarm or task doesn't exist");
-            continue;
+    
+    BOOL hasChanges = NO;
+    
+    //for (EWAlarmEditCell *cell in alarmCells) {
+    for (NSInteger i=0; i<alarms.count; i++) {
+        NSIndexPath *path = [NSIndexPath indexPathForItem:i inSection:0];
+        EWAlarmEditCell *cell = (EWAlarmEditCell *)[self.tableView cellForRowAtIndexPath:path];
+        if (!cell ) {
+            cell = (EWAlarmEditCell *)[self tableView:_tableView cellForRowAtIndexPath:path];
         }
+        EWAlarmItem *alarm = alarms[i];
+        EWTaskItem *task = tasks[i];
+        
+        
         //state
-        if (cell.alarmToggle.selected != cell.alarm.state) {
-            NSLog(@"Change alarm state for %@ to %@", cell.alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
-            cell.alarm.state = cell.alarmToggle.selected?YES:NO;
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
+        if (cell.alarmToggle.selected != alarm.state) {
+            NSLog(@"Change alarm state for %@ to %@", alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
+            alarm.state = cell.alarmToggle.selected?YES:NO;
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": alarm}];
             hasChanges = YES;
         }
-        //music
 
         //time
-        if (![cell.myTime isEqual:cell.task.time]) {
+        if (![cell.myTime isEqual:task.time]) {
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
-            cell.alarm.time = cell.myTime;
-            //save alarm time to user defaults
-            [[EWAlarmManager sharedInstance] setSavedAlarmTime:cell.alarm];
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": cell.alarm}];
+            alarm.time = cell.myTime;
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": alarm}];
             hasChanges = YES;
         }
         //statement
-        if (cell.statement.text.length && ![cell.statement.text isEqualToString:cell.task.statement]) {
-            cell.task.statement = cell.statementText.text;
-            hasChanges = YES;
+        if (cell.statement.text.length && ![cell.statement.text isEqualToString:task.statement]) {
+            alarm.statement = cell.statementText.text;
+            task.statement = cell.statementText.text;
+            //hasChanges = YES;
             
         }
         
-        if (hasChanges) {
-            [[EWTaskStore sharedInstance] updateNextTaskTime];
-        }
         
         //save
         [EWDataStore save];
     }
     
+    if (hasChanges) {
+        [[EWTaskStore sharedInstance] updateNextTaskTime];
+        
+        //save alarm time to user defaults
+        [[EWAlarmManager sharedInstance] setSavedAlarmTimes];
+    }
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
 }

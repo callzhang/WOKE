@@ -14,6 +14,8 @@
 #import "AVManager.h"
 
 
+const BOOL BACKGROUNDING_FROM_START = YES;
+
 @interface EWBackgroundingManager(){
     NSTimer *backgroundingtimer;
     UIBackgroundTaskIdentifier backgroundTaskIdentifier;
@@ -69,13 +71,13 @@
 }
 
 - (void)enterBackground{
-    if (self.sleeping || BACKGROUNDING_ALL_TIME) {
+    if (self.sleeping || BACKGROUNDING_FROM_START) {
         [self startBackgrounding];
     }
 }
 
 - (void)enterForeground{
-    if (!self.sleeping && !BACKGROUNDING_ALL_TIME) {
+    if (!self.sleeping && !BACKGROUNDING_FROM_START) {
         [self endBackgrounding];
     }else{
         //[self startBackgrounding];
@@ -108,7 +110,7 @@
         [app scheduleLocalNotification:notif];
     }
     
-    if (self.sleeping || BACKGROUNDING_ALL_TIME) {
+    if (self.sleeping || BACKGROUNDING_FROM_START) {
         [self startBackgrounding];
     }
 }

@@ -29,12 +29,11 @@ extern EWPerson *me;
 /**
  Possible people that are relevant, fetched from server(TODO)
  */
-@property NSArray *everyone;
-@property EWPerson *currentUser;
-+ (EWPerson *)meInContext:(NSManagedObjectContext *)context;
+@property (nonatomic) NSArray *everyone;
+@property (nonatomic) EWPerson *currentUser;
 + (EWPersonStore *)sharedInstance;
 - (EWPerson *)createPersonWithParseObject:(PFUser *)user;
-- (EWPerson *)getPersonByObjectID:(NSString *)ID;
+- (EWPerson *)getPersonByServerID:(NSString *)ID;
 - (void)getEveryoneInBackgroundWithCompletion:(void (^)(void))block;
 - (void)refreshPersonInBackgroundWithCompletion:(void (^)(void))block; 
 + (void)updateMe;

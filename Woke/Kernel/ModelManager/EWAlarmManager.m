@@ -140,9 +140,11 @@
         NSLog(@"Alarm for me is less than 7, fetch from server!");
         PFQuery *alarmQuery = [PFQuery queryWithClassName:@"EWAlarmItem"];
         [alarmQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
+        [alarmQuery whereKey:kParseObjectID notContainedIn:[alarms valueForKey:kParseObjectID]];
         NSArray *objects = [alarmQuery findObjects];
         
         for (PFObject *a in objects) {
+            [EWDataStore setCachedParseObject:a];
             EWAlarmItem *alarm = (EWAlarmItem *)[a managedObjectInContext:mainContext];;
             alarm.owner = me;
             if (![alarms containsObject:alarm]) {
@@ -241,6 +243,7 @@
         //notification
         NSLog(@"Saving new alarms");
         [EWDataStore save];
+        [self setSavedAlarmTimes];
         
         //notification
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -286,15 +289,21 @@
     return dic;
 }
 
-- (void)setSavedAlarmTime:(EWAlarmItem *)alarm{
+- (void)setSavedAlarmTimes{
     NSMutableArray *alarmTimes = [[self getSavedAlarmTimes] mutableCopy];
-    NSInteger wkd = [alarm.time weekdayNumber];
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *comp = [cal components: (NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:alarm.time];
-    double hour = comp.hour;
-    double minute = comp.minute;
-    double number = hour + minute/100;
-    [alarmTimes setObject:[NSNumber numberWithDouble:number] atIndexedSubscript:wkd];
+    NSArray *alarms = [EWAlarmManager myAlarms];
+    
+    for (EWAlarmItem *alarm in alarms) {
+        NSInteger wkd = [alarm.time weekdayNumber];
+        NSCalendar *cal = [NSCalendar currentCalendar];
+        NSDateComponents *comp = [cal components: (NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:alarm.time];
+        double hour = comp.hour;
+        double minute = comp.minute;
+        double number = hour + minute/100;
+        [alarmTimes setObject:[NSNumber numberWithDouble:number] atIndexedSubscript:wkd];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setObject:alarmTimes.copy forKey:kSavedAlarms];
 }
 
 - (NSArray *)getSavedAlarmTimes{

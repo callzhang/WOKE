@@ -69,7 +69,7 @@
         self.profilePic.image = notification.owner.profilePic;
         self.profilePic.hidden = NO;
         [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
-        EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByObjectID:notification.sender];
+        EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByServerID:notification.sender];
         if([type isEqualToString:kNotificationTypeFriendRequest]){
             
                self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request", sender.name];

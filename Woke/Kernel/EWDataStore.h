@@ -53,6 +53,7 @@ typedef void (^EWSavingCallback)(void);
 @property Reachability *reachability;
 @property NSMutableDictionary *serverObjectPool;
 @property NSMutableDictionary *changeRecords;
+@property BOOL isUploading;
 
 #pragma mark - Connectivity
 + (BOOL)isReachable;
@@ -92,7 +93,7 @@ typedef void (^EWSavingCallback)(void);
  And save ManagedObject.
  @discussion Please do not call this method directly. It is scheduled when you call save method.
  */
-+ (void)updateToServer;
+- (void)updateToServer;
 
 /*
  Resume uploading at startup.

@@ -86,27 +86,17 @@
 - (void)dealloc{
     [me removeObserver:self forKeyPath:@"tasks"];
     [me removeObserver:self forKeyPath:@"notification"];
-    [[EWPersonStore sharedInstance] removeObserver:self forKeyPath:@"currentUser"];
+    //[[EWPersonStore sharedInstance] removeObserver:self forKeyPath:@"currentUser"];
 }
 
 
 #pragma mark - View lifecycle
-- (void)refreshView{
-    
-    //update data and view
-    [self initData];
-    [self reloadAlarmPage];
-    [self.collectionView reloadData];
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-}
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
 
     //listen to user log in, and updates its view
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
-    [[EWPersonStore sharedInstance] addObserver:self forKeyPath:@"currentUser" options:NSKeyValueObservingOptionNew context:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
+    //[[EWPersonStore sharedInstance] addObserver:self forKeyPath:@"currentUser" options:NSKeyValueObservingOptionNew context:nil];
     
     //listen to hex structure change
     [[NSNotificationCenter defaultCenter] addObserverForName:kHexagonStructureChange object:nil queue:nil usingBlock:^(NSNotification *note) {
@@ -159,11 +149,6 @@
     [self initView];
 }
 
-- (void)viewWillDisappear:(BOOL)animated{
-    [super viewWillDisappear:animated];
-    NSLog(@"Main view will disappear");
-}
-
 
 - (void)initData {
     
@@ -176,10 +161,11 @@
         
         if (alarms.count != 7){
             [[EWAlarmManager sharedInstance] scheduleAlarm];
+            NSLog(@"!!! Alarm(%ld) ", (long)alarms.count);
         }
         
         if (tasks.count != 7 * nWeeksToScheduleTask) {
-            NSLog(@"Alarm(%ld) and Task(%ld)", (long)alarms.count, (long)tasks.count);
+            NSLog(@"!!! Task(%ld)", (long)tasks.count);
             [[EWTaskStore sharedInstance] scheduleTasksInBackground];
             
         }
@@ -206,18 +192,36 @@
 }
 
 - (void)initView {
-    
-
-//    [EWUIUtil addFirstTimeTutorialInViewController:self];
 
     //show loading indicator
     [self showAlarmPageLoading:YES];
     
-    
     //load page
     [self reloadAlarmPage];
     
+}
+
+
+- (void)refreshView{
     
+    //update data and view
+    [self initData];
+    [self reloadAlarmPage];
+    [self.collectionView reloadData];
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+}
+
+- (void)userLoggedIn{
+    //user login listeners
+    [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+    [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
+    
+    //listen to schedule signal
+    [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
+    
+    [self refreshView];
+    [NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(refreshView) userInfo:nil repeats:YES];
+
 }
 
 
@@ -228,15 +232,14 @@
     }
     
     //predicate
-    //NSArray *usernameList = [people valueForKey:@"username"];
-    //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"username IN %@", usernameList];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"score > 0"];
     
     //sort
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO];
     
     //request
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"EWPerson"];
-    //request.predicate = predicate;
+    request.predicate = predicate;
     request.sortDescriptors = @[sort];
     
     //controller
@@ -261,19 +264,7 @@
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     
-    if ([object isKindOfClass:[EWPersonStore class]]) {
-        if (me) {
-            //user login listeners
-            [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
-            [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
-            
-            //listen to schedule signal
-            [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
-            
-            [self refreshView];
-            [NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(refreshView) userInfo:nil repeats:YES];
-        }
-    }else if ([object isKindOfClass:[EWPerson class]]) {
+    if ([object isKindOfClass:[EWPerson class]]) {
         
         if ([keyPath isEqualToString:@"tasks"]){
             static NSTimer *alarmPagetimer;
@@ -343,7 +334,7 @@
         [_alarmPages removeAllObjects];
         _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
         _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
-        
+        [self showAlarmPageLoading:NO];
         return;
         
         
@@ -351,8 +342,8 @@
         //task or alarm incomplete, schedule
         //init state
         
-        alarms = [[EWAlarmManager sharedInstance] scheduleAlarm];
-        tasks = [[EWTaskStore sharedInstance] scheduleTasks];
+        //alarms = [[EWAlarmManager sharedInstance] scheduleAlarm];
+        //tasks = [[EWTaskStore sharedInstance] scheduleTasks];
         return;
     }
     
@@ -482,9 +473,13 @@
 
 
 - (void)showAlarmPageLoading:(BOOL)on{
-    if (_alarmPages.count > 0) {
-        return;
+    
+    for (UIView *view in _alarmPages) {
+        if ([view isKindOfClass:[EWAlarmPageView class]]) {
+            return;
+        }
     }
+    
     if (on) {
         [self.alarmloadingIndicator startAnimating];
         self.addBtn.hidden = YES;
@@ -820,7 +815,8 @@
             
         } else {
             //prevent updating too fast
-            if(lastUpdated.timeElapsed < 0.1 ){
+            if(lastUpdated.timeElapsed < 0.2 ){
+                [self.collectionView reloadData];
                 return;
             }
             
@@ -837,7 +833,7 @@
                 
             }completion:^(BOOL finished){
                 if (finished) {
-                    
+                    //
                 }else{
                     NSLog(@"*** Update of collection view failed");
                 }

@@ -52,15 +52,6 @@ EWPerson *me;
 
 #pragma mark - ME
 //Current User MO at background thread
-+ (EWPerson *)meInContext:(NSManagedObjectContext *)context{
-    EWPerson *localMe = (EWPerson *)[context objectWithID:me.objectID];
-    return localMe;
-}
-
-- (EWPerson *)currentUser{
-    return currentUser;
-}
-
 - (void)setCurrentUser:(EWPerson *)user{
     me = user;
     currentUser = user;
@@ -78,15 +69,12 @@ EWPerson *me;
     if ([user isEqual:[PFUser currentUser]]) {
         newUser.score = @100;
     }
-    
-    //skip uploading because there will have more info to upload
-    
-    [EWDataStore save];
-
+    newUser.updatedAt = [NSDate date];
+    //no need to save here
     return newUser;
 }
 
--(EWPerson *)getPersonByObjectID:(NSString *)ID{
+-(EWPerson *)getPersonByServerID:(NSString *)ID{
     NSParameterAssert([NSThread isMainThread]);
     //ID is username
     if(!ID) return nil;
@@ -98,16 +86,21 @@ EWPerson *me;
         if ([[PFUser currentUser].objectId isEqualToString:ID]) {
             user = [PFUser currentUser];
         }else{
-            PFQuery *query = [PFUser query];
-            [query whereKey:kParseObjectID equalTo:ID];
-            [query includeKey:@"friends"];
-            query.cachePolicy = kPFCachePolicyCacheElseNetwork;
-            NSError *error;
-            user = [query findObjects:&error].firstObject;
-            if (error || !user) {
-                NSLog(@"Failed to find user with ID %@. Reason:%@", ID, error.description);
-                return nil;
+            user = (PFUser *)[EWDataStore getCachedParseObjectForID:ID];
+            if (!user) {
+                PFQuery *query = [PFUser query];
+                [query whereKey:kParseObjectID equalTo:ID];
+                [query includeKey:@"friends"];
+                query.cachePolicy = kPFCachePolicyCacheElseNetwork;
+                NSError *error;
+                user = [query findObjects:&error].firstObject;
+                [EWDataStore setCachedParseObject:user];
+                if (error || !user) {
+                    NSLog(@"Failed to find user with ID %@. Reason:%@", ID, error.description);
+                    return nil;
+                }
             }
+            
         }
         
         
@@ -116,12 +109,7 @@ EWPerson *me;
             NSLog(@"New user %@ data has CREATED", person.name);
         }else{
             person = (EWPerson *)[user managedObjectInContext:mainContext];
-            NSLog(@"Person created from PO");
-            //assign user
-            for (PFUser *friendPO in user[@"friends"]) {
-                EWPerson *friend = (EWPerson *)[friendPO managedObjectInContext:mainContext];
-                [person addFriendsObject:friend];
-            }
+            NSLog(@"Person %@ created from PO", user[@"name"]);
         }
         
     }else{
@@ -234,7 +222,7 @@ EWPerson *me;
         [EWDataStore saveToLocal:person];
     }
     
-    EWPerson *localMe = [EWPersonStore meInContext:context];
+    EWPerson *localMe = [me inContext:context];
     localMe.score = @100;
     NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
     
@@ -258,7 +246,7 @@ EWPerson *me;
 
 #pragma mark - Notification
 - (void)userLoggedIn:(NSNotification *)notif{
-    EWPerson *user = notif.userInfo[kUserLoggedInUserKey];
+    EWPerson *user = notif.object;
     if (![me isEqual:user]) {
         self.currentUser = user;
     }
@@ -274,7 +262,7 @@ EWPerson *me;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([object isEqual:me]) {
         NSNumber *score = change[NSKeyValueChangeNewKey];
-        if ([score integerValue] != 100) {
+        if ([score isKindOfClass:[NSNull class]] || [score integerValue] != 100) {
             NSLog(@"My score resotred to 100");
             me.score = @100;
         }
@@ -345,7 +333,7 @@ EWPerson *me;
 
 + (void)updateCachedFriends{
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        EWPerson *localMe = [EWPersonStore meInContext:localContext];
+        EWPerson *localMe = [me inContext:localContext];
         NSSet *friends = [localMe.friends valueForKey:kParseObjectID];
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
         cache[kCachedFriends] = friends.allObjects;
@@ -382,11 +370,6 @@ EWPerson *me;
     if(!person.username){
         person.username = [PFUser currentUser].username;
         NSLog(@"Username is missing!");
-    }
-    
-    if(person.friends.count == 0){
-        NSLog(@"*** Please check if your friend count is indeed 0. If not, something is seriously wrong. Check the process that arrived to this code and try to fix this problem.");
-        
     }
     
     if (needRefreshFacebook) {

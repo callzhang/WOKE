@@ -119,13 +119,11 @@
     }
 
     //fetch or create, delay 0.1s so the login view can animate
-    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByObjectID:user.objectId];
+    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:user.objectId];
     //save me
     [EWPersonStore sharedInstance].currentUser = person;
     me.score = @100;
-    NSMutableDictionary *cache = me.cachedInfo.mutableCopy;
-    [cache removeObjectForKey:@"task_activity_cache"];
-    me.cachedInfo = cache.copy;
+    [EWDataStore saveToLocal:me];
     
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     
@@ -395,7 +393,7 @@
 //after fb login, fetch user managed object
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        EWPerson *person = [EWPersonStore meInContext:localContext];
+        EWPerson *person = [me inContext:localContext];
 
         NSParameterAssert(person);
         
@@ -465,7 +463,7 @@
         //get social graph of current user
         //if not, create one
         [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-            EWPerson *localMe = [EWPersonStore meInContext:localContext];
+            EWPerson *localMe = [me inContext:localContext];
             EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:localMe];
             //skip if checked within a week
             if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {

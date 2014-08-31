@@ -159,7 +159,7 @@
     [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
         [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
-        EWPerson *localMe = [EWPersonStore meInContext:localContext];
+        EWPerson *localMe = [me inContext:localContext];
         NSSet *localAssetIDs = [localMe.mediaAssets valueForKey:kParseObjectID];
         [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
         mediaPOs = [query findObjects];
