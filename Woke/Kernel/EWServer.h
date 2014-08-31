@@ -78,7 +78,7 @@
 
 + (void)searchForFriendsOnServer;
 
-+(void)publishOpenGraphUsingAPICallsWithObjectId:(NSString *)objectId;
++(void)publishOpenGraphUsingAPICallsWithObjectId:(NSString *)objectId andUrlString:(NSString *)url;
 
 +(void)publishOpenGraphUsingShareDialog;// un wirte
 
@@ -88,5 +88,5 @@
 
 +(void)uploadOGStoryWithPhoto:(UIImage *)image;// use this to update a OG story 
 
-+(void)makeRequestToPostStoryWithId:(NSString *)objectId;
++(void)makeRequestToPostStoryWithId:(NSString *)objectId andUrlString:(NSString *)url;
 @end

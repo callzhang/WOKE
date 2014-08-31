@@ -286,7 +286,7 @@
     
 }
 
-+(void)publishOpenGraphUsingAPICallsWithObjectId:(NSString *)objectId{
++(void)publishOpenGraphUsingAPICallsWithObjectId:(NSString *)objectId andUrlString:(NSString *)url {
     
     // We will post a story on behalf of the user
     // These are the permissions we need:
@@ -318,7 +318,7 @@
                                                                                   // Permission granted
                                                                                   NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
                                                                                   // We can request the user information
-                                                          [EWServer makeRequestToPostStoryWithId:objectId];
+                                                          [EWServer makeRequestToPostStoryWithId:objectId andUrlString:url];
                                                         //upload a graph and form a OG story
                                                                                   
                                                                               } else {
@@ -331,7 +331,7 @@
                                       // Permissions are present
                                       // We can request the user information
                                       
-                                      [EWServer makeRequestToPostStoryWithId:objectId];
+                                      [EWServer makeRequestToPostStoryWithId:objectId andUrlString:url];
                                        //upload a graph and form a OG story
                                   }
                                   
@@ -379,12 +379,15 @@
     [FBRequestConnection startForUploadStagingResourceWithImage:image completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
         __block NSString *alertText;
         __block NSString *alertTitle;
+        __block NSString *urlString ;
         if(!error) {
             
-            NSLog(@"Successfuly staged image with staged URI: %@", [result objectForKey:@"uri"]);
-            
-            // Package image inside a dictionary, inside an array like we'll need it for the object
             NSArray *image = @[@{@"url": [result objectForKey:@"uri"], @"user_generated" : @"true" }];
+            
+            urlString = [result objectForKey:@"uri"];
+   
+            // Package image inside a dictionary, inside an array like we'll need it for the object
+            
             
             // Create an object
             NSMutableDictionary<FBOpenGraphObject> *place = [FBGraphObject openGraphObjectForPost];
@@ -393,7 +396,7 @@
             place.provisionedForPost = YES;
             
             // Add the standard object properties
-            place[@"og"] = @{ @"title":@"mytitle", @"type":@"restaurant.restaurant", @"description":@"my description", @"image":image };
+            place[@"og"] = @{ @"title":@"Woke Now", @"type":@"woke_alarm:people", @"description":@"Woke up", @"image":image };
             
             // Add the properties restaurant inherits from place
             place[@"place"] = @{ @"location" : @{ @"longitude": @"-58.381667", @"latitude":@"-34.603333"} };
@@ -407,20 +410,14 @@
                                                              @"website": @"http://www.example.com"}};
             
             // Make the Graph API request to post the object
-            FBRequest *request = [FBRequest requestForPostWithGraphPath:@"me/objects/restaurant.restaurant"
+            FBRequest *request = [FBRequest requestForPostWithGraphPath:@"me/objects/woke_alarm:people"
                                                             graphObject:@{@"object":place}];
             [request startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                 if (!error) {
                     // Success! Include your code to handle the results here
                     NSLog(@"result: %@", result);
                    NSString *  _objectID = [result objectForKey:@"id"];
-                    alertTitle = @"Object successfully created";
-                    alertText = [NSString stringWithFormat:@"An object with id %@ has been created", _objectID];
-                    [[[UIAlertView alloc] initWithTitle:alertTitle
-                                                message:alertText
-                                               delegate:self
-                                      cancelButtonTitle:@"OK!"
-                                      otherButtonTitles:nil] show];
+                    [EWServer publishOpenGraphUsingAPICallsWithObjectId:_objectID andUrlString:urlString];
                     
                 } else {
                     // An error occurred, we need to handle the error
@@ -437,7 +434,7 @@
 
 }
 
-+(void)makeRequestToPostStoryWithId:(NSString *)objectId
++(void)makeRequestToPostStoryWithId:(NSString *)objectId andUrlString:(NSString *)url
 {
     if(!objectId){
         [[[UIAlertView alloc] initWithTitle:@"Error"
@@ -450,10 +447,11 @@
         id<FBOpenGraphAction> action = (id<FBOpenGraphAction>)[FBGraphObject graphObject];
         
         // Link that like action to the restaurant object that we have created
-        [action setObject:objectId forKey:@"object"];
+//        [action setObject:objectId forKey:@"object"];
+        action[@"people"] = objectId;
         
         // Post the action to Facebook
-        [FBRequestConnection startForPostWithGraphPath:@"me/og.likes"
+        [FBRequestConnection startForPostWithGraphPath:@"me/woke_alarm:woke"
                                            graphObject:action
                                      completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                                          __block NSString *alertText;
@@ -477,18 +475,8 @@
         
     }
     
-    
-    NSMutableDictionary<FBGraphObject> *action = [FBGraphObject graphObject];
-    action[@"people"] = @"http://samples.ogp.me/978378285511479";
-    
-    [FBRequestConnection startForPostWithGraphPath:@"me/woke_alarm:woke"
-                                       graphObject:action
-                                 completionHandler:^(FBRequestConnection *connection,
-                                                     id result,
-                                                     NSError *error) {
-                                     // handle the result
-                                 }];
-}
+   
+ }
 
 
 @end

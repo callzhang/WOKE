@@ -428,7 +428,7 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", @"Feedback", @"Start Sleeping",@"TestFeedback",@"TestSearchFriends",nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", @"Feedback", @"Start Sleeping",@"TestFeedback",@"TestSearchFriends",@"TestPublicFaceBookStatus",nil];
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
@@ -643,7 +643,10 @@
         {
             [EWServer searchForFriendsOnServer];
         }
-        
+        else if ([title isEqualToString:@"TestPublicFaceBookStatus"])
+        {
+            [EWServer uploadOGStoryWithPhoto:me.profilePic];
+        }
     }else{
         EWAlert(@"Unknown alert sheet");
     }
