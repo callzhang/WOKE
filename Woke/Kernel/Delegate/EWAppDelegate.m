@@ -42,6 +42,9 @@ UIViewController *rootViewController;
 @synthesize backgroundTaskIdentifier;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+#ifdef DEBUG
+    EWLogInit();
+#endif
     
     //test flight
     [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];

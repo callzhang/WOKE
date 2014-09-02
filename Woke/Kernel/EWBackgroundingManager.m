@@ -84,6 +84,12 @@ const BOOL BACKGROUNDING_FROM_START = YES;
     }else{
         //[self startBackgrounding];
     }
+    
+    for (UILocalNotification *note in [UIApplication sharedApplication].scheduledLocalNotifications) {
+        if ([note.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeReactivate]) {
+            [[UIApplication sharedApplication] cancelLocalNotification:note];
+        }
+    }
 }
 
 

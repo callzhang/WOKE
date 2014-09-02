@@ -71,7 +71,9 @@
                @"Test Alarm Timer",
                @"Add some media",
                @"Update facebook friends",
-               @"Notification Center"];
+               @"Notification Center",
+               @"Address book",
+               @"Facebook post"];
     
     subTitles = @[@"Pop up the WakeUp View with all medias of mine",
                   @"Test shake",
@@ -82,7 +84,9 @@
                   @"Test alarm timer event. Cloase app after this!",
                   @"Add some medias to next task, takes 20s.",
                   @"Test for facebook friends list and store",
-                  @"Create some notifications"];
+                  @"Create some notifications",
+                  @"Read addressbook and find friends by matching email",
+                  @"Send a facebook story"];
 }
 
 - (void)initView {
@@ -306,7 +310,13 @@
             [EWDataStore save];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
             [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
-            
+            break;
+        }
+        case 10:{//address book
+            [EWServer searchForFriendsOnServer];
+        }
+        case 11:{//facebook story post
+            [EWServer uploadOGStoryWithPhoto:me.profilePic];
         }
         default:
             break;

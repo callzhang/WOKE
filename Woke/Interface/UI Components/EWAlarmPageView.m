@@ -90,12 +90,13 @@
     [self setNeedsDisplay];
     
     //set task state
-    task.state = sender.selected;
-    [EWDataStore save];
+    alarm.state = sender.selected;
     
     //broadcast
-    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:task userInfo:@{@"task": task}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:alarm userInfo:nil];
     NSLog(@"Task on %@ changed to %@", task.time.weekday, (sender.selected?@"ON":@"OFF"));
+    
+    [EWDataStore save];
 }
 
 - (IBAction)playMessage:(id)sender {

@@ -416,7 +416,7 @@
                 if (!error) {
                     // Success! Include your code to handle the results here
                     NSLog(@"result: %@", result);
-                   NSString *  _objectID = [result objectForKey:@"id"];
+                    NSString *  _objectID = [result objectForKey:@"id"];
                     [EWServer publishOpenGraphUsingAPICallsWithObjectId:_objectID andUrlString:urlString];
                     
                 } else {

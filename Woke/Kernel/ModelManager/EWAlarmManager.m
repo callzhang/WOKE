@@ -172,11 +172,12 @@
     NSMutableArray *newAlarms = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
     //check if alarm scheduled are duplicated
     for (EWAlarmItem *a in alarms) {
+        BOOL good = [EWAlarmManager validateAlarm:a];
         
         //check time
-        if (!a.time) {
-            NSLog(@"Something wrong with alarm. Deleted. %@",[a.time date2detailDateString]);
-            [self removeAlarm:a];
+        if (!good) {
+            NSLog(@"Something wrong with alarm %@. Deleted.",[a.time date2detailDateString]);
+            [a deleteEntity];
             continue;
         }
         
@@ -187,7 +188,7 @@
         if (![newAlarms[i] isEqual:@NO]){
             //remove duplicacy
             NSLog(@"@@@ Duplicated alarm found. Deleted! %@", a.time.date2detailDateString);
-            [self removeAlarm:a];
+            [a deleteEntity];
             hasChange = YES;
             continue;
         }
@@ -301,7 +302,7 @@
         NSCalendar *cal = [NSCalendar currentCalendar];
         NSDateComponents *comp = [cal components: (NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:alarm.time];
         double hour = comp.hour;
-        double minute = comp.minute;
+        double minute = round(comp.minute);
         double number = hour + minute/100;
         [alarmTimes setObject:[NSNumber numberWithDouble:number] atIndexedSubscript:wkd];
     }
@@ -348,7 +349,7 @@
 + (BOOL)validateAlarm:(EWAlarmItem *)alarm{
     BOOL good = YES;
     if (!alarm.owner) {
-        NSLog(@"M %@（%@）missing owner", alarm.entity.name, alarm.serverID);
+        NSLog(@"Alarm（%@）missing owner", alarm.serverID);
         alarm.owner = [me inContext:alarm.managedObjectContext];
     }
     if (!alarm.tasks || alarm.tasks.count == 0) {
@@ -360,6 +361,9 @@
 //            EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:alarm.managedObjectContext];
 //            [alarm addTasksObject:task];
 //        }
+        good = NO;
+    }
+    if (!alarm.time) {
         good = NO;
     }
     

@@ -27,6 +27,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 @implementation EWAlarmScheduleViewController{
     NSInteger selected;
     NSMutableArray *alarmCells;
+    NSArray *tasks;
 }
 
 - (void)viewDidLoad{
@@ -63,7 +64,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)initData{
     //data source
-    alarms = [EWAlarmManager myAlarms];
+    //alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskStore myTasks];
     alarmCells = [[NSMutableArray alloc] initWithCapacity:7];
     selected = 99;
@@ -75,47 +76,46 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     BOOL hasChanges = NO;
     
     //for (EWAlarmEditCell *cell in alarmCells) {
-    for (NSInteger i=0; i<alarms.count; i++) {
+    for (NSInteger i=0; i<tasks.count; i++) {
         NSIndexPath *path = [NSIndexPath indexPathForItem:i inSection:0];
         EWAlarmEditCell *cell = (EWAlarmEditCell *)[self.tableView cellForRowAtIndexPath:path];
         if (!cell ) {
             cell = (EWAlarmEditCell *)[self tableView:_tableView cellForRowAtIndexPath:path];
         }
-        EWAlarmItem *alarm = alarms[i];
+        
         EWTaskItem *task = tasks[i];
+        EWAlarmItem *alarm = task.alarm;
         
         
         //state
         if (cell.alarmToggle.selected != alarm.state) {
             NSLog(@"Change alarm state for %@ to %@", alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
             alarm.state = cell.alarmToggle.selected?YES:NO;
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:self userInfo:@{@"alarm": alarm}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
             hasChanges = YES;
         }
 
         //time
         if (![cell.myTime isEqual:task.time]) {
+            NSAssert(cell.myTime.weekdayNumber == alarm.time.weekdayNumber, @"Updating time to wrong alarm");
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
             alarm.time = cell.myTime;
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:self userInfo:@{@"alarm": alarm}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
             hasChanges = YES;
         }
+        
         //statement
         if (cell.statement.text.length && ![cell.statement.text isEqualToString:task.statement]) {
             alarm.statement = cell.statementText.text;
             task.statement = cell.statementText.text;
             //hasChanges = YES;
-            
         }
-        
         
         //save
         [EWDataStore save];
     }
     
     if (hasChanges) {
-        [[EWTaskStore sharedInstance] updateNextTaskTime];
-        
         //save alarm time to user defaults
         [[EWAlarmManager sharedInstance] setSavedAlarmTimes];
     }
@@ -142,7 +142,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 #pragma mark - tableViewController delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return alarms.count;
+    return tasks.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

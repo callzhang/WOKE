@@ -1657,10 +1657,10 @@ NSManagedObjectContext *mainContext;
                     NSSet *relatedMOs = [managedObject valueForKey:key];
                     NSMutableArray *relatedPOs = [NSMutableArray new];
                     for (NSManagedObject *MO in relatedMOs) {
-                        PFObject *PO = [EWDataStore getCachedParseObjectForID:MO.serverID];
-						if (!PO) {
-							PO = [PFObject objectWithoutDataWithClassName:MO.entity.serverClassName objectId:[MO valueForKey:kParseObjectID]];
-						}
+                        //PFObject *PO = [EWDataStore getCachedParseObjectForID:MO.serverID];
+						//if (!PO) {
+						PFObject *PO = [PFObject objectWithoutDataWithClassName:MO.entity.serverClassName objectId:[MO valueForKey:kParseObjectID]];
+						//}
                         [relatedPOs addObject:PO];
                     }
                     [self setObject:[relatedPOs copy] forKey:key];

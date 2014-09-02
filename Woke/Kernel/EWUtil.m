@@ -124,9 +124,11 @@ void EWLog(NSString *format, ...){
     va_start(args, format);
     NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
     va_end(args);
-    //dispatch to NSLog
-    TFLog(@"%@", str);
     
+
+    
+#ifdef DEBUG
+    //dispatch to NSLOG
     NSString *symbol = [str substringToIndex:3];
     static const NSArray *symbolList;
     symbolList = @[@"***", @"!!!"];//error, warning
@@ -135,7 +137,26 @@ void EWLog(NSString *format, ...){
     if (level <= EW_DEBUG_LEVEL) {
         LogMessageF(__FILE__,__LINE__,__FUNCTION__, @"Woke", level, @"%@", str);
     }
+#else
+    //only send to TestFlight on release version
+    TFLog(@"%@", str);
+#endif
 }
+
+void EWLogInit(){
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES);
+    
+	NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+	NSString *fileName =[NSString stringWithFormat:@"%@.log",[NSDate date]];
+    
+	NSString *logFilePath = [documentsDirectory stringByAppendingPathComponent:fileName];
+    
+    Logger *logger = LoggerGetDefaultLogger();
+    LoggerSetBufferFile(logger, (__bridge CFStringRef)logFilePath);
+}
+
+
 +(NSArray *)readContactsEmailsFromAddressBooks
 {
     

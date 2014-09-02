@@ -127,16 +127,18 @@ EWPerson *me;
 //check my relation, used for new installation with existing user
 + (void)updateMe{
     NSDate *lastCheckedMe = [[NSUserDefaults standardUserDefaults] valueForKey:kLastCheckedMe];
-    if (!lastCheckedMe || [[NSDate date] timeIntervalSinceDate:lastCheckedMe] > kCheckMeInternal) {
-        if (!lastCheckedMe) {
+    BOOL good = [EWPersonStore validatePerson:me];
+    if (!lastCheckedMe || lastCheckedMe.timeElapsed > kCheckMeInternal) {
+        if (!good) {
+            NSLog(@"Failed to validate me, refreshing from server");
+        }else if (!lastCheckedMe) {
             NSLog(@"Didn't find lastCheckedMe date, start to refresh my relation in background");
         }else{
             NSLog(@"lastCheckedMe date is %@, which exceed the check interval %d, start to refresh my relation in background", lastCheckedMe.date2detailDateString, kCheckMeInternal);
         }
-        [me refreshInBackgroundWithCompletion:^{
-            [EWPersonStore updateCachedFriends];
-        }];
+
         [me refreshRelatedInBackground];
+        [EWPersonStore updateCachedFriends];
         [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kLastCheckedMe];
     }
 }
@@ -344,6 +346,7 @@ EWPerson *me;
 #pragma mark - Validation
 + (BOOL)validatePerson:(EWPerson *)person{
     if (!person.isMe) {
+        //skip check other user
         return YES;
     }
     
@@ -368,7 +371,17 @@ EWPerson *me;
     }
     if(!person.username){
         person.username = [PFUser currentUser].username;
-        NSLog(@"Username is missing!");
+        NSLog(@"!!!Username is missing!");
+    }
+    
+    if (person.alarms.count == 7 && person.tasks.count == 7*nWeeksToScheduleTask) {
+        good = YES;
+    }else if (person.alarms.count == 0 && person.tasks.count == 0){
+        good = YES;
+    
+    }else{
+        good = NO;
+        NSLog(@"The person failed validation: alarms: %ld, tasks: %ld", (long)person.alarms.count, (long)person.alarms.count);
     }
     
     if (needRefreshFacebook) {

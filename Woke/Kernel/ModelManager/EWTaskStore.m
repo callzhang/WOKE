@@ -455,12 +455,11 @@
 
 //state
 - (void)updateTaskState:(NSNotification *)notif{
-    id alarm = notif.userInfo[@"alarm"];
-    id task = notif.userInfo[@"task"];
-    if([alarm isKindOfClass:[EWAlarmItem class]]){
-        [self updateTaskStateForAlarm:(EWAlarmItem *)alarm];
-    }else if([task isKindOfClass:[EWTaskItem class]]){
-        [self scheduleNotificationForTask:(EWTaskItem *)task];
+    id object = notif.object;
+    if([object isKindOfClass:[EWAlarmItem class]]){
+        [self updateTaskStateForAlarm:(EWAlarmItem *)object];
+    }else if([object isKindOfClass:[EWTaskItem class]]){
+        [self scheduleNotificationForTask:(EWTaskItem *)object];
     }else{
         [NSException raise:@"No alarm/task info" format:@"Check notification"];
     }
@@ -497,16 +496,15 @@
 
 //time
 - (void)updateTaskTime:(NSNotification *)notif{
-    EWAlarmItem *a = notif.userInfo[@"alarm"];
+    EWAlarmItem *a = notif.object;
     if (!a) [NSException raise:@"No alarm info" format:@"Check notification"];
     [self updateTaskTimeForAlarm:a];
 }
 
 - (void)updateTaskTimeForAlarm:(EWAlarmItem *)alarm{
     if (!alarm.tasks.count) {
-        //[a.managedObjectContext refreshObject:a mergeChanges:YES];
-        //[EWDataStore refreshObjectWithServer:a];
         NSLog(@"Alarm's tasks not fetched, refresh from server. New tasks relation has %lu tasks", (unsigned long)alarm.tasks.count);
+        [alarm refresh];
     }
     NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
     NSArray *sortedTasks = [alarm.tasks sortedArrayUsingDescriptors:@[des]];
@@ -599,14 +597,15 @@
             
             NSLog(@"Updated next task time: %@ to cacheInfo", task.time.date2detailDateString);
         }
-
     }];
-    
 }
 
 #pragma mark - DELETE
 - (void)removeTask:(EWTaskItem *)task{
     NSLog(@"Task on %@ deleted", task.time.date2detailDateString);
+    //test
+    //[task removeObserver:self forKeyPath:@"owner"];
+    
     [self cancelNotificationForTask:task];
     [task.managedObjectContext deleteObject:task];
     [task.managedObjectContext saveToPersistentStoreAndWait];
@@ -918,6 +917,7 @@
 #pragma mark - Schedule Alarm Timer
 
 + (void)scheduleNotificationOnServerWithTimer:(EWTaskItem *)task{
+    
     [task.managedObjectContext refreshObject:task mergeChanges:YES];
     if (!task.time || !task.objectId) {
         NSLog(@"*** The Task for schedule push doesn't have time or objectId: %@", task);
@@ -928,7 +928,22 @@
         // task outDate
         return;
     }
-    //TODO: save a scheduled record in cache
+    //check local schedule records before make the REST call
+    __block NSMutableDictionary *timeTable = [[[NSUserDefaults standardUserDefaults] objectForKey:kScheduledAlarmTimers] mutableCopy] ?:[NSMutableDictionary new];
+    for (NSString *objectId in timeTable.allKeys) {
+        EWTaskItem *task = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:objectId];
+        if (task.time.timeElapsed > 0) {
+            //delete from time table
+            [timeTable removeObjectForKey:objectId];
+            NSLog(@"Past task on %@ has been removed from schedule table", task.time.date2detailDateString);
+        }
+    }
+    
+    __block NSMutableArray *times = [[timeTable objectForKey:task.objectId] mutableCopy]?:[NSMutableArray new];
+    if ([times containsObject:task.time]) {
+        NSLog(@"Task (%@) time (%@) has already been scheduled, skip.", task.objectId, task.time);
+        return;
+    }
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
@@ -943,22 +958,23 @@
                           @"push_time":[NSNumber numberWithDouble:[task.time timeIntervalSince1970] ],
                           @"data":@{@"alert":@"Time to get up",
                                    @"content-available":@1,
-                                   kPushTypeKey: kPushTypeTimerKey,
-                                  kPushTaskKey: task.objectId},
+                                    kPushTypeKey: kPushTypeTimerKey,
+                                    kPushTaskKey: task.objectId},
                          };
     
     [manager POST:kParsePushUrl parameters:dic
          success:^(AFHTTPRequestOperation *operation,id responseObject) {
              
-             NSLog(@"Schedule push success: %@", responseObject);
-             
+             NSLog(@"Schedule push success for time %@", task.time.date2detailDateString);
+             [times addObject:task.time];
+             [timeTable setObject:times forKey:task.objectId];
+             [[NSUserDefaults standardUserDefaults] setObject:timeTable.copy forKey:kScheduledAlarmTimers];
              
          }failure:^(AFHTTPRequestOperation *operation,NSError *error) {
              
              NSLog(@"Schedule Push Error: %@", error);
              
          }];
-    
 }
 
 @end

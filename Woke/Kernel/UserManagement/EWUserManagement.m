@@ -134,15 +134,24 @@
     
     //update person
     //change to update in sync mode to avoid data overriding while update value from server
-    [person refreshInBackgroundWithCompletion:^{
-        
-        //update current user with fb info
-        [EWUserManagement updateFacebookInfo];
+    NSDate *updated = me.updatedAt;
+    BOOL good = [EWPersonStore validatePerson:me];
+    if (!updated || updated.timeElapsed > kCheckMeInternal || !good) {
+        [person refreshInBackgroundWithCompletion:^{
+            //update current user with fb info
+            [EWUserManagement updateFacebookInfo];
+            
+            //Broadcast user login event
+            NSLog(@"[c] Broadcast Person login notification");
+            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
+        }];
+    }else{
         
         //Broadcast user login event
         NSLog(@"[c] Broadcast Person login notification");
         [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
-    }];
+    }
+    
 
 }
 

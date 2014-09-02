@@ -15,9 +15,8 @@
 
 #define kAppName                        @"Woke"
 #define kAppVersion                     @"0.7.0"
-//#define DEBUG                           1
 #define BACKGROUND_TEST
-#define EW_DEBUG_LEVEL                  3
+#define EW_DEBUG_LEVEL                  3//defined logging level to
 
 #define kCustomWhite                    EWSTR2COLOR(@"#F5F5F5")
 #define kCustomGray                     EWSTR2COLOR(@"48494B")
@@ -51,9 +50,10 @@
 #define TICK                            NSDate *startTime = [NSDate date];
 #define TOCK                            NSLog(@"Time: %f", -[startTime timeIntervalSinceNow]);
 
+//Logging
 //#define NSLog   EWLog
 //#define NSLog TFLog
-//#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 //Global parameters
 #define nWeeksToScheduleTask            1

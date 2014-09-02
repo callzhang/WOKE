@@ -83,13 +83,6 @@
     return self;
 }
 
-- (void)dealloc{
-    [me removeObserver:self forKeyPath:@"tasks"];
-    [me removeObserver:self forKeyPath:@"notification"];
-    //[[EWPersonStore sharedInstance] removeObserver:self forKeyPath:@"currentUser"];
-}
-
-
 #pragma mark - View lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -99,7 +92,6 @@
         //user login listeners
         [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
         [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
-        
         //listen to schedule signal
         [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
         
@@ -361,7 +353,7 @@
     _pageView.numberOfPages = tasks.count;
     //determine if scroll need flash
     bool flash = NO;
-    if ([_alarmPages[0] isEqual: @NO]){
+    if (_alarmPages.count && [_alarmPages[0] isEqual: @NO]){
         flash = YES;
     }
     
@@ -437,7 +429,7 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Test sheet", @"Refresh", @"Feedback", @"Start Sleeping",@"TestFeedback",@"TestSearchFriends",@"TestPublicFaceBookStatus",nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Refresh", @"Feedback", @"Start Sleeping", @"Test sheet", nil];
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
@@ -633,28 +625,13 @@
         }else if([title isEqualToString:@"Refresh"]){
             [self refreshView];
         }else if([title isEqualToString:@"Feedback"]){
-            EWFeedbackViewController *controller = [[EWFeedbackViewController alloc] initWithNibName:nil bundle:nil];
-            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-            [self presentViewControllerWithBlurBackground:navController];
+            [[ATConnect sharedConnection] presentMessageCenterFromViewController:self];
+//            EWFeedbackViewController *controller = [[EWFeedbackViewController alloc] initWithNibName:nil bundle:nil];
+//            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+//            [self presentViewControllerWithBlurBackground:navController];
         }else if([title isEqualToString:@"Start Sleeping"]){
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
             [self presentViewControllerWithBlurBackground:controller];
-        }
-        else if([title isEqualToString:@"TestFeedback"])
-        {
-            [[ATConnect sharedConnection] presentMessageCenterFromViewController:self];
-            
-            /*
-            [[ATConnect sharedConnection] engage:@"test_event" fromViewController:self];
-             */
-        }
-        else if([title isEqualToString:@"TestSearchFriends"])
-        {
-            [EWServer searchForFriendsOnServer];
-        }
-        else if ([title isEqualToString:@"TestPublicFaceBookStatus"])
-        {
-            [EWServer uploadOGStoryWithPhoto:me.profilePic];
         }
     }else{
         EWAlert(@"Unknown alert sheet");
