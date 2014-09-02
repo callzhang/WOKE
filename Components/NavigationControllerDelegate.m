@@ -62,7 +62,7 @@ static NSString * PushSegueIdentifier = @"push segue identifier";
 
 - (id<UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC
 {
-    [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
+    
     if (operation == UINavigationControllerOperationPush) {
         self.animator.type = UINavigationControllerOperationPush;
         return self.animator;
@@ -79,6 +79,7 @@ static NSString * PushSegueIdentifier = @"push segue identifier";
 }
 
 - (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source{
+    [[AVManager sharedManager] playSoundFromFile:@"tock.caf"];
     self.animator.type = kModelViewPresent;
     return self.animator;
 }

@@ -79,7 +79,26 @@
 
 + (NSArray *)myTasks{
     NSParameterAssert([NSThread isMainThread]);
-    return [[EWTaskStore sharedInstance] getTasksByPerson:me];
+    NSArray *tasks = [[EWTaskStore sharedInstance] getTasksByPerson:me];
+    for (EWTaskItem *task in tasks) {
+        [task addObserver:[EWTaskStore sharedInstance] forKeyPath:@"owner" options:NSKeyValueObservingOptionNew context:nil];
+    }
+    
+    return tasks;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if ([object isKindOfClass:[EWTaskItem class]]) {
+        EWTaskItem *task = (EWTaskItem *)object;
+        if ([keyPath isEqualToString:@"owner"]) {
+            if ([change objectForKey:NSKeyValueChangeNewKey] == nil) {
+                //check why the new value is nil
+                BOOL completed  = task.completed || task.time.timeElapsed > kMaxWakeTime;
+                NSAssert(completed, @"Something wrong, the task's owner has been set to nil, check the call stack.");
+            }
+            
+        }
+    }
 }
 
 - (NSArray *)pastTasksByPerson:(EWPerson *)person{
@@ -169,6 +188,7 @@
 
 #pragma mark - SCHEDULE
 - (NSArray *)scheduleTasks{
+    NSParameterAssert([NSThread isMainThread]);
     if (self.isSchedulingTask) {
         NSLog(@"It is already checking task, skip!");
         return nil;
@@ -183,6 +203,7 @@
 
 
 - (void)scheduleTasksInBackground{
+    NSParameterAssert([NSThread isMainThread]);
     if (self.isSchedulingTask) {
         NSLog(@"It is already checking task, skip!");
         return;
@@ -231,9 +252,10 @@
             [EWDataStore setCachedParseObject:t];
             EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:context];
             [task refresh];
+            task.owner = [me inContext:context];
             BOOL good = [EWDataStore validateMO:task];
             if (!good) {
-                [task deleteEventually];
+                [self removeTask:task];
             }else if (![tasks containsObject:task]) {
                 [tasks addObject:task];
                 [newTask addObject:task];
@@ -757,6 +779,7 @@
     BOOL completed = task.completed || task.time.timeElapsed > kMaxWakeTime;
     if (completed) {
         if(task.alarm){
+            NSLog(@"*** task (%@) completed, shoundn't have alarm", task.serverID);
             task.alarm = nil;
         }
         
@@ -772,6 +795,7 @@
         }else if(!task.pastOwner.isMe){
             //NSParameterAssert(task.pastOwner.isMe);
             NSLog(@"*** Uploading task(%@) that is not owned by me, please check!", task.serverID);
+            return NO;
         }
         
     }else{
@@ -798,12 +822,15 @@
         if (!task.owner) {
             task.owner = task.alarm.owner;
             if (!task.owner) {
-                
-                NSLog(@"*** task (%@) missing owner", task.serverID);
+                task.owner = [me inContext:task.managedObjectContext]?:task.alarm.owner;
+                if (!task.owner) {
+                    NSLog(@"*** task (%@) missing owner", task.serverID);
+                }
             }
         }else if(!task.owner.isMe){
             //NSParameterAssert(task.owner.isMe);
             NSLog(@"*** validation task(%@) that is not owned by me, please check!", task.serverID);
+            return NO;
         }
     }
     
@@ -811,6 +838,8 @@
         PFObject *PO = task.parseObject;
         if (PO[@"time"]) {
             task.time = PO[@"time"];
+        }else if (task.alarm.time){
+            task.time = task.alarm.time;
         }else{
             good = NO;
             NSLog(@"*** task missing time: %@", task);

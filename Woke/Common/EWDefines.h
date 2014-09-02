@@ -110,9 +110,6 @@
 #define kTaskTimeChangedNotification    @"EWTaskTimeChanged"  //key: task
 #define kTaskChangedNotification        @"EWTaskChanged" //key: task
 
-//UI event
-#define kWillShowMainView               @"will_show_main_view"//notify main view to reload view
-
 //person store
 #define kPersonLoggedIn                 @"PersonLoggedIn"
 #define kPersonLoggedOut                @"PersonLoggedOut"

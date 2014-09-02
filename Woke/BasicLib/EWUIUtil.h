@@ -43,6 +43,7 @@
 + (BOOL)isMultitaskingSupported;
 
 + (void)showHUDWithCheckMark:(NSString *)str;
++ (void)showHUDWithString:(NSString *)str;
 
 + (NSString *)toString:(NSDictionary *)dic;
 

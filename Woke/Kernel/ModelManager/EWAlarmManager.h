@@ -39,10 +39,7 @@
 
 
 //check
-/**
- Check if alarm for current user is 0 or 7. Otherwise delete all alarm.
- */
-//- (BOOL)checkAlarms;
++ (BOOL)validateAlarm:(EWAlarmItem *)alarm;
 
 //KVO
 

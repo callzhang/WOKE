@@ -134,7 +134,7 @@
     BOOL hasChange = NO;
     self.isSchedulingAlarm = YES;
     //check from server for alarm with owner but lost relation
-    if (alarms.count != 7) {
+    if (alarms.count != 7 && [EWDataStore isReachable]) {
         //cannot check alarm for myself, which will cause a checking/schedule cycle
         
         NSLog(@"Alarm for me is less than 7, fetch from server!");
@@ -146,8 +146,11 @@
         for (PFObject *a in objects) {
             [EWDataStore setCachedParseObject:a];
             EWAlarmItem *alarm = (EWAlarmItem *)[a managedObjectInContext:mainContext];;
+            [alarm refresh];
             alarm.owner = me;
-            if (![alarms containsObject:alarm]) {
+            if (![EWAlarmManager validateAlarm:alarm]) {
+                [self removeAlarm:alarm];
+            }else if (![alarms containsObject:alarm]) {
                 [alarms addObject:alarm];
                 hasChange = YES;
                 NSLog(@"Alarm found from server %@", alarm.time.weekday);
@@ -340,5 +343,27 @@
     }
 }
 */
+
+#pragma mark - Validate alarm
++ (BOOL)validateAlarm:(EWAlarmItem *)alarm{
+    BOOL good = YES;
+    if (!alarm.owner) {
+        NSLog(@"M %@（%@）missing owner", alarm.entity.name, alarm.serverID);
+        alarm.owner = [me inContext:alarm.managedObjectContext];
+    }
+    if (!alarm.tasks || alarm.tasks.count == 0) {
+//        //check PO
+//        PFObject *a = alarm.parseObject;
+//        PFRelation *tr = [a relationForKey:@"tasks"];
+//        NSArray *ts = [[tr query] findObjects];
+//        for (PFObject *t in ts) {
+//            EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:alarm.managedObjectContext];
+//            [alarm addTasksObject:task];
+//        }
+        good = NO;
+    }
+    
+    return good;
+}
 
 @end

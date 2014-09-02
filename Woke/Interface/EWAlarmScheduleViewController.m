@@ -67,22 +67,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     tasks = [EWTaskStore myTasks];
     alarmCells = [[NSMutableArray alloc] initWithCapacity:7];
     selected = 99;
-    
-    //schedule alarm and tasks
-    //pop up alarmScheduleView
-    if (alarms.count != 7 || tasks.count != 7) {
-        NSLog(@"%s: Need to check the data", __func__);
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        
-        alarms = [EWAlarmManager myAlarms];//initial alarm
-        tasks = [EWTaskStore myTasks];
-        
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        
-        //view
-        [_tableView reloadData];
-        
-    }
 }
 
 - (void)save{

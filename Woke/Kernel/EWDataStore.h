@@ -78,6 +78,7 @@ typedef void (^EWSavingCallback)(void);
 + (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context withID:(NSManagedObjectID *)objectID ;
 //+ (NSManagedObjectContext *)mainContext;
 + (BOOL)validateMO:(NSManagedObject *)mo;
++ (BOOL)validateMO:(NSManagedObject *)mo andTryToFix:(BOOL)tryFix;
 + (NSManagedObject *)getManagedObjectByStringID:(NSString *)stringID;
 
 #pragma mark - Parse Server methods

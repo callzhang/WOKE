@@ -95,18 +95,26 @@
     [super viewDidLoad];
 
     //listen to user log in, and updates its view
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:kPersonLoggedIn object:nil];
+    [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
+        //user login listeners
+        [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+        [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
+        
+        //listen to schedule signal
+        [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
+        
+        //refresh
+        [self refreshView];
+        
+        //reload alarm page every 10min
+        [NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:YES];
+
+    }];
     //[[EWPersonStore sharedInstance] addObserver:self forKeyPath:@"currentUser" options:NSKeyValueObservingOptionNew context:nil];
     
     //listen to hex structure change
     [[NSNotificationCenter defaultCenter] addObserverForName:kHexagonStructureChange object:nil queue:nil usingBlock:^(NSNotification *note) {
         [self centerView];
-    }];
-    
-    //listen to navigation pop event
-    [[NSNotificationCenter defaultCenter] addObserverForName:kWillShowMainView object:nil queue:nil usingBlock:^(NSNotification *note) {
-        [self viewWillAppear:YES];
-        [self.collectionView reloadData];
     }];
     
     //static UI stuff (do it once)
@@ -211,20 +219,6 @@
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
-- (void)userLoggedIn{
-    //user login listeners
-    [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
-    [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
-    
-    //listen to schedule signal
-    [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
-    
-    [self refreshView];
-    [NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(refreshView) userInfo:nil repeats:YES];
-
-}
-
-
 #pragma mark - Fetch Controller
 - (NSFetchedResultsController *)fetchController{
     if (fetchController) {
@@ -269,20 +263,25 @@
         if ([keyPath isEqualToString:@"tasks"]){
             static NSTimer *alarmPagetimer;
             NSInteger nTask = me.tasks.count;
-            if (nTask == 7*nWeeksToScheduleTask || nTask == 0){
-                [alarmPagetimer invalidate];
-                alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
-                if (nTask == 0){
-                    if ([EWTaskStore sharedInstance].isSchedulingTask) {
-                        [self showAlarmPageLoading:NO];
-                    }else{
-                        [self showAlarmPageLoading:YES];
-                    }
+            if (![EWTaskStore sharedInstance].isSchedulingTask) {
+                //only refresh display when not scheduling
+                if (nTask == 7*nWeeksToScheduleTask){
+                    [alarmPagetimer invalidate];
+                    alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
+                }else if(nTask == 0){
+                    
+                    [self showAlarmPageLoading:NO];
+                
+                }else{
+                    
+                    //offer add alarm
+                    [self showAlarmPageLoading:NO];
                 }
             }else{
+                //if scheduling, display loading sign
                 [self showAlarmPageLoading:YES];
-                //[[EWTaskStore sharedInstance] scheduleTasks];
             }
+            
             
         }else if ([keyPath isEqualToString:@"notifications"]){
             //notification count
@@ -306,8 +305,12 @@
             //taskScheduled = NO;
         }else{
             NSLog(@"%@ finished scheduling", [object class]);
-            [self showAlarmPageLoading:NO];
-            //taskScheduled = YES;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self showAlarmPageLoading:NO];
+                [self reloadAlarmPage];
+            });
+            
         }
     }else{
         NSLog(@"@@@ Unhandled observation: %@", [object class]);
@@ -320,6 +323,11 @@
     //data
     alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskStore myTasks];
+    
+    if (!me) {
+        [self showAlarmPageLoading:YES];
+        return;
+    }
     
     if (alarms.count == 0 || tasks.count == 0) {
         //init state
@@ -347,6 +355,7 @@
         return;
     }
     
+    [self showAlarmPageLoading:NO];
     self.addBtn.hidden = YES;
     [self.alarmloadingIndicator stopAnimating];
     _pageView.numberOfPages = tasks.count;
@@ -662,7 +671,15 @@
     EWAlarmScheduleViewController *controller = [[EWAlarmScheduleViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
     navController.modalPresentationStyle = UIModalPresentationCustom;
-    [self presentViewControllerWithBlurBackground:navController];
+    [self presentViewControllerWithBlurBackground:navController completion:^{
+        //start schedule alarm when load finished
+        if (tasks.count != 7*nWeeksToScheduleTask) {
+            
+            [MBProgressHUD showHUDAddedTo:controller.view animated:YES];
+            [[EWTaskStore sharedInstance] scheduleTasks];
+            [MBProgressHUD hideAllHUDsForView:controller.view animated:YES];
+        }
+    }];
     
 }
 
@@ -737,6 +754,7 @@
         //[MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
         [EWServer buzz:@[person]];
         [weakMenu closeMenu];
+        [EWUIUtil showHUDWithString:@"Sending buzz"];
     };
     
     menu.toVoiceButtonBlock = ^{
@@ -823,7 +841,6 @@
         } else {
             //prevent updating too fast
             if(lastUpdated.timeElapsed < 0.2 ){
-                [self.collectionView reloadData];
                 return;
             }
             

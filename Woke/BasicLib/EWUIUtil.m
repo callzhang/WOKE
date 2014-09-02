@@ -54,6 +54,13 @@ static const float originalSize = 80.0;
     [hud hide:YES afterDelay:1.5];
 }
 
++ (void)showHUDWithString:(NSString *)str{
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    hud.mode = MBProgressHUDModeText;
+    hud.labelText = str;
+    [hud hide:YES afterDelay:3];
+}
+
 + (NSString *)toString:(NSDictionary *)dic{
     NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:0 error:NULL];
     NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];

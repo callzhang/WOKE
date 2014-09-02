@@ -169,8 +169,7 @@ EWPerson *me;
 - (void)getEveryoneInContext:(NSManagedObjectContext *)context{
     if (everyone && timeEveryoneChecked.timeElapsed < everyoneCheckTimeOut && everyone.count != 0) {
         return;
-    }
-    //fetch from sever
+    }    //fetch from sever
     NSMutableArray *allPerson = [NSMutableArray new];
     NSString *parseObjectId = [me valueForKey:kParseObjectID];
     NSError *error;
