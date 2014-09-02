@@ -256,13 +256,11 @@
         return;
     }
     //self.timeLeftText.text = task.time.timeLeft;
-    float h = ([task.time timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate])/3600;
-    if (h < 0) {
+
+    if ([task.time timeIntervalSinceNow] > 0) {
         self.timeLeftText.text = @"Just alarmed";
-    }else if(h < 24){
-        self.timeLeftText.text = [NSString stringWithFormat:@"%.1f hours left", h];
     }else{
-        self.timeLeftText.text = [task.time weekday];
+        self.timeLeftText.text = [task.time timeLeft];
     }
     
 }

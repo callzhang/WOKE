@@ -266,7 +266,7 @@
 }
 
 - (double)timeElapsed{
-    double t = -[self timeIntervalSinceNow];
+    double t = [self timeIntervalSinceNow];
     return t;
     
 }

@@ -302,8 +302,8 @@
         NSCalendar *cal = [NSCalendar currentCalendar];
         NSDateComponents *comp = [cal components: (NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:alarm.time];
         double hour = comp.hour;
-        double minute = round(comp.minute);
-        double number = hour + minute/100;
+        double minute = comp.minute;
+        double number = round(hour*100 + minute)/100.0;
         [alarmTimes setObject:[NSNumber numberWithDouble:number] atIndexedSubscript:wkd];
     }
     

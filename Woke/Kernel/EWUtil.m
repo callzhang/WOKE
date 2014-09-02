@@ -37,7 +37,7 @@
 + (NSDictionary *)timeFromNumber:(double)number{
     NSMutableDictionary *dic = [NSMutableDictionary new];
     NSInteger hour = floor(number);
-    NSInteger minute = (number - hour)*100;
+    NSInteger minute = round((number - hour)*100);
     dic[@"hour"] = [NSNumber numberWithInteger:hour];
     dic[@"minute"] = [NSNumber numberWithInteger: minute];
     return dic;
