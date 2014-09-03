@@ -164,7 +164,9 @@ EWPerson *me;
     }completion:^(BOOL success, NSError *error) {
         NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:mainContext];
         everyone = [allPerson sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO]]];
-        block();
+        if (block) {
+            block();
+        }
     }];
 }
 

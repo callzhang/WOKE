@@ -361,8 +361,10 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             NSLog(@"Presenting wakeUpView");
             if (rootViewController.presentedViewController) {
-                [rootViewController dismissViewControllerAnimated:YES completion:^{
-                    [rootViewController presentViewControllerWithBlurBackground:controller];
+                [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [rootViewController presentViewControllerWithBlurBackground:controller];
+                    });
                 }];
             }else{
                 [rootViewController presentViewControllerWithBlurBackground:controller];

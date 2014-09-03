@@ -25,7 +25,7 @@
 #define kServerTransformClasses             @{@"EWPerson": @"_User"} //localClass: serverClass
 #define kUserClass                          @"EWPerson"
 //#define classSkipped                        @[@"EWPerson"]
-#define attributeUploadSkipped              @[kParseObjectID, kUpdatedDateKey, @"score"]
+#define attributeUploadSkipped              @[kParseObjectID, kUpdatedDateKey, kUpdatedDateKey, @"score"]
 
 //============ Global shortcut to main context ===========
 NSManagedObjectContext *mainContext;

@@ -224,20 +224,24 @@
         return nil;
     }
     //start check
-    NSLog(@"Start check/scheduling tasks");
     self.isSchedulingTask = YES;
+    NSLog(@"Start check/scheduling tasks");
     
     //check necessity
     EWPerson *localPerson = [me inContext:context];
-    NSMutableArray *tasks = [[[EWTaskStore sharedInstance] getTasksByPerson:localPerson] mutableCopy];
+    NSMutableArray *tasks = [localPerson.tasks mutableCopy];
     NSArray *alarms = [[EWAlarmManager sharedInstance] alarmsForUser:localPerson];
-    if (!alarms) {
-        NSLog(@"Something wrong with my alarms, get nil");
+    if (alarms.count != 7) {
+        NSLog(@"Something wrong with my alarms(%d), get return nil", alarms.count);
         self.isSchedulingTask = NO;
         return nil;
     }
     
-    
+    if (alarms.count == 0 && tasks.count == 0) {
+        NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
+        self.isSchedulingTask = NO;
+        return nil;
+    }
     
     NSMutableArray *newTask = [NSMutableArray new];
     
@@ -269,12 +273,6 @@
         }
     }
 
-    if (alarms.count == 0 && tasks.count == 0) {
-        NSLog(@"Forfeit sccheduling task due to no alarm and task exists");
-        self.isSchedulingTask = NO;
-        return nil;
-    }
-
     //FIRST check past tasks
     BOOL hasOutDatedTask = [self checkPastTasks];
     
@@ -290,7 +288,7 @@
             BOOL taskMatched = NO;
             //loop through the tasks to verify the target time has been scheduled
             for (EWTaskItem *t in tasks) {
-                if ([t.time isEqualToDate:time] && t.objectId) {
+                if (abs([t.time timeIntervalSinceDate:time]) < 10 && t.objectId) {
                     BOOL good = [EWTaskStore validateTask:t];
                     //find the task, move to good task
                     if (good) {
@@ -304,6 +302,8 @@
                         break;
                     }
                     
+                }else if (abs([t.time timeIntervalSinceDate:time]) < 100){
+                    NSLog(@"Time mismatch");
                 }
             }
             

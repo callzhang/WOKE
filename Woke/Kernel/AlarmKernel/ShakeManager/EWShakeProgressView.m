@@ -9,12 +9,12 @@
 #import <CoreMotion/CoreMotion.h>
 
 #import "EWShakeProgressView.h"
-
+#import "AVManager.h"
 
 @interface  EWShakeProgressView()
 
 @property (nonatomic,strong) CMMotionManager * motionManager;
-
+@property (nonatomic) float threshold;
 
 @end
 
@@ -29,7 +29,7 @@
         _motionManager  = [[CMMotionManager alloc] init];
         
         _motionManager.accelerometerUpdateInterval = 0.1f;
-        
+        _threshold = kMotionThreshold;
         
         // Initialization code
     }
@@ -43,7 +43,7 @@
         _motionManager  = [[CMMotionManager alloc] init];
         
         _motionManager.accelerometerUpdateInterval = 0.1f;
-        
+        _threshold = kMotionThreshold;
         
         // Initialization code
     }
@@ -73,21 +73,17 @@
             double y = accelerometerData.acceleration.y;
             double z = accelerometerData.acceleration.z;
 			
+			_threshold = kMotionThreshold * (1+self.progress);
+			double strength = log(x*x +y*y+ z*z) * kMotionStrengthModifier - _threshold;
 			
-			double strength = log(x*x +y*y+ z*z) * kMotionStrengthModifier - kMotionThrethold;
-			
-			
-			if(fabsf(accelerometerData.acceleration.x)>2.0||fabsf(accelerometerData.acceleration.y>2.0)||fabsf(accelerometerData.acceleration.z)>2.0)
-			{
-				NSLog(@"检测到晃动");
-			}
-			
-//            double strength = sqrt(x*x +y*y+ z*z) * kMotionStrengthModifier;
-            //TODO: Viberation
+			static NSTimer *viberationTimer;
             if (self.progress < 1) {
+                //Viberation
+				if (![viberationTimer isValid]) {
+					viberationTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(viberation) userInfo:nil repeats:YES];
+				}
                 
-                AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-                [self setProgress:(self.progress + strength) animated:YES];
+                [self setProgress:(self.progress + strength/10) animated:YES];
                 
                 if (progressHandler) {
                     progressHandler();
@@ -95,6 +91,8 @@
                 
             }else{
                 //TODO: sound
+				[[AVManager sharedManager] playSoundFromFile:@"new.caf"];
+				[viberationTimer invalidate];
                 [self.motionManager stopAccelerometerUpdates];
                 
                 if (successProgressHandler) {
@@ -117,13 +115,47 @@
     
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
+- (void)viberation{
+#ifdef DEBUG
+	NSLog(@"Threshold %f, progress %f", _threshold, self.progress);
+#endif
+	double t = [[NSDate date] timeIntervalSinceReferenceDate];
+	NSInteger s = t * 5.0;
+	NSInteger phase = s % 5;
+	switch (phase) {
+		case 1:{
+			if (self.progress > 0.2) {
+				AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+			}
+			break;
+		}
+		case 2:{
+			if (self.progress > 0.4) {
+				AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+			}
+			break;
+		}
+		case 3:{
+			if (self.progress > 0.6) {
+				AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+			}
+			break;
+		}
+		case 4:{
+			if (self.progress > 0.8) {
+				AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+			}
+			break;
+		}
+		case 0:{
+			if (self.progress > 0.9) {
+				AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+			}
+			break;
+		}
+		default:
+			break;
+	}
 }
-*/
 
 @end

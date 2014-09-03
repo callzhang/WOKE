@@ -59,8 +59,10 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     if ([object isKindOfClass:[EWTaskStore class]]) {
         if ([keyPath isEqualToString:@"isSchedulingTask"]) {
             if (![EWTaskStore sharedInstance].isSchedulingTask) {
-                [self initData];
-                [self.tableView reloadData];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self initData];
+                    [self.tableView reloadData];
+                });
             }
         }
     }

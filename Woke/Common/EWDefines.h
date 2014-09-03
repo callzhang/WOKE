@@ -52,8 +52,8 @@
 
 //Logging
 //#define NSLog   EWLog
-//#define NSLog TFLog
-#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define NSLog TFLog
+//#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 //Global parameters
 #define nWeeksToScheduleTask            1

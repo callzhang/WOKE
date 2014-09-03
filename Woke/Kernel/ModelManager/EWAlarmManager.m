@@ -192,13 +192,6 @@
             hasChange = YES;
             continue;
         }
-        
-        //check tone
-        if (!a.tone) {
-            NSLog(@"Tone not set");
-            a.tone = me.preference[@"DefaultTone"];
-        }
-        
         //fill that day to the new alarm array
         newAlarms[i] = a;
     }
@@ -216,30 +209,31 @@
         if (![newAlarms[i] isEqual:@NO]) {
             //skip if alarm exists
             continue;
-        }else{
-            NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
-            EWAlarmItem *a = [self newAlarm];
-            //set time
-            NSDate *d = [NSDate date];
-            NSInteger wkd = [d weekdayNumber];
-            NSCalendar *cal = [NSCalendar currentCalendar];//TIMEZONE
-            NSDateComponents *comp = [[NSDateComponents alloc] init];
-            comp.day = i-wkd;
-            NSDate *time = [cal dateByAddingComponents:comp toDate:d options:0];//set the weekday
-            
-            //get time
-            a.time = time;//set the time first so we can get the saved time in next line
-            NSDictionary *timeDic = [self getSavedAlarmTime:a];
-            comp = [cal components: (NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit |NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:time];
-            comp.hour = [(NSNumber *)timeDic[@"hour"] intValue];
-            comp.minute = [(NSNumber *)timeDic[@"minute"] intValue];
-            time = [cal dateFromComponents:comp];//set time
-            //set alarm time
-            a.time = time;
-            //add to temp array
-            newAlarms[i] = a;
-            hasChange = YES;
         }
+    
+        NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
+        EWAlarmItem *a = [self newAlarm];
+        //set time
+        NSDate *d = [NSDate date];
+        NSInteger wkd = [d weekdayNumber];
+        NSCalendar *cal = [NSCalendar currentCalendar];//TIMEZONE
+        NSDateComponents *comp = [[NSDateComponents alloc] init];
+        comp.day = i-wkd;
+        NSDate *time = [cal dateByAddingComponents:comp toDate:d options:0];//set the weekday
+        
+        //get time
+        a.time = time;//set the time first so we can get the saved time in next line
+        NSDictionary *timeDic = [self getSavedAlarmTime:a];
+        comp = [cal components: (NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit |NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:time];
+        comp.hour = [(NSNumber *)timeDic[@"hour"] intValue];
+        comp.minute = [(NSNumber *)timeDic[@"minute"] intValue];
+        time = [cal dateFromComponents:comp];//set time
+        //set alarm time
+        a.time = time;
+        //add to temp array
+        newAlarms[i] = a;
+        hasChange = YES;
+        
     }
     
     //save
@@ -250,7 +244,8 @@
         [self setSavedAlarmTimes];
         
         //notification
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            //delay here to make sure the thread don't compete at the same time
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmChangedNotification object:self userInfo:nil];
         });
         
@@ -353,20 +348,16 @@
         alarm.owner = [me inContext:alarm.managedObjectContext];
     }
     if (!alarm.tasks || alarm.tasks.count == 0) {
-//        //check PO
-//        PFObject *a = alarm.parseObject;
-//        PFRelation *tr = [a relationForKey:@"tasks"];
-//        NSArray *ts = [[tr query] findObjects];
-//        for (PFObject *t in ts) {
-//            EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:alarm.managedObjectContext];
-//            [alarm addTasksObject:task];
-//        }
         good = NO;
     }
     if (!alarm.time) {
         good = NO;
     }
-    
+    //check tone
+    if (!alarm.tone) {
+        NSLog(@"Tone not set");
+        alarm.tone = me.preference[@"DefaultTone"];
+    }
     return good;
 }
 

@@ -213,7 +213,7 @@
             } completion:^(BOOL finished) {
                 
                 [_wakeupButton setTitle:@"Wake up others" forState:UIControlStateNormal];
-                [_wakeupButton addTarget:self action:@selector(presentWakeUpView) forControlEvents:UIControlEventTouchUpInside];
+                [_wakeupButton addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
             }];
         }];
     }];
@@ -500,6 +500,10 @@
     //check if need to play next
     if (!next){
         NSLog(@"Next is disabled, stop playing next");
+        return;
+    }
+    //return if no  medias
+    if (!medias.count) {
         return;
     }
     
