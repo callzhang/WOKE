@@ -653,6 +653,7 @@
         if (tasks.count != 7*nWeeksToScheduleTask) {
             
             [MBProgressHUD showHUDAddedTo:controller.view animated:YES];
+            [[EWAlarmManager sharedInstance] scheduleNewAlarms];
             [[EWTaskStore sharedInstance] scheduleTasks];
             [MBProgressHUD hideAllHUDsForView:controller.view animated:YES];
         }

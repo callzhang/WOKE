@@ -232,6 +232,7 @@
 + (NSString *)getStringFromTime:(float)time{
     
     NSString *timeStr;
+    time = abs(time);
     NSInteger t = (NSInteger)time;
     float days = time / 3600 / 24;
     float hours = (t % (3600*24)) / 3600;
@@ -266,7 +267,7 @@
 }
 
 - (double)timeElapsed{
-    double t = [self timeIntervalSinceNow];
+    double t = -[self timeIntervalSinceNow];
     return t;
     
 }

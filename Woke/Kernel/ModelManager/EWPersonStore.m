@@ -381,7 +381,7 @@ EWPerson *me;
     
     }else{
         good = NO;
-        NSLog(@"The person failed validation: alarms: %ld, tasks: %ld", (long)person.alarms.count, (long)person.alarms.count);
+        NSLog(@"The person failed validation: alarms: %ld, tasks: %ld", (long)person.alarms.count, (long)person.tasks.count);
     }
     
     if (needRefreshFacebook) {

@@ -51,11 +51,19 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     //data
     [self initData];
     
-    //add task delete observer
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:mainContext queue:nil usingBlock:^(NSNotification *note) {
-        [self initData];
-        [self.tableView reloadData];
-    }];
+    //add task observer
+    [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if ([object isKindOfClass:[EWTaskStore class]]) {
+        if ([keyPath isEqualToString:@"isSchedulingTask"]) {
+            if (![EWTaskStore sharedInstance].isSchedulingTask) {
+                [self initData];
+                [self.tableView reloadData];
+            }
+        }
+    }
 }
 
 - (BOOL)prefersStatusBarHidden{
