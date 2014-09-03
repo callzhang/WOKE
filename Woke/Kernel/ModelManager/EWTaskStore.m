@@ -51,7 +51,9 @@
 
 #pragma mark - threading
 - (BOOL)isSchedulingTask{
-    return _isSchedulingTask;
+    @synchronized(self){
+        return _isSchedulingTask;
+    }
 }
 
 - (void)setIsSchedulingTask:(BOOL)isSchedulingTask{

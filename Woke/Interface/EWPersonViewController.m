@@ -348,9 +348,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if (person.isMe) {
         
         sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference",@"Log out", nil];
-        if (DEBUG) {
+#ifdef DEBUG
             [sheet addButtonWithTitle:@"Add friend"];
-        }
+#endif
     }else{
         //sheet.destructiveButtonIndex = 0;
         if (person.isFriend) {
