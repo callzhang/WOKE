@@ -262,13 +262,9 @@
         return;
     }
     //self.timeLeftText.text = task.time.timeLeft;
-<<<<<<< HEAD
 
-    if ([task.time timeIntervalSinceNow] < 0) {
-=======
     NSInteger h = -task.time.timeElapsed/3600;
-    if (task.time.timeElapsed > 0) {
->>>>>>> FETCH_HEAD
+    if (h<0) {
         self.timeLeftText.text = @"Just alarmed";
     }else if(h<24){
         self.timeLeftText.text = [task.time timeLeft];
