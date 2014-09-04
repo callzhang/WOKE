@@ -15,8 +15,8 @@
 #import "EWTaskStore.h"
 #import "EWWakeUpViewController.h"
 #import "EWAppDelegate.h"
-#import "EWDataStore.h"
 #import "EWMediaItem.h"
+#import "EWWakeUpManager.h"
 
 @interface EWAlarmPageView (){
     NSTimer *changeTimeTimer;
@@ -100,10 +100,14 @@
 }
 
 - (IBAction)playMessage:(id)sender {
+    //test function
+#ifdef DEBUG
     if (task.medias.count) {
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:self.task];
-        [rootViewController presentViewControllerWithBlurBackground:controller];
+        ///EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:self.task];
+        //[rootViewController presentViewControllerWithBlurBackground:controller];
+        [EWWakeUpManager presentWakeUpViewWithTask:self.task];
     }
+#endif
 }
 
 - (void)setTask:(EWTaskItem *)t{
@@ -207,7 +211,9 @@
             if (nMedia == 0) {
                 [self.messages setTitle:@"" forState:UIControlStateNormal];
             }else{
+#ifdef DEBUG
                 [self.messages setTitle:[NSString stringWithFormat:@"%ld voice tones", (long)nMedia] forState:UIControlStateNormal];
+#endif
             }
             
         }else if ([keyPath isEqualToString:@"time"]){
@@ -256,11 +262,13 @@
         return;
     }
     //self.timeLeftText.text = task.time.timeLeft;
-
-    if ([task.time timeIntervalSinceNow] > 0) {
+    NSInteger h = -task.time.timeElapsed/3600;
+    if (task.time.timeElapsed > 0) {
         self.timeLeftText.text = @"Just alarmed";
-    }else{
+    }else if(h<24){
         self.timeLeftText.text = [task.time timeLeft];
+    }else{
+        self.timeLeftText.text = task.time.weekday;
     }
     
 }

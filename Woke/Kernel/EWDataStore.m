@@ -791,7 +791,7 @@ NSManagedObjectContext *mainContext;
 			//remove changed record
 			NSArray *changes = workingChangedRecords[localMO.objectID];
 			[workingChangedRecords removeObjectForKey:localMO.objectID];
-			NSLog(@"===> MO %@(%@) uploaded to server with changes: %@. %d to go.", localMO.entity.serverClassName, localMO.serverID, changes, workingChangedRecords.allKeys.count);
+			NSLog(@"===> MO %@(%@) uploaded to server with changes applied: %@. %d to go.", localMO.entity.serverClassName, localMO.serverID, changes, workingChangedRecords.allKeys.count);
 			
 			//remove from queue
 			[EWDataStore removeObjectFromWorkingQueue:localMO];
@@ -813,7 +813,7 @@ NSManagedObjectContext *mainContext;
 		
 		NSLog(@"=========== Finished uploading to saver ===============");
 		if (workingObjects.count) {
-			NSLog(@"With failures:%@", [workingObjects valueForKey:@"objectID"]);
+			NSLog(@"*** With failures:%@", [[EWDataStore getObjectFromQueue:kParseQueueWorking] valueForKey:kParseObjectID]);
 			[EWDataStore clearQueue:kParseQueueWorking];
 		}
 		if (workingChangedRecords.count) {

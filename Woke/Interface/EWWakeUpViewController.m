@@ -168,26 +168,22 @@
     tableView_.dataSource = self;
     tableView_.delegate = self;
     tableView_.separatorStyle = UITableViewCellSeparatorStyleNone;
-    tableView_.contentInset = UIEdgeInsetsMake(20, 0, 80, 0);//the distance of the content to the frame of tableview
+    tableView_.contentInset = UIEdgeInsetsMake(40, 0, 80, 0);//the distance of the content to the frame of tableview
     
     //alpha mask
-    [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.1f, @0.9f]];
+    [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.2f, @0.9f]];
     
+    //show button first
+    footer.top = [UIScreen mainScreen].bounds.size.height;
+    [self.wakeupButton setTitle:@"Shake To Wake Up!" forState:UIControlStateNormal];
+    [self.wakeupButton addTarget:self action:@selector(presentShakeProgressBar) forControlEvents:UIControlEventTouchUpInside];
     
     if ([self.shakeProgress isShakeSupported]) {
         // need  update
         self.shakeProgress.progress = 0;
         self.shakeProgress.alpha = 0;
-        [self presentShakeProgressBar];
-        
-    }
-    else
-    {
-        // use button to getup!;
-        footer.top = [UIScreen mainScreen].bounds.size.height;
-        [self.wakeupButton setTitle:@"Tap To Wake Up!" forState:UIControlStateNormal];
+    }else{
         [self.wakeupButton addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
-
     }
 
     
@@ -212,7 +208,7 @@
                 _shakeProgress.alpha = 0;
             } completion:^(BOOL finished) {
                 
-                [_wakeupButton setTitle:@"Wake up others" forState:UIControlStateNormal];
+                [_wakeupButton setTitle:@"Wake!" forState:UIControlStateNormal];
                 [_wakeupButton addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
             }];
         }];

@@ -288,7 +288,7 @@
             BOOL taskMatched = NO;
             //loop through the tasks to verify the target time has been scheduled
             for (EWTaskItem *t in tasks) {
-                if (abs([t.time timeIntervalSinceDate:time]) < 10 && t.objectId) {
+                if (abs([t.time timeIntervalSinceDate:time]) < 10) {
                     BOOL good = [EWTaskStore validateTask:t];
                     //find the task, move to good task
                     if (good) {
@@ -333,6 +333,8 @@
         }
     }
     
+    
+    
     //save
     if (hasOutDatedTask || newTask.count) {
         
@@ -354,7 +356,7 @@
     
     //last checked
     self.lastChecked = [NSDate date];
-    
+    NSLog(@"Finished schedule task with %d alarms and %d tasks", me.alarms.count, me.tasks.count);
     self.isSchedulingTask = NO;
     return goodTasks;
 }
