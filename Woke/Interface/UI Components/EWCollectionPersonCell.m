@@ -122,7 +122,7 @@
     NSDate *time = _person.cachedInfo[kNextTaskTime];
     if (time) {
         self.time.text = [time timeLeft];
-        if (self.showTime) {
+        if (self.showTime) {Ø
             self.time.alpha = 1;
         }
     }else{

@@ -109,7 +109,7 @@
 		56FEA58E17A5763200FC2938 /* EWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA57E17A5763200FC2938 /* EWAppDelegate.m */; };
 		56FEA59617A5766B00FC2938 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 56FEA59217A5766B00FC2938 /* InfoPlist.strings */; };
 		56FEA59717A5766B00FC2938 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEA59417A5766B00FC2938 /* main.m */; };
-		9B1CBCE019AE95630069CC70 /* MagicalRecord+ChainSave.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1CBCDF19AE95630069CC70 /* MagicalRecord+ChainSave.m */; };
+		9B1CBCE019AE95630069CC70 /* NSManagedObjectContext+ChainSave.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1CBCDF19AE95630069CC70 /* NSManagedObjectContext+ChainSave.m */; };
 		9B2DEEF718B811EC0046EB80 /* EWServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2DEEF618B811EC0046EB80 /* EWServer.m */; };
 		9B3EC17A1970DEBC00BB52AA /* GPUImageAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3EC1791970DEBC00BB52AA /* GPUImageAnimator.m */; };
 		9B3EC17D1970DECF00BB52AA /* NavigationControllerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3EC17C1970DECF00BB52AA /* NavigationControllerDelegate.m */; };
@@ -380,8 +380,8 @@
 		56FEA59017A5766B00FC2938 /* Woke-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Woke-Prefix.pch"; sourceTree = "<group>"; };
 		56FEA59317A5766B00FC2938 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		56FEA59417A5766B00FC2938 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		9B1CBCDE19AE95630069CC70 /* MagicalRecord+ChainSave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MagicalRecord+ChainSave.h"; sourceTree = "<group>"; };
-		9B1CBCDF19AE95630069CC70 /* MagicalRecord+ChainSave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MagicalRecord+ChainSave.m"; sourceTree = "<group>"; };
+		9B1CBCDE19AE95630069CC70 /* NSManagedObjectContext+ChainSave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+ChainSave.h"; sourceTree = "<group>"; };
+		9B1CBCDF19AE95630069CC70 /* NSManagedObjectContext+ChainSave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+ChainSave.m"; sourceTree = "<group>"; };
 		9B2DEEF518B811EC0046EB80 /* EWServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWServer.h; sourceTree = "<group>"; };
 		9B2DEEF618B811EC0046EB80 /* EWServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWServer.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		9B3EC1781970DEBC00BB52AA /* GPUImageAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUImageAnimator.h; sourceTree = "<group>"; };
@@ -774,8 +774,8 @@
 		5642AF4817ACCE27000C73E8 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
-				9B1CBCDE19AE95630069CC70 /* MagicalRecord+ChainSave.h */,
-				9B1CBCDF19AE95630069CC70 /* MagicalRecord+ChainSave.m */,
+				9B1CBCDE19AE95630069CC70 /* NSManagedObjectContext+ChainSave.h */,
+				9B1CBCDF19AE95630069CC70 /* NSManagedObjectContext+ChainSave.m */,
 				ABC8F96418E92F180096C073 /* UIView+Extend.h */,
 				ABC8F96518E92F180096C073 /* UIView+Extend.m */,
 				56D997F017B425D2003EDA53 /* NSString+Extend.h */,
@@ -1559,7 +1559,7 @@
 				56E0C36517B2CC6400835A6B /* EWViewController.m in Sources */,
 				9B5A2F94197C53DD0076F2BD /* EWFeedbackViewController.m in Sources */,
 				56E0C36F17B2CEC200835A6B /* EWShakeManager.m in Sources */,
-				9B1CBCE019AE95630069CC70 /* MagicalRecord+ChainSave.m in Sources */,
+				9B1CBCE019AE95630069CC70 /* NSManagedObjectContext+ChainSave.m in Sources */,
 				AB1D2D0D1877A87200D2576F /* EWUserManagement.m in Sources */,
 				ABD53FC6194D7D2F00BBC8DA /* _EWServerObject.m in Sources */,
 				9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */,

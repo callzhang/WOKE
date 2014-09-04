@@ -11,7 +11,7 @@
 #import "EWAlarmManager.h"
 #import "EWAlarmItem.h"
 #import "NSDate+Extend.h"
-#import "EWCostumTextField.h"
+//#import "EWCostumTextField.h"
 @implementation EWAlarmEditCell
 @synthesize task, alarm;
 @synthesize myTime, myStatement;
@@ -22,31 +22,17 @@
     if (self) {
         self.contentView.backgroundColor = [UIColor clearColor];
        
-        
-       
-        self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 80, 320, 50)];
-        self.scrollView.contentSize  = CGSizeMake(320, 50);
-        self.statement = [[EWCostumTextField alloc] initWithFrame:CGRectMake(30, 20, 300, 20)];
         self.statement.font = [UIFont fontWithName:@"Lato-Regular.ttf" size:14];
-//        self.statement.placeholder = @"I want to hear (a song about burrito...) ";
-    
         self.statement.delegate = self;
         
         self.statement.clearButtonMode = UITextFieldViewModeAlways;
-           self.statement.adjustsFontSizeToFitWidth = YES;
-         self.statement.leftViewMode = UITextFieldViewModeAlways;
-        self.scrollView.backgroundColor = [UIColor blackColor];
-        self.scrollView.alpha = 0.3;
-        self.statement.textColor = [UIColor whiteColor];
-        self.statement.tintColor = [UIColor whiteColor];
-        self.statement.enablesReturnKeyAutomatically = YES;
-        self.statement.returnKeyType = UIReturnKeyDone;
-        [self.scrollView addSubview:self.statement];
-        [self.contentView addSubview:self.scrollView];
-//        self.scrollView.scrollEnabled = NO;
+        //self.statement.adjustsFontSizeToFitWidth = YES;
+        self.statement.leftViewMode = UITextFieldViewModeAlways;
+        self.scrollView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
+        //self.scrollView.alpha = 0.3;
         
         CGRect frame = self.frame;
-        frame.size.height -=80;
+        frame.size.height -= 80;
         self.selectedBackgroundView = [[UIView alloc] initWithFrame: frame];
         self.selectedBackgroundView.backgroundColor = [UIColor clearColor];
         
@@ -181,6 +167,13 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
     return YES;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField{
+    UIFont *font = [UIFont systemFontOfSize:16];
+    CGSize size = [textField.text sizeWithFont:font constrainedToSize:kConstrainedSize lineBreakMode:NSLineBreakByWordWrapping];
+    CGRect frame = CGRectMake(0, 0, size.width, textField.frame.size.height);
+    textField.frame = frame;
 }
 
 @end

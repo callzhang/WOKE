@@ -46,7 +46,7 @@ DEPENDENCIES:
   - Facebook-iOS-SDK
   - GPUImage
   - IDMPhotoBrowser
-  - MagicalRecord (from `https://github.com/magicalpanda/MagicalRecord`)
+  - MagicalRecord (from `https://github.com/magicalpanda/MagicalRecord`, tag `v2.3.0-beta.3`)
   - NSLogger
   - Parse
   - Reachability
@@ -57,6 +57,7 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   MagicalRecord:
     :git: https://github.com/magicalpanda/MagicalRecord
+    :tag: v2.3.0-beta.3
 
 SPEC CHECKSUMS:
   AFNetworking: 47947303319594706f48a55185ea95a95159ab94

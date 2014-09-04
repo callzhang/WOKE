@@ -2,8 +2,6 @@
 #import <UIKit/UIKit.h>
 #endif
 
-#define MR_SHORTHAND
-#define MR_LOGGING_ENABLED 0
 #import "Pods-environment.h"
 #import <CoreData/CoreData.h>
 #import "CoreData+MagicalRecord.h"

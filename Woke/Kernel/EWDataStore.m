@@ -999,7 +999,7 @@ NSManagedObjectContext *mainContext;
 
 
 #pragma mark - Core Data ManagedObject extension
-@implementation NSManagedObject (PFObject)
+@implementation çNSManagedObject (PFObject)
 #import <objc/runtime.h>
 
 - (void)updateValueAndRelationFromParseObject:(PFObject *)parseObject{

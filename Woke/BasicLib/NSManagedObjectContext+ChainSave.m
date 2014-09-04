@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Lei. All rights reserved.
 //
 
-#import "MagicalRecord+ChainSave.h"
+#import "NSManagedObjectContext+ChainSave.h"
 
 @implementation NSManagedObjectContext(MagicalRecord_ChainSave)
 - (void) saveWithBlock:(void(^)(NSManagedObjectContext *localContext))block;

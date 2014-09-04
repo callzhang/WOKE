@@ -116,8 +116,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         
         //statement
         if (cell.statement.text.length && ![cell.statement.text isEqualToString:task.statement]) {
-            alarm.statement = cell.statementText.text;
-            task.statement = cell.statementText.text;
+            NSString *statement = [NSString stringWithFormat:@"%@", cell.statement.text];
+            alarm.statement = statement;
+            task.statement = statement;
             //hasChanges = YES;
         }
         
