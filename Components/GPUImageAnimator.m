@@ -177,7 +177,7 @@ static const float initialDownSampling = 2;
 - (void)updateFrame:(CADisplayLink*)link
 {
     [self updateProgress:link];
-    self.brightnessFilter.gamma = 1 + 1.2 * self.progress;
+    self.brightnessFilter.gamma = 1 + self.progress;
     double downSampling = initialDownSampling + self.progress * 6;
     self.blurFilter.downsampling = downSampling;
     self.blurFilter.blurRadiusInPixels = 1+ self.progress * 8;

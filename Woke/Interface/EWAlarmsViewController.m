@@ -300,7 +300,7 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self showAlarmPageLoading:NO];
-                [self reloadAlarmPage];
+                [self refreshView];
             });
             
         }

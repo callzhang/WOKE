@@ -538,7 +538,10 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             case 3://last seen
             {
                 NSDate *date = person.updatedAt;
-                cell.detailTextLabel.text = date.timeElapsedString;
+                if (!date) {
+                    date = person.parseObject.updatedAt;
+                }
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ ago", date.timeElapsedString];
                 break;
             }
             case 4://next task time
