@@ -352,6 +352,9 @@
                 [EWTaskStore scheduleNotificationOnServerWithTimer:task];
             }
         }];
+        
+        //save here first in order to reflect change to main context
+        [context saveToPersistentStoreAndWait];
     }
     
     //last checked
