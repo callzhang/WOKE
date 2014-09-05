@@ -226,13 +226,10 @@
             self.descriptionText.text = task.statement;
             
         }else{
-            
             NSLog(@"@@@ Unhandled task %@ change: %@", keyPath, change);
-            
         }
         [self setNeedsDisplay];
     }
-    
 }
 
 - (void)stopObserveTask{
@@ -250,8 +247,6 @@
         id observants = [task observationInfo];
         NSLog(@"Failed to remove observer %@ with observation info: %@",self , observants);
     }
-    
-    
     
 }
 #pragma mark - ChangeTimeLeftLabel

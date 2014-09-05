@@ -16,7 +16,6 @@
 #define kAppName                        @"Woke"
 #define kAppVersion                     @"0.7.0"
 #define BACKGROUND_TEST
-#define EW_DEBUG_LEVEL                  3//defined logging level to
 
 #define kCustomWhite                    EWSTR2COLOR(@"#F5F5F5")
 #define kCustomGray                     EWSTR2COLOR(@"48494B")
@@ -41,7 +40,7 @@
 
 
 // 任务宏
-
+#define EW_DEBUG_LEVEL                  3//defined logging level
 #define LOCALSTR(x)                     NSLocalizedString(x,nil)
 #define EWAlert(str)                    [[[UIAlertView alloc] initWithTitle:@"Alert" message:str delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
@@ -52,7 +51,8 @@
 
 //Logging
 //#define NSLog   EWLog
-#define NSLog TFLog
+#define NSLog                           LogMessageCompat
+//#define NSLog TFLog
 //#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 //Global parameters

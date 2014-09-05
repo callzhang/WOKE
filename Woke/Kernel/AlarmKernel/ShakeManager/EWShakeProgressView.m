@@ -83,7 +83,12 @@
 					viberationTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(viberation) userInfo:nil repeats:YES];
 				}
                 
-                [self setProgress:(self.progress + strength/10) animated:YES];
+#ifdef DEBUG
+                [self setProgress:(self.progress + strength) animated:YES];
+#else
+				//modify the time it takes to reach the end
+				[self setProgress:(self.progress + strength * kMotionStrengthModifier) animated:YES];
+#endif
                 
                 if (progressHandler) {
                     progressHandler();

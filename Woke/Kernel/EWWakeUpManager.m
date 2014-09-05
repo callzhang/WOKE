@@ -309,19 +309,27 @@
         
     }else if (isLanchedFromRemoteNotification){
         
+        NSLog(@"Entered from remote notification, start wakeup view now");
+        [EWWakeUpManager presentWakeUpViewWithTask:task];
+        
     }else{
         //fire an alarm
         NSLog(@"=============> Firing Alarm timer notification <===============");
         UILocalNotification *alarm = [[UILocalNotification alloc] init];
         alarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
         alarm.alertAction = @"Wake up!";
+        alarm.soundName = me.preference[@"DefaultTone"];
         alarm.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
                            kLocalNotificationTypeKey: kLocalNotificationTypeAlarmTimer};
         [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
-        [[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
+        //[[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
         
         //play sounds after 30s - time for alarm
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        double d = 30;
+#ifdef DEBUG
+        d = 5;
+#endif
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(d * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             //present wakeupVC and paly when displayed
             [EWWakeUpManager presentWakeUpViewWithTask:task];
         });

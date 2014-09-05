@@ -413,6 +413,7 @@
                 for (PFObject *task in tasks) {
                     EWTaskItem *taskMO = (EWTaskItem *)[task managedObjectInContext:localContext];
                     [taskMO refresh];
+                    [pastTasks addObject:taskMO];
                     [localMe addPastTasksObject:taskMO];
                     taskOutDated = YES;
                     NSLog(@"!!! Task found on server: %@", taskMO.time.date2dayString);
@@ -420,10 +421,35 @@
             }
         }
         
-        //TODO: check duplicated past tasks
-        
         
         if (taskOutDated) {
+            
+            //TODO: check duplicated past tasks
+            NSMutableDictionary *ptDic = [NSMutableDictionary new];
+            for (EWTaskItem *t in pastTasks) {
+                NSString *day = t.time.date2YYMMDDString;
+                if (!ptDic[day]) {
+                    ptDic[day] = t;
+                }else{
+                    if (!t.completed) {
+                        [t deleteEntityInContext:localContext];
+                        NSLog(@"duplicated past task deleted: %@", t.time);
+                    }else{
+                        EWTaskItem *t0 = (EWTaskItem *)ptDic[day];
+                        NSDate *c0 = [t0 completed];
+                        if (!c0 || [t.completed isEarlierThan:c0]) {
+                            ptDic[day] = t;
+                            [t0 deleteEntityInContext:localContext];
+                            NSLog(@"duplicated past task deleted: %@", t0.time);
+                        }else{
+                            [t deleteEntityInContext:localContext];
+                            NSLog(@"duplicated past task deleted: %@", t.time);
+                        }
+                    }
+                }
+            }
+            
+            
             //update cached activities
             [EWStatisticsManager updateTaskActivityCacheWithCompletion:NULL];
         }

@@ -13,7 +13,7 @@
 
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
-//#import "LoggerClient.m"
+#import <NSLogger/NSLogger.h>
 
 @implementation EWUtil
 
@@ -135,7 +135,8 @@ void EWLog(NSString *format, ...){
     NSInteger level = [symbolList indexOfObject:symbol];
     level = level != NSNotFound ? level : 3;
     if (level <= EW_DEBUG_LEVEL) {
-        LogMessageF(__FILE__,__LINE__,__FUNCTION__, @"Woke", level, @"%@", str);
+        //LogMessageF(__FILE__,__LINE__,__FUNCTION__, @"Woke", level, @"%@", str);
+        LogMessage(@"WOKE", level, str);
     }
 #else
     //only send to TestFlight on release version

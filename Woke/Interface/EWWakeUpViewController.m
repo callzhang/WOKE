@@ -65,6 +65,14 @@
     return self;
 }
 
+- (void)setTask:(EWTaskItem *)t{
+    task = t;
+    medias = [[task.medias allObjects] mutableCopy];
+    //KVO
+    [self.task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:nil];
+    [self initData];
+}
+
 
 #pragma mark - Life Cycle
 
@@ -79,7 +87,7 @@
     //HUD
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    [self initView];
+    [self initData];
     [self initView];
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
@@ -231,14 +239,6 @@
 }
 
 
-- (void)setTask:(EWTaskItem *)t{
-    task = t;
-    medias = [[task.medias allObjects] mutableCopy];
-    //KVO
-    [self.task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:nil];
-    [self initData];
-}
-
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([object isKindOfClass:[EWTaskItem class]]) {
@@ -264,6 +264,7 @@
     
     //stop music
     [[AVManager sharedManager] stopAllPlaying];
+    [AVManager sharedManager].currentCell = nil;
     [AVManager sharedManager].media = nil;
     next = NO;
     
@@ -462,7 +463,11 @@
         if (!cell) {
             cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
         }
-        [[AVManager sharedManager] playForCell:cell];
+        if (!cell) {
+            [[AVManager sharedManager] playMedia:medias[currentPlayingCellIndex]];
+        }else{
+            [[AVManager sharedManager] playForCell:cell];
+        }
     }
     
 }
