@@ -23,7 +23,6 @@
 @property (nonatomic) NSString *myStatement;
 //@property (nonatomic) BOOL alarmOn;
 @property (strong, nonatomic) IBOutlet UITextField *statement;
-@property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 
 //outlet
 @property (weak, nonatomic) IBOutlet UIButton *alarmToggle;

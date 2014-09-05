@@ -65,9 +65,9 @@
     if ([self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]){
         //only works when visible
         //if (!animating) {
-        //    success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
+            success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
         //}else{
-            success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
+        //    success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
         //}
     
     }

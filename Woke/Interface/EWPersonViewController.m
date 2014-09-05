@@ -126,6 +126,9 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     self.location.text = @"";
     self.statement.text = @"";
     
+    //test profile pic bounds change
+    [self.profilePic addObserver:self forKeyPath:@"bounds" options:NSKeyValueObservingOptionOld context:nil];
+    
     [self initData];
     [self initView];
     
@@ -159,18 +162,21 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             NSInteger n2 = [obj2 integerValue];
             return n1 < n2;
         }];
-        if (!_taskActivity && person.isMe) {
-            [EWStatisticsManager updateTaskActivityCacheWithCompletion:^{
-                _taskActivity = person.cachedInfo[kTaskActivityCache];
-                dates = _taskActivity.allKeys;
-                dates = [dates sortedArrayUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
-                    NSInteger n1 = [obj1 integerValue];
-                    NSInteger n2 = [obj2 integerValue];
-                    return n1 < n2;
+        if (person.isMe) {
+            if (!_taskActivity || _taskActivity.count != person.pastTasks.count) {
+                [EWStatisticsManager updateTaskActivityCacheWithCompletion:^{
+                    _taskActivity = person.cachedInfo[kTaskActivityCache];
+                    dates = _taskActivity.allKeys;
+                    dates = [dates sortedArrayUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
+                        NSInteger n1 = [obj1 integerValue];
+                        NSInteger n2 = [obj2 integerValue];
+                        return n1 < n2;
+                    }];
+                    [taskTableView reloadData];
                 }];
-                [taskTableView reloadData];
-            }];
+            }
         }
+        
         stats.person = person;
         
         if (!_photos) {
@@ -296,14 +302,10 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     NSMutableArray *urlArray = [person.images mutableCopy];
     
     if (!urlArray) {
-        //                person.images = [[NSMutableSet alloc] init];
         urlArray = [[NSMutableArray alloc] init];
     }
     
     [urlArray insertObject:person.profilePic atIndex:0];
-    // for test
-    // person photo;
-  
     _photoBrower = [[IDMPhotoBrowser alloc] initWithPhotoURLs:urlArray];
     
     _photoBrower.delegate = self;
@@ -312,7 +314,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         _photoBrower.actionButtonTitles = @[@"Uplode from library",@"Upload from taking photo",@"delete this image",@"Set this as profile"];
         
-//        _photoBrower.actionSheetTitle = @"Upload Your Photo";
      
     }else{
         
@@ -613,7 +614,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 break;
             case 2:{
                 //advanced query
-                NSArray *wokeTo = activity[kWokeBy];
+                NSArray *wokeTo = activity[kWokeTo];
                 if ([wokeTo isEqual: @0]) {
                     wokeTo = [NSArray new];
                 }
@@ -704,20 +705,20 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didShowPhotoAtIndex:(NSUInteger)pageIndex
 {
-    id <IDMPhoto> photo = [photoBrowser photoAtIndex:pageIndex];
-    NSLog(@"Did show photoBrowser with photo index: %lu, photo caption: %@", (unsigned long)pageIndex, photo.caption);
+    //id <IDMPhoto> photo = [photoBrowser photoAtIndex:pageIndex];
+    //NSLog(@"Did show photoBrowser with photo index: %lu, photo caption: %@", (unsigned long)pageIndex, photo.caption);
 }
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)pageIndex
 {
-    id <IDMPhoto> photo = [photoBrowser photoAtIndex:pageIndex];
-    NSLog(@"Did dismiss photoBrowser with photo index: %lu, photo caption: %@", (unsigned long)pageIndex, photo.caption);
+    //id <IDMPhoto> photo = [photoBrowser photoAtIndex:pageIndex];
+    //NSLog(@"Did dismiss photoBrowser with photo index: %lu, photo caption: %@", (unsigned long)pageIndex, photo.caption);
 }
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissActionSheetWithButtonIndex:(NSUInteger)buttonIndex photoIndex:(NSUInteger)photoIndex
 {
-    id <IDMPhoto> photo = [photoBrowser photoAtIndex:photoIndex];
-    NSLog(@"Did dismiss actionSheet with photo index: %lu, photo caption: %@", (unsigned long)photoIndex, photo.caption);
+    //id <IDMPhoto> photo = [photoBrowser photoAtIndex:photoIndex];
+    //NSLog(@"Did dismiss actionSheet with photo index: %lu, photo caption: %@", (unsigned long)photoIndex, photo.caption);
     
     if (buttonIndex == 2) {
         

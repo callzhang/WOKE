@@ -19,11 +19,6 @@
 #import "EWUIUtil.h"
 #import "EWMediaSlider.h"
 #import "EWWakeUpManager.h"
-
-
-#import "ATConnect.h"
-#import "EWDefines.h"
-//test
 #import "EWPostWakeUpViewController.h"
 
 #define cellIdentifier                  @"EWMediaViewCell"
@@ -273,17 +268,7 @@
     next = NO;
     
     //release the pointer in wakeUpManager
-    [EWWakeUpManager woke];
-    
-    [[ATConnect sharedConnection] engage:kWakeupSuccess fromViewController:self];
-    
-    //set wakeup time
-    if ([task.time isEarlierThan:[NSDate date]]) {
-        task.completed = [NSDate date];
-    }else{
-        task.completed = [task.time dateByAddingTimeInterval:kMaxWakeTime];
-    }
-    [EWDataStore save];
+    [EWWakeUpManager woke:task];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self scrollViewDidScroll:self.tableView];//prevent header move
@@ -389,13 +374,18 @@
     next = NO;
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    cell.backgroundColor = [UIColor clearColor];
+    cell.contentView.backgroundColor = [UIColor clearColor];
+}
+
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return 80;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return @"Flag";
+    return @"Avoid";
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath {

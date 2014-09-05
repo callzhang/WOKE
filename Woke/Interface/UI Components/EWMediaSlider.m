@@ -46,7 +46,7 @@
 //    UIImage *rightImg = [[UIImage imageNamed:@"MediaCellRightCap"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 2, 0, 2)];
 //    [self setMaximumTrackImage:rightImg forState:UIControlStateNormal];
 //    [self setMinimumTrackImage:leftImg forState:UIControlStateNormal];
-    [self setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
+    
     
     //text
     //timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.size.width - 50, (frame.size.height - 20)/2, 50, 20)];
@@ -57,17 +57,16 @@
 //    [self addSubview:timeLabel];
     
     //typeLabel
-    typeLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, (frame.size.height - 24)/2, 80, 20)];
-    typeLabel.text = @"Voice Tone";
-    typeLabel.font = [UIFont systemFontOfSize:15];
-    typeLabel.textColor = [UIColor whiteColor];
-    [self addSubview:typeLabel];
-    typeLabel.hidden = YES;
+//    typeLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, (frame.size.height - 24)/2, 80, 20)];
+//    typeLabel.text = @"Voice Tone";
+//    typeLabel.font = [UIFont systemFontOfSize:15];
+//    typeLabel.textColor = [UIColor whiteColor];
+//    [self addSubview:typeLabel];
+//    typeLabel.hidden = YES;
 
-    
-    //color
+    [self setThumbImage:[UIImage imageNamed:@"MediaCellThumb"] forState:UIControlStateNormal];
     self.tintColor = [UIColor whiteColor];
-    
+    self.maximumTrackTintColor = [UIColor colorWithWhite:1 alpha:0.1];
 }
 
 - (void)play{

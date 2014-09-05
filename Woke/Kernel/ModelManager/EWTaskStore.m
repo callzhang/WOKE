@@ -420,6 +420,8 @@
             }
         }
         
+        //TODO: check duplicated past tasks
+        
         
         if (taskOutDated) {
             //update cached activities

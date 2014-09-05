@@ -21,7 +21,7 @@
 #import "EWPerson.h"
 #import "EWUserManagement.h"
 #import "EWServer.h"
-
+#import "ATConnect.h"
 
 
 //UI
@@ -389,10 +389,23 @@
 }
 
 //indicate that the user has woke
-+ (void)woke{
++ (void)woke:(EWTaskItem *)task{
     [EWWakeUpManager sharedInstance].controller = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:kWokeNotification object:nil];
     [EWWakeUpManager sharedInstance].isWakingUp = NO;
+    
+    //handle wakeup signel
+    [[ATConnect sharedConnection] engage:kWakeupSuccess fromViewController:rootViewController];
+    
+    //set wakeup time
+    if ([task.time isEarlierThan:[NSDate date]] && !task.completed) {
+        if (task.time.timeElapsed > kMaxWakeTime) {
+            task.completed = [task.time dateByAddingTimeInterval:kMaxWakeTime];
+        }else{
+            task.completed = [NSDate date];
+        }
+        [[EWTaskStore sharedInstance] scheduleTasksInBackground];
+    }
     
     
     //TODO: something to do in the future
@@ -405,7 +418,7 @@
 + (void) alarmTimerCheck{
     //check time
     if (!me) return;
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
     if (task.state == NO) return;
     
     //alarm time up

@@ -62,7 +62,7 @@
  Release the reference to wakeupVC
  Post notification: kWokeNotification
  */
-+ (void)woke;
++ (void)woke:(EWTaskItem *)task;
 
 /**
  Timely alarm timer check task

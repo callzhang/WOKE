@@ -26,10 +26,9 @@
     if (self) {
         // Initialization code
         self.name.text = @"";
-        self.description.text = @"";
+        self.message.text = @"";
         self.backgroundColor = [UIColor clearColor];
-    
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCell:) name:kAudioPlayerWillStart object:nil];
+        self.contentView.backgroundColor = [UIColor clearColor];
     }
     return self;
 }
@@ -48,7 +47,6 @@
     if (AVManager.sharedManager.player.isPlaying) {
         [AVManager.sharedManager stopAllPlaying];
         if ([AVManager.sharedManager.currentCell isEqual:self]) {
-            [[AVManager sharedManager].currentCell.mediaBar stop];
             return;
         }
     }
@@ -62,10 +60,10 @@
     media = m;
     if ([media.type isEqualToString:kMediaTypeBuzz]) {
         self.mediaBar.hidden = YES;
-        [self.buzzIcon setImage:[UIImage imageNamed:@"Buzz Button"] forState:UIControlStateNormal];
+        [self.icon setImage:[UIImage imageNamed:@"Buzz Icon"] forState:UIControlStateNormal];
     }else if([media.type isEqualToString:kMediaTypeVoice]){
         self.mediaBar.hidden = NO;
-        [self.buzzIcon setImage:[UIImage imageNamed:@"Voice Message"] forState:UIControlStateNormal];
+        [self.icon setImage:[UIImage imageNamed:@"Voice Icon"] forState:UIControlStateNormal];
         
         //set media bar length
         CGRect frame = self.mediaBar.frame;
@@ -89,7 +87,7 @@
     [EWUIUtil applyHexagonSoftMaskForView:self.profilePic.imageView];
     
     //description
-    self.description.text = media.message;
+    self.message.text = media.message;
     
     
 }

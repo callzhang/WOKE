@@ -18,6 +18,7 @@
 #import "EWMediaItem.h"
 #import "EWNotification.h"
 #import "EWUIUtil.h"
+#import "EWStatisticsManager.h"
 
 
 #pragma mark - 
@@ -176,10 +177,9 @@ NSManagedObjectContext *mainContext;
     //check alarm, task, and local notif
     NSLog(@"2. Check alarm");
 	[[EWAlarmManager sharedInstance] scheduleAlarm];
-//	
-//    NSLog(@"3. Check task");
-//	[[EWTaskStore sharedInstance] scheduleTasksInBackground];
-//	[EWTaskStore.sharedInstance checkScheduledNotifications];
+	
+	NSLog(@"3. Check past task activity");
+	[EWStatisticsManager updateTaskActivityCacheWithCompletion:NULL];
 	
     NSLog(@"4. Check my unread media");
     [[EWMediaStore sharedInstance] checkMediaAssetsInBackground];
@@ -189,8 +189,10 @@ NSManagedObjectContext *mainContext;
     [EWUserManagement getFacebookFriends];
     
     //update facebook info
-    NSLog(@"6. Updating facebook info");
-    [EWUserManagement updateFacebookInfo];
+    //NSLog(@"6. Updating facebook info");
+    //[EWUserManagement updateFacebookInfo];
+	NSLog(@"6. Check scheduled local notifications");
+	[EWTaskStore.sharedInstance checkScheduledNotifications];
     
     //Update my relations
     NSLog(@"7. Refresh my relation in background");
@@ -791,7 +793,7 @@ NSManagedObjectContext *mainContext;
 			//remove changed record
 			NSArray *changes = workingChangedRecords[localMO.objectID];
 			[workingChangedRecords removeObjectForKey:localMO.objectID];
-			NSLog(@"===> MO %@(%@) uploaded to server with changes applied: %@. %d to go.", localMO.entity.serverClassName, localMO.serverID, changes, workingChangedRecords.allKeys.count);
+			NSLog(@"===> MO %@(%@) uploaded to server with changes applied: %@. %lu to go.", localMO.entity.serverClassName, localMO.serverID, changes, (unsigned long)workingChangedRecords.allKeys.count);
 			
 			//remove from queue
 			[EWDataStore removeObjectFromWorkingQueue:localMO];
@@ -805,7 +807,7 @@ NSManagedObjectContext *mainContext;
 		
         //completion block
 		if (callbacks.count) {
-			NSLog(@"=========== Start upload completion block (%d) =============", callbacks.count);
+			NSLog(@"=========== Start upload completion block (%lu) =============", (unsigned long)callbacks.count);
 			for (EWSavingCallback block in callbacks){
 				block();
 			}
@@ -829,7 +831,7 @@ NSManagedObjectContext *mainContext;
 	NSSet *workingMOs = [EWDataStore workingQueue];
 	NSSet *deletePOs = [EWDataStore deleteQueue];
 	if (workingMOs.count > 0 || deletePOs.count > 0) {
-		NSLog(@"There are %d MOs need to upload or %d MOs need to delete", workingMOs.count, deletePOs.count);
+		NSLog(@"There are %lu MOs need to upload or %lu MOs need to delete", (unsigned long)workingMOs.count, (unsigned long)deletePOs.count);
 		for (NSManagedObject *MO in workingMOs) {
 			if (MO.serverID) {
 				NSLog(@"MO %@(%@) resumed to UPDATE queue", MO.entity.name, MO.serverID);
@@ -996,11 +998,11 @@ NSManagedObjectContext *mainContext;
 
 @end
 
-
+#import <objc/runtime.h>
 
 #pragma mark - Core Data ManagedObject extension
-@implementation çNSManagedObject (PFObject)
-#import <objc/runtime.h>
+@implementation NSManagedObject (PFObject)
+
 
 - (void)updateValueAndRelationFromParseObject:(PFObject *)parseObject{
     if (!parseObject) {

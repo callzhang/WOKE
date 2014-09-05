@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6206.8" systemVersion="14A343f" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1792" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7026.1"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -9,7 +8,6 @@
             <string>Lato-Light</string>
         </mutableArray>
         <mutableArray key="lanenar.ttf">
-            <string>Lane-Narrow</string>
             <string>Lane-Narrow</string>
         </mutableArray>
     </customFonts>
@@ -23,20 +21,14 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="129"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Sat" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U3J-qk-8q9">
-                        <rect key="frame" x="16" y="33" width="94" height="24"/>
-                        <fontDescription key="fontDescription" name="AppleSDGothicNeo-Thin" family="Apple SD Gothic Neo" pointSize="12"/>
-                        <color key="textColor" white="1" alpha="0.80000000000000004" colorSpace="calibratedWhite"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="08:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uyf-Eh-JF9">
-                        <rect key="frame" x="32" y="21" width="112" height="48"/>
+                        <rect key="frame" x="73" y="20" width="112" height="48"/>
                         <fontDescription key="fontDescription" name="Lane-Narrow" family="Lane - Narrow" pointSize="34"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minimumValue="-100" maximumValue="100" stepValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="ErU-mV-aag">
-                        <rect key="frame" x="184" y="30" width="94" height="29"/>
+                        <rect key="frame" x="218" y="30" width="94" height="29"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="uSs-PO-gyv"/>
                         </constraints>
@@ -45,7 +37,7 @@
                         </connections>
                     </stepper>
                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cZF-xc-Dzb">
-                        <rect key="frame" x="283" y="29" width="32" height="32"/>
+                        <rect key="frame" x="8" y="29" width="32" height="32"/>
                         <state key="normal" image="On_Btn">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
@@ -54,22 +46,25 @@
                         </connections>
                     </button>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="PM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ond-mm-R2B">
-                        <rect key="frame" x="137" y="34" width="28" height="21"/>
+                        <rect key="frame" x="182" y="34" width="28" height="21"/>
                         <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="12"/>
                         <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YK4-Kv-AMo">
-                        <rect key="frame" x="0.0" y="82" width="320" height="50"/>
-                        <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="I want to hear (a song about burrito...)" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="4wf-AO-TGF">
-                                <rect key="frame" x="0.0" y="8" width="320" height="30"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" name="Lane-Narrow" family="Lane - Narrow" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
-                            </textField>
-                        </subviews>
-                    </scrollView>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="I want to hear a story about burgers..." textAlignment="center" adjustsFontSizeToFit="NO" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="6JF-rr-ZJd">
+                        <rect key="frame" x="0.0" y="81" width="325" height="48"/>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.29999999999999999" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" red="0.32003066990000001" green="0.55666045939999997" blue="0.70884627529999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
+                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" enablesReturnKeyAutomatically="YES"/>
+                    </textField>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Sat" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U3J-qk-8q9">
+                        <rect key="frame" x="48" y="33" width="35" height="24"/>
+                        <fontDescription key="fontDescription" name="AppleSDGothicNeo-Thin" family="Apple SD Gothic Neo" pointSize="12"/>
+                        <color key="textColor" white="1" alpha="0.80000000000000004" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <color key="backgroundColor" red="0.32003066987289891" green="0.55666045940823616" blue="0.7088462752525253" alpha="1" colorSpace="calibratedRGB"/>
             </tableViewCellContentView>
@@ -77,13 +72,12 @@
             <connections>
                 <outlet property="AM" destination="Ond-mm-R2B" id="VlF-k8-Nbx"/>
                 <outlet property="alarmToggle" destination="cZF-xc-Dzb" id="osu-Uf-qYg"/>
-                <outlet property="scrollView" destination="YK4-Kv-AMo" id="Q00-gb-JPP"/>
-                <outlet property="statement" destination="4wf-AO-TGF" id="LjL-vx-dci"/>
+                <outlet property="statement" destination="6JF-rr-ZJd" id="3S7-4H-2TZ"/>
                 <outlet property="time" destination="Uyf-Eh-JF9" id="9df-il-C5U"/>
                 <outlet property="timeStepper" destination="ErU-mV-aag" id="Rla-V0-oc6"/>
                 <outlet property="weekday" destination="U3J-qk-8q9" id="iiT-rO-CXO"/>
             </connections>
-            <point key="canvasLocation" x="198" y="149"/>
+            <point key="canvasLocation" x="198" y="144"/>
         </tableViewCell>
     </objects>
     <resources>

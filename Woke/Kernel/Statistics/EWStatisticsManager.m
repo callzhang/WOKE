@@ -181,6 +181,9 @@
         NSArray *tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:localMe];//newest on top
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
         NSMutableDictionary *activity = [cache[kTaskActivityCache] mutableCopy]?:[NSMutableDictionary new];
+        if (activity.count == tasks.count) {
+            return;
+        }
         
         for (NSInteger i =0; i<tasks.count; i++) {
             //start from the newest task

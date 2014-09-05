@@ -120,8 +120,8 @@
 	NSLog(@"Threshold %f, progress %f", _threshold, self.progress);
 #endif
 	double t = [[NSDate date] timeIntervalSinceReferenceDate];
-	NSInteger s = t * 5.0;
-	NSInteger phase = s % 5;
+	t = t - (NSInteger)t;
+	NSInteger phase = floor(t*5);
 	switch (phase) {
 		case 1:{
 			if (self.progress > 0.2) {

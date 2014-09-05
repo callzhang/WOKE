@@ -117,7 +117,7 @@ static const float initialDownSampling = 2;
         self.displayLink.paused = NO;
         
         //animation
-        [UIView animateWithDuration:duration delay:delay + 0.4 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        [UIView animateWithDuration:duration delay:delay + 0.2 options:UIViewAnimationOptionCurveEaseOut animations:^{
             
             toView.alpha = 1;
             toView.transform = CGAffineTransformIdentity;

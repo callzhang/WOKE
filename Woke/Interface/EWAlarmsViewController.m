@@ -98,6 +98,9 @@
         //refresh
         [self refreshView];
         
+        //fetch everyone
+        [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+        
         //reload alarm page every 10min
         [NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:YES];
 
@@ -120,10 +123,6 @@
     UIImageView *background = [[UIImageView alloc] initWithFrame:_collectionView.frame ];
     background.image = [UIImage imageNamed:@"Background"];
     [self.view insertSubview:background belowSubview:_collectionView];
-    
-    //alarmBarBG
-    //self.alarmBarBG.layer.borderColor = [UIColor colorWithWhite:0 alpha:0.02].CGColor;
-    //self.alarmBarBG.layer.borderWidth = 1;
     
     //paging
     _scrollView.delegate = self;
@@ -173,16 +172,8 @@
         if (alarms.count == 7 && tasks.count == 7*nWeeksToScheduleTask) {
             
             //alarmPages
-            _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
-            for (EWAlarmPageView *view in _scrollView.subviews) {
-                [view removeFromSuperview];
-            }
+            [self resetAlarmPage];
         }
-        
-        //fetch everyone
-        [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:^{
-            //
-        }];
         
     }else{
         alarms = nil;
@@ -260,17 +251,14 @@
                 if (nTask == 7*nWeeksToScheduleTask){
                     [alarmPagetimer invalidate];
                     alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
-                }else if(nTask == 0){
-                    
-                    [self showAlarmPageLoading:NO];
-                
                 }else{
-                    
                     //offer add alarm
+                    [self resetAlarmPage];
                     [self showAlarmPageLoading:NO];
                 }
             }else{
                 //if scheduling, display loading sign
+                [self resetAlarmPage];
                 [self showAlarmPageLoading:YES];
             }
             
@@ -302,7 +290,6 @@
                 [self showAlarmPageLoading:NO];
                 [self refreshView];
             });
-            
         }
     }else{
         NSLog(@"@@@ Unhandled observation: %@", [object class]);
@@ -323,17 +310,8 @@
     
     if (alarms.count == 0 || tasks.count == 0) {
         //init state
+        [self resetAlarmPage];
         
-        //remove all page
-        for (EWAlarmPageView *view in _scrollView.subviews) {
-            if ([view isKindOfClass:[EWAlarmPageView class]]) {
-                [view removeFromSuperview];
-            }
-        }
-        //reset the page
-        [_alarmPages removeAllObjects];
-        _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
-        _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
         [self showAlarmPageLoading:NO];
         return;
         
@@ -341,9 +319,7 @@
     }else if(alarms.count != 7 || tasks.count != 7* nWeeksToScheduleTask){
         //task or alarm incomplete, schedule
         //init state
-        
-        //alarms = [[EWAlarmManager sharedInstance] scheduleAlarm];
-        //tasks = [[EWTaskStore sharedInstance] scheduleTasks];
+        [self resetAlarmPage];
         return;
     }
     
@@ -366,6 +342,19 @@
     //flash
     if (flash) [_scrollView flashScrollIndicators];
     
+}
+
+- (void)resetAlarmPage{
+    //remove all page
+    for (EWAlarmPageView *view in _scrollView.subviews) {
+        if ([view isKindOfClass:[EWAlarmPageView class]]) {
+            [view removeFromSuperview];
+        }
+    }
+    //reset the page
+    [_alarmPages removeAllObjects];
+    _alarmPages = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
+    _scrollView.contentSize = CGSizeMake(_scrollView.width * self.alarms.count, _scrollView.height);
 }
 
 
@@ -653,7 +642,9 @@
         if (tasks.count != 7*nWeeksToScheduleTask) {
             
             [MBProgressHUD showHUDAddedTo:controller.view animated:YES];
-            [[EWAlarmManager sharedInstance] scheduleNewAlarms];
+            if (me.alarms.count != 7) {
+                [[EWAlarmManager sharedInstance] scheduleNewAlarms];
+            }
             [[EWTaskStore sharedInstance] scheduleTasks];
             [MBProgressHUD hideAllHUDsForView:controller.view animated:YES];
         }

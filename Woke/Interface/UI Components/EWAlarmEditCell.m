@@ -22,14 +22,14 @@
     if (self) {
         self.contentView.backgroundColor = [UIColor clearColor];
        
-        self.statement.font = [UIFont fontWithName:@"Lato-Regular.ttf" size:14];
-        self.statement.delegate = self;
-        
-        self.statement.clearButtonMode = UITextFieldViewModeAlways;
-        //self.statement.adjustsFontSizeToFitWidth = YES;
-        self.statement.leftViewMode = UITextFieldViewModeAlways;
-        self.scrollView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
-        //self.scrollView.alpha = 0.3;
+//        self.statement.font = [UIFont fontWithName:@"Lato-Regular.ttf" size:14];
+//        self.statement.delegate = self;
+//        
+//        self.statement.clearButtonMode = UITextFieldViewModeAlways;
+//        //self.statement.adjustsFontSizeToFitWidth = YES;
+//        self.statement.leftViewMode = UITextFieldViewModeAlways;
+//        self.scrollView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
+//        //self.scrollView.alpha = 0.3;
         
         CGRect frame = self.frame;
         frame.size.height -= 80;

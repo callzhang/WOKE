@@ -125,14 +125,14 @@
         NSLog(@"Skip scheduling alarm because it is scheduling already!");
         return nil;
     }
-    
+    self.isSchedulingAlarm = YES;
     
     //get alarms
     NSMutableArray *alarms = [[self alarmsForUser:me] mutableCopy];
     
     
     BOOL hasChange = NO;
-    self.isSchedulingAlarm = YES;
+    
     //check from server for alarm with owner but lost relation
     if (alarms.count != 7 && [EWDataStore isReachable]) {
         //cannot check alarm for myself, which will cause a checking/schedule cycle
@@ -160,7 +160,7 @@
     
     //check if need to check
     if (alarms.count==0) {
-        if ([EWTaskStore myTasks].count == 0 && !self.alarmNeedToSetup) {
+        if ([EWTaskStore myTasks].count == 0 && !_alarmNeedToSetup) {
             //initial state task==0, need another indicator to break the lock
             NSLog(@"Skip check alarm due to 0 tasks exists");
             self.isSchedulingAlarm = NO;

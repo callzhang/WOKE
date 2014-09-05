@@ -148,6 +148,12 @@ const BOOL BACKGROUNDING_FROM_START = YES;
     //stop backgrounding fail notif
     if (backgroundingFailNotification) {
         [[UIApplication sharedApplication] cancelLocalNotification:backgroundingFailNotification];
+    }else{
+        for (UILocalNotification *n in [UIApplication sharedApplication].scheduledLocalNotifications) {
+            if ([n.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeReactivate]) {
+                [[UIApplication sharedApplication] cancelLocalNotification:n];
+            }
+        }
     }
 }
 

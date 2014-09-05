@@ -19,9 +19,9 @@
 //interface
 @property (weak, nonatomic) IBOutlet UILabel *name;
 @property (weak, nonatomic) IBOutlet UILabel *date;
-@property (weak, nonatomic) IBOutlet UILabel *description;
+@property (weak, nonatomic) IBOutlet UILabel *message;
 @property (weak, nonatomic) IBOutlet EWMediaSlider *mediaBar;
-@property (weak, nonatomic) IBOutlet UIButton *buzzIcon;
+@property (weak, nonatomic) IBOutlet UIButton *icon;
 @property (weak, nonatomic) IBOutlet UIButton *profilePic;
 
 //action

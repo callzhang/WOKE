@@ -47,9 +47,6 @@
     if (self) {
         //regist the player
         
-        //observe the background event
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        
         //recorder path
         NSString *tempDir = NSTemporaryDirectory ();
         NSString *soundFilePath =  [tempDir stringByAppendingString: @"recording.m4a"];
@@ -481,11 +478,11 @@
         [AVPlayerUpdateTimer invalidate];
     }
     
-    AVPlayerItem *item = [AVPlayerItem playerItemWithURL:url];
-    avplayer = [AVPlayer playerWithPlayerItem:item];
+    //AVPlayerItem *item = [AVPlayerItem playerItemWithURL:url];
+    avplayer = [AVPlayer playerWithURL:url];
     [avplayer setActionAtItemEnd:AVPlayerActionAtItemEndNone];
     avplayer.volume = 1.0;
-    if (avplayer.status != AVPlayerStatusReadyToPlay) {
+    if (avplayer.status == AVPlayerStatusFailed) {
         NSLog(@"!!! AV player not ready to play.");
     }
     //[avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
@@ -495,6 +492,7 @@
 - (void)playSilentSound{
 #if !TARGET_IPHONE_SIMULATOR
     NSLog(@"Play silent sound");
+    //NSURL *path = [[NSBundle mainBundle] URLForResource:@"tock" withExtension:@"caf"];
     NSURL *path = [[NSBundle mainBundle] URLForResource:@"bg" withExtension:@"caf"];
     [self playAvplayerWithURL:path];
 #endif
@@ -578,14 +576,6 @@ void RouteChangeListener(	void *inClientData,
 		}
 	}
 }*/
-
-
-#pragma mark - Background events handler
-- (void)didEnterBackground:(NSNotification *)notification{
-    //NSLog(@"%s: Received background event notification", __func__);
-    [self registerAudioSession];
-}
-
 
 
 #pragma  mark - System Sound Service
