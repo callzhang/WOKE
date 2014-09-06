@@ -23,4 +23,7 @@ typedef enum{
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController completion:(void (^)(void))block;
 - (void)presentViewControllerWithBlurBackground:(UIViewController *)viewController option:(EWBlurViewOptions)blurOption completion:(void (^)(void))block;
 - (void)dismissBlurViewControllerWithCompletionHandler:(void(^)(void))completion;
+
+
+- (void)presentWithBlur:(UIViewController *)controller withCompletion:(void (^)(void))completion;
 @end

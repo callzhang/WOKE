@@ -328,4 +328,17 @@ static const float originalSize = 80.0;
     }
 }
 
++ (UIImage *)resizeImageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
+    float rh = image.size.height / newSize.height;
+    float rw = image.size.width / newSize.width;
+    if (MAX(rh, rw)<1) {
+        return image;
+    }
+    UIGraphicsBeginImageContextWithOptions(newSize, YES, [UIScreen mainScreen].scale);
+    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
+}
+
 @end

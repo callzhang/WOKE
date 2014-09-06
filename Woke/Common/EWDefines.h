@@ -30,6 +30,7 @@
 #define kParseUploadUrl                 @"https://api.parse.com/1/"
 #define kParseApplicationId             @"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
 #define kParseRestAPIId                 @"lGJTP5XCAq0O3gDyjjRjYtWui6pAJxdyDSTPXzkL"
+#define kParseMasterKey                 @"yTKxNzkIm79nLPyNSycVY3lz32b434bZUu0koGSD"
 #define AWS_ACCESS_KEY_ID               @"AKIAIB2BXKRPL3FCWJYA"
 #define AWS_SECRET_KEY                  @"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"
 #define AWS_SNS_APP_ARN                 @"arn:aws:sns:us-west-2:260520558889:app/APNS_SANDBOX/Woke_Dev"

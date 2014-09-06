@@ -115,6 +115,24 @@
 
 }
 
++ (void)deleteFileFromParseRESTwithURL:(NSURL *)url{
+    //If you still want to delete a file, you can do so through the REST API. You will need to provide the master key in order to be allowed to delete a file. Note that the name of the file must be the name in the response of the upload operation, rather than the original filename.
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request setHTTPMethod:@"DELETE"];
+    [request addValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
+    [request addValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+    [request addValue:@"X-Parse-Master-Key" forHTTPHeaderField:kParseMasterKey];
+    [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+    request.URL = url;
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:nil completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (connectionError) {
+            NSLog(@"Failed to delete photo: %@", connectionError);
+        }
+    }];
+    
+}
+
 
 #pragma mark - Logging
 void EWLog(NSString *format, ...){

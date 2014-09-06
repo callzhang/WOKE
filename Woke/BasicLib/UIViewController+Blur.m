@@ -9,6 +9,7 @@
 #import "UIViewController+Blur.h"
 #import "EWUIUtil.h"
 #import "NavigationControllerDelegate.h"
+#import "EWAppDelegate.h"
 
 
 static NavigationControllerDelegate *delegate = nil;
@@ -72,6 +73,26 @@ static NavigationControllerDelegate *delegate = nil;
 	
 }
 
+- (void)presentWithBlur:(UIViewController *)controller withCompletion:(void (^)(void))completion{
+	if (self.presentedViewController) {
+		//need to dismiss first
+		[self dismissBlurViewControllerWithCompletionHandler:^{
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+				[self presentViewControllerWithBlurBackground:controller completion:^{
+					if (completion) {
+						completion();
+					}
+				}];
+			});
+		}];
+	}else{
+		[self presentViewControllerWithBlurBackground:controller completion:^{
+			if (completion) {
+				completion();
+			}
+		}];
+	}
+}
 
 
 @end

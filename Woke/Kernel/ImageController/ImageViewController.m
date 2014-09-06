@@ -61,4 +61,5 @@
     UIGraphicsEndImageContext();
     return smallImage;
 }
+
 @end

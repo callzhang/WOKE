@@ -70,4 +70,6 @@
 //+ (NSString *)getStringFromTime:(float)time;
 
 + (void)addFirstTimeTutorialInViewController: (UIViewController * )vc;
+
++ (UIImage *)resizeImageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize;
 @end

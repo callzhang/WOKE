@@ -723,14 +723,18 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if (buttonIndex == 2) {
         
         [photoBrowser deleteButtonPressed:nil];
+        //If you still want to delete a file, you can do so through the REST API. You will need to provide the master key in order to be allowed to delete a file. Note that the name of the file must be the name in the response of the upload operation, rather than the original filename.
         
-        
+        //curl -X DELETE \
+        //-H "X-Parse-Application-Id: <YOUR_APPLICATION_ID>" \
+        //-H "X-Parse-Master-Key: <YOUR_MASTER_KEY>" \
+        //https://api.parse.com/1/files/<FILE_NAME>
         return ;
-    }
-    if (buttonIndex == 3){
+    }else if (buttonIndex == 3){
         UIImage *image = [photoBrowser photoAtIndex:photoIndex].underlyingImage;
         // upload my profile and move to first place
         NSString *fileUrl = [EWUtil uploadImageToParseREST:me.profilePic];
+        [EWUtil deleteFileFromParseRESTwithURL:me.images[photoIndex]];
         [_photos insertObject:fileUrl atIndex:0];
         // set my profile
         me.profilePic = image;
@@ -750,25 +754,21 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         _imagePicker.delegate = self;
         _imagePicker.resizeableCropArea = YES;
 //        imagePicker.imagePickerController.allowsEditing = YES;
-//    
-        _imagePicker.imagePickerController.sourceType = buttonIndex;
+
+    //determine upload from library or camera
+    _imagePicker.imagePickerController.sourceType = buttonIndex;
 
     
     [photoBrowser presentViewController:_imagePicker.imagePickerController animated:YES completion:^{}];
     
-//    [photoBrowser dismissViewControllerAnimated:YES completion:^(){
-//    }];
-//    
-    
-        
 
 }
 -(void)photoBrowser:(IDMPhotoBrowser *)photoBrowser detelePhotoAtIndexPath:(NSInteger)path
 {
     [photoBrowser setInitialPageIndex:0];
     
+    [EWUtil deleteFileFromParseRESTwithURL:_photos[path-1]];
     [_photos removeObjectAtIndex:path-1];
-    
     
     [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
     
@@ -799,21 +799,27 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     [picker dismissViewControllerAnimated:YES completion:^(){
         
-     [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
+        [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
         UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+        image = [EWUIUtil resizeImageWithImage:image scaledToSize:CGSizeMake(640, 960)];
         
-        NSString *fileUrl = [EWUtil uploadImageToParseREST:image];
-          
-        [_photos addObject:fileUrl];
-   
-        me.images = _photos;
-//        [EWDataStore save];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            NSString *fileUrl = [EWUtil uploadImageToParseREST:image];
+            
+            [_photos addObject:fileUrl];
+            
+            me.images = _photos;
+            //        [EWDataStore save];
+            
+            [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
+            
+            [_photoBrower.view showSuccessNotification:@"Uploaded"];
+            
+            [_photoBrower addPhotoInBrowser:fileUrl];
+        });
         
-        [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
-
-        [_photoBrower.view showSuccessNotification:@"Uploaded"];
         
-        [_photoBrower addPhotoInBrowser:fileUrl];
         
 //        [UIView animateWithDuration:0 delay:0.6 options:UIViewAnimationOptionLayoutSubviews animations:^(){
 //            

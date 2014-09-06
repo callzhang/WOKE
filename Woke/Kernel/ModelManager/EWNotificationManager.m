@@ -133,8 +133,8 @@
         if (notification.completed) {
             EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-            [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
-                [rootViewController presentViewControllerWithBlurBackground:navController];
+            [rootViewController presentWithBlur:navController withCompletion:^{
+                //
             }];
         }else{
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Friend accepted"
@@ -240,9 +240,8 @@
             case 2:{ //profile
                 EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:self.person];
                 UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-                [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
-                    
-                    [rootViewController presentViewControllerWithBlurBackground:navController];
+                [rootViewController presentWithBlur:navController withCompletion:^{
+                    //
                 }];
                 break;
             }
@@ -260,9 +259,8 @@
             case 1:{//view profile
                 EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:self.person];
                 UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-                [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
-                    
-                    [rootViewController presentViewControllerWithBlurBackground:navController];
+                [rootViewController presentWithBlur:navController withCompletion:^{
+                    //
                 }];
             }
                 break;
