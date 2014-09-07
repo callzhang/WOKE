@@ -121,9 +121,7 @@
 }
 
 - (void)viberation{
-#ifdef DEBUG
-	NSLog(@"Threshold %f, progress %f", _threshold, self.progress);
-#endif
+
 	double t = [[NSDate date] timeIntervalSinceReferenceDate];
 	t = t - (NSInteger)t;
 	NSInteger phase = floor(t*5);

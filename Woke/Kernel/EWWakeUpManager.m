@@ -453,7 +453,7 @@
     //alarm time up
     NSNumber *sleepDuration = me.preference[kSleepDuration];
     NSInteger durationInSeconds = sleepDuration.integerValue * 3600;
-    NSTimeInterval timeLeft = [task.time timeIntervalSinceNow] + durationInSeconds;
+    NSTimeInterval timeLeft = [task.time timeIntervalSinceNow] - durationInSeconds;
     NSLog(@"===========================>> Check Sleep Timer (%ld min left) <<=============================", (NSInteger)timeLeft/60);
     static BOOL timerInitiated = NO;
     if (timeLeft < kServerUpdateInterval && timeLeft > 0 && !timerInitiated) {

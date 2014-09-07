@@ -58,12 +58,16 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([object isKindOfClass:[EWTaskStore class]]) {
         if ([keyPath isEqualToString:@"isSchedulingTask"]) {
+            [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
             if (![EWTaskStore sharedInstance].isSchedulingTask) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self initData];
                     [self.tableView reloadData];
                 });
             }
+        }else{
+            NSLog(@"Schedule View detecte task schedule");
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         }
     }
 }
@@ -107,7 +111,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
         //time
         if (![cell.myTime isEqual:task.time]) {
-            NSAssert(cell.myTime.weekdayNumber == alarm.time.weekdayNumber, @"Updating time to wrong alarm");
+            NSAssert(cell.myTime.weekdayNumber == alarm.time.weekdayNumber, @"Updating time to wrong alarm. (cell:%@, alarm:%@ and task:%@", cell.myTime, alarm.time, task.time);
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
             alarm.time = cell.myTime;
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];

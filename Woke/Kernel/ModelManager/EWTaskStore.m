@@ -272,7 +272,7 @@
     }
 
     //FIRST check past tasks
-    BOOL hasOutDatedTask = [self checkPastTasks];
+    BOOL hasOutDatedTask = [self checkPastTasksInContext:context];
     
     //for each alarm, find matching task, or create new task
     NSMutableArray *goodTasks = [NSMutableArray new];
@@ -301,7 +301,7 @@
                     }
                     
                 }else if (abs([t.time timeIntervalSinceDate:time]) < 100){
-                    NSLog(@"Time mismatch");
+                    NSLog(@"*** Time mismatch");
                 }
             }
             
@@ -325,7 +325,7 @@
    
     //check data integrety
     if (tasks.count > 0) {
-        NSLog(@"!!! After removing valid task and past task, there are still %lu tasks left", (unsigned long)tasks.count);
+        NSLog(@"!!! After removing valid task and past task, there are still %lu tasks left:%@", (unsigned long)tasks.count, tasks);
         for (EWTaskItem *t in tasks) {
             [self removeTask:t];
         }
@@ -362,98 +362,115 @@
     return goodTasks;
 }
 
-
 - (BOOL)checkPastTasks{
+    //in sync
     __block BOOL taskOutDated = NO;
-    static NSDate *lastPastTaskChecked;
-    if (lastPastTaskChecked && lastPastTaskChecked.timeElapsed < kTaskUpdateInterval) {
+
+    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        taskOutDated = [self checkPastTasksInContext:localContext];
+    }];
+    
+    return taskOutDated;
+}
+
+- (void)checkPastTasksInBackgroundWithCompletion:(void (^)(void))block{
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
+        [self checkPastTasksInContext:localContext];
+    }completion:^(BOOL success, NSError *error) {
+        if (block) {
+            block();
+        }
+    }];
+}
+
+- (BOOL)checkPastTasksInContext:(NSManagedObjectContext *)localContext{
+    BOOL taskOutDated = NO;
+    if (_lastPastTaskChecked && _lastPastTaskChecked.timeElapsed < kTaskUpdateInterval) {
         return taskOutDated;
     }
-    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        //First get outdated current task and move to past
-        EWPerson *localMe = [me inContext:localContext];
-        NSMutableSet *tasks = localMe.tasks.mutableCopy;
-        
-        //nullify old task's relation to alarm
-        BOOL taskOutDated = NO;
-        NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingSeconds:-kMaxWakeTime]];
-        NSSet *outDatedTasks = [tasks filteredSetUsingPredicate:old];
-        for (EWTaskItem *t in outDatedTasks) {
-            t.alarm = nil;
-            t.owner = nil;
-            t.pastOwner = [me inContext:t.managedObjectContext];
-            [tasks removeObject:t];
-            NSLog(@"====== Task on %@ moved to past ======", [t.time date2dayString]);
-            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
-            taskOutDated = YES;
-        }
-        
-        //check on server
-        NSMutableArray *pastTasks = [[localMe.pastTasks allObjects] mutableCopy];
-        [pastTasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
-        EWTaskItem *latestTask = pastTasks.firstObject;
-        if (latestTask.time.timeElapsed > 3600*24) {
-            NSLog(@"=== Checking past tasks but the latest task is outdated: %@", latestTask.time);
-            if([EWDataStore isReachable]){
-                //get from server
-                NSLog(@"=== Fetch past task from server for %@", localMe.name);
-                PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
-                //[query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
-                //[query whereKey:@"state" equalTo:@YES];
-                [query whereKey:kParseObjectID notContainedIn:[pastTasks valueForKey:kParseObjectID]];
-                PFUser *user = [PFUser objectWithoutDataWithClassName:@"PFUser" objectId:localMe.objectId];
-                [query whereKey:@"pastOwner" equalTo:user];
-                [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]];
-                tasks = [[query findObjects] mutableCopy];
+    
+    NSLog(@"=== Start checking past tasks ===");
+    //First get outdated current task and move to past
+    EWPerson *localMe = [me inContext:localContext];
+    NSMutableSet *tasks = localMe.tasks.mutableCopy;
+    
+    //nullify old task's relation to alarm
+    NSPredicate *old = [NSPredicate predicateWithFormat:@"time < %@", [[NSDate date] timeByAddingSeconds:-kMaxWakeTime]];
+    NSSet *outDatedTasks = [tasks filteredSetUsingPredicate:old];
+    for (EWTaskItem *t in outDatedTasks) {
+        t.alarm = nil;
+        t.owner = nil;
+        t.pastOwner = [me inContext:t.managedObjectContext];
+        [tasks removeObject:t];
+        NSLog(@"=== Task(%@) on %@ moved to past", t.objectId, [t.time date2dayString]);
+        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
+        taskOutDated = YES;
+    }
+    
+    //check on server
+    NSMutableArray *pastTasks = [[localMe.pastTasks allObjects] mutableCopy];
+    [pastTasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
+    EWTaskItem *latestTask = pastTasks.firstObject;
+    if (latestTask.time.timeElapsed > 3600*24) {
+        NSLog(@"=== Checking past tasks but the latest task is outdated: %@", latestTask.time);
+        if([EWDataStore isReachable]){
+            //get from server
+            NSLog(@"=== Fetch past task from server for %@", localMe.name);
+            PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
+            //[query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
+            //[query whereKey:@"state" equalTo:@YES];
+            [query whereKey:kParseObjectID notContainedIn:[pastTasks valueForKey:kParseObjectID]];
+            PFUser *user = [PFUser objectWithoutDataWithClassName:@"PFUser" objectId:localMe.objectId];
+            [query whereKey:@"pastOwner" equalTo:user];
+            [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]];
+            tasks = [[query findObjects] mutableCopy];
 //                >>>>>>> task has not result <<<<<<<<
-                //assign back to person.tasks
-                for (PFObject *task in tasks) {
-                    EWTaskItem *taskMO = (EWTaskItem *)[task managedObjectInContext:localContext];
-                    [taskMO refresh];
-                    [pastTasks addObject:taskMO];
-                    [localMe addPastTasksObject:taskMO];
-                    taskOutDated = YES;
-                    NSLog(@"!!! Task found on server: %@", taskMO.time.date2dayString);
-                }
+            //assign back to person.tasks
+            for (PFObject *task in tasks) {
+                EWTaskItem *taskMO = (EWTaskItem *)[task managedObjectInContext:localContext];
+                [taskMO refresh];
+                [pastTasks addObject:taskMO];
+                [localMe addPastTasksObject:taskMO];
+                taskOutDated = YES;
+                NSLog(@"!!! Task found on server: %@", taskMO.time.date2dayString);
             }
         }
+    }
+    
+    
+    if (taskOutDated) {
         
-        
-        if (taskOutDated) {
-            
-            //TODO: check duplicated past tasks
-            NSMutableDictionary *ptDic = [NSMutableDictionary new];
-            for (EWTaskItem *t in pastTasks) {
-                NSString *day = t.time.date2YYMMDDString;
-                if (!ptDic[day]) {
-                    ptDic[day] = t;
+        //TODO: check duplicated past tasks
+        NSMutableDictionary *ptDic = [NSMutableDictionary new];
+        for (EWTaskItem *t in pastTasks) {
+            NSString *day = t.time.date2YYMMDDString;
+            if (!ptDic[day]) {
+                ptDic[day] = t;
+            }else{
+                if (!t.completed) {
+                    [t deleteEntityInContext:localContext];
+                    NSLog(@"duplicated past task deleted: %@", t.time);
                 }else{
-                    if (!t.completed) {
+                    EWTaskItem *t0 = (EWTaskItem *)ptDic[day];
+                    NSDate *c0 = [t0 completed];
+                    if (!c0 || [t.completed isEarlierThan:c0]) {
+                        ptDic[day] = t;
+                        [t0 deleteEntityInContext:localContext];
+                        NSLog(@"duplicated past task deleted: %@", t0.time);
+                    }else{
                         [t deleteEntityInContext:localContext];
                         NSLog(@"duplicated past task deleted: %@", t.time);
-                    }else{
-                        EWTaskItem *t0 = (EWTaskItem *)ptDic[day];
-                        NSDate *c0 = [t0 completed];
-                        if (!c0 || [t.completed isEarlierThan:c0]) {
-                            ptDic[day] = t;
-                            [t0 deleteEntityInContext:localContext];
-                            NSLog(@"duplicated past task deleted: %@", t0.time);
-                        }else{
-                            [t deleteEntityInContext:localContext];
-                            NSLog(@"duplicated past task deleted: %@", t.time);
-                        }
                     }
                 }
             }
-            
-            
-            //update cached activities
-            [EWStatisticsManager updateTaskActivityCacheWithCompletion:NULL];
         }
+        
+        
+        //update cached activities
+        [EWStatisticsManager updateTaskActivityCacheWithCompletion:NULL];
+    }
 
-    }];
-    lastPastTaskChecked = [NSDate date];
+    _lastPastTaskChecked = [NSDate date];
     
     return taskOutDated;
 }
@@ -961,20 +978,22 @@
         // task outDate
         return;
     }
+    NSString *taskID = task.serverID;
+    NSDate *time = task.time;
     //check local schedule records before make the REST call
     __block NSMutableDictionary *timeTable = [[[NSUserDefaults standardUserDefaults] objectForKey:kScheduledAlarmTimers] mutableCopy] ?:[NSMutableDictionary new];
     for (NSString *objectId in timeTable.allKeys) {
-        EWTaskItem *task = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:objectId];
-        if (task.time.timeElapsed > 0) {
+        EWTaskItem *t = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:objectId];
+        if (t.time.timeElapsed > 0) {
             //delete from time table
             [timeTable removeObjectForKey:objectId];
-            NSLog(@"Past task on %@ has been removed from schedule table", task.time.date2detailDateString);
+            NSLog(@"Past task on %@ has been removed from schedule table", t.time.date2detailDateString);
         }
     }
     
-    __block NSMutableArray *times = [[timeTable objectForKey:task.objectId] mutableCopy]?:[NSMutableArray new];
-    if ([times containsObject:task.time]) {
-        NSLog(@"Task (%@) time (%@) has already been scheduled, skip.", task.objectId, task.time);
+    __block NSMutableArray *times = [[timeTable objectForKey:taskID] mutableCopy]?:[NSMutableArray new];
+    if ([times containsObject:time]) {
+        NSLog(@"===Task (%@) timer push (%@) has already been scheduled on server, skip.", taskID, time);
         return;
     }
     
@@ -988,19 +1007,19 @@
 
     NSDictionary *dic = @{@"where":@{kUsername:me.username},
 
-                          @"push_time":[NSNumber numberWithDouble:[task.time timeIntervalSince1970] ],
+                          @"push_time":[NSNumber numberWithDouble:[time timeIntervalSince1970] ],
                           @"data":@{@"alert":@"Time to get up",
                                    @"content-available":@1,
                                     kPushTypeKey: kPushTypeTimerKey,
-                                    kPushTaskKey: task.objectId},
+                                    kPushTaskKey: taskID},
                          };
     
     [manager POST:kParsePushUrl parameters:dic
          success:^(AFHTTPRequestOperation *operation,id responseObject) {
              
-             NSLog(@"Schedule push success for time %@", task.time.date2detailDateString);
-             [times addObject:task.time];
-             [timeTable setObject:times forKey:task.objectId];
+             NSLog(@"Schedule push success for time %@", time.date2detailDateString);
+             [times addObject:time];
+             [timeTable setObject:times forKey:taskID];
              [[NSUserDefaults standardUserDefaults] setObject:timeTable.copy forKey:kScheduledAlarmTimers];
              
          }failure:^(AFHTTPRequestOperation *operation,NSError *error) {

@@ -262,7 +262,7 @@
     if (h<0) {
         self.timeLeftText.text = @"Just alarmed";
     }else if(h<24){
-        self.timeLeftText.text = [task.time timeLeft];
+        self.timeLeftText.text = [NSString stringWithFormat:@"%@ left", [task.time timeLeft]];
     }else{
         self.timeLeftText.text = task.time.weekday;
     }

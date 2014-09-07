@@ -779,7 +779,7 @@
                     duplicated = YES;
                 }
             }];
-            change[@(type)] = indexPath;
+            if(!duplicated) change[@(type)] = indexPath;
         }
             
             break;
@@ -809,8 +809,9 @@
             
         } else {
             //prevent updating too fast
-            if(lastUpdated && lastUpdated.timeElapsed < 1 ){
-                return;
+            if(lastUpdated && lastUpdated.timeElapsed < 0.1 ){
+                NSLog(@"!!! Update main view too fast. %f sec since last update.", lastUpdated.timeElapsed);
+                //return;
             }
             
             //NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);

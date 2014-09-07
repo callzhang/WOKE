@@ -179,9 +179,9 @@ NSManagedObjectContext *mainContext;
 	[[EWAlarmManager sharedInstance] scheduleAlarm];
 	
 	NSLog(@"3. Check past task activity");
-	[[EWTaskStore sharedInstance] checkPastTasks];
+	[[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
 	
-    NSLog(@"4. Check my unread media");
+    NSLog(@"4. Check my unread media");//also will check with background fetch
     [[EWMediaStore sharedInstance] checkMediaAssetsInBackground];
     
     //updating facebook friends
@@ -199,17 +199,25 @@ NSManagedObjectContext *mainContext;
     [EWPersonStore updateMe];
     
     //update data with timely updates
-    [self registerServerUpdateService];
-}
-
-
-#pragma mark - Timely sync
-- (void)registerServerUpdateService{
-    self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:kServerUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:nil repeats:0];
-    [self serverUpdate:nil];
+	//first time
+	NSMutableDictionary *userInfo = [NSMutableDictionary new];
+	userInfo[@"start_date"] = [NSDate date];
+	userInfo[@"count"] = @0;
+	self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:kServerUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:userInfo repeats:YES];
+	[self serverUpdate:nil];
 }
 
 - (void)serverUpdate:(NSTimer *)timer{
+
+	if (timer) {
+		NSInteger count;
+		NSDate *start = timer.userInfo[@"start_date"];
+		count = [(NSNumber *)timer.userInfo[@"count"] integerValue];
+		NSLog(@"=== Server update started at %@ is running for the %ld times ===", start.date2detailDateString, (long)count);
+		count++;
+		timer.userInfo[@"count"] = @(count);
+	}
+	
     //services that need to run periodically
     if (!me) {
         return;
@@ -375,8 +383,8 @@ NSManagedObjectContext *mainContext;
 		if (![MO isKindOfClass:[EWServerObject class]]) {
 			continue;
 		}
-		NSLog(@"~~~> MO %@(%@) deleted from context", MO.entity.name, [MO valueForKey:kParseObjectID]);
 		if (MO.serverID) {
+			NSLog(@"~~~> MO %@(%@) is going to be DELETED, enqueue PO to delete queue.", MO.entity.name, [MO valueForKey:kParseObjectID]);
 			
 			PFObject *PO = [PFObject objectWithoutDataWithClassName:MO.entity.serverClassName objectId:MO.serverID];
 			
@@ -1703,6 +1711,7 @@ NSManagedObjectContext *mainContext;
 						PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:relatedManagedObject.entity.serverClassName objectId:parseID];
                         //[relatedParseObject fetchIfNeeded];
                         [parseRelation addObject:relatedParseObject];
+						NSLog(@"+++> To-many relation on PO %@(%@)->%@(%@) added when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, relatedParseObject.objectId);
                         
                     } else {
                         __block PFObject *blockObject = self;
@@ -1713,7 +1722,7 @@ NSManagedObjectContext *mainContext;
                             //the relation can only be additive, which is not a problem for new relation
                             [blockParseRelation addObject:object];
                             [blockObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                NSLog(@"Relation %@ -> %@ (%@) established", blockObject.parseClassName, object.parseClassName, object.objectId);
+                                NSLog(@"PO Relation %@(%@) -> %@ (%@) established in PO save callback", blockObject.parseClassName, blockObject.objectId, object.parseClassName, object.objectId);
                                 if (error) {
                                     NSLog(@"Failed to save: %@", error.description);
                                     @try {
@@ -1742,6 +1751,7 @@ NSManagedObjectContext *mainContext;
                 if (parseID) {
                     PFObject *relatedPO = [relatedMO getParseObjectWithError:NULL];//TODO: test if we can use empty PO
                     [self setObject:relatedPO forKey:key];
+					NSLog(@"+++> To-one relation on PO %@(%@)->%@(%@) added when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, relatedPO.objectId);
                 }else{
                     //MO doesn't have parse id, save to parse
                     __block PFObject *blockObject = self;
@@ -1767,34 +1777,34 @@ NSManagedObjectContext *mainContext;
                 }
             }
         }else{
-			//Optional
-			return;
+			
+			//relation cannot be to-many, as it's always has value
             //empty related object, delete PO relationship
 			//I doubt if we really need to delete inverse relation
             if ([self valueForKey:key]) {
-                NSParameterAssert(!obj.isToMany);//relation cannot be to-many, as it's always has value
-                //NSLog(@"Empty relationship on MO %@(%@) -> %@, delete PO relation.", managedObject.entity.name, self.objectId, obj.name);
-                
-                NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
-                PFObject *inversePO = self[key];
-				if ([inversePO isKindOfClass:[EWPerson class]]) {
-					NSLog(@"*** Something wrong, we should not modify any relation with other user. MO: %@", inversePO);
-					return;
-				}
-                if (inverseRelation.isToMany) {
-                    //inverse to-many relation need to be updated
-                    [inversePO fetchIfNeeded];
-                    PFRelation *inversePFRelation = [inversePO relationForKey:inverseRelation.name];
-                    [inversePFRelation removeObject:self];
-                    [inversePO save:nil];
-                    NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
-                }else{
-                    //to-one
-                    [inversePO removeObjectForKey:inverseRelation.name];
-                }
-                
+				
+
+				NSLog(@"Empty relationship on MO %@(%@) -> %@, delete PO relation.", managedObject.entity.name, self.objectId, obj.name);
+//                NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
+//                PFObject *inversePO = self[key];
+//				if (inversePO.ACL != nil) {
+//					BOOL write = [inversePO.ACL getWriteAccessForUser:[PFUser currentUser]] || [inversePO.ACL getPublicWriteAccess];
+//				}
+//                if (inverseRelation.isToMany) {
+//                    //inverse to-many relation need to be updated
+//                    [inversePO fetchIfNeeded];
+//                    PFRelation *inversePFRelation = [inversePO relationForKey:inverseRelation.name];
+//                    [inversePFRelation removeObject:self];
+//                    [inversePO save:nil];
+//                    NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
+//                }else{
+//                    //to-one
+//                    [inversePO removeObjectForKey:inverseRelation.name];
+//                }
+//				[inversePO save];
+				
                 [self removeObjectForKey:key];
-				[inversePO save];
+				
             }
         }
         

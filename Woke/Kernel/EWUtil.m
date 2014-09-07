@@ -147,8 +147,7 @@ void EWLog(NSString *format, ...){
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         //dispatch to NSLOG
         NSString *symbol = [format substringToIndex:3];
-        static const NSArray *symbolList;
-        symbolList = @[@"***", @"!!!", @"@@@", @"==="];//error, warning
+        NSArray *symbolList = logLevelSymbols;
         NSInteger level = [symbolList indexOfObject:symbol];
         level = level != NSNotFound ? level : 3;
         if (level <= EW_DEBUG_LEVEL) {
@@ -178,7 +177,7 @@ void EWLog(NSString *format, ...){
     
 #else
     //only send to TestFlight on release version
-    TFLog(format, args);
+    TFLog(str);
 #endif
     
 }

@@ -19,6 +19,7 @@
 @interface EWTaskStore : NSObject <NSKeyedArchiverDelegate>
 @property (atomic) BOOL isSchedulingTask;
 @property NSDate *lastChecked;//last checked task with server
+@property NSDate *lastPastTaskChecked;
 
 #pragma mark - Search Task
 /**
@@ -74,6 +75,8 @@
 - (NSArray *)scheduleTasks;
 - (void)scheduleTasksInBackground;
 - (BOOL)checkPastTasks;
+- (void)checkPastTasksInBackgroundWithCompletion:(void (^)(void))block;
+- (BOOL)checkPastTasksInContext:(NSManagedObjectContext *)localContext;
 
 #pragma mark - KVO
 - (void)updateTaskState:(NSNotification *)notif;

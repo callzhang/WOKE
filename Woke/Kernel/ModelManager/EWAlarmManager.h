@@ -29,7 +29,7 @@
 - (NSArray *)alarmsForUser:(EWPerson *)user;
 + (NSArray *)myAlarms;
 //- (EWAlarmItem *)nextAlarm;
-- (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm;
+//- (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm;
 
 // change
 //- (void)setAlarm:(EWAlarmItem *)alarm;
@@ -45,7 +45,7 @@
 
 
 //UTIL
-- (NSDictionary *)getSavedAlarmTime:(EWAlarmItem *)alarm;
+- (NSDateComponents *)getSavedAlarmTime:(EWAlarmItem *)alarm;
 - (void)setSavedAlarmTimes;
 
 @end

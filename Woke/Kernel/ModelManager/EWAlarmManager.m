@@ -100,17 +100,17 @@
 //    return nextA;
 //}
 
-- (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm{
-    if (alarm.tasks.count == 0) {
-        return nil;
-    }else if (alarm.tasks.count == 1){
-        return alarm.tasks.anyObject;
-    }
-    NSMutableArray *tasks = [[alarm.tasks allObjects] mutableCopy];
-    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
-    [tasks sortUsingDescriptors:@[sort]];
-    return tasks[0];
-}
+//- (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm{
+//    if (alarm.tasks.count == 0) {
+//        return nil;
+//    }else if (alarm.tasks.count == 1){
+//        return alarm.tasks.anyObject;
+//    }
+//    NSMutableArray *tasks = [[alarm.tasks allObjects] mutableCopy];
+//    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
+//    [tasks sortUsingDescriptors:@[sort]];
+//    return tasks[0];
+//}
 
 #pragma mark - SCHEDULE
 - (NSArray *)scheduleNewAlarms{
@@ -153,7 +153,7 @@
             }else if (![alarms containsObject:alarm]) {
                 [alarms addObject:alarm];
                 hasChange = YES;
-                NSLog(@"Alarm found from server %@", alarm.time.weekday);
+                NSLog(@"Alarm found from server %@", alarm);
             }
         }
     }
@@ -174,7 +174,7 @@
     for (EWAlarmItem *a in alarms) {
         BOOL good = [EWAlarmManager validateAlarm:a];
         
-        //check time
+        //validate
         if (!good) {
             NSLog(@"Something wrong with alarm %@. Deleted.",[a.time date2detailDateString]);
             [a deleteEntity];
@@ -213,7 +213,7 @@
     
         NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
         EWAlarmItem *a = [self newAlarm];
-        //set time
+        //set weekday
         NSDate *d = [NSDate date];
         NSInteger wkd = [d weekdayNumber];
         NSCalendar *cal = [NSCalendar currentCalendar];//TIMEZONE
@@ -280,29 +280,38 @@
 
 
 #pragma mark - Get/Set alarm to UserDefaults
-- (NSDictionary *)getSavedAlarmTime:(EWAlarmItem *)alarm{
+- (NSDateComponents *)getSavedAlarmTime:(EWAlarmItem *)alarm{
     NSArray *alarmTimes = [self getSavedAlarmTimes];
     NSInteger wkd = [alarm.time weekdayNumber];
     double number = [(NSNumber *)alarmTimes[wkd] doubleValue];
-    NSDictionary *dic = [EWUtil timeFromNumber:number];
-    return dic;
+    NSDateComponents *comp = [[NSDateComponents alloc] init];
+    NSInteger hour = floor(number);
+    NSInteger minute = round((number - hour)*100);
+    comp.hour = hour;
+    comp.minute = minute;
+    return comp;
 }
 
 - (void)setSavedAlarmTimes{
-    NSMutableArray *alarmTimes = [[self getSavedAlarmTimes] mutableCopy];
-    NSArray *alarms = [EWAlarmManager myAlarms];
     
-    for (EWAlarmItem *alarm in alarms) {
-        NSInteger wkd = [alarm.time weekdayNumber];
-        NSCalendar *cal = [NSCalendar currentCalendar];
-        NSDateComponents *comp = [cal components: (NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:alarm.time];
-        double hour = comp.hour;
-        double minute = comp.minute;
-        double number = round(hour*100 + minute)/100.0;
-        [alarmTimes setObject:[NSNumber numberWithDouble:number] atIndexedSubscript:wkd];
-    }
-    
-    [[NSUserDefaults standardUserDefaults] setObject:alarmTimes.copy forKey:kSavedAlarms];
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        NSMutableArray *alarmTimes = [[self getSavedAlarmTimes] mutableCopy];
+        EWPerson *localMe = [me inContext:localContext];
+        NSSet *alarms = localMe.alarms;
+        
+        for (EWAlarmItem *alarm in alarms) {
+            NSInteger wkd = [alarm.time weekdayNumber];
+            NSCalendar *cal = [NSCalendar currentCalendar];
+            NSDateComponents *comp = [cal components: (NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:alarm.time];
+            double hour = comp.hour;
+            double minute = comp.minute;
+            double number = round(hour*100 + minute)/100.0;
+            [alarmTimes setObject:[NSNumber numberWithDouble:number] atIndexedSubscript:wkd];
+        }
+        
+        [[NSUserDefaults standardUserDefaults] setObject:alarmTimes.copy forKey:kSavedAlarms];
+
+    }];
 }
 
 - (NSArray *)getSavedAlarmTimes{
@@ -311,7 +320,7 @@
     //create if not exsit
     if (!alarmTimes) {
         //if asking saved value, the alarm is not scheduled
-        
+        NSLog(@"=== Saved alarm time not found, use default values!");
         alarmTimes = defaultAlarmTimes;
         [defaults setObject:alarmTimes forKey:kSavedAlarms];
         [defaults synchronize];
