@@ -21,6 +21,15 @@ PODS:
   - apptentive-ios (1.5.4):
     - apptentive-ios/arc-files
   - apptentive-ios/arc-files (1.5.4)
+  - CocoaLumberjack (2.0.0-beta):
+    - CocoaLumberjack/CLI
+    - CocoaLumberjack/Core
+    - CocoaLumberjack/Extensions
+  - CocoaLumberjack/CLI (2.0.0-beta):
+    - CocoaLumberjack/Core
+  - CocoaLumberjack/Core (2.0.0-beta)
+  - CocoaLumberjack/Extensions (2.0.0-beta):
+    - CocoaLumberjack/Core
   - DACircularProgress (2.2.0)
   - Facebook-iOS-SDK (3.13.1)
   - GPUImage (0.1.4)
@@ -43,6 +52,7 @@ PODS:
 DEPENDENCIES:
   - AFNetworking
   - apptentive-ios
+  - CocoaLumberjack
   - Facebook-iOS-SDK
   - GPUImage
   - IDMPhotoBrowser
@@ -62,6 +72,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AFNetworking: 47947303319594706f48a55185ea95a95159ab94
   apptentive-ios: f1c0f7c63134837b17a1410b525c8703e7e4bc43
+  CocoaLumberjack: aadc76d7bd6c839ca84b38ed50cbf89d7cf8c693
   DACircularProgress: 3b41941891a56dc6aa17971f5322a9a38a6f446e
   Facebook-iOS-SDK: bc0d0bdf14f64cb7f4d49f8f17d445f49c40d342
   GPUImage: ac2bde5f4dbea02a81ced6313964cec1f2043ca9

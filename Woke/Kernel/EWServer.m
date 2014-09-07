@@ -377,8 +377,8 @@
 {
     
     [FBRequestConnection startForUploadStagingResourceWithImage:image completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-        __block NSString *alertText;
-        __block NSString *alertTitle;
+        //__block NSString *alertText;
+        //__block NSString *alertTitle;
         __block NSString *urlString ;
         if(!error) {
             

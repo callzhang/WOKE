@@ -205,10 +205,8 @@
     EWNotification *notification = [EWNotification findFirstByAttribute:kParseObjectID withValue:notificationID];
     if (!notification) {
         //get from server
-        PFQuery *q = [PFQuery queryWithClassName:@"EWNotification"];
-        [q whereKey:kParseObjectID equalTo:notificationID];
-        q.cachePolicy = kPFCachePolicyCacheElseNetwork;
-        notification = (EWNotification *)[[q getFirstObject] managedObjectInContext:nil];
+        PFObject *PO = [EWDataStore getParseObjectWithClass:@"EWNotification" WithID:notificationID withError:NULL];
+        notification = (EWNotification *)[PO managedObjectInContext:mainContext];
         [notification refresh];
     }
     return notification;

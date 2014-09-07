@@ -78,7 +78,7 @@ EWPerson *me;
     NSParameterAssert([NSThread isMainThread]);
     //ID is username
     if(!ID) return nil;
-    EWPerson *person = [EWPerson findFirstByAttribute:@"objectId" withValue:ID];
+    EWPerson *person = [EWPerson findFirstByAttribute:kParseObjectID withValue:ID];
     
     if (!person){
         //First find user on server
@@ -88,15 +88,10 @@ EWPerson *me;
         }else{
             user = (PFUser *)[EWDataStore getCachedParseObjectForID:ID];
             if (!user) {
-                PFQuery *query = [PFUser query];
-                [query whereKey:kParseObjectID equalTo:ID];
-                [query includeKey:@"friends"];
-                query.cachePolicy = kPFCachePolicyCacheElseNetwork;
-                NSError *error;
-                user = [query findObjects:&error].firstObject;
-                [EWDataStore setCachedParseObject:user];
-                if (error || !user) {
-                    NSLog(@"Failed to find user with ID %@. Reason:%@", ID, error.description);
+                NSError *err;
+                user = (PFUser *)[EWDataStore getParseObjectWithClass:@"EWPerson" WithID:ID withError:&err];
+                if (err || !user) {
+                    NSLog(@"Failed to find user with ID %@. Reason:%@", ID, err.description);
                     return nil;
                 }
             }

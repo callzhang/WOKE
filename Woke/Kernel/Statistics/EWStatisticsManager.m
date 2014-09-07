@@ -173,7 +173,7 @@
 #pragma mark - Update Activity
 + (void)updateTaskActivityCacheWithCompletion:(void (^)(void))block{
     //test
-    //return;
+    //return
     
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *localMe = [me inContext:localContext];

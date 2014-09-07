@@ -88,7 +88,7 @@
 
     
     
-    CGSize fixLabelSize = [self.detail.text  sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
+    CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
     
     self.detail.height = fixLabelSize.height;
     

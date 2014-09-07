@@ -52,7 +52,7 @@
 NSString *const taskCellIdentifier = @"taskCellIdentifier";
 NSString *const profileCellIdentifier = @"ProfileCell";
 NSString *const activitiyCellIdentifier = @"ActivityCell";
-@interface EWPersonViewController()<GKImagePickerDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,IDMPhotoBrowserDelegate>{
+@interface EWPersonViewController()<GKImagePickerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, IDMPhotoBrowserDelegate>{
     NSArray *dates;
 }
 @property (strong,nonatomic)GKImagePicker *imagePicker;
@@ -536,13 +536,30 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 
             }
                 break;
-            case 3://last seen
+            case 3://last seen, get it async
             {
-                NSDate *date = person.updatedAt;
+                __block NSDate *date = person.updatedAt;
                 if (!date) {
-                    date = person.parseObject.updatedAt;
+                    __block UIActivityIndicatorView *loader = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+                    cell.accessoryView = loader;
+                    __block __weak UITableViewCell *blockCell = cell;
+                    [loader startAnimating];
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        date = person.parseObject.updatedAt;
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            blockCell.accessoryView = nil;
+                            [loader stopAnimating];
+                            if (blockCell) {
+                                blockCell.detailTextLabel.text = [NSString stringWithFormat:@"%@ ago", date.timeElapsedString];
+                            }
+                            
+                        });
+                    });
+                    
+                }else{
+                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ ago", date.timeElapsedString];
                 }
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ ago", date.timeElapsedString];
+                
                 break;
             }
             case 4://next task time
@@ -722,13 +739,19 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     if (buttonIndex == 2) {
         
-        [photoBrowser deleteButtonPressed:nil];
-        //If you still want to delete a file, you can do so through the REST API. You will need to provide the master key in order to be allowed to delete a file. Note that the name of the file must be the name in the response of the upload operation, rather than the original filename.
+        if (photoIndex != 0) {
+            
+            [_photos removeObjectAtIndex:photoIndex];
+            [self photoBrowser:photoBrowser detelePhotoAtIndexPath:photoIndex];
+            
+            [photoBrowser performSelector:@selector(photoBrowser:) withObject:0];
+            
+        }else{
+            
+            [[[UIAlertView alloc] initWithTitle:@"" message:@"Can't delete your profile" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+            
+        }
         
-        //curl -X DELETE \
-        //-H "X-Parse-Application-Id: <YOUR_APPLICATION_ID>" \
-        //-H "X-Parse-Master-Key: <YOUR_MASTER_KEY>" \
-        //https://api.parse.com/1/files/<FILE_NAME>
         return ;
     }else if (buttonIndex == 3){
         UIImage *image = [photoBrowser photoAtIndex:photoIndex].underlyingImage;
@@ -747,19 +770,20 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         return;
         
-    }
-    
+    }else{
+        
         _imagePicker = [[GKImagePicker alloc] init];
         _imagePicker.cropSize = CGSizeMake(self.view.frame.size.height-100, self.view.frame.size.width-100);
         _imagePicker.delegate = self;
         _imagePicker.resizeableCropArea = YES;
-//        imagePicker.imagePickerController.allowsEditing = YES;
-
-    //determine upload from library or camera
-    _imagePicker.imagePickerController.sourceType = buttonIndex;
-
-    
-    [photoBrowser presentViewController:_imagePicker.imagePickerController animated:YES completion:^{}];
+        //imagePicker.imagePickerController.allowsEditing = YES;
+        
+        //determine upload from library or camera
+        _imagePicker.imagePickerController.sourceType = buttonIndex;
+        
+        
+        [photoBrowser presentViewController:_imagePicker.imagePickerController animated:YES completion:^{}];
+    }
     
 
 }
@@ -816,7 +840,17 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             
             [_photoBrower.view showSuccessNotification:@"Uploaded"];
             
-            [_photoBrower addPhotoInBrowser:fileUrl];
+            //[_photoBrower addPhotoInBrowser:fileUrl];
+            NSURL *url = [NSURL URLWithString:fileUrl];
+            IDMPhoto *idmPhoto = [IDMPhoto photoWithURL:url];
+            [_photos addObject:idmPhoto];
+            
+            //[self setInitialPageIndex:0];
+            [_photoBrower performSelector:@selector(setInitialPageIndex:) withObject:0];
+            //[self reloadData];
+            [_photoBrower performSelector:@selector(reloadData)];
+            //[self jumpToPageAtIndex:0];
+            [_photoBrower performSelector:@selector(jumpToPageAtIndex:) withObject:0];
         });
         
         
@@ -858,6 +892,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:NULL];
 }
+
 -(void)imagePickerDidCancel:(GKImagePicker *)imagePicker
 {
     [_imagePicker.imagePickerController dismissViewControllerAnimated:YES completion:^(){
@@ -898,14 +933,23 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [_photos addObject:fileUrl];
         
         me.images = _photos;
-//        [EWDataStore save];
+        [EWDataStore save];
         
         [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
         
         [_photoBrower.view showSuccessNotification:@"Uploaded"];
         
-        [_photoBrower addPhotoInBrowser:fileUrl];
-
+        //[_photoBrower addPhotoInBrowser:fileUrl];
+        url = [NSURL URLWithString:fileUrl];
+        IDMPhoto *idmPhoto = [IDMPhoto photoWithURL:url];
+        [_photos addObject:idmPhoto];
+        
+        //[self setInitialPageIndex:0];
+        [_photoBrower performSelector:@selector(setInitialPageIndex:) withObject:0];
+        //[self reloadData];
+        [_photoBrower performSelector:@selector(reloadData)];
+        //[self jumpToPageAtIndex:0];
+        [_photoBrower performSelector:@selector(jumpToPageAtIndex:) withObject:0];
     
     }];
     

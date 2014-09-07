@@ -14,8 +14,9 @@
 #define iOS7 ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0)
 
 #define kAppName                        @"Woke"
-#define kAppVersion                     @"0.7.0"
+#define kAppVersion                     @"0.8.0"
 #define BACKGROUND_TEST
+
 
 #define kCustomWhite                    EWSTR2COLOR(@"#F5F5F5")
 #define kCustomGray                     EWSTR2COLOR(@"48494B")
@@ -29,6 +30,7 @@
 #define kParsePushUrl                   @"https://api.parse.com/1/push"
 #define kParseUploadUrl                 @"https://api.parse.com/1/"
 #define kParseApplicationId             @"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
+#define kParseClientKey                 @"9yfUenOzHJYOTVLIFfiPCt8QOo5Ca8fhU8Yqw9yb"
 #define kParseRestAPIId                 @"lGJTP5XCAq0O3gDyjjRjYtWui6pAJxdyDSTPXzkL"
 #define kParseMasterKey                 @"yTKxNzkIm79nLPyNSycVY3lz32b434bZUu0koGSD"
 #define AWS_ACCESS_KEY_ID               @"AKIAIB2BXKRPL3FCWJYA"
@@ -36,7 +38,7 @@
 #define AWS_SNS_APP_ARN                 @"arn:aws:sns:us-west-2:260520558889:app/APNS_SANDBOX/Woke_Dev"
 #define TESTFLIGHT_ACCESS_KEY           @"e1ffe70a-26bf-4db0-91c8-eb2d1d362cb3"
 #define WokeUserID                      @"CvCaWauseD"
-
+#define KATConnectKey                   @"61c58f4a6f819d0f209606bdf5e9eeadabfc73529dba358cd079df0dc6dd1102"
 
 
 
@@ -51,8 +53,8 @@
 #define TOCK                            NSLog(@"Time: %f", -[startTime timeIntervalSinceNow]);
 
 //Logging
-//#define NSLog   EWLog
-#define NSLog                           LogMessageCompat
+#define NSLog                           EWLog
+//#define NSLog                           DDLogError
 //#define NSLog TFLog
 //#define NSLog(__FORMAT__, ...) TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 

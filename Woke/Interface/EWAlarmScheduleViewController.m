@@ -233,7 +233,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     NSIndexPath *path = [NSIndexPath indexPathForRow:selected inSection:0];
-    EWAlarmEditCell *cell = [self.tableView cellForRowAtIndexPath:path];
+    EWAlarmEditCell *cell = (EWAlarmEditCell *)[self.tableView cellForRowAtIndexPath:path];
     [cell hideKeyboard:cell.statement];
 }
 

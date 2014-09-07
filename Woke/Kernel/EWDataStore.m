@@ -689,7 +689,7 @@ NSManagedObjectContext *mainContext;
     [[NSUserDefaults standardUserDefaults] setObject:[dic copy] forKey:kParseQueueDelete];
 }
 
-
+#pragma mark - Parse helper methods
 + (PFObject *)getCachedParseObjectForID:(NSString *)objectId{
 	PFObject *object = [[EWDataStore sharedInstance].serverObjectPool valueForKey:objectId];
 	if (object) {
@@ -702,6 +702,47 @@ NSManagedObjectContext *mainContext;
 
 + (void)setCachedParseObject:(PFObject *)PO{
 	[[EWDataStore sharedInstance].serverObjectPool setObject:PO forKey:PO.objectId];
+}
+
++ (PFObject *)getParseObjectWithClass:(NSString *)class WithID:(NSString *)ID withError:(NSError **)error{
+	if (ID) {
+		//try to find PO in the pool first
+		//there are some errors that might caused by this cache, disable it for now
+		PFObject *object = [EWDataStore getCachedParseObjectForID:ID];
+		
+		NSEntityDescription *entity = [NSEntityDescription entityForName:class inManagedObjectContext:mainContext];
+		
+		//if not found, then download
+		if (!object || !object.isDataAvailable) {
+			//fetch from server if not found
+			//or if PO doesn't have data avaiable
+			//or if PO is older than MO
+			PFQuery *q = [PFQuery queryWithClassName:entity.serverClassName];
+			[q whereKey:kParseObjectID equalTo:ID];
+			q.cachePolicy = kPFCachePolicyCacheElseNetwork;
+			
+			[entity.relationshipsByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
+				if (obj.isToMany && !obj.inverseRelationship) {
+					[q includeKey:key];
+				}
+			}];
+			if (q.hasCachedResult || [EWDataStore isReachable]) {
+				object = [q getFirstObject:error];
+			}
+			
+			if (object) {
+				//save to queue
+				[[EWDataStore sharedInstance].serverObjectPool setObject:object forKey:ID];
+			}
+			
+		}
+		
+		return object;
+	}
+	
+	NSLog(@"!!! ParseObjectID not exist, upload first!");
+	return nil;
+
 }
 
 #pragma mark - ============== Parse Server methods ==============
@@ -1156,52 +1197,19 @@ NSManagedObjectContext *mainContext;
 }
 
 - (PFObject *)getParseObjectWithError:(NSError **)err{
-    NSString *parseObjectId = self.serverID;
     
-    if (parseObjectId) {
-		//try to find PO in the pool first
-		//there are some errors that might caused by this cache, disable it for now
-		PFObject *object;// = [EWDataStore getCachedParseObjectForID:self.serverID];
+	PFObject *PO = [EWDataStore getParseObjectWithClass:self.entity.name WithID:self.serverID withError:err];
+	if (!PO.isDataAvailable && *err) {
+		if ((*err).code == kPFErrorObjectNotFound && [EWDataStore isReachable]) {
+			NSLog(@"*** PO %@(%@) doesn't exist on server", self.entity.serverClassName, self.serverID);
+			[self setValue:nil forKeyPath:kParseObjectID];
+		}else{
+			NSLog(@"*** Failed to get PO(%@) from server. %@", self.serverID, *err);
+		}
 		
-		//if not found, then download
-		if (!object || !object.isDataAvailable) {
-			//fetch from server if not found
-			//or if PO doesn't have data avaiable
-			//or if PO is older than MO
-			PFQuery *q = [PFQuery queryWithClassName:self.entity.serverClassName];
-			[q whereKey:kParseObjectID equalTo:parseObjectId];
-			q.cachePolicy = kPFCachePolicyCacheElseNetwork;
-			[self.entity.relationshipsByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
-				if (obj.isToMany && !obj.inverseRelationship) {
-					[q includeKey:key];
-				}
-			}];
-			
-			object = [q getFirstObject:err];
-			if (object) {
-				//save to queue
-				[[EWDataStore sharedInstance].serverObjectPool setObject:object forKey:parseObjectId];
-			}
-			
-		}
-        
-		if (!object.isDataAvailable && *err) {
-			if ((*err).code == kPFErrorObjectNotFound) {
-				NSLog(@"*** PO %@(%@) doesn't exist on server", self.entity.serverClassName, self.serverID);
-				[self setValue:nil forKeyPath:kParseObjectID];
-			}else{
-				NSLog(@"*** Failed to get PO(%@) from server. %@", self.serverID, *err);
-			}
-			
-			return nil;
-		}
-        return object;
-    }else{
-        NSLog(@"!!! ParseObjectID not exist, upload first!");
-        return nil;
-    }
-    
-    return nil;
+		return nil;
+	}
+    return PO;
 }
 
 - (void)createParseObjectWithCompletion:(void (^)(void))block {
@@ -1759,6 +1767,8 @@ NSManagedObjectContext *mainContext;
                 }
             }
         }else{
+			//Optional
+			return;
             //empty related object, delete PO relationship
 			//I doubt if we really need to delete inverse relation
             if ([self valueForKey:key]) {
@@ -1774,7 +1784,7 @@ NSManagedObjectContext *mainContext;
                 if (inverseRelation.isToMany) {
                     //inverse to-many relation need to be updated
                     [inversePO fetchIfNeeded];
-                    PFRelation *inversePFRelation = inversePO[inverseRelation.name];
+                    PFRelation *inversePFRelation = [inversePO relationForKey:inverseRelation.name];
                     [inversePFRelation removeObject:self];
                     [inversePO save:nil];
                     NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);

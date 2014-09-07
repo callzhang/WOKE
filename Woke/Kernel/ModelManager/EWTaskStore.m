@@ -176,9 +176,7 @@
     if (!task) {
         PFObject *PO = [EWDataStore getCachedParseObjectForID:taskID];
         if (!PO) {
-            PFQuery *q = [PFQuery queryWithClassName:@"EWTaskItem"];
-            [q whereKey:kParseObjectID equalTo:taskID];
-            PO = [q getFirstObject];
+            PO = [EWDataStore getParseObjectWithClass:@"EWTaskItem" WithID:taskID withError:nil];
         }
         
         task = (EWTaskItem *)[PO managedObjectInContext:nil];

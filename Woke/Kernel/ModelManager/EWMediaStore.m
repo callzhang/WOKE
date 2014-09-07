@@ -102,10 +102,7 @@
     EWMediaItem *media = [EWMediaItem MR_findFirstByAttribute:kParseObjectID withValue:mediaID];
     if (!media) {
         //get from server
-        PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
-        [query whereKey:kParseObjectID equalTo:mediaID];
-        [query includeKey:@"receivers"];
-        PFObject *object = [query getFirstObject];
+        PFObject *object = [EWDataStore getParseObjectWithClass:@"EWMediaItem" WithID:mediaID withError:NULL];
         media = (EWMediaItem *)[object managedObjectInContext:nil];
         [media refresh];
     }

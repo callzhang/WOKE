@@ -533,7 +533,7 @@
     //delay 3s
     NSLog(@"Delay 3s to play next cell");
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (!next || [AVManager sharedManager].player.playing) {
+        if (!next /* || [AVManager sharedManager].player.playing*/) {
             return;
         }
         //get cell
@@ -545,7 +545,8 @@
         if (cell) {
             [[AVManager sharedManager] playForCell:cell];
         }else{
-            [self playNextCell];
+            //[self playNextCell];
+            [[AVManager sharedManager] playMedia:medias[path.row]];
         }
         
     });

@@ -136,8 +136,12 @@ typedef void (^EWSavingCallback)(void);
  */
 + (void)addSaveCallback:(PFObjectResultBlock)callback forManagedObjectID:(NSManagedObjectID *)objectID;
 
+#pragma mark - Parse helper methods
+
 + (PFObject *)getCachedParseObjectForID:(NSString *)parseID;
 + (void)setCachedParseObject:(PFObject *)PO;
++ (PFObject *)getParseObjectWithClass:(NSString *)class WithID:(NSString *)ID withError:(NSError **)error;
+
 @end
 
 

@@ -60,7 +60,7 @@
     
     /* iOS 7 */
     //BOOL visible = !self.hidden && self.superview != nil;
-    BOOL animating = self.layer.animationKeys != nil;
+    //BOOL animating = self.layer.animationKeys != nil;
     BOOL success = YES;
     if ([self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]){
         //only works when visible

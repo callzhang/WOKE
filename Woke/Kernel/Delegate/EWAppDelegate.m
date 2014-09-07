@@ -43,6 +43,7 @@ UIViewController *rootViewController;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 #ifdef DEBUG
+    //log to local cache file
     EWLogInit();
 #endif
     
@@ -50,12 +51,12 @@ UIViewController *rootViewController;
     [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     [TestFlight manuallyStartSession];
+    
     // appetitive
-    [ATConnect sharedConnection].apiKey = @"61c58f4a6f819d0f209606bdf5e9eeadabfc73529dba358cd079df0dc6dd1102";
+    [ATConnect sharedConnection].apiKey = KATConnectKey;
     
     //Parse
-    [Parse setApplicationId:@"p1OPo3q9bY2ANh8KpE4TOxCHeB6rZ8oR7SrbZn6Z"
-                  clientKey:@"9yfUenOzHJYOTVLIFfiPCt8QOo5Ca8fhU8Yqw9yb"];
+    [Parse setApplicationId:kParseApplicationId clientKey:kParseClientKey];
     //Analytics
     if (application.applicationState != UIApplicationStateBackground) {
         // Track an app open here if we launch with a push, unless
