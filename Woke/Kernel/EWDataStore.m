@@ -504,11 +504,11 @@ NSManagedObjectContext *mainContext;
 	//first see if cached PO exist
 	PFObject *po = [EWDataStore getCachedParseObjectForID:mo.serverID];
 	if (po.ACL != nil) {
-		BOOL write = [po.ACL getWriteAccessForUser:[PFUser currentUser]];
+		BOOL write = [po.ACL getWriteAccessForUser:[PFUser currentUser]] || [po.ACL getPublicWriteAccess];
 		return write;
 	}
 	
-	//if not cached, use MO to determine
+	//if no ACL, use MO to determine
 	EWPerson *p;
 	if ([mo respondsToSelector:@selector(owner)]) {
 		p = [mo valueForKey:@"owner"];
@@ -523,13 +523,7 @@ NSManagedObjectContext *mainContext;
 		p = (EWPerson *)mo;
 	}else{
 		//if not, use PO from server
-		po = [mo getParseObjectWithError:NULL];
-		if (po.ACL != nil) {
-			BOOL write = [po.ACL getWriteAccessForUser:[PFUser currentUser]];
-			return write;
-		}else{
-			return YES;
-		}
+		return YES;
 	}
 	
 	if (p.isMe){
