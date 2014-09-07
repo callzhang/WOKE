@@ -179,7 +179,7 @@ NSManagedObjectContext *mainContext;
 	[[EWAlarmManager sharedInstance] scheduleAlarm];
 	
 	NSLog(@"3. Check past task activity");
-	[EWStatisticsManager updateTaskActivityCacheWithCompletion:NULL];
+	[[EWTaskStore sharedInstance] checkPastTasks];
 	
     NSLog(@"4. Check my unread media");
     [[EWMediaStore sharedInstance] checkMediaAssetsInBackground];

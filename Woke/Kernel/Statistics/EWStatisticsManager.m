@@ -182,6 +182,7 @@
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
         NSMutableDictionary *activity = [cache[kTaskActivityCache] mutableCopy]?:[NSMutableDictionary new];
         if (activity.count == tasks.count) {
+            NSLog(@"=== cached task activities count is same as past task count (%ld)", (long)tasks.count);
             return;
         }
         
@@ -247,7 +248,7 @@
         cache[kTaskActivityCache] = [activity copy];
         localMe.cachedInfo = [cache copy];
         
-        NSLog(@"Task activity cache: %@", activity);
+        NSLog(@"Task activity cache updated with %d records", activity.count);
 
     } completion:^(BOOL success, NSError *error) {
         NSLog(@"Finished updating task activity cache");

@@ -809,7 +809,7 @@
             
         } else {
             //prevent updating too fast
-            if(lastUpdated.timeElapsed < 0.2 ){
+            if(lastUpdated && lastUpdated.timeElapsed < 1 ){
                 return;
             }
             

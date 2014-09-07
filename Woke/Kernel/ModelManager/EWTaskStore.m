@@ -394,10 +394,10 @@
         [pastTasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
         EWTaskItem *latestTask = pastTasks.firstObject;
         if (latestTask.time.timeElapsed > 3600*24) {
-            NSLog(@"Checking past tasks but the latest task is outdated: %@", latestTask.time);
+            NSLog(@"=== Checking past tasks but the latest task is outdated: %@", latestTask.time);
             if([EWDataStore isReachable]){
                 //get from server
-                NSLog(@"Fetch past task from server for %@", localMe.name);
+                NSLog(@"=== Fetch past task from server for %@", localMe.name);
                 PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
                 //[query whereKey:@"time" lessThan:[[NSDate date] timeByAddingMinutes:-kMaxWakeTime]];
                 //[query whereKey:@"state" equalTo:@YES];
@@ -902,7 +902,7 @@
 }
 
 + (void)scheduleSleepNotificationForTask:(EWTaskItem *)task{
-    NSNumber *duration = me.preference[@"SleepDuration"];
+    NSNumber *duration = me.preference[kSleepDuration];
     float d = duration.floatValue;
     NSDate *sleepTime = [task.time dateByAddingTimeInterval:-d*3600];
     

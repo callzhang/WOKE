@@ -76,18 +76,11 @@
         NSLog(@"==================> Reactivated Woke <======================");
         EWAlert(@"You brought me back to life!");
     }else if ([type isEqualToString:kLocalNotificationTypeSleepTimer]){
-        NSLog(@"Entering sleep mode...");
-        if (me) {
-            //logged in enter sleep mode
-            EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
-            [rootViewController presentViewControllerWithBlurBackground:controller];
-        }else{
-            [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
-                EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
-                [rootViewController presentViewControllerWithBlurBackground:controller];
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kPersonLoggedIn object:nil];
-            }];
-        }
+        NSLog(@"=== Received Sleep timer local notification, broadcasting sleep event, and enter sleep mode... \n%@", notification);
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kSleepNotification object:notification];
+        
+        [EWWakeUpManager handleSleepTimerEvent];
     }
     else{
         NSLog(@"Unexpected Local Notification Type. Detail: %@", notification);

@@ -739,18 +739,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     
     if (buttonIndex == 2) {
         
-        if (photoIndex != 0) {
-            
-            [_photos removeObjectAtIndex:photoIndex];
-            [self photoBrowser:photoBrowser detelePhotoAtIndexPath:photoIndex];
-            
-            [photoBrowser performSelector:@selector(photoBrowser:) withObject:0];
-            
-        }else{
-            
-            [[[UIAlertView alloc] initWithTitle:@"" message:@"Can't delete your profile" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-            
-        }
+        [photoBrowser deleteButtonPressed:nil];
         
         return ;
     }else if (buttonIndex == 3){
@@ -840,17 +829,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             
             [_photoBrower.view showSuccessNotification:@"Uploaded"];
             
-            //[_photoBrower addPhotoInBrowser:fileUrl];
-            NSURL *url = [NSURL URLWithString:fileUrl];
-            IDMPhoto *idmPhoto = [IDMPhoto photoWithURL:url];
-            [_photos addObject:idmPhoto];
-            
-            //[self setInitialPageIndex:0];
-            [_photoBrower performSelector:@selector(setInitialPageIndex:) withObject:0];
-            //[self reloadData];
-            [_photoBrower performSelector:@selector(reloadData)];
-            //[self jumpToPageAtIndex:0];
-            [_photoBrower performSelector:@selector(jumpToPageAtIndex:) withObject:0];
+            [_photoBrower addPhotoInBrowser:fileUrl];
         });
         
         
@@ -939,17 +918,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         [_photoBrower.view showSuccessNotification:@"Uploaded"];
         
-        //[_photoBrower addPhotoInBrowser:fileUrl];
-        url = [NSURL URLWithString:fileUrl];
-        IDMPhoto *idmPhoto = [IDMPhoto photoWithURL:url];
-        [_photos addObject:idmPhoto];
-        
-        //[self setInitialPageIndex:0];
-        [_photoBrower performSelector:@selector(setInitialPageIndex:) withObject:0];
-        //[self reloadData];
-        [_photoBrower performSelector:@selector(reloadData)];
-        //[self jumpToPageAtIndex:0];
-        [_photoBrower performSelector:@selector(jumpToPageAtIndex:) withObject:0];
+        [_photoBrower addPhotoInBrowser:fileUrl];
     
     }];
     

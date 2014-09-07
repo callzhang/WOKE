@@ -210,6 +210,7 @@ const BOOL BACKGROUNDING_FROM_START = YES;
     
     //alarm timer check
     [EWWakeUpManager alarmTimerCheck];
+    [EWWakeUpManager sleepTimerCheck];
 }
 
 

@@ -56,7 +56,7 @@
 }
 
 - (void)setMedia:(EWMediaItem *)m{
-    NSParameterAssert(m);
+    if (!m) return;
     media = m;
     if ([media.type isEqualToString:kMediaTypeBuzz]) {
         self.mediaBar.hidden = YES;

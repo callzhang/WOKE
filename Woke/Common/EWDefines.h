@@ -82,6 +82,10 @@
 #define kSocialLevelFriendCircle        @"Friend_Circle"
 #define kSocialLevelEveryone            @"Everyone"
 
+//sleep
+#define kSleepDuration                  @"SleepDuration"
+#define kBedTimeNotification            @"BedTimeNotification"
+
 //user defaults key
 #define kPushTokenDicKey                @"push_token_dic" //the key for local defaults to get the array of tokenByUser dict
 #define kUserLoggedInUserKey            @"user"
@@ -93,6 +97,7 @@
 #pragma mark - User / External events
 //App wide events
 #define kWokeNotification               @"woke"
+#define kSleepNotification              @"Sleep"
 #define kNewBuzzNotification            @"buzz_event"
 #define kNewMediaNotification           @"media_event" //key: task & media
 #define kNewTimerNotification           @"alarm_timer"

@@ -140,44 +140,47 @@ void EWLog(NSString *format, ...){
     
     va_list args;
     va_start(args, format);
-    //NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
+    NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
     va_end(args);
     
-
-    
 #ifdef DEBUG
-    //dispatch to NSLOG
-    NSString *symbol = [format substringToIndex:3];
-    static const NSArray *symbolList;
-    symbolList = @[@"***", @"!!!"];//error, warning
-    NSInteger level = [symbolList indexOfObject:symbol];
-    level = level != NSNotFound ? level : 3;
-    if (level <= EW_DEBUG_LEVEL) {
-        //LogMessageF(__FILE__,__LINE__,__FUNCTION__, @"Woke", level, @"%@", str);
-        switch (level) {
-            case 0://fatal
-                DDLogError(format, args);
-                break;
-            case 1:
-                DDLogWarn(format, args);
-                break;
-            case 2:
-                DDLogInfo(format, args);
-                break;
-            case 3:
-                DDLogDebug(format, args);
-                break;
-            case 4:
-                DDLogVerbose(format, args);
-                break;
-            default:
-                break;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //dispatch to NSLOG
+        NSString *symbol = [format substringToIndex:3];
+        static const NSArray *symbolList;
+        symbolList = @[@"***", @"!!!", @"@@@", @"==="];//error, warning
+        NSInteger level = [symbolList indexOfObject:symbol];
+        level = level != NSNotFound ? level : 3;
+        if (level <= EW_DEBUG_LEVEL) {
+            //LogMessageF(__FILE__,__LINE__,__FUNCTION__, @"Woke", level, @"%@", str);
+            switch (level) {
+                case 0://fatal
+                    DDLogError(str);
+                    break;
+                case 1:
+                    DDLogWarn(str);
+                    break;
+                case 2:
+                    DDLogInfo(str);
+                    break;
+                case 3:
+                    DDLogDebug(str);
+                    break;
+                case 4:
+                    DDLogVerbose(str);
+                    break;
+                default:
+                    break;
+            }
         }
-    }
+
+    });
+    
 #else
     //only send to TestFlight on release version
     TFLog(format, args);
 #endif
+    
 }
 
 void EWLogInit(){

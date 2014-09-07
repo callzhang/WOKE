@@ -11,9 +11,6 @@
 #import "EWRingtoneSelectionViewController.h"
 #import "EWViewController.h"
 
-#define kSleepDuration          @"SleepDuration"
-#define kBedTimeNotification    @"BedTimeNotification"
-
 typedef enum {
     settingGroupProfile,
     settingGroupPreference,

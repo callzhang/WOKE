@@ -26,6 +26,7 @@
 
 //UI
 #import "EWWakeUpViewController.h"
+#import "EWSleepViewController.h"
 
 
 @interface EWWakeUpManager()
@@ -443,6 +444,41 @@
     
 }
 
++ (void)sleepTimerCheck{
+    //check time
+    if (!me) return;
+    EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+    if (task.state == NO) return;
+    
+    //alarm time up
+    NSNumber *sleepDuration = me.preference[kSleepDuration];
+    NSInteger durationInSeconds = sleepDuration.integerValue * 3600;
+    NSTimeInterval timeLeft = [task.time timeIntervalSinceNow] + durationInSeconds;
+    NSLog(@"===========================>> Check Sleep Timer (%ld min left) <<=============================", (NSInteger)timeLeft/60);
+    static BOOL timerInitiated = NO;
+    if (timeLeft < kServerUpdateInterval && timeLeft > 0 && !timerInitiated) {
+        NSLog(@"%s: About to init alart timer in %fs", __func__, timeLeft);
+        timerInitiated = YES;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [EWWakeUpManager handleSleepTimerEvent];
+        });
+    }
+}
 
++ (void)handleSleepTimerEvent{
+    
+    
+    if (me) {
+        //logged in enter sleep mode
+        EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
+        [rootViewController presentViewControllerWithBlurBackground:controller];
+    }else{
+        [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
+            EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
+            [rootViewController presentViewControllerWithBlurBackground:controller];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:kPersonLoggedIn object:nil];
+        }];
+    }
+}
 
 @end
