@@ -70,18 +70,17 @@
         return;
     }
     
-    
     // init label
-    self.name = [[UILabel alloc] initWithFrame:CGRectMake(-20, 60, 120, 21)];
-    self.name.textAlignment = NSTextAlignmentCenter;
-    self.name.backgroundColor = [UIColor clearColor];
-    self.name.font = [UIFont systemFontOfSize:13.0];
-    self.name.textColor  = [UIColor whiteColor];
+//    self.name = [[UILabel alloc] initWithFrame:CGRectMake(-20, 60, 120, 21)];
+//    self.name.textAlignment = NSTextAlignmentCenter;
+//    self.name.backgroundColor = [UIColor clearColor];
+//    self.name.font = [UIFont systemFontOfSize:13.0];
+//    self.name.textColor  = [UIColor whiteColor];
    
     _person = person;
     [self addSubview:self.name];
     //init state
-    self.image.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
+    //self.image.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
     self.name.alpha = 0;
     self.selection.hidden = YES;
     self.initial.hidden = YES;
@@ -101,12 +100,15 @@
         self.initial.hidden = NO;
         self.initial.text = @"YOU";
     }else if(self.showName){
-        [UIView animateWithDuration:0.2 animations:^{
-            self.name.alpha = 1;
-            CGRect frame = self.name.frame;
-            frame.origin.y += 20;
-            self.name.frame = frame;
-        }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [UIView animateWithDuration:0.2 animations:^{
+                self.name.alpha = 1;
+                CGRect frame = self.name.frame;
+                frame.origin.y += 20;
+                self.name.frame = frame;
+            }];
+        });
+        
     }
     
     
@@ -123,8 +125,9 @@
     //time
     NSDate *time = _person.cachedInfo[kNextTaskTime];
     if (time) {
-        self.time.text = [time timeLeft];
+        
         if (self.showTime) {
+            self.time.text = [time timeLeft];
             self.time.alpha = 1;
         }
     }else{
@@ -138,7 +141,7 @@
         CLLocation *loc1 = _person.lastLocation;
         self.distance = [loc0 distanceFromLocation:loc1]/1000;
     }
-    if (self.showDistance && self.distance) {
+    if (self.showDistance && self.distance && !time) {
         self.km.text = [NSString stringWithFormat:@"%.1fkm", _distance];
     }
     

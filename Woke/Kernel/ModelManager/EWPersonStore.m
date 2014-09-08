@@ -107,8 +107,6 @@ EWPerson *me;
             NSLog(@"Person %@ created from PO", user[@"name"]);
         }
         
-    }else{
-        NSLog(@"Me %@ data has FETCHED", person.name);
     }
     
     return person;

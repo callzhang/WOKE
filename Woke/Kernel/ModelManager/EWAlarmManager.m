@@ -223,10 +223,9 @@
         
         //get time
         a.time = time;//set the time first so we can get the saved time in next line
-        NSDictionary *timeDic = [self getSavedAlarmTime:a];
-        comp = [cal components: (NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit |NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:time];
-        comp.hour = [(NSNumber *)timeDic[@"hour"] intValue];
-        comp.minute = [(NSNumber *)timeDic[@"minute"] intValue];
+        NSDateComponents *timecomp = [self getSavedAlarmTimeOnWeekday:time.weekdayNumber];
+        comp.hour = timecomp.hour;
+        comp.minute = timecomp.minute;
         time = [cal dateFromComponents:comp];//set time
         //set alarm time
         a.time = time;
@@ -280,15 +279,15 @@
 
 
 #pragma mark - Get/Set alarm to UserDefaults
-- (NSDateComponents *)getSavedAlarmTime:(EWAlarmItem *)alarm{
+- (NSDateComponents *)getSavedAlarmTimeOnWeekday:(NSInteger)wkd{
     NSArray *alarmTimes = [self getSavedAlarmTimes];
-    NSInteger wkd = [alarm.time weekdayNumber];
     double number = [(NSNumber *)alarmTimes[wkd] doubleValue];
     NSDateComponents *comp = [[NSDateComponents alloc] init];
     NSInteger hour = floor(number);
     NSInteger minute = round((number - hour)*100);
     comp.hour = hour;
     comp.minute = minute;
+    NSLog(@"Get alarm time %d:%d for weekday %d", hour, minute, wkd);
     return comp;
 }
 

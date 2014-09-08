@@ -57,11 +57,7 @@
    
     myStatement = self.task.statement;
     
-    if (myStatement == nil || [myStatement isEqualToString:@""] ) {
-        self.statement.text = @"I want to hear a funny song about burrito...";
-    }
-    else
-        self.statement.text = myStatement;
+    self.statement.text = myStatement;
     
     
     //view

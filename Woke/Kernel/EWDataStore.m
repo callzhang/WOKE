@@ -26,7 +26,7 @@
 #define kServerTransformClasses             @{@"EWPerson": @"_User"} //localClass: serverClass
 #define kUserClass                          @"EWPerson"
 //#define classSkipped                        @[@"EWPerson"]
-#define attributeUploadSkipped              @[kParseObjectID, kUpdatedDateKey, kUpdatedDateKey, @"score"]
+#define attributeUploadSkipped              @[kParseObjectID, kUpdatedDateKey, @"score"]
 
 //============ Global shortcut to main context ===========
 NSManagedObjectContext *mainContext;
@@ -1247,7 +1247,7 @@ NSManagedObjectContext *mainContext;
 	
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
     if (!parseObjectId) {
-        NSLog(@"+++> Insert MO %@ from refresh", self.entity.name);
+        NSLog(@"When refreshing, MO missing serverID %@, prepare to upload", self.entity.name);
         [self updateEventually];
         [EWDataStore save];
         if (block) {
@@ -1356,7 +1356,7 @@ NSManagedObjectContext *mainContext;
 }
 
 - (void)refreshShallowWithCompletion:(void (^)(void))block{
-    if (![EWDataStore sharedInstance].reachability.isReachable) {
+    if (![EWDataStore isReachable]) {
 		NSLog(@"Network not reachable, refresh later.");
 		//refresh later
 		[self refreshEventually];
@@ -1416,8 +1416,10 @@ NSManagedObjectContext *mainContext;
         NSLog(@"Shallow refreshed MO %@(%@) in backgound", PO.parseClassName, PO.objectId);
         
     }completion:^(BOOL success, NSError *error) {
-        
-        block();
+		if (block) {
+			block();
+		}
+		
         
     }];
     
@@ -1705,7 +1707,7 @@ NSManagedObjectContext *mainContext;
 						PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:relatedManagedObject.entity.serverClassName objectId:parseID];
                         //[relatedParseObject fetchIfNeeded];
                         [parseRelation addObject:relatedParseObject];
-						NSLog(@"+++> To-many relation on PO %@(%@)->%@(%@) added when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, relatedParseObject.objectId);
+						//NSLog(@"+++> To-many relation on PO %@(%@)->%@(%@) added when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, relatedParseObject.objectId);
                         
                     } else {
                         __block PFObject *blockObject = self;
@@ -1745,7 +1747,7 @@ NSManagedObjectContext *mainContext;
                 if (parseID) {
                     PFObject *relatedPO = [relatedMO getParseObjectWithError:NULL];//TODO: test if we can use empty PO
                     [self setObject:relatedPO forKey:key];
-					NSLog(@"+++> To-one relation on PO %@(%@)->%@(%@) added when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, relatedPO.objectId);
+					//NSLog(@"+++> To-one relation on PO %@(%@)->%@(%@) added when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, relatedPO.objectId);
                 }else{
                     //MO doesn't have parse id, save to parse
                     __block PFObject *blockObject = self;

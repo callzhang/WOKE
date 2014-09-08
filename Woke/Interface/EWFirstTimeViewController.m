@@ -6,18 +6,18 @@
 //  Copyright (c) 2014年 WokeAlarm.com. All rights reserved.
 //
 
-#import "EWUIUtil.h"
 #import "EWAppDelegate.h"
+#import "MYBlurIntroductionView.h"
+#import "MYIntroductionPanel.h"
+//#import "EWLogInViewController.h"
 #import "EWUserManagement.h"
-#import "../../Components/MYBlurIntroductionView/MYBlurIntroductionView.h"
-#import "../../Components/MYBlurIntroductionView/MYIntroductionPanel.h"
-
 #import "EWFirstTimeViewController.h"
 
 @interface EWFirstTimeViewController ()<MYIntroductionDelegate>
 {
     MYBlurIntroductionView *introductionView;
-    int  _lastIndex ;
+    NSInteger  _lastIndex ;
+    //EWLogInViewController *loginController;
 }
 @end
 
@@ -59,9 +59,12 @@
         MYIntroductionPanel *panel5 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) nibNamed:@"LoginView"];
 
     
+    panel5.backgroundColor = [UIColor clearColor];
     UIButton *loginButton = (UIButton *)[panel5 viewWithTag:99];
-    [loginButton addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
     UIButton *alertButton = (UIButton *)[panel5 viewWithTag:98];
+    
+    //loginController = [[EWLogInViewController alloc] init];
+    [loginButton addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
     [alertButton addTarget:self action:@selector(whyFacebookAlert:) forControlEvents:UIControlEventTouchUpInside];
         //Add custom attributes
         //        panel3.PanelTitle = @"Test Title";
@@ -72,63 +75,66 @@
         //    //Feel free to customize your introduction view here
         //
         //    //Add panels to an array
-        NSArray *panels = @[panel1, panel2,panel3,panel4,panel5];
-        _lastIndex = [panels count] - 1;
+    NSArray *panels = @[panel1, panel2,panel3,panel4,panel5];
+    _lastIndex = [panels count] - 1;
         //
         //    //Build the introduction with desired panels
         [introductionView buildIntroductionWithPanels:panels];
     
 //        [introductionView ]
-        [self.view addSubview:introductionView];
-        [self.view bringSubviewToFront:introductionView];
-        
-        [EWUtil setFirstTimeLoginOver];
+    [self.view addSubview:introductionView];
+    [self.view bringSubviewToFront:introductionView];
     
-//     [EWUtil setFirstTimeLoginOver];
-    // Do any additional setup after loading the view from its nib.
+    [EWUtil setFirstTimeLoginOver];
     
 }
--(void)introduction:(MYBlurIntroductionView *)introductionView didFinishWithType:(MYFinishType)finishType
-{
+
+
+-(void)introduction:(MYBlurIntroductionView *)introductionView didFinishWithType:(MYFinishType)finishType{
     [self didPressSkipButton];
 }
 
--(void)didPressSkipButton
-{
+-(void)didPressSkipButton{
     [introductionView changeToPanelAtIndex:_lastIndex];
     [introductionView.MasterScrollView setScrollEnabled:NO ];
     [introductionView.RightSkipButton setHidden:YES];
     [introductionView.PageControl setHidden:YES];
 }
+
+
 -(void)introduction:(MYBlurIntroductionView *)introductionView didChangeToPanel:(MYIntroductionPanel *)panel withIndex:(NSInteger)panelIndex
 {
     if (panelIndex == _lastIndex) {
         [self didPressSkipButton];
     }
 }
+
+
 #pragma mark - ButtonPressed
 -(void)login:(id)sender
 {
-    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+    //[self.indicator startAnimating];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    //
-    
-    
-    //leaving
-    [self dismissViewControllerAnimated:YES completion:NULL];
     
     [EWUserManagement loginParseWithFacebookWithCompletion:^{
-        //update UI
-//        [self updateView];//notification also used
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         
-        
+        //leaving
+        [rootViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }];
-
+    
 }
 -(void)whyFacebookAlert:(id)sender
 {
-    
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"Why Facebook?"
+                                                     message:@"Lorem ipsum dolor sit amet,\nconsectertur adipisicing elit,sed do\neiusmod tempor incididunt ut\n labore et dolore magna aliqua Ut enim ad minim veniam."
+                                                    delegate:nil
+                                           cancelButtonTitle:@"OK"
+                                           otherButtonTitles: nil];
+    [alertV show];
 }
+
 
 - (void)didReceiveMemoryWarning
 {

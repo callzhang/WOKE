@@ -45,7 +45,7 @@
 
 
 //UTIL
-- (NSDateComponents *)getSavedAlarmTime:(EWAlarmItem *)alarm;
+- (NSDateComponents *)getSavedAlarmTimeOnWeekday:(NSInteger)wkd;
 - (void)setSavedAlarmTimes;
 
 @end

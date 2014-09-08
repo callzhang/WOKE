@@ -53,6 +53,12 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //add task observer
     [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
+    [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)dealloc{
+    [[EWTaskStore sharedInstance] removeObserver:self forKeyPath:@"isSchedulingTask"];
+    [me removeObserver:self forKeyPath:@"tasks"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
@@ -72,6 +78,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             }
         });
         
+    }else if (object == me){
+        [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
+        [self initData];
+        [self.tableView reloadData];
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     }
 }
 
@@ -113,8 +124,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         }
 
         //time
-        if (![cell.myTime isEqual:task.time]) {
-            NSAssert(cell.myTime.weekdayNumber == alarm.time.weekdayNumber, @"Updating time to wrong alarm. (cell:%@, alarm:%@ and task:%@", cell.myTime, alarm.time, task.time);
+        if (cell.myTime && ![cell.myTime isEqualToDate:task.time]) {
+            if (cell.myTime.weekdayNumber != alarm.time.weekdayNumber) {
+                NSLog(@"!!! Updating time to wrong alarm. (cell:%@, alarm:%@ and task:%@)", cell.myTime, alarm.time, task.time);
+            }
+            
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
             alarm.time = cell.myTime;
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];

@@ -67,13 +67,6 @@ typedef void (^EWSavingCallback)(void);
 
 + (EWDataStore *)sharedInstance;
 
-
-
-/**
- * Register the server update process, which will run periodically to sync with server data
- */
-- (void)registerServerUpdateService;
-
 #pragma mark - CoreData
 + (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context withID:(NSManagedObjectID *)objectID ;
 //+ (NSManagedObjectContext *)mainContext;

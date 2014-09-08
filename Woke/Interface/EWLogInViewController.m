@@ -47,9 +47,9 @@
 - (void)updateView {
 
     if (FBSession.activeSession.state == FBSessionStateOpen || FBSession.activeSession.state == FBSessionStateOpenTokenExtended) {
-//        [self.btnLoginLogout setTitle:@"Log out" forState:UIControlStateNormal];
+        [self.btnLoginLogout setTitle:@"Log out" forState:UIControlStateNormal];
     } else {
-//        [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
+        [self.btnLoginLogout setTitle:@"Login with Facebook" forState:UIControlStateNormal];
     }
     
     [self.indicator stopAnimating];
@@ -104,17 +104,13 @@
     //[self.indicator startAnimating];
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     
-    //
-    
-      
-    //leaving
-    [self dismissViewControllerAnimated:YES completion:NULL];
     
     [EWUserManagement loginParseWithFacebookWithCompletion:^{
         //update UI
         [self updateView];//notification also used
         
-        
+        //leaving
+        [rootViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }];
     
 }

@@ -41,13 +41,21 @@
 }
 
 - (void)setNotification:(EWNotification *)notification{
-  
+    _notification = notification;
     self.detail.frame = CGRectMake(61, 8, 250, 35);
     self.time.frame = CGRectMake(61, 47, 181, 15);
-
+    
 
     //time
-    self.time.text = [notification.createdAt.timeElapsedString stringByAppendingString:@" ago"];
+    if (notification.createdAt) {
+        self.time.text = [notification.createdAt.timeElapsedString stringByAppendingString:@" ago"];
+    }else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            PFObject *PO = [notification getParseObjectWithError:NULL];
+            self.time.text = [PO.createdAt.timeElapsedString stringByAppendingString:@" ago"];
+        });
+    }
+    
     
     NSString *type = notification.type;
     if ([type isEqualToString:kNotificationTypeNotice]) {
@@ -65,11 +73,22 @@
         
         self.detail.text = title;
     }else{
+        //kNotificationTypeNextTaskHasMedia
+        //kNotificationTypeFriendRequest
+        //kNotificationTypeFriendAccepted
         
-        self.profilePic.image = notification.owner.profilePic;
-        self.profilePic.hidden = NO;
-        [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
-        EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByServerID:notification.sender];
+        NSString *personID = notification.sender;
+        EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByServerID:personID];
+        if (sender.profilePic) {
+            self.profilePic.image = sender.profilePic;
+        }else{
+            //download
+            [sender refreshShallowWithCompletion:^{
+                self.profilePic.image = sender.profilePic;
+            }];
+        }
+
+        
         if([type isEqualToString:kNotificationTypeFriendRequest]){
             
                self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request", sender.name];
@@ -80,41 +99,43 @@
             self.detail.text = [NSString stringWithFormat:@"%@ has accepted your friend request", sender.name];
             
         }else if (kNotificationTypeNextTaskHasMedia){
-            self.detail.text = @"You have received voice(s) for tomorrow morning. To find out, wake up on time!";
+            self.detail.text = @"You have received voice(s) for next wake up.";
         }
     }
     
-    
-
-    
-    
-    CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
-    
-    self.detail.height = fixLabelSize.height;
-    
-   
-//    self.detail.backgroundColor = [UIColor whiteColor];
-   
-    CGFloat deltaHeight = self.detail.height - 35;
-    //self.detail.height += deltaHeight;®
-    self.time.y += deltaHeight;
-    self.contentView.height += deltaHeight;
-    self.height = self.contentView.height;
-    
-    
-    if (notification.completed) {
-        self.detail.enabled = NO;
-        self.time.enabled = NO;
-    }else{
-        self.detail.enabled = YES;
-        self.time.enabled = YES;
-       
-    }
-    
+    //adjust size
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
+        
+        self.detail.height = fixLabelSize.height;
+        //self.detail.width = fixLabelSize.width;
+        
+        CGFloat deltaHeight = self.detail.height - 35;
+        //self.detail.height += deltaHeight;®
+        self.time.y += deltaHeight;
+        self.contentView.height += deltaHeight;
+        self.height = self.contentView.height;
+        
+        
+        if (notification.completed) {
+            self.detail.enabled = NO;
+            self.time.enabled = NO;
+        }else{
+            self.detail.enabled = YES;
+            self.time.enabled = YES;
+            
+        }
+    });
     
     [self setNeedsDisplay];
 }
 
+- (void)drawRect:(CGRect)rect{
+    [super drawRect:rect];
+    
+    [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
+}
 
 
 @end

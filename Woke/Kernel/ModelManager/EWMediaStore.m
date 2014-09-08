@@ -151,59 +151,47 @@
 
 
 - (BOOL)checkMediaAssets{
-    //NSParameterAssert([NSThread isMainThread]);
-    if (![PFUser currentUser]) {
-        return NO;
-    }
-    __block NSArray *mediaPOs;
+    NSParameterAssert([NSThread isMainThread]);
+
+    __block BOOL new;
     [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
-        [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
-        EWPerson *localMe = [me inContext:localContext];
-        NSSet *localAssetIDs = [localMe.mediaAssets valueForKey:kParseObjectID];
-        [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
-        mediaPOs = [query findObjects];
-        NSManagedObjectID *myID = localMe.objectID;
-        
-        for (PFObject *po in mediaPOs) {
-            EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:localContext];
-            [mo refresh];
-            //relationship
-            EWPerson *localMe = (EWPerson *)[localContext objectWithID:myID];
-            [mo removeReceiversObject:localMe];//remove from the receiver list
-            [localMe addMediaAssetsObject:mo];//add to my media asset list
-            NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
-            EWAlert(@"You got voice for your next wake up");
-        }
+        new = [self checkMediaAssetsInContext:localContext];
     }];
     
-    if (mediaPOs.count > 0) {
-        [EWDataStore save];
-        return YES;
-    }
-    
-    return NO;
+    return new;
 }
 
 - (void)checkMediaAssetsInBackground{
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
-        [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
-        NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
-        [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
-        NSArray *mediaPOs = [query findObjects];
-        mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, localAssetIDs]];
-        for (PFObject *po in mediaPOs) {
-            EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:localContext];
-            [mo refresh];
-            //relationship
-            [mo removeReceiversObject:me];
-            [me addMediaAssetsObject:mo];
-            NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
-            EWAlert(@"You got voice for your next wake up");
-            
-        }
+        [self checkMediaAssetsInContext:localContext];
     }];
+}
+
+- (BOOL)checkMediaAssetsInContext:(NSManagedObjectContext *)context{
+    if (![PFUser currentUser]) {
+        return NO;
+    }
+    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
+    [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
+    NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
+    [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
+    NSArray *mediaPOs = [query findObjects];
+    mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, localAssetIDs]];
+    for (PFObject *po in mediaPOs) {
+        EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:context];
+        [mo refresh];
+        //relationship
+        [mo removeReceiversObject:me];
+        [me addMediaAssetsObject:mo];
+        NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
+    }
+    if (mediaPOs.count) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            EWAlert(@"You got voice for your next wake up");
+        });
+        return YES;
+    }
+    return NO;
 }
 
 + (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media{
