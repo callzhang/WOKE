@@ -18,6 +18,7 @@
 #import "EWPersonStore.h"
 #import "AFNetworking.h"
 #import "EWStatisticsManager.h"
+#import "EWWakeUpManager.h"
 
 @implementation EWTaskStore
 @synthesize isSchedulingTask = _isSchedulingTask;
@@ -221,7 +222,14 @@
         NSLog(@"It is already checking task, skip!");
         return nil;
     }
-    //start check
+    
+    //Also stop scheduling if is waking
+    BOOL isWakingUp = [EWWakeUpManager sharedInstance].isWakingUp;
+    if (isWakingUp) {
+        NSLog(@"Waking up, skip scheduling tasks");
+        return nil;
+    }
+
     self.isSchedulingTask = YES;
     
     //check necessity
@@ -296,7 +304,7 @@
                         [goodTasks addObject:t];
                         [tasks removeObject:t];
                         if (t.alarm != a) {
-                            NSLog(@"Task miss match to another alarm: %@", t);
+                            NSLog(@"Task miss match to another alarm: Task:%@ Alarm:%@", t, a);
                             t.alarm = a;
                         }
                         taskMatched = YES;
@@ -566,8 +574,8 @@
 
 - (void)updateTaskTimeForAlarm:(EWAlarmItem *)alarm{
     if (!alarm.tasks.count) {
-        NSLog(@"Alarm's tasks not fetched, refresh from server. New tasks relation has %lu tasks", (unsigned long)alarm.tasks.count);
         [alarm refresh];
+        NSLog(@"Alarm's tasks not fetched, refresh from server. New tasks relation has %lu tasks", (unsigned long)alarm.tasks.count);
     }
     NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
     NSArray *sortedTasks = [alarm.tasks sortedArrayUsingDescriptors:@[des]];

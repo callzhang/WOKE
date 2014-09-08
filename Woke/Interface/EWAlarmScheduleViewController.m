@@ -69,7 +69,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
                 if (![EWTaskStore sharedInstance].isSchedulingTask) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [self initData];
-                        [self.tableView reloadData];
                     });
                 }else{
                     NSLog(@"Schedule View detecte task schedule");
@@ -81,7 +80,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     }else if (object == me){
         [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
         [self initData];
-        [self.tableView reloadData];
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     }
 }
@@ -96,6 +94,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     tasks = [EWTaskStore myTasks];
     alarmCells = [[NSMutableArray alloc] initWithCapacity:7];
     selected = 99;
+    [self.tableView reloadData];
 }
 
 - (void)save{
@@ -105,15 +104,18 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //for (EWAlarmEditCell *cell in alarmCells) {
     for (NSInteger i=0; i<tasks.count; i++) {
-        NSIndexPath *path = [NSIndexPath indexPathForItem:i inSection:0];
-        EWAlarmEditCell *cell = (EWAlarmEditCell *)[self.tableView cellForRowAtIndexPath:path];
+        EWAlarmEditCell *cell = (EWAlarmEditCell *)alarmCells[i];
         if (!cell ) {
+            NSIndexPath *path = [NSIndexPath indexPathForItem:i inSection:0];
             cell = (EWAlarmEditCell *)[self tableView:_tableView cellForRowAtIndexPath:path];
         }
         
         EWTaskItem *task = tasks[i];
         EWAlarmItem *alarm = task.alarm;
-        
+        if (cell.task != task) {
+            NSLog(@"!!! Cell/task mismatch (cell:%@, alarm:%@ and task:%@)", cell.myTime, alarm.time, task.time);
+            continue;
+        }
         
         //state
         if (cell.alarmToggle.selected != alarm.state) {
@@ -125,9 +127,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
         //time
         if (cell.myTime && ![cell.myTime isEqualToDate:task.time]) {
-            if (cell.myTime.weekdayNumber != alarm.time.weekdayNumber) {
-                NSLog(@"!!! Updating time to wrong alarm. (cell:%@, alarm:%@ and task:%@)", cell.myTime, alarm.time, task.time);
-            }
             
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
             alarm.time = cell.myTime;

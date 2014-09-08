@@ -128,12 +128,13 @@
 
 - (NSDate *)nextOccurTime:(NSInteger)n{
     NSDate *time = self;
-    //bring to now
-    while ([time isEarlierThan:[NSDate date]]) {
-        time = [time nextWeekTime];
+    //bring to past
+    while ([time timeIntervalSinceNow]>0) {
+        time = [time lastWeekTime];
     }
-    //future
-    for (unsigned i=1; i<n; i++) {
+    
+    //future, first(0) is the the first future occurance
+    for (unsigned i = 0; i <= n; i++) {
         time = [time nextWeekTime];
     }
     return time;
@@ -142,6 +143,13 @@
 - (NSDate *)nextWeekTime{
     NSDateComponents* deltaComps = [[NSDateComponents alloc] init];
     deltaComps.day = 7;
+    NSDate *time = [[NSCalendar currentCalendar] dateByAddingComponents:deltaComps toDate:self options:0];
+    return time;
+}
+
+- (NSDate *)lastWeekTime{
+    NSDateComponents* deltaComps = [[NSDateComponents alloc] init];
+    deltaComps.day = -7;
     NSDate *time = [[NSCalendar currentCalendar] dateByAddingComponents:deltaComps toDate:self options:0];
     return time;
 }

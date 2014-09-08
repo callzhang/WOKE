@@ -49,6 +49,9 @@
 }
 
 - (void)setTask:(EWTaskItem *)t{
+    if (task == t) {
+        return;
+    }
     //data
     task = t;
     alarm = task.alarm;

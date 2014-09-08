@@ -290,7 +290,7 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self showAlarmPageLoading:NO];
                     [refreshTimer invalidate];
-                    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
+                    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
                 });
             }
         });

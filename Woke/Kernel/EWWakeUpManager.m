@@ -32,11 +32,11 @@
 @interface EWWakeUpManager()
 //retain the controller so that it won't deallocate when needed
 @property (nonatomic, retain) EWWakeUpViewController *controller;
-@property (nonatomic) BOOL isWakingUp;
 @end
 
 
 @implementation EWWakeUpManager
+@synthesize isWakingUp = _isWakingUp;
 
 + (EWWakeUpManager *)sharedInstance{
     static EWWakeUpManager *manager;
@@ -46,6 +46,18 @@
         manager.isWakingUp = NO;
     });
     return manager;
+}
+
+- (BOOL)isWakingUp{
+    @synchronized(self){
+        return _isWakingUp;
+    }
+}
+
+- (void)setIsWakingUp:(BOOL)isWakingUp{
+    @synchronized(self){
+        _isWakingUp = isWakingUp;
+    }
 }
 
 
@@ -423,7 +435,7 @@
 }
 
 
-#pragma mark - CHECK ALARM TIMER
+#pragma mark - CHECK TIMER
 + (void) alarmTimerCheck{
     //check time
     if (!me) return;
@@ -432,6 +444,9 @@
     
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
+    if ([EWWakeUpManager sharedInstance].forceAlarm) {
+        timeLeft = 10;
+    }
     NSLog(@"===========================>> Check Alarm Timer (%ld min left) <<=============================", (NSInteger)timeLeft/60);
     static BOOL timerInitiated = NO;
     if (timeLeft < kServerUpdateInterval && timeLeft > 0 && !timerInitiated) {

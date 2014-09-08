@@ -62,7 +62,7 @@
 
 
 - (void)initData {
-    titles = @[@"Wake Up View",
+    titles = @[@"Wake up in 10s",
                @"Shake test",
                @"Social Network API",
                @"Local Notifications",
@@ -75,7 +75,7 @@
                @"Address book",
                @"Facebook post"];
     
-    subTitles = @[@"Pop up the WakeUp View with all medias of mine",
+    subTitles = @[@"Add a task that is due in 10s.",
                   @"Test shake",
                   @"Test social networking capabilities",
                   @"List local notifications",
@@ -169,9 +169,18 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     switch (indexPath.row) {
-        case 0: {//wake up view
-            [EWWakeUpManager presentWakeUpView];
+        case 0: {
+            //1. show wake up view
+            //[EWWakeUpManager presentWakeUpView];
             
+            //2. force alarm in 10s
+            [EWWakeUpManager sharedInstance].forceAlarm = YES;
+            [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
+                [rootViewController.view showSuccessNotification:@"Exit app now."];
+            }];
+            
+            //3. Insert a task that is dur in 10s
+            //...
             break;
         }
         case 1: {
@@ -322,7 +331,7 @@
             break;
     }
     
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 @end

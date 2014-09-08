@@ -186,7 +186,7 @@ void EWLogInit(){
     
     
     //UncaughtExceptionHandler
-    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+    //NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
     
     
 }

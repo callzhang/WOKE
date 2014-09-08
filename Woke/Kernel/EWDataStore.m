@@ -1284,7 +1284,7 @@ NSManagedObjectContext *mainContext;
         NSLog(@"!!! The MO %@(%@) trying to refresh doesn't have servreID, skip! %@", self.entity.name, self.serverID, self);
     }else{
         if ([self changedKeys]) {
-            NSLog(@"*** The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.changedKeys);
+            NSLog(@"*** The MO%@ (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
         }
         
         NSLog(@"===> Refreshing MO %@", self.entity.name);

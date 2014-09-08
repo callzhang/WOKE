@@ -10,6 +10,8 @@
 @class EWTaskItem;
 
 @interface EWWakeUpManager : NSObject
+@property (nonatomic) BOOL forceAlarm;
+@property BOOL isWakingUp;
 
 + (EWWakeUpManager *)sharedInstance;
 
