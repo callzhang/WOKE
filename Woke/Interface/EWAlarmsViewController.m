@@ -149,6 +149,16 @@
 }
 
 
+
+- (void)refreshView{
+    
+    //update data and view
+    [self initData];
+    [self reloadAlarmPage];
+    [self.collectionView reloadData];
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+}
+
 - (void)initData {
     
     //init alarm page container
@@ -192,16 +202,6 @@
     
 }
 
-
-- (void)refreshView{
-    
-    //update data and view
-    [self initData];
-    [self reloadAlarmPage];
-    [self.collectionView reloadData];
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-}
-
 #pragma mark - Fetch Controller
 - (NSFetchedResultsController *)fetchController{
     if (fetchController) {
@@ -241,7 +241,7 @@
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     
-    if ([object isKindOfClass:[EWPerson class]]) {
+    if (object == me) {
         
         if ([keyPath isEqualToString:@"tasks"]){
             static NSTimer *alarmPagetimer;
@@ -278,19 +278,23 @@
             }
         }
         
-    }else if ([object isKindOfClass:[EWTaskStore class]]){
-        if ([EWTaskStore sharedInstance].isSchedulingTask) {
-            NSLog(@"Detected %@ is scheduling", [object class]);
-            [self showAlarmPageLoading:YES];
-            //taskScheduled = NO;
-        }else{
-            NSLog(@"%@ finished scheduling", [object class]);
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self showAlarmPageLoading:NO];
-                [self refreshView];
-            });
-        }
+    }else if (object == [EWTaskStore sharedInstance]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([EWTaskStore sharedInstance].isSchedulingTask) {
+                NSLog(@"Detected %@ is scheduling", [object class]);
+                [self showAlarmPageLoading:YES];
+                //taskScheduled = NO;
+            }else{
+                NSLog(@"%@ finished scheduling", [object class]);
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showAlarmPageLoading:NO];
+                    [self refreshView];
+                });
+            }
+
+        });
+        
     }else{
         NSLog(@"@@@ Unhandled observation: %@", [object class]);
     }
@@ -808,15 +812,6 @@
             [self.collectionView reloadData];
             
         } else {
-            //prevent updating too fast
-            if(lastUpdated && lastUpdated.timeElapsed < 0.1 ){
-                NSLog(@"!!! Update main view too fast. %f sec since last update.", lastUpdated.timeElapsed);
-                //return;
-            }
-            
-            //NSLog(@"Updating CollectionView at %@: %@", [NSDate date], cellChangeArray);
-            //need to ®record the time at the beginning
-            lastUpdated = [NSDate date];
             
             [self.collectionView performBatchUpdates:^{
                 
@@ -829,12 +824,15 @@
                 if (finished) {
                     //
                 }else{
-                    NSLog(@"*** Update of collection view failed");
+                    NSLog(@"*** Update of collection view failed. Update main view too fast. %f sec since last update.", lastUpdated.timeElapsed);
                 }
                 
             }];
             
         }
+        
+        //need to ®record the time at the beginning
+        lastUpdated = [NSDate date];
         
         //after reload, we still need to update the view, do not clean the changeArray until updating the view.
         [cellChangeArray removeAllObjects];

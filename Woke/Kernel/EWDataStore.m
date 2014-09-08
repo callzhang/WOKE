@@ -850,14 +850,14 @@ NSManagedObjectContext *mainContext;
 		
         //completion block
 		if (callbacks.count) {
-			NSLog(@"=========== Start upload completion block (%lu) =============", (unsigned long)callbacks.count);
+			NSLog(@"=========== Start running completion block (%lu) =============", (unsigned long)callbacks.count);
 			for (EWSavingCallback block in callbacks){
 				block();
 			}
 		}
 		
 		NSLog(@"=========== Finished uploading to saver ===============");
-		if (workingObjects.count) {
+		if (workingObjects.count > 0) {
 			NSLog(@"*** With failures:%@", [[EWDataStore getObjectFromQueue:kParseQueueWorking] valueForKey:kParseObjectID]);
 			[EWDataStore clearQueue:kParseQueueWorking];
 		}

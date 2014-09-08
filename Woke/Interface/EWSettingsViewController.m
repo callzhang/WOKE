@@ -45,7 +45,7 @@ static const NSArray *pref;
     [super viewDidLoad];
     sleepDurations = @[@6, @6.5, @7.5, @8, @8.5, @9, @9.5, @10, @10.5, @11, @11.5, @12];
     socialLevels = @[kSocialLevelFriends, kSocialLevelEveryone];
-    pref = @[@"Alarm sound", @"Who can send me voice", @"Bed time notification", @"Sleep duration", @"Privacy", @"Log out"];
+    pref = @[@"Morning tone", @"Bed time notification", @"Sleep duration", @"Log out", @"About"];
     
     [self setTitle:@"Preferences"];
 
@@ -205,243 +205,128 @@ static const NSArray *pref;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = nil;
-    switch (settingGroup) {
-        case settingGroupProfile: {
-            cell= [self makeProfileCellInTableView:tableView];
-            switch (indexPath.row){
-                case 0: {
-                    cell.textLabel.text = LOCALSTR(@"Name");
-                    cell.detailTextLabel.text = me.name;
-                }
-                    break;
-                case 1: {
-                    cell.textLabel.text = LOCALSTR(@"Profile Picture");
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                    cell.imageView.image = me.profilePic;
-                }
-                    break;
-                case 2: {
-                    cell.textLabel.text = LOCALSTR(@"ID");
-                    cell.detailTextLabel.text = me.username;
-                }
-                    break;
-                case 3: {
-                    cell.textLabel.text = LOCALSTR(@"Facebook ID");
-                    cell.detailTextLabel.text = me.facebook;
-                }
-                    break;
-                case 4:{
-                    cell.textLabel.text = LOCALSTR(@"Weibo ID");
-                    cell.detailTextLabel.text = me.weibo;
-                }
-                    break;
-                case 5:{
-                    cell.textLabel.text = LOCALSTR(@"City");
-                    cell.detailTextLabel.text = me.city;
-                }
-                    break;
-                case 6: {
-                    cell.textLabel.text = LOCALSTR(@"Region");
-                    cell.detailTextLabel.text = me.region;
-                }
-                    break;
-                case 7:{
-                    cell.textLabel.text = LOCALSTR(@"Log out");
-                }
-                    break;
-                default:
-                    break;
-            }
-        }
-            break;
-        case settingGroupPreference: {
-            cell= [self makePrefCellInTableView:tableView];
-            cell.textLabel.text = LOCALSTR(pref[indexPath.row]);
-            switch (indexPath.row){
-                case 0: {
-                    
-                    NSArray *fileString = [preference[@"DefaultTone"] componentsSeparatedByString:@"."];
-                    NSString *file = [fileString objectAtIndex:0];
-                    cell.detailTextLabel.text = file;
-                    break;
-                }
-                case 1: {
-                    cell.detailTextLabel.text = preference[@"SocialLevel"];
-                }
-                    break;
-                case 2: {
-                    //switch
-                    UISwitch *bedTimeNotifSwitch = [[UISwitch alloc] init];
-                    bedTimeNotifSwitch.tintColor = [UIColor grayColor];
-                    bedTimeNotifSwitch.onTintColor = [UIColor greenColor];
-                    bedTimeNotifSwitch.on = (BOOL)preference[@"BedTimeNotification"];
-                    bedTimeNotifSwitch.tag = 3;
-                    
-                    [bedTimeNotifSwitch addTarget:self action:@selector(OnBedTimeNotificationSwitchChanged:) forControlEvents:UIControlEventValueChanged];
-                    cell.accessoryView = bedTimeNotifSwitch;
-                    //cell.detailTextLabel.text = @"";
-
-                    
-                                    }
-                    break;
-                case 3: {
-                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ hours", preference[@"SleepDuration"]];
-                    
-                                    }
-                    break;
-                case 4: {
-                    cell.detailTextLabel.text = preference[@"PrivacyLevel"];
-                }
-                    break;
-                    
-                case 5:
-                    break;
-                default:
-                    break;
-            }
-        }
-            break;
-        case settingGroupAbout: {
-            cell= [self makeAboutCellInTableView:tableView];
-            switch (indexPath.section) {
-                case 0: {
-                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                    cell.backgroundColor = kCustomWhite;
-                    cell.textLabel.textColor = kCustomGray;
-                    cell.textLabel.text = [NSString stringWithFormat:@"关于%@", LOCALSTR(@"EarlyWorm")];
-                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ %@", LOCALSTR(@"Setting_Version"), kAppVersion];
-                }
-                    break;
-                default:
-                    break;
-            }
-        }
-        break;
-        default:
-            break;
-    }
+    cell= [self makePrefCellInTableView:tableView];
     
+    NSString *title = LOCALSTR(pref[indexPath.row]);
+    cell.textLabel.text = title;
+    if ([title isEqualToString:@"Morning tone"]) {
+        NSArray *fileString = [preference[@"DefaultTone"] componentsSeparatedByString:@"."];
+        NSString *file = [fileString objectAtIndex:0];
+        cell.detailTextLabel.text = file;
+
+    }else if ([title isEqualToString:@"Bed time notification"]){
+        //switch
+        UISwitch *bedTimeNotifSwitch = [[UISwitch alloc] init];
+        bedTimeNotifSwitch.tintColor = [UIColor grayColor];
+        bedTimeNotifSwitch.onTintColor = [UIColor greenColor];
+        bedTimeNotifSwitch.on = (BOOL)preference[@"BedTimeNotification"];
+        bedTimeNotifSwitch.tag = 3;
+        
+        [bedTimeNotifSwitch addTarget:self action:@selector(OnBedTimeNotificationSwitchChanged:) forControlEvents:UIControlEventValueChanged];
+        cell.accessoryView = bedTimeNotifSwitch;
+        //cell.detailTextLabel.text = @"";
+    }else if ([title isEqualToString:@"Sleep duration"]){
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ hours", preference[@"SleepDuration"]];
+    }else if ([title isEqualToString:@"Log out"]){
+        //
+    }else if ([title isEqualToString:@"About"]){
+        //
+    }
+
     return cell;
 }
 
 #pragma mark - Delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    selectedCellNum = indexPath.row;
-    if (settingGroup == settingGroupProfile) {
-        switch ( indexPath.row) {
-            case 1:
-                NSLog(@"Full screen image:???");
-                break;
-            case 7:{
-                //alert
-                [[[UIAlertView alloc] initWithTitle:@"Log out" message:@"Log out?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", nil] show];
-                            }
-                break;
-            
-            default:
-                break;
-        }
+    pref = @[@"Morning tone", @"Bed time notification", @"Sleep duration", @"Log out", @"About"];
+    NSString *title = pref[indexPath.row];
+    if ([title isEqualToString:@"Morning tone"]){
+                
+        EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
+        selectionVC.hideNowButton = YES;
+        //You can enable or disable bouncing and motion effects
+        //dateSelectionVC.disableBouncingWhenShowing = YES;
+        //dateSelectionVC.disableMotionEffects = YES;
+        //                    [selectionVC show];
         
-    }else if (settingGroup == settingGroupPreference){
-        switch (indexPath.row) {
-            case 0:  {//sound selection
-//                ringtoneVC = [[EWRingtoneSelectionViewController alloc] init];
-//                ringtoneVC.delegate = self;
-//                NSArray *ringtones = ringtoneNameList;
-//                ringtoneVC.selected = [ringtones indexOfObject:preference[@"DefaultTone"]];
-//           
-//                
-//                [self.navigationController pushViewController:ringtoneVC animated:YES];
-                
-                EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
-                selectionVC.hideNowButton = YES;
-                //You can enable or disable bouncing and motion effects
-                //dateSelectionVC.disableBouncingWhenShowing = YES;
-                //dateSelectionVC.disableMotionEffects = YES;
-                //                    [selectionVC show];
-                
-                [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
-                    NSUInteger row =[vc.picker selectedRowInComponent:0];
-                    UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
-                    self.preference[@"DefaultTone"] = titleLabel.text;
-                    [_tableView reloadData];
-                    [[AVManager sharedManager] stopAllPlaying];
-                    
-                } andCancelHandler:^(EWSelectionViewController *vc) {
-                    [[AVManager sharedManager] stopAllPlaying];
-                    NSLog(@"Date selection was canceled (with block)");
-                    
-                }];
+        [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
+            NSUInteger row =[vc.picker selectedRowInComponent:0];
+            UILabel *titleLabel = (UILabel *)[vc.picker viewForRow:row forComponent:0];
+            self.preference[@"DefaultTone"] = titleLabel.text;
+            [_tableView reloadData];
+            [[AVManager sharedManager] stopAllPlaying];
+            
+        } andCancelHandler:^(EWSelectionViewController *vc) {
+            [[AVManager sharedManager] stopAllPlaying];
+            NSLog(@"Date selection was canceled (with block)");
+            
+        }];
 
-                
-            }
-                break;
-            case 1:  {
-                    EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
-                    selectionVC.hideNowButton = YES;
-                    //You can enable or disable bouncing and motion effects
-                    //dateSelectionVC.disableBouncingWhenShowing = YES;
-                    //dateSelectionVC.disableMotionEffects = YES;
+        
+    }else if ([title isEqualToString:@"Social"]){//depreciated
+        EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
+        selectionVC.hideNowButton = YES;
+        //You can enable or disable bouncing and motion effects
+        //dateSelectionVC.disableBouncingWhenShowing = YES;
+        //dateSelectionVC.disableMotionEffects = YES;
 //                    [selectionVC show];
-                
-                    [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
-                        NSUInteger row =[vc.picker selectedRowInComponent:0];
-                        NSString *level = socialLevels[row];
-                        self.preference[@"SocialLevel"] = level;
-                        [_tableView reloadData];
-                        NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
-                        
-                   } andCancelHandler:^(EWSelectionViewController *vc) {
-                       
-                       NSLog(@"Date selection was canceled (with block)");
+    
+        [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
+            NSUInteger row =[vc.picker selectedRowInComponent:0];
+            NSString *level = socialLevels[row];
+            self.preference[@"SocialLevel"] = level;
+            [_tableView reloadData];
+            NSLog(@"Successfully selected date: %ld (With block)",(long)[vc.picker selectedRowInComponent:0]);
+            
+       } andCancelHandler:^(EWSelectionViewController *vc) {
+           
+           NSLog(@"Date selection was canceled (with block)");
 
-                    }];
-            }
-                break;
-            case 3:{
-                
-            }
-            case 4:
-            {
-                EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
-                selectionVC.hideNowButton = YES;
-                
-                //You can enable or disable bouncing and motion effects
-                //dateSelectionVC.disableBouncingWhenShowing = YES;
-                //dateSelectionVC.disableMotionEffects = YES;
-    //                [selectionVC show];
-                [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
-                    NSUInteger row =[vc.picker selectedRowInComponent:0];
-                    
-                    float d = [(NSNumber *)sleepDurations[row] floatValue];
-                    float d0 = [(NSNumber *)preference[kSleepDuration] floatValue];
-                    if (d != d0) {
-                        NSLog(@"Sleep duration changed from %f to %f", d0, d);
-                        preference[kSleepDuration] = @(d);
-                        me.preference = preference.copy;
-                        [_tableView reloadData];
-                        [EWTaskStore updateSleepNotification];
-                    }
-                    
+        }];
 
-                    } andCancelHandler:^(EWSelectionViewController *vc) {
-                        NSLog(@"Date selection was canceled (with block)");
-
-                }];
-
+    }else if ([title isEqualToString:@"Sleep duration"]){
+        EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
+        selectionVC.hideNowButton = YES;
+        
+        //You can enable or disable bouncing and motion effects
+        //dateSelectionVC.disableBouncingWhenShowing = YES;
+        //dateSelectionVC.disableMotionEffects = YES;
+//                [selectionVC show];
+        [selectionVC showWithSelectionHandler:^(EWSelectionViewController *vc) {
+            NSUInteger row =[vc.picker selectedRowInComponent:0];
+            
+            float d = [(NSNumber *)sleepDurations[row] floatValue];
+            float d0 = [(NSNumber *)preference[kSleepDuration] floatValue];
+            if (d != d0) {
+                NSLog(@"Sleep duration changed from %f to %f", d0, d);
+                preference[kSleepDuration] = @(d);
+                me.preference = preference.copy;
+                [_tableView reloadData];
+                [EWTaskStore updateSleepNotification];
             }
-                break;
-                
-            case 5:{
-                [[[UIAlertView alloc] initWithTitle:@"Log out" message:@"Do you want to log out?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Log out", nil] show];
-            }
-                break;
-            default:
-                break;
-        }
+            
+
+            } andCancelHandler:^(EWSelectionViewController *vc) {
+                NSLog(@"Date selection was canceled (with block)");
+
+        }];
+
+    }else if ([title isEqualToString:@"Log out"]){
+        
+        [[[UIAlertView alloc] initWithTitle:@"Log out" message:@"Do you want to log out?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Log out", nil] show];
+        
+    }else if ([title isEqualToString:@"About"]){
+        
+        NSString *v = kAppVersion;
+        NSString *context = [NSString stringWithFormat:@"Woke \n Version: %@ \n WokeAlarm.com", v];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"About" message:context delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Logo200"]];
+        image.frame = CGRectMake(200, 50, 80, 80);
+        [alert addSubview:image];
+        [alert show ];
     }
+
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

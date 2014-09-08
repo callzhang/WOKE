@@ -152,6 +152,9 @@
 
 - (BOOL)checkMediaAssets{
     //NSParameterAssert([NSThread isMainThread]);
+    if (![PFUser currentUser]) {
+        return NO;
+    }
     __block NSArray *mediaPOs;
     [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];

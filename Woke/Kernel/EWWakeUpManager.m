@@ -253,8 +253,8 @@
         return;
     }
     if (task.time.timeElapsed > kMaxWakeTime) {
-        task.completed = [task.time dateByAddingTimeInterval:kMaxWakeTime];
-        [EWDataStore save];
+        NSLog(@"Task(%@) from notification has passed the wake up window. Handle is with checkPastTasks.");
+        [[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
         
         return;
     }

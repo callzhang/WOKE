@@ -273,6 +273,10 @@
 
     //FIRST check past tasks
     BOOL hasOutDatedTask = [self checkPastTasksInContext:context];
+    if (hasOutDatedTask) {
+        //need to make sure the task is up to date
+        tasks = [localPerson.tasks mutableCopy];
+    }
     
     //for each alarm, find matching task, or create new task
     NSMutableArray *goodTasks = [NSMutableArray new];
@@ -351,7 +355,7 @@
             }
         }];
         
-        //save here first in order to reflect change to main context
+        //Need to save here first in order to reflect change to main context
         [context saveToPersistentStoreAndWait];
     }
     

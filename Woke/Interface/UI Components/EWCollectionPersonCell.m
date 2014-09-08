@@ -69,6 +69,8 @@
     if ([self.person isEqual:person]) {
         return;
     }
+    
+    
     // init label
     self.name = [[UILabel alloc] initWithFrame:CGRectMake(-20, 60, 120, 21)];
     self.name.textAlignment = NSTextAlignmentCenter;
