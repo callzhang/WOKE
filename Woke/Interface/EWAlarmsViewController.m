@@ -174,7 +174,7 @@
         }
         
         if (tasks.count != 7 * nWeeksToScheduleTask) {
-            NSLog(@"!!! Task(%ld)", (long)tasks.count);
+            NSLog(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
             [[EWTaskStore sharedInstance] scheduleTasksInBackground];
             
         }
@@ -240,17 +240,17 @@
 
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    
+    static NSTimer *refreshTimer;
     if (object == me) {
         
         if ([keyPath isEqualToString:@"tasks"]){
-            static NSTimer *alarmPagetimer;
+            
             NSInteger nTask = me.tasks.count;
             if (![EWTaskStore sharedInstance].isSchedulingTask) {
                 //only refresh display when not scheduling
                 if (nTask == 7*nWeeksToScheduleTask){
-                    [alarmPagetimer invalidate];
-                    alarmPagetimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:NO];
+                    [refreshTimer invalidate];
+                    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
                 }else{
                     //offer add alarm
                     [self resetAlarmPage];
@@ -285,14 +285,14 @@
                 [self showAlarmPageLoading:YES];
                 //taskScheduled = NO;
             }else{
-                NSLog(@"%@ finished scheduling", [object class]);
+                NSLog(@"%s %@ finished scheduling", __func__, [object class]);
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self showAlarmPageLoading:NO];
-                    [self refreshView];
+                    [refreshTimer invalidate];
+                    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
                 });
             }
-
         });
         
     }else{

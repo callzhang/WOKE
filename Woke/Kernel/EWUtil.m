@@ -146,35 +146,20 @@ void EWLog(NSString *format, ...){
 #ifdef DEBUG
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         //dispatch to NSLOG
-        NSString *symbol = [format substringToIndex:3];
+        
         NSArray *symbolList = logLevelSymbols;
-        NSInteger level = [symbolList indexOfObject:symbol];
-        level = level != NSNotFound ? level : 3;
-        if (level <= EW_DEBUG_LEVEL) {
-            //LogMessageF(__FILE__,__LINE__,__FUNCTION__, @"Woke", level, @"%@", str);
-            switch (level) {
-                case 0://fatal
-                    DDLogError(str);
-                    break;
-                case 1:
-                    DDLogWarn(str);
-                    break;
-                case 2:
-                    DDLogInfo(str);
-                    break;
-                case 3:
-                    DDLogDebug(str);
-                    break;
-                case 4:
-                    DDLogVerbose(str);
-                    break;
-                default:
-                    break;
-            }
+        if ([format hasPrefix:symbolList[0]]){
+            DDLogError(str);
+        }else if ([format hasPrefix:symbolList[1]]) {
+            DDLogWarn(str);
+        }else if ([format hasPrefix:symbolList[2]]) {
+            DDLogInfo(str);
+        }else if ([format hasPrefix:symbolList[3]]) {
+            DDLogDebug(str);
+        }else{
+            DDLogVerbose(str);
         }
-
     });
-    
 #else
     //only send to TestFlight on release version
     TFLog(str);
@@ -184,13 +169,9 @@ void EWLog(NSString *format, ...){
 
 void EWLogInit(){
 //    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES);
-//    
 //	NSString *documentsDirectory = [paths objectAtIndex:0];
-//    
 //	NSString *fileName =[NSString stringWithFormat:@"%@.log",[NSDate date]];
-//    
 //	NSString *logFilePath = [documentsDirectory stringByAppendingPathComponent:fileName];
-//    
 //    Logger *logger = LoggerGetDefaultLogger();
 //    LoggerSetBufferFile(logger, (__bridge CFStringRef)logFilePath);
 
@@ -202,8 +183,19 @@ void EWLogInit(){
     fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
     
     [DDLog addLogger:fileLogger];
+    
+    
+    //UncaughtExceptionHandler
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+    
+    
 }
 
+void uncaughtExceptionHandler(NSException *exception) {
+    DDLogError(@"Uncaught Exception (CRASH): %@", exception);
+    DDLogError(@"Stack Trace: %@", [exception callStackSymbols]);
+    // Internal error reporting
+}
 
 +(NSArray *)readContactsEmailsFromAddressBooks
 {

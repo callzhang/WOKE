@@ -172,14 +172,6 @@
     NSMutableArray *newAlarms = [@[@NO, @NO, @NO, @NO, @NO, @NO, @NO] mutableCopy];
     //check if alarm scheduled are duplicated
     for (EWAlarmItem *a in alarms) {
-        BOOL good = [EWAlarmManager validateAlarm:a];
-        
-        //validate
-        if (!good) {
-            NSLog(@"Something wrong with alarm %@. Deleted.",[a.time date2detailDateString]);
-            [a deleteEntity];
-            continue;
-        }
         
         //get the day alarm represents
         NSInteger i = [a.time weekdayNumber];
@@ -187,11 +179,16 @@
         //see if that day has alarm already
         if (![newAlarms[i] isEqual:@NO]){
             //remove duplicacy
-            NSLog(@"@@@ Duplicated alarm found. Deleted! %@", a.time.date2detailDateString);
+            NSLog(@"@@@ Duplicated alarm found. Delete! %@", a.time.date2detailDateString);
             [a deleteEntity];
             hasChange = YES;
             continue;
+        }else if (![EWAlarmManager validateAlarm:a]){
+            NSLog(@"%s Something wrong with alarm(%@) Delete!", __func__, a.objectId);
+            continue;
         }
+        
+        
         //fill that day to the new alarm array
         newAlarms[i] = a;
     }
@@ -199,7 +196,7 @@
     //remove excess
     [alarms removeObjectsInArray:newAlarms];
     for (EWAlarmItem *a in alarms) {
-        NSLog(@"Corruped alarm found and deleted: %@", [a.time date2detailDateString]);
+        NSLog(@"Corruped alarm found and deleted: %@", a.serverID);
         [self removeAlarm:a];
         hasChange = YES;
     }
@@ -213,20 +210,9 @@
     
         NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
         EWAlarmItem *a = [self newAlarm];
-        //set weekday
-        NSDate *d = [NSDate date];
-        NSInteger wkd = [d weekdayNumber];
-        NSCalendar *cal = [NSCalendar currentCalendar];//TIMEZONE
-        NSDateComponents *comp = [[NSDateComponents alloc] init];
-        comp.day = i-wkd;
-        NSDate *time = [cal dateByAddingComponents:comp toDate:d options:0];//set the weekday
         
         //get time
-        a.time = time;//set the time first so we can get the saved time in next line
-        NSDateComponents *timecomp = [self getSavedAlarmTimeOnWeekday:time.weekdayNumber];
-        comp.hour = timecomp.hour;
-        comp.minute = timecomp.minute;
-        time = [cal dateFromComponents:comp];//set time
+        NSDate *time = [self getSavedAlarmTimeOnWeekday:i];
         //set alarm time
         a.time = time;
         //add to temp array
@@ -279,24 +265,32 @@
 
 
 #pragma mark - Get/Set alarm to UserDefaults
-- (NSDateComponents *)getSavedAlarmTimeOnWeekday:(NSInteger)wkd{
+- (NSDate *)getSavedAlarmTimeOnWeekday:(NSInteger)targetDay{
+    
+    //set weekday
+    NSDate *today = [NSDate date];
+    NSCalendar *cal = [NSCalendar currentCalendar];//TIMEZONE
+    NSDateComponents *comp = [NSDateComponents new];//used as a dic to hold time diff
+    comp.day = targetDay - today.weekdayNumber;
+    NSDate *time = [cal dateByAddingComponents:comp toDate:today options:0];//set the weekday
+    comp = [cal components:(NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit) fromDate:time];//get the target date
     NSArray *alarmTimes = [self getSavedAlarmTimes];
-    double number = [(NSNumber *)alarmTimes[wkd] doubleValue];
-    NSDateComponents *comp = [[NSDateComponents alloc] init];
+    double number = [(NSNumber *)alarmTimes[targetDay] doubleValue];
     NSInteger hour = floor(number);
     NSInteger minute = round((number - hour)*100);
     comp.hour = hour;
     comp.minute = minute;
-    NSLog(@"Get alarm time %d:%d for weekday %d", hour, minute, wkd);
-    return comp;
+    time = [cal dateFromComponents:comp];
+    NSLog(@"Get saved alarm time %@", time);
+    return time;
 }
 
 - (void)setSavedAlarmTimes{
     
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [mainContext performBlock:^{
+        
         NSMutableArray *alarmTimes = [[self getSavedAlarmTimes] mutableCopy];
-        EWPerson *localMe = [me inContext:localContext];
-        NSSet *alarms = localMe.alarms;
+        NSSet *alarms = me.alarms;
         
         for (EWAlarmItem *alarm in alarms) {
             NSInteger wkd = [alarm.time weekdayNumber];
@@ -356,15 +350,21 @@
         alarm.owner = [me inContext:alarm.managedObjectContext];
     }
     if (!alarm.tasks || alarm.tasks.count == 0) {
+        NSLog(@"Alarm（%@）missing task", alarm.serverID);
         good = NO;
     }
     if (!alarm.time) {
+        NSLog(@"Alarm（%@）missing time", alarm.serverID);
         good = NO;
     }
     //check tone
     if (!alarm.tone) {
-        NSLog(@"Tone not set");
+        NSLog(@"Tone not set, fixed!");
         alarm.tone = me.preference[@"DefaultTone"];
+    }
+    
+    if (!good) {
+        NSLog(@"Alarm failed validation: %@", alarm);
     }
     return good;
 }

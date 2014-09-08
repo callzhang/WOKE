@@ -328,7 +328,7 @@ NSManagedObjectContext *mainContext;
 		
 		BOOL mine = [EWDataStore checkAccess:MO];
 		if (!mine) {
-			NSLog(@"!!! Skip updating other's object %@", MO.objectID);
+			NSLog(@"!!! Skip updating other's object %@ with changes %@", MO.objectID, MO.changedKeys);
 			continue;
 		}
 		
@@ -450,11 +450,6 @@ NSManagedObjectContext *mainContext;
 			[mo refresh];
 			good = [EWTaskStore validateTask:(EWTaskItem *)mo];
 			
-			if (!good) {
-				NSLog(@"*** %@(%@) failed in validation => delete!", mo.entity.name, mo.serverID);
-				[mo deleteEntity];
-			}
-			
 		}
     } else if([type isEqualToString:@"EWMediaItem"]){
         good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
@@ -464,11 +459,6 @@ NSManagedObjectContext *mainContext;
 			}
 			[mo refresh];
 			good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
-			
-			if (!good) {
-				NSLog(@"*** %@(%@) failed in validation => delete!", mo.entity.name, mo.serverID);
-				[mo deleteEntity];
-			}
 		}
     }else if ([type isEqualToString:@"EWPerson"]){
         good = [EWPersonStore validatePerson:(EWPerson *)mo];
@@ -488,6 +478,9 @@ NSManagedObjectContext *mainContext;
 			[mo refresh];
 			good = [EWAlarmManager validateAlarm:(EWAlarmItem *)mo];
 		}
+	}
+	if (!good) {
+		NSLog(@"*** %@(%@) failed in validation after trying to fix", mo.entity.name, mo.serverID);
 	}
 	
 	return good;
@@ -958,9 +951,8 @@ NSManagedObjectContext *mainContext;
     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
 		if (error) {
 			if (error.code == kPFErrorObjectNotFound){
-				NSLog(@"*** ObjectId not found for %@(%@), set to nil.", managedObject.entity.name, managedObject.serverID);
+				NSLog(@"*** PO not found for %@(%@), set to nil.", managedObject.entity.name, managedObject.serverID);
 				[managedObject setValue:nil forKey:kParseObjectID];
-				[EWDataStore removeObjectFromWorkingQueue:managedObject];
 			}else{
 				NSLog(@"*** Failed to save server object: %@", error.description);
 			}
@@ -1255,7 +1247,7 @@ NSManagedObjectContext *mainContext;
         }
     }else{
         if ([self changedKeys]) {
-            NSLog(@"!!! The MO (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.changedKeys);
+            NSLog(@"!!! The MO %@(%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
         }
         
 		

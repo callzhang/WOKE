@@ -223,7 +223,6 @@
     }
     //start check
     self.isSchedulingTask = YES;
-    NSLog(@"Start check/scheduling tasks");
     
     //check necessity
     EWPerson *localPerson = [me inContext:context];
@@ -297,11 +296,14 @@
                         [goodTasks addObject:t];
                         [tasks removeObject:t];
                         if (t.alarm != a) {
+                            NSLog(@"Task miss match to another alarm: %@", t);
                             t.alarm = a;
                         }
                         taskMatched = YES;
                         //break here to avoid creating new task
                         break;
+                    }else{
+                        NSLog(@"*** Task failed validation: %@", t);
                     }
                     
                 }else if (abs([t.time timeIntervalSinceDate:time]) < 100){
@@ -355,13 +357,20 @@
             }
         }];
         
-        //Need to save here first in order to reflect change to main context
+        //Need to save here first in order to reflect change to main context from KVO
         [context saveToPersistentStoreAndWait];
     }
     
     //last checked
     self.lastChecked = [NSDate date];
-    NSLog(@"Finished schedule task with %d alarms and %d tasks", me.alarms.count, me.tasks.count);
+    //check if the main context is good
+    [mainContext performBlockAndWait:^{
+        NSLog(@"Finished schedule task with %d alarms and %d tasks", me.alarms.count, me.tasks.count);
+        if (me.tasks.count != 7*nWeeksToScheduleTask) {
+            NSLog(@"Something wrong with my task: %@", me.tasks);
+        }
+    }];
+    
     self.isSchedulingTask = NO;
     return goodTasks;
 }
@@ -490,7 +499,7 @@
     t.createdAt = [NSDate date];
     //[EWDataStore save];
     
-    NSLog(@"Created new Task");
+    NSLog(@"Created new Task %@", t.objectID);
     return t;
 }
 
@@ -895,7 +904,7 @@
             task.time = task.alarm.time;
         }else{
             good = NO;
-            NSLog(@"*** task missing time: %@", task);
+            NSLog(@"*** task missing time: %@", task.serverID);
         }
         
     }
@@ -907,6 +916,10 @@
 //            [[EWTaskStore sharedInstance] scheduleTasksInBackground];
 //        }
 //    }
+    
+    if (!good) {
+        NSLog(@"Task failed validation: %@", task);
+    }
     
     return good;
 }
