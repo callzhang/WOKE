@@ -186,9 +186,12 @@
         NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
     }
     if (mediaPOs.count) {
+#ifdef DEBUG
         dispatch_async(dispatch_get_main_queue(), ^{
             EWAlert(@"You got voice for your next wake up");
         });
+#endif
+        
         return YES;
     }
     return NO;

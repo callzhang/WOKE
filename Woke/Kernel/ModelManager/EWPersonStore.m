@@ -213,7 +213,7 @@ EWPerson *me;
     //change the returned people's score;
     for (PFUser *user in people) {
         EWPerson *person = (EWPerson *)[user managedObjectInContext:context];
-        float score = 99 - [people indexOfObject:user] - arc4random_uniform(1);//add random for testing
+        float score = 99 - [people indexOfObject:user] - arc4random_uniform(3);//add random for testing
         person.score = [NSNumber numberWithFloat:score];
         [allPerson addObject:person];
         [EWDataStore saveToLocal:person];
