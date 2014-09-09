@@ -204,7 +204,10 @@ NSManagedObjectContext *mainContext;
 	userInfo[@"start_date"] = [NSDate date];
 	userInfo[@"count"] = @0;
 	self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:kServerUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:userInfo repeats:YES];
-	[self serverUpdate:nil];
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		[self serverUpdate:nil];
+	});
+	
 }
 
 - (void)serverUpdate:(NSTimer *)timer{

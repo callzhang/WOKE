@@ -53,11 +53,9 @@
     loopCount = kLoopMediaPlayCount;
     
     //notification
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     //responder to remote control
     [self prepareRemoteControlEventsListener];
     
@@ -74,12 +72,32 @@
 }
 
 
+- (void)dealloc {
+    @try {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
+    }
+    @catch (NSException *exception) {
+        //
+    }
+    
+    
+    NSLog(@"WakeUpViewController deallocated. Observers removed.");
+}
+
+
+- (void)refresh{
+    [self initData];
+    [tableView_ reloadData];
+    [self startPlayCells];
+}
+
+
+
 #pragma mark - Life Cycle
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    
     
     //origin header frame
     headerFrame = header.frame;
@@ -121,6 +139,8 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
+    [task removeObserver:self forKeyPath:@"medias"];
     
     NSLog(@"WakeUpViewController popped out of view: remote control event listner stopped. Observers removed.");
     
@@ -218,25 +238,6 @@
     }];
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)dealloc {
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-    
-    NSLog(@"WakeUpViewController deallocated. Observers removed.");
-}
-
-
-- (void)refresh{
-    [self initData];
-    [tableView_ reloadData];
-}
 
 
 #pragma mark - KVO
@@ -451,8 +452,8 @@
     if (currentPlayingCellIndex < 0) {
         currentPlayingCellIndex = 0;
     }
-    if ([AVManager sharedManager].player.playing && [AVManager sharedManager].currentCell) {
-        //AVManager has current cell means it is paused
+    if ([AVManager sharedManager].player.playing && [AVManager sharedManager].media) {
+        //AVManager has media and is playing, meaning it is working for wakeupView
         NSLog(@"AVManager is playing media %ld", (long)currentPlayingCellIndex);
         return;
     }

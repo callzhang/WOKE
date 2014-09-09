@@ -209,9 +209,12 @@
         NSLog(@"It is already checking task, skip!");
         return;
     }
-    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        [self scheduleTasksInContext:localContext];
-    }];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
+            [self scheduleTasksInContext:localContext];
+        }];
+    });
+    
 }
 
 
@@ -582,7 +585,7 @@
     for (unsigned i=0; i<nWeeksToScheduleTask; i++) {
         EWTaskItem *t = sortedTasks[i];
         NSDate *nextTime = [alarm.time nextOccurTime:i];
-        if (![t.time isEqual:nextTime]) {
+        if (![t.time isEqualToDate:nextTime]) {
             t.time = nextTime;
             //local notif
             [self cancelNotificationForTask:t];
@@ -591,7 +594,15 @@
             //[[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:t userInfo:@{@"task": t}];
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskTimeChangedNotification object:t userInfo:@{@"task": t}];
             // schedule on server
-            [EWTaskStore scheduleNotificationOnServerWithTimer:t];
+            if (t.objectId) {
+                [EWTaskStore scheduleNotificationOnServerWithTimer:t];
+            }else{
+                __block EWTaskItem *blockTask = t;
+                [[EWDataStore sharedInstance].saveCallbacks addObject:^{
+                    [EWTaskStore scheduleNotificationOnServerWithTimer:blockTask];
+                }];
+            }
+            
         }
     }
     [self updateNextTaskTime];

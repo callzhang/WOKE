@@ -121,7 +121,7 @@ EWPerson *me;
 + (void)updateMe{
     NSDate *lastCheckedMe = [[NSUserDefaults standardUserDefaults] valueForKey:kLastCheckedMe];
     BOOL good = [EWPersonStore validatePerson:me];
-    if (!lastCheckedMe || lastCheckedMe.timeElapsed > kCheckMeInternal) {
+    if (!good || !lastCheckedMe || lastCheckedMe.timeElapsed > kCheckMeInternal) {
         if (!good) {
             NSLog(@"Failed to validate me, refreshing from server");
         }else if (!lastCheckedMe) {

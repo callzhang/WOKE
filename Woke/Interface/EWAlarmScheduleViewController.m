@@ -26,7 +26,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 @implementation EWAlarmScheduleViewController{
     NSInteger selected;
-    NSMutableArray *alarmCells;
     NSArray *tasks;
 }
 
@@ -92,7 +91,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     //data source
     //alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskStore myTasks];
-    alarmCells = [[NSMutableArray alloc] initWithCapacity:7];
     selected = 99;
     [self.tableView reloadData];
 }
@@ -102,20 +100,24 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     BOOL hasChanges = NO;
     
-    //for (EWAlarmEditCell *cell in alarmCells) {
+    
     for (NSInteger i=0; i<tasks.count; i++) {
-        EWAlarmEditCell *cell = (EWAlarmEditCell *)alarmCells[i];
+        NSIndexPath *path = [NSIndexPath indexPathForItem:i inSection:0];
+        EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:path];
         if (!cell ) {
-            NSIndexPath *path = [NSIndexPath indexPathForItem:i inSection:0];
             cell = (EWAlarmEditCell *)[self tableView:_tableView cellForRowAtIndexPath:path];
         }
         
-        EWTaskItem *task = tasks[i];
-        EWAlarmItem *alarm = task.alarm;
-        if (cell.task != task) {
-            NSLog(@"!!! Cell/task mismatch (cell:%@, alarm:%@ and task:%@)", cell.myTime, alarm.time, task.time);
+        EWTaskItem *task = cell.task;
+        if (!task) {
+            NSLog(@"*** Getting cell that has no task, skip");
             continue;
         }
+        EWAlarmItem *alarm = task.alarm;
+//        if (cell.task != task) {
+//            NSLog(@"!!! Cell/task mismatch (cell:%@, alarm:%@ and task:%@)", cell.myTime, alarm.time, task.time);
+//            continue;
+//        }
         
         //state
         if (cell.alarmToggle.selected != alarm.state) {
@@ -193,9 +195,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //breaking MVC pattern to get ringtonVC work
     cell.presentingViewController = self;
-    
-    //save cell
-    alarmCells[indexPath.row] = cell;
     
     //return
     return cell;
