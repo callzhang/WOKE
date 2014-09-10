@@ -203,25 +203,26 @@ EWPerson *me;
     }
     
     //make sure the rest of people's score is revert back to 0
-    NSArray *otherLocalPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [people valueForKey:kParseObjectID]] inContext:context];
+    NSArray *otherLocalPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"(NOT %K IN %@) AND score > 0 AND %K != %@", kParseObjectID, [people valueForKey:kParseObjectID], kParseObjectID, me.objectId] inContext:context];
     NSLog(@"%d person's score changed to 0", otherLocalPerson.count);
     for (EWPerson *person in otherLocalPerson) {
         person.score = 0;
-        [EWDataStore saveToLocal:person];
-        [NSThread sleepForTimeInterval:0.5f];
     }
+    
     //change the returned people's score;
     for (PFUser *user in people) {
         EWPerson *person = (EWPerson *)[user managedObjectInContext:context];
         float score = 99 - [people indexOfObject:user] - arc4random_uniform(3);//add random for testing
         person.score = [NSNumber numberWithFloat:score];
         [allPerson addObject:person];
-        [EWDataStore saveToLocal:person];
-        [NSThread sleepForTimeInterval:0.5f];
     }
     
     EWPerson *localMe = [me inContext:context];
     localMe.score = @100;
+    
+    //batch save to local
+    [EWDataStore saveAllToLocal:[EWPerson findAllInContext:context]];
+    
     NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
     
     timeEveryoneChecked = [NSDate date];

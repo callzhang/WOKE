@@ -181,13 +181,12 @@
             [self playSoundFromFile:@"buzz.caf"];
         }else{
             //TODO
-            [self playSoundFromFile:@"buzz.caf"];
+            [self playSoundFromFile:media.buzzKey];
         }
         
     }else{
         NSLog(@"Unknown type of media, skip");
         [self playSoundFromFile:kSilentSound];
-        
     }
     
 }
@@ -458,13 +457,16 @@
                 
                 EWBackgroundingManager *manager = [EWBackgroundingManager sharedInstance];
                 if (manager.sleeping == YES) {
+#ifdef DEBUG
                     UILocalNotification *n = [UILocalNotification new];
                     n.alertBody = @"Woke is active";
                     [[UIApplication sharedApplication] scheduleLocalNotification:n];
+#endif
+                    [self registerAudioSession];
+                    [manager backgroundKeepAlive:NULL];
                 }
                 
-                [self registerAudioSession];
-                [manager backgroundKeepAlive:NULL];
+                
                 
             });
         }
@@ -617,8 +619,8 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     NSLog(@"System audio playback fnished");
     
     if ([AVManager sharedManager].media) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
-        NSLog(@"broadcasting finish event");
+        //[[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
+        //NSLog(@"broadcasting finish event");
     }    
     [[UIApplication sharedApplication] endBackgroundTask:(NSInteger)bgTaskId];
 }
