@@ -18,6 +18,7 @@
     MYBlurIntroductionView *introductionView;
     NSInteger  _lastIndex ;
     //EWLogInViewController *loginController;
+    UIActivityIndicatorView *loading;
 }
 @end
 
@@ -56,26 +57,21 @@
         
         MYIntroductionPanel *panel3 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"Picture3.png"]];
         MYIntroductionPanel *panel4 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) title:@"Automated Stock Panels" description:@"Need a quick-and-dirty solution for your app introduction? MYBlurIntroductionView comes with customizable stock panels that make writing an introduction a walk in the park. Stock panels come with optional overlay on background images. A full panel is just one method away!" image:[UIImage imageNamed:@"Picture4.png"]];
-        MYIntroductionPanel *panel5 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) nibNamed:@"LoginView"];
+        MYIntroductionPanel *panel5 = [[MYIntroductionPanel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) nibNamed:@"EWLogInView"];
 
     
     panel5.backgroundColor = [UIColor clearColor];
     UIButton *loginButton = (UIButton *)[panel5 viewWithTag:99];
     UIButton *alertButton = (UIButton *)[panel5 viewWithTag:98];
+    UIButton *skipButton = (UIButton *)[panel5 viewWithTag:97];
+    loading = (UIActivityIndicatorView *)[panel5 viewWithTag:96];
     
     //loginController = [[EWLogInViewController alloc] init];
     [loginButton addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
     [alertButton addTarget:self action:@selector(whyFacebookAlert:) forControlEvents:UIControlEventTouchUpInside];
-        //Add custom attributes
-        //        panel3.PanelTitle = @"Test Title";
-        //        panel3.PanelDescription = @"This is a test panel description to test out the new animations on a custom nib";
-        
-        //Rebuild panel with new attributes
-        //        [panel3 buildPanelWithFrame:CGRectMake(0, 0, vc.view.frame.size.width, vc.view.frame.size.height)];
-        //    //Feel free to customize your introduction view here
-        //
-        //    //Add panels to an array
-    NSArray *panels = @[panel1, panel2,panel3,panel4,panel5];
+    [skipButton addTarget:self action:@selector(skip:) forControlEvents:UIControlEventTouchUpInside];
+    
+    NSArray *panels = @[panel1, panel2, panel3, panel4, panel5];
     _lastIndex = [panels count] - 1;
         //
         //    //Build the introduction with desired panels
@@ -90,11 +86,11 @@
 }
 
 
--(void)introduction:(MYBlurIntroductionView *)introductionView didFinishWithType:(MYFinishType)finishType{
+- (void)introduction:(MYBlurIntroductionView *)introductionView didFinishWithType:(MYFinishType)finishType{
     [self didPressSkipButton];
 }
 
--(void)didPressSkipButton{
+- (void)didPressSkipButton{
     [introductionView changeToPanelAtIndex:_lastIndex];
     [introductionView.MasterScrollView setScrollEnabled:NO ];
     [introductionView.RightSkipButton setHidden:YES];
@@ -102,7 +98,7 @@
 }
 
 
--(void)introduction:(MYBlurIntroductionView *)introductionView didChangeToPanel:(MYIntroductionPanel *)panel withIndex:(NSInteger)panelIndex
+- (void)introduction:(MYBlurIntroductionView *)introductionView didChangeToPanel:(MYIntroductionPanel *)panel withIndex:(NSInteger)panelIndex
 {
     if (panelIndex == _lastIndex) {
         [self didPressSkipButton];
@@ -111,20 +107,31 @@
 
 
 #pragma mark - ButtonPressed
--(void)login:(id)sender
+- (IBAction)login:(id)sender
 {
-    //[self.indicator startAnimating];
+    [loading startAnimating];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     
     [EWUserManagement loginParseWithFacebookWithCompletion:^{
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        
+        [loading stopAnimating];
         //leaving
         [rootViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }];
     
 }
+
+- (IBAction)skip:(id)sender {//this function will not be called
+    [loading startAnimating];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [EWUserManagement loginWithDeviceIDWithCompletionBlock:^{
+        [loading stopAnimating];
+        [rootViewController dismissViewControllerAnimated:YES completion:NULL];
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    }];
+}
+
 -(void)whyFacebookAlert:(id)sender
 {
     UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"Why Facebook?"

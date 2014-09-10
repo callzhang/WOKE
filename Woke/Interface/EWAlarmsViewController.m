@@ -167,23 +167,27 @@
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskStore myTasks];
         
-        
-        if (alarms.count != 7){
-            [[EWAlarmManager sharedInstance] scheduleAlarm];
-            NSLog(@"!!! Alarm(%ld) ", (long)alarms.count);
-        }
-        
-        if (tasks.count != 7 * nWeeksToScheduleTask) {
-            NSLog(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
-            [[EWTaskStore sharedInstance] scheduleTasksInBackground];
-            
-        }
-        
-        if (alarms.count == 7 && tasks.count == 7*nWeeksToScheduleTask) {
+        if (alarms.count == 0 && tasks.count == 0) {
+            NSLog(@"Alarm and task is 0, skip schedule");
+            [self resetAlarmPage];
+            return;
+        }else if (alarms.count == 7 && tasks.count == 7*nWeeksToScheduleTask) {
             
             //alarmPages
             [self resetAlarmPage];
+        }else{
+            if (alarms.count != 7){
+                [[EWAlarmManager sharedInstance] scheduleAlarm];
+                NSLog(@"!!! Alarm(%ld) ", (long)alarms.count);
+            }
+            
+            if (tasks.count != 7 * nWeeksToScheduleTask) {
+                NSLog(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
+                [[EWTaskStore sharedInstance] scheduleTasksInBackground];
+                
+            }
         }
+        
         
     }else{
         alarms = nil;
@@ -287,11 +291,9 @@
             }else{
                 NSLog(@"%s %@ finished scheduling", __func__, [object class]);
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self showAlarmPageLoading:NO];
-                    [refreshTimer invalidate];
-                    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
-                });
+                [self showAlarmPageLoading:NO];
+                [refreshTimer invalidate];
+                refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
             }
         });
         

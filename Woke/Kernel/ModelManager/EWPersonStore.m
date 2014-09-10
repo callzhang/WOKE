@@ -168,8 +168,17 @@ EWPerson *me;
         return;
     }    //fetch from sever
     NSMutableArray *allPerson = [NSMutableArray new];
-    NSString *parseObjectId = [me valueForKey:kParseObjectID];
+    
+    EWPerson *localMe = [me inContext:context];
+    NSString *parseObjectId = [localMe valueForKey:kParseObjectID];
     NSError *error;
+    
+    //check my location
+    if (!localMe.lastLocation) {
+        [EWUserManagement registerLocation];
+        [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(getEveryoneInBackgroundWithCompletion:) userInfo:nil repeats:NO];
+        return;
+    }
     NSArray *list = [PFCloud callFunction:@"getRelevantUsers"
                            withParameters:@{@"objectId": parseObjectId,
                                             @"topk" : numberOfRelevantUsers,
@@ -180,13 +189,13 @@ EWPerson *me;
         NSLog(@"*** Failed to get friends list: %@", error.description);
         //get cached person
         error = nil;
-        list = me.cachedInfo[kEveryone];
+        list = localMe.cachedInfo[kEveryone];
     }else{
         //cache
-        NSMutableDictionary *cachedInfo = [me.cachedInfo mutableCopy];
+        NSMutableDictionary *cachedInfo = [localMe.cachedInfo mutableCopy];
         cachedInfo[kEveryone] = list;
         cachedInfo[kEveryoneLastFetched] = [NSDate date];
-        me.cachedInfo = cachedInfo;
+        localMe.cachedInfo = cachedInfo;
     }
     
     //fetch
@@ -204,7 +213,6 @@ EWPerson *me;
     
     //make sure the rest of people's score is revert back to 0
     NSArray *otherLocalPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"(NOT %K IN %@) AND score > 0 AND %K != %@", kParseObjectID, [people valueForKey:kParseObjectID], kParseObjectID, me.objectId] inContext:context];
-    NSLog(@"%d person's score changed to 0", otherLocalPerson.count);
     for (EWPerson *person in otherLocalPerson) {
         person.score = 0;
     }
@@ -217,11 +225,12 @@ EWPerson *me;
         [allPerson addObject:person];
     }
     
-    EWPerson *localMe = [me inContext:context];
-    localMe.score = @100;
-    
     //batch save to local
-    [EWDataStore saveAllToLocal:[EWPerson findAllInContext:context]];
+    NSArray *all = [people arrayByAddingObjectsFromArray:otherLocalPerson];
+    [EWDataStore saveAllToLocal:all];
+    
+    //still need to save me
+    localMe.score = @100;
     
     NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
     
