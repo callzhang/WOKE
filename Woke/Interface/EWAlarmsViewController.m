@@ -16,7 +16,7 @@
 #import "NSDate+Extend.h"
 #import "UIViewController+Blur.h"
 #import "EWServer.h"
-//#import "NGAParallaxMotion.h"
+#import <BlocksKit.h>
 
 // Manager
 #import "EWAlarmManager.h"
@@ -816,11 +816,39 @@
         } else {
             
             [self.collectionView performBatchUpdates:^{
-                
+                //NSMutableSet *inserts = [NSMutableSet new];
+                //NSMutableSet *deletes = [NSMutableSet new];
+                NSMutableSet *updates = [NSMutableSet new];
+                //NSMutableSet *moves = [NSMutableSet new];
                 for (NSDictionary *change in cellChangeArray)
                 {
-                    [self processChange:change];
+                    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
+                        
+                        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                        switch (type)
+                        {
+                            case NSFetchedResultsChangeInsert:
+                                //inserts addObject:obj];
+                                [self.collectionView insertItemsAtIndexPaths:@[obj]];
+                                break;
+                            case NSFetchedResultsChangeDelete:
+                                //[deletes addObject:obj];
+                                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
+                                break;
+                            case NSFetchedResultsChangeUpdate:{
+                                [updates addObject:obj];
+                                //[self.collectionView reloadItemsAtIndexPaths:@[obj]];
+                            }
+                                break;
+                            case NSFetchedResultsChangeMove:
+                                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
+                                break;
+                        }
+                    }];
+                    
+                    [self.collectionView reloadItemsAtIndexPaths:updates.allObjects];
                 }
+                
                 
             }completion:^(BOOL finished){
                 if (finished) {
