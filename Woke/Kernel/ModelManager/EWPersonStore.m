@@ -208,7 +208,7 @@ EWPerson *me;
     for (EWPerson *person in otherLocalPerson) {
         person.score = 0;
         [EWDataStore saveToLocal:person];
-        [NSThread sleepForTimeInterval:0.5f];
+        [NSThread sleepForTimeInterval:0.2f];
     }
     //change the returned people's score;
     for (PFUser *user in people) {
@@ -217,7 +217,7 @@ EWPerson *me;
         person.score = [NSNumber numberWithFloat:score];
         [allPerson addObject:person];
         [EWDataStore saveToLocal:person];
-        [NSThread sleepForTimeInterval:0.5f];
+        [NSThread sleepForTimeInterval:0.2f];
     }
     
     EWPerson *localMe = [me inContext:context];

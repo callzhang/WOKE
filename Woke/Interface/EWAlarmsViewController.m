@@ -852,9 +852,6 @@
                 [self.collectionView deleteItemsAtIndexPaths:@[obj]];
                 break;
             case NSFetchedResultsChangeUpdate:{
-                //                        if ([obj isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]) {
-                //                            return;
-                //                        }
                 [self.collectionView reloadItemsAtIndexPaths:@[obj]];
             }
                 break;
