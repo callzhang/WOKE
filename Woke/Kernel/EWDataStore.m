@@ -417,7 +417,34 @@ NSManagedObjectContext *mainContext;
     //remove from the update queue
     [EWDataStore removeObjectFromInsertQueue:mo];
     [EWDataStore removeObjectFromUpdateQueue:mo];
+    
+}
 
++ (void)saveAllToLocal:(NSArray *)MOs{
+	if (MOs.count == 0) {
+		return;
+	}
+    
+	//mark MO as save to local
+	for (NSManagedObject *mo in MOs) {
+		if (mo.objectID.isTemporaryID) {
+			[mo.managedObjectContext obtainPermanentIDsForObjects:@[mo] error:NULL];
+		}
+		[[EWDataStore sharedInstance].saveToLocalItems addObject:mo.objectID];
+		
+	}
+	
+	//save to enqueue the updates
+	NSManagedObject *anyMO = MOs[0];
+	[anyMO.managedObjectContext saveToPersistentStoreAndWait];
+    
+	for (NSManagedObject *mo in MOs) {
+		
+		//remove from the update queue
+		[EWDataStore removeObjectFromInsertQueue:mo];
+		[EWDataStore removeObjectFromUpdateQueue:mo];
+		
+	}
     
 }
 

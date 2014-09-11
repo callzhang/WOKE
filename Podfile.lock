@@ -21,6 +21,21 @@ PODS:
   - apptentive-ios (1.5.4):
     - apptentive-ios/arc-files
   - apptentive-ios/arc-files (1.5.4)
+  - BlocksKit (2.2.5):
+    - BlocksKit/All
+  - BlocksKit/All (2.2.5):
+    - BlocksKit/Core
+    - BlocksKit/DynamicDelegate
+    - BlocksKit/MessageUI
+    - BlocksKit/UIKit
+  - BlocksKit/Core (2.2.5)
+  - BlocksKit/DynamicDelegate (2.2.5)
+  - BlocksKit/MessageUI (2.2.5):
+    - BlocksKit/Core
+    - BlocksKit/DynamicDelegate
+  - BlocksKit/UIKit (2.2.5):
+    - BlocksKit/Core
+    - BlocksKit/DynamicDelegate
   - CocoaLumberjack (2.0.0-beta):
     - CocoaLumberjack/CLI
     - CocoaLumberjack/Core
@@ -52,6 +67,7 @@ PODS:
 DEPENDENCIES:
   - AFNetworking
   - apptentive-ios
+  - BlocksKit
   - CocoaLumberjack
   - Facebook-iOS-SDK
   - GPUImage
@@ -72,6 +88,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AFNetworking: 47947303319594706f48a55185ea95a95159ab94
   apptentive-ios: f1c0f7c63134837b17a1410b525c8703e7e4bc43
+  BlocksKit: 4439e7f30a9f90743462ca63545a15c1f4304cef
   CocoaLumberjack: aadc76d7bd6c839ca84b38ed50cbf89d7cf8c693
   DACircularProgress: 3b41941891a56dc6aa17971f5322a9a38a6f446e
   Facebook-iOS-SDK: bc0d0bdf14f64cb7f4d49f8f17d445f49c40d342

@@ -38,7 +38,7 @@
 @property (nonatomic, strong) NSString* objectId;
 @property (nonatomic, strong) id preference;
 @property (nonatomic, strong) NSString* region;
-@property (nonatomic, strong) NSString* statement;
+@property (nonatomic, strong) NSString* statementi;
 @property (nonatomic, strong) NSDate* updatedAt;
 @property (nonatomic, strong) NSString* username;
 @property (nonatomic, strong) NSString* weibo;

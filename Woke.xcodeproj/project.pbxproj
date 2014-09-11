@@ -91,7 +91,6 @@
 		0ECAF195197EB50100368D6B /* EWSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECAF192197EB50100368D6B /* EWSelectionViewController.m */; };
 		0ECAF196197EB50100368D6B /* RMDateSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECAF194197EB50100368D6B /* RMDateSelectionViewController.m */; };
 		0ECB00A21964585A00B122EF /* EWCostumTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECB00A11964585A00B122EF /* EWCostumTextField.m */; };
-		0EFC9C1C19A4ECEB00F12483 /* LoginView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EFC9C1B19A4ECEB00F12483 /* LoginView.xib */; };
 		12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECF3A8B63334474C9C7D2A62 /* libPods.a */; };
 		561ECB4C17BBE94200C8AC91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 561ECB4E17BBE94200C8AC91 /* Localizable.strings */; };
 		5632E38F17D1BF1A0079D81C /* EWFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5632E38E17D1BF1A0079D81C /* EWFoundation.m */; };
@@ -142,7 +141,7 @@
 		9BF297B11912F713008C136E /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297921912F713008C136E /* EWAlarmsView.xib */; };
 		9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297941912F713008C136E /* EWAlarmsViewController.m */; };
 		9BF297B61912F713008C136E /* EWLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2979B1912F713008C136E /* EWLogInViewController.m */; };
-		9BF297B71912F713008C136E /* EWLogInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2979C1912F713008C136E /* EWLogInViewController.xib */; };
+		9BF297B71912F713008C136E /* EWLogInView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2979C1912F713008C136E /* EWLogInView.xib */; };
 		9BF297B81912F713008C136E /* EWNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2979E1912F713008C136E /* EWNotificationViewController.m */; };
 		9BF297B91912F713008C136E /* EWNotificationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2979F1912F713008C136E /* EWNotificationViewController.xib */; };
 		9BF297BA1912F713008C136E /* EWPersonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297A11912F713008C136E /* EWPersonViewController.m */; };
@@ -338,7 +337,6 @@
 		0ECAF194197EB50100368D6B /* RMDateSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMDateSelectionViewController.m; sourceTree = "<group>"; };
 		0ECB00A01964585A00B122EF /* EWCostumTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWCostumTextField.h; sourceTree = "<group>"; };
 		0ECB00A11964585A00B122EF /* EWCostumTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWCostumTextField.m; sourceTree = "<group>"; };
-		0EFC9C1B19A4ECEB00F12483 /* LoginView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = LoginView.xib; path = "Woke/Interface/UI Components/LoginView.xib"; sourceTree = SOURCE_ROOT; };
 		561ECB4D17BBE94200C8AC91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		561ECB5117BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		561ECB5217BBE9EB00C8AC91 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -439,7 +437,7 @@
 		9BF297941912F713008C136E /* EWAlarmsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWAlarmsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		9BF2979A1912F713008C136E /* EWLogInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWLogInViewController.h; sourceTree = "<group>"; };
 		9BF2979B1912F713008C136E /* EWLogInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWLogInViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		9BF2979C1912F713008C136E /* EWLogInViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWLogInViewController.xib; sourceTree = "<group>"; };
+		9BF2979C1912F713008C136E /* EWLogInView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWLogInView.xib; sourceTree = "<group>"; };
 		9BF2979D1912F713008C136E /* EWNotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationViewController.h; sourceTree = "<group>"; };
 		9BF2979E1912F713008C136E /* EWNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWNotificationViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		9BF2979F1912F713008C136E /* EWNotificationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWNotificationViewController.xib; sourceTree = "<group>"; };
@@ -1000,8 +998,7 @@
 				9BF297941912F713008C136E /* EWAlarmsViewController.m */,
 				9BF2979A1912F713008C136E /* EWLogInViewController.h */,
 				9BF2979B1912F713008C136E /* EWLogInViewController.m */,
-				9BF2979C1912F713008C136E /* EWLogInViewController.xib */,
-				0EFC9C1B19A4ECEB00F12483 /* LoginView.xib */,
+				9BF2979C1912F713008C136E /* EWLogInView.xib */,
 				9BF2979D1912F713008C136E /* EWNotificationViewController.h */,
 				9BF2979E1912F713008C136E /* EWNotificationViewController.m */,
 				9BF2979F1912F713008C136E /* EWNotificationViewController.xib */,
@@ -1367,7 +1364,7 @@
 				0E590FF0194DF35B000AD7C4 /* Lato-Hairline.ttf in Resources */,
 				ABF3FB611908B72F0017D2EF /* 12.jpg in Resources */,
 				0EAD6FB8195A62EC00DDB052 /* EWFriendsTableCell.xib in Resources */,
-				9BF297B71912F713008C136E /* EWLogInViewController.xib in Resources */,
+				9BF297B71912F713008C136E /* EWLogInView.xib in Resources */,
 				ABF3FB551908B72F0017D2EF /* 0.jpg in Resources */,
 				ABFCB2E1186E957100355781 /* Parisian Dream.caf in Resources */,
 				0E590FEE194DF35B000AD7C4 /* Lato-Bold.ttf in Resources */,
@@ -1407,7 +1404,6 @@
 				9BF297BB1912F713008C136E /* EWPostWakeUpView.xib in Resources */,
 				ABF3FB591908B72F0017D2EF /* 4.jpg in Resources */,
 				0E590FFC194DF35B000AD7C4 /* Lato-Thin.ttf in Resources */,
-				0EFC9C1C19A4ECEB00F12483 /* LoginView.xib in Resources */,
 				0E590FEC194DF35B000AD7C4 /* Lato-Black.ttf in Resources */,
 				9BF297EF1912F720008C136E /* EWTextFieldCell.xib in Resources */,
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,

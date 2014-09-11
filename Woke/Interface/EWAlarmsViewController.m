@@ -16,7 +16,7 @@
 #import "NSDate+Extend.h"
 #import "UIViewController+Blur.h"
 #import "EWServer.h"
-//#import "NGAParallaxMotion.h"
+#import <BlocksKit.h>
 
 // Manager
 #import "EWAlarmManager.h"
@@ -167,23 +167,27 @@
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskStore myTasks];
         
-        
-        if (alarms.count != 7){
-            [[EWAlarmManager sharedInstance] scheduleAlarm];
-            NSLog(@"!!! Alarm(%ld) ", (long)alarms.count);
-        }
-        
-        if (tasks.count != 7 * nWeeksToScheduleTask) {
-            NSLog(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
-            [[EWTaskStore sharedInstance] scheduleTasksInBackground];
-            
-        }
-        
-        if (alarms.count == 7 && tasks.count == 7*nWeeksToScheduleTask) {
+        if (alarms.count == 0 && tasks.count == 0) {
+            NSLog(@"Alarm and task is 0, skip schedule");
+            [self resetAlarmPage];
+            return;
+        }else if (alarms.count == 7 && tasks.count == 7*nWeeksToScheduleTask) {
             
             //alarmPages
             [self resetAlarmPage];
+        }else{
+            if (alarms.count != 7){
+                [[EWAlarmManager sharedInstance] scheduleAlarm];
+                NSLog(@"!!! Alarm(%ld) ", (long)alarms.count);
+            }
+            
+            if (tasks.count != 7 * nWeeksToScheduleTask) {
+                NSLog(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
+                [[EWTaskStore sharedInstance] scheduleTasksInBackground];
+                
+            }
         }
+        
         
     }else{
         alarms = nil;
@@ -287,11 +291,9 @@
             }else{
                 NSLog(@"%s %@ finished scheduling", __func__, [object class]);
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self showAlarmPageLoading:NO];
-                    [refreshTimer invalidate];
-                    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
-                });
+                [self showAlarmPageLoading:NO];
+                [refreshTimer invalidate];
+                refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
             }
         });
         
@@ -812,19 +814,48 @@
             [self.collectionView reloadData];
             
         } else {
+            //add a update queue to handle exception when updating cell in batch updates block
+            NSMutableArray *updates = [NSMutableArray new];
             
             [self.collectionView performBatchUpdates:^{
                 
                 for (NSDictionary *change in cellChangeArray)
                 {
-                    [self processChange:change];
+                    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
+                        
+                        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                        switch (type)
+                        {
+                            case NSFetchedResultsChangeInsert:
+                                [self.collectionView insertItemsAtIndexPaths:@[obj]];
+                                break;
+                            case NSFetchedResultsChangeDelete:
+                                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
+                                break;
+                            case NSFetchedResultsChangeUpdate:{
+                                [updates addObject:obj];
+                                //[self.collectionView reloadItemsAtIndexPaths:@[obj]];
+                            }
+                                break;
+                            case NSFetchedResultsChangeMove:
+                                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
+                                break;
+                        }
+                    }];
+                    
+                    //[self.collectionView reloadItemsAtIndexPaths:updates.allObjects];
                 }
                 
+                
             }completion:^(BOOL finished){
+                //perform updates here
+                
+                [self.collectionView reloadItemsAtIndexPaths:updates.copy];
+                
                 if (finished) {
-                    //
+                    
                 }else{
-                    NSLog(@"*** Update of collection view failed. Update main view too fast. %f sec since last update.", lastUpdated.timeElapsed);
+                    NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
                 }
                 
             }];
@@ -839,28 +870,6 @@
     }
 }
 
-- (void)processChange:(NSDictionary *)change{
-    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
-        
-        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-        switch (type)
-        {
-            case NSFetchedResultsChangeInsert:
-                [self.collectionView insertItemsAtIndexPaths:@[obj]];
-                break;
-            case NSFetchedResultsChangeDelete:
-                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
-                break;
-            case NSFetchedResultsChangeUpdate:{
-                [self.collectionView reloadItemsAtIndexPaths:@[obj]];
-            }
-                break;
-            case NSFetchedResultsChangeMove:
-                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
-                break;
-        }
-    }];
-}
 
 
 - (BOOL)shouldReloadCollectionViewToPreventKnownIssue {
