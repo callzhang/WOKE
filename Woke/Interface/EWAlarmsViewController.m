@@ -814,12 +814,11 @@
             [self.collectionView reloadData];
             
         } else {
+            //add a update queue to handle exception when updating cell in batch updates block
+            NSMutableArray *updates = [NSMutableArray new];
             
             [self.collectionView performBatchUpdates:^{
-                //NSMutableSet *inserts = [NSMutableSet new];
-                //NSMutableSet *deletes = [NSMutableSet new];
-                NSMutableSet *updates = [NSMutableSet new];
-                //NSMutableSet *moves = [NSMutableSet new];
+                
                 for (NSDictionary *change in cellChangeArray)
                 {
                     [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
@@ -828,11 +827,9 @@
                         switch (type)
                         {
                             case NSFetchedResultsChangeInsert:
-                                //inserts addObject:obj];
                                 [self.collectionView insertItemsAtIndexPaths:@[obj]];
                                 break;
                             case NSFetchedResultsChangeDelete:
-                                //[deletes addObject:obj];
                                 [self.collectionView deleteItemsAtIndexPaths:@[obj]];
                                 break;
                             case NSFetchedResultsChangeUpdate:{
@@ -846,15 +843,19 @@
                         }
                     }];
                     
-                    [self.collectionView reloadItemsAtIndexPaths:updates.allObjects];
+                    //[self.collectionView reloadItemsAtIndexPaths:updates.allObjects];
                 }
                 
                 
             }completion:^(BOOL finished){
+                //perform updates here
+                
+                [self.collectionView reloadItemsAtIndexPaths:updates.copy];
+                
                 if (finished) {
-                    //
+                    
                 }else{
-                    NSLog(@"*** Update of collection view failed. Update main view too fast. %f sec since last update.", lastUpdated.timeElapsed);
+                    NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
                 }
                 
             }];
@@ -869,31 +870,6 @@
     }
 }
 
-- (void)processChange:(NSDictionary *)change{
-    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
-        
-        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-        switch (type)
-        {
-            case NSFetchedResultsChangeInsert:
-                [self.collectionView insertItemsAtIndexPaths:@[obj]];
-                break;
-            case NSFetchedResultsChangeDelete:
-                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
-                break;
-            case NSFetchedResultsChangeUpdate:{
-                //                        if ([obj isEqual:[NSIndexPath indexPathForRow:0 inSection:0]]) {
-                //                            return;
-                //                        }
-                [self.collectionView reloadItemsAtIndexPaths:@[obj]];
-            }
-                break;
-            case NSFetchedResultsChangeMove:
-                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
-                break;
-        }
-    }];
-}
 
 
 - (BOOL)shouldReloadCollectionViewToPreventKnownIssue {
