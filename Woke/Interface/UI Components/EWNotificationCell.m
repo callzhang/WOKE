@@ -72,10 +72,22 @@
         self.time.width += deltaX;
         
         NSString *title = notification.userInfo[@"title"];
-        //NSString *body = notification.userInfo[@"content"];
-        //NSString *link = notification.userInfo[@"link"];
+        NSString *body = notification.userInfo[@"content"];
+        NSString *link = notification.userInfo[@"link"];
         
-        self.detail.text = title;
+        self.detail.text = [title stringByAppendingString:[NSString stringWithFormat:@"\n%@\n%@", body, link]];
+        
+        //adjust size
+        
+        CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(self.detail.width, 1000)  lineBreakMode:UILineBreakModeWordWrap];
+        self.detail.height = fixLabelSize.height;
+        
+        CGFloat deltaHeight = self.detail.height - 35;
+        //self.detail.height += deltaHeight;®
+        self.time.y += deltaHeight;
+        self.contentView.height += deltaHeight;
+        self.height = self.contentView.height;
+        
     }else{
         //kNotificationTypeNextTaskHasMedia
         //kNotificationTypeFriendRequest
@@ -107,19 +119,6 @@
         }
     }
     
-    //adjust size
-        
-    CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
-    
-    self.detail.height = fixLabelSize.height;
-    //self.detail.width = fixLabelSize.width;
-    
-    CGFloat deltaHeight = self.detail.height - 35;
-    //self.detail.height += deltaHeight;®
-    self.time.y += deltaHeight;
-    self.contentView.height += deltaHeight;
-    self.height = self.contentView.height;
-    
     
     if (notification.completed) {
         self.detail.enabled = NO;
@@ -130,7 +129,7 @@
         
     }
     
-    [self setNeedsDisplay];
+    //[self setNeedsDisplay];
 }
 
 - (void)drawRect:(CGRect)rect{

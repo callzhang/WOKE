@@ -145,6 +145,9 @@
     //dynamic UI stuff
     [self initData];
     [self initView];
+    
+    //show loading indicator
+    [self showAlarmPageLoading:YES];
 }
 
 
@@ -153,8 +156,7 @@
     
     //update data and view
     [self initData];
-    [self reloadAlarmPage];
-    [self.collectionView reloadData];
+    [self initView];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
@@ -196,9 +198,7 @@
 }
 
 - (void)initView {
-
-    //show loading indicator
-    [self showAlarmPageLoading:YES];
+    [self.collectionView reloadData];
     
     //load page
     [self reloadAlarmPage];
@@ -504,7 +504,7 @@
 
 
 - (void)toggleSleepBtnVisibility{
-    if (tasks) {
+    if (tasks.count > 0) {
         EWTaskItem *task = tasks[0];
         float h = -task.time.timeElapsed/3600;
         NSNumber *duration = me.preference[kSleepDuration];
@@ -515,10 +515,12 @@
                     self.sleepBtn.alpha = 1;
                 }];
             }
-            
-        }else if(self.sleepBtn.alpha != 0){
-            self.sleepBtn.alpha = 0;
+            return;
         }
+    }
+    
+    if(self.sleepBtn.alpha != 0){
+        self.sleepBtn.alpha = 0;
     }
 }
 

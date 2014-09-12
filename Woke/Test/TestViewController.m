@@ -180,7 +180,7 @@
             }];
             
             //3. Insert a task that is dur in 10s
-            //...
+            //...Ø
             break;
         }
         case 1: {

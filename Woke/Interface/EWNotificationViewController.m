@@ -139,9 +139,10 @@
     if (h) {
         return h.floatValue;
     }
-    EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
-    cellHeights[indexPath] = @(cell.height);
-    return cell.height;
+    //EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
+    //cellHeights[indexPath] = @(cell.height);
+    //return cell.height;
+    return 70;
 }
 
 

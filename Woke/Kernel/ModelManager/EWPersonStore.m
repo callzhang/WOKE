@@ -56,6 +56,7 @@ EWPerson *me;
     me = user;
     currentUser = user;
     [me addObserver:self forKeyPath:@"score" options:NSKeyValueObservingOptionNew context:nil];
+    [me addObserver:self forKeyPath:@"lastLocation" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 #pragma mark - CREATE USER
@@ -175,14 +176,19 @@ EWPerson *me;
     
     //check my location
     if (!localMe.lastLocation) {
-        [EWUserManagement registerLocation];
-        [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(getEveryoneInBackgroundWithCompletion:) userInfo:nil repeats:NO];
-        return;
+        //NSLog(@"Forfeit getting everyone around because no location on file");
+        //return;
+        
+        //get a temp coordinate
+        CLLocation *loc = [[CLLocation alloc] initWithLatitude:40.732019 longitude:-73.992684];
+        localMe.lastLocation = loc;
+        
     }
     NSArray *list = [PFCloud callFunction:@"getRelevantUsers"
                            withParameters:@{@"objectId": parseObjectId,
                                             @"topk" : numberOfRelevantUsers,
-                                            @"radius" : radiusOfRelevantUsers}
+                                            @"radius" : radiusOfRelevantUsers,
+                                            @"location": localMe.lastLocation}
                                     error:&error];
     
     if (error && list.count == 0) {
@@ -269,14 +275,20 @@ EWPerson *me;
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([object isEqual:me]) {
-        NSNumber *score = change[NSKeyValueChangeNewKey];
-        if ([score isKindOfClass:[NSNull class]] || [score integerValue] != 100) {
-            NSLog(@"My score resotred to 100");
-            me.score = @100;
-        }
-    }else if ([keyPath isEqualToString:@"profilePic"]){
-        if (![object valueForKey:@"profilePic"]) {
-            EWAlert(@"Profile picture missing");
+        if ([keyPath isEqualToString:@"score"]) {
+            NSNumber *score = change[NSKeyValueChangeNewKey];
+            if ([score isKindOfClass:[NSNull class]] || [score integerValue] != 100) {
+                NSLog(@"My score resotred to 100");
+                me.score = @100;
+            }
+        }else if ([keyPath isEqualToString:@"profilePic"]){
+            if (![object valueForKey:@"profilePic"]) {
+                EWAlert(@"*** Profile picture missing");
+            }
+            
+        }else if ([keyPath isEqualToString:@"lastLocation"]){
+            NSLog(@"Last location updated, start grab everyone");
+            [self refreshPersonInBackgroundWithCompletion:NULL];
         }
         
     }
