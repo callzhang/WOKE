@@ -41,6 +41,9 @@
 }
 
 - (void)setNotification:(EWNotification *)notification{
+    if (_notification == notification) {
+        return;
+    }
     _notification = notification;
     self.detail.frame = CGRectMake(61, 8, 250, 35);
     self.time.frame = CGRectMake(61, 47, 181, 15);
@@ -52,6 +55,7 @@
     }else{
         dispatch_async(dispatch_get_main_queue(), ^{
             PFObject *PO = [notification getParseObjectWithError:NULL];
+            notification.createdAt = PO.createdAt;
             self.time.text = [PO.createdAt.timeElapsedString stringByAppendingString:@" ago"];
         });
     }
@@ -104,29 +108,27 @@
     }
     
     //adjust size
-    dispatch_async(dispatch_get_main_queue(), ^{
         
-        CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
+    CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(250, 1000)  lineBreakMode:UILineBreakModeWordWrap];
+    
+    self.detail.height = fixLabelSize.height;
+    //self.detail.width = fixLabelSize.width;
+    
+    CGFloat deltaHeight = self.detail.height - 35;
+    //self.detail.height += deltaHeight;®
+    self.time.y += deltaHeight;
+    self.contentView.height += deltaHeight;
+    self.height = self.contentView.height;
+    
+    
+    if (notification.completed) {
+        self.detail.enabled = NO;
+        self.time.enabled = NO;
+    }else{
+        self.detail.enabled = YES;
+        self.time.enabled = YES;
         
-        self.detail.height = fixLabelSize.height;
-        //self.detail.width = fixLabelSize.width;
-        
-        CGFloat deltaHeight = self.detail.height - 35;
-        //self.detail.height += deltaHeight;®
-        self.time.y += deltaHeight;
-        self.contentView.height += deltaHeight;
-        self.height = self.contentView.height;
-        
-        
-        if (notification.completed) {
-            self.detail.enabled = NO;
-            self.time.enabled = NO;
-        }else{
-            self.detail.enabled = YES;
-            self.time.enabled = YES;
-            
-        }
-    });
+    }
     
     [self setNeedsDisplay];
 }

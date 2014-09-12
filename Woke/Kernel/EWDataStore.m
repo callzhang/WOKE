@@ -228,10 +228,10 @@ NSManagedObjectContext *mainContext;
     //this will run at the beginning and every 600s
     NSLog(@"Start sync service");
 	
-    //lsat seen
-    //NSLog(@"[1] Start last seen recurring updates");
-    //[EWUserManagement updateLastSeen];
-    
+	//fetch everyone
+	NSLog(@"[1] Getting everyone");
+	[[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+	
     //location
     NSLog(@"[2] Start location recurring update");
     [EWUserManagement registerLocation];

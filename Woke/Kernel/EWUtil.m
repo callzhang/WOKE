@@ -11,7 +11,7 @@
 #import <AdSupport/ASIdentifierManager.h>
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
-
+#import <Crashlytics/Crashlytics.h>
 
 //static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
@@ -174,6 +174,9 @@ void EWLogInit(){
 //	NSString *logFilePath = [documentsDirectory stringByAppendingPathComponent:fileName];
 //    Logger *logger = LoggerGetDefaultLogger();
 //    LoggerSetBufferFile(logger, (__bridge CFStringRef)logFilePath);
+    
+    //crashlytics
+    [Crashlytics startWithAPIKey:@"6ec9eab6ca26fcd18d51d0322752b861c63bc348"];
 
     
     [DDLog addLogger:[DDASLLogger sharedInstance]];
@@ -238,6 +241,9 @@ void uncaughtExceptionHandler(NSException *exception) {
 }
 
 
++ (void)crash{
+    [[Crashlytics sharedInstance] crash];
+}
 
     
 @end

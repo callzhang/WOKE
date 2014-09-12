@@ -17,6 +17,7 @@
 #import "EWAppDelegate.h"
 #import "EWMediaItem.h"
 #import "EWWakeUpManager.h"
+#import "EWSleepViewController.h"
 
 @interface EWAlarmPageView (){
     NSTimer *changeTimeTimer;
@@ -53,7 +54,8 @@
     }
     
     //timer
-    changeTimeTimer = [NSTimer scheduledTimerWithTimeInterval:360 target:self selector:@selector(changeTimeLeftLabel) userInfo:nil repeats:YES];
+    changeTimeTimer = [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(changeTimeLeftLabel) userInfo:nil repeats:YES];
+    
 }
 
 
@@ -109,6 +111,7 @@
     }
 #endif
 }
+
 
 - (void)setTask:(EWTaskItem *)t{
     //unsubscribe previous task if possible
@@ -251,15 +254,15 @@
 }
 #pragma mark - ChangeTimeLeftLabel
 
--(void)changeTimeLeftLabel
+- (void)changeTimeLeftLabel
 {
     if (!task) {
         return;
     }
     //self.timeLeftText.text = task.time.timeLeft;
 
-    NSInteger h = -task.time.timeElapsed/3600;
-    if (h<0) {
+    float h = -task.time.timeElapsed/3600;
+    if (h < 0) {
         self.timeLeftText.text = @"Just alarmed";
     }else if(h<24){
         self.timeLeftText.text = [NSString stringWithFormat:@"%@ left", [task.time timeLeft]];

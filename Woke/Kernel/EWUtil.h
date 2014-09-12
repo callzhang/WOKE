@@ -32,5 +32,5 @@ void EWLogInit();//to init logger and direct the log to file
 
 + (NSArray *)readContactsEmailsFromAddressBooks;
 
-
++ (void)crash;
 @end

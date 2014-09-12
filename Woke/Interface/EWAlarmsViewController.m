@@ -98,11 +98,14 @@
         //refresh
         [self refreshView];
         
-        //fetch everyone
-        [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
-        
         //reload alarm page every 10min
-        [NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:YES];
+        //[NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:YES];
+        
+        //sleep buttom visibility
+        [[NSNotificationCenter defaultCenter] addObserverForName:kSleepNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+            [self toggleSleepBtnVisibility];
+        }];
+        [NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(toggleSleepBtnVisibility) userInfo:nil repeats:YES];
 
     }];
     //[[EWPersonStore sharedInstance] addObserver:self forKeyPath:@"currentUser" options:NSKeyValueObservingOptionNew context:nil];
@@ -135,10 +138,6 @@
     UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
     blurBar.barStyle = UIBarStyleBlack;
     [self.alarmBar insertSubview:blurBar belowSubview:self.scrollView];
-    
-    //parallax
-//    self.background.parallaxIntensity = -100;
-//    self.collectionView.parallaxIntensity = 20;
     
     //indicator center
     self.youIndicator.layer.anchorPoint = CGPointMake(0.5, 0.5);
@@ -203,6 +202,8 @@
     
     //load page
     [self reloadAlarmPage];
+    
+    [self toggleSleepBtnVisibility];
     
 }
 
@@ -424,7 +425,7 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Refresh", @"Feedback", @"Start Sleeping", @"Test sheet", nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Refresh", @"Feedback", @"Test sheet", nil];
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
@@ -467,7 +468,6 @@
     }
 }
 
-
 - (void)showAlarmPageLoading:(BOOL)on{
     
     for (UIView *view in _alarmPages) {
@@ -501,6 +501,34 @@
         [_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally) animated:YES];
     }
 }
+
+
+- (void)toggleSleepBtnVisibility{
+    if (tasks) {
+        EWTaskItem *task = tasks[0];
+        float h = -task.time.timeElapsed/3600;
+        NSNumber *duration = me.preference[kSleepDuration];
+        if (h < duration.floatValue) {
+            //time to sleep
+            if (self.sleepBtn.alpha < 1) {
+                [UIView animateWithDuration:0.5 animations:^{
+                    self.sleepBtn.alpha = 1;
+                }];
+            }
+            
+        }else if(self.sleepBtn.alpha != 0){
+            self.sleepBtn.alpha = 0;
+        }
+    }
+}
+
+
+- (IBAction)startSleep:(id)sender {
+    
+    EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
+    [rootViewController presentViewControllerWithBlurBackground:controller];
+}
+
 
 
 

@@ -45,8 +45,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *you;
 @property (weak, nonatomic) IBOutlet UIButton *youBtn;
 @property (weak, nonatomic) IBOutlet UIButton *notificationBtn;
-
-
+@property (weak, nonatomic) IBOutlet UIButton *sleepBtn;
 
 
 
@@ -60,4 +59,5 @@
 - (IBAction)youBtn:(id)sender;
 - (IBAction)showNotification:(id)sender;
 - (IBAction)pinched:(UIPinchGestureRecognizer *)sender;
+- (IBAction)startSleep:(id)sender;
 @end
