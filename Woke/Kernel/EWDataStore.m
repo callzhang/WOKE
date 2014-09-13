@@ -881,7 +881,7 @@ NSManagedObjectContext *mainContext;
 		
 		NSLog(@"=========== Finished uploading to saver ===============");
 		if (workingObjects.count > 0) {
-			NSLog(@"*** With failures:%@", [[EWDataStore getObjectFromQueue:kParseQueueWorking] valueForKey:kParseObjectID]);
+			NSLog(@"*** With failures:%@(%@)", [workingObjects valueForKey:@"objectId"]);
 			[EWDataStore clearQueue:kParseQueueWorking];
 		}
 		if (workingChangedRecords.count) {

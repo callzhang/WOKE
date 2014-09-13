@@ -126,9 +126,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     self.location.text = @"";
     self.statement.text = @"";
     
-    //test profile pic bounds change
-    [self.profilePic addObserver:self forKeyPath:@"bounds" options:NSKeyValueObservingOptionOld context:nil];
-    
     [self initData];
     [self initView];
     

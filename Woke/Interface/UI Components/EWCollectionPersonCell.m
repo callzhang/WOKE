@@ -80,7 +80,6 @@
     _person = person;
     [self addSubview:self.name];
     //init state
-    //self.image.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
     self.name.alpha = 0;
     self.selection.hidden = YES;
     self.initial.hidden = YES;
@@ -108,7 +107,6 @@
                 self.name.frame = frame;
             }];
         });
-        
     }
     
     
@@ -118,33 +116,46 @@
         self.showTime = NO;
         return;
     }else{
-        self.showTime = YES;
-    }
-    
-    
-    //time
-    NSDate *time = _person.cachedInfo[kNextTaskTime];
-    if (time) {
-        
         if (self.showTime) {
-            self.time.text = [time timeLeft];
-            self.time.alpha = 1;
+            //time
+            NSDate *time = _person.cachedInfo[kNextTaskTime];
+            if (time.timeElapsed>0) time = nil;
+            if (time) {
+                [_time addObserver:self forKeyPath:@"alpha" options:NSKeyValueObservingOptionNew context:nil];
+                self.time.text = [time timeLeft];
+                self.time.alpha = 1;
+                
+            
+            }else{
+                self.time.text = @"";
+            }
+
         }
-    }else{
-        self.time.text = @"";
+        
+        
+        //distance
+        if (self.showDistance && !time) {
+            if (!_person.isMe && _person.lastLocation && me.lastLocation && !_distance) {
+                CLLocation *loc0 = me.lastLocation;
+                CLLocation *loc1 = _person.lastLocation;
+                self.distance = [loc0 distanceFromLocation:loc1]/1000;
+            }
+            if (_distance) {
+                self.km.text = [NSString stringWithFormat:@"%.0fkm", _distance];
+            }else{
+                self.km.text = @"";
+            }
+        }
+        
     }
     
     
-    //distance
-    if (!_person.isMe && _person.lastLocation && me.lastLocation && !_distance) {
-        CLLocation *loc0 = me.lastLocation;
-        CLLocation *loc1 = _person.lastLocation;
-        self.distance = [loc0 distanceFromLocation:loc1]/1000;
-    }
-    if (self.showDistance && self.distance && !time) {
-        self.km.text = [NSString stringWithFormat:@"%.1fkm", _distance];
-    }
     
+    
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    NSLog(@"alpha changed");
 }
 
 

@@ -710,6 +710,9 @@
     //Data
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
     
+    cell.showName = YES;
+    cell.showTime = YES;
+    cell.showDistance = NO;
     cell.person = person;
     
     return cell;
