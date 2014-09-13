@@ -71,7 +71,10 @@
     PFQuery *q = [PFQuery queryWithClassName:@"EWMediaItem"];
     [q whereKey:@"author" equalTo:[PFQuery getUserObjectWithId:WokeUserID]];
     NSArray *mediasFromWoke = me.cachedInfo[kWokeVoiceReceived]?:[NSArray new];
+#ifdef DEBUG
+#else
     [q whereKey:kParseObjectID notContainedIn:mediasFromWoke];
+#endif
     PFObject *voice = [q getFirstObject];
     if (voice) {
         [EWDataStore setCachedParseObject:voice];

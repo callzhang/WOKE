@@ -327,6 +327,9 @@
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     [self scrollViewDidScroll:tableView];
     if (editingStyle == UITableViewCellEditingStyleDelete) {
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+        cell.media = nil;
+        
         //media
         EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
     

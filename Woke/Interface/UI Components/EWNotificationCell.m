@@ -18,19 +18,7 @@
 - (void)awakeFromNib
 {
     // Initialization code
-    
-    self.time = [[UILabel alloc] init];
-    [self addSubview:self.time];
-    self.time.textColor = [UIColor whiteColor];
-    self.time.backgroundColor = [UIColor clearColor];
-    self.time.font = [UIFont systemFontOfSize:12];
-    
-    self.detail = [[UILabel alloc] init];
-     self.detail.textColor = [UIColor whiteColor];
-    self.detail.backgroundColor = [UIColor clearColor];
-    [self addSubview:self.detail];
-    self.detail.font = [UIFont fontWithName:@"lato-Regular.ttf" size:14];
-    self.detail.numberOfLines = 0;
+    [super awakeFromNib];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -45,19 +33,19 @@
         return;
     }
     _notification = notification;
-    self.detail.frame = CGRectMake(61, 8, 250, 35);
-    self.time.frame = CGRectMake(61, 47, 181, 15);
-    
 
     //time
     if (notification.createdAt) {
         self.time.text = [notification.createdAt.timeElapsedString stringByAppendingString:@" ago"];
     }else{
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             PFObject *PO = [notification getParseObjectWithError:NULL];
-            notification.createdAt = PO.createdAt;
-            self.time.text = [PO.createdAt.timeElapsedString stringByAppendingString:@" ago"];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                notification.createdAt = PO.createdAt;
+                self.time.text = [notification.createdAt.timeElapsedString stringByAppendingString:@" ago"];
+            });
         });
+        
     }
     
     
@@ -65,11 +53,6 @@
     if ([type isEqualToString:kNotificationTypeNotice]) {
         self.profilePic.image = nil;
         self.profilePic.hidden = YES;
-        NSInteger deltaX = self.detail.x - self.profilePic.x;
-        self.detail.left = self.profilePic.x;
-        self.detail.width += deltaX;
-        self.time.left = self.profilePic.x;
-        self.time.width += deltaX;
         
         NSString *title = notification.userInfo[@"title"];
         NSString *body = notification.userInfo[@"content"];
@@ -77,16 +60,6 @@
         
         self.detail.text = [title stringByAppendingString:[NSString stringWithFormat:@"\n%@\n%@", body, link]];
         
-        //adjust size
-        
-        CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(self.detail.width, 1000)  lineBreakMode:UILineBreakModeWordWrap];
-        self.detail.height = fixLabelSize.height;
-        
-        CGFloat deltaHeight = self.detail.height - 35;
-        //self.detail.height += deltaHeight;®
-        self.time.y += deltaHeight;
-        self.contentView.height += deltaHeight;
-        self.height = self.contentView.height;
         
     }else{
         //kNotificationTypeNextTaskHasMedia
@@ -95,6 +68,7 @@
         
         NSString *personID = notification.sender;
         EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByServerID:personID];
+        self.profilePic.hidden = NO;
         if (sender.profilePic) {
             self.profilePic.image = sender.profilePic;
         }else{
@@ -115,6 +89,7 @@
             self.detail.text = [NSString stringWithFormat:@"%@ has accepted your friend request", sender.name];
             
         }else if (kNotificationTypeNextTaskHasMedia){
+            //TODO: timestamp
             self.detail.text = @"You have received voice(s) for next wake up.";
         }
     }
@@ -126,16 +101,42 @@
     }else{
         self.detail.enabled = YES;
         self.time.enabled = YES;
-        
     }
     
     //[self setNeedsDisplay];
 }
 
+- (void)setSize{
+    //adjust size
+    if ([_notification.type isEqualToString:kNotificationTypeNotice]) {
+        
+        NSInteger deltaX = self.detail.x - self.profilePic.x;
+        self.detail.x = self.profilePic.x;
+        self.detail.width += deltaX;
+        self.time.x = self.profilePic.x;
+        self.time.width += deltaX;
+        
+        CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(self.detail.width, 1000)  lineBreakMode:UILineBreakModeWordWrap];
+        float original_height = self.detail.height;
+        self.detail.height = ceil(fixLabelSize.height);
+        
+        CGFloat deltaHeight = self.detail.height - original_height;
+        //self.detail.height += deltaHeight;
+        //self.time.y += deltaHeight;
+        self.contentView.height += deltaHeight;
+        self.height = self.contentView.height;
+        
+    }
+    
+    [self setNeedsDisplay];
+}
+
 - (void)drawRect:(CGRect)rect{
     [super drawRect:rect];
+    if (self.profilePic.image) {
+        [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
+    }
     
-    [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
 }
 
 

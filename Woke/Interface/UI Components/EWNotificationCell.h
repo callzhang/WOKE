@@ -4,7 +4,7 @@
 //
 //  Created by Lee on 7/3/14.
 //  Copyright (c) 2014 Shens. All rights reserved.
-//
+//void
 
 #import <UIKit/UIKit.h>
 @class EWNotification;
@@ -15,5 +15,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *detail;
 @property (strong, nonatomic) EWNotification *notification;
 @property (nonatomic) NSInteger cellHeight;
+
+- (void)setSize;
 
 @end

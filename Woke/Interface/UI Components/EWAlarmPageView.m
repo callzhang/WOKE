@@ -139,17 +139,17 @@
     self.timeText.text = [t.time date2timeShort];
     self.AM.text = [t.time date2am];
     self.descriptionText.text = t.statement ?: alarm.statement;
-    
  
     [self changeTimeLeftLabel];//mq  changed 2014-06-12
     
     NSInteger mCount = task.medias.count;
     
+    [self.messages setTitle:@"" forState:UIControlStateNormal];
+#ifdef DEBUG
     if (mCount > 0) {
-        [self.messages setTitle:[NSString stringWithFormat:@"%lu voice tones", (unsigned long)task.medias.count] forState:UIControlStateNormal];
-    }else{
-        [self.messages setTitle:@"" forState:UIControlStateNormal];
+        [self.messages setTitle:[NSString stringWithFormat:@"%lu voice", (unsigned long)task.medias.count] forState:UIControlStateNormal];
     }
+#endif
     
     
     
@@ -215,7 +215,7 @@
                 [self.messages setTitle:@"" forState:UIControlStateNormal];
             }else{
 #ifdef DEBUG
-                [self.messages setTitle:[NSString stringWithFormat:@"%ld voice tones", (long)nMedia] forState:UIControlStateNormal];
+                [self.messages setTitle:[NSString stringWithFormat:@"%ld voices", (long)nMedia] forState:UIControlStateNormal];
 #endif
             }
             
@@ -224,11 +224,13 @@
             self.timeText.text = [task.time date2timeShort];
             self.AM.text = [task.time date2am];
             [self changeTimeLeftLabel];
+            
         }else if ([keyPath isEqualToString:@"statement"]){
         
             self.descriptionText.text = task.statement;
             
         }else{
+            
             NSLog(@"@@@ Unhandled task %@ change: %@", keyPath, change);
         }
         [self setNeedsDisplay];

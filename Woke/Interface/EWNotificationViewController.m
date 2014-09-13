@@ -128,8 +128,6 @@
     EWNotification *notification = notifications[indexPath.row];
     if (!cell.notification || cell.notification != notification) {
         cell.notification = notification;
-
-
     }
     return cell;
 }
@@ -139,9 +137,16 @@
     if (h) {
         return h.floatValue;
     }
-    //EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
-    //cellHeights[indexPath] = @(cell.height);
-    //return cell.height;
+    
+    EWNotification *notification = notifications[indexPath.row];
+    NSString *type = notification.type;
+    if ([type isEqualToString:kNotificationTypeNotice]) {
+        EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
+        [cell setSize];
+        cellHeights[indexPath] = @(cell.height);
+        return cell.height;
+    }
+    //else
     return 70;
 }
 
@@ -169,6 +174,7 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
     
     cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0];
+    [(EWNotificationCell *)cell setSize];
 
 }
 

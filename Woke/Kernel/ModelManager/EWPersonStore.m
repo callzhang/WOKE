@@ -188,7 +188,8 @@ EWPerson *me;
                            withParameters:@{@"objectId": parseObjectId,
                                             @"topk" : numberOfRelevantUsers,
                                             @"radius" : radiusOfRelevantUsers,
-                                            @"location": localMe.lastLocation}
+                                            @"location": @{@"latitude": @(me.lastLocation.coordinate.latitude),
+                                                           @"longitude": @(me.lastLocation.coordinate.longitude)}}
                                     error:&error];
     
     if (error && list.count == 0) {
