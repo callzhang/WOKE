@@ -881,7 +881,7 @@ NSManagedObjectContext *mainContext;
 		
 		NSLog(@"=========== Finished uploading to saver ===============");
 		if (workingObjects.count > 0) {
-			NSLog(@"*** With failures:%@(%@)", [workingObjects valueForKey:@"objectId"]);
+//			NSLog(@"*** With failures:%@(%@)", [workingObjects valueForKey:@"objectId"]);
 			[EWDataStore clearQueue:kParseQueueWorking];
 		}
 		if (workingChangedRecords.count) {
@@ -1223,7 +1223,7 @@ NSManagedObjectContext *mainContext;
 - (PFObject *)getParseObjectWithError:(NSError **)err{
     
 	PFObject *PO = [EWDataStore getParseObjectWithClass:self.entity.name WithID:self.serverID withError:err];
-	if (!PO.isDataAvailable && *err) {
+	if (!PO.isDataAvailable && err) {
 		if ((*err).code == kPFErrorObjectNotFound && [EWDataStore isReachable]) {
 			NSLog(@"*** PO %@(%@) doesn't exist on server", self.entity.serverClassName, self.serverID);
 			[self setValue:nil forKeyPath:kParseObjectID];

@@ -126,9 +126,8 @@
     EWNotificationCell *cell = [tableView dequeueReusableCellWithIdentifier:kNotificationCellIdentifier];
     
     EWNotification *notification = notifications[indexPath.row];
-    if (!cell.notification || cell.notification != notification) {
-        cell.notification = notification;
-    }
+    cell.notification = notification;
+    
     return cell;
 }
 
@@ -142,7 +141,7 @@
     NSString *type = notification.type;
     if ([type isEqualToString:kNotificationTypeNotice]) {
         EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
-        [cell setSize];
+//        [cell setSize];
         cellHeights[indexPath] = @(cell.height);
         return cell.height;
     }

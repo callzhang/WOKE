@@ -1319,7 +1319,6 @@
 				ORGANIZATIONNAME = WokeAlarm.com;
 				TargetAttributes = {
 					568CC783178DD2C900AB1579 = {
-						DevelopmentTeam = SDR7T9YB58;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
