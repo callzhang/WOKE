@@ -117,7 +117,6 @@
         return;
     }else{
         if (self.showTime) {
-            
             //time
             //[_time addObserver:self forKeyPath:@"alpha" options:NSKeyValueObservingOptionNew context:nil];
             self.time.alpha = 1;
@@ -148,7 +147,6 @@
 
 - (NSString *)timeString{
     NSDate *time = _person.cachedInfo[kNextTaskTime];
-    
     if (time && [time timeIntervalSinceNow] > 0) {
         _timeLeft = [time timeIntervalSinceNow];
         return [time timeLeft];
