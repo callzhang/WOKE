@@ -23,6 +23,7 @@
 @property (nonatomic,strong)NSString *timeAndDistance;
 @property (nonatomic, strong) EWPerson *person;
 @property (nonatomic) float distance;
+@property (nonatomic) float timeLeft;
 @property (nonatomic) BOOL showName;
 @property (nonatomic) BOOL showDistance;
 @property (nonatomic) BOOL showTime;

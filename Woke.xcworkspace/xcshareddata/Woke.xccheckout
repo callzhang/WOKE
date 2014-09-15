@@ -5,13 +5,15 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>6796A2C7-5301-4B02-B515-1D8DD9879323</string>
+	<string>C48EAB14-066D-4EC5-9CF4-90D6CCAA85BF</string>
 	<key>IDESourceControlProjectName</key>
 	<string>Woke</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>8EF5E265AB5CE282CCFE2D382DE7A4899F116F22</key>
 		<string>https://github.com/callzhang/WOKE.git</string>
+		<key>c81c12f4-6276-2f43-b71e-88467c5cecd4++3325</key>
+		<string>https://10.3.15.20/gzrd/gzrd_mail_rep/Foxmail6.0_proj/trunk/MMessengerTag/Iphone/3.1/3rd/facebook/JSON</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>Woke.xcworkspace</string>
@@ -19,6 +21,13 @@
 	<dict>
 		<key>8EF5E265AB5CE282CCFE2D382DE7A4899F116F22</key>
 		<string>..</string>
+		<key>c81c12f4-6276-2f43-b71e-88467c5cecd4++3325</key>
+		<string>../Components/JSON</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>c81c12f4-6276-2f43-b71e-88467c5cecd4++3325</key>
+		<string>https://10.3.15.20/gzrd/gzrd_mail_rep</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/callzhang/WOKE.git</string>
@@ -28,6 +37,14 @@
 	<string>8EF5E265AB5CE282CCFE2D382DE7A4899F116F22</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>c81c12f4-6276-2f43-b71e-88467c5cecd4++3325</string>
+			<key>IDESourceControlWCCName</key>
+			<string>JSON</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>

@@ -169,13 +169,17 @@
 
 - (void)playMedia:(EWMediaItem *)mi{
     NSParameterAssert([NSThread isMainThread]);
-    media = (EWMediaItem *)[mainContext objectWithID:mi.objectID];
-    if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
+    media = [mi inContext:mainContext];
+    if (!mi){
+        [self playSoundFromFile:kSilentSound];
+    }
+    else if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
         
         [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];
         
         //lock screen
         [self displayNowPlayingInfoToLockScreen:mi];
+        
     }else if([media.type isEqualToString:kMediaTypeBuzz]){
         if ([media.buzzKey isEqualToString: @"default"]) {
             [self playSoundFromFile:@"buzz.caf"];

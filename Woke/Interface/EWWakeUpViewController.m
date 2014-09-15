@@ -199,18 +199,15 @@
     //show button first
     footer.top = [UIScreen mainScreen].bounds.size.height;
     [self.wakeupButton setTitle:@"Shake To Wake Up!" forState:UIControlStateNormal];
-    [self.wakeupButton addTarget:self action:@selector(presentShakeProgressBar) forControlEvents:UIControlEventTouchUpInside];
+    self.shakeProgress.alpha = 0;
     
     if ([self.shakeProgress isShakeSupported]) {
+        [self.wakeupButton addTarget:self action:@selector(presentShakeProgressBar) forControlEvents:UIControlEventTouchUpInside];
         // need  update
         self.shakeProgress.progress = 0;
-        self.shakeProgress.alpha = 0;
     }else{
         [self.wakeupButton addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     }
-
-    
-    
 }
 
 - (void)presentShakeProgressBar{
@@ -492,58 +489,53 @@
 
 
 - (void)playNextCell{
-    //check if need to play next
-    if (!next){
-        NSLog(@"Next is disabled, stop playing next");
-        return;
-    }
-    //return if no  medias
-    if (!medias.count) {
-        return;
-    }
-    
-    NSInteger currentCellPlaying = [self seekCurrentCell];
+    //delay 3s
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        //check if need to play next
+        if (!next){
+            NSLog(@"Next is disabled, stop playing next");
+            return;
+        }
+        //return if no  medias
+        if (!medias.count) {
+            return;
+        }
+        
+        NSInteger currentCellPlaying = [self seekCurrentCell];
 
-    __block EWMediaViewCell *cell;
-    NSIndexPath *path;
-    NSInteger nextCellIndex = currentCellPlaying + 1;
-    
-    if (nextCellIndex < medias.count){
+        __block EWMediaViewCell *cell;
+        NSIndexPath *path;
+        NSInteger nextCellIndex = currentCellPlaying + 1;
         
-        //get next cell
-        NSLog(@"Play next song (%ld)", (long)nextCellIndex);
-        path = [NSIndexPath indexPathForRow:nextCellIndex inSection:0];
-        
-    }else if(nextCellIndex >= medias.count){
-        if ((--loopCount)>0) {
-            //play the first if loopCount > 0
-            NSLog(@"Looping, %ld loop left", (long)loopCount);
-            path = [NSIndexPath indexPathForRow:0 inSection:0];
+        if (nextCellIndex < medias.count){
+            
+            //get next cell
+            NSLog(@"Play next song (%ld)", (long)nextCellIndex);
+            path = [NSIndexPath indexPathForRow:nextCellIndex inSection:0];
+            
+        }else if(nextCellIndex >= medias.count){
+            if ((--loopCount)>0) {
+                //play the first if loopCount > 0
+                NSLog(@"Looping, %ld loop left", (long)loopCount);
+                path = [NSIndexPath indexPathForRow:0 inSection:0];
+                
+            }else{
+                NSLog(@"Loop finished, stop playing");
+                //nullify all cell info in avmanager
+                cell = nil;
+                [AVManager sharedManager].currentCell = nil;
+                [AVManager sharedManager].media = nil;
+                path = nil;
+                return;
+            }
             
         }else{
-            NSLog(@"Loop finished, stop playing");
-            //nullify all cell info in avmanager
-            cell = nil;
-            [AVManager sharedManager].currentCell = nil;
-            [AVManager sharedManager].media = nil;
-            path = nil;
-            return;
+            [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%lu)", (long)nextCellIndex, (unsigned long)medias.count];
         }
         
-    }else{
-        [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%lu)", (long)nextCellIndex, (unsigned long)medias.count];
-    }
-    
-    //delay 3s
-    NSLog(@"Delay 3s to play next cell");
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (!next /* || [AVManager sharedManager].player.playing*/) {
-            return;
-        }
         //get cell
         cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
         if (!cell) {
-            NSLog(@"@@@ cell is not visible. %@", path);
             cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
         }
         if (cell) {
@@ -553,16 +545,17 @@
             [[AVManager sharedManager] playMedia:medias[path.row]];
         }
         
+        //highlight
+        if (path) {
+            [tableView_ selectRowAtIndexPath:path animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [tableView_ deselectRowAtIndexPath:path animated:YES];
+            });
+        }
+        
     });
     
-    //highlight
-    if (path) {
-        cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
-        [tableView_ selectRowAtIndexPath:path animated:YES scrollPosition:UITableViewScrollPositionMiddle];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [tableView_ deselectRowAtIndexPath:path animated:YES];
-        });
-    }
+    
     
 }
 

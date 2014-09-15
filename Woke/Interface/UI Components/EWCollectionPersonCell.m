@@ -48,18 +48,18 @@
 -(NSString *)timeAndDistance
 {
     
-    NSString *timeLeft = _time.text;
-    NSString *distance = _km.text;
+    NSString *timeLeftString = [self timeString];
+    NSString *distanceString = [self distanceString];
     
-    if (!timeLeft && !_distance) {
+    if (!_timeLeft && !_distance) {
         _timeAndDistance = @"";
     }
-    else if (timeLeft || distance) {
-        _timeAndDistance = [timeLeft stringByAppendingString:distance];
-    }
-    else
-    {
-       _timeAndDistance = [[timeLeft stringByAppendingString:@" . "] stringByAppendingString:distance];
+    else if(_timeLeft && _distance){
+       _timeAndDistance = [[timeLeftString stringByAppendingString:@" . "] stringByAppendingString:distanceString];
+    }else if (_timeLeft) {
+        _timeAndDistance = [timeLeftString stringByAppendingString:timeLeftString];
+    }else if(_distance){
+        _timeAndDistance = [timeLeftString stringByAppendingString:distanceString];
     }
     
     return _timeAndDistance;
@@ -117,45 +117,54 @@
         return;
     }else{
         if (self.showTime) {
-            //time
-            NSDate *time = _person.cachedInfo[kNextTaskTime];
-            if (time.timeElapsed>0) time = nil;
-            if (time) {
-                [_time addObserver:self forKeyPath:@"alpha" options:NSKeyValueObservingOptionNew context:nil];
-                self.time.text = [time timeLeft];
-                self.time.alpha = 1;
-                
             
-            }else{
-                self.time.text = @"";
-            }
-
+            //time
+            //[_time addObserver:self forKeyPath:@"alpha" options:NSKeyValueObservingOptionNew context:nil];
+            self.time.alpha = 1;
+            self.time.text = [self timeString];
         }
         
         
         //distance
         if (self.showDistance && !time) {
-            if (!_person.isMe && _person.lastLocation && me.lastLocation && !_distance) {
-                CLLocation *loc0 = me.lastLocation;
-                CLLocation *loc1 = _person.lastLocation;
-                self.distance = [loc0 distanceFromLocation:loc1]/1000;
-            }
-            if (_distance) {
-                self.km.text = [NSString stringWithFormat:@"%.0fkm", _distance];
-            }else{
-                self.km.text = @"";
-            }
+            self.km.text = [self distanceString];
         }
         
     }
+}
+
+- (NSString *)distanceString{
+    if (!_person.isMe && _person.lastLocation && me.lastLocation && !_distance) {
+        CLLocation *loc0 = me.lastLocation;
+        CLLocation *loc1 = _person.lastLocation;
+        _distance = [loc0 distanceFromLocation:loc1]/1000;
+    }
+    if (_distance) {
+        return [NSString stringWithFormat:@"%.0fkm", _distance];
+    }else{
+        return @"";
+    }
+}
+
+- (NSString *)timeString{
+    NSDate *time = _person.cachedInfo[kNextTaskTime];
     
-    
-    
-    
+    if (time && [time timeIntervalSinceNow] > 0) {
+        _timeLeft = [time timeIntervalSinceNow];
+        return [time timeLeft];
+        
+    }else{
+        _timeLeft = 0;
+        return @"";
+        
+    }
+
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    NSLog(@"alpha changed");
+    NSNumber *a = change[NSKeyValueChangeNewKey];
+    float alpha = a.floatValue;
+    NSLog(@"alpha changed: %f", alpha);
 }
 
 

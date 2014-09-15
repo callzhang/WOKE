@@ -12,6 +12,7 @@ Parse.Cloud.define("getRelevantUsers", function(request, response) {
   if (request.params.raius === undefined)
     radius = request.params.radius;
   var topk = request.params.topk;
+  var userGeoPoint = request.params.location;
   //console.log(radius);
 
   //query using objectId

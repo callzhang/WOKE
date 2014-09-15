@@ -119,6 +119,7 @@
 		9B5AF7F11965EC640002AA06 /* EWNotificationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B5AF7EF1965EC640002AA06 /* EWNotificationCell.m */; };
 		9B5AF7F21965EC640002AA06 /* EWNotificationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B5AF7F01965EC640002AA06 /* EWNotificationCell.xib */; };
 		9B73830A18BD3B4200E7FFC3 /* EWDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */; };
+		9B76F0E519C68EBB0091E8DA /* buzz.caf in Resources */ = {isa = PBXBuildFile; fileRef = 9B76F0E419C68EBB0091E8DA /* buzz.caf */; };
 		9B8A6A9F191887F400591E8A /* NGAParallaxMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */; };
 		9B99267719C29D9B00A75427 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B99267619C29D9B00A75427 /* Crashlytics.framework */; };
 		9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F9718EB416700C07809 /* EWUtil.m */; };
@@ -202,7 +203,6 @@
 		AB29C4CB18DEBCE700C0A141 /* UIViewController+Blur.m in Sources */ = {isa = PBXBuildFile; fileRef = AB29C4CA18DEBCE700C0A141 /* UIViewController+Blur.m */; };
 		AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB2C18C218733C7F0058BFAD /* image.xcassets */; };
 		AB2D195218E26ED100FED6F0 /* EWWakeUpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */; };
-		AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */ = {isa = PBXBuildFile; fileRef = AB2DFBC718BA7CBE00534AF1 /* buzz.caf */; };
 		AB3ACDC019037DDE0066CF3F /* EWNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */; };
 		AB3ACDC4190387C10066CF3F /* EWNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3ACDC3190387C10066CF3F /* EWNotification.m */; };
 		AB3B9E4517A765CE00C2AD93 /* AVManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3B9E4417A765CE00C2AD93 /* AVManager.m */; };
@@ -398,6 +398,7 @@
 		9B5AF7F01965EC640002AA06 /* EWNotificationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWNotificationCell.xib; sourceTree = "<group>"; };
 		9B73830818BD3B4200E7FFC3 /* EWDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EWDownloadManager.h; path = Download/EWDownloadManager.h; sourceTree = "<group>"; };
 		9B73830918BD3B4200E7FFC3 /* EWDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EWDownloadManager.m; path = Download/EWDownloadManager.m; sourceTree = "<group>"; };
+		9B76F0E419C68EBB0091E8DA /* buzz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buzz.caf; sourceTree = "<group>"; };
 		9B8A6A9D191887F400591E8A /* NGAParallaxMotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGAParallaxMotion.h; sourceTree = "<group>"; };
 		9B8A6A9E191887F400591E8A /* NGAParallaxMotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NGAParallaxMotion.m; sourceTree = "<group>"; };
 		9B99267619C29D9B00A75427 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
@@ -520,7 +521,6 @@
 		AB2C18C218733C7F0058BFAD /* image.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = image.xcassets; sourceTree = "<group>"; };
 		AB2D195018E26ED100FED6F0 /* EWWakeUpManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWWakeUpManager.h; sourceTree = "<group>"; };
 		AB2D195118E26ED100FED6F0 /* EWWakeUpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWWakeUpManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		AB2DFBC718BA7CBE00534AF1 /* buzz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buzz.caf; sourceTree = "<group>"; };
 		AB3ACDBE19037DDE0066CF3F /* EWNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotificationManager.h; sourceTree = "<group>"; };
 		AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWNotificationManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AB3ACDC2190387C10066CF3F /* EWNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWNotification.h; sourceTree = "<group>"; };
@@ -1229,13 +1229,13 @@
 		AB94330417C3013F00ADC702 /* Ringtone */ = {
 			isa = PBXGroup;
 			children = (
+				9B76F0E419C68EBB0091E8DA /* buzz.caf */,
 				9B58FD3E19844E8500D13CC7 /* sleep mode.caf */,
 				AB4B837D18D2C8BA0087E654 /* tock.caf */,
 				AB4B837B18D2B9840087E654 /* new.caf */,
 				ABFECBF619075F4100DD5BDC /* bg.caf */,
 				AB4B837818CFE68F0087E654 /* Silence04s.caf */,
 				ABF192AB18C03D71006A4AA2 /* media.caf */,
-				AB2DFBC718BA7CBE00534AF1 /* buzz.caf */,
 				ABFCB2DB186E957100355781 /* Daybreak.caf */,
 				ABFCB2DC186E957100355781 /* Parisian Dream.caf */,
 				ABFCB2DD186E957100355781 /* Tropical Delight.caf */,
@@ -1363,6 +1363,7 @@
 			files = (
 				0E590FF4194DF35B000AD7C4 /* Lato-Italic.ttf in Resources */,
 				9BEEAF691992C75E008E6F34 /* EWSleepViewController.xib in Resources */,
+				9B76F0E519C68EBB0091E8DA /* buzz.caf in Resources */,
 				0E590FF2194DF35B000AD7C4 /* Lato-Heavy.ttf in Resources */,
 				0E590FEF194DF35B000AD7C4 /* Lato-BoldItalic.ttf in Resources */,
 				9BF297E51912F720008C136E /* EWCollectionPersonCell.xib in Resources */,
@@ -1416,7 +1417,6 @@
 				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
 				9BF297B11912F713008C136E /* EWAlarmsView.xib in Resources */,
 				0E590FF7194DF35B000AD7C4 /* Lato-Medium.ttf in Resources */,
-				AB2DFBC818BA7CBE00534AF1 /* buzz.caf in Resources */,
 				0E590FFF194DF35B000AD7C4 /* README.txt in Resources */,
 				ABF3FB641908B72F0017D2EF /* 15.jpg in Resources */,
 				0E590FFA194DF35B000AD7C4 /* Lato-Semibold.ttf in Resources */,

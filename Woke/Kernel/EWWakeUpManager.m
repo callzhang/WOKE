@@ -284,8 +284,9 @@
             
             //find media to add
             [task addMediasObject: media];
-            //remove media from mediaAssets
+            //remove media from mediaAssets, need to remove relation doesn't have inverse relation. This is to make sure the sender doesn't need to modify other person
             [me removeMediaAssetsObject:media];
+            [media removeReceiversObject:me];
             
             if ([media.type isEqualToString: kMediaTypeVoice]) {
                 

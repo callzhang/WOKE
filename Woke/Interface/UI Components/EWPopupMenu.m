@@ -146,19 +146,13 @@
              cell.name.alpha = 1;
              
              //location
-             CGPoint nrect1 = [_profileButton center];
-             CGPoint nrect2 = [_buzzButton center];
-             CGPoint nrect3 = [_voiceButton center];
-             CGPoint infoRect = locationAndTimeLabel.center;
-             CGPoint nameRect = cell.name.center;
-
-             nrect1.x += kCollectionViewCellWidth / 2 + 22.5;
-             nrect1.y -= kCollectionViewCellHeight / 2 + 15;
-             nrect2.y -= kCollectionViewCellHeight / 2 + 15;
-             nrect2.x -= kCollectionViewCellWidth / 2 + 22.5;
-             nrect3.y -= kCollectionViewCellHeight / 2 + 30 + kCallOutBtnSize/2;
-             infoRect.y += kCollectionViewCellHeight / 2 + 40;
-             nameRect.y += 20;
+             _profileButton.x += kCollectionViewCellWidth / 2 + 22.5;
+             _profileButton.y -= kCollectionViewCellHeight / 2 + 15;
+             _buzzButton.y -= kCollectionViewCellHeight / 2 + 15;
+             _buzzButton.x -= kCollectionViewCellWidth / 2 + 22.5;
+             _voiceButton.y -= kCollectionViewCellHeight / 2 + 30 + kCallOutBtnSize/2;
+             locationAndTimeLabel.y += kCollectionViewCellHeight / 2 + 40;
+             cell.name.y += 20;
              
              _alphaView.alpha = 1;
              _profileButton.alpha=1;
@@ -167,14 +161,7 @@
              _closeButton.alpha=1;
              
              [EWUIUtil applyShadow:name];
-             [EWUIUtil applyShadow:locationAndTimeLabel];
-             
-             [_profileButton setCenter:nrect1];
-             [_buzzButton setCenter:nrect2];
-             [_voiceButton setCenter:nrect3];
-             //[_closeButton setCenter:nrect4];
-             [locationAndTimeLabel setCenter:infoRect];
-             cell.name.center = nameRect;
+             //[EWUIUtil applyShadow:locationAndTimeLabel];
              
          } completion:^(BOOL finished){
              

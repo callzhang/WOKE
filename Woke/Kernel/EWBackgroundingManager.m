@@ -13,15 +13,13 @@
 #import "EWWakeUpManager.h"
 #import "AVManager.h"
 
-const BOOL BACKGROUNDING_ALL_TIME = 1;
 
-
-const BOOL BACKGROUNDING_FROM_START = YES;
 
 @interface EWBackgroundingManager(){
     NSTimer *backgroundingtimer;
     UIBackgroundTaskIdentifier backgroundTaskIdentifier;
     UILocalNotification *backgroundingFailNotification;
+    BOOL BACKGROUNDING_FROM_START;
 }
 
 @end
@@ -49,6 +47,10 @@ const BOOL BACKGROUNDING_FROM_START = YES;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
         //become active
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didbecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+        
+#ifdef BACKGOUND_TEST
+        BACKGROUNDING_FROM_START = YES;
+#endif
     }
     
     return self;
