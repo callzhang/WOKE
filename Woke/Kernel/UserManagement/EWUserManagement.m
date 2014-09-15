@@ -135,6 +135,10 @@
     //update person
     //change to update in sync mode to avoid data overriding while update value from server
     NSDate *updated = me.updatedAt;
+    
+    //update everyone first
+    [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+    
     BOOL good = [EWPersonStore validatePerson:me];
     if (!updated || updated.timeElapsed > kCheckMeInternal || !good) {
         [person refreshInBackgroundWithCompletion:^{
