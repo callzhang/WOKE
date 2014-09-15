@@ -12,6 +12,10 @@
 #import "EWUIUtil.h"
 #import "EWPersonStore.h"
 
+@interface EWNotificationCell()
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *userLabelLeadingConstraint;
+
+@end
 
 @implementation EWNotificationCell
 
@@ -103,6 +107,7 @@
         self.time.enabled = YES;
     }
     
+    [self setSize];
     //[self setNeedsDisplay];
 }
 
@@ -110,22 +115,17 @@
     //adjust size
     if ([_notification.type isEqualToString:kNotificationTypeNotice]) {
         
-        NSInteger deltaX = self.detail.x - self.profilePic.x;
-        self.detail.x = self.profilePic.x;
-        self.detail.width += deltaX;
-        self.time.x = self.profilePic.x;
-        self.time.width += deltaX;
+        self.userLabelLeadingConstraint.constant = -45;
+        self.detail.text = [NSString stringWithFormat:@"%@:%@", self.detail.text, kNotificationTypeNotice];
+
+        CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(self.detail.width, 1000)  lineBreakMode:NSLineBreakByWordWrapping];
         
-        CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(self.detail.width, 1000)  lineBreakMode:UILineBreakModeWordWrap];
-        float original_height = self.detail.height;
-        self.detail.height = ceil(fixLabelSize.height);
-        
-        CGFloat deltaHeight = self.detail.height - original_height;
-        //self.detail.height += deltaHeight;
-        //self.time.y += deltaHeight;
-        self.contentView.height += deltaHeight;
+        self.contentView.height = fixLabelSize.height + 25;
         self.height = self.contentView.height;
-        
+    }
+    else {
+        self.userLabelLeadingConstraint.constant = 8;
+        self.detail.text = [NSString stringWithFormat:@"%@:%@", self.detail.text, @"NOT SYSTEM"];
     }
     
     [self setNeedsDisplay];
