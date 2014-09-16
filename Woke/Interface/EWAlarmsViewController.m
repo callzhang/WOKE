@@ -157,6 +157,9 @@
     //update data and view
     [self initData];
     [self initView];
+    [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:^{
+        //
+    }];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 

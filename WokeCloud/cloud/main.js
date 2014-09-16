@@ -12,7 +12,7 @@ Parse.Cloud.define("getRelevantUsers", function(request, response) {
   if (request.params.raius === undefined)
     radius = request.params.radius;
   var topk = request.params.topk;
-  var userGeoPoint = request.params.location;
+  var userLocation = request.params.location;
   //console.log(radius);
 
   //query using objectId
@@ -26,7 +26,8 @@ Parse.Cloud.define("getRelevantUsers", function(request, response) {
       //user = results[0];
       var userObject = result;
       // User's location
-      var userGeoPoint = userObject.get("lastLocation");
+      //var userGeoPoint = userObject.get("lastLocation");
+      var userGeoPoint =  new Parse.GeoPoint({latitude: userLocation.latitude, longitude: userLocation.longitude});
       // Create a query for places
       var query = new Parse.Query(Parse.User);
       // Interested in locations near user.
@@ -50,8 +51,7 @@ Parse.Cloud.define("getRelevantUsers", function(request, response) {
           console.log("friends:" +friendsList);
           var queryFriends = new Parse.Query(Parse.User);
           queryFriends.containedIn("objectId", friendsList);
-          queryFriends.find({
-          success: function(list) {
+          queryFriends.find({success: function(list) {
             //a list of friends
             //var friendsList = list.map(function(x) { return x.id; });
 
@@ -74,7 +74,7 @@ Parse.Cloud.define("getRelevantUsers", function(request, response) {
                 for (i = 0; i < list.length; i++) {
                   var hit = false;
                   for (j = 0; j < nearbyUsers; j++) {
-                    if (nearbyUsers[j].id === list[i].id)
+                    if (nearbyUsers[j].id != list[i].id)
                       hit = true;
                   }
                   if (hit) nearbyUsers.push(list[i]);
@@ -84,12 +84,13 @@ Parse.Cloud.define("getRelevantUsers", function(request, response) {
                 var mergedList = nearbyUsers.filter(function (x) { return x.id != userObject.id});
                 var minDistance = 9999;
                 var maxDistance = -1;
-                var myGeoPoint = (userObject.get("lastLocation"));
+                //var myGeoPoint = (userObject.get("lastLocation"));
 
                 for (i = 0; i < mergedList.length; i++) {
                   var geoPoint = (mergedList[i].get("lastLocation"));
 
-                  var distance = geoPoint.kilometersTo(myGeoPoint);
+                  var distance = geoPoint.kilometersTo(userGeoPoint);
+                  //set distance for every user
                   mergedList[i].set("distance", distance);
                   //console.log(distance);
                   if (distance > maxDistance) maxDistance = distance;
@@ -97,22 +98,22 @@ Parse.Cloud.define("getRelevantUsers", function(request, response) {
                 }
 
                 //make ranking
-                var myCachedInfo = userObject.get("cachedInfo");
-                var mytime = null;
+                // var myCachedInfo = userObject.get("cachedInfo");
+                // var mytime = null;
 
-                //console.log(myCachedInfo);
-                if (myCachedInfo != null) {
-                  var test = myCachedInfo.next_task_time;
-                  mytime = test;
-                  //console.log(mytime);
-                }
+                // //console.log(myCachedInfo);
+                // if (myCachedInfo != null) {
+                //   var test = myCachedInfo.next_task_time;
+                //   mytime = test;
+                //   console.log(mytime);
+                // }
 
                 for (i = 0; i < mergedList.length; i++) {
                   var distance = mergedList[i].get("distance");
                   var locationScore = 1;
                   if (maxDistance - minDistance > 0.0001) {
                     locationScore = (distance - minDistance) * 2 / (maxDistance - minDistance);
-                    locationScore = Math.log(2, locationScore);
+                    locationScore = (locationScore - 1)^2;
                   }
                   var genderScore = 1;
                   if (userObject.gender === mergedList[i].gender) 
@@ -122,12 +123,14 @@ Parse.Cloud.define("getRelevantUsers", function(request, response) {
                     friendScore = 1;
                   var taskScore = 0;
 
-                  if (mytime != null) {
+                  //time in sec
+                  var currentTime = new Date().getTime() / 1000
+                  if (currentTime != null) {
                     var otherCachedInfo = mergedList[i].get("cachedInfo");
                     if (otherCachedInfo != null) {
                       var otherTime = otherCachedInfo.next_task_time;
                       //console.log(otherTime + " " + mytime);
-                      var timeDiff = Math.abs(otherTime - mytime) / 60000 / 60;
+                      var timeDiff = Math.abs(otherTime - currentTime) / 60000 / 10;//10min
                       //console.log("time diff: " + timeDiff);
                       taskScore = Math.pow(1.1, -timeDiff);
                     }
