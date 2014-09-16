@@ -45,8 +45,7 @@ UIViewController *rootViewController;
 #ifdef DEBUG
     //log to local cache file
     EWLogInit();
-#endif
-#ifdef DEBUG
+    
     //Lumberjack
     DDTTYLogger *log = [DDTTYLogger sharedInstance];
     // we also enable colors in Xcode debug console

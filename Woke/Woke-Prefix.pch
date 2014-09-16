@@ -23,5 +23,7 @@
 #import <CocoaLumberjack.h>
 #import "NSManagedObjectContext+ChainSave.h"
 #import "EWUtil.h"
+#import <BlocksKit/BlocksKit.h>
+#import <BlocksKit/BlocksKit+UIKit.h>
 static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 #endif

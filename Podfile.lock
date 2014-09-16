@@ -67,7 +67,7 @@ PODS:
 DEPENDENCIES:
   - AFNetworking
   - apptentive-ios
-  - BlocksKit
+  - BlocksKit (~> 2.2.5)
   - CocoaLumberjack
   - Facebook-iOS-SDK
   - GPUImage

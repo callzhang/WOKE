@@ -848,42 +848,49 @@
             
         } else {
             //add a update queue to handle exception when updating cell in batch updates block
-            NSMutableArray *updates = [NSMutableArray new];
+            
+            NSMutableArray *update = [NSMutableArray array];
+            NSMutableArray *insert = [NSMutableArray array];
+            NSMutableArray *delete = [NSMutableArray array];
+            NSMutableArray *move = [NSMutableArray array];
             
             [self.collectionView performBatchUpdates:^{
                 
-                for (NSDictionary *change in cellChangeArray)
-                {
-                    [change enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id obj, BOOL *stop) {
-                        
+                [cellChangeArray bk_each:^(NSDictionary *obj) {
+                    [obj bk_each:^(id key, NSIndexPath *indexPath) {
                         NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-                        switch (type)
-                        {
+                        switch (type) {
                             case NSFetchedResultsChangeInsert:
-                                [self.collectionView insertItemsAtIndexPaths:@[obj]];
+                                [insert addObject:indexPath];
+                                break;
+                            case NSFetchedResultsChangeUpdate:
+                                [update addObject:indexPath];
                                 break;
                             case NSFetchedResultsChangeDelete:
-                                [self.collectionView deleteItemsAtIndexPaths:@[obj]];
+                                [delete addObject:indexPath];
                                 break;
-                            case NSFetchedResultsChangeUpdate:{
-                                [updates addObject:obj];
-                                //[self.collectionView reloadItemsAtIndexPaths:@[obj]];
-                            }
+                               case NSFetchedResultsChangeMove:
+                                [move addObject:indexPath];
                                 break;
-                            case NSFetchedResultsChangeMove:
-                                [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
-                                break;
-                        }
+                               default:
+                                   break;
+                           }
+                       }];
                     }];
-                    
-                    //[self.collectionView reloadItemsAtIndexPaths:updates.allObjects];
-                }
                 
+                [self.collectionView insertItemsAtIndexPaths:insert];
+                [self.collectionView deleteItemsAtIndexPaths:delete];
+                
+                for (NSArray *moveArray in move) {
+                    [self.collectionView moveItemAtIndexPath:moveArray[0] toIndexPath:moveArray[1]];
+                }
                 
             }completion:^(BOOL finished){
                 //perform updates here
                 
-                [self.collectionView reloadItemsAtIndexPaths:updates.copy];
+//                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self.collectionView reloadItemsAtIndexPaths:update];
+//                });
                 
                 if (finished) {
                     
