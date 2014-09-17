@@ -88,15 +88,6 @@
         UIImage *dimge=[UIImage imageNamed:@"Callout_Close_Btn"];
         [_closeButton setImage:dimge forState:UIControlStateNormal];
         
-        //name
-//        name = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kCollectionViewCellWidth, 22)];
-//        name.center = cellCenter;
-//        name.text = cell.name.text;
-//        [self addSubview:name];
-//        name.adjustsFontSizeToFitWidth = YES;
-//        name.textColor = [UIColor whiteColor];
-//        name.font =[UIFont fontWithName:@"Lato-Regular" size:14];
-//        name.textAlignment = NSTextAlignmentCenter;
         
         locationAndTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 22)];
         locationAndTimeLabel.center = cellCenter;

@@ -82,6 +82,7 @@ typedef void (^EWSavingCallback)(void);
 + (void)saveWithCompletion:(EWSavingCallback)block;
 + (void)saveToLocal:(NSManagedObject *)mo;
 + (void)saveAllToLocal:(NSArray *)MOs;
++ (void)deleteToLocal:(PFObject *)PO;
 
 /**
  The main method of server update/insert/delete.

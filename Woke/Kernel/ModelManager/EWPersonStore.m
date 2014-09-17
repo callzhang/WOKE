@@ -141,6 +141,8 @@ EWPerson *me;
 
 - (NSArray *)everyone{
     NSParameterAssert([NSThread isMainThread]);
+    
+    //fetch from sever
     [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         [self getEveryoneInContext:localContext];
     }];
@@ -165,9 +167,12 @@ EWPerson *me;
 }
 
 - (void)getEveryoneInContext:(NSManagedObjectContext *)context{
+    
+    //cache
     if (everyone && timeEveryoneChecked.timeElapsed < everyoneCheckTimeOut && everyone.count != 0) {
         return;
-    }    //fetch from sever
+    }
+    
     NSMutableArray *allPerson = [NSMutableArray new];
     
     EWPerson *localMe = [me inContext:context];
@@ -198,7 +203,7 @@ EWPerson *me;
         error = nil;
         list = localMe.cachedInfo[kEveryone];
     }else{
-        //cache
+        //update cache
         NSMutableDictionary *cachedInfo = [localMe.cachedInfo mutableCopy];
         cachedInfo[kEveryone] = list;
         cachedInfo[kEveryoneLastFetched] = [NSDate date];

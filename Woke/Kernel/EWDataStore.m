@@ -39,6 +39,7 @@ NSManagedObjectContext *mainContext;
 @property NSMutableDictionary *parseSaveCallbacks;
 @property (nonatomic) NSTimer *saveToServerDelayTimer;
 @property NSMutableArray *saveToLocalItems;
+@property NSMutableArray *deleteToLocalItems;
 //@property (nonatomic) NSMutableDictionary *changesDictionary;
 @end
 
@@ -123,6 +124,7 @@ NSManagedObjectContext *mainContext;
         self.parseSaveCallbacks = [NSMutableDictionary dictionary];
         self.saveCallbacks = [NSMutableArray new];
 		self.saveToLocalItems = [NSMutableArray new];
+		self.deleteToLocalItems = [NSMutableArray new];
 		self.serverObjectPool = [NSMutableDictionary new];
 		self.changeRecords = [NSMutableDictionary new];
     }
@@ -386,6 +388,9 @@ NSManagedObjectContext *mainContext;
 		if (![MO isKindOfClass:[EWServerObject class]]) {
 			continue;
 		}
+		if ([[EWDataStore sharedInstance].deleteToLocalItems containsObject:MO.serverID]) {
+			continue;
+		}
 		if (MO.serverID) {
 			NSLog(@"~~~> MO %@(%@) is going to be DELETED, enqueue PO to delete queue.", MO.entity.name, [MO valueForKey:kParseObjectID]);
 			
@@ -393,7 +398,7 @@ NSManagedObjectContext *mainContext;
 			
 			[[EWDataStore sharedInstance].serverObjectPool removeObjectForKey:MO.serverID];
 			
-			[EWDataStore appendDeleteQueue:PO];
+			[EWDataStore appendObjectToDeleteQueue:PO];
 		}
 	}
 
@@ -446,6 +451,13 @@ NSManagedObjectContext *mainContext;
 		
 	}
     
+}
+
++ (void)deleteToLocal:(PFObject *)PO{
+	[[EWDataStore sharedInstance].deleteToLocalItems addObject:PO.objectId];
+	
+	//remove from the update queue
+	[EWDataStore removeObjectFromDeleteQueue:PO];
 }
 
 #pragma mark - Core Data Tools
@@ -700,14 +712,14 @@ NSManagedObjectContext *mainContext;
     return [set copy];
 }
 
-+ (void)appendDeleteQueue:(PFObject *)object{
++ (void)appendObjectToDeleteQueue:(PFObject *)object{
     if (!object) return;
     NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy]?:[NSMutableDictionary new];;
     [dic setObject:object.parseClassName forKey:object.objectId];
     [[NSUserDefaults standardUserDefaults] setObject:[dic copy] forKey:kParseQueueDelete];
 }
 
-+ (void)removeDeleteQueue:(PFObject *)object{
++ (void)removeObjectFromDeleteQueue:(PFObject *)object{
     if (!object) return;
     NSMutableDictionary *dic = [[[NSUserDefaults standardUserDefaults] valueForKey:kParseQueueDelete] mutableCopy];
     [dic removeObjectForKey:object.objectId];
@@ -826,10 +838,10 @@ NSManagedObjectContext *mainContext;
 	for (NSManagedObjectID *ID in saveToLocalItemAlreadyInWorkingQueue) {
 		[self.saveToLocalItems removeObject:ID];
 	}
-	if (self.saveToLocalItems.count) {
-		NSLog(@"There are still %d saveToLocalItems: %@", self.saveToLocalItems.count, self.saveToLocalItems);
-		self.saveToLocalItems = [NSMutableArray new];
-	}
+
+	//clear save/delete to local items
+	self.saveToLocalItems = [NSMutableArray new];
+	self.deleteToLocalItems = [NSMutableArray new];
     
     //clear queues
     [EWDataStore clearQueue:kParseQueueInsert];
@@ -1012,16 +1024,16 @@ NSManagedObjectContext *mainContext;
         if (succeeded) {
             //Good
             NSLog(@"~~~> PO %@(%@) deleted from server", parseObject.parseClassName, parseObject.objectId);
-            [EWDataStore removeDeleteQueue:parseObject];
+            [EWDataStore removeObjectFromDeleteQueue:parseObject];
             
         }else if (error.code == kPFErrorObjectNotFound){
             //fine
             NSLog(@"~~~> Trying to deleted PO %@(%@) but not found", parseObject.parseClassName, parseObject.objectId);
-            [EWDataStore removeDeleteQueue:parseObject];
+            [EWDataStore removeObjectFromDeleteQueue:parseObject];
             
         }else{
             //not good
-            [EWDataStore appendDeleteQueue:parseObject];
+            [EWDataStore removeObjectFromDeleteQueue:parseObject];
         }
     }];
 }
@@ -1835,10 +1847,24 @@ NSManagedObjectContext *mainContext;
 }
 
 - (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context{
+	
+	if (!self.objectId) {
+		return nil;
+	}
+	
 	if (!context) {
 		context = mainContext;
 	}
-    NSManagedObject *mo = [NSClassFromString(self.localClassName) MR_findFirstByAttribute:kParseObjectID withValue:self.objectId inContext:context];
+	NSMutableArray *MOs = [[NSClassFromString(self.localClassName) findByAttribute:kParseObjectID withValue:self.objectId inContext:context] mutableCopy];
+    //NSManagedObject *mo = [NSClassFromString(self.localClassName) MR_findFirstByAttribute:kParseObjectID withValue:self.objectId inContext:context];
+	while (MOs.count > 1) {
+		NSLog(@"Find duplicated MO for ID %@", self.objectId);
+		NSManagedObject *mo_ = MOs.lastObject;
+		[MOs removeLastObject];
+		[mo_ deleteEntityInContext:context];
+		[EWDataStore deleteToLocal:self];
+	}
+	NSManagedObject *mo = MOs.firstObject;
     
     if (!mo) {
         //if managedObject not exist, create it locally

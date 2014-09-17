@@ -157,9 +157,6 @@
     //update data and view
     [self initData];
     [self initView];
-    [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:^{
-        //
-    }];
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
 }
 
@@ -217,7 +214,7 @@
     }
     
     //predicate
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"score > 0"];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"score > 0 && profilePic != nil"];
     
     //sort
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO];
@@ -428,7 +425,7 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Refresh", @"Feedback", @"Test sheet", nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Refresh view", @"Feedback", @"Test sheet", @"Refresh people", nil];
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
@@ -660,6 +657,8 @@
         }else if([title isEqualToString:@"Start Sleeping"]){
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
             [self presentViewControllerWithBlurBackground:controller];
+        }else if([title isEqualToString:@"Refresh people"]){
+            [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
         }
     }else{
         EWAlert(@"Unknown alert sheet");
@@ -738,6 +737,10 @@
 
     //根据tag值判断是否创建meun
     if([rootViewController.view viewWithTag:kMenuTag]){
+        EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
+        EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+        [self presentViewControllerWithBlurBackground:navController completion:NULL];
         return;
     }
     
@@ -834,9 +837,9 @@
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
     //Lesson learned: do not update collectionView in parts, as the final count may not be equal to inserts/deletes applied partially.
-    //Also, do not delay the update, as the count may not hold when accumulated with a lot of updates.
+    //Also, do not delay the update, as the change may not hold when accumulated with a lot of updates.
     static NSDate *lastUpdated;
-    if ([[NSDate date] timeIntervalSinceDate:lastUpdated] < 0.1) {
+    if ([[NSDate date] timeIntervalSinceDate:lastUpdated] < 0.1 || [rootViewController.view viewWithTag:kMenuTag]) {
         return;
     }
     
@@ -857,51 +860,58 @@
             NSMutableArray *delete = [NSMutableArray array];
             NSMutableArray *move = [NSMutableArray array];
             
-            [self.collectionView performBatchUpdates:^{
-                
-                [cellChangeArray bk_each:^(NSDictionary *obj) {
-                    [obj bk_each:^(id key, NSIndexPath *indexPath) {
-                        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-                        switch (type) {
-                            case NSFetchedResultsChangeInsert:
-                                [insert addObject:indexPath];
-                                break;
-                            case NSFetchedResultsChangeUpdate:
-                                [update addObject:indexPath];
-                                break;
-                            case NSFetchedResultsChangeDelete:
-                                [delete addObject:indexPath];
-                                break;
-                               case NSFetchedResultsChangeMove:
-                                [move addObject:indexPath];
-                                break;
-                               default:
-                                   break;
-                           }
-                       }];
+            @try {
+                [self.collectionView performBatchUpdates:^{
+                    
+                    [cellChangeArray bk_each:^(NSDictionary *obj) {
+                        [obj bk_each:^(id key, NSIndexPath *indexPath) {
+                            NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                            switch (type) {
+                                case NSFetchedResultsChangeInsert:
+                                    [insert addObject:indexPath];
+                                    break;
+                                case NSFetchedResultsChangeUpdate:
+                                    [update addObject:indexPath];
+                                    break;
+                                case NSFetchedResultsChangeDelete:
+                                    [delete addObject:indexPath];
+                                    break;
+                                case NSFetchedResultsChangeMove:
+                                    [move addObject:indexPath];
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }];
                     }];
-                
-                [self.collectionView insertItemsAtIndexPaths:insert];
-                [self.collectionView deleteItemsAtIndexPaths:delete];
-                
-                for (NSArray *moveArray in move) {
-                    [self.collectionView moveItemAtIndexPath:moveArray[0] toIndexPath:moveArray[1]];
-                }
-                
-            }completion:^(BOOL finished){
-                if (update.count) {
-                    //perform updates here
-                    [self.collectionView reloadData];
-                }
-                
-                if (finished) {
                     
+                    [self.collectionView insertItemsAtIndexPaths:insert];
+                    [self.collectionView deleteItemsAtIndexPaths:delete];
                     
-                }else{
-                    NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
-                }
-                
-            }];
+                    for (NSArray *moveArray in move) {
+                        [self.collectionView moveItemAtIndexPath:moveArray[0] toIndexPath:moveArray[1]];
+                    }
+                    
+                }completion:^(BOOL finished){
+                    if (update.count) {
+                        //perform updates here
+                        [self.collectionView reloadData];
+                    }
+                    
+                    if (finished) {
+                        
+                        
+                    }else{
+                        NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
+                    }
+                    
+                }];
+            }
+            @catch (NSException *exception) {
+                [self.collectionView reloadData];
+            }
+            
+            
             
         }
         
