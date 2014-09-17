@@ -1558,7 +1558,7 @@ NSManagedObjectContext *mainContext;
 - (void)deleteEventually{
     PFObject *po = [PFObject objectWithoutDataWithClassName:self.entity.name objectId:self.serverID];
     NSLog(@"%s: delete %@ eventually", __func__, self.entity.name);
-    [EWDataStore appendDeleteQueue:po];
+    [EWDataStore appendObjectToDeleteQueue:po];
 
     //delete
     [self.managedObjectContext performBlock:^{
