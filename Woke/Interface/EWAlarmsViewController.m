@@ -736,11 +736,14 @@
     selectedPersonIndex = indexPath.row;
 
     //根据tag值判断是否创建meun
-    if([rootViewController.view viewWithTag:kMenuTag]){
+    __weak EWPopupMenu *weakMenu = (EWPopupMenu *)[rootViewController.view viewWithTag:kMenuTag];
+    if(weakMenu){
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         EWPersonViewController *controller = [[EWPersonViewController alloc] initWithPerson:person];
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        [self presentViewControllerWithBlurBackground:navController completion:NULL];
+        [weakMenu closeMenuWithCompletion:^{
+            [self presentViewControllerWithBlurBackground:navController completion:NULL];
+        }];
         return;
     }
     
@@ -749,7 +752,7 @@
     //create menu with cell
     EWPopupMenu *menu = [[EWPopupMenu alloc] initWithCell:cell];
     menu.tag = kMenuTag;
-    __weak EWPopupMenu *weakMenu = menu;
+    weakMenu = menu;
     
     //create button block
     menu.toProfileButtonBlock = ^{

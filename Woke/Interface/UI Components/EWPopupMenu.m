@@ -47,6 +47,7 @@
         delay = 0;
     }else{
         [collectionView scrollRectToVisible:frame animated:YES];
+        //TODO: hide the self indicator
     }
     //delay if scrollview moves
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
