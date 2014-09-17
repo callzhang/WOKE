@@ -214,7 +214,7 @@
     }
     
     //predicate
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"score > 0 && profilePic != nil"];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"score > 0 && profilePic != nil && objectId != nil"];
     
     //sort
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO];
