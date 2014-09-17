@@ -832,14 +832,14 @@
     [cellChangeArray addObject:change];
 }
 
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller{
-    //NSLog(@"Content of collection view will change");
-}
-
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
     //Lesson learned: do not update collectionView in parts, as the final count may not be equal to inserts/deletes applied partially.
     //Also, do not delay the update, as the count may not hold when accumulated with a lot of updates.
     static NSDate *lastUpdated;
+    if ([[NSDate date] timeIntervalSinceDate:lastUpdated] < 0.1) {
+        return;
+    }
+    
     if (cellChangeArray.count > 0){
         if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {
             // This is to prevent a bug in UICollectionView from occurring.
@@ -889,13 +889,13 @@
                 }
                 
             }completion:^(BOOL finished){
-                //perform updates here
-                
-//                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self.collectionView reloadItemsAtIndexPaths:update];
-//                });
+                if (update.count) {
+                    //perform updates here
+                    [self.collectionView reloadData];
+                }
                 
                 if (finished) {
+                    
                     
                 }else{
                     NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
