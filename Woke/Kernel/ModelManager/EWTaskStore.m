@@ -293,7 +293,7 @@
     
     for (EWAlarmItem *a in alarms){//loop through alarms
         
-        for (unsigned i=0; i<nWeeksToScheduleTask; i++) {//loop for week
+        for (unsigned i=1; i<=nWeeksToScheduleTask; i++) {//loop for week
             
             //next time for alarm, this is what the time should be there
             NSDate *time = [a.time nextOccurTime:i];
@@ -582,7 +582,7 @@
     }
     NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
     NSArray *sortedTasks = [alarm.tasks sortedArrayUsingDescriptors:@[des]];
-    for (unsigned i=0; i<nWeeksToScheduleTask; i++) {
+    for (unsigned i=1; i<=nWeeksToScheduleTask; i++) {
         EWTaskItem *t = sortedTasks[i];
         NSDate *nextTime = [alarm.time nextOccurTime:i];
         if (![t.time isEqualToDate:nextTime]) {
