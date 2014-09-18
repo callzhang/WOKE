@@ -81,10 +81,14 @@
 //}
 
 + (EWNotification *)newNotificationForMedia:(EWMediaItem *)media{
+    if (!media) {
+        return nil;
+    }
     EWNotification *note = [EWNotificationManager newNotification];
     note.type = kNotificationTypeNextTaskHasMedia;
     note.userInfo = @{@"media": media.objectId};
     note.sender = media.author.objectId;
+    [EWDataStore save];
     return note;
 }
 

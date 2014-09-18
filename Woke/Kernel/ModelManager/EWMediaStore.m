@@ -181,16 +181,31 @@
     //[query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
     NSArray *mediaPOs = [query findObjects];
     for (PFObject *po in mediaPOs) {
+        [EWDataStore setCachedParseObject:po];
         EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:context];
-        [mo refreshInBackgroundWithCompletion:NULL];
+        [mo refreshInBackgroundWithCompletion:NULL];//save to local marked
         //relationship
+        NSMutableArray *receivers = po[@"receivers"];
+        for (PFObject *receiver in receivers) {
+            if ([receiver.objectId isEqualToString:[PFUser currentUser].objectId]) {
+                [receivers removeObject:receiver];
+                break;
+            }
+        }
+        po[@"receivers"] = receivers.copy;
+        [po saveInBackground];
+        
         [mo removeReceiversObject:me];
         [me addMediaAssetsObject:mo];
+        
+        //in order to upload change to server, we need to save to server
+        [mo saveToServer];
         NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
         
         //create a notification or find existing one
         dispatch_async(dispatch_get_main_queue(), ^{
-            EWNotification *newMediaNotification = [EWNotificationManager newNotificationForMedia:mo];
+            EWMediaItem *media = (EWMediaItem *)[mo inContext:mainContext];
+            [EWNotificationManager newNotificationForMedia:media];
         });
     }
     

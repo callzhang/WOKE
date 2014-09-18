@@ -216,6 +216,10 @@ typedef void (^EWSavingCallback)(void);
  */
 - (NSArray *)changedKeys;
 
+#pragma mark - Network
+- (void)saveToLocal;
+- (void)saveToServer;
+
 #pragma mark - Helper methods
 /**
  Reflex method to search for runtime attributes

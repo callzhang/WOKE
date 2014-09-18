@@ -1316,8 +1316,9 @@ NSManagedObjectContext *mainContext;
 				NSLog(@"*** Failed to obtain object from database: %@", self);
 				return;
 			}
-			
+			//============ Refresh
 			[currentMO refresh];
+			//=====================
 			
 		} completion:^(BOOL success, NSError *error) {
 			if (block) {
@@ -1596,6 +1597,30 @@ NSManagedObjectContext *mainContext;
 		return changes;
 	}
 	return nil;
+}
+
+- (void)saveToLocal{
+	//mark MO as save to local
+	if (self.objectID.isTemporaryID) {
+		[self.managedObjectContext obtainPermanentIDsForObjects:@[self] error:NULL];
+	}
+	[[EWDataStore sharedInstance].saveToLocalItems addObject:self.objectID];
+	
+	//save to enqueue the updates
+	[self.managedObjectContext MR_saveToPersistentStoreWithCompletion:NULL];
+	
+	//remove from the update queue
+	[EWDataStore removeObjectFromInsertQueue:self];
+	[EWDataStore removeObjectFromUpdateQueue:self];
+}
+
+- (void)saveToServer{
+	if (self.objectID.isTemporaryID) {
+		[self.managedObjectContext obtainPermanentIDsForObjects:@[self] error:NULL];
+	}
+	[[EWDataStore sharedInstance].saveToLocalItems removeObject:self.objectID];
+	//[self.managedObjectContext MR_saveToPersistentStoreWithCompletion:NULL];
+	[EWDataStore appendUpdateQueue:self];
 }
 
 
