@@ -1,0 +1,5 @@
+#include "Pods-WOKE Tests-BlocksKit.xcconfig"
+GCC_PREPROCESSOR_DEFINITIONS = COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/BuildHeaders" "${PODS_ROOT}/BuildHeaders/BlocksKit" "${PODS_ROOT}/Headers" "${PODS_ROOT}/Headers/AFNetworking" "${PODS_ROOT}/Headers/BlocksKit" "${PODS_ROOT}/Headers/CocoaLumberjack" "${PODS_ROOT}/Headers/DACircularProgress" "${PODS_ROOT}/Headers/Expecta" "${PODS_ROOT}/Headers/Facebook-iOS-SDK" "${PODS_ROOT}/Headers/Facebook-iOS-SDK/FacebookSDK" "${PODS_ROOT}/Headers/GPUImage" "${PODS_ROOT}/Headers/IDMPhotoBrowser" "${PODS_ROOT}/Headers/MagicalRecord" "${PODS_ROOT}/Headers/MagicalRecord/MagicalRecord" "${PODS_ROOT}/Headers/NSLogger" "${PODS_ROOT}/Headers/OCMock" "${PODS_ROOT}/Headers/Parse" "${PODS_ROOT}/Headers/Reachability" "${PODS_ROOT}/Headers/Reveal-iOS-SDK" "${PODS_ROOT}/Headers/SVProgressHUD" "${PODS_ROOT}/Headers/TestFlightSDK" "${PODS_ROOT}/Headers/Weibo" "${PODS_ROOT}/Headers/apptentive-ios"
+OTHER_LDFLAGS = -ObjC ${PODS_WOKE_TESTS_BLOCKSKIT_OTHER_LDFLAGS}
+PODS_ROOT = ${SRCROOT}
