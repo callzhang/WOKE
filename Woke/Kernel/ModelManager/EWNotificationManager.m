@@ -80,6 +80,14 @@
 //    [EWNotificationManager sendNotification:notice];
 //}
 
++ (EWNotification *)newNotificationForMedia:(EWMediaItem *)media{
+    EWNotification *note = [EWNotificationManager newNotification];
+    note.type = kNotificationTypeNextTaskHasMedia;
+    note.userInfo = @{@"media": media.objectId};
+    note.sender = media.author.objectId;
+    return note;
+}
+
 
 + (void)handleNotification:(NSString *)notificationID{
     EWNotification *notification = [EWNotificationManager getNotificationByID:notificationID];

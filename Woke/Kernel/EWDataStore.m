@@ -1320,7 +1320,10 @@ NSManagedObjectContext *mainContext;
 			[currentMO refresh];
 			
 		} completion:^(BOOL success, NSError *error) {
-			block();
+			if (block) {
+				block();
+			}
+			
 		}];
             
         

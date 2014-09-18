@@ -180,17 +180,29 @@ void EWLogInit(){
 
     
     [DDLog addLogger:[DDASLLogger sharedInstance]];
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    DDTTYLogger *log = [DDTTYLogger sharedInstance];
+    [DDLog addLogger:log];
     DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
     fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
     fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
     
     [DDLog addLogger:fileLogger];
     
+    // we also enable colors in Xcode debug console
+    // because this require some setup for Xcode, commented out here.
+    // https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/XcodeColors
+    [log setColorsEnabled:YES];
+    [log setForegroundColor:[UIColor orangeColor] backgroundColor:nil forFlag:LOG_FLAG_INFO];
+    [log setForegroundColor:[UIColor redColor] backgroundColor:nil forFlag:LOG_FLAG_ERROR];
+    [log setForegroundColor:[UIColor darkGrayColor] backgroundColor:nil forFlag:LOG_FLAG_VERBOSE];
+    [log setForegroundColor:[UIColor colorWithRed:(255/255.0) green:(58/255.0) blue:(159/255.0) alpha:1.0] backgroundColor:nil forFlag:LOG_FLAG_WARN];
+    
+    [DDLog addLogger:log];
+    
+    
     
     //UncaughtExceptionHandler
-    //NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
-    
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
     
 }
 
@@ -225,14 +237,14 @@ void uncaughtExceptionHandler(NSException *exception) {
         for (int x = 0; x < emailcount; x++)
         {
             //获取email Label
-//            NSString* emailLabel = (__bridge NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(email, x));
+            //NSString* emailLabel = (__bridge NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(email, x));
             //获取email值
             NSString* emailContent = (__bridge NSString*)ABMultiValueCopyValueAtIndex(email, x);
             [friendsEmails addObject:emailContent];
 
         }
     }
-//
+
     CFRelease(results);
     CFRelease(addressBook);
     

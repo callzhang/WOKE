@@ -11,7 +11,7 @@
 #define kNotificationCompleted      @"notification_completed"
 
 
-@class EWNotification;
+@class EWNotification, EWMediaItem;
 
 @interface EWNotificationManager : NSObject <UIAlertViewDelegate>
 
@@ -38,6 +38,7 @@
 
 //Create
 + (EWNotification *)newNotification;
++ (EWNotification *)newNotificationForMedia:(EWMediaItem *)media;
 
 //delete
 + (void)deleteNotification:(EWNotification *)notice;
