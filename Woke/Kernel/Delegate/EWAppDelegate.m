@@ -28,6 +28,8 @@
 
 #import "ATConnect.h"
 //global view for HUD
+#import <Crashlytics/Crashlytics.h>
+
 UIViewController *rootViewController;
 
 //Private
@@ -59,6 +61,8 @@ UIViewController *rootViewController;
     
     [DDLog addLogger:log];
 #endif
+    
+    [Crashlytics startWithAPIKey:@"6ec9eab6ca26fcd18d51d0322752b861c63bc348"];
     
     //test flight
     [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];

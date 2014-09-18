@@ -11,7 +11,6 @@
 #import <AdSupport/ASIdentifierManager.h>
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
-#import <Crashlytics/Crashlytics.h>
 
 //static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
@@ -168,17 +167,6 @@ void EWLog(NSString *format, ...){
 }
 
 void EWLogInit(){
-//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES);
-//	NSString *documentsDirectory = [paths objectAtIndex:0];
-//	NSString *fileName =[NSString stringWithFormat:@"%@.log",[NSDate date]];
-//	NSString *logFilePath = [documentsDirectory stringByAppendingPathComponent:fileName];
-//    Logger *logger = LoggerGetDefaultLogger();
-//    LoggerSetBufferFile(logger, (__bridge CFStringRef)logFilePath);
-    
-    //crashlytics
-    [Crashlytics startWithAPIKey:@"6ec9eab6ca26fcd18d51d0322752b861c63bc348"];
-
-    
     [DDLog addLogger:[DDASLLogger sharedInstance]];
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
     DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
@@ -186,18 +174,6 @@ void EWLogInit(){
     fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
     
     [DDLog addLogger:fileLogger];
-    
-    
-    //UncaughtExceptionHandler
-    //NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
-    
-    
-}
-
-void uncaughtExceptionHandler(NSException *exception) {
-    DDLogError(@"Uncaught Exception (CRASH): %@", exception);
-    DDLogError(@"Stack Trace: %@", [exception callStackSymbols]);
-    // Internal error reporting
 }
 
 +(NSArray *)readContactsEmailsFromAddressBooks
@@ -241,9 +217,4 @@ void uncaughtExceptionHandler(NSException *exception) {
 }
 
 
-+ (void)crash{
-    [[Crashlytics sharedInstance] crash];
-}
-
-    
 @end
