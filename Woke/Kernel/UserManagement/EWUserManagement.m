@@ -316,7 +316,7 @@
 }
 
 #pragma mark - FACEBOOK
-+ (void)loginParseWithFacebookWithCompletion:(void (^)(void))block{
++ (void)loginParseWithFacebookWithCompletion:(ErrorBlock)block{
     if([PFUser currentUser]){
         [EWUserManagement linkWithFacebook];
         return;
@@ -326,20 +326,19 @@
     [PFFacebookUtils logInWithPermissions:[EWUserManagement facebookPermissions] block:^(PFUser *user, NSError *error) {
         if (error) {
             [EWUserManagement handleFacebookException:error];
-            return;
-        }
-        
-        //login core data user with PFUser, do NOT refresh from PO, refresh from fb info
-        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-        
-        [EWUserManagement loginWithServerUser:[PFUser currentUser] withCompletionBlock:^{
-            //background refresh
             if (block) {
-                NSLog(@"[d] Run completion block.");
-                block();
+                block(error);
             }
-        }];
-        
+        }
+        else {
+            [EWUserManagement loginWithServerUser:[PFUser currentUser] withCompletionBlock:^{
+                //background refresh
+                if (block) {
+                    NSLog(@"[d] Run completion block.");
+                    block(nil);
+                }
+            }];
+        }
     }];
 }
 
@@ -384,7 +383,7 @@
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *person = [me inContext:localContext];
-
+        
         NSParameterAssert(person);
         
         //name
@@ -470,7 +469,7 @@
         }];
         
     }
-
+    
 }
 
 + (void)getFacebookFriendsWithPath:(NSString *)path withReturnData:(NSMutableDictionary *)friendsHolder{
@@ -511,7 +510,7 @@
             [EWUserManagement handleFacebookException:error];
         }
     }];
-
+    
 }
 
 
@@ -557,8 +556,10 @@
         
         // If the user cancelled login, do nothing
         if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryUserCancelled) {
-            [EWUserManagement showLoginPanel];
+            [MBProgressHUD hideHUDForView:rootViewController.view animated:YES];
             NSLog(@"User cancelled login");
+            alertTitle = @"User Cancelled Login";
+            alertText = @"Please Try Again";
             
             // Handle session closures that happen outside of the app
         } else if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryAuthenticationReopenSession){
