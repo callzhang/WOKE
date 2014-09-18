@@ -352,20 +352,16 @@
             if (block) {
                 block(error);
             }
-            return;
         }
-        
-        //login core data user with PFUser, do NOT refresh from PO, refresh from fb info
-        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-        
-        [EWUserManagement loginWithServerUser:[PFUser currentUser] withCompletionBlock:^{
-            //background refresh
-            if (block) {
-                NSLog(@"[d] Run completion block.");
-                block(nil);
-            }
-        }];
-        
+        else {
+            [EWUserManagement loginWithServerUser:[PFUser currentUser] withCompletionBlock:^{
+                //background refresh
+                if (block) {
+                    NSLog(@"[d] Run completion block.");
+                    block(nil);
+                }
+            }];
+        }
     }];
 }
 
@@ -410,7 +406,7 @@
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *person = [me inContext:localContext];
-
+        
         NSParameterAssert(person);
         
         //name
@@ -495,7 +491,7 @@
         }];
         
     }
-
+    
 }
 
 + (void)getFacebookFriendsWithPath:(NSString *)path withReturnData:(NSMutableDictionary *)friendsHolder{
@@ -536,7 +532,7 @@
             [EWUserManagement handleFacebookException:error];
         }
     }];
-
+    
 }
 
 
