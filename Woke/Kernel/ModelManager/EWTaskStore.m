@@ -203,17 +203,16 @@
 }
 
 
-- (void)scheduleTasksInBackground{
+- (void)scheduleTasksInBackgroundWithCompletion:(void (^)(void))block{
     NSParameterAssert([NSThread isMainThread]);
-    if (self.isSchedulingTask) {
-        NSLog(@"It is already checking task, skip!");
-        return;
-    }
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-            [self scheduleTasksInContext:localContext];
-        }];
-    });
+    
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
+        [self scheduleTasksInContext:localContext];
+    }completion:^(BOOL success, NSError *error) {
+        if (block) {
+            block();
+        }
+    }];
     
 }
 
@@ -932,7 +931,7 @@
 //        if (task.updatedAt.timeElapsed > kStalelessInterval) {
 //            [[EWTaskStore sharedInstance] removeTask:task];
 //        }else{
-//            [[EWTaskStore sharedInstance] scheduleTasksInBackground];
+//            [[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
 //        }
 //    }
     
@@ -1007,7 +1006,7 @@
     [task.managedObjectContext refreshObject:task mergeChanges:YES];
     if (!task.time || !task.objectId) {
         NSLog(@"*** The Task for schedule push doesn't have time or objectId: %@", task);
-        [[EWTaskStore sharedInstance] scheduleTasksInBackground];
+        [[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
         return;
     }
     if ([[task time] timeIntervalSinceNow] < 0) {

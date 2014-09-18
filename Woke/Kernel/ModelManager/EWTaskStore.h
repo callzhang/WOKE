@@ -73,7 +73,7 @@
  */
 - (NSArray *)scheduleTasksInContext:(NSManagedObjectContext *)context;
 - (NSArray *)scheduleTasks;
-- (void)scheduleTasksInBackground;
+- (void)scheduleTasksInBackgroundWithCompletion:(void (^)(void))block;
 - (BOOL)checkPastTasks;
 - (void)checkPastTasksInBackgroundWithCompletion:(void (^)(void))block;
 - (BOOL)checkPastTasksInContext:(NSManagedObjectContext *)localContext;

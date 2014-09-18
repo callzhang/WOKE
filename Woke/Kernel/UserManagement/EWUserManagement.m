@@ -107,6 +107,22 @@
 //login with local user default info
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
 
+    //fetch or create, delay 0.1s so the login view can animate
+    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:user.objectId];
+    //save me
+    [EWPersonStore sharedInstance].currentUser = person;
+    me.score = @100;
+    [EWDataStore saveToLocal:me];
+    
+    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+    
+    //update everyone first: everyone is updated in data store
+    //[[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+
+    //Broadcast user login event
+    //Here we don't update me because we have that task in the DataStore login tsak
+    NSLog(@"[c] Broadcast Person login notification");
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
     
     //background refresh
     if (completionBlock) {
@@ -117,45 +133,6 @@
             [[ATConnect sharedConnection] engage:@"login_success" fromViewController:rootViewController];
         });
     }
-
-    //fetch or create, delay 0.1s so the login view can animate
-    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:user.objectId];
-    //save me
-    [EWPersonStore sharedInstance].currentUser = person;
-    me.score = @100;
-    [EWDataStore saveToLocal:me];
-    
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-    
-    
-    if ([PFUser currentUser].isNew) {
-        [EWUserManagement handleNewUser];
-    }
-    
-    //update person
-    //change to update in sync mode to avoid data overriding while update value from server
-    NSDate *updated = me.updatedAt;
-    
-    //update everyone first
-    [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
-    
-    BOOL good = [EWPersonStore validatePerson:me];
-    if (!updated || updated.timeElapsed > kCheckMeInternal || !good) {
-        [person refreshInBackgroundWithCompletion:^{
-            //update current user with fb info
-            [EWUserManagement updateFacebookInfo];
-            
-            //Broadcast user login event
-            NSLog(@"[c] Broadcast Person login notification");
-            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
-        }];
-    }else{
-        
-        //Broadcast user login event
-        NSLog(@"[c] Broadcast Person login notification");
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
-    }
-    
 
 }
 
@@ -248,7 +225,7 @@
     NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", me.name];
     EWAlert(msg);
     [EWServer broadcastMessage:msg onSuccess:^{
-        NSLog(@"Welcome new user %@. Push sent!", me.name);
+        NSLog(@"Welcome new user %@ from %@ joined Woke", me.name, me.city);
     }onFailure:NULL];
     
 }
@@ -434,13 +411,14 @@
             //new user
             person.preference = kUserDefaults;
         }
-        //download profile picture if needed
-        //profile pic, async download, need to assign img to person before leave
-        NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
         
-        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
-        UIImage *img = [UIImage imageWithData:data];
-        if (img && !person.profilePic) {
+        if (!person.profilePic) {
+            //download profile picture if needed
+            //profile pic, async download, need to assign img to person before leave
+            NSString *imageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large", user.id];
+            
+            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+            UIImage *img = [UIImage imageWithData:data];
             person.profilePic = img;
         }
         

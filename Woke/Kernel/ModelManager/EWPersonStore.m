@@ -130,9 +130,21 @@ EWPerson *me;
         }else{
             NSLog(@"lastCheckedMe date is %@, which exceed the check interval %d, start to refresh my relation in background", lastCheckedMe.date2detailDateString, kCheckMeInternal);
         }
-
-        [me refreshRelatedInBackground];
-        [EWPersonStore updateCachedFriends];
+        
+        [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
+            EWPerson *localMe = [me inContext:localContext];
+            [localMe refreshRelatedWithCompletion:^{
+                
+                [EWPersonStore updateCachedFriends];
+                [EWUserManagement updateFacebookInfo];
+                
+                if ([PFUser currentUser].isNew) {
+                    [EWUserManagement handleNewUser];
+                }
+            }];
+        }];
+        
+        
         [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kLastCheckedMe];
     }
 }
@@ -172,6 +184,8 @@ EWPerson *me;
     if (everyone && timeEveryoneChecked.timeElapsed < everyoneCheckTimeOut && everyone.count != 0) {
         return;
     }
+    timeEveryoneChecked = [NSDate date];
+    
     
     NSMutableArray *allPerson = [NSMutableArray new];
     
@@ -245,8 +259,6 @@ EWPerson *me;
     localMe.score = @100;
     
     NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
-    
-    timeEveryoneChecked = [NSDate date];
     
 }
 

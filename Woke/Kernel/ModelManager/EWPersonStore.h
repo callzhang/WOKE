@@ -17,7 +17,7 @@
 #define kEveryoneLastFetched                @"everyone_last_fetched"
 #define kEveryone                           @"everyone"
 #define kLastCheckedMe                      @"last_checked_me"
-#define kCheckMeInternal                    3600 * 24 * 7 //7 days
+#define kCheckMeInternal                    3600 * 24 //1 day
 
 
 extern EWPerson *me;

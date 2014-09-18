@@ -184,7 +184,7 @@
             
             if (tasks.count != 7 * nWeeksToScheduleTask) {
                 NSLog(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
-                [[EWTaskStore sharedInstance] scheduleTasksInBackground];
+                [[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
                 
             }
         }
@@ -858,10 +858,10 @@
         } else {
             //add a update queue to handle exception when updating cell in batch updates block
             
-            NSMutableArray *update = [NSMutableArray array];
-            NSMutableArray *insert = [NSMutableArray array];
-            NSMutableArray *delete = [NSMutableArray array];
-            NSMutableArray *move = [NSMutableArray array];
+            NSMutableSet *update = [NSMutableSet new];
+            NSMutableSet *insert = [NSMutableSet new];
+            NSMutableSet *delete = [NSMutableSet new];
+            NSMutableSet *move = [NSMutableSet new];
             
             @try {
                 [self.collectionView performBatchUpdates:^{
@@ -888,8 +888,8 @@
                         }];
                     }];
                     
-                    [self.collectionView insertItemsAtIndexPaths:insert];
-                    [self.collectionView deleteItemsAtIndexPaths:delete];
+                    [self.collectionView insertItemsAtIndexPaths:insert.allObjects];
+                    [self.collectionView deleteItemsAtIndexPaths:delete.allObjects];
                     
                     for (NSArray *moveArray in move) {
                         [self.collectionView moveItemAtIndexPath:moveArray[0] toIndexPath:moveArray[1]];

@@ -171,19 +171,29 @@ NSManagedObjectContext *mainContext;
     //continue upload to server if any
     NSLog(@"0. Continue uploading to server");
     [EWDataStore resumeUploadToServer];
+	
+	//fetch everyone
+	NSLog(@"1. Getting everyone");
+	[[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
     
     //refresh current user
-    NSLog(@"1. Register AWS push key");
+    NSLog(@"2. Register AWS push key");
     [EWServer registerAPNS];
     
     //check alarm, task, and local notif
-    NSLog(@"2. Check alarm");
+    NSLog(@"3. Check alarm");
 	[[EWAlarmManager sharedInstance] scheduleAlarm];
+    
+    //check task
+    NSLog(@"4. Start task schedule");
+	[[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
+		[EWPersonStore updateMe];
+	}];
 	
-	NSLog(@"3. Check past task activity");
+	NSLog(@"5. Check past task activity");
 	[[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
 	
-    NSLog(@"4. Check my unread media");//also will check with background fetch
+    NSLog(@"4. Check my unread media");//media also will be checked with background fetch
     [[EWMediaStore sharedInstance] checkMediaAssetsInBackground];
     
     //updating facebook friends
@@ -196,9 +206,13 @@ NSManagedObjectContext *mainContext;
 	NSLog(@"6. Check scheduled local notifications");
 	[EWTaskStore.sharedInstance checkScheduledNotifications];
     
-    //Update my relations
-    NSLog(@"7. Refresh my relation in background");
-    [EWPersonStore updateMe];
+    //Update my relations cancelled here because the we should wait for all sync task finished before we can download the rest of the relation
+    //NSLog(@"7. Refresh my relation in background");
+    //[EWPersonStore updateMe];
+	
+	//location
+    NSLog(@"8. Start location recurring update");
+    [EWUserManagement registerLocation];
     
     //update data with timely updates
 	//first time
@@ -206,9 +220,6 @@ NSManagedObjectContext *mainContext;
 	userInfo[@"start_date"] = [NSDate date];
 	userInfo[@"count"] = @0;
 	self.serverUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:kServerUpdateInterval target:self selector:@selector(serverUpdate:) userInfo:userInfo repeats:YES];
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-		[self serverUpdate:nil];
-	});
 	
 }
 
@@ -240,7 +251,9 @@ NSManagedObjectContext *mainContext;
     
     //check task
     NSLog(@"[3] Start recurring task schedule");
-	[[EWTaskStore sharedInstance] scheduleTasksInBackground];
+	[[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
+		[EWPersonStore updateMe];
+	}];
     
     //check alarm timer: alarm time check is done by backgrounding process
     //NSLog(@"[4] Start recurring alarm timer check");
@@ -1347,7 +1360,7 @@ NSManagedObjectContext *mainContext;
 	[EWDataStore appendObject:self toQueue:kParseQueueRefresh];
 }
 
-- (void)refreshRelatedInBackground{
+- (void)refreshRelatedWithCompletion:(void (^)(void))block{
 	if (![EWDataStore sharedInstance].reachability.isReachable) {
 		NSLog(@"Network not reachable, refresh later.");
 		//refresh later
@@ -1378,17 +1391,17 @@ NSManagedObjectContext *mainContext;
                 if ([MO isKindOfClass:[EWPerson class]]) {
                     return ;
                 }
-                [MO refreshInBackgroundWithCompletion:^{
-                    NSLog(@"Relation %@(%@) -> %@(%@) refreshed in background", self.entity.name, [self valueForKey:kParseObjectID], description.destinationEntity.name, [relatedMOs valueForKey:kParseObjectID]);
-                }];
+                [MO refresh];
             }
         }else{
             NSManagedObject *MO = [self valueForKey:key];
-            [MO refreshInBackgroundWithCompletion:^{
-                NSLog(@"Relation %@(%@) -> %@(%@) refreshed in background", self.entity.name, [self valueForKey:kParseObjectID], description.destinationEntity.name, [MO valueForKey:kParseObjectID]);
-            }];
+            [MO refresh];
         }
     }];
+	
+	if (block) {
+		block();
+	}
 }
 
 - (void)refreshShallowWithCompletion:(void (^)(void))block{
@@ -1463,9 +1476,13 @@ NSManagedObjectContext *mainContext;
 
 
 - (void)assignValueFromParseObject:(PFObject *)object{
-    [object fetchIfNeeded];
+	NSError *err;
+    [object fetchIfNeeded:&err];
     if (!object.isDataAvailable) {
         NSLog(@"*** The PO %@(%@) you passed in doesn't have any data. Deleted from server?", object.parseClassName, object.objectId);
+		if (err.code == kPFErrorObjectNotFound) {
+			[self setValue:nil forKeyPath:kParseObjectID];
+		}
         return;
     }
     if (self.serverID) {
@@ -1869,8 +1886,8 @@ NSManagedObjectContext *mainContext;
     if (!mo) {
         //if managedObject not exist, create it locally
         mo = [NSClassFromString(self.localClassName) MR_createInContext:context];
-		[EWDataStore saveToLocal:mo];//save to local first
         [mo assignValueFromParseObject:self];
+		//[EWDataStore saveToLocal:mo];//save to local first
         NSLog(@"+++> MO created: %@ (%@)", self.localClassName, self.objectId);
     }else{
 		

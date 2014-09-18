@@ -426,7 +426,7 @@
         }else{
             task.completed = [NSDate date];
         }
-        [[EWTaskStore sharedInstance] scheduleTasksInBackground];
+        [[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
     }
     
     

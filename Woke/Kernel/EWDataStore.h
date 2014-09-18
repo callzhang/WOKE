@@ -188,7 +188,7 @@ typedef void (^EWSavingCallback)(void);
  *TODO: It also checks that if any data on server has duplication.
  *@discussion it is usually used for current user object (me)
  */
-- (void)refreshRelatedInBackground;
+- (void)refreshRelatedWithCompletion:(void (^)(void))block;
 
 /**
  Update object from PO for value, and related PO that is returned as Array of pointers

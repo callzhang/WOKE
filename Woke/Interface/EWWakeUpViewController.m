@@ -159,7 +159,7 @@
     
     //refresh media
     for (EWMediaItem *media in medias) {
-        [media refreshRelatedInBackground];
+        [media refreshInBackgroundWithCompletion:NULL];
     }
     
     
