@@ -64,7 +64,7 @@
 
 #pragma mark - facebook
 //high level stuff
-+ (void)loginParseWithFacebookWithCompletion:(void (^)(void))block;
++ (void)loginParseWithFacebookWithCompletion:(ErrorBlock)block;
 //+ (void)loginUsingFacebookWithCompletion:(void (^)(void))block;
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user;
 + (void)getFacebookFriends;

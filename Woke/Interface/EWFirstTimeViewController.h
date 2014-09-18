@@ -9,5 +9,5 @@
 #import "EWViewController.h"
 
 @interface EWFirstTimeViewController : UIViewController
-
+@property (nonatomic, strong) UIActivityIndicatorView *loading;
 @end

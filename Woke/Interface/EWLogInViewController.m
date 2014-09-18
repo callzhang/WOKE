@@ -105,7 +105,7 @@
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     
     
-    [EWUserManagement loginParseWithFacebookWithCompletion:^{
+    [EWUserManagement loginParseWithFacebookWithCompletion:^(NSError *error){
         //update UI
         [self updateView];//notification also used
         

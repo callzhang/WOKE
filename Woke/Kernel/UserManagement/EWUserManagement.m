@@ -339,7 +339,7 @@
 }
 
 #pragma mark - FACEBOOK
-+ (void)loginParseWithFacebookWithCompletion:(void (^)(void))block{
++ (void)loginParseWithFacebookWithCompletion:(ErrorBlock)block{
     if([PFUser currentUser]){
         [EWUserManagement linkWithFacebook];
         return;
@@ -349,6 +349,9 @@
     [PFFacebookUtils logInWithPermissions:[EWUserManagement facebookPermissions] block:^(PFUser *user, NSError *error) {
         if (error) {
             [EWUserManagement handleFacebookException:error];
+            if (block) {
+                block(error);
+            }
             return;
         }
         
@@ -359,7 +362,7 @@
             //background refresh
             if (block) {
                 NSLog(@"[d] Run completion block.");
-                block();
+                block(nil);
             }
         }];
         
@@ -579,8 +582,10 @@
         
         // If the user cancelled login, do nothing
         if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryUserCancelled) {
-            [EWUserManagement showLoginPanel];
+            [MBProgressHUD hideHUDForView:rootViewController.view animated:YES];
             NSLog(@"User cancelled login");
+            alertTitle = @"User Cancelled Login";
+            alertText = @"Please Try Again";
             
             // Handle session closures that happen outside of the app
         } else if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryAuthenticationReopenSession){

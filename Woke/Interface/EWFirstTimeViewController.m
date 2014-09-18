@@ -18,11 +18,15 @@
     MYBlurIntroductionView *introductionView;
     NSInteger  _lastIndex ;
     //EWLogInViewController *loginController;
-    UIActivityIndicatorView *loading;
 }
+@property (nonatomic, strong) id observer;
 @end
 
+
 @implementation EWFirstTimeViewController
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self.observer];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -64,7 +68,7 @@
     UIButton *loginButton = (UIButton *)[panel5 viewWithTag:99];
     UIButton *alertButton = (UIButton *)[panel5 viewWithTag:98];
     UIButton *skipButton = (UIButton *)[panel5 viewWithTag:97];
-    loading = (UIActivityIndicatorView *)[panel5 viewWithTag:96];
+    self.loading = (UIActivityIndicatorView *)[panel5 viewWithTag:96];
     
     //loginController = [[EWLogInViewController alloc] init];
     [loginButton addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
@@ -83,6 +87,11 @@
     
     [EWUtil setFirstTimeLoginOver];
     
+    self.observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification
+                                                      object:nil queue:nil usingBlock:^(NSNotification *note) {
+                                                          [self.loading stopAnimating];
+                                                          [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                                                      }];
 }
 
 
@@ -107,26 +116,26 @@
 
 
 #pragma mark - ButtonPressed
-- (IBAction)login:(id)sender
-{
-    [loading startAnimating];
+- (IBAction)login:(id)sender {
+    [self.loading startAnimating];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    
-    [EWUserManagement loginParseWithFacebookWithCompletion:^{
+    [EWUserManagement loginParseWithFacebookWithCompletion:^(NSError *error){
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        [loading stopAnimating];
-        //leaving
-        [rootViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+        [self.loading stopAnimating];
+        if (!error) {
+            //leaving
+            [rootViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+        }
     }];
     
 }
 
 - (IBAction)skip:(id)sender {//this function will not be called
-    [loading startAnimating];
+    [self.loading startAnimating];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [EWUserManagement loginWithDeviceIDWithCompletionBlock:^{
-        [loading stopAnimating];
+        [self.loading stopAnimating];
         [rootViewController dismissViewControllerAnimated:YES completion:NULL];
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
     }];

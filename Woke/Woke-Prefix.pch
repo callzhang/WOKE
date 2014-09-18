@@ -11,6 +11,7 @@
 #define MR_SHORTHAND
 #import <MagicalRecord/CoreData+MagicalRecord.h>
 #import "EWDefines.h"
+#import "EWBlockTypes.h"
 #import "UIView+Layout.h"
 #import "NSString+Extend.h"
 #import "NSDate+Extend.h"

@@ -260,6 +260,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0957E44219CA7036005F2808 /* EWBlockTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EWBlockTypes.h; sourceTree = "<group>"; };
 		0E01D7BC19AC657C0034570A /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		0E01D7BE19AC65880034570A /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		0E47B6C619A3BBDF002E48A8 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = Pods/TestFlightSDK/libTestFlight.a; sourceTree = "<group>"; };
@@ -1058,6 +1059,7 @@
 		56FEA57B17A5763200FC2938 /* Kernel */ = {
 			isa = PBXGroup;
 			children = (
+				0957E44219CA7036005F2808 /* EWBlockTypes.h */,
 				9BEEAF621992B227008E6F34 /* EWBackgroundingManager.h */,
 				9BEEAF631992B227008E6F34 /* EWBackgroundingManager.m */,
 				56FEA57917A5763200FC2938 /* EWDefines.h */,
