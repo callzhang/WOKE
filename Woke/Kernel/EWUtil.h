@@ -28,7 +28,6 @@
 + (void)deleteFileFromParseRESTwithURL:(NSURL *)url;
 
 void EWLog(NSString *format,...);
-void EWLogInit();//to init logger and direct the log to file
 
 + (NSArray *)readContactsEmailsFromAddressBooks;
 @end

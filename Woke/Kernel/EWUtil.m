@@ -166,16 +166,6 @@ void EWLog(NSString *format, ...){
     
 }
 
-void EWLogInit(){
-    [DDLog addLogger:[DDASLLogger sharedInstance]];
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];
-    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
-    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
-    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
-    
-    [DDLog addLogger:fileLogger];
-}
-
 +(NSArray *)readContactsEmailsFromAddressBooks
 {
     
@@ -201,14 +191,14 @@ void EWLogInit(){
         for (int x = 0; x < emailcount; x++)
         {
             //获取email Label
-//            NSString* emailLabel = (__bridge NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(email, x));
+            //NSString* emailLabel = (__bridge NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(email, x));
             //获取email值
             NSString* emailContent = (__bridge NSString*)ABMultiValueCopyValueAtIndex(email, x);
             [friendsEmails addObject:emailContent];
 
         }
     }
-//
+
     CFRelease(results);
     CFRelease(addressBook);
     

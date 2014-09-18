@@ -14,6 +14,7 @@
 #import "EWTaskItem.h"
 #import "EWUserManagement.h"
 #import "EWDataStore.h"
+#import "EWNotificationManager.h"
 
 @implementation EWMediaStore
 //@synthesize context, model;
@@ -176,27 +177,31 @@
     }
     PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
     [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
-    NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
-    [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
+    //NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
+    //[query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
     NSArray *mediaPOs = [query findObjects];
-    mediaPOs = [mediaPOs filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, localAssetIDs]];
     for (PFObject *po in mediaPOs) {
         EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:context];
-        [mo refresh];
+        [mo refreshInBackgroundWithCompletion:NULL];
         //relationship
         [mo removeReceiversObject:me];
         [me addMediaAssetsObject:mo];
         NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
+        
+        //create a notification or find existing one
+        dispatch_async(dispatch_get_main_queue(), ^{
+            EWNotification *newMediaNotification = [EWNotificationManager newNotificationForMedia:mo];
+        });
     }
+    
     if (mediaPOs.count) {
-#ifdef DEBUG
+        //notify user for the new media
         dispatch_async(dispatch_get_main_queue(), ^{
             EWAlert(@"You got voice for your next wake up");
         });
-#endif
-        
         return YES;
     }
+    
     return NO;
 }
 

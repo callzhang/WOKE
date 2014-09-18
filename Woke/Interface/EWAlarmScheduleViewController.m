@@ -55,6 +55,13 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
 }
 
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    if ([EWTaskStore sharedInstance].isSchedulingTask) {
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    }
+}
+
 - (void)dealloc{
     [[EWTaskStore sharedInstance] removeObserver:self forKeyPath:@"isSchedulingTask"];
     [me removeObserver:self forKeyPath:@"tasks"];
@@ -64,11 +71,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     if ([object isKindOfClass:[EWTaskStore class]]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([keyPath isEqualToString:@"isSchedulingTask"]) {
-                [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
                 if (![EWTaskStore sharedInstance].isSchedulingTask) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self initData];
-                    });
+                    
+                    [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
+                    [self initData];
+                    
                 }else{
                     NSLog(@"Schedule View detecte task schedule");
                     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
