@@ -211,8 +211,10 @@ NSManagedObjectContext *mainContext;
     //[EWPersonStore updateMe];
 	
 	//location
-    NSLog(@"8. Start location recurring update");
-    [EWUserManagement registerLocation];
+	if (!me.lastLocation) {
+		NSLog(@"8. Start location recurring update");
+		[EWUserManagement registerLocation];
+	}
     
     //update data with timely updates
 	//first time

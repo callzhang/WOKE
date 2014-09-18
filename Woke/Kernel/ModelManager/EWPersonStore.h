@@ -31,6 +31,8 @@ extern EWPerson *me;
  */
 @property (nonatomic) NSArray *everyone;
 @property (nonatomic) EWPerson *currentUser;
+@property BOOL isFetchingEveryone;
+
 + (EWPersonStore *)sharedInstance;
 - (EWPerson *)createPersonWithParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByServerID:(NSString *)ID;

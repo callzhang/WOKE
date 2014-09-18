@@ -842,9 +842,9 @@
     //Lesson learned: do not update collectionView in parts, as the final count may not be equal to inserts/deletes applied partially.
     //Also, do not delay the update, as the change may not hold when accumulated with a lot of updates.
     static NSDate *lastUpdated;
-    if ([[NSDate date] timeIntervalSinceDate:lastUpdated] < 0.1 || [rootViewController.view viewWithTag:kMenuTag]) {
-        return;
-    }
+//    if ([[NSDate date] timeIntervalSinceDate:lastUpdated] < 0.1 || [rootViewController.view viewWithTag:kMenuTag]) {
+//        return;
+//    }
     
     if (cellChangeArray.count > 0){
         if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {

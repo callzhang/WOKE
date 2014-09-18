@@ -47,11 +47,14 @@ static NavigationControllerDelegate *delegate = nil;
 		[self presentViewController:viewController animated:YES completion:block];
 	} else {
 		//if inactive, wait until app become active
-		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-			NSLog(@"Application did become active, start blur animation");
-			[self presentViewController:viewController animated:YES completion:block];
-			[[NSNotificationCenter defaultCenter] removeObserver:observer];
-		}];
+//		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+//			NSLog(@"Application did become active, start blur animation");
+//			[self presentViewController:viewController animated:YES completion:block];
+//			[[NSNotificationCenter defaultCenter] removeObserver:observer];
+//		}];
+		
+		//use simple transition instead
+		viewController.transitioningDelegate = nil;
 	}
 	
 	

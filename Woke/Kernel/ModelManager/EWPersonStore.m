@@ -36,6 +36,7 @@ EWPerson *me;
 @implementation EWPersonStore
 @synthesize currentUser;
 @synthesize everyone;
+@synthesize isFetchingEveryone = _isFetchingEveryone;
 
 +(EWPersonStore *)sharedInstance{
     static EWPersonStore *sharedPersonStore_ = nil;
@@ -149,7 +150,19 @@ EWPerson *me;
     }
 }
 
+#pragma mark - Everyone server code
 
+- (BOOL)isFetchingEveryone{
+    @synchronized(self){
+        return _isFetchingEveryone;
+    }
+}
+
+- (void)setIsFetchingEveryone:(BOOL)isFetchingEveryone{
+    @synchronized(self){
+        _isFetchingEveryone = isFetchingEveryone;
+    }
+}
 
 - (NSArray *)everyone{
     NSParameterAssert([NSThread isMainThread]);
@@ -181,9 +194,10 @@ EWPerson *me;
 - (void)getEveryoneInContext:(NSManagedObjectContext *)context{
     
     //cache
-    if (everyone && timeEveryoneChecked.timeElapsed < everyoneCheckTimeOut && everyone.count != 0) {
+    if ((everyone && timeEveryoneChecked.timeElapsed < everyoneCheckTimeOut && everyone.count != 0) || self.isFetchingEveryone) {
         return;
     }
+    self.isFetchingEveryone = YES;
     timeEveryoneChecked = [NSDate date];
     
     
@@ -195,11 +209,8 @@ EWPerson *me;
     
     //check my location
     if (!localMe.lastLocation) {
-        //NSLog(@"Forfeit getting everyone around because no location on file");
-        //return;
-        
-        //get a temp coordinate
-        CLLocation *loc = [[CLLocation alloc] initWithLatitude:40.732019 longitude:-73.992684];
+        //get a fake coordinate
+        CLLocation *loc = [[CLLocation alloc] initWithLatitude:0 longitude:0];
         localMe.lastLocation = loc;
         
     }
@@ -232,9 +243,20 @@ EWPerson *me;
     NSArray *people = [query findObjects:&error];
     
     if (error) {
-        NSLog(@"*** Failed to fetch everyone.");
-        //TODO
-        return;
+        NSLog(@"*** Failed to fetch everyone: %@", error);
+        //try to get PO locally
+        NSMutableArray *localPeople = [NSMutableArray new];
+        for (NSString *serverID in list) {
+            PFObject *PO = [EWDataStore getCachedParseObjectForID:serverID];
+            if (PO) {
+                [localPeople addObject:PO];
+            }
+        }
+        if (localPeople.count == 0) {
+            //no one fetched, return
+            self.isFetchingEveryone = NO;
+            return;
+        }
     }
     
     //make sure the rest of people's score is revert back to 0
@@ -259,7 +281,7 @@ EWPerson *me;
     localMe.score = @100;
     
     NSLog(@"Received everyone list: %@", [allPerson valueForKey:@"name"]);
-    
+    self.isFetchingEveryone = NO;
 }
 
 - (void)setEveryone:(NSArray *)e{
