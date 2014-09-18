@@ -224,9 +224,7 @@
     
     NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", me.name];
     EWAlert(msg);
-    [EWServer broadcastMessage:msg onSuccess:^{
-        NSLog(@"Welcome new user %@ from %@ joined Woke", me.name, me.city);
-    }onFailure:NULL];
+    [EWServer broadcastMessage:msg onSuccess:NULL onFailure:NULL];
     
 }
 

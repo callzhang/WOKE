@@ -201,7 +201,8 @@
 
 + (void)broadcastMessage:msg onSuccess:(void (^)(void))block onFailure:(void (^)(void))failureBlock{
     
-    NSDictionary *payload = @{@"alert": msg};
+    NSDictionary *payload = @{@"alert": msg,
+                              @"sound": @"new.caf"};
     
     PFQuery *pushQuery = [PFInstallation query];
     [pushQuery whereKeyExists:@"username"];

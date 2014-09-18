@@ -1346,7 +1346,7 @@ NSManagedObjectContext *mainContext;
             NSLog(@"*** The MO%@ (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
         }
         
-        NSLog(@"===> Refreshing MO %@", self.entity.name);
+        NSLog(@"===>>>> Refreshing MO %@", self.entity.name);
 		//get the PO
         PFObject *object = self.parseObject;
 		//Must update the PO
