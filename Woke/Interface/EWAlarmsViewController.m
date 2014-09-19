@@ -647,7 +647,7 @@
             TestViewController *controller = [[TestViewController alloc] init];
             UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
             [self presentViewControllerWithBlurBackground:nav];
-        }else if([title isEqualToString:@"Refresh"]){
+        }else if([title isEqualToString:@"Refresh View"]){
             [self refreshView];
         }else if([title isEqualToString:@"Feedback"]){
             [[ATConnect sharedConnection] presentMessageCenterFromViewController:self];

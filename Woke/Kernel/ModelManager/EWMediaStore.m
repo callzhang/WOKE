@@ -193,7 +193,11 @@
             }
         }
         po[@"receivers"] = receivers.copy;
-        [po saveInBackground];
+        [po saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (error) {
+                DDLogError(@"Failed to save media %@: %@",po.objectId, error);
+            }
+        }];
         
         [mo removeReceiversObject:me];
         [me addMediaAssetsObject:mo];
