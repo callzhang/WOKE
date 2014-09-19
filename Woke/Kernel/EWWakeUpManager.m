@@ -280,16 +280,20 @@
     NSInteger nVoiceNeeded = kMaxVoicePerTask - nVoice;
     
     for (EWMediaItem *media in medias) {
-        if (!media.targetDate || [media.targetDate isEarlierThan:[NSDate date]]) {
+        if (!media.targetDate || [media.targetDate timeIntervalSinceNow]<0) {
             
             //find media to add
             [task addMediasObject: media];
+            
+#ifdef DEBUG
+            [media addObserver:[EWWakeUpManager sharedInstance] forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+#endif
             //remove media from mediaAssets, need to remove relation doesn't have inverse relation. This is to make sure the sender doesn't need to modify other person
             [me removeMediaAssetsObject:media];
             [media removeReceiversObject:me];
             
+            //stop if enough
             if ([media.type isEqualToString: kMediaTypeVoice]) {
-                
                 //reduce the counter
                 nVoiceNeeded--;
                 if (nVoiceNeeded <= 0) {
@@ -305,6 +309,9 @@
         //need to create some voice
         EWMediaItem *media = [[EWMediaStore sharedInstance] getWokeVoice];
         [task addMediasObject:media];
+#ifdef DEBUG
+        [media addObserver:[EWWakeUpManager sharedInstance] forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+#endif
     }
     
     //save
@@ -332,26 +339,37 @@
         UILocalNotification *alarm = [[UILocalNotification alloc] init];
         alarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
         alarm.alertAction = @"Wake up!";
-        alarm.soundName = me.preference[@"DefaultTone"];
+        //alarm.soundName = me.preference[@"DefaultTone"];
         alarm.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
                            kLocalNotificationTypeKey: kLocalNotificationTypeAlarmTimer};
         [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
-        //[[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
+        
+        //play sound
+        [[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
         
         //play sounds after 30s - time for alarm
         double d = 30;
 #ifdef DEBUG
-        d = 5;
+        d = 10;
 #endif
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(d * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             //present wakeupVC and paly when displayed
-            [EWWakeUpManager presentWakeUpViewWithTask:task];
+            [[AVManager sharedManager] volumeFadeWithCompletion:^{
+                [EWWakeUpManager presentWakeUpViewWithTask:task];
+            }];
+            
         });
     }
-    
-    
-    
-    
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if ([object isKindOfClass:[EWMediaItem class]]) {
+        if ([keyPath isEqualToString:@"tasks"]) {
+            if (change[NSKeyValueChangeKindKey] == NSKeyValueChangeIndexesKey) {
+                NSLog(@"Tasks changed for media %@", [object valueForKey:@"objectId"]);
+            }
+        }
+    }
 }
 
 #pragma mark - Utility

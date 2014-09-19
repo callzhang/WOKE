@@ -38,23 +38,26 @@ static NavigationControllerDelegate *delegate = nil;
 		[(UINavigationController *)viewController setDelegate:delegate];
 	}
 	
+	//hide status bar
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+	
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-		
-		//hide status bar
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		
 		//if active, show the animation
 		[self presentViewController:viewController animated:YES completion:block];
 	} else {
 		//if inactive, wait until app become active
-//		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-//			NSLog(@"Application did become active, start blur animation");
-//			[self presentViewController:viewController animated:YES completion:block];
-//			[[NSNotificationCenter defaultCenter] removeObserver:observer];
-//		}];
+		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+			NSLog(@"Application did become active, start blur animation");
+			[self presentViewController:viewController animated:YES completion:block];
+			[[NSNotificationCenter defaultCenter] removeObserver:observer];
+		}];
 		
-		//use simple transition instead
-		viewController.transitioningDelegate = nil;
+		//use simple transition instead: this doesn't work as the background needs blur
+//		viewController.transitioningDelegate = nil;
+//		[self presentViewController:viewController animated:YES completion:^{
+//			viewController.transitioningDelegate = delegate;
+//		}];
 	}
 	
 	

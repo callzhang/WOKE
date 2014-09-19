@@ -74,6 +74,8 @@
     return supported;
 }
 
+
+#pragma mark - Application state change
 - (void)enterBackground{
     if (self.sleeping || BACKGROUNDING_FROM_START) {
         [self startBackgrounding];
@@ -81,6 +83,9 @@
 }
 
 - (void)enterForeground{
+    
+    [[AVManager sharedManager] registerAudioSession];
+    
     if (!self.sleeping && !BACKGROUNDING_FROM_START) {
         [self endBackgrounding];
     }else{
@@ -124,6 +129,8 @@
         [self startBackgrounding];
     }
 }
+
+#pragma mark - Backgrounding
 
 - (void)startBackgrounding{
     self.sleeping = YES;

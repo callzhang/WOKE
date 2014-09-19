@@ -76,6 +76,7 @@
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
+        [self.task removeObserver:self forKeyPath:@"medias"];
     }
     @catch (NSException *exception) {
         //
@@ -105,7 +106,7 @@
     //HUD
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    [self initData];
+    //[self initData];
     [self initView];
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
@@ -158,9 +159,10 @@
     [tableView_ reloadData];
     
     //refresh media
-    for (EWMediaItem *media in medias) {
-        [media refreshInBackgroundWithCompletion:NULL];
-    }
+    //Lesson learned: do not refresh media as they haven't uploaded their newly created relation with task and will be overwritten by old status, thus the media will gone from view.
+//    for (EWMediaItem *media in medias) {
+//        [media refreshInBackgroundWithCompletion:NULL];
+//    }
     
     
     //load MediaViewCell

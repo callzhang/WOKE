@@ -31,6 +31,7 @@ extern EWPerson *me;
  */
 @property (nonatomic) NSArray *everyone;
 @property (nonatomic) EWPerson *currentUser;
+@property (nonatomic) NSDate *timeEveryoneChecked;
 @property BOOL isFetchingEveryone;
 
 + (EWPersonStore *)sharedInstance;

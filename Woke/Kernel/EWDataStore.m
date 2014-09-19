@@ -889,6 +889,7 @@ NSManagedObjectContext *mainContext;
 			
 			//remove from queue
 			[EWDataStore removeObjectFromWorkingQueue:localMO];
+			[workingObjects removeObject:localMO];
         }
         
         for (PFObject *po in deletedServerObjects) {
@@ -942,7 +943,7 @@ NSManagedObjectContext *mainContext;
 	}
 }
 
-#pragma mark -
+#pragma mark - Upload worker
 
 
 + (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject{
@@ -1233,6 +1234,93 @@ NSManagedObjectContext *mainContext;
     [EWDataStore saveToLocal:self];
 }
 
+
+
+- (void)assignValueFromParseObject:(PFObject *)object{
+	NSError *err;
+	[object fetchIfNeeded:&err];
+	if (!object.isDataAvailable) {
+		NSLog(@"*** The PO %@(%@) you passed in doesn't have any data. Deleted from server?", object.parseClassName, object.objectId);
+		if (err.code == kPFErrorObjectNotFound) {
+			[self setValue:nil forKeyPath:kParseObjectID];
+		}
+		return;
+	}
+	if (self.serverID) {
+		NSParameterAssert([[self valueForKey:kParseObjectID] isEqualToString:object.objectId]);
+	}else{
+		[self setValue:object.objectId forKey:kParseObjectID];
+	}
+	//attributes
+	NSDictionary *managedObjectAttributes = self.entity.attributesByName;
+	//NSArray *allKeys = object.allKeys;
+	//add or delete some attributes here
+	[managedObjectAttributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
+		key = [NSString stringWithFormat:@"%@", key];
+		if (key.skipUpload) {
+			//skip the updatedAt
+			return;
+		}
+		id parseValue = [object objectForKey:key];
+		
+		if ([parseValue isKindOfClass:[PFFile class]]) {
+			//PFFile
+			PFFile *file = (PFFile *)parseValue;
+			
+			[self.managedObjectContext saveWithBlock:^(NSManagedObjectContext *localContext) {
+				NSError *error;
+				NSData *data = [file getData:&error];
+				//[file getDataWithBlock:^(NSData *data, NSError *error) {
+				if (error || !data) {
+					NSLog(@"@@@ Failed to download PFFile: %@", error.description);
+					return;
+				}
+				NSManagedObject *localSelf = [self MR_inContext:localContext];
+				NSString *className = [localSelf getPropertyClassByName:key];
+				if ([className isEqualToString:@"UIImage"]) {
+					UIImage *img = [UIImage imageWithData:data];
+					[localSelf setValue:img forKey:key];
+				}
+				else{
+					[localSelf setValue:data forKey:key];
+				}
+				
+			}];
+			
+		}else if(parseValue && ![parseValue isKindOfClass:[NSNull class]]){
+			//contains value
+			if ([[self getPropertyClassByName:key] serverType]){
+				
+				//need to deal with local type
+				if ([parseValue isKindOfClass:[PFGeoPoint class]]) {
+					PFGeoPoint *point = (PFGeoPoint *)parseValue;
+					CLLocation *loc = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
+					[self setValue:loc forKey:key];
+				}else{
+					[NSException raise:@"Server class not handled" format:@"Check your code!"];
+				}
+			}else{
+				@try {
+					[self setValue:parseValue forKey:key];
+				}
+				@catch (NSException *exception) {
+					NSLog(@"*** Failed to set value for key %@ on MO %@(%@)", key, self.entity.name, self.serverID);
+				}
+			}
+		}else{
+			//parse value empty, delete
+			if ([self valueForKey:key]) {
+				//NSLog(@"~~~> Delete attribute on MO %@(%@)->%@", self.entity.name, [obj valueForKey:kParseObjectID], obj.name);
+				[self setValue:nil forKey:key];
+			}
+		}
+	}];
+	
+	//[EWDataStore saveToLocal:self];
+}
+
+#pragma mark -
+
 - (PFObject *)parseObject{
 	
 	NSError *err;
@@ -1243,12 +1331,12 @@ NSManagedObjectContext *mainContext;
 	if (object && object.updatedAt.timeElapsed > kStalelessInterval) {
 		[object refresh];
 	}
-    
+	
     return object;
 }
 
 - (PFObject *)getParseObjectWithError:(NSError **)err{
-    
+	
 	PFObject *PO = [EWDataStore getParseObjectWithClass:self.entity.name WithID:self.serverID withError:err];
 
 	if (!PO.isDataAvailable/* && *err*/) {
@@ -1350,7 +1438,7 @@ NSManagedObjectContext *mainContext;
             NSLog(@"*** The MO%@ (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
         }
         
-        NSLog(@"===>>>> Refreshing MO %@", self.entity.name);
+        NSLog(@"===>>>> Refreshing MO %@(%@)", self.entity.name, self.serverID);
 		//get the PO
         PFObject *object = self.parseObject;
 		//Must update the PO
@@ -1478,91 +1566,6 @@ NSManagedObjectContext *mainContext;
         
     }];
     
-}
-
-
-- (void)assignValueFromParseObject:(PFObject *)object{
-	NSError *err;
-    [object fetchIfNeeded:&err];
-    if (!object.isDataAvailable) {
-        NSLog(@"*** The PO %@(%@) you passed in doesn't have any data. Deleted from server?", object.parseClassName, object.objectId);
-		if (err.code == kPFErrorObjectNotFound) {
-			[self setValue:nil forKeyPath:kParseObjectID];
-		}
-        return;
-    }
-    if (self.serverID) {
-        NSParameterAssert([[self valueForKey:kParseObjectID] isEqualToString:object.objectId]);
-    }else{
-        [self setValue:object.objectId forKey:kParseObjectID];
-    }
-    //attributes
-    NSDictionary *managedObjectAttributes = self.entity.attributesByName;
-    //NSArray *allKeys = object.allKeys;
-    //add or delete some attributes here
-    [managedObjectAttributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
-		key = [NSString stringWithFormat:@"%@", key];
-        if (key.skipUpload) {
-			//skip the updatedAt
-            return;
-        }
-        id parseValue = [object objectForKey:key];
-        
-        if ([parseValue isKindOfClass:[PFFile class]]) {
-            //PFFile
-			PFFile *file = (PFFile *)parseValue;
-            //[self setPFFile:parseValue forPropertyDescription:obj];
-			[self.managedObjectContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-				NSError *error;
-				NSData *data = [file getData:&error];
-				//[file getDataWithBlock:^(NSData *data, NSError *error) {
-				if (error || !data) {
-					NSLog(@"@@@ Failed to download PFFile: %@", error.description);
-					return;
-				}
-				NSManagedObject *localSelf = [self MR_inContext:localContext];
-				NSString *className = [localSelf getPropertyClassByName:key];
-				if ([className isEqualToString:@"UIImage"]) {
-					UIImage *img = [UIImage imageWithData:data];
-					[localSelf setValue:img forKey:key];
-				}
-				else{
-					[localSelf setValue:data forKey:key];
-				}
-				
-			}];
-            
-        }else if(parseValue && ![parseValue isKindOfClass:[NSNull class]]){
-            //contains value
-            if ([[self getPropertyClassByName:key] serverType]){
-                
-                //need to deal with local type
-                if ([parseValue isKindOfClass:[PFGeoPoint class]]) {
-                    PFGeoPoint *point = (PFGeoPoint *)parseValue;
-                    CLLocation *loc = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
-                    [self setValue:loc forKey:key];
-                }else{
-                    [NSException raise:@"Server class not handled" format:@"Check your code!"];
-                }
-            }else{
-				@try {
-					[self setValue:parseValue forKey:key];
-				}
-				@catch (NSException *exception) {
-					NSLog(@"*** Failed to set value for key %@ on MO %@(%@)", key, self.entity.name, self.serverID);
-				}
-                
-            }
-        }else{
-            //parse value empty, delete
-            if ([self valueForKey:key]) {
-                //NSLog(@"~~~> Delete attribute on MO %@(%@)->%@", self.entity.name, [obj valueForKey:kParseObjectID], obj.name);
-                [self setValue:nil forKey:key];
-            }
-        }
-    }];
-    
-    //[EWDataStore saveToLocal:self];
 }
 
 - (void)updateEventually{

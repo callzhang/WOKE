@@ -387,7 +387,7 @@
     AVAudioPlayer *p = (AVAudioPlayer *)timer.userInfo;
     if(![p isEqual:player]) NSLog(@"***Player passed in is not correct");
     if (!progressBar.isTouchInside) {
-        player.volume = 1.0;
+        //player.volume = 1.0;
         progressBar.value = player.currentTime;
         //currentTime.text = [NSString stringWithFormat:@"%02ld\"", (long)player.currentTime % 60, nil];
     }
@@ -661,6 +661,24 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
         
         NSLog(@"Set lock screen informantion");
+    }
+}
+
+
+
+- (void)volumeFadeWithCompletion:(void (^)(void))block{
+    if (self.player.volume > 0) {
+        self.player.volume = self.player.volume - 0.1;
+        [self performSelector:@selector(volumeFadeWithCompletion:) withObject:block afterDelay:0.2];
+    } else {
+        // Stop and get the sound ready for playing again
+        [self.player stop];
+        self.player.currentTime = 0;
+        //[self.player prepareToPlay];
+        self.player.volume = 1.0;
+        if (block) {
+            block();
+        }
     }
 }
 @end

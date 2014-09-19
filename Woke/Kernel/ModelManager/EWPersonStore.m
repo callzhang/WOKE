@@ -27,16 +27,11 @@
 EWPerson *me;
 //=========================================================
 
-@interface EWPersonStore(){
-    NSDate *timeEveryoneChecked;
-}
-
-@end
-
 @implementation EWPersonStore
 @synthesize currentUser;
 @synthesize everyone;
 @synthesize isFetchingEveryone = _isFetchingEveryone;
+@synthesize timeEveryoneChecked;
 
 +(EWPersonStore *)sharedInstance{
     static EWPersonStore *sharedPersonStore_ = nil;

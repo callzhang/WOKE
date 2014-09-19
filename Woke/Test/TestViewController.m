@@ -234,13 +234,17 @@
             //alarm timer
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             //alarm timer in 10s
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [EWWakeUpManager handleAlarmTimerEvent:nil];
-            });
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [EWWakeUpManager handleAlarmTimerEvent:nil];
+//            });
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
             [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
                 [rootViewController.view showSuccessNotification:@"Exit app now!"];
             }];
+            
+            //handle alarm timer
+            [[EWWakeUpManager class] performSelector:@selector(handleAlarmTimerEvent:) withObject:nil afterDelay:5];
+            
             break;
         }
         

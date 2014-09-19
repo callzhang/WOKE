@@ -425,7 +425,7 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Refresh view", @"Feedback", @"Test sheet", @"Refresh people", nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Refresh View", @"Feedback", @"Test sheet", @"Refresh people", nil];
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
@@ -658,6 +658,7 @@
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
             [self presentViewControllerWithBlurBackground:controller];
         }else if([title isEqualToString:@"Refresh people"]){
+            [EWPersonStore sharedInstance].timeEveryoneChecked = nil;
             [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
         }
     }else{

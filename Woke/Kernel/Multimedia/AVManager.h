@@ -110,4 +110,7 @@
 // */
 //- (void)resignRemoteControlEventsListener;
 
+#pragma mark - Tools
+- (void)volumeFadeWithCompletion:(void (^)(void))block;
+
 @end

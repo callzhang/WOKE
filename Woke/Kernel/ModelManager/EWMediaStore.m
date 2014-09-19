@@ -183,7 +183,7 @@
     for (PFObject *po in mediaPOs) {
         [EWDataStore setCachedParseObject:po];
         EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:context];
-        [mo refreshInBackgroundWithCompletion:NULL];//save to local marked
+        [mo refresh];//save to local marked
         //relationship
         NSMutableArray *receivers = po[@"receivers"];
         for (PFObject *receiver in receivers) {
