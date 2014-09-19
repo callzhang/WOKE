@@ -28,6 +28,7 @@
 #import "EWSocialGraphManager.h"
 #import "EWNotification.h"
 #import "EWNotificationManager.h"
+#import "EWBackgroundingManager.h"
 
 @interface TestViewController ()
 
@@ -232,12 +233,7 @@
             
         case 6:{
             //alarm timer
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            //alarm timer in 10s
-//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//                [EWWakeUpManager handleAlarmTimerEvent:nil];
-//            });
-            [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+            [[EWBackgroundingManager sharedInstance] startBackgrounding];
             [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
                 [rootViewController.view showSuccessNotification:@"Exit app now!"];
             }];

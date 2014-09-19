@@ -40,7 +40,7 @@
 @property (weak, nonatomic) EWMediaItem *media;
 @property (weak, nonatomic) UIButton *recordStopBtn;
 @property (weak, nonatomic) UIButton *playStopBtn;
-@property (weak, nonatomic) EWMediaSlider *progressBar;
+@property (nonatomic) EWMediaSlider *progressBar;
 @property (weak, nonatomic) UILabel *currentTime;
 @property (weak, nonatomic) SCSiriWaveformView *waveformView;
 //@property (nonatomic) BOOL loop;

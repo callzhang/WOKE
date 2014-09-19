@@ -284,10 +284,6 @@
             
             //find media to add
             [task addMediasObject: media];
-            
-#ifdef DEBUG
-            [media addObserver:[EWWakeUpManager sharedInstance] forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
-#endif
             //remove media from mediaAssets, need to remove relation doesn't have inverse relation. This is to make sure the sender doesn't need to modify other person
             [me removeMediaAssetsObject:media];
             [media removeReceiversObject:me];
@@ -309,9 +305,7 @@
         //need to create some voice
         EWMediaItem *media = [[EWMediaStore sharedInstance] getWokeVoice];
         [task addMediasObject:media];
-#ifdef DEBUG
-        [media addObserver:[EWWakeUpManager sharedInstance] forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
-#endif
+
     }
     
     //save
@@ -350,7 +344,7 @@
         //play sounds after 30s - time for alarm
         double d = 30;
 #ifdef DEBUG
-        d = 10;
+        d = 5;
 #endif
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(d * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             //present wakeupVC and paly when displayed
@@ -359,16 +353,6 @@
             }];
             
         });
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if ([object isKindOfClass:[EWMediaItem class]]) {
-        if ([keyPath isEqualToString:@"tasks"]) {
-            if (change[NSKeyValueChangeKindKey] == NSKeyValueChangeIndexesKey) {
-                NSLog(@"Tasks changed for media %@", [object valueForKey:@"objectId"]);
-            }
-        }
     }
 }
 

@@ -889,7 +889,6 @@ NSManagedObjectContext *mainContext;
 			
 			//remove from queue
 			[EWDataStore removeObjectFromWorkingQueue:localMO];
-			[workingObjects removeObject:localMO];
         }
         
         for (PFObject *po in deletedServerObjects) {
@@ -907,8 +906,9 @@ NSManagedObjectContext *mainContext;
 		}
 		
 		NSLog(@"=========== Finished uploading to saver ===============");
-		if (workingObjects.count > 0) {
-			NSLog(@"*** With failures:%@(%@)", [workingObjects valueForKey:@"objectId"], [workingObjects valueForKeyPath: @"entity.name"]);
+		NSSet *reminningWorkingObjects = [EWDataStore getObjectFromQueue:kParseQueueWorking];
+		if (reminningWorkingObjects.count > 0) {
+			NSLog(@"*** With failures: (ID)%@(Entity)%@", [reminningWorkingObjects valueForKey:@"objectId"], [reminningWorkingObjects valueForKeyPath: @"entity.name"]);
 
 			[EWDataStore clearQueue:kParseQueueWorking];
 		}

@@ -45,7 +45,12 @@
 
 - (EWWakeUpViewController *)initWithTask:(EWTaskItem *)t{
     self = [self initWithNibName:nil bundle:nil];
-    self.task = t;
+    task = t;
+    medias = [[task.medias allObjects] mutableCopy];
+    
+    //KVO
+    [self.task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:nil];
+    [self initData];
     
     //first time loop
     next = YES;
@@ -53,7 +58,7 @@
     loopCount = kLoopMediaPlayCount;
     
     //notification
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell) name:kAudioPlayerDidFinishPlaying object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell:) name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     //responder to remote control
@@ -64,11 +69,6 @@
 }
 
 - (void)setTask:(EWTaskItem *)t{
-    task = t;
-    medias = [[task.medias allObjects] mutableCopy];
-    //KVO
-    [self.task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:nil];
-    [self initData];
 }
 
 
@@ -165,11 +165,6 @@
 //    }
     
     
-    //load MediaViewCell
-    UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
-    //register the nib
-    [tableView_ registerNib:nib forCellReuseIdentifier:cellIdentifier];
-    
     //_shakeManager = [[EWShakeManager alloc] init];
     //_shakeManager.delegate = self;
     //[_shakeManager register];
@@ -194,6 +189,11 @@
     tableView_.delegate = self;
     tableView_.separatorStyle = UITableViewCellSeparatorStyleNone;
     tableView_.contentInset = UIEdgeInsetsMake(40, 0, 80, 0);//the distance of the content to the frame of tableview
+    
+    //load MediaViewCell
+    UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
+    //register the nib
+    [tableView_ registerNib:nib forCellReuseIdentifier:cellIdentifier];
     
     //alpha mask
     [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.2f, @0.9f]];
@@ -326,19 +326,17 @@
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     [self scrollViewDidScroll:tableView];
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-        cell.media = nil;
-        
         //media
-        EWMediaItem *mi = [medias objectAtIndex:indexPath.row];
-    
+        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+        EWMediaItem *mi = cell.media;
+        cell.media = nil;
         
         //stop play if media is being played
         if ([[AVManager sharedManager].media isEqual:mi]) {
             //media is being played
             NSLog(@"Deleting current cell, play next");
             if ([tableView numberOfRowsInSection:0] > 1) {
-                [self playNextCell];
+                [self playNextCell:nil];
             }
         }
         
@@ -349,7 +347,10 @@
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         
         //delete
-        [[EWMediaStore sharedInstance] deleteMedia:mi];
+        if (mi.author == me) {
+            [[EWMediaStore sharedInstance] deleteMedia:mi];
+        }
+        [task removeMediasObject:mi];
         [EWDataStore save];
         
         
@@ -450,14 +451,9 @@
     //Active session
     [[AVManager sharedManager] registerActiveAudioSession];
     
-    NSInteger currentPlayingCellIndex = [self seekCurrentCell];
-    if (currentPlayingCellIndex < 0) {
+    NSInteger currentPlayingCellIndex = [medias indexOfObject:[AVManager sharedManager].media];
+    if (currentPlayingCellIndex == NSNotFound) {
         currentPlayingCellIndex = 0;
-    }
-    if ([AVManager sharedManager].player.playing && [AVManager sharedManager].media) {
-        //AVManager has media and is playing, meaning it is working for wakeupView
-        NSLog(@"AVManager is playing media %ld", (long)currentPlayingCellIndex);
-        return;
     }
     
     //get the cell
@@ -469,28 +465,24 @@
         if (!cell) {
             [[AVManager sharedManager] playMedia:medias[currentPlayingCellIndex]];
         }else{
-            [[AVManager sharedManager] playForCell:cell];
+            if ([AVManager sharedManager].player.playing && [AVManager sharedManager].media) {
+                //AVManager has media and is playing, meaning it is working for wakeupView
+                NSLog(@"AVManager is playing media %ld", (long)currentPlayingCellIndex);
+                //set the cell
+                [AVManager sharedManager].currentCell = cell;
+                return;
+            }
+            else{
+                [[AVManager sharedManager] playForCell:cell];
+            }
+            
         }
     }
     
 }
 
-
-- (NSInteger)seekCurrentCell{
-    [self initData];
-    
-    for (NSInteger i=0; i<medias.count; i++) {
-        if ([[AVManager sharedManager].media isEqual:medias[i]]) {
-            return i;
-        }
-    }
-    
-    //if not found, play the first one
-    return -1;
-}
-
-
-- (void)playNextCell{
+- (void)playNextCell:(NSNotification *)note{
+    EWMediaItem *mediaJustFinished = note.object;
     //delay 3s
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         //check if need to play next
@@ -503,7 +495,7 @@
             return;
         }
         
-        NSInteger currentCellPlaying = [self seekCurrentCell];
+        NSInteger currentCellPlaying = [medias indexOfObject:mediaJustFinished];//if not found, next = 0
 
         __block EWMediaViewCell *cell;
         NSIndexPath *path;
@@ -515,7 +507,7 @@
             NSLog(@"Play next song (%ld)", (long)nextCellIndex);
             path = [NSIndexPath indexPathForRow:nextCellIndex inSection:0];
             
-        }else if(nextCellIndex >= medias.count){
+        }else{
             if ((--loopCount)>0) {
                 //play the first if loopCount > 0
                 NSLog(@"Looping, %ld loop left", (long)loopCount);
@@ -531,8 +523,6 @@
                 return;
             }
             
-        }else{
-            [NSException raise:@"Unknown state" format:@"Current cell count (%ld) exceeds total medias (%lu)", (long)nextCellIndex, (unsigned long)medias.count];
         }
         
         //get cell
@@ -543,16 +533,19 @@
         if (cell) {
             [[AVManager sharedManager] playForCell:cell];
         }else{
-            //[self playNextCell];
+            //play media when in background
             [[AVManager sharedManager] playMedia:medias[path.row]];
         }
         
         //highlight
         if (path) {
-            [tableView_ selectRowAtIndexPath:path animated:YES scrollPosition:UITableViewScrollPositionMiddle];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [tableView_ deselectRowAtIndexPath:path animated:YES];
-            });
+            if ([tableView_ cellForRowAtIndexPath:path]) {
+                [tableView_ selectRowAtIndexPath:path animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [tableView_ deselectRowAtIndexPath:path animated:YES];
+                });
+            }
+            
         }
         
     });

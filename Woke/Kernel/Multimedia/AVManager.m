@@ -419,8 +419,10 @@
     [updateTimer invalidate];
     self.player.currentTime = 0.0;
     progressBar.value = 0.0;
-    //NSLog(@"Playback fnished");
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:nil];
+    if (self.media) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:self.media];
+    }
+    
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
