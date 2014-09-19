@@ -133,10 +133,18 @@
         time = [time lastWeekTime];
     }
     
-    //future, first(0) is the the first future occurance
-    for (unsigned i = 0; i <= n; i++) {
+    //bring to the first occurance of future
+    while ([time timeIntervalSinceNow]<0) {
         time = [time nextWeekTime];
     }
+    
+    //further n weeks
+    while (n>0) {
+        n--;
+        time = [time nextWeekTime];
+    }
+    
+    NSAssert([time timeIntervalSinceNow] >3600*24*7*n && [time timeIntervalSinceNow] < 3600*24*7*(n+1), @"Error in getting %ld next time %@", (long)n, time);
     return time;
 }
 
