@@ -90,7 +90,7 @@
         [_closeButton setImage:dimge forState:UIControlStateNormal];
         
         
-        locationAndTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 22)];
+        locationAndTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 20)];
         locationAndTimeLabel.center = cellCenter;
         locationAndTimeLabel.textAlignment = NSTextAlignmentCenter;
         locationAndTimeLabel.adjustsFontSizeToFitWidth = YES;
@@ -99,6 +99,16 @@
         locationAndTimeLabel.text = cell.timeAndDistance;
         locationAndTimeLabel.alpha = 0;
         [self addSubview:locationAndTimeLabel];
+        
+        name = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 20)];
+        name.center = cellCenter;
+        name.textAlignment = NSTextAlignmentCenter;
+        name.adjustsFontSizeToFitWidth = YES;
+        name.textColor = [UIColor whiteColor];
+        name.font =[UIFont fontWithName:@"Lato-Regular" size:12];
+        name.text = cell.person.name;
+        name.alpha = 0;
+        [self addSubview:name];
         
         
         
@@ -129,13 +139,13 @@
              cell.transform = scale;
              
              //hide everything
-             cell.km.alpha = 0;
-             cell.time.alpha = 0;
+             cell.info.alpha = 0;
              cell.initial.alpha = 0;
+             cell.name.alpha = 0;
              
              //show name and info
              locationAndTimeLabel.alpha = 1;
-             cell.name.alpha = 1;
+             name.alpha = 1;
              
              //location
              _profileButton.x += kCollectionViewCellWidth / 2 + 22.5;
@@ -144,7 +154,7 @@
              _buzzButton.x -= kCollectionViewCellWidth / 2 + 22.5;
              _voiceButton.y -= kCollectionViewCellHeight / 2 + 30 + kCallOutBtnSize/2;
              locationAndTimeLabel.y += kCollectionViewCellHeight / 2 + 40;
-             cell.name.y += 20;
+             name.y += kCollectionViewCellHeight/2 +20;
              
              _alphaView.alpha = 1;
              _profileButton.alpha=1;
@@ -210,26 +220,24 @@
          _buzzButton.center = cellCenter;
          _voiceButton.center = cellCenter;
          _closeButton.center = cellCenter;
-         CGPoint nameRect = cell.name.center;
-         nameRect.y -= 20;
-         cell.name.center = nameRect;
+         name.center = cellCenter;
          locationAndTimeLabel.center = cellCenter;
          
-         if (cell.showDistance){
-             cell.km.alpha = 1;
+         //recover label
+         if (cell.showDistance || cell.showTime){
+              cell.info.alpha = 1;
          }
-         if (cell.showTime) {
-             cell.time.alpha = 1;
+         if (cell.showName) {
+             cell.name.alpha = 1;
          }
-         if (!cell.showName) {
-             cell.name.alpha = 0;
-         }
+         
+         //hide menu label
          _profileButton.alpha=0;
          _buzzButton.alpha=0;
          _voiceButton.alpha=0;
          _closeButton.alpha=0;
          _alphaView.alpha=0;
-         //name.alpha = 0;
+         name.alpha = 0;
          locationAndTimeLabel.alpha = 0;
          
      } completion:^(BOOL finished) {

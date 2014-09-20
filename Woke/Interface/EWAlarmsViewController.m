@@ -425,7 +425,11 @@
 #pragma mark - UI Events
 
 - (IBAction)mainActions:(id)sender {
+#ifdef DEBUG
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Refresh View", @"Feedback", @"Test sheet", @"Refresh people", nil];
+#else
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Preferences", @"Feedback", nil];
+#endif
     sheet.tag = kOptionsAlert;
     [sheet showFromRect:self.actionBtn.frame inView:self.view animated:YES];
     
@@ -504,7 +508,7 @@
 
 
 - (void)toggleSleepBtnVisibility{
-    if (tasks.count > 0) {
+    if (tasks.count != 7*nWeeksToScheduleTask) {
         EWTaskItem *task = tasks[0];
         float h = -task.time.timeElapsed/3600;
         NSNumber *duration = me.preference[kSleepDuration];

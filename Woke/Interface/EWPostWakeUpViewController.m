@@ -232,10 +232,10 @@ NSString * const selectAllCellId = @"selectAllCellId";
         cell = [cView  dequeueReusableCellWithReuseIdentifier:selectAllCellId forIndexPath:indexPath];
         [cell applyHexagonMask];
         cell.image.alpha = 0.1;
-        cell.initial.text = @"Select";
-        cell.time.text = @"All";
+        cell.initial.text = @"ALL";
         cell.initial.alpha = 1;
-        cell.time.alpha = 1;
+        cell.name.text = @"";
+        cell.info.text = @"";
         
         return cell;
     }
@@ -253,7 +253,6 @@ NSString * const selectAllCellId = @"selectAllCellId";
 
 -(void)collectionView:(UICollectionView *)cView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"%@",cView.indexPathsForSelectedItems);
     if (indexPath.row == [personArray count]) {
         [self selectAllCell];
         return;

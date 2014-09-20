@@ -115,17 +115,17 @@
     //adjust size
     if ([_notification.type isEqualToString:kNotificationTypeNotice]) {
         
-        self.userLabelLeadingConstraint.constant = -45;
+        self.userLabelLeadingConstraint.constant = -40;
         self.detail.text = [NSString stringWithFormat:@"%@:%@", self.detail.text, kNotificationTypeNotice];
 
-        CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(self.detail.width, 1000)  lineBreakMode:NSLineBreakByWordWrapping];
-        
-        self.contentView.height = fixLabelSize.height + 25;
+        CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(self.detail.width+40, 1000)  lineBreakMode:NSLineBreakByWordWrapping];
+        CGFloat deltaH = ceil(fixLabelSize.height - self.detail.height);
+        self.detail.height += deltaH;
+        self.contentView.height = fixLabelSize.height + deltaH;
         self.height = self.contentView.height;
     }
     else {
         self.userLabelLeadingConstraint.constant = 8;
-        self.detail.text = [NSString stringWithFormat:@"%@:%@", self.detail.text, @"NOT SYSTEM"];
     }
     
     [self setNeedsDisplay];

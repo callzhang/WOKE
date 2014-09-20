@@ -239,7 +239,7 @@
     NSMutableArray *tasks = [localPerson.tasks mutableCopy];
     NSArray *alarms = [[EWAlarmManager sharedInstance] alarmsForUser:localPerson];
     if (alarms.count != 7) {
-        NSLog(@"Something wrong with my alarms(%d), get return nil", alarms.count);
+        NSLog(@"Something wrong with my alarms， only (%d) found when scheduling task", alarms.count);
         self.isSchedulingTask = NO;
         return nil;
     }

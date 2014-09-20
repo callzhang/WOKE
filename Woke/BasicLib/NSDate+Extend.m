@@ -257,12 +257,12 @@
     
     if (days >=2) {
         timeStr = [NSString stringWithFormat:@"%d days", (NSInteger)days];
-    }else if (days >=1) {
-        timeStr = [NSString stringWithFormat:@"1 day %d hours", (NSInteger)hours];
+//    }else if (days >=1) {
+//        timeStr = [NSString stringWithFormat:@"1 day %d hours", (NSInteger)hours];
     }else if (hours > 10) {
-        timeStr = [NSString stringWithFormat:@"%d hours", (NSInteger)hours];
+        timeStr = [NSString stringWithFormat:@"%d hours", (NSInteger)hours + (NSInteger)days*24];
     }else if (hours >= 1){
-        timeStr = [NSString stringWithFormat:@"%.1f hours", hours];
+        timeStr = [NSString stringWithFormat:@"%.1f hours", hours + minutes/60];
     }else if(minutes >= 1){
         timeStr = [NSString stringWithFormat:@"%ld minutes",(long)minutes];
     }else{

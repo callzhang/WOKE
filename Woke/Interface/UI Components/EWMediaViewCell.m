@@ -69,6 +69,7 @@
         CGRect frame = self.mediaBar.frame;
         NSError *err;
         AVAudioPlayer *p = [[AVAudioPlayer alloc] initWithData:media.audio error:&err];
+        
         double len = p.duration;
         double ratio = len/30/2 + 0.5;
         if (ratio > 1.0) ratio = 1.0;

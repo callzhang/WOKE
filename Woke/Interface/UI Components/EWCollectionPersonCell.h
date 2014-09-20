@@ -15,8 +15,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *profile;
 @property (weak, nonatomic) IBOutlet UIImageView *selection;
 @property (weak, nonatomic) IBOutlet UIView *image;
-@property (weak, nonatomic) IBOutlet UILabel *time;
-@property (weak, nonatomic) IBOutlet UILabel *km;
+@property (weak, nonatomic) IBOutlet UILabel *info;
 @property (weak, nonatomic) IBOutlet UILabel *initial;
 @property (strong, nonatomic) IBOutlet UILabel *name;
 

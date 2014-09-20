@@ -347,15 +347,16 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Preference",@"Log out", nil];
 #ifdef DEBUG
-            [sheet addButtonWithTitle:@"Add friend"];
+        [sheet addButtonWithTitle:@"Add friend"];
+        [sheet addButtonWithTitle:@"Send Voice Greeting"];
 #endif
     }else{
         //sheet.destructiveButtonIndex = 0;
         if (person.isFriend) {
-            sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Flag", @"Unfriend", @"Send Voice Greeting", @"Friend history", nil];
+            sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Flag", @"Unfriend", @"Send Voice Greeting", @"Friend history", @"Block", nil];
         }else{
             
-            sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", nil];
+            sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Close" destructiveButtonTitle:nil otherButtonTitles:@"Add friend", @"Block", nil];
         }
     }
     
@@ -390,7 +391,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
     }else if ([title isEqualToString:@"Send Voice Greeting"]){
         [self sendVoice];
-    }else if ([title isEqualToString:@"Flag"]){
+    }else if ([title isEqualToString:@"Block"]){
         //
     }else if ([title isEqualToString:@"Friendship history"]){
         //
