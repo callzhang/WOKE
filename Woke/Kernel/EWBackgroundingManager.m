@@ -85,6 +85,7 @@
 - (void)enterForeground{
     
     [[AVManager sharedManager] registerAudioSession];
+    [backgroundingtimer invalidate];
     
     if (!self.sleeping && !BACKGROUNDING_FROM_START) {
         [self endBackgrounding];
