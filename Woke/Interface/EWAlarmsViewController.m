@@ -55,8 +55,7 @@
     NSMutableArray *cellChangeArray;
     NSInteger selectedPersonIndex;
     NSTimer *indicatorHideTimer;
-    NSTimer *collectionUpdateTimer;
-    //BOOL taskScheduled;
+    NSTimer *refreshViewTimer;
 }
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchController;
@@ -100,15 +99,17 @@
         
         //reload alarm page every 10min
         //[NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:YES];
+        [[NSNotificationCenter defaultCenter] addObserverForName:kTaskTimeChangedNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+            [refreshViewTimer invalidate];
+            refreshViewTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
+        }];
         
         //sleep buttom visibility
         [[NSNotificationCenter defaultCenter] addObserverForName:kSleepNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
             [self toggleSleepBtnVisibility];
         }];
-        [NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(toggleSleepBtnVisibility) userInfo:nil repeats:YES];
 
     }];
-    //[[EWPersonStore sharedInstance] addObserver:self forKeyPath:@"currentUser" options:NSKeyValueObservingOptionNew context:nil];
     
     //listen to hex structure change
     [[NSNotificationCenter defaultCenter] addObserverForName:kHexagonStructureChange object:nil queue:nil usingBlock:^(NSNotification *note) {
@@ -245,7 +246,6 @@
 
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    static NSTimer *refreshTimer;
     if (object == me) {
         
         if ([keyPath isEqualToString:@"tasks"]){
@@ -254,8 +254,8 @@
             if (![EWTaskStore sharedInstance].isSchedulingTask) {
                 //only refresh display when not scheduling
                 if (nTask == 7*nWeeksToScheduleTask){
-                    [refreshTimer invalidate];
-                    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
+                    [refreshViewTimer invalidate];
+                    refreshViewTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
                 }else{
                     //offer add alarm
                     [self resetAlarmPage];
@@ -293,8 +293,8 @@
                 NSLog(@"%s %@ finished scheduling", __func__, [object class]);
                 
                 [self showAlarmPageLoading:NO];
-                [refreshTimer invalidate];
-                refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
+                [refreshViewTimer invalidate];
+                refreshViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
             }
         });
         
@@ -508,11 +508,12 @@
 
 
 - (void)toggleSleepBtnVisibility{
-    if (tasks.count != 7*nWeeksToScheduleTask) {
+    if (tasks.count == 7*nWeeksToScheduleTask) {
         EWTaskItem *task = tasks[0];
         float h = -task.time.timeElapsed/3600;
         NSNumber *duration = me.preference[kSleepDuration];
         if (h < duration.floatValue) {
+            self.sleepBtn.layer.borderColor = [UIColor whiteColor].CGColor;
             //time to sleep
             if (self.sleepBtn.alpha < 1) {
                 [UIView animateWithDuration:0.5 animations:^{
@@ -521,9 +522,8 @@
             }
             return;
         }
-    }
-    
-    if(self.sleepBtn.alpha != 0){
+    }//hide all
+    else if(self.sleepBtn.alpha != 0){
         self.sleepBtn.alpha = 0;
     }
 }

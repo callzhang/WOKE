@@ -343,6 +343,7 @@ NSManagedObjectContext *mainContext;
 		
 		//skip if marked save to local
 		if ([[EWDataStore sharedInstance].saveToLocalItems containsObject:MO.objectID]) {
+			[[EWDataStore sharedInstance].saveToLocalItems removeObject:MO.objectID];
 			continue;
 		}
 		
@@ -1029,7 +1030,7 @@ NSManagedObjectContext *mainContext;
 		[managedObject setValue:[NSDate date] forKey:kUpdatedDateKey];
 	}else{
 		[managedObject setValue:[NSDate date] forKey:kUpdatedDateKey];
-		[EWDataStore saveToLocal:managedObject];
+		[managedObject saveToLocal];
 	}
     
 }
@@ -1761,7 +1762,12 @@ NSManagedObjectContext *mainContext;
 						//if (!PO) {
 						PFObject *PO = [PFObject objectWithoutDataWithClassName:MO.entity.serverClassName objectId:[MO valueForKey:kParseObjectID]];
 						//}
-                        [relatedPOs addObject:PO];
+						if (PO.objectId) {
+							[relatedPOs addObject:PO];
+						}else{
+							NSLog(@"objectId not found");
+						}
+						
                     }
                     [self setObject:[relatedPOs copy] forKey:key];
                     return;

@@ -209,7 +209,7 @@
     player.volume = 1.0;
     
     if (err) {
-        NSLog(@"Cannot init player. Reason: %@", err);
+        NSLog(@"*** Cannot init player. Reason: %@", err);
         [self playSystemSound:url];
         return;
     }
@@ -217,7 +217,7 @@
     if ([player play]){
         [self updateViewForPlayerState:player];
     }else{
-        NSLog(@"Could not play with AVPlayer, using system sound");
+        NSLog(@"*** Could not play with AVPlayer, using system sound");
         [self playSystemSound:url];
     }
 }
@@ -323,11 +323,11 @@
     //timer stop first
     [updateTimer invalidate];
     //set up timer
-	if (p.playing){
+    if (p.playing){
 		//[lvlMeter_in setPlayer:p];
         //add new target
         //[progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
-		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(updateCurrentTime:) userInfo:p repeats:YES];
+		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(updateCurrentTime:) userInfo:p repeats:YES];
         
         //unhide
         [UIView animateWithDuration:0.5 animations:^{
@@ -378,16 +378,15 @@
 	}
 	else
 	{
-		updateTimer = nil;
+		[updateTimer invalidate];
         
 	}
 }
 
 -(void)updateCurrentTime:(NSTimer *)timer{
     AVAudioPlayer *p = (AVAudioPlayer *)timer.userInfo;
-    if(![p isEqual:player]) NSLog(@"***Player passed in is not correct");
     if (!progressBar.isTouchInside) {
-        //player.volume = 1.0;
+        if(![p isEqual:player]) NSLog(@"***Player passed in is not correct");
         progressBar.value = player.currentTime;
         //currentTime.text = [NSString stringWithFormat:@"%02ld\"", (long)player.currentTime % 60, nil];
     }

@@ -134,13 +134,7 @@ static const float initialDownSampling = 2;
     }else if(self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
 		
 		UIImage *toViewImage;
-		if (self.type == kModelViewDismiss) {
-			[[self.context containerView] addSubview:toView];
-			toViewImage = toView.screenshot;
-			toView.alpha = 0;
-		}else{
-			toViewImage = toView.screenshot;
-		}
+		toViewImage = toView.screenshot;
 		
 		
         [UIView animateWithDuration:duration-delay animations:^{
@@ -183,16 +177,14 @@ static const float initialDownSampling = 2;
     self.blurFilter.blurRadiusInPixels = 1+ self.progress * 8;
     [self triggerRenderOfNextFrame];
     
-    if (self.interactive) {
-        return;
-    }
-	
+	NSAssert(!self.interactive, @"Interactive transition is not supported");
 	
     if ((self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent)) {
 		UIView *fromView = [self.context viewControllerForKey:UITransitionContextFromViewControllerKey].view;
-		if (fromView.superview) {
+		if (fromView.alpha != 0) {
 			//remove here to reduce the gap between the removal of from view and the display of GPU image
-			[fromView removeFromSuperview];
+			//[fromView removeFromSuperview];
+			fromView.alpha = 0;
 		}
 			
 		if (self.progress == 1) {

@@ -58,9 +58,9 @@ static const NSArray *pref;
 }
 - (void)initData {
     //profile
-    preference = [me.preference mutableCopy];
+    preference = [me.preference mutableCopy]?:[kUserDefaults mutableCopy];
     settingGroup = settingGroupPreference;
-    ringtoneList = ringtoneNameList
+    ringtoneList = ringtoneNameList;
     
 }
 

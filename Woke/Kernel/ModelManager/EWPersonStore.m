@@ -376,7 +376,8 @@ EWPerson *me;
             if ([f isKindOfClass:[NSNull class]]) {
                 continue;
             }
-            NSManagedObject *mo = [f managedObjectInContext:person.managedObjectContext];
+            EWPerson *mo = (EWPerson *)[f managedObjectInContext:person.managedObjectContext];
+            mo.serverObject = f;
             [friendsMO addObject:mo];
         }
         person.friends = [friendsMO copy];
@@ -440,6 +441,18 @@ EWPerson *me;
     
     if (needRefreshFacebook) {
         [EWUserManagement updateFacebookInfo];
+    }
+    
+    //preference
+    if (!person.preference) {
+        person.preference = kUserDefaults;
+    }
+    
+    //friends
+    NSArray *friendsID = person.cachedInfo[kFriended];
+    if (person.friends.count != friendsID.count) {
+        NSLog(@"Friends mismatch, fetch from server");
+        [EWPersonStore getFriendsForPerson:person];
     }
     
     return good;
