@@ -523,7 +523,7 @@
             return;
         }
     }//hide all
-    else if(self.sleepBtn.alpha != 0){
+    else{
         self.sleepBtn.alpha = 0;
     }
 }

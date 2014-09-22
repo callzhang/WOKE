@@ -44,28 +44,10 @@ UIViewController *rootViewController;
 @synthesize backgroundTaskIdentifier;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-#ifdef DEBUG
-    //log to local cache file
-    [DDLog addLogger:[DDASLLogger sharedInstance]];
-    DDTTYLogger *log = [DDTTYLogger sharedInstance];
-    [DDLog addLogger:log];
-    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
-    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
-    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
-    
-    [DDLog addLogger:fileLogger];
-    
-    // we also enable colors in Xcode debug console
-    // https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/XcodeColors
-    [log setColorsEnabled:YES];
-    [log setForegroundColor:[UIColor orangeColor] backgroundColor:nil forFlag:LOG_FLAG_INFO];
-    [log setForegroundColor:[UIColor redColor] backgroundColor:nil forFlag:LOG_FLAG_ERROR];
-    [log setForegroundColor:[UIColor darkGrayColor] backgroundColor:nil forFlag:LOG_FLAG_VERBOSE];
-    [log setForegroundColor:[UIColor colorWithRed:(255/255.0) green:(58/255.0) blue:(159/255.0) alpha:1.0] backgroundColor:nil forFlag:LOG_FLAG_WARN];
-    
-#endif
-    
+    //crash
     [Crashlytics startWithAPIKey:@"6ec9eab6ca26fcd18d51d0322752b861c63bc348"];
+    //log
+    EWLogInit();
     
     //test flight
     [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
@@ -110,11 +92,8 @@ UIViewController *rootViewController;
     //window
     [self.window makeKeyAndVisible];
     
-
-    [EWUserManagement login];
-    
     //User login
-
+    [EWUserManagement login];
     
     //local notification entry
     if (launchOptions) {

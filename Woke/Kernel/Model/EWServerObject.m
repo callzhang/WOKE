@@ -11,6 +11,5 @@
 @implementation EWServerObject
 
 // Custom logic goes here.
-@synthesize serverObject;
 
 @end

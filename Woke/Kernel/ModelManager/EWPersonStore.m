@@ -377,7 +377,7 @@ EWPerson *me;
                 continue;
             }
             EWPerson *mo = (EWPerson *)[f managedObjectInContext:person.managedObjectContext];
-            mo.serverObject = f;
+            [EWDataStore setCachedParseObject:f];
             [friendsMO addObject:mo];
         }
         person.friends = [friendsMO copy];

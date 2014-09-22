@@ -2,5 +2,5 @@
 
 @interface EWServerObject : _EWServerObject {}
 // Custom logic goes here.
-@property (nonatomic) PFObject *serverObject;
+//@property (nonatomic) PFObject *serverObject;
 @end
