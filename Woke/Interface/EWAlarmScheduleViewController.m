@@ -42,7 +42,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     [EWUIUtil applyAlphaGradientForView:self.tableView withEndPoints:@[@0.15]];
     
     //header view
-    UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Confirm Button"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
+    UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Confirm Button"] style:UIBarButtonItemStylePlain target:self action:@selector(onDone)];
     UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Close Button"] style:UIBarButtonItemStylePlain target:self action:@selector(OnCancel)];
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:rightBarButtonItem rightItem:leftBarButtonItem];
     self.title = @"Schedule Alarms";
@@ -164,7 +164,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 }
 
 #pragma mark - UI events
-- (void)OnDone{
+- (void)onDone{
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     [self save];
 }
