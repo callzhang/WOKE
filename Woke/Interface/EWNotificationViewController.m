@@ -134,7 +134,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     EWNotification *notification = notifications[indexPath.row];
     NSString *type = notification.type;
-    if ([type isEqualToString:kNotificationTypeNotice]) {
+    if ([type isEqualToString:kNotificationTypeSystemNotice]) {
         EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
         [cell setSize];
         return cell.height;

@@ -192,7 +192,7 @@
             [[EWNotificationManager sharedInstance] finishedNotification:notification];
         }
         
-    } else if ([notification.type isEqualToString:kNotificationTypeNotice]) {
+    } else if ([notification.type isEqualToString:kNotificationTypeSystemNotice]) {
         //UserInfo
         //->Title
         //->Content

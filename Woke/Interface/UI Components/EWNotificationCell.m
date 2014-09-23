@@ -39,7 +39,7 @@
     }
     
     NSString *type = notification.type;
-    if ([type isEqualToString:kNotificationTypeNotice]) {
+    if ([type isEqualToString:kNotificationTypeSystemNotice]) {
         self.profilePic.image = nil;
         self.profilePic.hidden = YES;
         
@@ -93,9 +93,9 @@
 
 - (void)setSize{
     //adjust size
-    if ([_notification.type isEqualToString:kNotificationTypeNotice]) {
+    if ([_notification.type isEqualToString:kNotificationTypeSystemNotice]) {
         self.userLabelLeadingConstraint.constant = -40;
-        self.detail.text = [NSString stringWithFormat:@"%@:%@", self.detail.text, kNotificationTypeNotice];
+        self.detail.text = [NSString stringWithFormat:@"%@:%@", self.detail.text, kNotificationTypeSystemNotice];
 
         CGSize fixLabelSize = [self.detail.text sizeWithFont:self.detail.font constrainedToSize:CGSizeMake(self.detail.width+40, 1000)  lineBreakMode:NSLineBreakByWordWrapping];
         CGFloat deltaH = ceil(fixLabelSize.height - self.detail.height);
