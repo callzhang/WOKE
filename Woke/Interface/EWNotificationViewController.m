@@ -20,7 +20,6 @@
 @interface EWNotificationViewController (){
     NSMutableArray *notifications;
     UIActivityIndicatorView *loading;
-    NSMutableDictionary *cellHeights;
 }
 
 @end
@@ -39,7 +38,6 @@
     
     // Data source
     notifications = [[EWNotificationManager allNotifications] mutableCopy];
-    cellHeights = [NSMutableDictionary new];
     
     //tableview
     self.tableView.delegate = self;
@@ -166,8 +164,6 @@
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         
         [EWNotificationManager deleteNotification:notice];
-        
-        cellHeights = [NSMutableDictionary new];
     }
 }
 
