@@ -29,7 +29,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *timeLeftText;
 @property (weak, nonatomic) IBOutlet UILabel *AM;
 @property (weak, nonatomic) IBOutlet UIButton *editBtn;
-@property (weak, nonatomic) IBOutlet UILabel *descriptionText;//detailed text not used anymore
+@property (weak, nonatomic) IBOutlet UILabel *descriptionText;//detailed text not used anymoreW
 @property (weak, nonatomic) IBOutlet UIButton *messages;
 @property (weak, nonatomic) IBOutlet UIButton *alarmState;
 

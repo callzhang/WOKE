@@ -98,7 +98,10 @@ static const float initialDownSampling = 1;
 	
 	[self.brightnessFilter removeAllTargets];
 	[self.brightnessFilter addTarget:self.imageView];
-    
+	
+	//init timer
+	self.startTime = 0;
+	
     if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
 		
         //pre animation toView set up
@@ -113,7 +116,6 @@ static const float initialDownSampling = 1;
 		[self triggerRenderOfNextFrame];
         
         //trigger GPU rendering
-        self.startTime = 0;
         self.displayLink.paused = NO;
         
         //animation
@@ -121,21 +123,15 @@ static const float initialDownSampling = 1;
             
             toView.alpha = 1;
             toView.transform = CGAffineTransformIdentity;
-        } completion:^(BOOL finished) {
-			//========> Present animation ended
-			//[self triggerRenderOfNextFrame];
-			
-            //remove from view
-			//fromView.hidden = NO;
-            //[self.context completeTransition:YES];
-        }];
+        } completion:NULL];
         
         
     }else if(self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
-		
-		UIImage *toViewImage;
-		toViewImage = toView.screenshot;
-		
+		//take a new screenshot and render the imageView
+		UIImage *toViewImage = toView.screenshot;
+		self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];
+		[self.blurImage addTarget:self.blurFilter];
+		[self updateFrame:nil];
 		
         [UIView animateWithDuration:duration-delay animations:^{
             
@@ -150,10 +146,7 @@ static const float initialDownSampling = 1;
         
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-			
-			self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];
-			[self.blurImage addTarget:self.blurFilter];
-            self.startTime = 0;
+			//start the animation
             self.displayLink.paused = NO;
         });
     }
@@ -215,13 +208,19 @@ static const float initialDownSampling = 1;
 - (void)updateProgress:(CADisplayLink*)link
 {
     if (self.interactive) return;
-    
+	float progress;
+	
     if (self.startTime == 0) {
         self.startTime = link.timestamp;
     }
-    
-    
-    float progress = MAX(0, MIN((link.timestamp - self.startTime) / duration, 1));
+	
+	if (link) {
+		progress = MAX(0, MIN((link.timestamp - self.startTime) / duration, 1));
+	}else{
+		//used for precalculation
+		progress = 0;
+	}
+	
     
     if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
         self.progress = progress;

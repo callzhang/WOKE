@@ -362,8 +362,10 @@ EWPerson *me;
 }
 
 + (void)getFriendsForPerson:(EWPerson *)person{
-    NSArray *friends = person.cachedInfo[kCachedFriends];
-    if (!friends || friends.count != person.friends.count) {
+    NSArray *friendsCached = person.cachedInfo[kCachedFriends]?:[NSArray new];
+    NSSet *friends = person.friends;
+    BOOL friendsNeedUpdate = person.isMe && friendsCached.count !=person.friends.count;
+    if (!friends || friendsNeedUpdate) {
         //friend need update
         PFQuery *q = [PFQuery queryWithClassName:person.entity.serverClassName];
         [q includeKey:@"friends"];
