@@ -116,7 +116,7 @@
 #define kTaskStateChangedNotification   @"EWTasksStateChanged"  //key: task
 #define kTaskDeleteNotification         @"EWTaskDelete"  //key: task
 #define kTaskTimeChangedNotification    @"EWTaskTimeChanged"  //key: task
-#define kTaskChangedNotification        @"EWTaskChanged" //key: task
+//#define kTaskChangedNotification        @"EWTaskChanged" //key: task
 
 //person store
 #define kPersonLoggedIn                 @"PersonLoggedIn"

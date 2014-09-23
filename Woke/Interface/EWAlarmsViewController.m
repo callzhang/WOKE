@@ -101,6 +101,11 @@
         //reload alarm page every 10min
         //[NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:YES];
         
+        //reload alarm page when time updated
+        [[NSNotificationCenter defaultCenter] addObserverForName:kTaskTimeChangedNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+            [self reloadAlarmPage];
+        }];
+        
         //sleep buttom visibility
         [[NSNotificationCenter defaultCenter] addObserverForName:kSleepNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
             [self toggleSleepBtnVisibility];

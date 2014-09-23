@@ -134,11 +134,11 @@
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="v8g-91-68v" userLabel="sleep">
-                    <rect key="frame" x="93" y="453" width="134" height="30"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="v8g-91-68v" userLabel="sleep">
+                    <rect key="frame" x="95" y="452" width="130" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" red="0.29238453349999999" green="0.65916105150000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                    <state key="normal" title="Start Sleeping">
+                    <state key="normal" title="Start Sleeping" backgroundImage="sleep">
                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
@@ -166,6 +166,7 @@
         <image name="Configure Button" width="40" height="40"/>
         <image name="You_Indicator" width="64" height="64"/>
         <image name="addBtn" width="50" height="50"/>
+        <image name="sleep" width="130" height="30"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

@@ -97,7 +97,7 @@
             if ([change objectForKey:NSKeyValueChangeNewKey] == nil) {
                 //check why the new value is nil
                 BOOL completed  = task.completed || task.time.timeElapsed > kMaxWakeTime;
-                NSAssert(completed, @"Something wrong, the task's owner has been set to nil, check the call stack.");
+                NSAssert(completed, @"*** Something wrong, the task's owner has been set to nil, check the call stack.");
             }
             
         }

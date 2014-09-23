@@ -72,12 +72,12 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([keyPath isEqualToString:@"isSchedulingTask"]) {
                 if (![EWTaskStore sharedInstance].isSchedulingTask) {
-                    
+                    NSLog(@"Schedule view detected task store finished scheduling");
                     [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
                     [self initData];
                     
                 }else{
-                    NSLog(@"Schedule View detecte task schedule");
+                    NSLog(@"Schedule View detect task schedule");
                     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                 }
             }
