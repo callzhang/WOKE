@@ -46,24 +46,6 @@
 
 
 
-#pragma mark - Handle Push Notification
-+ (void)handlePushNotification:(NSDictionary *)pushInfo{
-    NSString *type = pushInfo[kPushTypeKey];
-    BOOL isBuzz = [type isEqualToString:kPushTypeBuzzKey];
-    BOOL isVoice = [type isEqualToString:kPushTypeMediaKey];
-    BOOL isNotification = [type isEqualToString:kPushTypeNotificationKey];
-    BOOL isAlarmTimer = [type isEqualToString:kPushTypeTimerKey];
-    if (isNotification) {
-        [EWNotificationManager handleNotification: pushInfo[kPushNofiticationIDKey]];
-    }else if(isBuzz || isVoice){
-        [EWWakeUpManager handlePushNotification:pushInfo];
-    }else if (isAlarmTimer){
-        [EWWakeUpManager handlePushNotification:pushInfo];
-    }else{
-        NSString *str = [NSString stringWithFormat:@"Unknown push: %@", pushInfo];
-        EWAlert(str);
-    }
-}
 
 #pragma mark - Handle Local Notification
 + (void)handleLocalNotification:(UILocalNotification *)notification{
@@ -73,8 +55,8 @@
     if ([type isEqualToString:kLocalNotificationTypeAlarmTimer]) {
         [EWWakeUpManager handleAlarmTimerEvent:notification.userInfo];
     }else if([type isEqualToString:kLocalNotificationTypeReactivate]){
-        NSLog(@"==================> Reactivated Woke <======================");
-        EWAlert(@"You brought me back to life!");
+        DDLogInfo(@"==================> Reactivated Woke <======================");
+        EWAlert(@"You brought me back!");
     }else if ([type isEqualToString:kLocalNotificationTypeSleepTimer]){
         NSLog(@"=== Received Sleep timer local notification, broadcasting sleep event, and enter sleep mode... \n%@", notification);
         

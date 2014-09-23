@@ -29,14 +29,12 @@
 @property (strong, nonatomic) IBOutlet UILabel *timeLeftText;
 @property (weak, nonatomic) IBOutlet UILabel *AM;
 @property (weak, nonatomic) IBOutlet UIButton *editBtn;
-@property (weak, nonatomic) IBOutlet UILabel *descriptionText;
+@property (weak, nonatomic) IBOutlet UILabel *descriptionText;//detailed text not used anymore
 @property (weak, nonatomic) IBOutlet UIButton *messages;
 @property (weak, nonatomic) IBOutlet UIButton *alarmState;
-@property (weak, nonatomic) IBOutlet UIButton *sleepBtn;
 
 - (IBAction)editAlarm:(id)sender;
 - (IBAction)OnAlarmSwitchChanged:(UIButton *)sender;
 - (IBAction)playMessage:(id)sender;
-- (IBAction)sleep:(UIButton *)sender;
 
 @end

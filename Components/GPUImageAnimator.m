@@ -20,7 +20,7 @@
 static const float duration = 0.3;
 static const float delay = 0.1;
 static const float zoom = 1.5;
-static const float initialDownSampling = 2;
+static const float initialDownSampling = 1;
 
 @interface GPUImageAnimator ()
 
@@ -89,11 +89,11 @@ static const float initialDownSampling = 2;
 		self.imageView = [[GPUImageView alloc] init];
 		self.imageView.tag = kGPUImageViewTag;
 		self.imageView.frame = container.bounds;
-		self.imageView.alpha = 1;
 		self.imageView.backgroundColor = [UIColor clearColor];
 		[container addSubview:self.imageView];
 	}else{
 		self.imageView = view;
+		self.imageView.alpha = 1;
 	}
 	
 	[self.brightnessFilter removeAllTargets];
@@ -151,7 +151,7 @@ static const float initialDownSampling = 2;
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 			
-			self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];//take screenshot again to update the image in GPUPicture
+			self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];
 			[self.blurImage addTarget:self.blurFilter];
             self.startTime = 0;
             self.displayLink.paused = NO;
@@ -182,8 +182,6 @@ static const float initialDownSampling = 2;
     if ((self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent)) {
 		UIView *fromView = [self.context viewControllerForKey:UITransitionContextFromViewControllerKey].view;
 		if (fromView.alpha != 0) {
-			//remove here to reduce the gap between the removal of from view and the display of GPU image
-			//[fromView removeFromSuperview];
 			fromView.alpha = 0;
 		}
 			
@@ -192,7 +190,7 @@ static const float initialDownSampling = 2;
 			[self.context completeTransition:YES];
 		}
 		
-    }else if ((self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss) && self.progress == 0){
+    }else if (self.progress == 0 && (self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss)){
         
         //=======> dismiss animation ended
         
@@ -203,11 +201,12 @@ static const float initialDownSampling = 2;
 		
         if (self.type == UINavigationControllerOperationPop) {
 			[[self.context containerView] addSubview:toView];
-			[self.imageView removeFromSuperview];
-        }else if (self.type == kModelViewDismiss){
-			toView.alpha = 1;
-			toView.hidden = NO;
-		}
+			self.imageView.alpha = 0;
+        }
+		
+		//make toView visible
+		toView.alpha = 1;
+		toView.hidden = NO;
         
     }
 }

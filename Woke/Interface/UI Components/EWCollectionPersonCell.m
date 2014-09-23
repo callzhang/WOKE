@@ -65,21 +65,22 @@
     if (isMe) {
         //self.initial.hidden = NO;
         self.initial.text = @"YOU";
-    }else if(self.showName){
-        self.initial.text = @"";
-        self.name.alpha = 1;
-        self.name.text = person.name;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [UIView animateWithDuration:0.2 animations:^{
-                self.name.alpha = 1;
-                CGRect frame = self.name.frame;
-                frame.origin.y += 20;
-                self.name.frame = frame;
-            }];
-        });
     }else{
         self.initial.text = @"";
-        self.name.text = @"";
+        if(self.showName){
+            self.name.alpha = 1;
+            self.name.text = person.name;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [UIView animateWithDuration:0.2 animations:^{
+                    self.name.alpha = 1;
+                    CGRect frame = self.name.frame;
+                    frame.origin.y += 20;
+                    self.name.frame = frame;
+                }];
+            });
+        }else{
+            self.name.text = @"";
+        }
     }
     
     //info
@@ -90,11 +91,8 @@
         self.info.text = @"";
         
         if (self.showTime) {
-            //time
-            //[_time addObserver:self forKeyPath:@"alpha" options:NSKeyValueObservingOptionNew context:nil];
             self.info.text = [self timeString];
         }
-        
         
         //distance
         if (self.showDistance && [self.info.text isEqualToString:@""]) {

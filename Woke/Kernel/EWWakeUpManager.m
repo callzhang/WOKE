@@ -485,15 +485,14 @@
 
 + (void)handleSleepTimerEvent{
     
-    
     if (me) {
         //logged in enter sleep mode
         EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
-        [rootViewController presentViewControllerWithBlurBackground:controller];
+        [rootViewController presentWithBlur:controller withCompletion:NULL];
     }else{
         [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
-            [rootViewController presentViewControllerWithBlurBackground:controller];
+            [rootViewController presentWithBlur:controller withCompletion:NULL];
             [[NSNotificationCenter defaultCenter] removeObserver:self name:kPersonLoggedIn object:nil];
         }];
     }

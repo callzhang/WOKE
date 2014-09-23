@@ -336,7 +336,7 @@ NSManagedObjectContext *mainContext;
 		}
 		//First test MO exist
 		if (![context existingObjectWithID:MO.objectID error:NULL]) {
-			NSLog(@"*** MO you are trying to modify doesn't exist in the sqlite: %@", MO.objectID);
+			DDLogError(@"*** MO you are trying to modify doesn't exist in the sqlite: %@", MO.objectID);
 			continue;
 		}
 		
@@ -349,7 +349,7 @@ NSManagedObjectContext *mainContext;
 		
 		BOOL mine = [EWDataStore checkAccess:MO];
 		if (!mine) {
-			NSLog(@"!!! Skip updating other's object %@ with changes %@", MO.objectID, MO.changedKeys);
+			DDLogWarn(@"!!! Skip updating other's object %@ with changes %@", MO.objectID, MO.changedKeys);
 			continue;
 		}
 		
@@ -363,7 +363,7 @@ NSManagedObjectContext *mainContext;
 		//if last updated doesn't exist, skip
 		if (![MO valueForKey:kUpdatedDateKey]){
 			//this is MY VALID UPDATED MO but doesn't have updatedAt, should check the cause if it.
-			NSLog(@"*** MO %@(%@) doesn't have updatedAt, check how this object is being updated. Updated keys: %@", MO.entity.name, MO.serverID, MO.changedValues);
+			DDLogError(@"*** MO %@(%@) doesn't have updatedAt, check how this object is being updated. Updated keys: %@", MO.entity.name, MO.serverID, MO.changedValues);
 		}
 		
 		if ([insertedObjects containsObject:MO]) {
@@ -405,6 +405,7 @@ NSManagedObjectContext *mainContext;
 			continue;
 		}
 		if ([[EWDataStore sharedInstance].deleteToLocalItems containsObject:MO.serverID]) {
+			[EWDataStore removeObjectFromDeleteQueue:[PFObject objectWithoutDataWithClassName:MO.entity.serverClassName objectId:MO.serverID]];
 			continue;
 		}
 		if (MO.serverID) {
@@ -1588,11 +1589,17 @@ NSManagedObjectContext *mainContext;
 	[[EWDataStore sharedInstance].saveToLocalItems addObject:self.objectID];
 	
 	//save to enqueue the updates
+#ifdef DEBUG
+	[self.managedObjectContext MR_saveToPersistentStoreAndWait];
+	[EWDataStore removeObjectFromInsertQueue:self];
+	[EWDataStore removeObjectFromUpdateQueue:self];
+#else
 	[self.managedObjectContext MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
 		//remove from the update queue
 		[EWDataStore removeObjectFromInsertQueue:self];
 		[EWDataStore removeObjectFromUpdateQueue:self];
 	}];
+#endif
 	
 }
 
@@ -1601,8 +1608,8 @@ NSManagedObjectContext *mainContext;
 		[self.managedObjectContext obtainPermanentIDsForObjects:@[self] error:NULL];
 	}
 	[[EWDataStore sharedInstance].saveToLocalItems removeObject:self.objectID];
-	//[self.managedObjectContext MR_saveToPersistentStoreWithCompletion:NULL];
-	[EWDataStore appendUpdateQueue:self];
+	[self.managedObjectContext MR_saveToPersistentStoreWithCompletion:NULL];
+	//[EWDataStore appendUpdateQueue:self];
 }
 
 

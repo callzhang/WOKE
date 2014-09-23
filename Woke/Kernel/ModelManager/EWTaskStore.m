@@ -973,7 +973,6 @@
     
     //local notification
     UILocalNotification *sleepNotif = [[UILocalNotification alloc] init];
-    sleepNotif.fireDate = sleepTime;
     sleepNotif.timeZone = [NSTimeZone systemTimeZone];
     sleepNotif.alertBody = [NSString stringWithFormat:@"It's time to sleep, press here to enter sleep mode (%@)", sleepTime.date2String];
     sleepNotif.alertAction = @"Sleep";
@@ -981,6 +980,10 @@
     sleepNotif.soundName = @"sleep mode.caf";
     sleepNotif.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
                             kLocalNotificationTypeKey: kLocalNotificationTypeSleepTimer};
+    if ([sleepTime timeIntervalSinceNow]>0) {
+        //future
+        sleepNotif.fireDate = sleepTime;
+    }
     
     [[UIApplication sharedApplication] scheduleLocalNotification:sleepNotif];
     NSLog(@"Sleep notification schedule at %@", sleepNotif.fireDate.date2detailDateString);

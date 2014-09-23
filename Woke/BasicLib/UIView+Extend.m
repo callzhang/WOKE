@@ -72,10 +72,11 @@
             success = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
             self.alpha = alpha;
         }
-    
     }
     if(!success){ /* iOS 6 */
+        self.alpha = 1;
         [self.layer renderInContext:UIGraphicsGetCurrentContext()];
+        self.alpha = alpha;
     }
     
     UIImage* img = UIGraphicsGetImageFromCurrentImageContext();

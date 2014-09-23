@@ -724,7 +724,7 @@
     
     cell.showName = NO;
     cell.showTime = YES;
-    cell.showDistance = NO;
+    cell.showDistance = YES;
     cell.person = person;
     
     return cell;
@@ -911,11 +911,10 @@
                         [self.collectionView reloadData];
                     }
                     
-                    if (finished) {
-                        
-                        
-                    }else{
-                        NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
+                    if (!finished) {
+                        if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+                            NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
+                        }
                     }
                     
                 }];
