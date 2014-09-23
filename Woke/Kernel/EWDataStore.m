@@ -745,15 +745,10 @@ NSManagedObjectContext *mainContext;
 #pragma mark - Parse helper methods
 + (PFObject *)getCachedParseObjectForID:(NSString *)objectId{
 	PFObject *object = [[EWDataStore sharedInstance].serverObjectPool valueForKey:objectId];
-	if (object) {
-		return object;
-	}else{
-		return nil;
-	}
-	
+	return object;
 }
 
-+ (void)setCachedParseObject:(PFObject *)PO{
++ (void)setCachedParseObject:(PFObject *)PO {
 	[[EWDataStore sharedInstance].serverObjectPool setObject:PO forKey:PO.objectId];
 }
 
@@ -784,7 +779,7 @@ NSManagedObjectContext *mainContext;
 			
 			if (object) {
 				//save to queue
-				[[EWDataStore sharedInstance].serverObjectPool setObject:object forKey:ID];
+				[self setCachedParseObject:object];
 			}
 			
 		}
@@ -1341,35 +1336,36 @@ NSManagedObjectContext *mainContext;
 	PFObject *PO = [EWDataStore getParseObjectWithClass:self.entity.name WithID:self.serverID withError:err];
 
 	if (!PO.isDataAvailable/* && *err*/) {
-
-		if ((*err).code == kPFErrorObjectNotFound && [EWDataStore isReachable]) {
-			NSLog(@"*** PO %@(%@) doesn't exist on server", self.entity.serverClassName, self.serverID);
-			[self setValue:nil forKeyPath:kParseObjectID];
-		}else{
-			NSLog(@"*** Failed to get PO(%@) from server. %@", self.serverID, *err);
+		if (err) {
+			if ((*err).code == kPFErrorObjectNotFound && [EWDataStore isReachable]) {
+				NSLog(@"*** PO %@(%@) doesn't exist on server", self.entity.serverClassName, self.serverID);
+				[self setValue:nil forKeyPath:kParseObjectID];
+			}
+			else{
+				NSLog(@"*** Failed to get PO(%@) from server. %@", self.serverID, *err);
+			}
 		}
-		
 		return nil;
 	}
-    return PO;
+	return PO;
 }
 
 - (void)createParseObjectWithCompletion:(void (^)(void))block {
 	NSParameterAssert(!self.serverID);
-    PFObject *object = [PFObject objectWithClassName:self.entity.serverClassName];
+	PFObject *object = [PFObject objectWithClassName:self.entity.serverClassName];
 	
-    NSError *error;
-    [object save:&error];
-    if (!error) {
-        NSLog(@"+++> CREATED PO %@(%@)", object.parseClassName, object.objectId);
+	NSError *error;
+	[object save:&error];
+	if (!error) {
+		NSLog(@"+++> CREATED PO %@(%@)", object.parseClassName, object.objectId);
 		[[EWDataStore sharedInstance].serverObjectPool setObject:object forKey:object.objectId];
-        [self setValue:object.objectId forKey:kParseObjectID];
-        [self setValue:object.updatedAt forKeyPath:kUpdatedDateKey];//update MO's updatedAt
-    }else{
-        [self updateEventually];
-        return;
-    }
-    if (block) block();
+		[self setValue:object.objectId forKey:kParseObjectID];
+		[self setValue:object.updatedAt forKeyPath:kUpdatedDateKey];//update MO's updatedAt
+	}else{
+		[self updateEventually];
+		return;
+	}
+	if (block) block();
 }
 
 
@@ -1380,24 +1376,24 @@ NSManagedObjectContext *mainContext;
 		//refresh later
 		[self refreshEventually];
 		if (block) {
-            block();
-        }
+			block();
+		}
 		return;
 	}
 	
-    NSString *parseObjectId = [self valueForKey:kParseObjectID];
-    if (!parseObjectId) {
-        NSLog(@"When refreshing, MO missing serverID %@, prepare to upload", self.entity.name);
-        [self updateEventually];
-        [EWDataStore save];
-        if (block) {
-            block();
-        }
-    }else{
-        if ([self changedKeys]) {
-            NSLog(@"!!! The MO %@(%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
-        }
-        
+	NSString *parseObjectId = [self valueForKey:kParseObjectID];
+	if (!parseObjectId) {
+		NSLog(@"When refreshing, MO missing serverID %@, prepare to upload", self.entity.name);
+		[self updateEventually];
+		[EWDataStore save];
+		if (block) {
+			block();
+		}
+	}else{
+		if ([self changedKeys]) {
+			NSLog(@"!!! The MO %@(%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
+		}
+		
 		
 		[mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
 			NSManagedObject *currentMO = [self inContext:localContext];
@@ -1415,40 +1411,40 @@ NSManagedObjectContext *mainContext;
 			}
 			
 		}];
-            
-        
-    }
+		
+		
+	}
 }
 
 - (void)refresh{
 	//check network
-    if (![EWDataStore sharedInstance].reachability.isReachable) {
+	if (![EWDataStore sharedInstance].reachability.isReachable) {
 		NSLog(@"Network not reachable, refresh later.");
 		//refresh later
 		[self refreshEventually];
 		return;
 	}
-    
-    NSString *parseObjectId = self.serverID;
-    
-    if (!parseObjectId) {
-        //NSParameterAssert([self isInserted]);
-        NSLog(@"!!! The MO %@(%@) trying to refresh doesn't have servreID, skip! %@", self.entity.name, self.serverID, self);
-    }else{
-        if ([self changedKeys]) {
-            NSLog(@"*** The MO%@ (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
-        }
-        
-        NSLog(@"===>>>> Refreshing MO %@(%@)", self.entity.name, self.serverID);
+	
+	NSString *parseObjectId = self.serverID;
+	
+	if (!parseObjectId) {
+		//NSParameterAssert([self isInserted]);
+		NSLog(@"!!! The MO %@(%@) trying to refresh doesn't have servreID, skip! %@", self.entity.name, self.serverID, self);
+	}else{
+		if ([self changedKeys]) {
+			NSLog(@"*** The MO%@ (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
+		}
+		
+		NSLog(@"===>>>> Refreshing MO %@(%@)", self.entity.name, self.serverID);
 		//get the PO
-        PFObject *object = self.parseObject;
+		PFObject *object = self.parseObject;
 		//Must update the PO
 		[object fetch];
 		//update MO
-        [self updateValueAndRelationFromParseObject:object];
+		[self updateValueAndRelationFromParseObject:object];
 		//save
-        [EWDataStore saveToLocal:self];
-    }
+		[EWDataStore saveToLocal:self];
+	}
 }
 
 - (void)refreshEventually{
@@ -1466,33 +1462,33 @@ NSManagedObjectContext *mainContext;
 	if (![self isKindOfClass:[EWPerson class]]) {
 		return;
 	}
-    
-    //first try to refresh if needed
-    [self refresh];
-    
-    //then iterate all relations
-    NSDictionary *relations = self.entity.relationshipsByName;
-    [relations enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *description, BOOL *stop) {
-        if ([description.destinationEntity.name isEqualToString:kUserClass]) {
-            //return;
-        }
-        
-        
-        if ([description isToMany]) {
-            
-            NSSet *relatedMOs = [self valueForKey:key];
-            
-            for (NSManagedObject *MO in relatedMOs) {
-                if ([MO isKindOfClass:[EWPerson class]]) {
-                    return ;
-                }
-                [MO refresh];
-            }
-        }else{
-            NSManagedObject *MO = [self valueForKey:key];
-            [MO refresh];
-        }
-    }];
+	
+	//first try to refresh if needed
+	[self refresh];
+	
+	//then iterate all relations
+	NSDictionary *relations = self.entity.relationshipsByName;
+	[relations enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *description, BOOL *stop) {
+		if ([description.destinationEntity.name isEqualToString:kUserClass]) {
+			//return;
+		}
+		
+		
+		if ([description isToMany]) {
+			
+			NSSet *relatedMOs = [self valueForKey:key];
+			
+			for (NSManagedObject *MO in relatedMOs) {
+				if ([MO isKindOfClass:[EWPerson class]]) {
+					return ;
+				}
+				[MO refresh];
+			}
+		}else{
+			NSManagedObject *MO = [self valueForKey:key];
+			[MO refresh];
+		}
+	}];
 	
 	if (block) {
 		block();
@@ -1500,45 +1496,45 @@ NSManagedObjectContext *mainContext;
 }
 
 - (void)refreshShallowWithCompletion:(void (^)(void))block{
-    if (![EWDataStore isReachable]) {
+	if (![EWDataStore isReachable]) {
 		NSLog(@"Network not reachable, refresh later.");
 		//refresh later
 		[self refreshEventually];
 		return;
 	}
 	
-    if (!self.isOutDated) {
-        return;
-    }
-    
-    NSManagedObjectID *ID = self.objectID;
-    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        NSError *err;
-        NSManagedObject *backMO = [localContext existingObjectWithID:ID error:&err];
-        if (err) {
-            NSLog(@"*** Failed to get back MO: %@", err.description);
-            return ;
-        }
-        
-        //Get PO from server, also add inlcude key for pointer
-        PFObject *PO = self.parseObject;
+	if (!self.isOutDated) {
+		return;
+	}
+	
+	NSManagedObjectID *ID = self.objectID;
+	[mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
+		NSError *err;
+		NSManagedObject *backMO = [localContext existingObjectWithID:ID error:&err];
+		if (err) {
+			NSLog(@"*** Failed to get back MO: %@", err.description);
+			return ;
+		}
+		
+		//Get PO from server, also add inlcude key for pointer
+		PFObject *PO = self.parseObject;
 		
 		//update properties
 		[self assignValueFromParseObject:PO];
-        
-        //get related object parsimoniously, if
-        [backMO.entity.relationshipsByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
-            if (obj.isToMany) {
-                if (obj.inverseRelationship) {
-                    //PFRelation, skip
-                }else{
-                    //Pointer
-                    NSArray *relatedPOs = PO[key];
+		
+		//get related object parsimoniously, if
+		[backMO.entity.relationshipsByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
+			if (obj.isToMany) {
+				if (obj.inverseRelationship) {
+					//PFRelation, skip
+				}else{
+					//Pointer
+					NSArray *relatedPOs = PO[key];
 					if (relatedPOs.count == 0) {
 						return;
 					}
-                    NSMutableSet *relatedMOs = [backMO mutableSetValueForKey:key];
-                    for (PFObject *p in relatedPOs) {
+					NSMutableSet *relatedMOs = [backMO mutableSetValueForKey:key];
+					for (PFObject *p in relatedPOs) {
 						if ([p isKindOfClass:[NSNull class]]) {
 							[relatedMOs removeObject:p];
 							PO[key] = relatedPOs;
@@ -1547,50 +1543,50 @@ NSManagedObjectContext *mainContext;
 							}
 							continue ;
 						}
-                        NSManagedObject *relatedMO = [p managedObjectInContext:localContext];
-                        if (![relatedMOs containsObject:relatedMO]) {
-                            [relatedMOs addObject:relatedMO];
-                        }
-                    }
-                    [backMO setValue:relatedMOs forKey:key];
-                }
-            }
-        }];
-        
-        NSLog(@"Shallow refreshed MO %@(%@) in backgound", PO.parseClassName, PO.objectId);
-        
-    }completion:^(BOOL success, NSError *error) {
+						NSManagedObject *relatedMO = [p managedObjectInContext:localContext];
+						if (![relatedMOs containsObject:relatedMO]) {
+							[relatedMOs addObject:relatedMO];
+						}
+					}
+					[backMO setValue:relatedMOs forKey:key];
+				}
+			}
+		}];
+		
+		NSLog(@"Shallow refreshed MO %@(%@) in backgound", PO.parseClassName, PO.objectId);
+		
+	}completion:^(BOOL success, NSError *error) {
 		if (block) {
 			block();
 		}
 		
-        
-    }];
-    
+		
+	}];
+	
 }
 
 - (void)updateEventually{
 	
-    if (self.serverID) {
-        //update
-        NSLog(@"%s: updated %@ eventually", __func__, self.entity.name);
-        [EWDataStore appendUpdateQueue:self];
-    }else{
-        //insert
-        NSLog(@"%s: insert %@ eventually", __func__, self.entity.name);
-        [EWDataStore appendInsertQueue:self];
-    }
+	if (self.serverID) {
+		//update
+		NSLog(@"%s: updated %@ eventually", __func__, self.entity.name);
+		[EWDataStore appendUpdateQueue:self];
+	}else{
+		//insert
+		NSLog(@"%s: insert %@ eventually", __func__, self.entity.name);
+		[EWDataStore appendInsertQueue:self];
+	}
 }
 
 - (void)deleteEventually{
-    PFObject *po = [PFObject objectWithoutDataWithClassName:self.entity.name objectId:self.serverID];
-    NSLog(@"%s: delete %@ eventually", __func__, self.entity.name);
-    [EWDataStore appendObjectToDeleteQueue:po];
-
-    //delete
-    [self.managedObjectContext performBlock:^{
-        [self.managedObjectContext deleteObject:self];
-    }];
+	PFObject *po = [PFObject objectWithoutDataWithClassName:self.entity.name objectId:self.serverID];
+	NSLog(@"%s: delete %@ eventually", __func__, self.entity.name);
+	[EWDataStore appendObjectToDeleteQueue:po];
+	
+	//delete
+	[self.managedObjectContext performBlock:^{
+		[self.managedObjectContext deleteObject:self];
+	}];
 }
 
 
@@ -1630,29 +1626,29 @@ NSManagedObjectContext *mainContext;
 
 #pragma mark - Helper methods
 - (NSString *)getPropertyClassByName:(NSString *)name{
-    objc_property_t property = class_getProperty([self class], [name UTF8String]);
-    const char * type = property_getAttributes(property);
-    NSString * typeString = [NSString stringWithUTF8String:type];
-    NSArray * attributes = [typeString componentsSeparatedByString:@","];
-    NSString * typeAttribute = [attributes objectAtIndex:0];
-    if ([typeAttribute hasPrefix:@"T@"]) {
-        NSString * typeClassName = [typeAttribute substringWithRange:NSMakeRange(3, [typeAttribute length]-4)];  //turns @"NSDate" into NSDate
-        return typeClassName;
-    }
-    return @"";
+	objc_property_t property = class_getProperty([self class], [name UTF8String]);
+	const char * type = property_getAttributes(property);
+	NSString * typeString = [NSString stringWithUTF8String:type];
+	NSArray * attributes = [typeString componentsSeparatedByString:@","];
+	NSString * typeAttribute = [attributes objectAtIndex:0];
+	if ([typeAttribute hasPrefix:@"T@"]) {
+		NSString * typeClassName = [typeAttribute substringWithRange:NSMakeRange(3, [typeAttribute length]-4)];  //turns @"NSDate" into NSDate
+		return typeClassName;
+	}
+	return @"";
 }
 
 - (BOOL)isOutDated{
-    NSDate *date = (NSDate *)[self valueForKey:kUpdatedDateKey];
-    if (!date) {
-        return YES;
-    }
-    BOOL outdated = !date.isUpToDated;
-    return outdated;
+	NSDate *date = (NSDate *)[self valueForKey:kUpdatedDateKey];
+	if (!date) {
+		return YES;
+	}
+	BOOL outdated = !date.isUpToDated;
+	return outdated;
 }
 
 - (NSString *)serverID{
-    return [self valueForKey:kParseObjectID];
+	return [self valueForKey:kParseObjectID];
 }
 
 @end
@@ -1675,90 +1671,90 @@ NSManagedObjectContext *mainContext;
 		return;
 	}
 	
-//If PO just created, the PO is newer than MO, this is not reliable. Also, it is against the intention. Therefore, the intention of upload should overload the fact that PO is newer.
-//    if (self.isNewerThanMO) {
-//        NSLog(@"@@@ Trying to update MO %@, but PO is newer! Please check the code.(%@ -> %@)", managedObject.entity.name, [managedObject valueForKey:kUpdatedDateKey], self.updatedAt);
-//        return;
-//    }
-
+	//If PO just created, the PO is newer than MO, this is not reliable. Also, it is against the intention. Therefore, the intention of upload should overload the fact that PO is newer.
+	//    if (self.isNewerThanMO) {
+	//        NSLog(@"@@@ Trying to update MO %@, but PO is newer! Please check the code.(%@ -> %@)", managedObject.entity.name, [managedObject valueForKey:kUpdatedDateKey], self.updatedAt);
+	//        return;
+	//    }
 	
-    NSArray *changeValues = [[EWDataStore sharedInstance].changeRecords objectForKey:managedObject.objectID];
-//    if (!changeValues) {
-//        changeValues = attributeDescriptions.allKeys;
-//    }
-    [managedObject.entity.attributesByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
+	
+	NSArray *changeValues = [[EWDataStore sharedInstance].changeRecords objectForKey:managedObject.objectID];
+	//    if (!changeValues) {
+	//        changeValues = attributeDescriptions.allKeys;
+	//    }
+	[managedObject.entity.attributesByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSAttributeDescription *obj, BOOL *stop) {
 		//for now, we just use changed value as a mean to exam our theory
 		BOOL expectChange = NO;
-        if ([changeValues containsObject:key]){
-            expectChange = YES;
-        }
-        
-        //check if changed
-        if (key.skipUpload) {
-            return;
-        }
-        
+		if ([changeValues containsObject:key]){
+			expectChange = YES;
+		}
+		
+		//check if changed
+		if (key.skipUpload) {
+			return;
+		}
+		
 		//=============== ATTRIBUTES ===============
-        id value = [managedObject valueForKey:key];
+		id value = [managedObject valueForKey:key];
 		id POValue = [self valueForKey:key];
-        
-        //there could have some optimization that checks if value equals to PFFile value, and thus save some network calls. But in order to compare there will be another network call to fetch, the the comparison is redundant.
-        if ([value isKindOfClass:[NSData class]]) {
-            //data
+		
+		//there could have some optimization that checks if value equals to PFFile value, and thus save some network calls. But in order to compare there will be another network call to fetch, the the comparison is redundant.
+		if ([value isKindOfClass:[NSData class]]) {
+			//data
 			if (!expectChange && POValue) {
 				NSLog(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
 			}
 			//TODO: video file
 			EWPerson *localMe = (EWPerson *)[localContext objectWithID:me.objectID];
 			NSString *fileName = [NSString stringWithFormat:@"%@.m4a", localMe.name];
-            PFFile *dataFile = [PFFile fileWithName:fileName data:value];
-            [self setObject:dataFile forKey:key];
-        }else if ([value isKindOfClass:[UIImage class]]){
-            //image
+			PFFile *dataFile = [PFFile fileWithName:fileName data:value];
+			[self setObject:dataFile forKey:key];
+		}else if ([value isKindOfClass:[UIImage class]]){
+			//image
 			if (!expectChange && POValue) {
 				NSLog(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
 			}
-            PFFile *dataFile = [PFFile fileWithName:@"Image.png" data:UIImagePNGRepresentation((UIImage *)value)];
-            //[dataFile saveInBackground];//TODO: handle file upload exception
-            [self setObject:dataFile forKey:key];
-        }else if ([value isKindOfClass:[CLLocation class]]){
-            //location
+			PFFile *dataFile = [PFFile fileWithName:@"Image.png" data:UIImagePNGRepresentation((UIImage *)value)];
+			//[dataFile saveInBackground];//TODO: handle file upload exception
+			[self setObject:dataFile forKey:key];
+		}else if ([value isKindOfClass:[CLLocation class]]){
+			//location
 			if (!expectChange && POValue) {
 				NSLog(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
 			}
-            PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
-            [self setObject:point forKey:key];
-        }else if(value != nil){
+			PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
+			[self setObject:point forKey:key];
+		}else if(value != nil){
 			[self setObject:value forKey:key];
-            
-        }else{
-            //value is nil, delete PO value
+			
+		}else{
+			//value is nil, delete PO value
 			
 			if ([self.allKeys containsObject:key]) {
 				NSLog(@"!!! Data %@ empty on MO %@(%@), please check!", key, managedObject.entity.name, managedObject.serverID);
 				[self removeObjectForKey:key];
 			}
-        }
-        
-    }];
-    
-    //=============== relation ===============
-    NSMutableDictionary *mutableRelationships = [managedObject.entity.relationshipsByName mutableCopy];
-    [mutableRelationships enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
-        id relatedManagedObjects = [managedObject valueForKey:key];
-        if (relatedManagedObjects){
-            if ([obj isToMany]) {
-                //To-Many relation
-                //First detect if has inverse relation, if not, we use Array to represent the relation
+		}
+		
+	}];
+	
+	//=============== relation ===============
+	NSMutableDictionary *mutableRelationships = [managedObject.entity.relationshipsByName mutableCopy];
+	[mutableRelationships enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
+		id relatedManagedObjects = [managedObject valueForKey:key];
+		if (relatedManagedObjects){
+			if ([obj isToMany]) {
+				//To-Many relation
+				//First detect if has inverse relation, if not, we use Array to represent the relation
 				//Exceptin: if the relation is linked to a user, we still use PFRelation as the size of PFObject will be too large for Array to store PFUser
 				//TODO: in the next release we need to use Array for all relation except relation to EWPerson
-                if (!obj.inverseRelationship/* && ![key isEqualToString:kUserClass]*/) {
-                    //No inverse relation, use array of pointer
-                    
-                    NSSet *relatedMOs = [managedObject valueForKey:key];
-                    NSMutableArray *relatedPOs = [NSMutableArray new];
-                    for (NSManagedObject *MO in relatedMOs) {
-                        //PFObject *PO = [EWDataStore getCachedParseObjectForID:MO.serverID];
+				if (!obj.inverseRelationship/* && ![key isEqualToString:kUserClass]*/) {
+					//No inverse relation, use array of pointer
+					
+					NSSet *relatedMOs = [managedObject valueForKey:key];
+					NSMutableArray *relatedPOs = [NSMutableArray new];
+					for (NSManagedObject *MO in relatedMOs) {
+						//PFObject *PO = [EWDataStore getCachedParseObjectForID:MO.serverID];
 						//if (!PO) {
 						PFObject *PO = [PFObject objectWithoutDataWithClassName:MO.entity.serverClassName objectId:[MO valueForKey:kParseObjectID]];
 						//}
@@ -1768,17 +1764,17 @@ NSManagedObjectContext *mainContext;
 							NSLog(@"objectId not found");
 						}
 						
-                    }
-                    [self setObject:[relatedPOs copy] forKey:key];
-                    return;
-                }
+					}
+					[self setObject:[relatedPOs copy] forKey:key];
+					return;
+				}
 				
 				//========================== relation ==========================
-                PFRelation *parseRelation = [self relationForKey:key];
+				PFRelation *parseRelation = [self relationForKey:key];
 				//==============================================================
 				
-                //Find related PO to delete async
-                NSMutableArray *relatedParseObjects = [[[parseRelation query] findObjects] mutableCopy];
+				//Find related PO to delete async
+				NSMutableArray *relatedParseObjects = [[[parseRelation query] findObjects] mutableCopy];
 				if (relatedParseObjects.count) {
 					NSArray *relatedParseObjectsToDelete = [relatedParseObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [relatedManagedObjects valueForKey:@"objectId"]]];
 					for (PFObject *PO in relatedParseObjectsToDelete) {
@@ -1786,119 +1782,119 @@ NSManagedObjectContext *mainContext;
 						//We don't update the inverse PFRelation as they should be updated from that MO
 						NSLog(@"~~~> To-many relation on PO %@(%@)->%@(%@) deleted when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, PO.objectId);
 					}
-
+					
 				}
-                
-                //related managedObject that needs to add
-                for (NSManagedObject *relatedManagedObject in relatedManagedObjects) {
-                    NSString *parseID = relatedManagedObject.serverID;
-                    if (parseID) {
-                        //the pfobject already exists, need to inspect PFRelation to determin add or remove
-                        
-                        //PFObject *relatedParseObject = [EWDataStore getCachedParseObjectForID:parseID];
+				
+				//related managedObject that needs to add
+				for (NSManagedObject *relatedManagedObject in relatedManagedObjects) {
+					NSString *parseID = relatedManagedObject.serverID;
+					if (parseID) {
+						//the pfobject already exists, need to inspect PFRelation to determin add or remove
+						
+						//PFObject *relatedParseObject = [EWDataStore getCachedParseObjectForID:parseID];
 						PFObject *relatedParseObject = [PFObject objectWithoutDataWithClassName:relatedManagedObject.entity.serverClassName objectId:parseID];
-                        //[relatedParseObject fetchIfNeeded];
-                        [parseRelation addObject:relatedParseObject];
+						//[relatedParseObject fetchIfNeeded];
+						[parseRelation addObject:relatedParseObject];
 						//NSLog(@"+++> To-many relation on PO %@(%@)->%@(%@) added when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, relatedParseObject.objectId);
-                        
-                    } else {
-                        __block PFObject *blockObject = self;
-                        __block PFRelation *blockParseRelation = parseRelation;
-                        //set up a saving block
-                        //NSLog(@"Relation %@ -> %@ save block setup", blockObject.parseClassName, relatedManagedObject.entity.serverClassName);
-                        PFObjectResultBlock connectRelationship = ^(PFObject *object, NSError *error) {
-                            //the relation can only be additive, which is not a problem for new relation
-                            [blockParseRelation addObject:object];
-                            [blockObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                NSLog(@"PO Relation %@(%@) -> %@ (%@) established in PO save callback", blockObject.parseClassName, blockObject.objectId, object.parseClassName, object.objectId);
-                                if (error) {
-                                    NSLog(@"Failed to save: %@", error.description);
-                                    @try {
-                                        [blockObject saveEventually];
-                                    }
-                                    @catch (NSException *exception) {
-                                        [managedObject updateEventually];
-                                    }
-                                }
-                            }];
-                        };
-                        
-                        //add to global save callback distionary
-                        [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:relatedManagedObject.objectID];
-
-                        //add relatedMO to insertQueue
+						
+					} else {
+						__block PFObject *blockObject = self;
+						__block PFRelation *blockParseRelation = parseRelation;
+						//set up a saving block
+						//NSLog(@"Relation %@ -> %@ save block setup", blockObject.parseClassName, relatedManagedObject.entity.serverClassName);
+						PFObjectResultBlock connectRelationship = ^(PFObject *object, NSError *error) {
+							//the relation can only be additive, which is not a problem for new relation
+							[blockParseRelation addObject:object];
+							[blockObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+								NSLog(@"PO Relation %@(%@) -> %@ (%@) established in PO save callback", blockObject.parseClassName, blockObject.objectId, object.parseClassName, object.objectId);
+								if (error) {
+									NSLog(@"Failed to save: %@", error.description);
+									@try {
+										[blockObject saveEventually];
+									}
+									@catch (NSException *exception) {
+										[managedObject updateEventually];
+									}
+								}
+							}];
+						};
+						
+						//add to global save callback distionary
+						[EWDataStore addSaveCallback:connectRelationship forManagedObjectID:relatedManagedObject.objectID];
+						
+						//add relatedMO to insertQueue
 						if (![EWDataStore contains:relatedManagedObject inQueue:kParseQueueWorking]) {
 							[EWDataStore appendInsertQueue:relatedManagedObject];
 						}
-                    }
-                }
-            }else {
-                //TO-One relation
-                NSManagedObject *relatedMO = [managedObject valueForKey:key];
-                NSString *parseID = relatedMO.serverID;
-                if (parseID) {
-                    PFObject *relatedPO = [relatedMO getParseObjectWithError:NULL];//TODO: test if we can use empty PO
-                    [self setObject:relatedPO forKey:key];
+					}
+				}
+			}else {
+				//TO-One relation
+				NSManagedObject *relatedMO = [managedObject valueForKey:key];
+				NSString *parseID = relatedMO.serverID;
+				if (parseID) {
+					PFObject *relatedPO = [relatedMO getParseObjectWithError:NULL];//TODO: test if we can use empty PO
+					[self setObject:relatedPO forKey:key];
 					//NSLog(@"+++> To-one relation on PO %@(%@)->%@(%@) added when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, relatedPO.objectId);
-                }else{
-                    //MO doesn't have parse id, save to parse
-                    __block PFObject *blockObject = self;
-                    //set up a saving block
-                    PFObjectResultBlock connectRelationship = ^(PFObject *object, NSError *error) {
-                        [blockObject setObject:object forKey:key];
-                        [blockObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                            //relationship can be saved regardless of network condition.
-                            if (error) {
-                                NSLog(@"Failed to save: %@", error.description);
-                                @try {
-                                    [blockObject saveEventually];
-                                }
-                                @catch (NSException *exception) {
-                                    [managedObject updateEventually];
-                                }
-                                
-                            }
-                        }];
-                    };
-                    //add to global save callback distionary
-                    [EWDataStore addSaveCallback:connectRelationship forManagedObjectID:relatedMO.objectID];
-                }
-            }
-        }else{
+				}else{
+					//MO doesn't have parse id, save to parse
+					__block PFObject *blockObject = self;
+					//set up a saving block
+					PFObjectResultBlock connectRelationship = ^(PFObject *object, NSError *error) {
+						[blockObject setObject:object forKey:key];
+						[blockObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+							//relationship can be saved regardless of network condition.
+							if (error) {
+								NSLog(@"Failed to save: %@", error.description);
+								@try {
+									[blockObject saveEventually];
+								}
+								@catch (NSException *exception) {
+									[managedObject updateEventually];
+								}
+								
+							}
+						}];
+					};
+					//add to global save callback distionary
+					[EWDataStore addSaveCallback:connectRelationship forManagedObjectID:relatedMO.objectID];
+				}
+			}
+		}else{
 			
 			//relation cannot be to-many, as it's always has value
-            //empty related object, delete PO relationship
+			//empty related object, delete PO relationship
 			//I doubt if we really need to delete inverse relation
-            if ([self valueForKey:key]) {
+			if ([self valueForKey:key]) {
 				
-
+				
 				NSLog(@"Empty relationship on MO %@(%@) -> %@, delete PO relation.", managedObject.entity.name, self.objectId, obj.name);
-//                NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
-//                PFObject *inversePO = self[key];
-//				if (inversePO.ACL != nil) {
-//					BOOL write = [inversePO.ACL getWriteAccessForUser:[PFUser currentUser]] || [inversePO.ACL getPublicWriteAccess];
-//				}
-//                if (inverseRelation.isToMany) {
-//                    //inverse to-many relation need to be updated
-//                    [inversePO fetchIfNeeded];
-//                    PFRelation *inversePFRelation = [inversePO relationForKey:inverseRelation.name];
-//                    [inversePFRelation removeObject:self];
-//                    [inversePO save:nil];
-//                    NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
-//                }else{
-//                    //to-one
-//                    [inversePO removeObjectForKey:inverseRelation.name];
-//                }
-//				[inversePO save];
+				//                NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
+				//                PFObject *inversePO = self[key];
+				//				if (inversePO.ACL != nil) {
+				//					BOOL write = [inversePO.ACL getWriteAccessForUser:[PFUser currentUser]] || [inversePO.ACL getPublicWriteAccess];
+				//				}
+				//                if (inverseRelation.isToMany) {
+				//                    //inverse to-many relation need to be updated
+				//                    [inversePO fetchIfNeeded];
+				//                    PFRelation *inversePFRelation = [inversePO relationForKey:inverseRelation.name];
+				//                    [inversePFRelation removeObject:self];
+				//                    [inversePO save:nil];
+				//                    NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
+				//                }else{
+				//                    //to-one
+				//                    [inversePO removeObjectForKey:inverseRelation.name];
+				//                }
+				//				[inversePO save];
 				
-                [self removeObjectForKey:key];
+				[self removeObjectForKey:key];
 				
-            }
-        }
-        
-    }];
-    //Only save when network is available so that MO can link with PO
-    //[self saveEventually];
+			}
+		}
+		
+	}];
+	//Only save when network is available so that MO can link with PO
+	//[self saveEventually];
 	
 }
 
@@ -1912,7 +1908,7 @@ NSManagedObjectContext *mainContext;
 		context = mainContext;
 	}
 	NSMutableArray *MOs = [[NSClassFromString(self.localClassName) findByAttribute:kParseObjectID withValue:self.objectId inContext:context] mutableCopy];
-    //NSManagedObject *mo = [NSClassFromString(self.localClassName) MR_findFirstByAttribute:kParseObjectID withValue:self.objectId inContext:context];
+	//NSManagedObject *mo = [NSClassFromString(self.localClassName) MR_findFirstByAttribute:kParseObjectID withValue:self.objectId inContext:context];
 	while (MOs.count > 1) {
 		NSLog(@"Find duplicated MO for ID %@", self.objectId);
 		NSManagedObject *mo_ = MOs.lastObject;
@@ -1921,23 +1917,23 @@ NSManagedObjectContext *mainContext;
 		[EWDataStore deleteToLocal:self];
 	}
 	NSManagedObject *mo = MOs.firstObject;
-    
-    if (!mo) {
-        //if managedObject not exist, create it locally
-        mo = [NSClassFromString(self.localClassName) MR_createInContext:context];
-        [mo assignValueFromParseObject:self];
+	
+	if (!mo) {
+		//if managedObject not exist, create it locally
+		mo = [NSClassFromString(self.localClassName) MR_createInContext:context];
+		[mo assignValueFromParseObject:self];
 		//[EWDataStore saveToLocal:mo];//save to local first
-        NSLog(@"+++> MO created: %@ (%@)", self.localClassName, self.objectId);
-    }else{
+		NSLog(@"+++> MO created: %@ (%@)", self.localClassName, self.objectId);
+	}else{
 		
-        if (mo.isOutDated || self.isNewerThanMO) {
-            
-            [mo assignValueFromParseObject:self];
-            //[EWDataStore saveToLocal:mo];//mo will be saved later
-        }
-    }
-    
-    return mo;
+		if (mo.isOutDated || self.isNewerThanMO) {
+			
+			[mo assignValueFromParseObject:self];
+			//[EWDataStore saveToLocal:mo];//mo will be saved later
+		}
+	}
+	
+	return mo;
 }
 
 - (BOOL)isNewerThanMO{
@@ -1959,9 +1955,9 @@ NSManagedObjectContext *mainContext;
 }
 
 - (NSString *)localClassName{
-    NSDictionary *map = kServerTransformClasses;
-    NSString *localClass = [[map allKeysForObject:self.parseClassName] firstObject];
-    return localClass ?: self.parseClassName;
+	NSDictionary *map = kServerTransformClasses;
+	NSString *localClass = [[map allKeysForObject:self.parseClassName] firstObject];
+	return localClass ?: self.parseClassName;
 }
 @end
 
@@ -1969,9 +1965,9 @@ NSManagedObjectContext *mainContext;
 @implementation NSEntityDescription (Parse)
 
 - (NSString *)serverClassName{
-    NSDictionary *map = kServerTransformClasses;
-    NSString *serverClass = [map objectForKey:self.name];
-    return serverClass ?: self.name;
+	NSDictionary *map = kServerTransformClasses;
+	NSString *serverClass = [map objectForKey:self.name];
+	return serverClass ?: self.name;
 }
 
 @end
@@ -1979,15 +1975,15 @@ NSManagedObjectContext *mainContext;
 @implementation NSString (Parse)
 
 - (NSString *)serverType{
-    NSDictionary *typeDic = kServerTransformTypes;
-    NSString *serverType = typeDic[self];
-    return serverType;
+	NSDictionary *typeDic = kServerTransformTypes;
+	NSString *serverType = typeDic[self];
+	return serverType;
 }
 
 - (BOOL)skipUpload{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF IN %@", attributeUploadSkipped];
-    BOOL result = [predicate evaluateWithObject:self];
-    return result;
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF IN %@", attributeUploadSkipped];
+	BOOL result = [predicate evaluateWithObject:self];
+	return result;
 }
 
 @end

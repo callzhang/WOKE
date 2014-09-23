@@ -18,20 +18,6 @@
 @end
 
 @implementation EWNotificationCell
-
-- (void)awakeFromNib
-{
-    // Initialization code
-    [super awakeFromNib];
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:NO];
-
-    // Configure the view for the selected state
-}
-
 - (void)setNotification:(EWNotification *)notification{
     if (_notification == notification) {
         return;
@@ -52,7 +38,6 @@
         
     }
     
-    
     NSString *type = notification.type;
     if ([type isEqualToString:kNotificationTypeNotice]) {
         self.profilePic.image = nil;
@@ -63,9 +48,8 @@
         NSString *link = notification.userInfo[@"link"];
         
         self.detail.text = [title stringByAppendingString:[NSString stringWithFormat:@"\n%@\n%@", body, link]];
-        
-        
-    }else{
+    }
+    else{
         //kNotificationTypeNextTaskHasMedia
         //kNotificationTypeFriendRequest
         //kNotificationTypeFriendAccepted
@@ -75,46 +59,41 @@
         self.profilePic.hidden = NO;
         if (sender.profilePic) {
             self.profilePic.image = sender.profilePic;
-        }else{
+        }
+        else{
             //download
             [sender refreshShallowWithCompletion:^{
                 self.profilePic.image = sender.profilePic;
             }];
         }
-
         
         if([type isEqualToString:kNotificationTypeFriendRequest]){
-            
-               self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request", sender.name];
-            
-            
-        }else if([type isEqualToString:kNotificationTypeFriendAccepted]){
-            
+            self.detail.text = [NSString stringWithFormat:@"%@ has sent you a friend request", sender.name];
+        }
+        else if([type isEqualToString:kNotificationTypeFriendAccepted]){
             self.detail.text = [NSString stringWithFormat:@"%@ has accepted your friend request", sender.name];
-            
-        }else if (kNotificationTypeNextTaskHasMedia){
+        }
+        else if (kNotificationTypeNextTaskHasMedia){
             //TODO: timestamp
             self.detail.text = @"You have received voice(s) for next wake up.";
         }
     }
     
-    
     if (notification.completed) {
         self.detail.enabled = NO;
         self.time.enabled = NO;
-    }else{
+    }
+    else{
         self.detail.enabled = YES;
         self.time.enabled = YES;
     }
     
     [self setSize];
-    //[self setNeedsDisplay];
 }
 
 - (void)setSize{
     //adjust size
     if ([_notification.type isEqualToString:kNotificationTypeNotice]) {
-        
         self.userLabelLeadingConstraint.constant = -40;
         self.detail.text = [NSString stringWithFormat:@"%@:%@", self.detail.text, kNotificationTypeNotice];
 
@@ -136,8 +115,5 @@
     if (self.profilePic.image) {
         [EWUIUtil applyHexagonSoftMaskForView:self.profilePic];
     }
-    
 }
-
-
 @end
