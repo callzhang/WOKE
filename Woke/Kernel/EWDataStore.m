@@ -420,27 +420,6 @@ NSManagedObjectContext *mainContext;
 
 }
 
-+ (void)saveToLocal:(NSManagedObject *)mo{
-	
-    //pre save check
-    
-	//mark MO as save to local
-	if (mo.objectID.isTemporaryID) {
-		[mo.managedObjectContext obtainPermanentIDsForObjects:@[mo] error:NULL];
-	}
-	[[EWDataStore sharedInstance].saveToLocalItems addObject:mo.objectID];
-
-    //save to enqueue the updates
-    //[EWDataStore enqueueChangesInContext:mo.managedObjectContext];
-	//[[EWDataStore sharedInstance].saveToLocalItems removeObject:mo];
-	[mo.managedObjectContext saveToPersistentStoreAndWait];
-    
-    //remove from the update queue
-    [EWDataStore removeObjectFromInsertQueue:mo];
-    [EWDataStore removeObjectFromUpdateQueue:mo];
-    
-}
-
 + (void)saveAllToLocal:(NSArray *)MOs{
 	if (MOs.count == 0) {
 		return;
@@ -457,23 +436,14 @@ NSManagedObjectContext *mainContext;
 	
 	//save to enqueue the updates
 	NSManagedObject *anyMO = MOs[0];
-	[anyMO.managedObjectContext saveToPersistentStoreAndWait];
-    
-	for (NSManagedObject *mo in MOs) {
-		
-		//remove from the update queue
-		[EWDataStore removeObjectFromInsertQueue:mo];
-		[EWDataStore removeObjectFromUpdateQueue:mo];
-		
-	}
-    
-}
-
-+ (void)deleteToLocal:(PFObject *)PO{
-	[[EWDataStore sharedInstance].deleteToLocalItems addObject:PO.objectId];
-	
-	//remove from the update queue
-	[EWDataStore removeObjectFromDeleteQueue:PO];
+	[anyMO.managedObjectContext saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
+		for (NSManagedObject *mo in MOs) {
+			//remove from the update queue
+			[EWDataStore removeObjectFromInsertQueue:mo];
+			[EWDataStore removeObjectFromUpdateQueue:mo];
+			
+		}
+	}];
 }
 
 #pragma mark - Core Data Tools
@@ -841,14 +811,15 @@ NSManagedObjectContext *mainContext;
     [workingObjects unionSet:insertedManagedObjects];
     for (NSManagedObject *mo in workingObjects) {
 		[EWDataStore appendObject:mo toQueue:kParseQueueWorking];
-		//clear save to local items
-		[self.saveToLocalItems removeObject:mo.objectID];
     }
 	
 	//save to local items
-	NSArray *saveToLocalItemAlreadyInWorkingQueue = [self.saveToLocalItems filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT SELF IN %@", workingObjects]];
-	for (NSManagedObjectID *ID in saveToLocalItemAlreadyInWorkingQueue) {
-		[self.saveToLocalItems removeObject:ID];
+	NSArray *saveToLocalItemAlreadyInWorkingQueue = [self.saveToLocalItems filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF IN %@", [workingObjects valueForKey:@"objectID"]]];
+	if (saveToLocalItemAlreadyInWorkingQueue.count) {
+		DDLogError(@"There are items in saveToLocal queue but also appeared in working queue, please check the code!%@", saveToLocalItemAlreadyInWorkingQueue);
+		for (NSManagedObjectID *ID in saveToLocalItemAlreadyInWorkingQueue) {
+			[self.saveToLocalItems removeObject:ID];
+		}
 	}
 
 	//clear save/delete to local items
@@ -965,9 +936,6 @@ NSManagedObjectContext *mainContext;
         if (!object || error) {
             if ([error code] == kPFErrorObjectNotFound) {
                 NSLog(@"PO %@ couldn't be found!", managedObject.entity.serverClassName);
-				//[managedObject deleteEntityInContext:managedObject.managedObjectContext];
-				//return;
-				//here we should not return, instead we should create the PO because that's the intention of the process.
             } else if ([error code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
                 [managedObject updateEventually];
@@ -1007,7 +975,11 @@ NSManagedObjectContext *mainContext;
 		if (error) {
 			if (error.code == kPFErrorObjectNotFound){
 				NSLog(@"*** PO not found for %@(%@), set to nil.", managedObject.entity.name, managedObject.serverID);
-				[managedObject setValue:nil forKey:kParseObjectID];
+				NSManagedObject *trueMO = [managedObject.managedObjectContext existingObjectWithID:managedObject.objectID error:NULL];
+				if (trueMO) {
+					//need to check if the object is available
+					[managedObject setValue:nil forKey:kParseObjectID];
+				}
 			}else{
 				NSLog(@"*** Failed to save server object: %@", error.description);
 			}
@@ -1016,7 +988,6 @@ NSManagedObjectContext *mainContext;
 			//assign connection between MO and PO
 			[EWDataStore performSaveCallbacksWithParseObject:object andManagedObjectID:managedObject.objectID];
 		}
-		
 	}];
     
     
@@ -1142,7 +1113,10 @@ NSManagedObjectContext *mainContext;
             //TODO: handle error
             if ([err code] == kPFErrorObjectNotFound) {
                 NSLog(@"*** Uh oh, we couldn't find the related PO!");
-                [self setValue:nil forKey:key];
+				NSManagedObject *trueSelf = [self.managedObjectContext existingObjectWithID:self.objectID error:NULL];
+				if (trueSelf) {
+					[self setValue:nil forKey:key];
+				}
                 return;
             } else if ([err code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
@@ -1228,7 +1202,7 @@ NSManagedObjectContext *mainContext;
     [self setValue:[NSDate date] forKey:kUpdatedDateKey];
     
     //pre save check
-    [EWDataStore saveToLocal:self];
+	[self saveToLocal];
 }
 
 
@@ -1239,7 +1213,10 @@ NSManagedObjectContext *mainContext;
 	if (!object.isDataAvailable) {
 		NSLog(@"*** The PO %@(%@) you passed in doesn't have any data. Deleted from server?", object.parseClassName, object.objectId);
 		if (err.code == kPFErrorObjectNotFound) {
-			[self setValue:nil forKeyPath:kParseObjectID];
+			NSManagedObject *trueSelf = [self.managedObjectContext existingObjectWithID:self.objectID error:NULL];
+			if (trueSelf) {
+				[self setValue:nil forKeyPath:kParseObjectID];
+			}
 		}
 		return;
 	}
@@ -1340,7 +1317,10 @@ NSManagedObjectContext *mainContext;
 		if (err) {
 			if ((*err).code == kPFErrorObjectNotFound && [EWDataStore isReachable]) {
 				NSLog(@"*** PO %@(%@) doesn't exist on server", self.entity.serverClassName, self.serverID);
-				[self setValue:nil forKeyPath:kParseObjectID];
+				NSManagedObject *trueSelf = [self.managedObjectContext existingObjectWithID:self.objectID error:NULL];
+				if (trueSelf) {
+					[self setValue:nil forKeyPath:kParseObjectID];
+				}
 			}
 			else{
 				NSLog(@"*** Failed to get PO(%@) from server. %@", self.serverID, *err);
@@ -1444,7 +1424,7 @@ NSManagedObjectContext *mainContext;
 		//update MO
 		[self updateValueAndRelationFromParseObject:object];
 		//save
-		[EWDataStore saveToLocal:self];
+		[self saveToLocal];
 	}
 }
 
@@ -1608,11 +1588,12 @@ NSManagedObjectContext *mainContext;
 	[[EWDataStore sharedInstance].saveToLocalItems addObject:self.objectID];
 	
 	//save to enqueue the updates
-	[self.managedObjectContext MR_saveToPersistentStoreWithCompletion:NULL];
+	[self.managedObjectContext MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
+		//remove from the update queue
+		[EWDataStore removeObjectFromInsertQueue:self];
+		[EWDataStore removeObjectFromUpdateQueue:self];
+	}];
 	
-	//remove from the update queue
-	[EWDataStore removeObjectFromInsertQueue:self];
-	[EWDataStore removeObjectFromUpdateQueue:self];
 }
 
 - (void)saveToServer{
@@ -1663,7 +1644,10 @@ NSManagedObjectContext *mainContext;
 	if (err && self.objectId) {
 		if (err.code == kPFErrorObjectNotFound) {
 			NSLog(@"PO %@(%@) not found on server!", self.parseClassName, self.objectId);
-			[managedObject setValue:nil forKeyPath:kParseObjectID];
+			NSManagedObject *trueMO = [managedObject.managedObjectContext existingObjectWithID:managedObject.objectID error:NULL];
+			if (trueMO) {
+				[managedObject setValue:nil forKeyPath:kParseObjectID];
+			}
 		}else{
 			NSLog(@"Trying to upload but PO error fetching: %@. Skip!", err.description);
 		}
@@ -1915,7 +1899,11 @@ NSManagedObjectContext *mainContext;
 		NSManagedObject *mo_ = MOs.lastObject;
 		[MOs removeLastObject];
 		[mo_ deleteEntityInContext:context];
-		[EWDataStore deleteToLocal:self];
+		
+		[[EWDataStore sharedInstance].deleteToLocalItems addObject:self.objectId];
+		
+		//remove from the update queue
+		[EWDataStore removeObjectFromDeleteQueue:self];
 	}
 	NSManagedObject *mo = MOs.firstObject;
 	
@@ -1923,7 +1911,6 @@ NSManagedObjectContext *mainContext;
 		//if managedObject not exist, create it locally
 		mo = [NSClassFromString(self.localClassName) MR_createInContext:context];
 		[mo assignValueFromParseObject:self];
-		//[EWDataStore saveToLocal:mo];//save to local first
 		NSLog(@"+++> MO created: %@ (%@)", self.localClassName, self.objectId);
 	}else{
 		

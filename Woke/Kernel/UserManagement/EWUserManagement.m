@@ -116,7 +116,7 @@
     //save me
     [EWPersonStore sharedInstance].currentUser = person;
     me.score = @100;
-    [EWDataStore saveToLocal:me];
+    [me saveToLocal];
     
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     

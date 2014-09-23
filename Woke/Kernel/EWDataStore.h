@@ -80,9 +80,9 @@ typedef void (^EWSavingCallback)(void);
  */
 + (void)save;
 + (void)saveWithCompletion:(EWSavingCallback)block;
-+ (void)saveToLocal:(NSManagedObject *)mo;
+//+ (void)saveToLocal:(NSManagedObject *)mo;
 + (void)saveAllToLocal:(NSArray *)MOs;
-+ (void)deleteToLocal:(PFObject *)PO;
+//+ (void)deleteToLocal:(PFObject *)PO;
 
 /**
  The main method of server update/insert/delete.
@@ -217,7 +217,13 @@ typedef void (^EWSavingCallback)(void);
 - (NSArray *)changedKeys;
 
 #pragma mark - Network
+/**
+ Mark MO as to save locally and remove MO from upload queue
+ */
 - (void)saveToLocal;
+/**
+ Mark MO to upload to server and insert MO to upload queue
+ */
 - (void)saveToServer;
 
 #pragma mark - Helper methods
