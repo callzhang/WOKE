@@ -304,20 +304,20 @@
         //only update cells in the screen
         NSArray *attributesNeedZoom = [self getContainedRect:bounds fromAttributesArray:self.attributeArray];
         
-        CGPoint midBounds = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
+        CGPoint boundCenter = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
         for (UICollectionViewLayoutAttributes *attribute in attributesNeedZoom) {
             if (CGRectIntersectsRect(attribute.frame, bounds)) {
                 //get real center
                 CGRect cellFrame = CGRectMake(attribute.frame.origin.x, attribute.frame.origin.y, kCollectionViewCellWidth, kCollectionViewCellHeight);
                 CGPoint cellCenter = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
                 //calculate distance
-                CGFloat distance = [EWUIUtil distanceOfPoint:midBounds toPoint:cellCenter];
-                if (distance < (kCollectionViewCellHeight * CELL_SPACE_RATIO)) {
-                    CGFloat normDistance = distance / (kCollectionViewCellWidth * CELL_SPACE_RATIO);
-                    CGFloat zoom = 1 + pow((1-normDistance),2)/4 ;
-                    attribute.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
-                    //attribute.zIndex = round(zoom);
-                }
+                CGFloat distance = [EWUIUtil distanceOfPoint:boundCenter toPoint:cellCenter];
+                CGFloat baseDistance = kCollectionViewCellHeight * CELL_SPACE_RATIO;
+                CGFloat normDistance = MAX(baseDistance/distance, 1.5);
+                CGFloat zoom = pow((normDistance),2);
+                attribute.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
+                //attribute.zIndex = round(zoom);
+            
             }
         }
     }
@@ -373,7 +373,7 @@
     }
     
     //return NO
-    return kZoomEffect ? YES : NO;
+    return kZoomEffect;
 }
 
 
