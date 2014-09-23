@@ -20,7 +20,7 @@
 static const float duration = 0.3;
 static const float delay = 0.1;
 static const float zoom = 1.5;
-static const float initialDownSampling = 1;
+static const float initialDownSampling = 2;
 
 @interface GPUImageAnimator ()
 
@@ -165,7 +165,7 @@ static const float initialDownSampling = 1;
 {
     [self updateProgress:link];
     self.brightnessFilter.gamma = 1 + 1.2 * self.progress;
-    double downSampling = initialDownSampling + self.progress * 6;
+    double downSampling = initialDownSampling + self.progress * 4;
     self.blurFilter.downsampling = downSampling;
     self.blurFilter.blurRadiusInPixels = 1+ self.progress * 8;
     [self triggerRenderOfNextFrame];
