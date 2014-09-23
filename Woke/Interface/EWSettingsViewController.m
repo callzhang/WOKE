@@ -24,7 +24,7 @@ static const NSArray *pref;
 
 @interface EWSettingsViewController ()
 {
-    NSUInteger selectedCellNum;
+    NSString *selectedCellTitle;
     NSArray *ringtoneList;
 }
 //@property (strong, nonatomic) NSArray *options;
@@ -58,9 +58,9 @@ static const NSArray *pref;
 }
 - (void)initData {
     //profile
-    preference = [me.preference mutableCopy];
+    preference = [me.preference mutableCopy]?:[kUserDefaults mutableCopy];
     settingGroup = settingGroupPreference;
-    ringtoneList = ringtoneNameList
+    ringtoneList = ringtoneNameList;
     
 }
 
@@ -239,8 +239,9 @@ static const NSArray *pref;
 #pragma mark - Delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    pref = @[@"Morning tone", @"Bed time notification", @"Sleep duration", @"Log out", @"About"];
+    //pref = @[@"Morning tone", @"Bed time notification", @"Sleep duration", @"Log out", @"About"];
     NSString *title = pref[indexPath.row];
+    selectedCellTitle = title;
     if ([title isEqualToString:@"Morning tone"]){
                 
         EWSelectionViewController *selectionVC = [[EWSelectionViewController alloc] initWithPickerDelegate:self];
@@ -371,31 +372,19 @@ static const NSArray *pref;
 }
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-    switch (selectedCellNum) {
-        case 0:
-            return ringtoneList.count;
-        case 1:
-            return socialLevels.count;
-            break;
-        case 3:
-            return sleepDurations.count;
-        default:
-            break;
+    if ([selectedCellTitle isEqualToString:@"Morning tone"]) {
+        return ringtoneList.count;
+    }else if ([selectedCellTitle isEqualToString:@"Sleep duration"]) {
+        return sleepDurations.count;
     }
     return 0;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
-    switch (selectedCellNum) {
-        case 0:{
+    if ([selectedCellTitle isEqualToString:@"Morning tone"]) {
         NSString *tone = [ringtoneList objectAtIndex:row];
         [AVManager.sharedManager playSoundFromFile:tone];
-        }
-            break;
-            
-        default:
-            break;
     }
     
 }
@@ -408,25 +397,13 @@ static const NSArray *pref;
     label.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:18];
     
     NSString *titleString = @"";
-    switch (selectedCellNum) {
-        case 0:{
-            
-            
-            titleString = ringtoneList[row];
-
-        }
-            break;
-        case 1:{
-            titleString = socialLevels[row];
-        }
-            break;
-        case 3:{
-            titleString = [NSString stringWithFormat:@"%@ hours",sleepDurations[row]];
-        }
-            break;
-        default:
-            break;
+    
+    if ([selectedCellTitle isEqualToString:@"Morning tone"]) {
+        titleString = ringtoneList[row];
+    }else if ([selectedCellTitle isEqualToString:@"Sleep duration"]) {
+        titleString = [NSString stringWithFormat:@"%@ hours",sleepDurations[row]];
     }
+    
     label.text = titleString;
     return label; 
 }

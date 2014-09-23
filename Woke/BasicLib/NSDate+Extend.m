@@ -276,7 +276,7 @@
 {
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents* deltaComps = [cal components:(NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:self];
-    NSArray *monthArray = monthShort
+    NSArray *monthArray = monthShort;
     NSString *str = [monthArray[deltaComps.month] stringByAppendingFormat:@"%ld", (long)deltaComps.day];
     
     return str;

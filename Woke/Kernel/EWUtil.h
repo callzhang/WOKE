@@ -27,6 +27,7 @@
 + (NSString *) uploadImageToParseREST:(UIImage *)uploadImage;
 + (void)deleteFileFromParseRESTwithURL:(NSURL *)url;
 
+void EWLogInit();
 void EWLog(NSString *format,...);
 
 + (NSArray *)readContactsEmailsFromAddressBooks;

@@ -97,9 +97,13 @@
 //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //        [rootViewController presentViewController:loginVC animated:YES completion:NULL];
 //    });
-    
-    [rootViewController presentViewController:[EWFirstTimeViewController new] animated:YES completion:^(){
-    }];
+    if ([PFUser currentUser]) {
+        
+        [rootViewController presentViewController:[EWFirstTimeViewController new] animated:YES completion:NULL];
+    }else{
+        
+        [rootViewController presentViewController:[EWFirstTimeViewController new] animated:NO completion:NULL];
+    }
     
 }
 

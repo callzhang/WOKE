@@ -166,6 +166,39 @@ void EWLog(NSString *format, ...){
     
 }
 
+void EWLogInit(){
+    
+    [DDLog addLogger:[DDASLLogger sharedInstance]];
+    DDTTYLogger *log = [DDTTYLogger sharedInstance];
+    [DDLog addLogger:log];
+    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
+    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
+    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
+    
+    [DDLog addLogger:fileLogger];
+    
+    // we also enable colors in Xcode debug console
+    // because this require some setup for Xcode, commented out here.
+    // https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/XcodeColors
+    [log setColorsEnabled:YES];
+    [log setForegroundColor:[UIColor orangeColor] backgroundColor:nil forFlag:LOG_FLAG_INFO];
+    [log setForegroundColor:[UIColor redColor] backgroundColor:nil forFlag:LOG_FLAG_ERROR];
+    [log setForegroundColor:[UIColor darkGrayColor] backgroundColor:nil forFlag:LOG_FLAG_VERBOSE];
+    [log setForegroundColor:[UIColor colorWithRed:(255/255.0) green:(58/255.0) blue:(159/255.0) alpha:1.0] backgroundColor:nil forFlag:LOG_FLAG_WARN];
+    
+    //TODO:UncaughtExceptionHandler
+    //NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+    
+}
+
+//void uncaughtExceptionHandler(NSException *exception) {
+//    DDLogError(@"Uncaught Exception (CRASH): %@", exception);
+//    DDLogError(@"Stack Trace: %@", [exception callStackSymbols]);
+//    // Internal error reporting
+//}
+
+
+
 +(NSArray *)readContactsEmailsFromAddressBooks
 {
     
