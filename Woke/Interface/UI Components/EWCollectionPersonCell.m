@@ -87,6 +87,7 @@
     if (isMe) {
         return;
     }else{
+        self.info.text = @"";
         
         if (self.showTime) {
             //time

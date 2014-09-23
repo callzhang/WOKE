@@ -757,7 +757,7 @@ NSManagedObjectContext *mainContext;
 	[[EWDataStore sharedInstance].serverObjectPool setObject:PO forKey:PO.objectId];
 }
 
-+ (PFObject *)getParseObjectWithClass:(NSString *)class WithID:(NSString *)ID withError:(NSError **)error{
++ (PFObject *)getParseObjectWithClass:(NSString *)class ID:(NSString *)ID error:(NSError **)error{
 	if (ID) {
 		//try to find PO in the pool first
 		PFObject *object = [EWDataStore getCachedParseObjectForID:ID];
@@ -772,6 +772,7 @@ NSManagedObjectContext *mainContext;
 			PFQuery *q = [PFQuery queryWithClassName:entity.serverClassName];
 			[q whereKey:kParseObjectID equalTo:ID];
 			q.cachePolicy = kPFCachePolicyCacheElseNetwork;
+			q.maxCacheAge = 60*60;
 			
 			[entity.relationshipsByName enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *obj, BOOL *stop) {
 				if (obj.isToMany && !obj.inverseRelationship) {
@@ -783,7 +784,7 @@ NSManagedObjectContext *mainContext;
 			}
 			
 			if (object) {
-				//save to queue
+				//save to cache
 				[[EWDataStore sharedInstance].serverObjectPool setObject:object forKey:ID];
 			}
 			

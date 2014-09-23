@@ -370,6 +370,7 @@ static const NSArray *pref;
 {
     return 1;
 }
+
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     if ([selectedCellTitle isEqualToString:@"Morning tone"]) {
@@ -388,6 +389,7 @@ static const NSArray *pref;
     }
     
 }
+
 - (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view{
     
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, pickerView.frame.size.width, 44)];

@@ -135,7 +135,7 @@ typedef void (^EWSavingCallback)(void);
 
 + (PFObject *)getCachedParseObjectForID:(NSString *)parseID;
 + (void)setCachedParseObject:(PFObject *)PO;
-+ (PFObject *)getParseObjectWithClass:(NSString *)class WithID:(NSString *)ID withError:(NSError **)error;
++ (PFObject *)getParseObjectWithClass:(NSString *)class ID:(NSString *)ID error:(NSError **)error;
 
 @end
 
