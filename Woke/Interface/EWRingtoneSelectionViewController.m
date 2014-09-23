@@ -36,7 +36,7 @@
     [super viewDidLoad];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(OnDone)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(onDone)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -58,7 +58,7 @@
     
 }
 
-- (void)OnDone{
+- (void)onDone{
     [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
 }
 

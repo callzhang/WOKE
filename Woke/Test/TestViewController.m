@@ -310,7 +310,7 @@
             EWPerson *user3 = people[k];
             notice_newMedia.sender = user3.objectId;
             //4
-            notice_system.type = kNotificationTypeNotice;
+            notice_system.type = kNotificationTypeSystemNotice;
             notice_system.owner = me;
             NSDictionary *dic = @{@"title": @"Test system notice", @"content": @"This is a test notice. An alert show pop up if you tap me.", @"link": @"WokeAlarm.com"};
             notice_system.userInfo = dic;

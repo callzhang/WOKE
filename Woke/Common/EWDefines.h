@@ -163,7 +163,7 @@
 #define kNotificationTypeFriendRequest      @"friendship_request"
 #define kNotificationTypeFriendAccepted     @"friendship_accepted"
 #define kNotificationTypeTimer              @"timer"//not used for now
-#define kNotificationTypeNotice             @"notice"
+#define kNotificationTypeSystemNotice             @"notice"
 #define kNotificationTypeNextTaskHasMedia   @"task_has_media"
 
 //Navgation Controller

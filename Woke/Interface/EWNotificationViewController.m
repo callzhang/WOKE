@@ -20,7 +20,6 @@
 @interface EWNotificationViewController (){
     NSMutableArray *notifications;
     UIActivityIndicatorView *loading;
-    NSMutableDictionary *cellHeights;
 }
 
 @end
@@ -31,8 +30,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     
     //notification
@@ -40,7 +38,6 @@
     
     // Data source
     notifications = [[EWNotificationManager allNotifications] mutableCopy];
-    cellHeights = [NSMutableDictionary new];
     
     //tableview
     self.tableView.delegate = self;
@@ -54,13 +51,12 @@
     [self.tableView registerNib:nib forCellReuseIdentifier:kNotificationCellIdentifier];
     
     //toolbar
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(OnDone)];
+    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(onDone)];
 
     loading = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
     loading.hidesWhenStopped = YES;
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithCustomView:loading];
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:doneBtn rightItem:refreshBtn];
-    
     
      NSInteger nUnread = [EWNotificationManager myNotifications].count;
     if (nUnread != 0){
@@ -84,22 +80,12 @@
     [self.tableView reloadData];
 }
 
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - UI event
-- (void)OnDone{
+- (void)onDone{
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
-
 - (void)refresh{
-    //[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    
     [loading startAnimating];
     
     PFQuery *query = [PFQuery queryWithClassName:@"EWNotification"];
@@ -116,37 +102,34 @@
         
         //[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         [loading stopAnimating];
-        
     }];
-    
 }
 
 #pragma mark - TableView
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     EWNotificationCell *cell = [tableView dequeueReusableCellWithIdentifier:kNotificationCellIdentifier];
     
     EWNotification *notification = notifications[indexPath.row];
-    cell.notification = notification;
+    if (cell.notification != notification) {
+        cell.notification = notification;
+    }
     
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     EWNotification *notification = notifications[indexPath.row];
     NSString *type = notification.type;
-    if ([type isEqualToString:kNotificationTypeNotice]) {
+    if ([type isEqualToString:kNotificationTypeSystemNotice]) {
         EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
-        [cell setSize];
         return cell.height;
     }
-    //else
-    return 70;
+    else {
+        return 70;
+    }
 }
 
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    
-    
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     EWNotification *notice = notifications[indexPath.row];
     [EWNotificationManager handleNotification:notice.objectId];
     
@@ -155,9 +138,8 @@
     });
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return notifications.count;
-    
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
@@ -165,31 +147,23 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-    
     cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0];
-    [(EWNotificationCell *)cell setSize];
-
 }
 
--(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
+-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
     view.backgroundColor = [UIColor clearColor];
     return view;
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
-    
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        
         EWNotification *notice = notifications[indexPath.row];
         [notifications removeObject:notice];
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         
         [EWNotificationManager deleteNotification:notice];
-        
-        cellHeights = [NSMutableDictionary new];
     }
 }
 
