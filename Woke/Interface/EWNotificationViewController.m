@@ -132,17 +132,11 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSNumber *h = cellHeights[indexPath];
-    if (h) {
-        return h.floatValue;
-    }
-    
     EWNotification *notification = notifications[indexPath.row];
     NSString *type = notification.type;
     if ([type isEqualToString:kNotificationTypeNotice]) {
         EWNotificationCell *cell = (EWNotificationCell*)[self tableView:_tableView cellForRowAtIndexPath:indexPath];
-//        [cell setSize];
-        cellHeights[indexPath] = @(cell.height);
+        [cell setSize];
         return cell.height;
     }
     //else

@@ -177,7 +177,7 @@
     if (!task) {
         PFObject *PO = [EWDataStore getCachedParseObjectForID:taskID];
         if (!PO) {
-            PO = [EWDataStore getParseObjectWithClass:@"EWTaskItem" WithID:taskID withError:nil];
+            PO = [EWDataStore getParseObjectWithClass:@"EWTaskItem" ID:taskID error:nil];
         }
         
         task = (EWTaskItem *)[PO managedObjectInContext:nil];

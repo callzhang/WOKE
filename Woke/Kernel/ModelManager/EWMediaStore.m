@@ -106,7 +106,7 @@
     EWMediaItem *media = [EWMediaItem MR_findFirstByAttribute:kParseObjectID withValue:mediaID];
     if (!media) {
         //get from server
-        PFObject *object = [EWDataStore getParseObjectWithClass:@"EWMediaItem" WithID:mediaID withError:NULL];
+        PFObject *object = [EWDataStore getParseObjectWithClass:@"EWMediaItem" ID:mediaID error:NULL];
         media = (EWMediaItem *)[object managedObjectInContext:nil];
         [media refresh];
     }

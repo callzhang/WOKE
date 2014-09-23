@@ -217,7 +217,7 @@
     EWNotification *notification = [EWNotification findFirstByAttribute:kParseObjectID withValue:notificationID];
     if (!notification) {
         //get from server
-        PFObject *PO = [EWDataStore getParseObjectWithClass:@"EWNotification" WithID:notificationID withError:NULL];
+        PFObject *PO = [EWDataStore getParseObjectWithClass:@"EWNotification" ID:notificationID error:NULL];
         notification = (EWNotification *)[PO managedObjectInContext:mainContext];
         [notification refresh];
     }

@@ -86,7 +86,7 @@ EWPerson *me;
             user = (PFUser *)[EWDataStore getCachedParseObjectForID:ID];
             if (!user) {
                 NSError *err;
-                user = (PFUser *)[EWDataStore getParseObjectWithClass:@"EWPerson" WithID:ID withError:&err];
+                user = (PFUser *)[EWDataStore getParseObjectWithClass:@"EWPerson" ID:ID error:&err];
                 if (err || !user) {
                     NSLog(@"Failed to find user with ID %@. Reason:%@", ID, err.description);
                     return nil;
