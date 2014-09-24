@@ -1451,13 +1451,7 @@ NSManagedObjectContext *mainContext;
 	//then iterate all relations
 	NSDictionary *relations = self.entity.relationshipsByName;
 	[relations enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSRelationshipDescription *description, BOOL *stop) {
-		if ([description.destinationEntity.name isEqualToString:kUserClass]) {
-			//return;
-		}
-		
-		
 		if ([description isToMany]) {
-			
 			NSSet *relatedMOs = [self valueForKey:key];
 			
 			for (NSManagedObject *MO in relatedMOs) {
@@ -1824,11 +1818,19 @@ NSManagedObjectContext *mainContext;
 				//TO-One relation
 				NSManagedObject *relatedMO = [managedObject valueForKey:key];
 				NSString *parseID = relatedMO.serverID;
+				PFObject *relatedPO ;//TODO: test if we can use empty PO
 				if (parseID) {
-					PFObject *relatedPO = [relatedMO getParseObjectWithError:NULL];//TODO: test if we can use empty PO
-					[self setObject:relatedPO forKey:key];
+					NSError *error;
+					relatedPO = [relatedMO getParseObjectWithError:&error];
+					if (error) {
+						DDLogError(@"error: %@", error);
+					}
+					else {
+						[self setObject:relatedPO forKey:key];
+					}
 					//NSLog(@"+++> To-one relation on PO %@(%@)->%@(%@) added when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, relatedPO.objectId);
-				}else{
+				}
+				if (!parseID || !relatedPO){
 					//MO doesn't have parse id, save to parse
 					__block PFObject *blockObject = self;
 					//set up a saving block

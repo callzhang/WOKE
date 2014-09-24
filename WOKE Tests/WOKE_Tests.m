@@ -10,6 +10,10 @@
 #define EXP_SHORTHAND YES
 #import "Expecta.h"
 #import "OCMock.h"
+#import "EWPerson.h"
+#import "CoreData+MagicalRecord.h"
+#import "EWDataStore.h"
+#import "EWPersonStore.h"
 
 @interface WOKE_Tests : XCTestCase
 
@@ -21,6 +25,7 @@
 {
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    [Expecta setAsynchronousTestTimeout:3];
 }
 
 - (void)tearDown
@@ -41,6 +46,21 @@
 //    expect(response).will.beNil();
 //    expect(error).willNot.beNil();
 //    expect(error).will.beKindOf([NSError class]);
+}
+
+- (void)testUploadMO {
+    NSArray *allPerson = [EWPerson MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [me.friends valueForKey:kParseObjectID]]];
+    
+    EWPerson *friend = allPerson.firstObject;
+    
+    [me addFriendsObject:friend];
+    
+    __block PFUser *aUser;
+    [EWDataStore saveWithCompletion:^{
+        NSLog(@"save");
+        aUser = (PFUser *)me.parseObject;
+    }];
+    expect([[aUser[@"friends"] valueForKey:kParseObjectID] containsObject:friend.serverID]).after(13).to.beNil();
 }
 
 @end

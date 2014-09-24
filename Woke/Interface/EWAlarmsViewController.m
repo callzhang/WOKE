@@ -234,7 +234,8 @@
     fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                           managedObjectContext:mainContext
                                                             sectionNameKeyPath:nil
-                                                                     cacheName:@"com.wokealarm.fetchControllerCache"];
+                                                                     cacheName:nil];
+//                                                                     cacheName:@"com.wokealarm.fetchControllerCache"];
     fetchController.delegate = self;
     request.fetchLimit = 100;
     
