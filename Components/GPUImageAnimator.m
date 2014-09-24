@@ -121,7 +121,7 @@ static const float initialDownSampling = 2;
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.zoomFilter];
 		//[self.zoomFilter addTarget:self.blendFilter];
-		[self triggerRenderOfNextFrame];
+		[self updateFrame:nil];
         
         //trigger GPU rendering
         self.displayLink.paused = NO;
@@ -176,29 +176,29 @@ static const float initialDownSampling = 2;
 - (void)updateFrame:(CADisplayLink*)link
 {
     [self updateProgress:link];
-	//[self.zoomFilter setAffineTransform:CGAffineTransformMakeScale(1 - 0.05 * self.progress, 1 - 0.05 * self.progress)];
+	//[self.zoomFilter setAffineTransform:CGAffineTransformMakeScale(1 - 0.05 * _progress, 1 - 0.05 * _progress)];
 	[self.brightnessFilter setRgbCompositeControlPoints:@[[NSValue valueWithCGPoint:CGPointMake(0.0, 0.0)],
-												  [NSValue valueWithCGPoint:CGPointMake(0.5, 0.5 - 0.3 * self.progress)],
-												  [NSValue valueWithCGPoint:CGPointMake(1.0, 1.0 - 0.6 * self.progress)]]];
-	self.blurFilter.saturation = 1 + 0.3 * self.progress;
-    self.blurFilter.downsampling = initialDownSampling + self.progress * 4;
-    self.blurFilter.blurRadiusInPixels = 0.1 + self.progress * 8;
+												  [NSValue valueWithCGPoint:CGPointMake(0.5, 0.5 - 0.3 * _progress)],
+												  [NSValue valueWithCGPoint:CGPointMake(1.0, 1.0 - 0.6 * _progress)]]];
+	self.blurFilter.saturation = 1 + 0.3 * _progress;
+    self.blurFilter.downsampling = initialDownSampling + _progress * 4;
+    self.blurFilter.blurRadiusInPixels = 0.1 + _progress * 8;
     [self triggerRenderOfNextFrame];
     
 	NSAssert(!self.interactive, @"Interactive transition is not supported");
 	
     if ((self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent)) {
 		UIView *fromView = [self.context viewControllerForKey:UITransitionContextFromViewControllerKey].view;
-		if (fromView.alpha != 0) {
+		if (_progress>0) {
 			fromView.alpha = 0;
 		}
 			
-		if (self.progress == 1) {
+		if (_progress == 1) {
 			self.displayLink.paused = YES;
 			[self.context completeTransition:YES];
 		}
 		
-    }else if (self.progress == 0 && (self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss)){
+    }else if (_progress == 0 && (self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss)){
         
         //=======> dismiss animation ended
         
@@ -238,9 +238,9 @@ static const float initialDownSampling = 2;
 	
     
     if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
-        self.progress = progress;
+        _progress = progress;
     }else if (self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
-        self.progress = 1- progress;
+        _progress = 1- progress;
     }
 }
 
