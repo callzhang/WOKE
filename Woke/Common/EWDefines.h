@@ -15,7 +15,7 @@
 
 #define kAppName                        @"Woke"
 #define kAppVersion                     @"0.8.0"
-#define BACKGROUND_TEST                 NO
+#define BACKGROUND_TEST                 YES
 
 
 #define kCustomWhite                    EWSTR2COLOR(@"#F5F5F5")
