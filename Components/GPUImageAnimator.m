@@ -12,9 +12,10 @@
 #import "GPUImagePixellateFilter.h"
 #import "GPUImageView.h"
 #import "UIViewController+Blur.h"
-#import "GPUImageGammaFilter.h"
-
-#import "EWAppDelegate.h"
+#import "GPUImageTransformFilter.h"
+#import "GPUImageToneCurveFilter.h"
+#import "GPUImageNormalBlendFilter.h"
+//#import "EWAppDelegate.h"
 
 
 static const float duration = 0.3;
@@ -25,9 +26,12 @@ static const float initialDownSampling = 2;
 @interface GPUImageAnimator ()
 
 @property (nonatomic, strong) GPUImagePicture* blurImage;
+@property (nonatomic, strong) GPUImageTransformFilter *zoomFilter;
 @property (nonatomic, strong) GPUImageiOSBlurFilter* blurFilter;
-@property (nonatomic, strong) GPUImageGammaFilter* brightnessFilter;
+@property (nonatomic, strong) GPUImageToneCurveFilter* brightnessFilter;
 @property (nonatomic, strong) GPUImageView* imageView;
+//@property (nonatomic, strong) GPUImageNormalBlendFilter *blendFilter;
+//@property (nonatomic, strong) GPUImagePicture *baseImage;
 @property (nonatomic, strong) id <UIViewControllerContextTransitioning> context;
 @property (nonatomic) NSTimeInterval startTime;
 @property (nonatomic, strong) CADisplayLink* displayLink;
@@ -47,15 +51,14 @@ static const float initialDownSampling = 2;
 
 - (void)setup
 {
-    
+	//self.blendFilter = [[GPUImageNormalBlendFilter alloc] init];
+	self.zoomFilter = [[GPUImageTransformFilter alloc] init];
     self.blurFilter = [[GPUImageiOSBlurFilter alloc] init];
-    self.blurFilter.blurRadiusInPixels = 1;
     self.blurFilter.rangeReductionFactor = 0;
-    self.blurFilter.downsampling = initialDownSampling;
-    //[self.blurFilter addTarget:self.imageView];
-    
-    self.brightnessFilter = [GPUImageGammaFilter new];
-    self.brightnessFilter.gamma = 1;
+    self.brightnessFilter = [[GPUImageToneCurveFilter alloc] init];
+	
+	//[self.zoomFilter addTarget:self.blendFilter];
+	[self.zoomFilter addTarget:self.blurFilter];
     [self.blurFilter addTarget:self.brightnessFilter];
     
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateFrame:)];
@@ -111,8 +114,13 @@ static const float initialDownSampling = 2;
         
         //GPU image setup
         UIImage *fromViewImage = fromView.screenshot;
+//		_baseImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
+//		[_baseImage processImage];
+//		[_baseImage addTarget:self.blendFilter];
+//		
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
-        [self.blurImage addTarget:self.blurFilter];
+        [self.blurImage addTarget:self.zoomFilter];
+		//[self.zoomFilter addTarget:self.blendFilter];
 		[self triggerRenderOfNextFrame];
         
         //trigger GPU rendering
@@ -129,8 +137,12 @@ static const float initialDownSampling = 2;
     }else if(self.type == UINavigationControllerOperationPop || self.type == kModelViewDismiss){
 		//take a new screenshot and render the imageView
 		UIImage *toViewImage = toView.screenshot;
+//		_baseImage = [[GPUImagePicture alloc] initWithImage:toViewImage];
+//		[_baseImage processImage];
+//		[_baseImage addTarget:self.blendFilter];
 		self.blurImage = [[GPUImagePicture alloc] initWithImage:toViewImage];
-		[self.blurImage addTarget:self.blurFilter];
+		[self.blurImage addTarget:self.zoomFilter];
+		//[self.zoomFilter addTarget:self.blendFilter];
 		[self updateFrame:nil];
 		
         [UIView animateWithDuration:duration-delay animations:^{
@@ -164,10 +176,13 @@ static const float initialDownSampling = 2;
 - (void)updateFrame:(CADisplayLink*)link
 {
     [self updateProgress:link];
-    self.brightnessFilter.gamma = 1 + 1.2 * self.progress;
-    double downSampling = initialDownSampling + self.progress * 4;
-    self.blurFilter.downsampling = downSampling;
-    self.blurFilter.blurRadiusInPixels = 1+ self.progress * 8;
+	//[self.zoomFilter setAffineTransform:CGAffineTransformMakeScale(1 - 0.05 * self.progress, 1 - 0.05 * self.progress)];
+	[self.brightnessFilter setRgbCompositeControlPoints:@[[NSValue valueWithCGPoint:CGPointMake(0.0, 0.0)],
+												  [NSValue valueWithCGPoint:CGPointMake(0.5, 0.5 - 0.3 * self.progress)],
+												  [NSValue valueWithCGPoint:CGPointMake(1.0, 1.0 - 0.6 * self.progress)]]];
+	self.blurFilter.saturation = 1 + 0.3 * self.progress;
+    self.blurFilter.downsampling = initialDownSampling + self.progress * 4;
+    self.blurFilter.blurRadiusInPixels = 0.1 + self.progress * 8;
     [self triggerRenderOfNextFrame];
     
 	NSAssert(!self.interactive, @"Interactive transition is not supported");
