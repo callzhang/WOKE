@@ -48,6 +48,12 @@ typedef void (^EWSavingCallback)(void);
 @property NSMutableDictionary *changeRecords;
 @property BOOL isUploading;
 
+
+
+
++ (EWSync *)sharedInstance;
+- (void)setup;
+
 #pragma mark - Connectivity
 + (BOOL)isReachable;
 
@@ -56,10 +62,6 @@ typedef void (^EWSavingCallback)(void);
 + (NSSet *) insertQueue;
 + (NSSet *) deleteQueue;
 + (NSSet *) workingQueue;//the working queue
-
-
-+ (EWDataStore *)sharedInstance;
-- (void)setup;
 
 #pragma mark - CoreData
 + (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context withID:(NSManagedObjectID *)objectID ;
