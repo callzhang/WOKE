@@ -179,7 +179,7 @@ static const float initialDownSampling = 2;
 	//[self.zoomFilter setAffineTransform:CGAffineTransformMakeScale(1 - 0.05 * _progress, 1 - 0.05 * _progress)];
 	[self.brightnessFilter setRgbCompositeControlPoints:@[[NSValue valueWithCGPoint:CGPointMake(0.0, 0.0)],
 												  [NSValue valueWithCGPoint:CGPointMake(0.5, 0.5 - 0.3 * _progress)],
-												  [NSValue valueWithCGPoint:CGPointMake(1.0, 1.0 - 0.6 * _progress)]]];
+												  [NSValue valueWithCGPoint:CGPointMake(1.0, 1.0 - 0.5 * _progress)]]];
 	self.blurFilter.saturation = 1 + 0.3 * _progress;
     self.blurFilter.downsampling = initialDownSampling + _progress * 4;
     self.blurFilter.blurRadiusInPixels = 0.1 + _progress * 8;
