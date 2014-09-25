@@ -88,7 +88,7 @@
     note.type = kNotificationTypeNextTaskHasMedia;
     note.userInfo = @{@"media": media.objectId};
     note.sender = media.author.objectId;
-    [EWDataStore save];
+    [EWSync save];
     return note;
 }
 
@@ -181,7 +181,7 @@
                                   otherButtonTitles:nil] show];
                 //complete task
                 task.completed = [NSDate date];
-                [EWDataStore save];
+                [EWSync save];
                 //completed task
                 [[EWNotificationManager sharedInstance] finishedNotification:notification];
             }
@@ -214,13 +214,7 @@
 
 + (EWNotification *)getNotificationByID:(NSString *)notificationID{
     
-    EWNotification *notification = [EWNotification findFirstByAttribute:kParseObjectID withValue:notificationID];
-    if (!notification) {
-        //get from server
-        PFObject *PO = [EWDataStore getParseObjectWithClass:@"EWNotification" ID:notificationID error:NULL];
-        notification = (EWNotification *)[PO managedObjectInContext:mainContext];
-        [notification refresh];
-    }
+    EWNotification *notification = [EWSync managedObjectWithClass:@"EWNotification" withID:notificationID];
     return notification;
 }
 
@@ -298,7 +292,7 @@
         //delete
         [EWNotificationManager deleteNotification:notice];
     }
-    [EWDataStore save];
+    [EWSync save];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCompleted object:notice];
     
     self.notification = nil;
@@ -307,7 +301,7 @@
 
 + (void)deleteNotification:(EWNotification *)notice{
     [notice.managedObjectContext deleteObject:notice];
-    [EWDataStore save];
+    [EWSync save];
     NSLog(@"Notification of type %@ deleted", notice.type);
     
 }

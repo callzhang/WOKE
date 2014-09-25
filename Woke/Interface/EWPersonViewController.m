@@ -752,7 +752,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         // delete original pic in array;
         [_photos removeObjectAtIndex:photoIndex];
         
-//        [EWDataStore save];
+//        [EWSync save];
         [photoBrowser.view showSuccessNotification:@"Success,Reopen To See"];
         
         return;
@@ -798,7 +798,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if (person.isMe) {
         // 结束时候保存一次
         me.images = _photos;
-        [EWDataStore save];
+        [EWSync save];
     }
 }
 
@@ -821,7 +821,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             [_photos addObject:fileUrl];
             
             me.images = _photos;
-            //        [EWDataStore save];
+            //        [EWSync save];
             
             [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
             
@@ -910,7 +910,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [_photos addObject:fileUrl];
         
         me.images = _photos;
-        [EWDataStore save];
+        [EWSync save];
         
         [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
         

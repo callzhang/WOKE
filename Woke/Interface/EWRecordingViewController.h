@@ -6,13 +6,14 @@
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
 
-#import "EWViewController.h"
+//#import "EWViewController.h"
 #import "AVManager.h"
 #import "UAProgressView.h"
 @class EWTaskItem;
 @class SCSiriWaveformView;
+@class EWPerson;
 
-@interface EWRecordingViewController : EWViewController<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface EWRecordingViewController : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (strong,nonatomic)     AVManager *manager;
 

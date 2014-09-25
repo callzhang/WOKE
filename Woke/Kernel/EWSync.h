@@ -10,34 +10,43 @@
 #import <CoreData/CoreData.h>
 #import <Parse/Parse.h>
 #import "Reachability.h"
-
+#import "NSManagedObject+EWSync.h"
+#import "PFObject+EWSync.h"
 
 extern NSManagedObjectContext *mainContext;
 typedef void (^EWSavingCallback)(void);
 
 
 
+#pragma mark - Sync parameters
+#define kServerTransformTypes               @{@"CLLocation": @"PFGeoPoint"} //localType: serverType
+#define kServerTransformClasses             @{@"EWPerson": @"_User"} //localClass: serverClass
+#define attributeUploadSkipped              @[kParseObjectID, kUpdatedDateKey, @"score"]
+//#define kUserClass                          @"EWPerson"
+//#define classSkipped                        @[@"EWPerson"]
+
+
 //Server update time
-#define kServerUpdateInterval            1800 //30 min
-#define kStalelessInterval               30
-#define kUploadLag                       10
+#define kStalelessInterval                  30
+#define kUploadLag                          10
+#define kCacheLifeTime                      60*60 //1hr
 
 //attribute stored on ManagedObject to identify corresponding PFObject on server
-#define kParseObjectID          @"objectId"
+#define kParseObjectID                      @"objectId"
 //Attribute stored on PFObject to identify corresponding ManagedObject on SQLite, not used
-#define kManagedObjectID        @"objectID"
+#define kManagedObjectID                    @"objectID"
 //The timestamp when MO gets updated from PO
-#define kUpdatedDateKey         @"updatedAt"
+#define kUpdatedDateKey                     @"updatedAt"
 //Not used
-#define kCreatedDateKey         @"createdAt"
+#define kCreatedDateKey                     @"createdAt"
 //Parse update queue
-#define kParseQueueInsert       @"parse_queue_insert"
-#define kParseQueueUpdate       @"parse_queue_update"
-#define kParseQueueDelete       @"parse_queue_delete"
-#define kParseQueueWorking      @"parse_queue_working"
-#define kParseQueueRefresh      @"parse_queue_refresh"//queue for refresh
-#define kUserID                 @"user_object_id"
-#define kUsername               @"username"
+#define kParseQueueInsert                   @"parse_queue_insert"
+#define kParseQueueUpdate                   @"parse_queue_update"
+#define kParseQueueDelete                   @"parse_queue_delete"
+#define kParseQueueWorking                  @"parse_queue_working"
+#define kParseQueueRefresh                  @"parse_queue_refresh"//queue for refresh
+#define kUserID                             @"user_object_id"
+#define kUsername                           @"username"
 
 
 
@@ -46,6 +55,8 @@ typedef void (^EWSavingCallback)(void);
 @property Reachability *reachability;
 @property NSMutableDictionary *serverObjectPool;
 @property NSMutableDictionary *changeRecords;
+@property NSMutableArray *saveToLocalItems;
+@property NSMutableArray *deleteToLocalItems;
 @property BOOL isUploading;
 
 
@@ -56,19 +67,6 @@ typedef void (^EWSavingCallback)(void);
 
 #pragma mark - Connectivity
 + (BOOL)isReachable;
-
-#pragma mark - Queue
-+ (NSSet *) updateQueue;
-+ (NSSet *) insertQueue;
-+ (NSSet *) deleteQueue;
-+ (NSSet *) workingQueue;//the working queue
-
-#pragma mark - CoreData
-+ (NSManagedObject *)managedObjectInContext:(NSManagedObjectContext *)context withID:(NSManagedObjectID *)objectID ;
-//+ (NSManagedObjectContext *)mainContext;
-+ (BOOL)validateMO:(NSManagedObject *)mo;
-+ (BOOL)validateMO:(NSManagedObject *)mo andTryToFix:(BOOL)tryFix;
-+ (NSManagedObject *)getManagedObjectByStringID:(NSString *)stringID;
 
 #pragma mark - Parse Server methods
 /**
@@ -87,7 +85,7 @@ typedef void (^EWSavingCallback)(void);
 /*
  Resume uploading at startup.
  **/
-+ (void)resumeUploadToServer;
+- (void)resumeUploadToServer;
 
 /**
  *Update or Insert PFObject according to given ManagedObject
@@ -102,7 +100,7 @@ typedef void (^EWSavingCallback)(void);
  *
  *5. Perform save callback block for this PO
  */
-+ (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject;
+- (void)updateParseObjectFromManagedObject:(NSManagedObject *)managedObject;
 
 /**
  Find or delete ManagedObject by Entity and by Server Object
@@ -113,29 +111,65 @@ typedef void (^EWSavingCallback)(void);
 /**
  Delete PFObject in server
  */
-+ (void)deleteParseObject:(PFObject *)parseObject;
+- (void)deleteParseObject:(PFObject *)parseObject;
 
 /**
  Perform save callback for managedObject
  */
-+ (void)performSaveCallbacksWithParseObject:(PFObject *)parseObject andManagedObjectID:(NSManagedObjectID *)managedObjectID;
+//- (void)performSaveCallbacksWithParseObject:(PFObject *)parseObject andManagedObjectID:(NSManagedObjectID *)managedObjectID;
 /**
  Access Global Save Callback dictionary and add blcok with key of ManagedObjectID
  */
-+ (void)addSaveCallback:(PFObjectResultBlock)callback forManagedObjectID:(NSManagedObjectID *)objectID;
+- (void)addSaveCallback:(PFObjectResultBlock)callback forManagedObjectID:(NSManagedObjectID *)objectID;
+
+
+#pragma mark - Queue
+//update queue
+- (NSSet *)updateQueue;
+- (void)appendUpdateQueue:(NSManagedObject *)mo;
+- (void)removeObjectFromUpdateQueue:(NSManagedObject *)mo;
+//insert queue
+- (NSSet *)insertQueue;
+- (void)appendInsertQueue:(NSManagedObject *)mo;
+- (void)removeObjectFromInsertQueue:(NSManagedObject *)mo;
+//uploading queue
+- (NSSet *)workingQueue;
+- (void)appendObjectToWorkingQueue:(NSManagedObject *)mo;
+- (void)removeObjectFromWorkingQueue:(NSManagedObject *)mo;
+//delete queue
+- (NSSet *) deleteQueue;
+- (void)appendObjectToDeleteQueue:(PFObject *)object;
+- (void)removeObjectFromDeleteQueue:(PFObject *)object;
+//worker
+- (NSSet *)getObjectFromQueue:(NSString *)queue;
+- (void)appendObject:(NSManagedObject *)mo toQueue:(NSString *)queue;
+- (BOOL)contains:(NSManagedObject *)mo inQueue:(NSString *)queue;
+
+#pragma mark - CoreData
++ (NSManagedObject *)managedObjectWithClass:(NSString *)className withID:(NSString *)objectID;
++ (BOOL)validateMO:(NSManagedObject *)mo;
++ (BOOL)validateMO:(NSManagedObject *)mo andTryToFix:(BOOL)tryFix;
 
 #pragma mark - Parse helper methods
-
-+ (PFObject *)getCachedParseObjectForID:(NSString *)parseID;
-+ (void)setCachedParseObject:(PFObject *)PO;
-+ (PFObject *)getParseObjectWithClass:(NSString *)class ID:(NSString *)ID error:(NSError **)error;
+//PO cache
++ (NSArray *)findServerObjectWithQuery:(PFQuery *)query;
++ (NSArray *)findServerObjectWithQuery:(PFQuery *)query error:(NSError **)error;
++ (void)findServerObjectInBackgroundWithQuery:(PFQuery *)query completion:(PFArrayResultBlock)block;
+//- (PFObject *)getCachedParseObjectForID:(NSString *)parseID;
+//- (void)setCachedParseObject:(PFObject *)PO;
+/**
+ 1. Try to get PO from cache
+ 2. If not, then request a network call with query cache life of 1 hour
+ */
+- (PFObject *)getParseObjectWithClass:(NSString *)class ID:(NSString *)ID error:(NSError **)error;
 
 @end
 
 
 
 
-@interface NSString (Parse)
+@interface NSString (EWSync)
 - (NSString *)serverType;
+- (NSString *)serverClass;
 - (BOOL)skipUpload;
 @end

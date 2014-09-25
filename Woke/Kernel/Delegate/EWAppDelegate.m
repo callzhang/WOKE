@@ -122,7 +122,7 @@ UIViewController *rootViewController;
     NSLog(@"Entered background with active time left: %f", application.backgroundTimeRemaining>999?999:application.backgroundTimeRemaining);
     
     //save core data
-    [EWDataStore save];
+    [EWSync save];
     
     //clean badge
     application.applicationIconBadgeNumber = 0;

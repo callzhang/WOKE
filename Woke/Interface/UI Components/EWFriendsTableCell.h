@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class EWPerson;
 
 @interface EWFriendsTableCell : UITableViewCell
 @property (strong, nonatomic) IBOutlet UIImageView *proImageView;

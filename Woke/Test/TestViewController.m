@@ -254,13 +254,13 @@
                     //buzz
                     EWMediaItem *media = [[EWMediaStore sharedInstance] createBuzzMedia];
                     [task addMediasObject:media];
-                    [EWDataStore save];
+                    [EWSync save];
                 }else{
                     //voice
                     EWMediaItem *media = [[EWMediaStore sharedInstance] getWokeVoice];
                     //[task addMediasObject:media];
                     [media addTasksObject:task];
-                    [EWDataStore save];
+                    [EWSync save];
                 }
                 
             }
@@ -316,7 +316,7 @@
             notice_system.userInfo = dic;
             notice_system.sender = nil;
             //save
-            [EWDataStore save];
+            [EWSync save];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
             [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
             break;

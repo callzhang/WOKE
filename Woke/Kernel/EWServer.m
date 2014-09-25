@@ -90,7 +90,7 @@
         NSString *sound = me.preference[@"buzzSound"]?:@"default";
         buzz.buzzKey = sound;
         
-        [EWDataStore saveWithCompletion:^{
+        [EWSync saveWithCompletion:^{
             NSParameterAssert(buzz.objectId);
             
             //push payload
@@ -175,7 +175,7 @@
     }];
     
     //save
-    [EWDataStore save];
+    [EWSync save];
     
 }
 

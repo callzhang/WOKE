@@ -17,6 +17,7 @@
 #import "EWUIUtil.h"
 #import "EWTaskStore.h"
 #import "EWDefines.h"
+#import "UAProgressView.h"
 //object
 #import "EWTaskItem.h"
 #import "EWTaskStore.h"
@@ -352,7 +353,7 @@
         
         
         //save
-        [EWDataStore saveWithCompletion:^{
+        [EWSync saveWithCompletion:^{
             
             //set ACL
             PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];

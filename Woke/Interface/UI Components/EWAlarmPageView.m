@@ -98,7 +98,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:alarm userInfo:nil];
     NSLog(@"Task on %@ changed to %@", task.time.weekday, (sender.selected?@"ON":@"OFF"));
     
-    [EWDataStore save];
+    [EWSync save];
 }
 
 - (IBAction)playMessage:(id)sender {

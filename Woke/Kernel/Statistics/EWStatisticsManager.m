@@ -48,7 +48,7 @@
     
     cache[kStatsCache] = stats;
     self.person.cachedInfo = cache;
-    [EWDataStore save];
+    [EWSync save];
 }
 
 - (NSNumber *)aveWakingLength{
@@ -274,7 +274,7 @@
     cache[kActivitiesCache] = [activity copy];
     me.cachedInfo = [cache copy];
     
-    [EWDataStore save];
+    [EWSync save];
 }
 
 @end

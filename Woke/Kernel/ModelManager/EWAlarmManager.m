@@ -134,17 +134,16 @@
     BOOL hasChange = NO;
     
     //check from server for alarm with owner but lost relation
-    if (alarms.count != 7 && [EWDataStore isReachable]) {
+    if (alarms.count != 7 && [EWSync isReachable]) {
         //cannot check alarm for myself, which will cause a checking/schedule cycle
         
         NSLog(@"Alarm for me is less than 7, fetch from server!");
         PFQuery *alarmQuery = [PFQuery queryWithClassName:@"EWAlarmItem"];
         [alarmQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
         [alarmQuery whereKey:kParseObjectID notContainedIn:[alarms valueForKey:kParseObjectID]];
-        NSArray *objects = [alarmQuery findObjects];
+        NSArray *objects = [EWSync findServerObjectWithQuery:alarmQuery error:NULL];
         
         for (PFObject *a in objects) {
-            [EWDataStore setCachedParseObject:a];
             EWAlarmItem *alarm = (EWAlarmItem *)[a managedObjectInContext:mainContext];;
             [alarm refresh];
             alarm.owner = me;
@@ -225,7 +224,7 @@
     if (hasChange) {
         //notification
         NSLog(@"Saving new alarms");
-        [EWDataStore save];
+        [EWSync save];
         [self setSavedAlarmTimes];
         
         //notification
@@ -245,7 +244,7 @@
 - (void)removeAlarm:(EWAlarmItem *)alarm{
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:nil];
     [alarm.managedObjectContext deleteObject:alarm];
-    [EWDataStore save];
+    [EWSync save];
 }
 
 - (void)deleteAllAlarms{

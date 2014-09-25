@@ -8,7 +8,7 @@
 
 #import <CoreData/CoreData.h>
 
-@interface NSManagedObject(Parse)
+@interface NSManagedObject(EWSync)
 /**
  Update ManagedObject from correspoinding Server Object
  
@@ -29,10 +29,6 @@
  Get PO only
  */
 - (PFObject *)getParseObjectWithError:(NSError **)error;
-/**
- Create a parse object
- */
-- (void)createParseObjectWithCompletion:(void (^)(void))block;
 
 /**
  Refresh ManagedObject value from server in background
@@ -106,9 +102,7 @@
 //Parse objectId
 - (NSString *)serverID;
 
-@end
-
-
-@interface NSEntityDescription (EWSync)
 - (NSString *)serverClassName;
+
 @end
+
