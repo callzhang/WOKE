@@ -30,5 +30,4 @@
 void EWLogInit();
 void EWLog(NSString *format,...);
 
-+ (NSArray *)readContactsEmailsFromAddressBooks;
 @end

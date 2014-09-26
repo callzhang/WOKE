@@ -174,6 +174,12 @@
 #define COCOAPODS_VERSION_MINOR_SVProgressHUD 0
 #define COCOAPODS_VERSION_PATCH_SVProgressHUD 0
 
+// TestFlightLogger
+#define COCOAPODS_POD_AVAILABLE_TestFlightLogger
+#define COCOAPODS_VERSION_MAJOR_TestFlightLogger 0
+#define COCOAPODS_VERSION_MINOR_TestFlightLogger 0
+#define COCOAPODS_VERSION_PATCH_TestFlightLogger 3
+
 // TestFlightSDK
 #define COCOAPODS_POD_AVAILABLE_TestFlightSDK
 #define COCOAPODS_VERSION_MAJOR_TestFlightSDK 3

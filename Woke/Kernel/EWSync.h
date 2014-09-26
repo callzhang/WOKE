@@ -151,7 +151,7 @@ typedef void (^EWSavingCallback)(void);
 + (BOOL)validateMO:(NSManagedObject *)mo andTryToFix:(BOOL)tryFix;
 
 #pragma mark - Parse helper methods
-//PO cache
+//PO query
 + (NSArray *)findServerObjectWithQuery:(PFQuery *)query;
 + (NSArray *)findServerObjectWithQuery:(PFQuery *)query error:(NSError **)error;
 + (void)findServerObjectInBackgroundWithQuery:(PFQuery *)query completion:(PFArrayResultBlock)block;

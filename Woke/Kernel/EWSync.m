@@ -886,7 +886,7 @@ NSManagedObjectContext *mainContext;
             }];
 			
 			//find on server
-			[EWSync findServerObjectWithQuery:q];
+			object = [[EWSync findServerObjectWithQuery:q] firstObject];
 
         }
         

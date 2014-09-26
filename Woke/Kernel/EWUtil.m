@@ -11,6 +11,7 @@
 #import <AdSupport/ASIdentifierManager.h>
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
+#import "TestFlightLogger.h"
 
 //static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
@@ -169,12 +170,13 @@ void EWLog(NSString *format, ...){
 void EWLogInit(){
 #ifdef DEBUG
     [DDLog addLogger:[DDASLLogger sharedInstance]];
+    
     DDTTYLogger *log = [DDTTYLogger sharedInstance];
     [DDLog addLogger:log];
+    
     DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
     fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
     fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
-    
     [DDLog addLogger:fileLogger];
     
     // we also enable colors in Xcode debug console
