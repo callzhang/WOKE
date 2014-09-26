@@ -91,7 +91,7 @@
     PFQuery *query = [PFQuery queryWithClassName:@"EWNotification"];
     [query whereKey:kParseObjectID notContainedIn:[me.notifications valueForKey:kParseObjectID]];
     [query whereKey:@"owner" equalTo:[PFUser currentUser]];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+    [EWSync findServerObjectInBackgroundWithQuery:query completion:^(NSArray *objects, NSError *error) {
         for (PFObject *PO in objects) {
             EWNotification *notification = (EWNotification *)[PO managedObjectInContext:mainContext];
             NSLog(@"Found new notification %@(%@)", notification.type, notification.objectId);

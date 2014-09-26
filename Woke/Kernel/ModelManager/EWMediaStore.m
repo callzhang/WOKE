@@ -13,7 +13,6 @@
 #import "EWTaskStore.h"
 #import "EWTaskItem.h"
 #import "EWUserManagement.h"
-#import "EWDataStore.h"
 #import "EWNotificationManager.h"
 
 @implementation EWMediaStore
@@ -63,7 +62,7 @@
     media.message = @"This is a test voice tone";
     media.type = kMediaTypeVoice;
     
-    [EWDataStore save];
+    [EWSync save];
     
     return media;
 }
@@ -76,9 +75,8 @@
 #else
     [q whereKey:kParseObjectID notContainedIn:mediasFromWoke];
 #endif
-    PFObject *voice = [q getFirstObject];
+    PFObject *voice = [[EWSync findServerObjectWithQuery:q] firstObject];
     if (voice) {
-        [EWDataStore setCachedParseObject:voice];
         EWMediaItem *media = (EWMediaItem *)[voice managedObjectInContext:nil];
         [media refresh];
         //save
@@ -87,7 +85,7 @@
         [voices addObject:media.objectId];
         [cache setObject:voices forKey:kWokeVoiceReceived];
         me.cachedInfo = [cache copy];
-        [EWDataStore save];
+        [EWSync save];
         
         return media;
     }
@@ -103,13 +101,7 @@
 
 #pragma mark - SEARCH
 - (EWMediaItem *)getMediaByID:(NSString *)mediaID{
-    EWMediaItem *media = [EWMediaItem MR_findFirstByAttribute:kParseObjectID withValue:mediaID];
-    if (!media) {
-        //get from server
-        PFObject *object = [EWDataStore getParseObjectWithClass:@"EWMediaItem" ID:mediaID error:NULL];
-        media = (EWMediaItem *)[object managedObjectInContext:nil];
-        [media refresh];
-    }
+    EWMediaItem *media = (EWMediaItem *)[EWSync managedObjectWithClass:@"EWMediaItem" withID:mediaID];
     return media;
 }
 
@@ -138,7 +130,7 @@
 - (void)deleteMedia:(EWMediaItem *)mi{
 
     [mi.managedObjectContext deleteObject:mi];
-    [EWDataStore save];
+    [EWSync save];
 }
 
 
@@ -149,7 +141,7 @@
     for (EWMediaItem *m in medias) {
         [m.managedObjectContext deleteObject:m];
     }
-    [EWDataStore save];
+    [EWSync save];
 #endif
 }
 
@@ -179,9 +171,8 @@
     [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
     //NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
     //[query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
-    NSArray *mediaPOs = [query findObjects];
+    NSArray *mediaPOs = [EWSync findServerObjectWithQuery:query];
     for (PFObject *po in mediaPOs) {
-        [EWDataStore setCachedParseObject:po];
         EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:context];
         [mo refresh];//save to local marked
         //relationship

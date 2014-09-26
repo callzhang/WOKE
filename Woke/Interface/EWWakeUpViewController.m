@@ -351,7 +351,7 @@
             [[EWMediaStore sharedInstance] deleteMedia:mi];
         }
         [task removeMediasObject:mi];
-        [EWDataStore save];
+        [EWSync save];
         
         
         //update UI

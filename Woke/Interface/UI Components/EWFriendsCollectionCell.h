@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class EWPerson;
 
 @interface EWFriendsCollectionCell : UICollectionViewCell
 @property UIImageView *headImageView;

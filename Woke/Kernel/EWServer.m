@@ -90,7 +90,7 @@
         NSString *sound = me.preference[@"buzzSound"]?:@"default";
         buzz.buzzKey = sound;
         
-        [EWDataStore saveWithCompletion:^{
+        [EWSync saveWithCompletion:^{
             NSParameterAssert(buzz.objectId);
             
             //push payload
@@ -175,7 +175,7 @@
     }];
     
     //save
-    [EWDataStore save];
+    [EWSync save];
     
 }
 
@@ -246,9 +246,9 @@
 {
     PFQuery *q = [PFQuery queryWithClassName:@"User"];
     
-    [q whereKey:@"email" containedIn:[EWUtil readContactsEmailsFromAddressBooks]];
+    //[q whereKey:@"email" containedIn:[EWUtil readContactsEmailsFromAddressBooks]];
     
-    [q findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+    [EWSync findServerObjectInBackgroundWithQuery:q completion:^(NSArray *objects, NSError *error) {
         if (!error) {
             
             // push  notification;

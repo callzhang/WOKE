@@ -152,7 +152,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         }
         
         //save
-        [EWDataStore save];
+        [EWSync save];
     }
     
     if (hasChanges) {

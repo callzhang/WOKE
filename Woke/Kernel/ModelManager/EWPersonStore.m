@@ -73,37 +73,15 @@ EWPerson *me;
 
 -(EWPerson *)getPersonByServerID:(NSString *)ID{
     NSParameterAssert([NSThread isMainThread]);
-    //ID is username
     if(!ID) return nil;
-    EWPerson *person = [EWPerson findFirstByAttribute:kParseObjectID withValue:ID];
+    EWPerson *person = (EWPerson *)[EWSync managedObjectWithClass:@"EWPerson" withID:ID];
     
     if (!person){
-        //First find user on server
-        PFUser *user;
+        //only MO create for me
         if ([[PFUser currentUser].objectId isEqualToString:ID]) {
-            user = [PFUser currentUser];
-        }else{
-            user = (PFUser *)[EWDataStore getCachedParseObjectForID:ID];
-            if (!user) {
-                NSError *err;
-                user = (PFUser *)[EWDataStore getParseObjectWithClass:@"EWPerson" ID:ID error:&err];
-                if (err || !user) {
-                    NSLog(@"Failed to find user with ID %@. Reason:%@", ID, err.description);
-                    return nil;
-                }
-            }
-            
-        }
-        
-        
-        if (user.isNew) {
-            person = [self createPersonWithParseObject:user];
+            person = [self createPersonWithParseObject:[PFUser currentUser]];
             NSLog(@"New user %@ data has CREATED", person.name);
-        }else{
-            person = (EWPerson *)[user managedObjectInContext:mainContext];
-            NSLog(@"Person %@ created from PO", user[@"name"]);
         }
-        
     }
     
     return person;
@@ -218,7 +196,7 @@ EWPerson *me;
                                     error:&error];
     
     if (error && list.count == 0) {
-        NSLog(@"*** Failed to get friends list: %@", error.description);
+        NSLog(@"*** Failed to get relavent user list: %@", error.description);
         //get cached person
         error = nil;
         list = localMe.cachedInfo[kEveryone];
@@ -235,23 +213,12 @@ EWPerson *me;
     PFQuery *query = [PFUser query];
     [query whereKey:kParseObjectID containedIn:list];
     [query includeKey:@"friends"];
-    NSArray *people = [query findObjects:&error];
+    NSArray *people = [EWSync findServerObjectWithQuery:query error:&error];
     
     if (error) {
         NSLog(@"*** Failed to fetch everyone: %@", error);
-        //try to get PO locally
-        NSMutableArray *localPeople = [NSMutableArray new];
-        for (NSString *serverID in list) {
-            PFObject *PO = [EWDataStore getCachedParseObjectForID:serverID];
-            if (PO) {
-                [localPeople addObject:PO];
-            }
-        }
-        if (localPeople.count == 0) {
-            //no one fetched, return
-            self.isFetchingEveryone = NO;
-            return;
-        }
+        self.isFetchingEveryone = NO;
+        return;
     }
     
     //make sure the rest of people's score is revert back to 0
@@ -270,7 +237,7 @@ EWPerson *me;
     
     //batch save to local
     [allPerson addObjectsFromArray:otherLocalPerson];
-    [EWDataStore saveAllToLocal:allPerson];
+    [EWSync saveAllToLocal:allPerson];
     
     //still need to save me
     localMe.score = @100;
@@ -336,7 +303,7 @@ EWPerson *me;
     [EWPersonStore updateCachedFriends];
     [EWNotificationManager sendFriendRequestNotificationToUser:person];
     
-    [EWDataStore save];
+    [EWSync save];
 
 }
 
@@ -349,7 +316,7 @@ EWPerson *me;
     //update cache
     [EWStatisticsManager updateCacheWithFriendsAdded:@[person.serverID]];
     
-    [EWDataStore save];
+    [EWSync save];
 }
 
 + (void)unfriend:(EWPerson *)person{
@@ -358,7 +325,7 @@ EWPerson *me;
     [EWPersonStore updateCachedFriends];
     //TODO: unfriend
     //[EWServer unfriend:user];
-    [EWDataStore save];
+    [EWSync save];
 }
 
 + (void)getFriendsForPerson:(EWPerson *)person{
@@ -366,11 +333,14 @@ EWPerson *me;
     NSSet *friends = person.friends;
     BOOL friendsNeedUpdate = person.isMe && friendsCached.count !=person.friends.count;
     if (!friends || friendsNeedUpdate) {
+        
+        DDLogInfo(@"Friends mismatch, fetch from server");
+        
         //friend need update
-        PFQuery *q = [PFQuery queryWithClassName:person.entity.serverClassName];
+        PFQuery *q = [PFQuery queryWithClassName:person.serverClassName];
         [q includeKey:@"friends"];
         [q whereKey:kParseObjectID equalTo:person.serverID];
-        PFObject *user = [q getFirstObject];
+        PFObject *user = [[EWSync findServerObjectWithQuery:q] firstObject];
         NSArray *friendsPO = user[@"friends"];
         if (friendsPO.count == 0) return;//prevent 0 friend corrupt data
         NSMutableSet *friendsMO = [NSMutableSet new];
@@ -379,7 +349,6 @@ EWPerson *me;
                 continue;
             }
             EWPerson *mo = (EWPerson *)[f managedObjectInContext:person.managedObjectContext];
-            [EWDataStore setCachedParseObject:f];
             [friendsMO addObject:mo];
         }
         person.friends = [friendsMO copy];
@@ -428,7 +397,7 @@ EWPerson *me;
     }
     if(!person.username){
         person.username = [PFUser currentUser].username;
-        NSLog(@"!!!Username is missing!");
+        DDLogError(@"Username is missing!");
     }
     
     if (person.alarms.count == 7 && person.tasks.count == 7*nWeeksToScheduleTask) {
@@ -438,7 +407,7 @@ EWPerson *me;
     
     }else{
         good = NO;
-        NSLog(@"The person failed validation: alarms: %ld, tasks: %ld", (long)person.alarms.count, (long)person.tasks.count);
+        DDLogError(@"The person failed validation: alarms: %ld, tasks: %ld", (long)person.alarms.count, (long)person.tasks.count);
     }
     
     if (needRefreshFacebook) {
@@ -453,7 +422,6 @@ EWPerson *me;
     //friends
     NSArray *friendsID = person.cachedInfo[kFriended];
     if (person.friends.count != friendsID.count) {
-        NSLog(@"Friends mismatch, fetch from server");
         [EWPersonStore getFriendsForPerson:person];
     }
     

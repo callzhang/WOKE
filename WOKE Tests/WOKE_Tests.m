@@ -14,6 +14,7 @@
 #import "CoreData+MagicalRecord.h"
 #import "EWDataStore.h"
 #import "EWPersonStore.h"
+#import "EWSync.h"
 
 @interface WOKE_Tests : XCTestCase
 
@@ -56,7 +57,7 @@
     [me addFriendsObject:friend];
     
     __block PFUser *aUser;
-    [EWDataStore saveWithCompletion:^{
+    [EWSync saveWithCompletion:^{
         NSLog(@"save");
         aUser = (PFUser *)me.parseObject;
     }];

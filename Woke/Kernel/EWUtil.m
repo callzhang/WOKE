@@ -11,6 +11,7 @@
 #import <AdSupport/ASIdentifierManager.h>
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
+#import "TestFlightLogger.h"
 
 //static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
@@ -167,14 +168,15 @@ void EWLog(NSString *format, ...){
 }
 
 void EWLogInit(){
-    
+#ifdef DEBUG
     [DDLog addLogger:[DDASLLogger sharedInstance]];
+    
     DDTTYLogger *log = [DDTTYLogger sharedInstance];
     [DDLog addLogger:log];
+    
     DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
     fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
     fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
-    
     [DDLog addLogger:fileLogger];
     
     // we also enable colors in Xcode debug console
@@ -185,59 +187,22 @@ void EWLogInit(){
     [log setForegroundColor:[UIColor redColor] backgroundColor:nil forFlag:LOG_FLAG_ERROR];
     [log setForegroundColor:[UIColor darkGrayColor] backgroundColor:nil forFlag:LOG_FLAG_VERBOSE];
     [log setForegroundColor:[UIColor colorWithRed:(255/255.0) green:(58/255.0) blue:(159/255.0) alpha:1.0] backgroundColor:nil forFlag:LOG_FLAG_WARN];
+#else
+    [DDLog addLogger:[TestFlightLogger sharedInstance]];
+#endif
     
+    //exception handler
     //TODO:UncaughtExceptionHandler
     //NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
-    
 }
 
-//void uncaughtExceptionHandler(NSException *exception) {
-//    DDLogError(@"Uncaught Exception (CRASH): %@", exception);
-//    DDLogError(@"Stack Trace: %@", [exception callStackSymbols]);
-//    // Internal error reporting
-//}
-
-
-
-+(NSArray *)readContactsEmailsFromAddressBooks
-{
-    
-    NSMutableArray * friendsEmails = [[NSMutableArray alloc] init];
-    
-    ABAddressBookRef addressBook = ABAddressBookCreate();
-    CFArrayRef results = ABAddressBookCopyArrayOfAllPeople(addressBook);
-    for(int i = 0; i < CFArrayGetCount(results); i++)
-    {
-        ABRecordRef person = CFArrayGetValueAtIndex(results, i);
-        //读取firstname
-//        NSString *personName = (__bridge NSString*)ABRecordCopyValue(person, kABPersonFirstNameProperty);
-//        //读取lastname
-//        NSString *lastname = (__bridge NSString*)ABRecordCopyValue(person, kABPersonLastNameProperty);
-//       
-//        //读取middlename
-//        NSString *middlename = (__bridge NSString*)ABRecordCopyValue(person, kABPersonMiddleNameProperty);
-
-        
-        //获取email多值
-        ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
-        long emailcount = ABMultiValueGetCount(email);
-        for (int x = 0; x < emailcount; x++)
-        {
-            //获取email Label
-            //NSString* emailLabel = (__bridge NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(email, x));
-            //获取email值
-            NSString* emailContent = (__bridge NSString*)ABMultiValueCopyValueAtIndex(email, x);
-            [friendsEmails addObject:emailContent];
-
-        }
-    }
-
-    CFRelease(results);
-    CFRelease(addressBook);
-    
-    return [friendsEmails copy];
-    
+void uncaughtExceptionHandler(NSException *exception) {
+    DDLogError(@"Uncaught Exception (CRASH): %@", exception);
+    DDLogError(@"Stack Trace: %@", [exception callStackSymbols]);
+    // Internal error reporting
 }
+
+
 
 
 @end

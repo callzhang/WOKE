@@ -172,17 +172,7 @@
 - (EWTaskItem *)getTaskByID:(NSString *)taskID{
     if (!taskID) return nil;
     
-    EWTaskItem *task = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:taskID];
-    
-    if (!task) {
-        PFObject *PO = [EWDataStore getCachedParseObjectForID:taskID];
-        if (!PO) {
-            PO = [EWDataStore getParseObjectWithClass:@"EWTaskItem" ID:taskID error:nil];
-        }
-        
-        task = (EWTaskItem *)[PO managedObjectInContext:nil];
-        [task refreshInBackgroundWithCompletion:NULL];
-    }
+    EWTaskItem *task = [EWSync managedObjectWithClass:@"EWTaskItem" withID:taskID];
     return task;
 }
 
@@ -260,13 +250,12 @@
         PFQuery *taskQuery= [PFQuery queryWithClassName:@"EWTaskItem"];
         [taskQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
         [taskQuery whereKey:kParseObjectID notContainedIn:[tasks valueForKey:kParseObjectID]];
-        NSArray *objects = [taskQuery findObjects];
+        NSArray *objects = [EWSync findServerObjectWithQuery:taskQuery];
         for (PFObject *t in objects) {
-            [EWDataStore setCachedParseObject:t];
             EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:context];
             [task refresh];
             task.owner = [me inContext:context];
-            BOOL good = [EWDataStore validateMO:task];
+            BOOL good = [EWSync validateMO:task];
             if (!good) {
                 [self removeTask:task];
             }else if (![tasks containsObject:task]) {
@@ -359,16 +348,13 @@
         
         NSArray *newTaskIDs = [newTask valueForKey:@"objectID"];
         
-        [[EWDataStore sharedInstance].saveCallbacks addObject:^{
+        [EWSync saveWithCompletion:^{
             for (NSManagedObjectID *taskID in newTaskIDs) {
                 EWTaskItem *task = (EWTaskItem *)[mainContext existingObjectWithID:taskID error:NULL];
                 // remote notification
                 [EWTaskStore scheduleNotificationOnServerWithTimer:task];
             }
         }];
-        
-        //Need to save here first in order to reflect change to main context from KVO
-        [context saveToPersistentStoreAndWait];
     }
     
     //last checked
@@ -436,7 +422,7 @@
     EWTaskItem *latestTask = pastTasks.firstObject;
     if (latestTask.time.timeElapsed > 3600*24) {
         NSLog(@"=== Checking past tasks but the latest task is outdated: %@", latestTask.time);
-        if([EWDataStore isReachable]){
+        if([EWSync isReachable]){
             //get from server
             NSLog(@"=== Fetch past task from server for %@", localMe.name);
             PFQuery *query = [PFQuery queryWithClassName:@"EWTaskItem"];
@@ -446,8 +432,7 @@
             PFUser *user = [PFUser objectWithoutDataWithClassName:@"PFUser" objectId:localMe.objectId];
             [query whereKey:@"pastOwner" equalTo:user];
             [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]];
-            tasks = [[query findObjects] mutableCopy];
-//                >>>>>>> task has not result <<<<<<<<
+            tasks = [[EWSync findServerObjectWithQuery:query] mutableCopy];
             //assign back to person.tasks
             for (PFObject *task in tasks) {
                 EWTaskItem *taskMO = (EWTaskItem *)[task managedObjectInContext:localContext];
@@ -507,7 +492,7 @@
     t.owner = [me inContext:context];
     //others
     t.createdAt = [NSDate date];
-    //[EWDataStore save];
+    //[EWSync save];
     
     NSLog(@"Created new Task %@", t.objectID);
     return t;
@@ -563,7 +548,7 @@
         }
     }
     if (updated) {
-        [EWDataStore save];
+        [EWSync save];
     }
 }
 
@@ -597,7 +582,7 @@
                 [EWTaskStore scheduleNotificationOnServerWithTimer:t];
             }else{
                 __block EWTaskItem *blockTask = t;
-                [[EWDataStore sharedInstance].saveCallbacks addObject:^{
+                [EWSync saveWithCompletion:^{
                     [EWTaskStore scheduleNotificationOnServerWithTimer:blockTask];
                 }];
             }
@@ -605,7 +590,7 @@
         }
     }
     [self updateNextTaskTime];
-    [EWDataStore save];
+    [EWSync save];
 }
 
 //Tone
@@ -651,7 +636,7 @@
         }
     }
     
-    [EWDataStore save];
+    [EWSync save];
 }
 
 /* add task by alarm, this function is replaced by scheduleTask

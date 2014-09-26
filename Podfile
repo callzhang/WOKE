@@ -16,6 +16,7 @@ pod 'IDMPhotoBrowser'
 pod 'apptentive-ios'
 pod 'CocoaLumberjack'
 pod 'BlocksKit', '~> 2.2.5'
+pod 'TestFlightLogger'
 
 target "WOKE Tests" do
   pod 'OCMock', '~> 3.1.1'

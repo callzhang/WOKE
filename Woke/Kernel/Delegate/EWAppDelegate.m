@@ -46,13 +46,14 @@ UIViewController *rootViewController;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     //crash
     [Crashlytics startWithAPIKey:@"6ec9eab6ca26fcd18d51d0322752b861c63bc348"];
-    //log
-    EWLogInit();
     
     //test flight
     [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
     [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
     [TestFlight manuallyStartSession];
+    
+    //log
+    EWLogInit();
     
     // appetitive
     [ATConnect sharedConnection].apiKey = KATConnectKey;
@@ -122,7 +123,7 @@ UIViewController *rootViewController;
     NSLog(@"Entered background with active time left: %f", application.backgroundTimeRemaining>999?999:application.backgroundTimeRemaining);
     
     //save core data
-    [EWDataStore save];
+    [EWSync save];
     
     //clean badge
     application.applicationIconBadgeNumber = 0;

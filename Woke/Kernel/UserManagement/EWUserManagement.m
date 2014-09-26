@@ -111,7 +111,7 @@
 //login with local user default info
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
 
-    //fetch or create, delay 0.1s so the login view can animate
+    //fetch or create
     EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:user.objectId];
     //save me
     [EWPersonStore sharedInstance].currentUser = person;
@@ -266,7 +266,7 @@
     
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     
-    [EWDataStore save];
+    [EWSync save];
     //person
     //me = nil;
     
@@ -309,7 +309,7 @@
             } else {
                 NSLog(@"%@", error.debugDescription);
             }
-            [EWDataStore save];
+            [EWSync save];
 
         }];
         
@@ -502,7 +502,7 @@
                 graph.facebookUpdated = [NSDate date];
                 
                 //save
-                [EWDataStore save];
+                [EWSync save];
             }
             
         } else {
@@ -576,7 +576,7 @@
             // Clear this token
             [FBSession.activeSession closeAndClearTokenInformation];
         } else if (error.code == 5){
-            if (![EWDataStore sharedInstance].reachability.isReachable) {
+            if (![EWSync isReachable]) {
                 NSLog(@"No connection: %@", error.description);
             }else{
                 

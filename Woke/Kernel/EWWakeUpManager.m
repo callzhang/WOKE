@@ -132,7 +132,7 @@
             //[[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
             
             [task addMediasObject:media];
-            [EWDataStore save];
+            [EWSync save];
         }
         
 
@@ -164,7 +164,7 @@
             
             //use KVO
             [task addMediasObject:media];
-            [EWDataStore save];
+            [EWSync save];
             
         }else{
             
@@ -177,7 +177,7 @@
                     
                     //need to move to media pool
                     [media removeTasksObject:task];
-                    [EWDataStore save];
+                    [EWSync save];
                 }
             }
             
@@ -241,7 +241,7 @@
             task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         }else if (taskLocalID){
             isLaunchedFromLocalNotification = YES;
-            task = (EWTaskItem *)[EWDataStore getManagedObjectByStringID:taskLocalID];
+            task = (EWTaskItem *)[EWTaskItem findFirstByAttribute:kParseObjectID withValue:taskID];
         }
         
     }else{
@@ -309,7 +309,7 @@
     }
     
     //save
-    [EWDataStore save];
+    [EWSync save];
     
     //cancel local alarm
     [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
