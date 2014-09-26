@@ -398,7 +398,7 @@
 		56E0C36E17B2CEC200835A6B /* EWUnlockManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWUnlockManager.m; sourceTree = "<group>"; };
 		56F09E4417AAE0F800C5AD52 /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
 		56F09E4517AAE0F800C5AD52 /* TestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = TestViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		56FEA57917A5763200FC2938 /* EWDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = EWDefines.h; path = ../Common/EWDefines.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		56FEA57917A5763200FC2938 /* EWDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = EWDefines.h; path = ../Common/EWDefines.h; sourceTree = "<group>"; usesTabs = 1; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		56FEA57D17A5763200FC2938 /* EWAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAppDelegate.h; sourceTree = "<group>"; };
 		56FEA57E17A5763200FC2938 /* EWAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWAppDelegate.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		56FEA58F17A5766B00FC2938 /* Woke-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Woke-Info.plist"; sourceTree = "<group>"; };
@@ -1426,6 +1426,7 @@
 						TestTargetID = 568CC783178DD2C900AB1579;
 					};
 					568CC783178DD2C900AB1579 = {
+						DevelopmentTeam = SDR7T9YB58;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -1978,7 +1979,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Derek Zhang (SRS98HY45T)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2006,7 +2007,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "b8ba3870-592c-44b0-a5f4-10a859db469f";
+				PROVISIONING_PROFILE = "06403c51-26ba-470c-b465-319a0bd281bd";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ $(PROJECT_DIR)/Pods/TestFlightSDK";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2020,7 +2021,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2047,7 +2048,7 @@
 					"-lsqlite3.0",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d04af335-0a98-43d2-9378-6d5a66fccbe3";
+				PROVISIONING_PROFILE = "82da8cd1-02b9-4a6f-8ec2-03c80aac3964";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ $(PROJECT_DIR)/Pods/TestFlightSDK";
 				WRAPPER_EXTENSION = app;
 			};

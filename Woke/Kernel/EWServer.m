@@ -44,7 +44,37 @@
     return manager;
 }
 
-
+#pragma mark - Handle Push Notification
++ (void)handlePushNotification:(NSDictionary *)push{
+	NSString *type = push[kPushType];
+					  
+    if ([type isEqualToString:kPushTypeAlarmTimer]) {
+		[EWWakeUpManager handlePushMedia:push];
+		
+	}else if([type isEqualToString:kPushTypeAlarmTimer]){
+		// ============== Alarm Timer ================
+		//first find the task ID
+		//then test if the tesk time is matched
+		//also the task should not be completed
+		//also make sure it's not too early or too late
+		
+		NSString *taskID = push[kPushTaskID];
+		EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+		
+		if (![taskID isEqualToString:task.objectId]) {
+			NSLog(@"Task from push is not the next task");
+			return;
+		}
+		
+		[EWWakeUpManager handleAlarmTimerEvent:push];
+		
+	}else{
+		// Other push type not supported
+		NSString *str = [NSString stringWithFormat:@"Unknown push type received: %@", push];
+		NSLog(@"Received unknown type of push msg");
+		EWAlert(str);
+	}
+}
 
 
 #pragma mark - Handle Local Notification
@@ -96,8 +126,8 @@
             //push payload
             NSMutableDictionary *pushMessage = [@{@"content-available": @1,
                                           @"badge": @"Increment",
-                                          kPushMediaKey: buzz.objectId,
-                                          kPushTypeKey: kPushTypeBuzzKey} mutableCopy];
+                                          kPushMediaID: buzz.objectId,
+                                          kPushType: kPushMediaTypeVoice} mutableCopy];
             
             
             if ([[NSDate date] isEarlierThan:time]) {
@@ -146,9 +176,9 @@
     NSMutableDictionary *pushMessage = [@{@"badge": @"Increment",
                                  @"alert": @"Someone has sent you an voice greeting",
                                  @"content-available": @1,
-                                 kPushTypeKey: kPushTypeMediaKey,
-                                 kPushPersonKey: me.objectId,
-                                 kPushMediaKey: mediaId} mutableCopy];
+                                 kPushType: kPushMediaTypeVoice,
+                                 kPushPersonID: me.objectId,
+                                 kPushMediaID: mediaId} mutableCopy];
     
     //form push payload
     if ([[NSDate date] isEarlierThan:time]) {

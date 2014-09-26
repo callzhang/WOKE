@@ -62,22 +62,22 @@
 
 
 #pragma mark - Handle push notification
-+ (void)handlePushNotification:(NSDictionary *)notification{
-    NSString *type = notification[kPushTypeKey];
-    NSString *mediaID = notification[kPushMediaKey];
-    NSString *taskID = notification[kPushTaskKey];
-    
-//    if (!mediaID) {
-//        NSLog(@"Push doesn't have media ID, abort!");
-//        return;
-//    }
++ (void)handlePushMedia:(NSDictionary *)notification{
+    NSString *type = notification[kPushType];
+    NSString *mediaID = notification[kPushMediaID];
+	//NSString *taskID = notification[kPushTaskID];
+	
+    if (!mediaID) {
+        NSLog(@"Push doesn't have media ID, abort!");
+        return;
+    }
 
     
     EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
     
     
-    if ([type isEqualToString:kPushTypeBuzzKey]) {
+    if ([type isEqualToString:kPushMediaTypeBuzz]) {
         // ============== Buzz ===============
         NSParameterAssert(mediaID);
         NSLog(@"Received buzz from %@", media.author.name);
@@ -90,7 +90,7 @@
 #ifdef DEBUG
         EWPerson *sender = media.author;
         //alert
-        [[[UIAlertView alloc] initWithTitle:@"Buzz 来啦" message:[NSString stringWithFormat:@"Got a buzz from %@. This message will not display in release.", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        [[[UIAlertView alloc] initWithTitle:@"Buzz coming" message:[NSString stringWithFormat:@"Got a buzz from %@. (Testing)", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         
 #endif
         
@@ -116,7 +116,7 @@
             notif.soundName = buzzSound;
             //message
             notif.alertBody = [NSString stringWithFormat:@"Buzz from %@", media.author.name];
-            notif.userInfo = @{kPushTaskKey: task.objectId, kPushMediaKey: mediaID, kLocalTaskKey: task.objectID.URIRepresentation.absoluteString};
+            notif.userInfo = @{kPushTaskID: task.objectId, kPushMediaID: mediaID, kLocalTaskKey: task.objectID.URIRepresentation.absoluteString};
             //schedule
             [[UIApplication sharedApplication] scheduleLocalNotification:notif];
             
@@ -137,7 +137,7 @@
         
 
         
-    }else if ([type isEqualToString:kPushTypeMediaKey]){
+    }else if ([type isEqualToString:kPushMediaTypeVoice]){
         // ============== Media ================
         NSParameterAssert(mediaID);
         NSLog(@"Received voice type push");
@@ -188,22 +188,6 @@
 #endif
         
         
-    }else if([type isEqualToString:kPushTypeTimerKey]){
-        // ============== Timer ================
-        //TODO: test if the push is correct
-        //first find the task ID
-        //then test if the tesk time is matched
-        //also the task should not be completed
-        //also make sure it's not too early or too late
-        if (![taskID isEqualToString:task.objectId]) {
-            NSLog(@"Task from push is not the next task");
-            return;
-        }
-        //...
-        
-        [EWWakeUpManager handleAlarmTimerEvent:notification];
-        
-        
     }else if([type isEqualToString:@"test"]){
         
         // ============== Test ================
@@ -213,11 +197,6 @@
         
         [[AVManager sharedManager] playSystemSound:[NSURL URLWithString:media.audioKey]];
         
-    }else{
-        // Other push type not supported
-        NSString *str = [NSString stringWithFormat:@"Unknown push type received: %@", notification];
-        NSLog(@"Received unknown type of push msg");
-        EWAlert(str);
     }
 }
 
@@ -234,7 +213,7 @@
     //get target task
     EWTaskItem *task;
     if (info) {
-        NSString *taskID = info[kPushTaskKey];
+        NSString *taskID = info[kPushTaskID];
         NSString *taskLocalID = info[kLocalTaskKey];
         NSParameterAssert(taskID || taskLocalID);
         if (taskID) {

@@ -16,7 +16,7 @@
 + (EWWakeUpManager *)sharedInstance;
 
 /**
- *Handles push notifications in varies mode
+ *Handles push media in varies mode
  @Discuss
  *1. Buzz
  *   active: sound + wakeupView
@@ -28,12 +28,8 @@
  *       before alarm: download
  *       woke: alert with no name
  *   suspend: background download
- *
- *3. Timer
- *   active: alert -> WakeupView
- *   suspend: background audio
  */
-+ (void)handlePushNotification:(NSDictionary *)notification;
++ (void)handlePushMedia:(NSDictionary *)notification;
 
 /**
  Handle alarm time up event

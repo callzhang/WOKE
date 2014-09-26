@@ -161,7 +161,7 @@
         
     } else if ([notification.type isEqualToString:kNotificationTypeTimer]) {
         
-        NSString *taskID = userInfo[kPushTaskKey];
+        NSString *taskID = userInfo[kPushTaskID];
         if (!taskID) return;
         EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         [EWNotificationManager sharedInstance].task = task;

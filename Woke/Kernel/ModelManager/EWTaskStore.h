@@ -124,5 +124,5 @@
  when person is in his sleep mode
  */
 #define kScheduledAlarmTimers       @"scheduled_alarm_timers"
-+ (void)scheduleNotificationOnServerWithTimer:(EWTaskItem *)task;
++ (void)scheduleNotificationOnServerForTask:(EWTaskItem *)task;
 @end

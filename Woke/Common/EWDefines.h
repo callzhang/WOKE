@@ -126,25 +126,25 @@
 //media store
 //#define kMediaNewNotification           @"EWMediaNew"
 
+#define kADIDKey                        @"ADID" //key for ADID
 #define kPushAPNSRegisteredNotification @"APNSRegistered"
 
 //Notification key
-#define kPushPersonKey                  @"person"
-#define kPushTaskKey                    @"task"
 #define kLocalTaskKey                   @"task_object_id"
 #define kLocalNotificationTypeKey       @"type"
 #define kLocalNotificationTypeAlarmTimer    @"alarm_timer"
 #define kLocalNotificationTypeReactivate    @"reactivate"
 #define kLocalNotificationTypeSleepTimer    @"sleep_timer"
-#define kPushMediaKey                   @"media"
-#define kPushTypeBuzzKey                @"buzz"
-#define kPushTypeMediaKey               @"media"
-#define kPushTypeTimerKey               @"timer"
-#define kFinishedSync                   @"FinishedSync" //server has finished syncing (usually at startup)
-#define kADIDKey                        @"ADID" //key for ADID
-#define kPushTypeKey                    @"type"
-#define kPushTypeNotificationKey        @"notice"
-#define kPushNofiticationIDKey          @"notificationID"
+//push
+#define kPushPersonID					@"person"
+#define kPushTaskID						@"task"
+#define kPushMediaID					@"media"
+#define kPushMediaTypeBuzz				@"buzz"
+#define kPushMediaTypeVoice				@"voice"
+#define kPushTypeAlarmTimer				@"timer"
+#define kPushType						@"type"
+#define kPushTypeNotification			@"notice"
+#define kPushNofiticationID				@"notificationID"
 
 //Audio & Video
 #define kMaxRecordTime                  30.0
