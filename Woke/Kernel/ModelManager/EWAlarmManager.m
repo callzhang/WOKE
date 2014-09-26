@@ -368,4 +368,24 @@
     return good;
 }
 
+
+#pragma mark - Error handling
++ (BOOL)handleExcessiveTasksForAlarm:(EWAlarmItem *)alarm{
+	NSInteger nTasks = alarm.tasks.count;
+	for (EWTaskItem *t in alarm.tasks) {
+		if (![EWTaskStore validateTask:t]) {
+			[alarm removeTasksObject:t];
+			[t deleteEntity];
+			nTasks--;
+		}
+	}
+	if (nTasks != nWeeksToScheduleTask) {
+		DDLogError(@"after deleting invalid task, there are still %d task remained. Schedule task instead",nTasks);
+		[[EWTaskStore sharedInstance] scheduleTasks];
+		return NO;
+	}
+	return YES;
+}
+
+
 @end

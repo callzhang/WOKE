@@ -145,7 +145,7 @@
 {
     NSString *tone = [ringtoneList objectAtIndex:indexPath.row];
     selected = indexPath.row;
-    [AVManager.sharedManager playSoundFromFile:tone];
+    [AVManager.sharedManager playSoundFromFileName:tone];
 }
 
 @end

@@ -139,7 +139,8 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
             alarm.time = cell.myTime;
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
+			//task.time = cell.myTime;
+			[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
             hasChanges = YES;
         }
         
@@ -150,12 +151,11 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             task.statement = statement;
             //hasChanges = YES;
         }
-        
-        //save
-        [EWSync save];
     }
     
-    if (hasChanges) {
+	if (hasChanges) {
+		//save
+		[EWSync save];
         //save alarm time to user defaults
         [[EWAlarmManager sharedInstance] setSavedAlarmTimes];
     }

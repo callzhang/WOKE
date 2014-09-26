@@ -185,7 +185,7 @@ NSManagedObjectContext *mainContext;
     workingChangedRecords = _changeRecords;
     _changeRecords = [NSMutableDictionary new];
     
-    
+	if (workingObjects.count == 0 && deletedServerObjects.count == 0) return;
     NSLog(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ ", [insertedManagedObjects valueForKeyPath:@"entity.name"], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
     NSLog(@"Change records:\n%@", workingChangedRecords);
     
@@ -301,16 +301,16 @@ NSManagedObjectContext *mainContext;
             [self.saveToLocalItems removeObject:MO.objectID];
             continue;
         }
-        
+		
+		//Pre-save validate
+		BOOL good = [EWSync validateMO:MO];
+		if (!good) {
+			continue;
+		}
+		
         BOOL mine = [EWSync checkAccess:MO];
         if (!mine) {
-            DDLogWarn(@"!!! Skip updating other's object %@ with changes %@", MO.objectID, MO.changedKeys);
-            continue;
-        }
-        
-        //Pre-save validate
-        BOOL good = [EWSync validateMO:MO];
-        if (!good) {
+            DDLogWarn(@"!!! Skip updating other's object %@ with changes %@", MO.serverID, MO.changedKeys);
             continue;
         }
         

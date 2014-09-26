@@ -141,18 +141,14 @@
     EWTaskItem *nextTask;
     for (unsigned i=0; i<tasks.count; i++) {
         nextTask = tasks[i];
-        
-        //Task shoud be On AND not finished AND has less than the default max voices
-        if (nextTask.state == YES && !nextTask.completed) {
-            NSInteger nVoice = [self numberOfVoiceInTask:nextTask];
-            if (nVoice < kMaxVoicePerTask) {
-                n--;
-                if (n < 0) {
-                    //find the task
-                    return nextTask;
-                }
+		BOOL finished = nextTask.completed || [nextTask.time timeIntervalSinceNow]<-kMaxWakeTime;
+        //Task shoud be On AND not finished
+        if (nextTask.state == YES && !finished) {
+			n--;
+			if (n < 0) {
+				//find the task
+				return nextTask;
             }
-            
         }
     }
     return nil;
@@ -346,12 +342,10 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
         });
-        
-        NSArray *newTaskIDs = [newTask valueForKey:@"objectID"];
-        
+		//call back
 		[[EWSync sharedInstance].saveCallbacks addObject:^{
-            for (NSManagedObjectID *taskID in newTaskIDs) {
-                EWTaskItem *task = (EWTaskItem *)[mainContext existingObjectWithID:taskID error:NULL];
+            for (EWTaskItem *t in newTask) {
+				EWTaskItem *task = (EWTaskItem *)[t inContext:mainContext];
                 // remote notification
                 [EWTaskStore scheduleNotificationOnServerForTask:task];
 				//check
@@ -361,8 +355,6 @@
 				}
             }
         }];
-		
-		//need to save first
     }
     
     //last checked
@@ -531,6 +523,12 @@
 
 - (void)updateTaskStateForAlarm:(EWAlarmItem *)a{
     BOOL updated = NO;
+	if (a.tasks.count > nWeeksToScheduleTask) {
+		DDLogError(@"Serious error: alarm(%@) has extra tasks: %@", a.serverID, a.tasks);
+		if (![EWAlarmManager handleExcessiveTasksForAlarm:a]) {
+			return;
+		}
+	}
     for (EWTaskItem *t in a.tasks) {
         if (t.state != a.state) {
             updated = YES;
@@ -569,8 +567,14 @@
         [alarm refresh];
         NSLog(@"***Alarm's tasks not fetched, refresh from server. New tasks relation has %lu tasks", (unsigned long)alarm.tasks.count);
     }
-    NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
-    NSArray *sortedTasks = [alarm.tasks sortedArrayUsingDescriptors:@[des]];
+	if (alarm.tasks.count > nWeeksToScheduleTask) {
+		DDLogError(@"Serious error: alarm(%@) has extra tasks: %@", alarm.serverID, alarm.tasks);
+		if (![EWAlarmManager handleExcessiveTasksForAlarm:alarm]) {
+			return;
+		}
+	}
+	NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
+	NSArray *sortedTasks = [alarm.tasks sortedArrayUsingDescriptors:@[des]];
     for (unsigned i=0; i<nWeeksToScheduleTask; i++) {
         EWTaskItem *t = sortedTasks[i];
         NSDate *nextTime = [alarm.time nextOccurTime:i];

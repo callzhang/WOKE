@@ -104,11 +104,6 @@
             refreshViewTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
         }];
         
-        //reload alarm page when time updated
-        [[NSNotificationCenter defaultCenter] addObserverForName:kTaskTimeChangedNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-            [self reloadAlarmPage];
-        }];
-        
         //sleep buttom visibility
         [[NSNotificationCenter defaultCenter] addObserverForName:kSleepNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
             [self toggleSleepBtnVisibility];
@@ -159,11 +154,11 @@
 
 
 - (void)refreshView{
-    
+	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //update data and view
     [self initData];
     [self initView];
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
 }
 
 - (void)initData {
@@ -515,10 +510,10 @@
 
 - (void)toggleSleepBtnVisibility{
     if (tasks.count == 7*nWeeksToScheduleTask) {
-        EWTaskItem *task = tasks[0];
+		EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
         float h = -task.time.timeElapsed/3600;
         NSNumber *duration = me.preference[kSleepDuration];
-        if (h < duration.floatValue) {
+        if (h < duration.floatValue && h>0) {
             self.sleepBtn.layer.borderColor = [UIColor whiteColor].CGColor;
             //time to sleep
             if (self.sleepBtn.alpha < 1) {

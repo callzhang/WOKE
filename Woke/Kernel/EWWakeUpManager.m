@@ -318,7 +318,7 @@
         [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
         
         //play sound
-        [[AVManager sharedManager] playSoundFromFile:me.preference[@"DefaultTone"]];
+        [[AVManager sharedManager] playSoundFromFileName:me.preference[@"DefaultTone"]];
         
         //play sounds after 30s - time for alarm
         double d = 30;

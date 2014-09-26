@@ -192,49 +192,47 @@
         return;
     }
     
-    
-    if ([object isKindOfClass:[EWTaskItem class]]) {
-        //TODO: dispatch different tasks for each updates
-        if ([keyPath isEqualToString:@"state"]) {
+	
+	//TODO: dispatch different tasks for each updates
+	if ([keyPath isEqualToString:@"state"]) {
 
-            self.alarmState.selected = task.state;
-            if (self.alarmState.selected) {
-                [self.alarmState setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
-            }else{
-                [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
-            }
-            [self.alarmState setNeedsDisplay];
-            //NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, task.state?@"YES":@"NO");
-            
-            
-        }else if ([keyPath isEqualToString:@"medias"]){
-            
-            NSInteger nMedia = task.medias.count;
-            
-            if (nMedia == 0) {
-                [self.messages setTitle:@"" forState:UIControlStateNormal];
-            }else{
+		self.alarmState.selected = task.state;
+		if (self.alarmState.selected) {
+			[self.alarmState setImage:[UIImage imageNamed:@"On_Btn"] forState:UIControlStateNormal];
+		}else{
+			[self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
+		}
+		[self.alarmState setNeedsDisplay];
+		//NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, task.state?@"YES":@"NO");
+		
+		
+	}else if ([keyPath isEqualToString:@"medias"]){
+		
+		NSInteger nMedia = task.medias.count;
+		
+		if (nMedia == 0) {
+			[self.messages setTitle:@"" forState:UIControlStateNormal];
+		}else{
 #ifdef DEBUG
-                [self.messages setTitle:[NSString stringWithFormat:@"%ld voices", (long)nMedia] forState:UIControlStateNormal];
+			[self.messages setTitle:[NSString stringWithFormat:@"%ld voices", (long)nMedia] forState:UIControlStateNormal];
 #endif
-            }
-            
-        }else if ([keyPath isEqualToString:@"time"]){
-            
-            self.timeText.text = [task.time date2timeShort];
-            self.AM.text = [task.time date2am];
-            [self changeTimeLeftLabel];
-            
-        }else if ([keyPath isEqualToString:@"statement"]){
-        
-            self.descriptionText.text = task.statement;
-            
-        }else{
-            
-            NSLog(@"@@@ Unhandled task %@ change: %@", keyPath, change);
-        }
-        [self setNeedsDisplay];
-    }
+		}
+		
+	}else if ([keyPath isEqualToString:@"time"]){
+		
+		self.timeText.text = [task.time date2timeShort];
+		self.AM.text = [task.time date2am];
+		[self changeTimeLeftLabel];
+		
+	}else if ([keyPath isEqualToString:@"statement"]){
+	
+		self.descriptionText.text = task.statement;
+		
+	}else{
+		
+		NSLog(@"@@@ Unhandled task %@ change: %@", keyPath, change);
+	}
+	[self setNeedsDisplay];
 }
 
 - (void)stopObserveTask{

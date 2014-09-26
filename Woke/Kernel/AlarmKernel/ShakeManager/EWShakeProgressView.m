@@ -96,7 +96,7 @@
                 
             }else{
                 //TODO: sound
-				[[AVManager sharedManager] playSoundFromFile:@"new.caf"];
+				[[AVManager sharedManager] playSoundFromFileName:@"new.caf"];
 				[viberationTimer invalidate];
                 [self.motionManager stopAccelerometerUpdates];
                 

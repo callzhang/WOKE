@@ -47,5 +47,6 @@
 //UTIL
 - (NSDate *)getSavedAlarmTimeOnWeekday:(NSInteger)wkd;
 - (void)setSavedAlarmTimes;
++ (BOOL)handleExcessiveTasksForAlarm:(EWAlarmItem *)alarm;
 
 @end

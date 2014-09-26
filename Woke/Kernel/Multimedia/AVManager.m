@@ -161,7 +161,6 @@
     
     //assign new value
     progressBar = cell.mediaBar;
-//    currentTime = progressBar.timeLabel;
     media = cell.media;
     currentCell = cell;
 }
@@ -171,61 +170,32 @@
     NSParameterAssert([NSThread isMainThread]);
     media = [mi inContext:mainContext];
     if (!mi){
-        [self playSoundFromFile:kSilentSound];
+        [self playSoundFromFileName:kSilentSound];
     }
     else if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
         
-        [self playSoundFromURL:[NSURL URLWithString:mi.audioKey]];
+        [self playSoundFromData:mi.audio];
         
         //lock screen
         [self displayNowPlayingInfoToLockScreen:mi];
         
     }else if([media.type isEqualToString:kMediaTypeBuzz]){
         if ([media.buzzKey isEqualToString: @"default"]) {
-            [self playSoundFromFile:@"buzz.caf"];
+            [self playSoundFromFileName:@"buzz.caf"];
         }else{
             //TODO
-            [self playSoundFromFile:media.buzzKey];
+            [self playSoundFromFileName:media.buzzKey];
         }
         
     }else{
         NSLog(@"Unknown type of media, skip");
-        [self playSoundFromFile:kSilentSound];
+        [self playSoundFromFileName:kSilentSound];
     }
     
 }
-
-//Depreciated: play from url
-- (void)playSoundFromURL:(NSURL *)url{
-    if (!url) {
-        NSLog(@"Url is empty, skip playing");
-        //[self audioPlayerDidFinishPlaying:player successfully:YES];
-        return;
-    }
-    
-    //data
-    NSError *err;
-    player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
-    player.volume = 1.0;
-    
-    if (err) {
-        NSLog(@"*** Cannot init player. Reason: %@", err);
-        [self playSystemSound:url];
-        return;
-    }
-    self.player.delegate = self;
-    if ([player play]){
-        [self updateViewForPlayerState:player];
-    }else{
-        NSLog(@"*** Could not play with AVPlayer, using system sound");
-        [self playSystemSound:url];
-    }
-}
-
-
 
 //play for file in main bundle
--(void)playSoundFromFile:(NSString *)fileName {
+-(void)playSoundFromFileName:(NSString *)fileName {
     
     NSArray *array = [fileName componentsSeparatedByString:@"."];
     
@@ -251,7 +221,60 @@
     [self playSoundFromURL:soundURL];
 }
 
+//Depreciated: play from url
+- (void)playSoundFromURL:(NSURL *)url{
+	if (!url) {
+		NSLog(@"Url is empty, skip playing");
+		//[self audioPlayerDidFinishPlaying:player successfully:YES];
+		return;
+	}
+	
+	//data
+	NSError *err;
+	player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
+	player.volume = 1.0;
+	
+	if (err) {
+		NSLog(@"*** Cannot init player. Reason: %@", err);
+		[self playSystemSound:url];
+		return;
+	}
+	self.player.delegate = self;
+	if ([player play]){
+		[self updateViewForPlayerState:player];
+	}else{
+		NSLog(@"*** Could not play with AVPlayer, using system sound");
+		[self playSystemSound:url];
+	}
+}
 
+- (void)playSoundFromData:(NSData *)data{
+	if (!data || data.length == 0) {
+		DDLogError(@"Playing from empty data");
+		return;
+	}
+	NSError *err;
+	player = [[AVAudioPlayer alloc] initWithData:data error:&err];
+	player.volume = 1.0;
+	
+	if (err) {
+		NSLog(@"*** Cannot init AVAudioPlayer. Reason: %@", err);
+		NSString *path = [NSTemporaryDirectory() stringByAppendingString:@"audioTempFile"];
+		[data writeToFile:path atomically:YES];
+		[self playSystemSound:[NSURL URLWithString:path]];
+		return;
+	}
+	self.player.delegate = self;
+	if ([player play]){
+		[self updateViewForPlayerState:player];
+	}else{
+		NSLog(@"*** Could not play with AVAudioPlayer, using system sound");
+		NSString *path = [NSTemporaryDirectory() stringByAppendingString:@"audioTempFile"];
+		[data writeToFile:path atomically:YES];
+		[self playSystemSound:[NSURL URLWithString:path]];
+	}
+	
+}
 
 #pragma mark - UI event
 - (IBAction)sliderChanged:(UISlider *)sender {

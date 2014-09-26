@@ -55,7 +55,7 @@
  Main play function. Support FTW cache method.
  */
 - (void)playSoundFromURL:(NSURL *)url;
-- (void)playSoundFromFile:(NSString *)fileName;
+- (void)playSoundFromFileName:(NSString *)fileName;
 
 //update states
 //- (void)updateViewForPlayerState:(AVAudioPlayer *)player;

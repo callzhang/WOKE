@@ -11,9 +11,11 @@
 #import "AVManager.h"
 #import "EWTaskStore.h"
 #import "EWPersonStore.h"
+#import "EWTaskItem.h"
 
 @interface EWSleepViewController (){
     NSTimer *timer;
+	EWTaskItem *nextTask;
 }
 
 @end
@@ -34,12 +36,18 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [[EWBackgroundingManager sharedInstance] startBackgrounding];
+	nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+	
+	NSDate *cachedNextTime = me.cachedInfo[kNextTaskTime];
+	if (![cachedNextTime isEqualToDate:nextTask.time]) {
+		[[EWTaskStore sharedInstance] updateNextTaskTime];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     //sound
-    [[AVManager sharedManager] playSoundFromFile:@"sleep mode.caf"];
+    [[AVManager sharedManager] playSoundFromFileName:@"sleep mode.caf"];
     //time
     [self updateTimer:nil];
     //timer
@@ -60,14 +68,8 @@
 - (void)updateTimer:(NSTimer *)timer{
     NSDate *t = [NSDate date];
     self.timeLabel.text = t.date2String;
-    NSDate *wakeTime = [[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:me];
-    self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", wakeTime.timeLeft];
-
-    NSDate *alarmtime = me.cachedInfo[kNextTaskTime];
-    if (!alarmtime) {
-        [[EWTaskStore sharedInstance] updateNextTaskTime];
-        alarmtime = me.cachedInfo[kNextTaskTime];
-    }
-    self.alarmTime.text = [NSString stringWithFormat:@"Alarm %@", alarmtime.date2String];
+	
+	self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", nextTask.time.timeLeft];
+    self.alarmTime.text = [NSString stringWithFormat:@"Alarm %@", nextTask.time.date2String];
 }
 @end

@@ -385,7 +385,7 @@ static const NSArray *pref;
 {
     if ([selectedCellTitle isEqualToString:@"Morning tone"]) {
         NSString *tone = [ringtoneList objectAtIndex:row];
-        [AVManager.sharedManager playSoundFromFile:tone];
+        [AVManager.sharedManager playSoundFromFileName:tone];
     }
     
 }
