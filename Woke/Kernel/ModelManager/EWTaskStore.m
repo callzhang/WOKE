@@ -285,6 +285,7 @@
             
             //next time for alarm, this is what the time should be there
             NSDate *time = [a.time nextOccurTime:i];
+			DDLogVerbose(@"Looking for next alarm time: %@", time);
             BOOL taskMatched = NO;
             //loop through the tasks to verify the target time has been scheduled
             for (EWTaskItem *t in tasks) {
@@ -295,24 +296,24 @@
                         [goodTasks addObject:t];
                         [tasks removeObject:t];
                         if (t.alarm != a) {
-                            NSLog(@"Task miss match to another alarm: Task:%@ Alarm:%@", t, a);
+                            DDLogError(@"Task miss match to another alarm: Task:%@ Alarm:%@", t, a);
                             t.alarm = a;
                         }
                         taskMatched = YES;
                         //break here to avoid creating new task
                         break;
                     }else{
-                        NSLog(@"*** Task failed validation: %@", t);
+                        DDLogError(@"*** Task failed validation: %@", t);
                     }
                     
                 }else if (abs([t.time timeIntervalSinceDate:time]) < 100){
-                    NSLog(@"*** Time mismatch");
+                    DDLogError(@"*** Time mismatch");
                 }
             }
             
             if (!taskMatched) {
                 //start scheduling task
-                NSLog(@"Task on %@ has not been found, creating!", time.weekday);
+                DDLogVerbose(@"Task on %@ has not been found, creating!", time.weekday);
                 //new task
                 EWTaskItem *t = [self newTaskInContext:context];
                 t.time = time;
@@ -330,7 +331,7 @@
    
     //check data integrety
     if (tasks.count > 0) {
-        NSLog(@"!!! After removing valid task and past task, there are still %lu tasks left:%@", (unsigned long)tasks.count, tasks);
+        DDLogError(@"Serious error: After removing valid task and past task, there are still %lu tasks left:%@", (unsigned long)tasks.count, tasks);
         for (EWTaskItem *t in tasks) {
             [self removeTask:t];
         }
@@ -348,23 +349,27 @@
         
         NSArray *newTaskIDs = [newTask valueForKey:@"objectID"];
         
-        [EWSync saveWithCompletion:^{
+		[[EWSync sharedInstance].saveCallbacks addObject:^{
             for (NSManagedObjectID *taskID in newTaskIDs) {
                 EWTaskItem *task = (EWTaskItem *)[mainContext existingObjectWithID:taskID error:NULL];
                 // remote notification
                 [EWTaskStore scheduleNotificationOnServerForTask:task];
+				//check
+				DDLogInfo(@"Perform schedule task completion block: %d alarms and %d tasks", me.alarms.count, me.tasks.count);
+				if (me.tasks.count != 7*nWeeksToScheduleTask) {
+					DDLogError(@"Something wrong with my task: %@", me.tasks);
+				}
             }
         }];
+		
+		//need to save first
     }
     
     //last checked
     self.lastChecked = [NSDate date];
     //check if the main context is good
     [mainContext performBlockAndWait:^{
-        NSLog(@"Finished schedule task with %d alarms and %d tasks", me.alarms.count, me.tasks.count);
-        if (me.tasks.count != 7*nWeeksToScheduleTask) {
-            NSLog(@"Something wrong with my task: %@", me.tasks);
-        }
+		
     }];
     
     self.isSchedulingTask = NO;

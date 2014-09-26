@@ -129,12 +129,12 @@
 - (NSDate *)nextOccurTime:(NSInteger)n{
     NSDate *time = self;
     //bring to past
-    while ([time timeIntervalSinceNow]>0) {
+    while ([time timeIntervalSinceNow]>-kMaxWakeTime) {
         time = [time lastWeekTime];
     }
     
     //bring to the first occurance of future
-    while ([time timeIntervalSinceNow]<0) {
+    while ([time timeIntervalSinceNow]<-kMaxWakeTime) {
         time = [time nextWeekTime];
     }
     
@@ -144,7 +144,7 @@
         time = [time nextWeekTime];
     }
     
-    NSAssert([time timeIntervalSinceNow] >3600*24*7*n && [time timeIntervalSinceNow] < 3600*24*7*(n+1), @"Error in getting %ld next time %@", (long)n, time);
+    NSAssert([time timeIntervalSinceNow] >3600*24*7*n-kMaxWakeTime && [time timeIntervalSinceNow] < 3600*24*7*(n+1)-kMaxWakeTime, @"Error in getting %ld next time %@", (long)n, time);
     return time;
 }
 
