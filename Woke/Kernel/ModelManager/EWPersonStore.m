@@ -167,7 +167,7 @@ EWPerson *me;
 - (void)getEveryoneInContext:(NSManagedObjectContext *)context{
     
     //cache
-    if ((everyone && timeEveryoneChecked.timeElapsed < everyoneCheckTimeOut && everyone.count != 0) || self.isFetchingEveryone) {
+    if ((everyone.count > 0 && timeEveryoneChecked && timeEveryoneChecked.timeElapsed < everyoneCheckTimeOut) || self.isFetchingEveryone) {
         return;
     }
     self.isFetchingEveryone = YES;

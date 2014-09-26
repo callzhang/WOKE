@@ -287,10 +287,10 @@
         //if managedObject not exist, create it locally
         mo = [NSClassFromString(self.localClassName) MR_createInContext:context];
         [mo assignValueFromParseObject:self];
-        NSLog(@"+++> MO created: %@ (%@)", self.localClassName, self.objectId);
+        DDLogInfo(@"+++> MO created: %@ (%@)", self.localClassName, self.objectId);
     }else{
         
-        if (mo.isOutDated || self.isNewerThanMO) {
+        if ([mo valueForKey:kUpdatedDateKey] && (mo.isOutDated || self.isNewerThanMO)) {
             
             [mo assignValueFromParseObject:self];
             //[EWDataStore saveToLocal:mo];//mo will be saved later

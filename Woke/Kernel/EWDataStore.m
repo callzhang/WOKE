@@ -35,6 +35,7 @@
 
 - (id)init{
 	self = [super init];
+	//set up server sync
 	[[EWSync sharedInstance] setup];
 	//watch for login event
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginDataCheck) name:kPersonLoggedIn object:nil];

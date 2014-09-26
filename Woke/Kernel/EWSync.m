@@ -314,7 +314,6 @@ NSManagedObjectContext *mainContext;
             continue;
         }
         
-        
         //if last updated doesn't exist, skip
         if (![MO valueForKey:kUpdatedDateKey]){
             //this is MY VALID UPDATED MO but doesn't have updatedAt, should check the cause if it.
@@ -697,26 +696,21 @@ NSManagedObjectContext *mainContext;
 	if (MOs.count == 0) {
 		return;
 	}
-    
+	
+	NSManagedObject *anyMO = MOs[0];
+    [anyMO.managedObjectContext obtainPermanentIDsForObjects:MOs error:NULL];
+	
 	//mark MO as save to local
 	for (NSManagedObject *mo in MOs) {
-		if (mo.objectID.isTemporaryID) {
-			[mo.managedObjectContext obtainPermanentIDsForObjects:@[mo] error:NULL];
-		}
 		[[EWSync sharedInstance].saveToLocalItems addObject:mo.objectID];
-		
 	}
 	
-	//save to enqueue the updates
-	NSManagedObject *anyMO = MOs[0];
-	[anyMO.managedObjectContext saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
-		for (NSManagedObject *mo in MOs) {
-			//remove from the update queue
-			[[EWSync sharedInstance] removeObjectFromInsertQueue:mo];
-			[[EWSync sharedInstance] removeObjectFromUpdateQueue:mo];
-			
-		}
-	}];
+	//remove from queue
+	for (NSManagedObject *mo in MOs) {
+		//remove from the update queue
+		[[EWSync sharedInstance] removeObjectFromInsertQueue:mo];
+		[[EWSync sharedInstance] removeObjectFromUpdateQueue:mo];
+	}
 }
 
 

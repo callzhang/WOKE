@@ -510,19 +510,9 @@
     }
     [[EWSync sharedInstance].saveToLocalItems addObject:self.objectID];
     
-    //save to enqueue the updates
-#ifdef DEBUG
-    [self.managedObjectContext MR_saveToPersistentStoreAndWait];
+    //remove from queue
     [[EWSync sharedInstance] removeObjectFromInsertQueue:self];
     [[EWSync sharedInstance] removeObjectFromUpdateQueue:self];
-#else
-    [self.managedObjectContext MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
-        //remove from the update queue
-        [[EWSync sharedInstance] removeObjectFromInsertQueue:self];
-        [[EWSync sharedInstance] removeObjectFromUpdateQueue:self];
-    }];
-#endif
-    
 }
 
 - (void)saveToServer{
