@@ -127,7 +127,7 @@ NSManagedObjectContext *mainContext;
     }
 }
 
-- (void)updateToServer{
+- (void)uploadToServer{
     //make sure it is called on main thread
     NSParameterAssert([NSThread isMainThread]);
     if([mainContext hasChanges]){
@@ -186,8 +186,8 @@ NSManagedObjectContext *mainContext;
     _changeRecords = [NSMutableDictionary new];
     
 	if (workingObjects.count == 0 && deletedServerObjects.count == 0) return;
-    NSLog(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ ", [insertedManagedObjects valueForKeyPath:@"entity.name"], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
-    NSLog(@"Change records:\n%@", workingChangedRecords);
+    DDLogVerbose(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ ", [insertedManagedObjects valueForKeyPath:@"entity.name"], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
+    DDLogVerbose(@"Change records:\n%@", workingChangedRecords);
     
     
     NSArray *callbacks = [self.saveCallbacks copy];
@@ -198,15 +198,16 @@ NSManagedObjectContext *mainContext;
         for (NSManagedObject *MO in workingObjects) {
             NSManagedObject *localMO = [MO inContext:localContext];
             if (!localMO) {
-                NSLog(@"*** MO %@(%@) to upload haven't saved", MO.entity.name, MO.serverID);
+                DDLogVerbose(@"*** MO %@(%@) to upload haven't saved", MO.entity.name, MO.serverID);
                 continue;
             }
+			
             [self updateParseObjectFromManagedObject:localMO];
             
             //remove changed record
             NSArray *changes = workingChangedRecords[localMO.objectID];
             [workingChangedRecords removeObjectForKey:localMO.objectID];
-            NSLog(@"===> MO %@(%@) uploaded to server with changes applied: %@. %lu to go.", localMO.serverClassName, localMO.serverID, changes, (unsigned long)workingChangedRecords.allKeys.count);
+            DDLogVerbose(@"===> MO %@(%@) uploaded to server with changes applied: %@. %lu to go.", localMO.serverClassName, localMO.serverID, changes, (unsigned long)workingChangedRecords.allKeys.count);
             
             //remove from queue
             [self removeObjectFromWorkingQueue:localMO];
@@ -220,21 +221,21 @@ NSManagedObjectContext *mainContext;
         
         //completion block
         if (callbacks.count) {
-            NSLog(@"=========== Start running completion block (%lu) =============", (unsigned long)callbacks.count);
+            DDLogVerbose(@"=========== Start running completion block (%lu) =============", (unsigned long)callbacks.count);
             for (EWSavingCallback block in callbacks){
                 block();
             }
         }
         
-        NSLog(@"=========== Finished uploading to saver ===============");
+        DDLogVerbose(@"=========== Finished uploading to saver ===============");
         NSSet *reminningWorkingObjects = [self getObjectFromQueue:kParseQueueWorking];
         if (reminningWorkingObjects.count > 0) {
-            NSLog(@"*** With failures: (ID)%@(Entity)%@", [reminningWorkingObjects valueForKey:@"objectId"], [reminningWorkingObjects valueForKeyPath: @"entity.name"]);
+            DDLogError(@"*** With failures: (ID)%@(Entity)%@", [reminningWorkingObjects valueForKey:@"objectId"], [reminningWorkingObjects valueForKeyPath: @"entity.name"]);
             
             [self clearQueue:kParseQueueWorking];
         }
         if (workingChangedRecords.count) {
-            NSLog(@"*** With remaining changed records: %@", workingChangedRecords);
+            DDLogVerbose(@"*** With remaining changed records: %@", workingChangedRecords);
         }
         
         self.isUploading = NO;
@@ -260,7 +261,7 @@ NSManagedObjectContext *mainContext;
         }
         NSParameterAssert([self workingQueue].count == 0);
         
-        [self updateToServer];
+        [self uploadToServer];
     }
 }
 
@@ -298,7 +299,8 @@ NSManagedObjectContext *mainContext;
         
         //skip if marked save to local
         if ([self.saveToLocalItems containsObject:MO.objectID]) {
-            [self.saveToLocalItems removeObject:MO.objectID];
+			NSUInteger index = [self.saveToLocalItems indexOfObject:MO.objectID];
+			[self.saveToLocalItems removeObjectAtIndex:index];
             continue;
         }
 		
@@ -401,14 +403,16 @@ NSManagedObjectContext *mainContext;
         
         if (!object || error) {
             if ([error code] == kPFErrorObjectNotFound) {
-                NSLog(@"PO %@ couldn't be found!", managedObject.serverClassName);
-            } else if ([error code] == kPFErrorConnectionFailed) {
-                NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
-                [managedObject updateEventually];
+                DDLogError(@"PO %@ couldn't be found!", managedObject.serverClassName);
+            }
+			else if ([error code] == kPFErrorConnectionFailed) {
+                DDLogError(@"Uh oh, we couldn't even connect to the Parse Cloud!");
+                [managedObject uploadEventually];
                 return;
-            } else if (error) {
-                NSLog(@"*** Error in getting related parse object from MO (%@). \n Error: %@", managedObject.entity.name, [error userInfo][@"error"]);
-                [managedObject updateEventually];
+            }
+			else if (error) {
+                DDLogError(@"*** Error in getting related parse object from MO (%@). \n Error: %@", managedObject.entity.name, [error userInfo][@"error"]);
+                [managedObject uploadEventually];
                 return;
             }
             object = nil;
@@ -423,15 +427,15 @@ NSManagedObjectContext *mainContext;
         
         [object save:&error];//need to save before working on PFRelation
         if (!error) {
-            NSLog(@"+++> CREATED PO %@(%@)", object.parseClassName, object.objectId);
+            DDLogVerbose(@"+++> CREATED PO %@(%@)", object.parseClassName, object.objectId);
             [managedObject setValue:object.objectId forKey:kParseObjectID];
             [managedObject setValue:object.updatedAt forKeyPath:kUpdatedDateKey];
-        }else{
-            [managedObject updateEventually];
+        }
+		else{
+            [managedObject uploadEventually];
             return;
         }
     }
-    
     
     //==========set Parse value/relation and callback block===========
     [object updateFromManagedObject:managedObject];
@@ -440,17 +444,19 @@ NSManagedObjectContext *mainContext;
     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (error) {
             if (error.code == kPFErrorObjectNotFound){
-                NSLog(@"*** PO not found for %@(%@), set to nil.", managedObject.entity.name, managedObject.serverID);
+                DDLogError(@"*** PO not found for %@(%@), set to nil.", managedObject.entity.name, managedObject.serverID);
                 NSManagedObject *trueMO = [managedObject.managedObjectContext existingObjectWithID:managedObject.objectID error:NULL];
                 if (trueMO) {
                     //need to check if the object is available
                     [managedObject setValue:nil forKey:kParseObjectID];
                 }
-            }else{
-                NSLog(@"*** Failed to save server object: %@", error.description);
             }
-            [managedObject updateEventually];
-        }else{
+			else{
+                DDLogError(@"*** Failed to save server object: %@", error.description);
+            }
+            [managedObject uploadEventually];
+        }
+		else{
             //assign connection between MO and PO
             [self performSaveCallbacksWithParseObject:object andManagedObjectID:managedObject.objectID];
         }
@@ -459,30 +465,31 @@ NSManagedObjectContext *mainContext;
     
     
     //time stamp for updated date. This is very important, otherwise mo might seems to be outdated
-    if (managedObject.hasChanges) {
-        [managedObject setValue:[NSDate date] forKey:kUpdatedDateKey];
-    }else{
-        [managedObject setValue:[NSDate date] forKey:kUpdatedDateKey];
-        [managedObject saveToLocal];
+	//this is for relation, if do not set kUpdateDateKey, means the relation haven't been downloaded yet.
+	[managedObject setValue:[NSDate date] forKey:kUpdatedDateKey];
+	
+    if (!managedObject.hasChanges) {
+		[managedObject saveToLocal];
     }
-    
 }
 
 - (void)deleteParseObject:(PFObject *)parseObject{
     [parseObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        
         if (succeeded) {
             //Good
-            NSLog(@"~~~> PO %@(%@) deleted from server", parseObject.parseClassName, parseObject.objectId);
+            DDLogVerbose(@"~~~> PO %@(%@) deleted from server", parseObject.parseClassName, parseObject.objectId);
             [self removeObjectFromDeleteQueue:parseObject];
             
-        }else if (error.code == kPFErrorObjectNotFound){
+        }
+		else if (error.code == kPFErrorObjectNotFound){
             //fine
-            NSLog(@"~~~> Trying to deleted PO %@(%@) but not found", parseObject.parseClassName, parseObject.objectId);
+            DDLogWarn(@"~~~> Trying to deleted PO %@(%@) but not found", parseObject.parseClassName, parseObject.objectId);
             [self removeObjectFromDeleteQueue:parseObject];
             
-        }else{
+        }
+		else{
             //not good
+			DDLogError(@"delete object failed, not sure why, %@(%@): error:%@", parseObject.parseClassName, parseObject.objectId, error);
             [self removeObjectFromDeleteQueue:parseObject];
         }
     }];

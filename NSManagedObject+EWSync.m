@@ -68,7 +68,7 @@
                 return;
             } else if ([err code] == kPFErrorConnectionFailed) {
                 NSLog(@"Uh oh, we couldn't even connect to the Parse Cloud!");
-                [self updateEventually];
+                [self uploadEventually];
             } else if (err) {
                 NSLog(@"Error: %@", [err userInfo][@"error"]);
                 return;
@@ -293,7 +293,7 @@
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
     if (!parseObjectId) {
         NSLog(@"When refreshing, MO missing serverID %@, prepare to upload", self.entity.name);
-        [self updateEventually];
+        [self uploadEventually];
         [EWSync save];
         if (block) {
             block();
@@ -468,13 +468,13 @@
     
 }
 
-- (void)updateEventually{
-    
+- (void)uploadEventually{
     if (self.serverID) {
         //update
         NSLog(@"%s: updated %@ eventually", __func__, self.entity.name);
         [[EWSync sharedInstance] appendUpdateQueue:self];
-    }else{
+    }
+    else{
         //insert
         NSLog(@"%s: insert %@ eventually", __func__, self.entity.name);
         [[EWSync sharedInstance] appendInsertQueue:self];

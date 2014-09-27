@@ -15,16 +15,17 @@
     [self fetchIfNeeded:&err];
     if (err && self.objectId) {
         if (err.code == kPFErrorObjectNotFound) {
-            NSLog(@"PO %@(%@) not found on server!", self.parseClassName, self.objectId);
+            DDLogError(@"PO %@(%@) not found on server!", self.parseClassName, self.objectId);
             NSManagedObject *trueMO = [managedObject.managedObjectContext existingObjectWithID:managedObject.objectID error:NULL];
             if (trueMO) {
                 [managedObject setValue:nil forKeyPath:kParseObjectID];
             }
-        }else{
-            NSLog(@"Trying to upload but PO error fetching: %@. Skip!", err.description);
+        }
+        else{
+            DDLogError(@"Trying to upload but PO error fetching: %@. Skip!", err.description);
         }
         
-        [managedObject updateEventually];
+        [managedObject uploadEventually];
         return;
     }
     
@@ -56,35 +57,41 @@
         if ([value isKindOfClass:[NSData class]]) {
             //data
             if (!expectChange && POValue) {
-                NSLog(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
+                DDLogWarn(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
+                return;
             }
             //TODO: video file
             NSString *fileName = [NSString stringWithFormat:@"%@.m4a", [PFUser currentUser].username];
             PFFile *dataFile = [PFFile fileWithName:fileName data:value];
             [self setObject:dataFile forKey:key];
-        }else if ([value isKindOfClass:[UIImage class]]){
+        }
+        else if ([value isKindOfClass:[UIImage class]]){
             //image
             if (!expectChange && POValue) {
-                NSLog(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
+                DDLogWarn(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
+                return;
             }
             PFFile *dataFile = [PFFile fileWithName:@"Image.png" data:UIImagePNGRepresentation((UIImage *)value)];
             //[dataFile saveInBackground];//TODO: handle file upload exception
             [self setObject:dataFile forKey:key];
-        }else if ([value isKindOfClass:[CLLocation class]]){
+        }
+        else if ([value isKindOfClass:[CLLocation class]]){
             //location
             if (!expectChange && POValue) {
-                NSLog(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
+                DDLogWarn(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
+                return;
             }
             PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
             [self setObject:point forKey:key];
-        }else if(value != nil){
+        }
+        else if(value != nil){
             [self setObject:value forKey:key];
             
-        }else{
+        }
+        else{
             //value is nil, delete PO value
-            
             if ([self.allKeys containsObject:key]) {
-                NSLog(@"!!! Data %@ empty on MO %@(%@), please check!", key, managedObject.entity.name, managedObject.serverID);
+                DDLogWarn(@"!!! Data %@ empty on MO %@(%@), please check!", key, managedObject.entity.name, managedObject.serverID);
                 [self removeObjectForKey:key];
             }
         }
@@ -166,7 +173,8 @@
                                         [blockObject saveEventually];
                                     }
                                     @catch (NSException *exception) {
-                                        [managedObject updateEventually];
+                                        [managedObject uploadEventually];
+                                        DDLogError(@"saveEventually failed, move to uploadEventually, got exeption:%@", exception);
                                     }
                                 }
                             }];
@@ -181,7 +189,8 @@
                         }
                     }
                 }
-            }else {
+            }
+            else {
                 //TO-One relation
                 NSManagedObject *relatedMO = [managedObject valueForKey:key];
                 NSString *parseID = relatedMO.serverID;
@@ -211,7 +220,7 @@
                                     [blockObject saveEventually];
                                 }
                                 @catch (NSException *exception) {
-                                    [managedObject updateEventually];
+                                    [managedObject uploadEventually];
                                 }
                                 
                             }
@@ -221,7 +230,9 @@
                     [[EWSync sharedInstance] addSaveCallback:connectRelationship forManagedObjectID:relatedMO.objectID];
                 }
             }
-        }else{
+        }
+        
+        else{
             
             //relation cannot be to-many, as it's always has value
             //empty related object, delete PO relationship

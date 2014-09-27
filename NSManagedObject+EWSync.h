@@ -66,7 +66,7 @@
 /**
  Save ManagedObjectID into update queue in userDefaults
  */
-- (void)updateEventually;
+- (void)uploadEventually;
 
 /**
  Save ManagedObjectID into delete queue in userDefaults

@@ -80,7 +80,7 @@ typedef void (^EWSavingCallback)(void);
  And save ManagedObject.
  @discussion Please do not call this method directly. It is scheduled when you call save method.
  */
-- (void)updateToServer;
+- (void)uploadToServer;
 
 /*
  Resume uploading at startup.

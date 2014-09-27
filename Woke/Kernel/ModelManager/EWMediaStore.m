@@ -230,18 +230,18 @@
     }
     if ([media.type isEqualToString:kMediaTypeVoice]) {
         if(!media.audio){
-            NSLog(@"Media %@ type voice with no audio.", media.serverID);
+            DDLogError(@"Media %@ type voice with no audio.", media.serverID);
             good = NO;
         }
     }else if ([media.type isEqualToString:kMediaTypeBuzz]){
         if(!media.buzzKey){
-            NSLog(@"Media %@ type buzz with no buzz type", media.serverID);
+            DDLogError(@"Media %@ type buzz with no buzz type", media.serverID);
             good = NO;
         }
     }
     if (!media.receivers) {
         if(media.tasks.count == 0){
-            NSLog(@"Found media %@ with no receiver and no task.", media.serverID);
+            DDLogError(@"Found media %@ with no receiver and no task.", media.serverID);
             good = NO;
         }
     }

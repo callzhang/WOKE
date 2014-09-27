@@ -312,7 +312,7 @@
     //create if not exsit
     if (!alarmTimes) {
         //if asking saved value, the alarm is not scheduled
-        NSLog(@"=== Saved alarm time not found, use default values!");
+        DDLogInfo(@"=== Saved alarm time not found, use default values!");
         alarmTimes = defaultAlarmTimes;
         [defaults setObject:alarmTimes forKey:kSavedAlarms];
         [defaults synchronize];
@@ -345,25 +345,25 @@
 + (BOOL)validateAlarm:(EWAlarmItem *)alarm{
     BOOL good = YES;
     if (!alarm.owner) {
-        NSLog(@"Alarm（%@）missing owner", alarm.serverID);
+        DDLogError(@"Alarm（%@）missing owner", alarm.serverID);
         alarm.owner = [me inContext:alarm.managedObjectContext];
     }
     if (!alarm.tasks || alarm.tasks.count == 0) {
-        NSLog(@"Alarm（%@）missing task", alarm.serverID);
+        DDLogError(@"Alarm（%@）missing task", alarm.serverID);
         good = NO;
     }
     if (!alarm.time) {
-        NSLog(@"Alarm（%@）missing time", alarm.serverID);
+        DDLogError(@"Alarm（%@）missing time", alarm.serverID);
         good = NO;
     }
     //check tone
     if (!alarm.tone) {
-        NSLog(@"Tone not set, fixed!");
+        DDLogError(@"Tone not set, fixed!");
         alarm.tone = me.preference[@"DefaultTone"];
     }
     
     if (!good) {
-        NSLog(@"Alarm failed validation: %@", alarm);
+        DDLogError(@"Alarm failed validation: %@", alarm);
     }
     return good;
 }

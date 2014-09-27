@@ -853,22 +853,22 @@
     BOOL completed = task.completed || task.time.timeElapsed > kMaxWakeTime;
     if (completed) {
         if(task.alarm){
-            NSLog(@"*** task (%@) completed, shoundn't have alarm", task.serverID);
+            DDLogError(@"*** task (%@) completed, shoundn't have alarm", task.serverID);
             task.alarm = nil;
         }
         
         if (task.owner) {
             task.owner = nil;
             //good = NO;
-            NSLog(@"*** task (%@) completed, shoundn't have owner", task.serverID);
+            DDLogError(@"*** task (%@) completed, shoundn't have owner", task.serverID);
         }
         if (!task.pastOwner) {
-            NSLog(@"*** task missing pastOwner: %@", task);
+            DDLogError(@"*** task missing pastOwner: %@", task);
             task.pastOwner = [me inContext:task.managedObjectContext];
             //good = NO;
         }else if(!task.pastOwner.isMe){
             //NSParameterAssert(task.pastOwner.isMe);
-            NSLog(@"*** Uploading task(%@) that is not owned by me, please check!", task.serverID);
+            DDLogError(@"*** Uploading task(%@) that is not owned by me, please check!", task.serverID);
             return NO;
         }
         
@@ -882,7 +882,7 @@
                 task.alarm = (EWAlarmItem *)[aPO managedObjectInContext:task.managedObjectContext];
             }else{
                 good = NO;
-                NSLog(@"*** task (%@) missing alarm", task.serverID);
+                DDLogError(@"*** task (%@) missing alarm", task.serverID);
             }
             
         }
@@ -890,7 +890,7 @@
         if (task.pastOwner) {
             task.pastOwner = nil;
             //good = NO;
-            NSLog(@"*** task (%@) incomplete, shoundn't have past owner", task.serverID);
+            DDLogError(@"*** task (%@) incomplete, shoundn't have past owner", task.serverID);
         }
         
         if (!task.owner) {
@@ -898,12 +898,12 @@
             if (!task.owner) {
                 task.owner = [me inContext:task.managedObjectContext]?:task.alarm.owner;
                 if (!task.owner) {
-                    NSLog(@"*** task (%@) missing owner", task.serverID);
+                    DDLogError(@"*** task (%@) missing owner", task.serverID);
                 }
             }
         }else if(!task.owner.isMe){
             //NSParameterAssert(task.owner.isMe);
-            NSLog(@"*** validation task(%@) that is not owned by me, please check!", task.serverID);
+            DDLogError(@"*** validation task(%@) that is not owned by me, please check!", task.serverID);
             return NO;
         }
     }
@@ -916,7 +916,7 @@
             task.time = task.alarm.time;
         }else{
             good = NO;
-            NSLog(@"*** task missing time: %@", task.serverID);
+            DDLogError(@"*** task missing time: %@", task.serverID);
         }
         
     }
@@ -930,7 +930,7 @@
 //    }
     
     if (!good) {
-        NSLog(@"Task failed validation: %@", task);
+        DDLogError(@"Task failed validation: %@", task);
     }
     
     return good;
