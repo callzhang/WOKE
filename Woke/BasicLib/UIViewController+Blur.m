@@ -39,7 +39,7 @@ static NavigationControllerDelegate *delegate = nil;
 	}
 	
 	//hide status bar
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 	
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
 		
@@ -52,15 +52,7 @@ static NavigationControllerDelegate *delegate = nil;
 			[self presentViewController:viewController animated:YES completion:block];
 			[[NSNotificationCenter defaultCenter] removeObserver:observer];
 		}];
-		
-		//use simple transition instead: this doesn't work as the background needs blur
-//		viewController.transitioningDelegate = nil;
-//		[self presentViewController:viewController animated:YES completion:^{
-//			viewController.transitioningDelegate = delegate;
-//		}];
 	}
-	
-	
 	
 	return;
 }
@@ -73,7 +65,7 @@ static NavigationControllerDelegate *delegate = nil;
 		}
 		
 		//status bar
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	}];
 	
 	

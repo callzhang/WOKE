@@ -281,7 +281,7 @@
             
             //next time for alarm, this is what the time should be there
             NSDate *time = [a.time nextOccurTime:i];
-			DDLogVerbose(@"Looking for next alarm time: %@", time);
+			DDLogVerbose(@"Checking for alarm time: %@", time);
             BOOL taskMatched = NO;
             //loop through the tasks to verify the target time has been scheduled
             for (EWTaskItem *t in tasks) {

@@ -295,7 +295,7 @@
                 
                 [self showAlarmPageLoading:NO];
                 [refreshViewTimer invalidate];
-                refreshViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
+                refreshViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
             }
         });
         
