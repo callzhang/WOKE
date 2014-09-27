@@ -53,18 +53,6 @@
 		
 	}else if([type isEqualToString:kPushTypeAlarmTimer]){
 		// ============== Alarm Timer ================
-		//first find the task ID
-		//then test if the tesk time is matched
-		//also the task should not be completed
-		//also make sure it's not too early or too late
-		
-		NSString *taskID = push[kPushTaskID];
-		EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
-		
-		if (![taskID isEqualToString:task.objectId]) {
-			NSLog(@"Task from push is not the next task");
-			return;
-		}
 		
 		[EWWakeUpManager handleAlarmTimerEvent:push];
 		

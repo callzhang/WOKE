@@ -220,14 +220,18 @@
         NSString *taskLocalID = info[kLocalTaskKey];
         NSParameterAssert(taskID || taskLocalID);
         if (taskID) {
+            isLanchedFromRemoteNotification = YES;
             task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         }else if (taskLocalID){
             isLaunchedFromLocalNotification = YES;
             task = (EWTaskItem *)[EWTaskItem findFirstByAttribute:kParseObjectID withValue:taskID];
         }
         
-    }else{
-        task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
+    }
+    EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+    if (![nextTask.serverID isEqualToString: task.serverID]){
+        DDLogWarn(@"Task passed from notification %@(%@) is not the next task, skip", task.serverID, task.time);
+        return;
     }
     
     NSLog(@"Start handle timer event");
