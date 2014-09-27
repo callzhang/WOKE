@@ -1046,8 +1046,7 @@
 		
 		
 		NSDictionary *dic = @{@"where":@{kUsername:me.username},
-							  
-							  @"push_time":[NSNumber numberWithDouble:[time timeIntervalSince1970] ],
+							  @"push_time":[NSNumber numberWithDouble:[time timeIntervalSince1970]+30],
 							  @"data":@{@"alert":@"Time to get up",
 										@"content-available":@1,
 										kPushType: kPushTypeAlarmTimer,

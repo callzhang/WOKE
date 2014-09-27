@@ -386,7 +386,7 @@
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         
         //dismiss
-        [rootViewController dismissViewControllerAnimated:YES completion:NULL];
+        [rootViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }
 }
 

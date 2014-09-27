@@ -477,6 +477,10 @@
     [p play];
 }
 
+- (void)beginInterruption{
+    [[EWBackgroundingManager sharedInstance] beginInterruption];
+}
+
 - (void)endInterruptionWithFlags:(NSUInteger)flags{
     if (flags) {
         if (AVAudioSessionInterruptionOptionShouldResume) {
@@ -491,11 +495,8 @@
                     [[UIApplication sharedApplication] scheduleLocalNotification:n];
 #endif
                     [self registerAudioSession];
-                    [manager backgroundKeepAlive:NULL];
+                    [manager endInterruption];
                 }
-                
-                
-                
             });
         }
     }

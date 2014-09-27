@@ -70,7 +70,7 @@ NSManagedObjectContext *mainContext;
     [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:_context queue:nil usingBlock:^(NSNotification *note) {
         
         [_saveToServerDelayTimer invalidate];
-        _saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:kUploadLag target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
+        _saveToServerDelayTimer = [NSTimer scheduledTimerWithTimeInterval:kUploadLag target:self selector:@selector(uploadToServer) userInfo:nil repeats:NO];
     }];
     
     //Reachability
@@ -140,7 +140,7 @@ NSManagedObjectContext *mainContext;
         NSLog(@"Data Store is uploading, delay for 30s");
         static NSTimer *uploadDelay;
         [uploadDelay invalidate];
-        uploadDelay = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(updateToServer) userInfo:nil repeats:NO];
+        uploadDelay = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(uploadToServer) userInfo:nil repeats:NO];
         return;
     }
     self.isUploading = YES;

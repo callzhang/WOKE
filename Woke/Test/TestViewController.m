@@ -114,7 +114,7 @@
 }
 
 - (void)OnBack {
-    [self dismissViewControllerAnimated:YES completion:^{}];
+    [self dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
 @end
@@ -164,7 +164,7 @@
 #pragma mark - TableView Delegate
 
 - (void)OnCancel {
-    [self dismissViewControllerAnimated:YES completion:^{}];
+    [self dismissBlurViewControllerWithCompletionHandler:NULL];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -180,8 +180,8 @@
                 [rootViewController.view showSuccessNotification:@"Exit app now."];
             }];
             
-            //3. Insert a task that is dur in 10s
-            //...Ø
+            //3. Insert a task that is due in 10s
+            
             break;
         }
         case 1: {
@@ -225,7 +225,7 @@
             //send to self a push
             [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
             //dismiss self to present popup view
-            [self dismissViewControllerAnimated:YES completion:^{
+            [self dismissBlurViewControllerWithCompletionHandler:^{
                 [EWServer buzz:@[me]];
             }];
             break;

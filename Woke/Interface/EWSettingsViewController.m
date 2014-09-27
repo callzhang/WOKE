@@ -347,7 +347,7 @@ static const NSArray *pref;
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if ([alertView.title isEqualToString:@"Log out"]) {
         if (buttonIndex == 1) {
-            [self dismissViewControllerAnimated:YES completion:^{
+            [self dismissBlurViewControllerWithCompletionHandler:^{
                 //log out
                 [EWUserManagement logout];
             }];

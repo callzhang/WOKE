@@ -191,7 +191,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
             });
         }
         
-        [rootViewController dismissViewControllerAnimated:YES completion:NULL];
+        [rootViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }
     else
     {
@@ -204,9 +204,9 @@ NSString * const selectAllCellId = @"selectAllCellId";
 -(IBAction)cancel:(id)sender
 {
 
-    [rootViewController dismissViewControllerAnimated:YES completion:^{
+    [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
         [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-        [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+        [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }];
 }
 

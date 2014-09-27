@@ -207,6 +207,9 @@
         return;
     }
     
+    //state change
+    [EWWakeUpManager sharedInstance].isWakingUp = YES;
+    
     BOOL isLaunchedFromLocalNotification = NO;
     BOOL isLanchedFromRemoteNotification = NO;
     
@@ -230,23 +233,26 @@
     NSLog(@"Start handle timer event");
     if (!task) {
         NSLog(@"*** %s No task found for next task, abord", __func__);
+        [EWWakeUpManager sharedInstance].isWakingUp = NO;
         return;
     }
     
     if (task.state == NO) {
         NSLog(@"Task is OFF, skip today's alarm");
+        [EWWakeUpManager sharedInstance].isWakingUp = NO;
         return;
     }
     
     if (task.completed) {
         // task completed
         NSLog(@"Task has completed at %@, skip.", task.completed.date2String);
+        [EWWakeUpManager sharedInstance].isWakingUp = NO;
         return;
     }
     if (task.time.timeElapsed > kMaxWakeTime) {
         NSLog(@"Task(%@) from notification has passed the wake up window. Handle is with checkPastTasks.", task.objectId);
         [[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
-        
+        [EWWakeUpManager sharedInstance].isWakingUp = NO;
         return;
     }
     

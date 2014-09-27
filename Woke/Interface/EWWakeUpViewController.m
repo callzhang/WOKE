@@ -253,7 +253,7 @@
 
 
 - (void)OnCancel{
-    [self.navigationController dismissViewControllerAnimated:YES completion:^{
+    [self.navigationController dismissBlurViewControllerWithCompletionHandler:^{
         [[AVManager sharedManager] stopAllPlaying];
     }];
 }

@@ -18,6 +18,7 @@
 + (BOOL)supportBackground;
 - (void)startBackgrounding;
 - (void)endBackgrounding;
-
+- (void)beginInterruption;
+- (void)endInterruption;
 - (void)backgroundKeepAlive:(NSTimer *)timer;
 @end
