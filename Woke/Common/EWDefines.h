@@ -136,13 +136,17 @@
 #define kLocalNotificationTypeReactivate    @"reactivate"
 #define kLocalNotificationTypeSleepTimer    @"sleep_timer"
 //push
+#define kPushType						@"type"
+#define kPushTypeAlarmTimer				@"timer"
+//media
+#define kPushTypeMedia					@"media"
+#define kPushMediaType					@"media_type"
+#define kPushMediaTypeBuzz				@"buzz"
+#define kPushMediaTypeVoice				@"voice"
 #define kPushPersonID					@"person"
 #define kPushTaskID						@"task"
 #define kPushMediaID					@"media"
-#define kPushMediaTypeBuzz				@"buzz"
-#define kPushMediaTypeVoice				@"voice"
-#define kPushTypeAlarmTimer				@"timer"
-#define kPushType						@"type"
+//notification
 #define kPushTypeNotification			@"notice"
 #define kPushNofiticationID				@"notificationID"
 

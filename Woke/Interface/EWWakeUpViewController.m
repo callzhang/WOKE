@@ -307,7 +307,6 @@
         mi = [medias objectAtIndex:indexPath.row];
     }
     
-    
     //title
     cell.name.text = mi.author.name;
     

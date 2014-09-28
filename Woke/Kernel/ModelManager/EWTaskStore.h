@@ -77,6 +77,7 @@
 - (BOOL)checkPastTasks;
 - (void)checkPastTasksInBackgroundWithCompletion:(void (^)(void))block;
 - (BOOL)checkPastTasksInContext:(NSManagedObjectContext *)localContext;
+- (void)completedTask:(EWTaskItem *)task;
 
 #pragma mark - KVO
 - (void)updateTaskState:(NSNotification *)notif;

@@ -69,13 +69,15 @@
 
 - (EWMediaItem *)getWokeVoice{
     PFQuery *q = [PFQuery queryWithClassName:@"EWMediaItem"];
-    [q whereKey:@"author" equalTo:[PFQuery getUserObjectWithId:WokeUserID]];
+    [q whereKey:EWMediaItemRelationships.author equalTo:[PFQuery getUserObjectWithId:WokeUserID]];
+    [q whereKey:EWMediaItemAttributes.type equalTo:kPushMediaTypeVoice];
     NSArray *mediasFromWoke = me.cachedInfo[kWokeVoiceReceived]?:[NSArray new];
-#ifdef DEBUG
-#else
+#if !DEBUG
     [q whereKey:kParseObjectID notContainedIn:mediasFromWoke];
 #endif
-    PFObject *voice = [[EWSync findServerObjectWithQuery:q] firstObject];
+    NSArray *voices = [EWSync findServerObjectWithQuery:q];
+    NSUInteger i = arc4random_uniform(voices.count);
+    PFObject *voice = voices[i];
     if (voice) {
         EWMediaItem *media = (EWMediaItem *)[voice managedObjectInContext:nil];
         [media refresh];

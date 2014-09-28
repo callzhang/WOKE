@@ -251,7 +251,7 @@
             EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:context];
             [task refresh];
             task.owner = [me inContext:context];
-            BOOL good = [EWSync validateMO:task];
+            BOOL good = [EWTaskStore validateTask:task];
             if (!good) {
                 [self removeTask:task];
             }else if (![tasks containsObject:task]) {
@@ -445,26 +445,26 @@
     
     if (taskOutDated) {
         
-        //TODO: check duplicated past tasks
-        NSMutableDictionary *ptDic = [NSMutableDictionary new];
+        //check duplicated past tasks
+        NSMutableDictionary *pastTaskDic = [NSMutableDictionary new];
         for (EWTaskItem *t in pastTasks) {
             NSString *day = t.time.date2YYMMDDString;
-            if (!ptDic[day]) {
-                ptDic[day] = t;
+            if (!pastTaskDic[day]) {
+                pastTaskDic[day] = t;
             }else{
                 if (!t.completed) {
                     [t deleteEntityInContext:localContext];
-                    NSLog(@"duplicated past task deleted: %@", t.time);
+                    DDLogWarn(@"duplicated past(%@) task deleted: %@", t.objectId, t.time);
                 }else{
-                    EWTaskItem *t0 = (EWTaskItem *)ptDic[day];
+                    EWTaskItem *t0 = (EWTaskItem *)pastTaskDic[day];
                     NSDate *c0 = [t0 completed];
                     if (!c0 || [t.completed isEarlierThan:c0]) {
-                        ptDic[day] = t;
+                        pastTaskDic[day] = t;
                         [t0 deleteEntityInContext:localContext];
-                        NSLog(@"duplicated past task deleted: %@", t0.time);
+                        DDLogWarn(@"duplicated past(%@) task deleted: %@", t.objectId, t.time);
                     }else{
                         [t deleteEntityInContext:localContext];
-                        NSLog(@"duplicated past task deleted: %@", t.time);
+                        DDLogWarn(@"duplicated past(%@) task deleted: %@", t.objectId, t.time);
                     }
                 }
             }
@@ -479,6 +479,21 @@
     
     return taskOutDated;
 }
+
+
+- (void)completedTask:(EWTaskItem *)task{
+    if (task.time.timeIntervalSinceNow>0) {
+        DDLogError(@"%s passed in future task %@(%@)", __func__, task.time, task.objectId);
+        return;
+    }
+    task.completed = [NSDate date];
+    task.pastOwner = task.owner;
+    task.owner = nil;
+    task.alarm = nil;
+    DDLogVerbose(@"Completed task: %@", task.objectId);
+    [self scheduleTasksInBackgroundWithCompletion:NULL];
+}
+
 
 #pragma mark - NEW
 - (EWTaskItem *)newTaskInContext:(NSManagedObjectContext *)context{
@@ -999,75 +1014,72 @@
 #pragma mark - Schedule Alarm Timer
 
 + (void)scheduleNotificationOnServerForTask:(EWTaskItem *)task{
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-		EWTaskItem *localTask = [task inContext:localContext];
-		if (!localTask.time || !localTask.objectId) {
-			DDLogError(@"*** The Task for schedule push doesn't have time or objectId: %@", task);
-			[[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
-			return;
-		}
-		if ([localTask.time timeIntervalSinceNow] < 0) {
-			// task outDate
-			return;
-		}
-		NSString *taskID = localTask.serverID;
-		NSDate *time = localTask.time;
-		//check local schedule records before make the REST call
-		__block NSMutableDictionary *timeTable = [[[NSUserDefaults standardUserDefaults] objectForKey:kScheduledAlarmTimers] mutableCopy] ?:[NSMutableDictionary new];
-		for (NSString *objectId in timeTable.allKeys) {
-			EWTaskItem *t = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:objectId inContext:localContext];
-			if (t.time.timeElapsed > 0) {
-				//delete from time table
-				[timeTable removeObjectForKey:objectId];
-				DDLogInfo(@"Past task on %@ has been removed from schedule table", t.time.date2detailDateString);
-			}
-		}
-		//add scheduled time to task
-		__block NSMutableArray *times = [[timeTable objectForKey:taskID] mutableCopy]?:[NSMutableArray new];
-		if ([times containsObject:time]) {
-			DDLogInfo(@"===Task (%@) timer push (%@) has already been scheduled on server, skip.", taskID, time);
-			return;
-		}else{
-			[times addObject:time];
-			[timeTable setObject:times.copy forKey:taskID];
-			[[NSUserDefaults standardUserDefaults] setObject:timeTable.copy forKey:kScheduledAlarmTimers];
-			DDLogInfo(@"Scheduled task timer on server: %@", timeTable);
-		}
-		
-		
-		//============ Start scheduling task timer on server ============
-		
-		AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-		manager.requestSerializer = [AFJSONRequestSerializer serializer];
-		
-		[manager.requestSerializer setValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
-		[manager.requestSerializer setValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
-		[manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-		
-		
-		NSDictionary *dic = @{@"where":@{kUsername:me.username},
-							  @"push_time":[NSNumber numberWithDouble:[time timeIntervalSince1970]+30],
-							  @"data":@{@"alert":@"Time to get up",
-										@"content-available":@1,
-										kPushType: kPushTypeAlarmTimer,
-										kPushTaskID: taskID},
-							  };
-		
-		[manager POST:kParsePushUrl parameters:dic
-			  success:^(AFHTTPRequestOperation *operation,id responseObject) {
-				  
-				  DDLogVerbose(@"Schedule task timer push success for time %@", time.date2detailDateString);
-				  [times addObject:time];
-				  [timeTable setObject:times forKey:taskID];
-				  [[NSUserDefaults standardUserDefaults] setObject:timeTable.copy forKey:kScheduledAlarmTimers];
-				  
-			  }failure:^(AFHTTPRequestOperation *operation,NSError *error) {
-				  
-				  DDLogError(@"Schedule Push Error: %@", error);
-				  
-			  }];
+    if (!task.time || !task.objectId) {
+        DDLogError(@"*** The Task for schedule push doesn't have time or objectId: %@", task);
+        [[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
+        return;
+    }
+    if ([task.time timeIntervalSinceNow] < 0) {
+        // task outDate
+        return;
+    }
+    NSString *taskID = task.serverID;
+    NSDate *time = task.time;
+    //check local schedule records before make the REST call
+    __block NSMutableDictionary *timeTable = [[[NSUserDefaults standardUserDefaults] objectForKey:kScheduledAlarmTimers] mutableCopy] ?:[NSMutableDictionary new];
+    for (NSString *objectId in timeTable.allKeys) {
+        EWTaskItem *t = [EWTaskItem findFirstByAttribute:kParseObjectID withValue:objectId];
+        if (t.time.timeElapsed > 0) {
+            //delete from time table
+            [timeTable removeObjectForKey:objectId];
+            DDLogInfo(@"Past task on %@ has been removed from schedule table", t.time.date2detailDateString);
+        }
+    }
+    //add scheduled time to task
+    __block NSMutableArray *times = [[timeTable objectForKey:taskID] mutableCopy]?:[NSMutableArray new];
+    if ([times containsObject:time]) {
+        DDLogInfo(@"===Task (%@) timer push (%@) has already been scheduled on server, skip.", taskID, time);
+        return;
+    }else{
+        [times addObject:time];
+        [timeTable setObject:times.copy forKey:taskID];
+        [[NSUserDefaults standardUserDefaults] setObject:timeTable.copy forKey:kScheduledAlarmTimers];
+        DDLogInfo(@"Scheduled task timer on server: %@", timeTable);
+    }
+    
+    
+    //============ Start scheduling task timer on server ============
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    
+    [manager.requestSerializer setValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
+    [manager.requestSerializer setValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    
+    
+    NSDictionary *dic = @{@"where":@{kUsername:me.username},
+                          @"push_time":[NSNumber numberWithDouble:[time timeIntervalSince1970]+30],
+                          @"data":@{@"alert":@"Time to get up",
+                                    @"content-available":@1,
+                                    kPushType: kPushTypeAlarmTimer,
+                                    kPushTaskID: taskID},
+                          };
+    
+    [manager POST:kParsePushUrl parameters:dic
+          success:^(AFHTTPRequestOperation *operation,id responseObject) {
+              
+              DDLogVerbose(@"Schedule task timer push success for time %@", time.date2detailDateString);
+              [times addObject:time];
+              [timeTable setObject:times forKey:taskID];
+              [[NSUserDefaults standardUserDefaults] setObject:timeTable.copy forKey:kScheduledAlarmTimers];
+              
+          }failure:^(AFHTTPRequestOperation *operation,NSError *error) {
+              
+              DDLogError(@"Schedule Push Error: %@", error);
+              
+    }];
 
-	}];
 }
 
 @end

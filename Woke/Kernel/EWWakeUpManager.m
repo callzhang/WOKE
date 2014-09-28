@@ -43,7 +43,6 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[EWWakeUpManager alloc] init];
-        manager.isWakingUp = NO;
     });
     return manager;
 }
@@ -63,7 +62,9 @@
 
 #pragma mark - Handle push notification
 + (void)handlePushMedia:(NSDictionary *)notification{
-    NSString *type = notification[kPushType];
+    NSString *pushType = notification[kPushType];
+    NSParameterAssert([pushType isEqualToString:kPushTypeMedia]);
+    NSString *type = notification[kPushMediaType];
     NSString *mediaID = notification[kPushMediaID];
 	//NSString *taskID = notification[kPushTaskID];
 	
@@ -91,7 +92,6 @@
         EWPerson *sender = media.author;
         //alert
         [[[UIAlertView alloc] initWithTitle:@"Buzz coming" message:[NSString stringWithFormat:@"Got a buzz from %@. (Testing)", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        
 #endif
         
         if (task.completed || [[NSDate date] timeIntervalSinceDate:task.time] > kMaxWakeTime) {
@@ -203,12 +203,10 @@
 + (void)handleAlarmTimerEvent:(NSDictionary *)info{
     NSParameterAssert([NSThread isMainThread]);
     if ([EWWakeUpManager sharedInstance].isWakingUp) {
-        NSLog(@"WakeUpManager is already handling alarm timer, skip");
+        DDLogWarn(@"WakeUpManager is already handling alarm timer, skip");
         return;
     }
     
-    //state change
-    [EWWakeUpManager sharedInstance].isWakingUp = YES;
     
     BOOL isLaunchedFromLocalNotification = NO;
     BOOL isLanchedFromRemoteNotification = NO;
@@ -224,41 +222,51 @@
             task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         }else if (taskLocalID){
             isLaunchedFromLocalNotification = YES;
-            task = (EWTaskItem *)[EWTaskItem findFirstByAttribute:kParseObjectID withValue:taskID];
+            NSURL *url = [NSURL URLWithString:taskLocalID];
+            NSManagedObjectID *ID = [mainContext.persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
+            if (ID) {
+                task = (EWTaskItem *)[mainContext existingObjectWithID:ID error:NULL];
+            }else{
+                DDLogError(@"The task objectID is invalid for alarm timer local notif: %@",taskLocalID);
+            }
         }
         
     }
     EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
-    if (![nextTask.serverID isEqualToString: task.serverID]){
-        DDLogWarn(@"Task passed from notification %@(%@) is not the next task, skip", task.serverID, task.time);
-        return;
+    if (task) {
+        if (![nextTask isEqual: task]){
+            DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, task.time);
+            task = nextTask;
+        }
+    }else{
+        task = nextTask;
     }
+   
     
     NSLog(@"Start handle timer event");
     if (!task) {
         NSLog(@"*** %s No task found for next task, abord", __func__);
-        [EWWakeUpManager sharedInstance].isWakingUp = NO;
         return;
     }
     
     if (task.state == NO) {
         NSLog(@"Task is OFF, skip today's alarm");
-        [EWWakeUpManager sharedInstance].isWakingUp = NO;
         return;
     }
     
     if (task.completed) {
         // task completed
         NSLog(@"Task has completed at %@, skip.", task.completed.date2String);
-        [EWWakeUpManager sharedInstance].isWakingUp = NO;
         return;
     }
     if (task.time.timeElapsed > kMaxWakeTime) {
         NSLog(@"Task(%@) from notification has passed the wake up window. Handle is with checkPastTasks.", task.objectId);
         [[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
-        [EWWakeUpManager sharedInstance].isWakingUp = NO;
         return;
     }
+    
+    //state change
+    [EWWakeUpManager sharedInstance].isWakingUp = YES;
     
     //update media
     [[EWMediaStore sharedInstance] checkMediaAssets];
@@ -302,9 +310,6 @@
     
     //cancel local alarm
     [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
-    
-    //state change
-    [EWWakeUpManager sharedInstance].isWakingUp = YES;
     
     if (isLaunchedFromLocalNotification) {
         
@@ -371,55 +376,27 @@
         [EWWakeUpManager sharedInstance].controller = controller;
         
         //dispatch to main thread
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"Presenting wakeUpView");
-            if (rootViewController.presentedViewController) {
-                [rootViewController dismissBlurViewControllerWithCompletionHandler:^{
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                        [rootViewController presentViewControllerWithBlurBackground:controller];
-                    });
-                }];
-            }else{
-                [rootViewController presentViewControllerWithBlurBackground:controller];
-            }
-            
-            //start playing regardless
-            [controller startPlayCells];
-        });
-        
+        [rootViewController presentWithBlur:controller withCompletion:NULL];
         
         
     }else{
-        //save controller if not
-        id controller = rootViewController.presentedViewController;
-        if ([controller isKindOfClass:[EWWakeUpViewController class]]) {
-            [EWWakeUpManager sharedInstance].controller = controller;
-        } else {
-            NSLog(@"*** Something wrong with detecting presented VC! Please cheeck!");
-            [EWWakeUpManager presentWakeUpView];
-        }
+        DDLogInfo(@"Wake up view is already presenting");
+        [EWWakeUpManager sharedInstance].isWakingUp = NO;
     }
 }
 
 //indicate that the user has woke
 + (void)woke:(EWTaskItem *)task{
     [EWWakeUpManager sharedInstance].controller = nil;
-    [[NSNotificationCenter defaultCenter] postNotificationName:kWokeNotification object:nil];
     [EWWakeUpManager sharedInstance].isWakingUp = NO;
     
     //handle wakeup signel
     [[ATConnect sharedConnection] engage:kWakeupSuccess fromViewController:rootViewController];
     
     //set wakeup time
-    if ([task.time isEarlierThan:[NSDate date]] && !task.completed) {
-        if (task.time.timeElapsed > kMaxWakeTime) {
-            task.completed = [task.time dateByAddingTimeInterval:kMaxWakeTime];
-        }else{
-            task.completed = [NSDate date];
-        }
-        [[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
-    }
+    [[EWTaskStore sharedInstance] completedTask:task];
     
+    [[NSNotificationCenter defaultCenter] postNotificationName:kWokeNotification object:nil];
     
     //TODO: something to do in the future
     //notify friends and challengers
@@ -436,9 +413,7 @@
     
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
-    if ([EWWakeUpManager sharedInstance].forceAlarm) {
-        timeLeft = 10;
-    }
+
     NSLog(@"===========================>> Check Alarm Timer (%ld min left) <<=============================", (NSInteger)timeLeft/60);
     static BOOL timerInitiated = NO;
     if (timeLeft < kServerUpdateInterval && timeLeft > 0 && !timerInitiated) {
@@ -467,23 +442,22 @@
         NSLog(@"%s: About to init alart timer in %fs", __func__, timeLeft);
         timerInitiated = YES;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [EWWakeUpManager handleSleepTimerEvent];
+            [EWWakeUpManager handleSleepTimerEvent:nil];
         });
     }
 }
 
-+ (void)handleSleepTimerEvent{
-    
++ (void)handleSleepTimerEvent:(UILocalNotification *)notification{
+    NSString *taskID = notification.userInfo[kLocalTaskKey];
     if (me) {
         //logged in enter sleep mode
-        EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
-        [rootViewController presentWithBlur:controller withCompletion:NULL];
-    }else{
-        [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
+        EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+        NSNumber *duration = me.preference[kSleepDuration];
+        if ([task.objectID.URIRepresentation.absoluteString isEqualToString:taskID] && task.time.timeIntervalSinceNow/3600<duration.floatValue) {
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
             [rootViewController presentWithBlur:controller withCompletion:NULL];
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:kPersonLoggedIn object:nil];
-        }];
+        }
+        
     }
 }
 

@@ -136,7 +136,7 @@ NSManagedObjectContext *mainContext;
         return;
     }
     
-    if (self.isUploading) {
+    if ([self workingQueue].count >0) {
         NSLog(@"Data Store is uploading, delay for 30s");
         static NSTimer *uploadDelay;
         [uploadDelay invalidate];

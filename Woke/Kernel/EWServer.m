@@ -48,7 +48,7 @@
 + (void)handlePushNotification:(NSDictionary *)push{
 	NSString *type = push[kPushType];
 					  
-    if ([type isEqualToString:kPushTypeAlarmTimer]) {
+    if ([type isEqualToString:kPushTypeMedia]) {
 		[EWWakeUpManager handlePushMedia:push];
 		
 	}else if([type isEqualToString:kPushTypeAlarmTimer]){
@@ -59,8 +59,10 @@
 	}else{
 		// Other push type not supported
 		NSString *str = [NSString stringWithFormat:@"Unknown push type received: %@", push];
-		NSLog(@"Received unknown type of push msg");
+		DDLogError(@"Received unknown type of push msg: %@", str);
+#ifdef DEBUG
 		EWAlert(str);
+#endif
 	}
 }
 
@@ -80,7 +82,7 @@
         
         [[NSNotificationCenter defaultCenter] postNotificationName:kSleepNotification object:notification];
         
-        [EWWakeUpManager handleSleepTimerEvent];
+        [EWWakeUpManager handleSleepTimerEvent:notification];
     }
     else{
         NSLog(@"Unexpected Local Notification Type. Detail: %@", notification);
@@ -113,9 +115,11 @@
             
             //push payload
             NSMutableDictionary *pushMessage = [@{@"content-available": @1,
-                                          @"badge": @"Increment",
-                                          kPushMediaID: buzz.objectId,
-                                          kPushType: kPushMediaTypeVoice} mutableCopy];
+                                                  @"badge": @"Increment",
+                                                  kPushMediaID: buzz.objectId,
+                                                  kPushType: kPushTypeMedia,
+                                                  kPushMediaType: kPushMediaTypeBuzz}
+                                                mutableCopy];
             
             
             if ([[NSDate date] isEarlierThan:time]) {
@@ -164,7 +168,8 @@
     NSMutableDictionary *pushMessage = [@{@"badge": @"Increment",
                                  @"alert": @"Someone has sent you an voice greeting",
                                  @"content-available": @1,
-                                 kPushType: kPushMediaTypeVoice,
+                                 kPushType: kPushTypeMedia,
+                                 kPushMediaType: kPushMediaTypeVoice,
                                  kPushPersonID: me.objectId,
                                  kPushMediaID: mediaId} mutableCopy];
     

@@ -71,5 +71,10 @@
 	
 	self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", nextTask.time.timeLeft];
     self.alarmTime.text = [NSString stringWithFormat:@"Alarm %@", nextTask.time.date2String];
+    
+    if (nextTask.time.timeIntervalSinceNow <0) {
+        //task has past
+        [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+    }
 }
 @end

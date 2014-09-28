@@ -29,6 +29,7 @@
 #import "EWNotification.h"
 #import "EWNotificationManager.h"
 #import "EWBackgroundingManager.h"
+#import "EWAlarmItem.h"
 
 @interface TestViewController ()
 
@@ -174,13 +175,22 @@
             //1. show wake up view
             //[EWWakeUpManager presentWakeUpView];
             
-            //2. force alarm in 10s
-            [EWWakeUpManager sharedInstance].forceAlarm = YES;
-            [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
-                [rootViewController.view showSuccessNotification:@"Exit app now."];
-            }];
             
-            //3. Insert a task that is due in 10s
+            //2. Modify alarm that is due in 30s
+            for (EWAlarmItem *alarm in me.alarms.copy) {
+                if (alarm.time.weekdayNumber == [NSDate date].weekdayNumber) {
+                    //add time 30s
+                    NSDate *t = alarm.time;
+                    alarm.time = [[NSDate date] dateByAddingTimeInterval:30];
+                    DDLogInfo(@"chenged alarm time from %@ to %@", t.date2String, alarm.time.date2String);
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
+                    [EWSync saveWithCompletion:^{
+                        [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
+                            [rootViewController.view showSuccessNotification:@"Exit app and wait for next alarm"];
+                        }];
+                    }];
+                }
+            }
             
             break;
         }

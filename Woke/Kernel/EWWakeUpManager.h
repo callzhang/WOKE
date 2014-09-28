@@ -10,7 +10,6 @@
 @class EWTaskItem;
 
 @interface EWWakeUpManager : NSObject
-@property (nonatomic) BOOL forceAlarm;
 @property BOOL isWakingUp;
 
 + (EWWakeUpManager *)sharedInstance;
@@ -43,7 +42,7 @@
  */
 + (void)handleAlarmTimerEvent:(NSDictionary *)pushInfo;
 
-+ (void)handleSleepTimerEvent;
++ (void)handleSleepTimerEvent:(UILocalNotification *)notification;
 
 /**
  Detect if root view is presenting EWWakeUpViewController
