@@ -161,35 +161,43 @@
     
     //assign new value
     progressBar = cell.mediaBar;
-    media = cell.media;
+    //media = cell.media;
     currentCell = cell;
 }
 
 
 - (void)playMedia:(EWMediaItem *)mi{
     NSParameterAssert([NSThread isMainThread]);
-    media = [mi inContext:mainContext];
+    
     if (!mi){
         [self playSoundFromFileName:kSilentSound];
+    }else if (media == mi && self.player.isPlaying){
+        DDLogInfo(@"Same media passed in, skip.");
+        [self updateViewForPlayerState:player];
+        return;
     }
-    else if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
-        
-        [self playSoundFromData:mi.audio];
-        
-        //lock screen
-        [self displayNowPlayingInfoToLockScreen:mi];
-        
-    }else if([media.type isEqualToString:kMediaTypeBuzz]){
-        if ([media.buzzKey isEqualToString: @"default"]) {
-            [self playSoundFromFileName:@"buzz.caf"];
+    else{
+        //new media
+        media = mi;
+        if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
+            
+            [self playSoundFromData:mi.audio];
+            
+            //lock screen
+            [self displayNowPlayingInfoToLockScreen:mi];
+            
+        }else if([media.type isEqualToString:kMediaTypeBuzz]){
+            if ([media.buzzKey isEqualToString: @"default"]) {
+                [self playSoundFromFileName:@"buzz.caf"];
+            }else{
+                //TODO
+                [self playSoundFromFileName:media.buzzKey];
+            }
+            
         }else{
-            //TODO
-            [self playSoundFromFileName:media.buzzKey];
+            NSLog(@"Unknown type of media, skip");
+            [self playSoundFromFileName:kSilentSound];
         }
-        
-    }else{
-        NSLog(@"Unknown type of media, skip");
-        [self playSoundFromFileName:kSilentSound];
     }
     
 }

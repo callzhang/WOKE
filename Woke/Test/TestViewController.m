@@ -64,7 +64,7 @@
 
 
 - (void)initData {
-    titles = @[@"Wake up in 10s",
+    titles = @[@"Wake up in 30s",
                @"Shake test",
                @"Social Network API",
                @"Local Notifications",
@@ -77,7 +77,7 @@
                @"Address book",
                @"Facebook post"];
     
-    subTitles = @[@"Add a task that is due in 10s.",
+    subTitles = @[@"Update task's time that is due in 30s.",
                   @"Test shake",
                   @"Test social networking capabilities",
                   @"List local notifications",

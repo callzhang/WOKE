@@ -130,6 +130,19 @@
     
     //pre download everyone for postWakeUpVC
     [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+    
+    //send currently played cell info to avmanager
+    if ([AVManager sharedManager].media) {
+        NSInteger currentPlayingCellIndex = [medias indexOfObject:[AVManager sharedManager].media];
+        if (currentPlayingCellIndex != NSNotFound) {
+            EWMediaViewCell *cell = (EWMediaViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
+            if (cell) {
+                [[AVManager sharedManager] playForCell:cell];
+            }
+        }
+    }
+    
+    
 
 }
 
@@ -201,21 +214,24 @@
     //show button first
     footer.top = [UIScreen mainScreen].bounds.size.height;
     [self.wakeupButton setTitle:@"Shake To Wake Up!" forState:UIControlStateNormal];
-    self.shakeProgress.alpha = 0;
-    
-    if ([self.shakeProgress isShakeSupported]) {
-        [self.wakeupButton addTarget:self action:@selector(presentShakeProgressBar) forControlEvents:UIControlEventTouchUpInside];
-        // need  update
-        self.shakeProgress.progress = 0;
+    BOOL skipShake = NO;
+#ifdef DEBUG
+    skipShake = YES;
+#endif
+    if ([self.shakeProgress isShakeSupported] && !skipShake) {
+        [self presentShakeProgressBar];
     }else{
+        [_wakeupButton setTitle:@"Wake up!" forState:UIControlStateNormal];
+        _shakeProgress.alpha = 0;
         [self.wakeupButton addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
     }
 }
 
 - (void)presentShakeProgressBar{
-    [_wakeupButton removeTarget:self action:@selector(presentShakeProgressBar) forControlEvents:UIControlEventTouchUpInside];
+    self.shakeProgress.progress = 0;
+    //[_wakeupButton removeTarget:self action:@selector(presentShakeProgressBar) forControlEvents:UIControlEventTouchUpInside];
     
-    [_wakeupButton setTitle:@"" forState:UIControlStateNormal];
+    //[_wakeupButton setTitle:@"" forState:UIControlStateNormal];
     [UIView animateWithDuration:0.5 animations:^{
         //show bar
         _shakeProgress.alpha = 1;
@@ -230,7 +246,7 @@
                 _shakeProgress.alpha = 0;
             } completion:^(BOOL finished) {
                 
-                [_wakeupButton setTitle:@"Wake!" forState:UIControlStateNormal];
+                [_wakeupButton setTitle:@"Wake up!" forState:UIControlStateNormal];
                 [_wakeupButton addTarget:self action:@selector(presentPostWakeUpVC) forControlEvents:UIControlEventTouchUpInside];
             }];
         }];
@@ -474,10 +490,8 @@
             else{
                 [[AVManager sharedManager] playForCell:cell];
             }
-            
         }
     }
-    
 }
 
 - (void)playNextCell:(NSNotification *)note{

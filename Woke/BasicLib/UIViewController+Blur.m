@@ -47,8 +47,9 @@ static NavigationControllerDelegate *delegate = nil;
 		[self presentViewController:viewController animated:YES completion:block];
 	} else {
 		//if inactive, wait until app become active
+		DDLogInfo(@"Application is not active, delay dismiss blur animation");
 		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-			NSLog(@"Application did become active, start blur animation");
+			DDLogInfo(@"Application did become active, start blur animation");
 			[self presentViewController:viewController animated:YES completion:block];
 			[[NSNotificationCenter defaultCenter] removeObserver:observer];
 		}];
@@ -79,22 +80,17 @@ static NavigationControllerDelegate *delegate = nil;
 
 - (void)presentWithBlur:(UIViewController *)controller withCompletion:(void (^)(void))completion{
 	if (self.presentedViewController) {
+		if ([self.presentedViewController isKindOfClass:[controller class]]) {
+			DDLogWarn(@"The view controller %@ is already presenting, skip blur animation", controller.class);
+		}
 		//need to dismiss first
 		[self dismissBlurViewControllerWithCompletionHandler:^{
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-				[self presentViewControllerWithBlurBackground:controller completion:^{
-					if (completion) {
-						completion();
-					}
-				}];
+				[self presentViewControllerWithBlurBackground:controller completion:completion];
 			});
 		}];
 	}else{
-		[self presentViewControllerWithBlurBackground:controller completion:^{
-			if (completion) {
-				completion();
-			}
-		}];
+		[self presentViewControllerWithBlurBackground:controller completion:completion];
 	}
 }
 

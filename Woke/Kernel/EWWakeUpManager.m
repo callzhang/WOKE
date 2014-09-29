@@ -27,6 +27,7 @@
 //UI
 #import "EWWakeUpViewController.h"
 #import "EWSleepViewController.h"
+#import "EWPostWakeUpViewController.h"
 
 
 @interface EWWakeUpManager()
@@ -232,14 +233,9 @@
         }
         
     }
-    EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
-    if (task) {
-        if (![nextTask isEqual: task]){
-            DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, task.time);
-            task = nextTask;
-        }
-    }else{
-        task = nextTask;
+    
+    if (!task) {
+        task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
     }
    
     
@@ -262,6 +258,10 @@
     if (task.time.timeElapsed > kMaxWakeTime) {
         NSLog(@"Task(%@) from notification has passed the wake up window. Handle is with checkPastTasks.", task.objectId);
         [[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
+        return;
+    }
+    if (task.time.timeIntervalSinceNow>0) {
+        DDLogWarn(@"Task %@(%@) passed in is in the future", task.time.date2String, task.objectId);
         return;
     }
     
@@ -356,8 +356,9 @@
     UIViewController *vc = rootViewController.presentedViewController;
     if ([vc isKindOfClass:[EWWakeUpViewController class]]) {
         return YES;
+    }else if ([vc isKindOfClass:[EWPostWakeUpViewController class]]){
+        return YES;
     }
-    
     return NO;
 }
 
@@ -453,7 +454,9 @@
         //logged in enter sleep mode
         EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
         NSNumber *duration = me.preference[kSleepDuration];
-        if ([task.objectID.URIRepresentation.absoluteString isEqualToString:taskID] && task.time.timeIntervalSinceNow/3600<duration.floatValue) {
+        BOOL nextTaskMatched = [task.objectID.URIRepresentation.absoluteString isEqualToString:taskID];
+        BOOL needSleep = task.time.timeIntervalSinceNow/3600<duration.floatValue;
+        if (nextTaskMatched && needSleep) {
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
             [rootViewController presentWithBlur:controller withCompletion:NULL];
         }

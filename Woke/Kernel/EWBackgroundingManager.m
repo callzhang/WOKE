@@ -48,9 +48,7 @@
         //become active
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didbecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
         
-#ifdef BACKGOUND_TEST
         BACKGROUNDING_FROM_START = YES;
-#endif
     }
     
     return self;
