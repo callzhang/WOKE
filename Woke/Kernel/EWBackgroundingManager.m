@@ -165,14 +165,16 @@
     }
 }
 
+- (void)endInterruption{
+	//resume backgrounding
+	if (self.sleeping || BACKGROUNDING_FROM_START) {
+		[self startBackgrounding];
+	}
+}
+
 - (void)beginInterruption{
     [[UIApplication sharedApplication] cancelLocalNotification:backgroundingFailNotification];
 }
-
-- (void)endInterruptionWithFlags:(NSUInteger)flags{
-    [self backgroundKeepAlive:NULL];
-}
-
 
 - (void)backgroundKeepAlive:(NSTimer *)timer{
     UIApplication *application = [UIApplication sharedApplication];

@@ -23,7 +23,13 @@ static const float delay = 0.1;
 static const float zoom = 1.5;
 static const float initialDownSampling = 2;
 
-@interface GPUImageAnimator ()
+@interface GPUImageAnimator (){
+	UIViewController* toViewController;
+	UIViewController* fromViewController;
+	UIView* container;
+	UIView *fromView;
+	UIView *toView;
+}
 
 @property (nonatomic, strong) GPUImagePicture* blurImage;
 @property (nonatomic, strong) GPUImageTransformFilter *zoomFilter;
@@ -75,16 +81,16 @@ static const float initialDownSampling = 2;
 - (void)animateTransition:(id <UIViewControllerContextTransitioning>)transitionContext
 {
     self.context = transitionContext;
-    UIViewController* toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    UIViewController* fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
+    fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     toViewController.view.backgroundColor = [UIColor clearColor];
     if ([toViewController isKindOfClass:[UINavigationController class]]) {
         UINavigationController *nav = (UINavigationController *)toViewController;
         nav.visibleViewController.view.backgroundColor = [UIColor clearColor];
     }
-    UIView* container = [transitionContext containerView];
-    UIView *fromView = fromViewController.view;
-    UIView *toView = toViewController.view;
+    container = [transitionContext containerView];
+    fromView = fromViewController.view;
+    toView = toViewController.view;
 	
 	//try to find GPUImageView in container first
 	GPUImageView *view = (GPUImageView*)[container viewWithTag:kGPUImageViewTag];
@@ -117,7 +123,7 @@ static const float initialDownSampling = 2;
 //		_baseImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
 //		[_baseImage processImage];
 //		[_baseImage addTarget:self.blendFilter];
-//		
+		self.blurImage = nil;
         self.blurImage = [[GPUImagePicture alloc] initWithImage:fromViewImage];
         [self.blurImage addTarget:self.zoomFilter];
 		//[self.zoomFilter addTarget:self.blendFilter];
@@ -166,7 +172,10 @@ static const float initialDownSampling = 2;
 
 - (void)triggerRenderOfNextFrame
 {
-    [self.blurImage processImage];
+	BOOL active = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
+	if (active) {
+		[self.blurImage processImage];
+	}
 }
 
 - (void)startInteractiveTransition:(id <UIViewControllerContextTransitioning>)transitionContext {
@@ -178,8 +187,9 @@ static const float initialDownSampling = 2;
     [self updateProgress:link];
 	//[self.zoomFilter setAffineTransform:CGAffineTransformMakeScale(1 - 0.05 * _progress, 1 - 0.05 * _progress)];
 	[self.brightnessFilter setRgbCompositeControlPoints:@[[NSValue valueWithCGPoint:CGPointMake(0.0, 0.0)],
-												  [NSValue valueWithCGPoint:CGPointMake(0.5, 0.5 - 0.3 * _progress)],
-												  [NSValue valueWithCGPoint:CGPointMake(1.0, 1.0 - 0.5 * _progress)]]];
+												[NSValue valueWithCGPoint:CGPointMake(0.3, 0.3 - 0.1 * _progress)],
+												[NSValue valueWithCGPoint:CGPointMake(0.7, 0.7 - 0.33 * _progress)],
+												[NSValue valueWithCGPoint:CGPointMake(1.0, 1.0 - 0.4 * _progress)]]];
 	self.blurFilter.saturation = 1 + 0.3 * _progress;
     self.blurFilter.downsampling = initialDownSampling + _progress * 4;
     self.blurFilter.blurRadiusInPixels = 0.1 + _progress * 8;
@@ -188,7 +198,6 @@ static const float initialDownSampling = 2;
 	NSAssert(!self.interactive, @"Interactive transition is not supported");
 	
     if ((self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent)) {
-		UIView *fromView = [self.context viewControllerForKey:UITransitionContextFromViewControllerKey].view;
 		if (_progress>0) {
 			fromView.alpha = 0;
 		}
@@ -205,7 +214,6 @@ static const float initialDownSampling = 2;
         //unhide to view'
         self.displayLink.paused = YES;
         [self.context completeTransition:YES];
-		UIView *toView = [self.context viewControllerForKey:UITransitionContextToViewControllerKey].view;
 		
         if (self.type == UINavigationControllerOperationPop) {
 			[[self.context containerView] addSubview:toView];
@@ -267,8 +275,17 @@ static const float initialDownSampling = 2;
 }
 
 - (void)animationEnded:(BOOL)transitionCompleted{
-	if (self.type == kModelViewPresent) {
-		[self triggerRenderOfNextFrame];
+	BOOL active = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
+	if (self.type == kModelViewPresent && !active) {
+		//rander the last frame when app become active
+		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+			NSLog(@"Application did become active, render last frame of presenting blur image");
+			self.blurImage = [[GPUImagePicture alloc] initWithImage:fromView.screenshot];
+			[self.blurImage addTarget:self.zoomFilter];
+			[self.blurImage processImage];
+			[[NSNotificationCenter defaultCenter] removeObserver:observer];
+		}];
+
 	}
     self.displayLink.paused = YES;
 }

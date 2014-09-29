@@ -40,20 +40,9 @@ static NavigationControllerDelegate *delegate = nil;
 	
 	//hide status bar
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-	
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-		
-		//if active, show the animation
-		[self presentViewController:viewController animated:YES completion:block];
-	} else {
-		//if inactive, wait until app become active
-		DDLogInfo(@"Application is not active, delay dismiss blur animation");
-		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-			DDLogInfo(@"Application did become active, start blur animation");
-			[self presentViewController:viewController animated:YES completion:block];
-			[[NSNotificationCenter defaultCenter] removeObserver:observer];
-		}];
-	}
+
+	[self presentViewController:viewController animated:YES completion:block];
+
 	
 	return;
 }
@@ -63,19 +52,9 @@ static NavigationControllerDelegate *delegate = nil;
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-		
-		//if active, show the animation
-		[self dismissViewControllerAnimated:YES completion:completion];
-		
-	} else {
-		//if inactive, wait until app become active
-		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-			NSLog(@"Application did become active, start blur animation");
-			[self dismissViewControllerAnimated:YES completion:completion];
-			[[NSNotificationCenter defaultCenter] removeObserver:observer];
-		}];
-	}
+
+	[self dismissViewControllerAnimated:YES completion:completion];
+
 }
 
 - (void)presentWithBlur:(UIViewController *)controller withCompletion:(void (^)(void))completion{

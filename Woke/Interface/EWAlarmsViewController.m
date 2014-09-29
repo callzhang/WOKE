@@ -154,7 +154,6 @@
 
 
 - (void)refreshView{
-	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //update data and view
     [self initData];
     [self initView];

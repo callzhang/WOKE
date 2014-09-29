@@ -65,7 +65,10 @@
     [[EWBackgroundingManager sharedInstance] endBackgrounding];
 }
 
-- (void)updateTimer:(NSTimer *)timer{
+- (void)updateTimer:(NSTimer *)time{
+	if (![UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+		return;
+	}
     NSDate *t = [NSDate date];
     self.timeLabel.text = t.date2String;
 	
@@ -74,6 +77,7 @@
     
     if (nextTask.time.timeIntervalSinceNow <0) {
         //task has past
+		[timer invalidate];
         [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }
 }

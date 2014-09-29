@@ -51,12 +51,17 @@
     if ([type isEqualToString:kPushTypeMedia]) {
 		[EWWakeUpManager handlePushMedia:push];
 		
-	}else if([type isEqualToString:kPushTypeAlarmTimer]){
+	}
+	else if([type isEqualToString:kPushTypeAlarmTimer]){
 		// ============== Alarm Timer ================
-		
 		[EWWakeUpManager handleAlarmTimerEvent:push];
 		
-	}else{
+	}
+	else if ([type isEqualToString:kPushTypeNotification]){
+		NSString *notificationID = push[kPushNofiticationID];
+		[EWNotificationManager handleNotification:notificationID];
+	}
+	else{
 		// Other push type not supported
 		NSString *str = [NSString stringWithFormat:@"Unknown push type received: %@", push];
 		DDLogError(@"Received unknown type of push msg: %@", str);
@@ -74,9 +79,11 @@
     
     if ([type isEqualToString:kLocalNotificationTypeAlarmTimer]) {
         [EWWakeUpManager handleAlarmTimerEvent:notification.userInfo];
+		
     }else if([type isEqualToString:kLocalNotificationTypeReactivate]){
         DDLogInfo(@"==================> Reactivated Woke <======================");
         EWAlert(@"You brought me back!");
+		
     }else if ([type isEqualToString:kLocalNotificationTypeSleepTimer]){
         NSLog(@"=== Received Sleep timer local notification, broadcasting sleep event, and enter sleep mode... \n%@", notification);
         

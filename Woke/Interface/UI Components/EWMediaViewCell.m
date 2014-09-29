@@ -66,7 +66,6 @@
         [self.icon setImage:[UIImage imageNamed:@"Voice Icon"] forState:UIControlStateNormal];
         
         //set media bar length
-        CGRect frame = self.mediaBar.frame;
         NSError *err;
         AVAudioPlayer *p = [[AVAudioPlayer alloc] initWithData:media.audio error:&err];
         if (err) {
@@ -91,7 +90,6 @@
     
     //description
     self.message.text = media.message;
-    
     
 }
 

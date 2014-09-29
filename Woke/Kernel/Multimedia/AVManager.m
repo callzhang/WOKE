@@ -171,9 +171,12 @@
     
     if (!mi){
         [self playSoundFromFileName:kSilentSound];
-    }else if (media == mi && self.player.isPlaying){
+    }else if (media == mi){
         DDLogInfo(@"Same media passed in, skip.");
-        [self updateViewForPlayerState:player];
+		if (!self.player.isPlaying) {
+			[self.player play];
+		}
+		[self updateViewForPlayerState:player];
         return;
     }
     else{
@@ -193,13 +196,11 @@
                 //TODO
                 [self playSoundFromFileName:media.buzzKey];
             }
-            
         }else{
             NSLog(@"Unknown type of media, skip");
             [self playSoundFromFileName:kSilentSound];
         }
     }
-    
 }
 
 //play for file in main bundle
@@ -281,6 +282,15 @@
 		[data writeToFile:path atomically:YES];
 		[self playSystemSound:[NSURL URLWithString:path]];
 	}
+	
+}
+
+- (void)stopAllPlaying{
+	[player stop];
+	//[qPlayer pause];
+	[avplayer pause];
+	[updateTimer invalidate];
+	//remove target action
 	
 }
 
@@ -441,18 +451,13 @@
 
 #pragma mark - AVAudioPlayer delegate method
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *)p successfully:(BOOL)flag {
-    NSString *success = flag?@"Success":@"Failed";
-    NSLog(@"Player finished (%@)", success);
-    p.delegate = nil;
-    p = nil;
-    //[progressBar removeTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
+    NSLog(@"Player finished (%@)", flag?@"Success":@"Failed");
     [updateTimer invalidate];
     self.player.currentTime = 0.0;
     progressBar.value = 0.0;
     if (self.media) {
         [[NSNotificationCenter defaultCenter] postNotificationName:kAudioPlayerDidFinishPlaying object:self.media];
     }
-    
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag{
@@ -467,24 +472,16 @@
 }
 
 
-#pragma mark - Delegate events
-- (void)stopAllPlaying{
-    [player stop];
-    //[qPlayer pause];
-    [avplayer pause];
-    [updateTimer invalidate];
-    //remove target action
-    
-}
 
 - (void)audioPlayerBeginInterruption:(AVAudioPlayer *)p{
-    [p stop];
+	[p stop];
 }
 
 - (void)audioPlayerEndInterruption:(AVAudioPlayer *)p{
-    [p play];
+	[p play];
 }
 
+#pragma mark - AudioSeesion Delegate events
 - (void)beginInterruption{
     [[EWBackgroundingManager sharedInstance] beginInterruption];
 }

@@ -14,9 +14,6 @@
 #import "EWAppDelegate.h"
 #import "EWMediaItem.h"
 #import "EWMediaStore.h"
-#import "EWDownloadManager.h"
-#import "UIViewController+Blur.h"
-#import "EWDownloadManager.h"
 #import "EWNotificationManager.h"
 #import "EWPerson.h"
 #import "EWUserManagement.h"
@@ -210,8 +207,9 @@
     
     
     BOOL isLaunchedFromLocalNotification = NO;
-    BOOL isLanchedFromRemoteNotification = NO;
-    
+    BOOL isLaunchedFromRemoteNotification = NO;
+    EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+	
     //get target task
     EWTaskItem *task;
     if (info) {
@@ -219,7 +217,7 @@
         NSString *taskLocalID = info[kLocalTaskKey];
         NSParameterAssert(taskID || taskLocalID);
         if (taskID) {
-            isLanchedFromRemoteNotification = YES;
+            isLaunchedFromRemoteNotification = YES;
             task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
         }else if (taskLocalID){
             isLaunchedFromLocalNotification = YES;
@@ -231,14 +229,29 @@
                 DDLogError(@"The task objectID is invalid for alarm timer local notif: %@",taskLocalID);
             }
         }
-        
-    }
-    
-    if (!task) {
-        task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
-    }
-   
-    
+		
+		//check
+		if (task) {
+			if (![nextTask isEqual: task]){
+				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, task.time);
+				task = nextTask;
+			}
+		}
+		else{
+			if (isLaunchedFromLocalNotification) {
+				DDLogError(@"Task from local notif for wake doesn't exist!\n%@", taskLocalID);
+			}else if (isLaunchedFromRemoteNotification){
+				DDLogError(@"Task from remote notif for wake doesn't exist!\n%@", taskID);
+			}else{
+				DDLogError(@"Task for wake doesn't exist!\n%@", info);
+			}
+			return;
+		}
+	}else{
+		task = nextTask;
+	}
+	
+	
     NSLog(@"Start handle timer event");
     if (!task) {
         NSLog(@"*** %s No task found for next task, abord", __func__);
@@ -316,7 +329,7 @@
         NSLog(@"Entered from local notification, start wakeup view now");
         [EWWakeUpManager presentWakeUpViewWithTask:task];
         
-    }else if (isLanchedFromRemoteNotification){
+    }else if (isLaunchedFromRemoteNotification){
         
         NSLog(@"Entered from remote notification, start wakeup view now");
         [EWWakeUpManager presentWakeUpViewWithTask:task];
@@ -370,19 +383,18 @@
 }
 
 + (void)presentWakeUpViewWithTask:(EWTaskItem *)task{
-    if (![EWWakeUpManager isRootPresentingWakeUpView]) {
+    if (![EWWakeUpManager isRootPresentingWakeUpView] && ![EWWakeUpManager sharedInstance].controller) {
         //init wake up view controller
-        __block EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
         //save to manager
         [EWWakeUpManager sharedInstance].controller = controller;
         
         //dispatch to main thread
         [rootViewController presentWithBlur:controller withCompletion:NULL];
         
-        
     }else{
-        DDLogInfo(@"Wake up view is already presenting");
-        [EWWakeUpManager sharedInstance].isWakingUp = NO;
+        DDLogInfo(@"Wake up view is already presenting, skip presenting wakeUpView");
+		NSParameterAssert([EWWakeUpManager sharedInstance].isWakingUp == YES);
     }
 }
 

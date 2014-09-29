@@ -96,7 +96,7 @@
 + (void)handleNotification:(NSString *)notificationID{
     EWNotification *notification = [EWNotificationManager getNotificationByID:notificationID];
     if (!notification) {
-        NSLog(@"@@@ Cannot find notification %@", notificationID);
+        DDLogError(@"@@@ Cannot find notification %@", notificationID);
         return;
     }
     
