@@ -180,10 +180,7 @@
         NSLog(@"It is already checking task, skip!");
         return nil;
     }
-    NSParameterAssert([NSThread isMainThread]);
-    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        [self scheduleTasksInContext:localContext];
-    }];
+    [self scheduleTasksInContext:mainContext];
     NSArray *myTasks = [self getTasksByPerson:me];
     return myTasks;
 }
@@ -491,7 +488,7 @@
     task.owner = nil;
     task.alarm = nil;
     DDLogVerbose(@"Completed task: %@", task.objectId);
-    [self scheduleTasksInBackgroundWithCompletion:NULL];
+	[self scheduleTasks];
 }
 
 
@@ -1044,7 +1041,7 @@
         [times addObject:time];
         [timeTable setObject:times.copy forKey:taskID];
         [[NSUserDefaults standardUserDefaults] setObject:timeTable.copy forKey:kScheduledAlarmTimers];
-        DDLogInfo(@"Scheduled task timer on server: %@", timeTable);
+        DDLogInfo(@"Scheduled task timer on server: %@", times);
     }
     
     

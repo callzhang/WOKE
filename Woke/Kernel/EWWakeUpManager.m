@@ -203,8 +203,10 @@
     if ([EWWakeUpManager sharedInstance].isWakingUp) {
         DDLogWarn(@"WakeUpManager is already handling alarm timer, skip");
         return;
-    }
-    
+    }else if ([EWWakeUpManager isRootPresentingWakeUpView]) {
+		DDLogWarn(@"WakeUpView is already presented, skip");
+		return;
+	}
     
     BOOL isLaunchedFromLocalNotification = NO;
     BOOL isLaunchedFromRemoteNotification = NO;
@@ -273,11 +275,12 @@
         [[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
         return;
     }
+#if !DEBUG
     if (task.time.timeIntervalSinceNow>0) {
         DDLogWarn(@"Task %@(%@) passed in is in the future", task.time.date2String, task.objectId);
         return;
     }
-    
+#endif
     //state change
     [EWWakeUpManager sharedInstance].isWakingUp = YES;
     
@@ -315,7 +318,9 @@
         //need to create some voice
         EWMediaItem *media = [[EWMediaStore sharedInstance] getWokeVoice];
         [task addMediasObject:media];
-
+		
+		//test
+		[task addObserver:[EWWakeUpManager sharedInstance] forKeyPath:EWTaskItemRelationships.medias options:NSKeyValueObservingOptionNew context:nil];
     }
     
     //save
@@ -363,6 +368,12 @@
     }
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+	if ([object isKindOfClass:[EWTaskItem class]]) {
+		DDLogError(@"task's media changed");
+	}
+}
+
 #pragma mark - Utility
 + (BOOL)isRootPresentingWakeUpView{
     //determin if WakeUpViewController is presenting
@@ -394,7 +405,7 @@
         
     }else{
         DDLogInfo(@"Wake up view is already presenting, skip presenting wakeUpView");
-		NSParameterAssert([EWWakeUpManager sharedInstance].isWakingUp == YES);
+		//NSParameterAssert([EWWakeUpManager sharedInstance].isWakingUp == YES);
     }
 }
 
@@ -406,7 +417,7 @@
     //handle wakeup signel
     [[ATConnect sharedConnection] engage:kWakeupSuccess fromViewController:rootViewController];
     
-    //set wakeup time
+    //set wakeup time, move to past, schedule and save
     [[EWTaskStore sharedInstance] completedTask:task];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kWokeNotification object:nil];
