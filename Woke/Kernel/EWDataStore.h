@@ -11,8 +11,6 @@
 #import <Foundation/Foundation.h>
 #import "EWSync.h"
 
-//Server update time
-#define kServerUpdateInterval            1800 //30 min
 @interface EWDataStore : NSObject
 @property (nonatomic, retain) NSDate *lastChecked;//The date that last sync with server
 + (EWDataStore *)sharedInstance;

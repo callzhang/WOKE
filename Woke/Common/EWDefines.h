@@ -70,6 +70,7 @@
 #define kSocialGraphUpdateInterval      3600*24*7
 #define kMaxVoicePerTask                3
 #define kLoopMediaPlayCount             100
+#define kServerUpdateInterval			1800
 
 //DEFAULT DATA
 #define ringtoneNameList                @[@"Autumn Spring.caf", @"Daybreak.caf", @"Drive.caf", @"Parisian Dream.caf", @"Sunny Afternoon.caf", @"Tropical Delight.caf"]

@@ -62,14 +62,12 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     //responder to remote control
-    //[self prepareRemoteControlEventsListener];
-    
-    //register for remote control
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    
+    [self prepareRemoteControlEventsListener];
     
     //Active session
     [[AVManager sharedManager] registerActiveAudioSession];
+	
+	[EWWakeUpManager sharedInstance].isWakingUp = YES;
     
     return self;
 }
@@ -162,7 +160,7 @@
     NSLog(@"WakeUpViewController popped out of view: remote control event listner stopped. Observers removed.");
     
     //Resume to normal session
-    [[AVManager sharedManager] registerAudioSession];
+    [[AVManager sharedManager] registerBackgroudingAudioSession];
     
     //invalid timer
     [timerTimer invalidate];
@@ -534,6 +532,7 @@
         }
         
         //get cell
+		[[AVManager sharedManager] registerActiveAudioSession];
         cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
         if (!cell) {
             cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
@@ -553,9 +552,7 @@
                     [tableView_ deselectRowAtIndexPath:path animated:YES];
                 });
             }
-            
         }
-        
     });
     
     
@@ -572,9 +569,9 @@
     // Set itself as the first responder
     BOOL success = [self becomeFirstResponder];
     if (success) {
-        NSLog(@"APP degelgated %@ remote control events", [self class]);
+        DDLogInfo(@"APP degelgated %@ remote control events", [self class]);
     }else{
-        NSLog(@"@@@ %@ failed to listen remote control events @@@", self.class);
+        DDLogWarn(@"@@@ %@ failed to listen remote control events @@@", self.class);
     }
 }
 
@@ -594,7 +591,7 @@
         NSLog(@"%@ resigned as first responder", self.class);
         
     }else{
-        NSLog(@"%@ failed to resign first responder", self.class);
+        DDLogWarn(@"%@ failed to resign first responder", self.class);
     }
 }
 

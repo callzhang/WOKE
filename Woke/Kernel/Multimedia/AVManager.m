@@ -21,6 +21,7 @@
 @interface AVManager(){
     id AVPlayerUpdateTimer;
     CADisplayLink *displaylink;
+	MPVolumeView *volumeView;
 }
 
 @end
@@ -50,51 +51,50 @@
         NSString *soundFilePath =  [tempDir stringByAppendingString: @"recording.m4a"];
         recordingFileUrl = [[NSURL alloc] initFileURLWithPath: soundFilePath];
         
-        //Audio session
-        //[self registerAudioSession];
-        
+        //Volume view
+		volumeView = [[MPVolumeView alloc] init];
     }
     return self;
 }
 
 #pragma mark - Audio Sessions
 //register the BACKGROUNDING audio session
-- (void)registerAudioSession{
-    //deactivated first
-    [[AVAudioSession sharedInstance] setActive:NO error:NULL];
+- (void)registerBackgroudingAudioSession{
+	[[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     
     //audio session
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     //set category
     BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback
-                                                    withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                                                    withOptions: AVAudioSessionCategoryOptionMixWithOthers
                                                           error:&error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     //force speaker
-//    success = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
-//                                                                 error:&error];
-//    if (!success || error) NSLog(@"AVAudioSession error overrideOutputAudioPort:%@",error);
     //set active
-    success = [[AVAudioSession sharedInstance] setActive:YES error:&error];
-    if (!success || error){
-        NSLog(@"Unable to activate BACKGROUNDING audio session:%@", error);
-    }else{
-        NSLog(@"BACKGROUNDING Audio session activated!");
-    }
+//    success = [[AVAudioSession sharedInstance] setActive:YES error:&error];
+//    if (!success || error){
+//        NSLog(@"Unable to activate BACKGROUNDING audio session:%@", error);
+//    }else{
+//        NSLog(@"BACKGROUNDING Audio session activated!");
+//    }
     //set active bg sound
     [self playSilentSound];
 }
 
 //register the ACTIVE playing session
 - (void)registerActiveAudioSession{
-    
+	[self setDeviceVolume:1.0];
+	[[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+	[[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     //audio session
-    //[[AVAudioSession sharedInstance] setDelegate: self];
+    [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     
     //set category
-    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback withOptions:!AVAudioSessionCategoryOptionMixWithOthers error:&error];
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback
+													withOptions: nil
+														  error: &error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     
     //set active
@@ -108,14 +108,13 @@
 
 - (void)registerRecordingAudioSession{
     [self stopAllPlaying];
-    
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     
     //set category
     BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord
-                                                    withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker | !AVAudioSessionCategoryOptionMixWithOthers
-                                                          error:&error];
+                                                    withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker
+                                                          error: &error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     
     //set active
@@ -159,7 +158,8 @@
 
 - (void)playMedia:(EWMediaItem *)mi{
     NSParameterAssert([NSThread isMainThread]);
-    
+	//set to max volume
+	[self setDeviceVolume:1.0];
     if (!mi){
         [self playSoundFromFileName:kSilentSound];
     }else if (media == mi){
@@ -173,13 +173,14 @@
     else{
         //new media
         media = mi;
+		
+		//lock screen
+		[self displayNowPlayingInfoToLockScreen:mi];
+		
         if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
             
             [self playSoundFromData:mi.audio];
-            
-            //lock screen
-            [self displayNowPlayingInfoToLockScreen:mi];
-            
+			
         }else if([media.type isEqualToString:kMediaTypeBuzz]){
             if ([media.buzzKey isEqualToString: @"default"]) {
                 [self playSoundFromFileName:@"buzz.caf"];
@@ -356,6 +357,7 @@
     [updateTimer invalidate];
     //set up timer
     if (p.playing){
+		player.volume = 1.0;
 		//[lvlMeter_in setPlayer:p];
         //add new target
         //[progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
@@ -490,7 +492,7 @@
                     n.alertBody = @"Woke is active";
                     [[UIApplication sharedApplication] scheduleLocalNotification:n];
 #endif
-                    [self registerAudioSession];
+                    [self registerBackgroudingAudioSession];
                     [manager endInterruption];
                 }
             });
@@ -687,6 +689,7 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
 
 
 
+#pragma mark - Volume control
 - (void)volumeFadeWithCompletion:(void (^)(void))block{
     if (self.player.volume > 0) {
         self.player.volume = self.player.volume - 0.1;
@@ -701,5 +704,35 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
             block();
         }
     }
+}
+
+- (void)setDeviceVolume:(float)volume{
+	UISlider* volumeViewSlider = nil;
+	for (UIView *view in [volumeView subviews]){
+		if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+			volumeViewSlider = (UISlider*)view;
+			break;
+		}
+	}
+	
+	[NSTimer bk_scheduledTimerWithTimeInterval:0.2 block:^(NSTimer *aTimer){
+		float currentVolume = volumeViewSlider.value;
+		float delta = volume - currentVolume;
+		if (delta > 0.1) {
+			delta = 0.1;
+		}else if(delta < -0.1){
+			delta = -0.1;
+		}
+		[volumeViewSlider setValue:currentVolume + delta animated:YES];
+		[volumeViewSlider sendActionsForControlEvents:UIControlEventTouchUpInside];
+		
+		if (currentVolume == volume || !volumeViewSlider) {
+			[aTimer invalidate];
+			DDLogVerbose(@"Volume set to %f", volume);
+			return;
+		}
+	} repeats:YES];
+	
+	
 }
 @end

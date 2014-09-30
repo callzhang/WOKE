@@ -56,7 +56,6 @@ PODS:
   - MagicalRecord (2.3.0-beta.3):
     - MagicalRecord/Core
   - MagicalRecord/Core (2.3.0-beta.3)
-  - NSLogger (1.2)
   - OCMock (3.1.1)
   - Parse (1.2.19):
     - Facebook-iOS-SDK (~> 3.11)
@@ -79,7 +78,6 @@ DEPENDENCIES:
   - GPUImage
   - IDMPhotoBrowser
   - MagicalRecord (from `https://github.com/magicalpanda/MagicalRecord`, tag `v2.3.0-beta.3`)
-  - NSLogger
   - OCMock (~> 3.1.1)
   - Parse
   - Reachability
@@ -104,7 +102,6 @@ SPEC CHECKSUMS:
   GPUImage: ac2bde5f4dbea02a81ced6313964cec1f2043ca9
   IDMPhotoBrowser: d691bcdf470553e165f8eb982c5cd8e9a58bcdef
   MagicalRecord: 23dfe0350eab4767cc1ce7d247af4e4cd54ee72c
-  NSLogger: 3df5dca5dcbf99fe1e5c54931e44880f6e7eb089
   OCMock: f6cb8c162ab9d5620dddf411282c7b2c0ee78854
   Parse: ffebaecaddd32cb52671010f81567c298ff93d04
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7

@@ -322,6 +322,9 @@
     
     //save
     [EWSync save];
+	
+	//set volume
+	[[AVManager sharedManager] setDeviceVolume:1.0];
     
     //cancel local alarm
     [[EWTaskStore sharedInstance] cancelNotificationForTask:task];

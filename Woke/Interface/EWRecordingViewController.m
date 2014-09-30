@@ -207,7 +207,7 @@
 - (void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
     
-    [[AVManager sharedManager] registerAudioSession];
+    [[AVManager sharedManager] registerBackgroudingAudioSession];
 }
 
 - (void)didReceiveMemoryWarning

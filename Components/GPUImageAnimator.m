@@ -278,11 +278,12 @@ static const float initialDownSampling = 2;
 	BOOL active = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
 	if (self.type == kModelViewPresent && !active) {
 		//rander the last frame when app become active
+		__weak GPUImageAnimator *weakSelf = self;
 		__block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
 			NSLog(@"Application did become active, render last frame of presenting blur image");
-			self.blurImage = [[GPUImagePicture alloc] initWithImage:fromView.screenshot];
-			[self.blurImage addTarget:self.zoomFilter];
-			[self.blurImage processImage];
+			weakSelf.blurImage = [[GPUImagePicture alloc] initWithImage:fromView.screenshot];
+			[weakSelf.blurImage addTarget:weakSelf.zoomFilter];
+			[weakSelf.blurImage processImage];
 			[[NSNotificationCenter defaultCenter] removeObserver:observer];
 		}];
 

@@ -11,13 +11,14 @@
 #define MR_SHORTHAND
 #import <MagicalRecord/CoreData+MagicalRecord.h>
 #import "EWDefines.h"
+#import	"EWSync.h"
 #import "EWBlockTypes.h"
 #import "UIView+Layout.h"
+//#import	"SFObservers.h"
 #import "NSString+Extend.h"
 #import "NSDate+Extend.h"
 #import "MBProgressHUD.h"
 #import "UIViewController+Blur.h"
-#import "EWDataStore.h"
 #import "UIView+Extend.h"
 #import <Parse/Parse.h>
 #import <TestFlightSDK/TestFlight.h>

@@ -71,7 +71,7 @@
  *register for NORMAL AudioSession for backgrounding
  @discussion This session starts with option of mix & speaker
  */
-- (void)registerAudioSession;
+- (void)registerBackgroudingAudioSession;
 
 /**
  *register for ACTIVE PLAYING AudioSession
@@ -113,5 +113,5 @@
 
 #pragma mark - Tools
 - (void)volumeFadeWithCompletion:(void (^)(void))block;
-
+- (void)setDeviceVolume:(float)volume;
 @end

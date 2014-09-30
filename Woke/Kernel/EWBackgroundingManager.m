@@ -81,8 +81,10 @@
 }
 
 - (void)enterForeground{
-    
-    [[AVManager sharedManager] registerAudioSession];
+	if (![EWWakeUpManager sharedInstance].isWakingUp) {
+		[[AVManager sharedManager] registerBackgroudingAudioSession];
+	}
+	
     [backgroundingtimer invalidate];
     
     if (!self.sleeping && !BACKGROUNDING_FROM_START) {
@@ -133,7 +135,9 @@
 
 - (void)startBackgrounding{
     self.sleeping = YES;
-    [[AVManager sharedManager] registerAudioSession];
+	if (![EWWakeUpManager sharedInstance].isWakingUp) {
+		[[AVManager sharedManager] registerBackgroudingAudioSession];
+	}
     [self backgroundKeepAlive:nil];
     NSLog(@"Start Sleep");
 }
