@@ -141,7 +141,6 @@
                         //We don't update the inverse PFRelation as they should be updated from that MO
                         NSLog(@"~~~> To-many relation on PO %@(%@)->%@(%@) deleted when updating from MO", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], obj.name, PO.objectId);
                     }
-                    
                 }
                 
                 //related managedObject that needs to add

@@ -15,11 +15,12 @@
 //
 */
 
-#import <Foundation/Foundation.h>
-#import <AudioToolbox/AudioToolbox.h>
-#import <AVFoundation/AVFoundation.h>
+@import Foundation;
+@import AVFoundation;
+@import AudioToolbox;
 #import "EWDefines.h"
 #import "SCSiriWaveformView.h"
+
 
 #define kSilentSound            @"Silence04s.caf"
 

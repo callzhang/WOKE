@@ -11,10 +11,8 @@
 #import "EWTaskItem.h"
 #import "EWMediaItem.h"
 #import "EWTaskStore.h"
-#import <AVFoundation/AVAudioPlayer.h>
 #import "EWDataStore.h"
 #import "EWMediaSlider.h"
-//#import "EWDownloadManager.h"
 #import "EWMediaStore.h"
 #import "EWBackgroundingManager.h"
 
@@ -90,23 +88,18 @@
 
 //register the ACTIVE playing session
 - (void)registerActiveAudioSession{
-    //deactivated first
-    [[AVAudioSession sharedInstance] setActive:NO error:NULL];
-    [self stopAvplayer];
     
     //audio session
-    [[AVAudioSession sharedInstance] setDelegate: self];
+    //[[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     
     //set category
-    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback
-                                                    withOptions: AVAudioSessionCategoryOptionDuckOthers
-                                                          error: &error];
+    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback withOptions:!AVAudioSessionCategoryOptionMixWithOthers error:&error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     
     //set active
     success = [[AVAudioSession sharedInstance] setActive:YES error:&error];
-    if (!success || error){
+    if (!success){
         NSLog(@"Unable to activate ACTIVE audio session:%@", error);
     }else{
         NSLog(@"ACTIVE Audio session activated!");
@@ -114,16 +107,14 @@
 }
 
 - (void)registerRecordingAudioSession{
-    //deactivated first
-    [[AVAudioSession sharedInstance] setActive:NO error:NULL];
-    [self stopAvplayer];
+    [self stopAllPlaying];
     
     [[AVAudioSession sharedInstance] setDelegate: self];
     NSError *error = nil;
     
     //set category
     BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord
-                                                    withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker
+                                                    withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker | !AVAudioSessionCategoryOptionMixWithOthers
                                                           error:&error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     
@@ -668,7 +659,7 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
         
         if (!m) m = media;
-        EWTaskItem *task = [[m.tasks filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owner = %@", me]] anyObject];
+        EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
         
         NSString *title = [task.time weekday];
         
@@ -676,10 +667,10 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
         NSMutableDictionary *dict = [NSMutableDictionary new];
         dict[MPMediaItemPropertyTitle] = @"Time to wake up";
         dict[MPMediaItemPropertyArtist] = m.author.name?m.author.name:@"";
-        dict[MPMediaItemPropertyAlbumTitle] = title?title:@"";
+        dict[MPMediaItemPropertyAlbumTitle] = title?:@"";
         
         //cover
-        UIImage *cover = media.image ? media.image : media.author.profilePic;
+        UIImage *cover = media.image ?: media.author.profilePic;
         if (cover) {
             MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:cover];
             dict[MPMediaItemPropertyArtwork] = artwork;
@@ -688,9 +679,9 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
         //TODO: media message can be rendered on image
         
         //set
-        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = dict;
         
-        NSLog(@"Set lock screen informantion");
+        DDLogInfo(@"Set lock screen informantion");
     }
 }
 

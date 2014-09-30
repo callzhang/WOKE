@@ -62,13 +62,16 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     //responder to remote control
-    [self prepareRemoteControlEventsListener];
+    //[self prepareRemoteControlEventsListener];
     
+    //register for remote control
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    
+    
+    //Active session
+    [[AVManager sharedManager] registerActiveAudioSession];
     
     return self;
-}
-
-- (void)setTask:(EWTaskItem *)t{
 }
 
 
@@ -176,12 +179,6 @@
 //    for (EWMediaItem *media in medias) {
 //        [media refreshInBackgroundWithCompletion:NULL];
 //    }
-    
-    
-    //_shakeManager = [[EWShakeManager alloc] init];
-    //_shakeManager.delegate = self;
-    //[_shakeManager register];
-    
     
 }
 
@@ -463,8 +460,6 @@
 
 #pragma mark - Handle player events
 - (void)startPlayCells{
-    //Active session
-    [[AVManager sharedManager] registerActiveAudioSession];
     
     NSInteger currentPlayingCellIndex = [medias indexOfObject:[AVManager sharedManager].media];
     if (currentPlayingCellIndex == NSNotFound) {
