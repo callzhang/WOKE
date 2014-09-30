@@ -370,7 +370,8 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
 	if ([object isKindOfClass:[EWTaskItem class]]) {
-		DDLogError(@"task's media changed");
+        NSSet *ms = change[NSKeyValueChangeNewKey];
+		DDLogError(@"task (%@) -> media(%@) changed", [(EWTaskItem *)object objectId], [ms valueForKey:kParseObjectID]);
 	}
 }
 

@@ -57,6 +57,7 @@
 
 - (void)setMedia:(EWMediaItem *)m{
     if (!m) return;
+    if (media == m) return;
     media = m;
     if ([media.type isEqualToString:kMediaTypeBuzz]) {
         self.mediaBar.hidden = YES;

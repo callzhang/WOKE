@@ -76,7 +76,7 @@ NSManagedObjectContext *mainContext;
     //Reachability
     self.reachability = [Reachability reachabilityForInternetConnection];
     self.reachability.reachableBlock = ^(Reachability *reachability) {
-        NSLog(@"====== Network is reachable. Start upload. ======");
+        DDLogInfo(@"====== Network is reachable. Start upload. ======");
         //in background thread
         [[EWSync sharedInstance] resumeUploadToServer];
         
@@ -89,7 +89,7 @@ NSManagedObjectContext *mainContext;
         }
     };
     self.reachability.unreachableBlock = ^(Reachability * reachability){
-        NSLog(@"====== Network is unreachable ======");
+        DDLogInfo(@"====== Network is unreachable ======");
         [EWUIUtil showHUDWithString:@"Offline"];
     };
     
@@ -184,9 +184,10 @@ NSManagedObjectContext *mainContext;
     [self clearQueue:kParseQueueUpdate];
     workingChangedRecords = _changeRecords;
     _changeRecords = [NSMutableDictionary new];
-    
-	if (workingObjects.count == 0 && deletedServerObjects.count == 0) return;
-    DDLogVerbose(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ ", [insertedManagedObjects valueForKeyPath:@"entity.name"], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
+	
+	//skip if no changes
+	if (workingObjects.count == 0 && deletedServerObjects.count == 0 && _saveCallbacks.count == 0) return;
+    DDLogInfo(@"============ Start updating to server =============== \n Inserts:%@, \n Updates:%@ \n and Deletes:%@ ", [insertedManagedObjects valueForKeyPath:@"entity.name"], [updatedManagedObjects valueForKey:kParseObjectID], deletedServerObjects);
     DDLogVerbose(@"Change records:\n%@", workingChangedRecords);
     
     
@@ -326,7 +327,7 @@ NSManagedObjectContext *mainContext;
             //enqueue to insertQueue
             [self appendInsertQueue:MO];
             
-            //*** we should not add updatedAt here. Two Inserts could be possible: downloaded from server or created here. Therefore we need to add createdAt at local creation point.
+            //*** we should not add updatedAt here, as it is the criteria before enqueue. Two Inserts could be possible: downloaded from server or created here. Therefore we need to add createdAt at local creation point.
             //change updatedAt
             //[MO setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
             continue;

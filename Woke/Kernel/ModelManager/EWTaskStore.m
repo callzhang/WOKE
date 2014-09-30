@@ -111,6 +111,7 @@
     if (!person.isMe) {
         return [NSArray new];
     }
+    [person.managedObjectContext refreshObject:person mergeChanges:YES];
     NSMutableArray *tasks = [[person.pastTasks allObjects] mutableCopy];
     [tasks sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO]]];
     
