@@ -172,11 +172,7 @@
     
     switch (indexPath.row) {
         case 0: {
-            //1. show wake up view
-            //[EWWakeUpManager presentWakeUpView];
-            
-            
-            //2. Modify alarm that is due in 30s
+            //Modify alarm that is due in 30s
             for (EWAlarmItem *alarm in me.alarms.copy) {
                 if (alarm.time.weekdayNumber == [NSDate date].weekdayNumber) {
                     //add time 30s

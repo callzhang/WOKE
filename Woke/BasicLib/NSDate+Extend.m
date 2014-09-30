@@ -126,15 +126,15 @@
     return weekdayOfDate - 1; //0:sunday ... 6:saturday
 }
 
-- (NSDate *)nextOccurTime:(NSInteger)n{
+- (NSDate *)nextOccurTime:(NSInteger)n withDevidingPoint:(NSInteger)seconds{
     NSDate *time = self;
     //bring to past
-    while ([time timeIntervalSinceNow]>-kMaxWakeTime) {
+    while ([time timeIntervalSinceNow]>seconds) {
         time = [time lastWeekTime];
     }
     
     //bring to the first occurance of future
-    while ([time timeIntervalSinceNow]<-kMaxWakeTime) {
+    while ([time timeIntervalSinceNow]<seconds) {
         time = [time nextWeekTime];
     }
     
@@ -144,8 +144,12 @@
         time = [time nextWeekTime];
     }
     
-    NSAssert([time timeIntervalSinceNow] >3600*24*7*n-kMaxWakeTime && [time timeIntervalSinceNow] < 3600*24*7*(n+1)-kMaxWakeTime, @"Error in getting %ld next time %@", (long)n, time);
+    NSAssert([time timeIntervalSinceNow] >3600*24*7*n+seconds && [time timeIntervalSinceNow] < 3600*24*7*(n+1)+seconds, @"Error in getting %ld next time %@", (long)n, time);
     return time;
+}
+
+- (NSDate *)nextOccurTime:(NSInteger)n{
+    return [self nextOccurTime:0 withDevidingPoint:0];
 }
 
 - (NSDate *)nextWeekTime{

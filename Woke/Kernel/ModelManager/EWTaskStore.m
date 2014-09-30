@@ -278,7 +278,7 @@
         for (unsigned i=0; i<nWeeksToScheduleTask; i++) {//loop for week
             
             //next time for alarm, this is what the time should be there
-            NSDate *time = [a.time nextOccurTime:i];
+            NSDate *time = [a.time nextOccurTime:i withDevidingPoint:-kMaxWakeTime];
 			DDLogVerbose(@"Checking for alarm time: %@", time);
             BOOL taskMatched = NO;
             //loop through the tasks to verify the target time has been scheduled
@@ -307,9 +307,12 @@
             
             if (!taskMatched) {
                 //start scheduling task
-                DDLogVerbose(@"Task on %@ has not been found, creating!", time.weekday);
+                DDLogInfo(@"Task on %@ has not been found, creating!", time);
                 //new task
                 EWTaskItem *t = [self newTaskInContext:context];
+                //new time in the future
+                time = [time nextOccurTime:0 withDevidingPoint:0];
+                DDLogVerbose(@"Next task time: %@", time);
                 t.time = time;
                 t.alarm = a;
                 t.state = a.state;
@@ -485,9 +488,9 @@
         return;
     }
     task.completed = [NSDate date];
-    task.pastOwner = task.owner;
-    task.owner = nil;
-    task.alarm = nil;
+    //task.pastOwner = task.owner;
+    //task.owner = nil;
+    //task.alarm = nil;
     DDLogVerbose(@"Completed task: %@", task.objectId);
 	[self scheduleTasks];
 }
@@ -504,7 +507,7 @@
     t.createdAt = [NSDate date];
     //[EWSync save];
     
-    NSLog(@"Created new Task %@", t.objectID);
+    DDLogInfo(@"Created new Task %@", t.objectID);
     return t;
 }
 

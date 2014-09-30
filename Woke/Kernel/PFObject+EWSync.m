@@ -131,12 +131,11 @@
                 
                 //========================== relation ==========================
                 PFRelation *parseRelation = [self relationForKey:key];
-                //==============================================================
                 
                 //Find related PO to delete async
                 NSMutableArray *relatedParseObjects = [[[parseRelation query] findObjects] mutableCopy];
                 if (relatedParseObjects.count) {
-                    NSArray *relatedParseObjectsToDelete = [relatedParseObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [relatedManagedObjects valueForKey:@"objectId"]]];
+                    NSArray *relatedParseObjectsToDelete = [relatedParseObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [relatedManagedObjects valueForKey:kParseObjectID]]];
                     for (PFObject *PO in relatedParseObjectsToDelete) {
                         [parseRelation removeObject:PO];
                         //We don't update the inverse PFRelation as they should be updated from that MO
