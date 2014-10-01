@@ -488,9 +488,22 @@
 }
 
 - (void)playNextCell:(NSNotification *)note{
-    EWMediaItem *mediaJustFinished = note.object;
+    EWMediaItem *mediaJustFinished;
+    float t = 0;
+    if (note) {
+        mediaJustFinished = note.object;
+        t = kMediaPlayInterval;
+    }else{
+        mediaJustFinished = [AVManager sharedManager].media;
+    }
     //delay 3s
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kMediaPlayInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(t * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        //check if playing media is changed
+        if (mediaJustFinished != [AVManager sharedManager].media) {
+            DDLogInfo(@"Media has changed since last notice. SKip!");
+            return;
+        }
+        
         //check if need to play next
         if (!next){
             NSLog(@"Next is disabled, stop playing next");
@@ -586,7 +599,7 @@
     BOOL sucess = [self resignFirstResponder];
     
     if (sucess) {
-        NSLog(@"%@ resigned as first responder", self.class);
+        DDLogInfo(@"%@ resigned as first responder", self.class);
         
     }else{
         DDLogWarn(@"%@ failed to resign first responder", self.class);
@@ -596,12 +609,11 @@
 - (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
     
     if (receivedEvent.type == UIEventTypeRemoteControl) {
-        
+        AVManager *manager = [AVManager sharedManager];
         switch (receivedEvent.subtype) {
                 
             case UIEventSubtypeRemoteControlPlay:{
-                NSLog(@"Received remote control: play");
-                AVManager *manager = [AVManager sharedManager];
+                DDLogVerbose(@"Received remote control: play");
                 if (![manager.player play]) {
                     [manager playMedia:manager.media];
                 }
@@ -610,25 +622,40 @@
                 break;
                 
             case UIEventSubtypeRemoteControlPreviousTrack:
-                NSLog(@"Received remote control: Previous");
+                DDLogVerbose(@"Received remote control: Previous");
+                [self startPlayCells];
                 break;
                 
             case UIEventSubtypeRemoteControlNextTrack:
-                NSLog(@"Received remote control: Next");
+                DDLogVerbose(@"Received remote control: Next");
+                [self playNextCell:nil];
                 break;
                 
             case UIEventSubtypeRemoteControlStop:
-                NSLog(@"Received remote control Stop");
-                [[AVManager sharedManager] stopAllPlaying];
+                DDLogVerbose(@"Received remote control Stop");
+                [manager stopAllPlaying];
                 break;
                 
-            case UIEventSubtypeRemoteControlPause:
-                NSLog(@"Received remote control pause");
-                //[[AVManager sharedManager] stopAllPlaying];
+            case UIEventSubtypeRemoteControlPause:{
+                DDLogVerbose(@"Received remote control pause");
+                if (manager.player.isPlaying) {
+                    EWMediaItem *m0 = manager.media;
+                    [manager.player pause];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        if (m0 == manager.media && !manager.player.isPlaying) {
+                            //continue play
+                            [manager.player play];
+                        }
+                    });
+                } else {
+                    [manager.player play];
+                }
+                
+            }
                 break;
                 
             default:
-                NSLog(@"Received remote control %ld", (long)receivedEvent.subtype);
+                DDLogVerbose(@"Received remote control %ld", (long)receivedEvent.subtype);
                 break;
         }
     }
