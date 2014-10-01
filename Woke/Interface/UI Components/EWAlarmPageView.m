@@ -270,6 +270,6 @@
     }
 	
 	//timer
-	[NSTimer scheduledTimerWithTimeInterval:-task.time.timeIntervalSinceNow/5 target:self selector:@selector(changeTimeLeftLabel) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:task.time.timeIntervalSinceNow/5 target:self selector:@selector(changeTimeLeftLabel) userInfo:nil repeats:NO];
 }
 @end
