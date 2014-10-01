@@ -361,7 +361,7 @@
 		//[lvlMeter_in setPlayer:p];
         //add new target
         //[progressBar addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
-		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(updateCurrentTime:) userInfo:p repeats:YES];
+		updateTimer = [NSTimer scheduledTimerWithTimeInterval:.05 target:self selector:@selector(updateCurrentTime:) userInfo:p repeats:YES];
         
         //unhide
         [UIView animateWithDuration:0.5 animations:^{

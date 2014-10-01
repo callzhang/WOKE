@@ -59,7 +59,6 @@ PODS:
   - OCMock (3.1.1)
   - Parse (1.2.19):
     - Facebook-iOS-SDK (~> 3.11)
-  - Reachability (3.1.1)
   - Reveal-iOS-SDK (1.0.3)
   - SVProgressHUD (1.0)
   - TestFlightLogger (0.0.3):
@@ -80,7 +79,6 @@ DEPENDENCIES:
   - MagicalRecord (from `https://github.com/magicalpanda/MagicalRecord`, tag `v2.3.0-beta.3`)
   - OCMock (~> 3.1.1)
   - Parse
-  - Reachability
   - Reveal-iOS-SDK
   - TestFlightLogger
   - TestFlightSDK
@@ -104,7 +102,6 @@ SPEC CHECKSUMS:
   MagicalRecord: 23dfe0350eab4767cc1ce7d247af4e4cd54ee72c
   OCMock: f6cb8c162ab9d5620dddf411282c7b2c0ee78854
   Parse: ffebaecaddd32cb52671010f81567c298ff93d04
-  Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   Reveal-iOS-SDK: 5f69f357d5a18a2f13db71730bc6b7973a21cf3e
   SVProgressHUD: 5034c6e22b8c2ca3e09402e48d41ed0340aa1c50
   TestFlightLogger: 755fa3745846e413787a2ec7d5cb531e5966de36

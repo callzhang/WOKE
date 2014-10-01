@@ -101,14 +101,13 @@
         //[NSTimer scheduledTimerWithTimeInterval:600 target:self selector:@selector(reloadAlarmPage) userInfo:nil repeats:YES];
         [[NSNotificationCenter defaultCenter] addObserverForName:kTaskTimeChangedNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
             [refreshViewTimer invalidate];
-            refreshViewTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
+            refreshViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(refreshView) userInfo:nil repeats:NO];
         }];
         
         //sleep buttom visibility
         [[NSNotificationCenter defaultCenter] addObserverForName:kSleepNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
             [self toggleSleepBtnVisibility];
         }];
-
     }];
     
     //listen to hex structure change

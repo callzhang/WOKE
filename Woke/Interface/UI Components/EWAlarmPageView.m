@@ -52,9 +52,7 @@
     }else{
         [self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
     }
-    
-    //timer
-    changeTimeTimer = [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(changeTimeLeftLabel) userInfo:nil repeats:YES];
+	
     
 }
 
@@ -264,11 +262,14 @@
     float h = -task.time.timeElapsed/3600;
     if (h < 0) {
         self.timeLeftText.text = @"Just alarmed";
+		return;
     }else if(h<24){
         self.timeLeftText.text = [NSString stringWithFormat:@"%@ left", [task.time timeLeft]];
     }else{
         self.timeLeftText.text = task.time.weekday;
     }
-    
+	
+	//timer
+	[NSTimer scheduledTimerWithTimeInterval:-task.time.timeIntervalSinceNow/5 target:self selector:@selector(changeTimeLeftLabel) userInfo:nil repeats:NO];
 }
 @end

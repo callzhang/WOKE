@@ -508,7 +508,6 @@
         NSInteger nextCellIndex = currentCellPlaying + 1;
         
         if (nextCellIndex < medias.count){
-            
             //get next cell
             NSLog(@"Play next song (%ld)", (long)nextCellIndex);
             path = [NSIndexPath indexPathForRow:nextCellIndex inSection:0];
@@ -528,7 +527,6 @@
                 path = nil;
                 return;
             }
-            
         }
         
         //get cell
