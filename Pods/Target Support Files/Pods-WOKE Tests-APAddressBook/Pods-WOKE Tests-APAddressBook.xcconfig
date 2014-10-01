@@ -1,0 +1,1 @@
+PODS_WOKE_TESTS_APADDRESSBOOK_OTHER_LDFLAGS = -framework "AddressBook"

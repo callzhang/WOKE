@@ -1,1 +1,0 @@
-PODS_STACKMOB_OTHER_LDFLAGS = -framework CoreData -framework CoreLocation -framework MobileCoreServices -framework Security -framework SystemConfiguration

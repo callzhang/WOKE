@@ -1,1 +1,0 @@
-../../apptentive-ios/ApptentiveConnect/source/Misc/ATLog.h

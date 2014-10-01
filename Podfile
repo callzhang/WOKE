@@ -1,3 +1,6 @@
+source 'git@github.com:iheartradio/Specs.git'
+source 'https://github.com/CocoaPods/Specs.git'
+
 platform :ios, '7.0'
 xcodeproj 'Woke.xcodeproj'
 
@@ -14,6 +17,7 @@ pod 'apptentive-ios'
 pod 'CocoaLumberjack'
 pod 'BlocksKit', '~> 2.2.5'
 pod 'TestFlightLogger'
+pod 'APAddressBook', '~> 0.1.2'
 
 target "WOKE Tests" do
   pod 'OCMock', '~> 3.1.1'

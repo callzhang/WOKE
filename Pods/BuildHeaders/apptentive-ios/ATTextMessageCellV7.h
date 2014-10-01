@@ -1,1 +1,0 @@
-../../apptentive-ios/ApptentiveConnect/source/Message Center/ATTextMessageCellV7.h

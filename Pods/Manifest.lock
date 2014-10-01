@@ -18,6 +18,9 @@ PODS:
   - AFNetworking/UIKit (2.2.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - APAddressBook (0.1.4):
+    - APAddressBook/Core
+  - APAddressBook/Core (0.1.4)
   - apptentive-ios (1.5.4):
     - apptentive-ios/arc-files
   - apptentive-ios/arc-files (1.5.4)
@@ -69,6 +72,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
+  - APAddressBook (~> 0.1.2)
   - apptentive-ios
   - BlocksKit (~> 2.2.5)
   - CocoaLumberjack
@@ -91,6 +95,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: 47947303319594706f48a55185ea95a95159ab94
+  APAddressBook: 2b23557950065f8eb048e421dd4a18373f69949b
   apptentive-ios: f1c0f7c63134837b17a1410b525c8703e7e4bc43
   BlocksKit: 4439e7f30a9f90743462ca63545a15c1f4304cef
   CocoaLumberjack: aadc76d7bd6c839ca84b38ed50cbf89d7cf8c693
@@ -108,4 +113,4 @@ SPEC CHECKSUMS:
   TestFlightSDK: 0c24c533748d0d84bfe7a3cb6036fa79124d84ee
   Weibo: 8ac9c24884290718ca62da62301165d209f7336c
 
-COCOAPODS: 0.33.1
+COCOAPODS: 0.34.1

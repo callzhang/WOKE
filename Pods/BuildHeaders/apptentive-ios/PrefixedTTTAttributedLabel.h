@@ -1,1 +1,0 @@
-../../apptentive-ios/ApptentiveConnect/ext/PrefixedTTTAttributedLabel/TTTAttributedLabel/PrefixedTTTAttributedLabel.h
