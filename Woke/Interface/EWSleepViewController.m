@@ -50,8 +50,6 @@
     [[AVManager sharedManager] playSoundFromFileName:@"sleep mode.caf"];
     //time
     [self updateTimer:nil];
-    //timer
-    timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTimer:) userInfo:nil repeats:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -79,5 +77,8 @@
 		[timer invalidate];
         [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }
+    
+    //timer
+    timer = [NSTimer scheduledTimerWithTimeInterval:nextTask.time.timeIntervalSinceNow/30 target:self selector:@selector(updateTimer:) userInfo:nil repeats:NO];
 }
 @end

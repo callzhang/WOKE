@@ -354,7 +354,7 @@
         [[AVManager sharedManager] playSoundFromFileName:me.preference[@"DefaultTone"]];
         
         //play sounds after 30s - time for alarm
-        double d = 30;
+        double d = 10;
 #ifdef DEBUG
         d = 5;
 #endif
@@ -472,7 +472,7 @@
         EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
         NSNumber *duration = me.preference[kSleepDuration];
         BOOL nextTaskMatched = [task.objectID.URIRepresentation.absoluteString isEqualToString:taskID];
-        BOOL needSleep = task.time.timeIntervalSinceNow/3600<duration.floatValue;
+        BOOL needSleep = task.time.timeIntervalSinceNow/3600 < duration.floatValue;
         if (nextTaskMatched && needSleep) {
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
             [rootViewController presentWithBlur:controller withCompletion:NULL];
