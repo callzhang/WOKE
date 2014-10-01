@@ -11,6 +11,6 @@
 #import "_EWSocialGraph.h"
 
 @interface EWSocialGraph : _EWSocialGraph
-@property (nonatomic, retain) NSDictionary *facebookFriends;
-@property (nonatomic, retain) NSDictionary *weiboFriends;
+@property (nonatomic, strong) NSArray *facebookFriends;
+@property (nonatomic, strong) NSArray *addressBookFriends;
 @end

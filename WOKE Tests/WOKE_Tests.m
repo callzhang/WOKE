@@ -15,6 +15,7 @@
 #import "EWDataStore.h"
 #import "EWPersonStore.h"
 #import "EWSync.h"
+#import "EWSocialGraphManager.h"
 
 @interface WOKE_Tests : XCTestCase
 
@@ -62,6 +63,17 @@
         aUser = (PFUser *)me.parseObject;
     }];
     expect([[aUser[@"friends"] valueForKey:kParseObjectID] containsObject:friend.serverID]).after(13).to.beNil();
+}
+
+- (void)testGetAddressBookUsers {
+    __block NSArray *users;
+    if ([[EWSocialGraphManager sharedInstance] hasAddressBookAccess]) {
+        [[EWSocialGraphManager sharedInstance] testFindWithUsersCompletion:^(NSArray *objs) {
+            users = objs;
+        }];
+    }
+    
+    expect(users).willNot.beNil();
 }
 
 @end

@@ -1,3 +1,18 @@
+// findWokeFriendsFromAddressBook
+// parameters: contacts - contacts
+Parse.Cloud.define("findUsersWithEmails", function (request, response) {
+  var contacts = request.params.contacts;
+  var query = new Parse.Query(Parse.User);
+  query.containedIn("email", contacts);
+  query.find({
+    success: function (result) {
+      response.success(result)
+    },
+    error: function () {
+      response.error("Lookup Address Book Failed");
+    }
+  });
+})
 
 
 // getRelevantUsers 

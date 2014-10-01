@@ -10,6 +10,12 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 #import "EWUserManagement.h"
+#import "APAddressBook.h"
+#import "APContact.h"
+
+@interface EWSocialGraphManager()
+@property (nonatomic, strong) APAddressBook *addressBook;
+@end
 
 @implementation EWSocialGraphManager
 
@@ -25,10 +31,18 @@
     return manager;
 }
 
-+ (EWSocialGraph *)mySocialGraph{
+- (APAddressBook *)addressBook {
+    if (!_addressBook) {
+        _addressBook = [[APAddressBook alloc] init];
+    }
+    
+    return _addressBook;
+}
+
+- (EWSocialGraph *)mySocialGraph{
     EWSocialGraph *sg = me.socialGraph;
     if (!sg) {
-        sg = [[EWSocialGraphManager sharedInstance] createSocialGraphForPerson:me];
+        sg = [self  createSocialGraphForPerson:me];
     }
     return sg;
 }
@@ -50,7 +64,6 @@
     return person.socialGraph;
 }
 
-
 - (EWSocialGraph *)createSocialGraphForPerson:(EWPerson *)person{
     EWSocialGraph *sg = [EWSocialGraph createEntityInContext:person.managedObjectContext];
     sg.updatedAt = [NSDate date];
@@ -61,6 +74,64 @@
     //[EWSync save];
     NSLog(@"Created new social graph for user %@", person.name);
     return sg;
+}
+
+- (BOOL)hasAddressBookAccess {
+    return [APAddressBook access] == APAddressBookAccessGranted;
+}
+
+- (void)testFindWithUsersCompletion:(void (^)(NSArray *users))completion {
+    [self loadAddressBookCompletion:^(NSArray *contacts, NSError *error) {
+        NSArray *emails = [contacts bk_map:^id(APContact *obj) {
+            return obj.emails;
+        }];
+        
+        NSMutableArray *allEmails = [NSMutableArray array];
+        for (NSArray *obj in emails) {
+            [allEmails addObjectsFromArray:obj];
+        }
+        
+        [self getUsersFromParse:allEmails completion:^(NSArray *contacts, NSError *error) {
+            DDLogInfo(@"contacts:%@", contacts);
+            completion(contacts);
+        }];
+    }];
+}
+
+- (void)loadAddressBookCompletion:(void (^)(NSArray *contacts, NSError *error))completion {
+    [self.addressBook loadContactsOnQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) completion:^(NSArray *contacts, NSError *error) {
+        DDLogInfo(@"got contacts: %@", contacts);
+        NSArray *mapContacts = [contacts bk_map:^id(APContact *obj) {
+            NSDictionary *contact = @{
+                                      @"firstName": obj.firstName,
+                                      @"middleName": obj.middleName,
+                                      @"lastName": obj.lastName,
+                                      @"emails": obj.emails,
+                                      @"recordID": obj.recordID,
+                                      @"socialProfiles": obj.socialProfiles,
+                                      @"phones": obj.phones,
+                                      @"phonesWithLabels": obj.phonesWithLabels
+                                      };
+            
+            return contact;
+        }];
+        
+        self.mySocialGraph.addressBookFriends = mapContacts;
+        
+        [EWSync save];
+        
+        if (completion) {
+            completion(contacts, error);
+        }
+    }];
+}
+
+- (void)getUsersFromParse:(NSArray *)emails completion:(void (^)(NSArray *contacts, NSError *error))completion {
+    [PFCloud callFunctionInBackground:@"findUsersWithEmails" withParameters:@{@"emails": emails} block:^(id object, NSError *error) {
+        if (completion) {
+            completion(object, error);
+        }
+    }];
 }
 
 @end
