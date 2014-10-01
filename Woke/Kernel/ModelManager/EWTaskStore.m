@@ -125,7 +125,6 @@
     if (t) {
         time = t.time;
     }else{
-        NSLog(@"Didn't get next task for %@, use catched info", person.name);
         time = person.cachedInfo[kNextTaskTime];
     }
     
