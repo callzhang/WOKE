@@ -19,7 +19,7 @@
 #import "EWUserManagement.h"
 #import "EWServer.h"
 #import "ATConnect.h"
-
+#import "EWBackgroundingManager.h"
 
 //UI
 #import "EWWakeUpViewController.h"
@@ -43,6 +43,15 @@
         manager = [[EWWakeUpManager alloc] init];
     });
     return manager;
+}
+
+- (id)init{
+	self = [super init];
+	[[NSNotificationCenter defaultCenter] addObserverForName:kBackgroundingEnterNotice object:nil queue:nil usingBlock:^(NSNotification *note) {
+		[self alarmTimerCheck];
+		[self sleepTimerCheck];
+	}];
+	return self;
 }
 
 - (BOOL)isWakingUp{
@@ -423,7 +432,7 @@
 
 
 #pragma mark - CHECK TIMER
-+ (void) alarmTimerCheck{
+- (void) alarmTimerCheck{
     //check time
     if (!me) return;
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
@@ -432,19 +441,24 @@
     //alarm time up
     NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
 
-    NSLog(@"===========================>> Check Alarm Timer (%ld min left) <<=============================", (NSInteger)timeLeft/60);
-    static BOOL timerInitiated = NO;
-    if (timeLeft < kServerUpdateInterval && timeLeft > 0 && !timerInitiated) {
+	
+    static NSTimer *timerScheduled;
+    if (timeLeft > 0 && (!timerScheduled || ![timerScheduled.fireDate isEqualToDate:task.time])) {
         NSLog(@"%s: About to init alart timer in %fs", __func__, timeLeft);
-        timerInitiated = YES;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [EWWakeUpManager handleAlarmTimerEvent:nil];
-        });
+		[timerScheduled invalidate];
+		[NSTimer bk_scheduledTimerWithTimeInterval:timeLeft-1 block:^(NSTimer *timer) {
+			[EWWakeUpManager handleAlarmTimerEvent:nil];
+		} repeats:NO];
+		NSLog(@"===========================>> Alarm Timer scheduled on %@) <<=============================", task.time.date2String);
     }
-    
+	
+	if (timeLeft > kServerUpdateInterval) {
+		[NSTimer scheduledTimerWithTimeInterval:timeLeft/2 target:self selector:@selector(alarmTimerCheck) userInfo:nil repeats:NO];
+		DDLogVerbose(@"Next alarm timer check in %.1fs", timeLeft/2);
+	}
 }
 
-+ (void)sleepTimerCheck{
+- (void)sleepTimerCheck{
     //check time
     if (!me) return;
     EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
@@ -453,16 +467,22 @@
     //alarm time up
     NSNumber *sleepDuration = me.preference[kSleepDuration];
     NSInteger durationInSeconds = sleepDuration.integerValue * 3600;
-    NSTimeInterval timeLeft = [task.time timeIntervalSinceNow] - durationInSeconds;
-    NSLog(@"===========================>> Check Sleep Timer (%ld min left) <<=============================", (NSInteger)timeLeft/60);
-    static BOOL timerInitiated = NO;
-    if (timeLeft < kServerUpdateInterval && timeLeft > 0 && !timerInitiated) {
+    NSDate *sleepTime = [task.time dateByAddingTimeInterval:-durationInSeconds];
+	NSTimeInterval timeLeft = sleepTime.timeIntervalSinceNow;
+    static NSTimer *timerScheduled;
+    if (timeLeft > 0 && (!timerScheduled || ![timerScheduled.fireDate isEqualToDate:sleepTime])) {
         NSLog(@"%s: About to init alart timer in %fs", __func__, timeLeft);
-        timerInitiated = YES;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((timeLeft - 1) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [EWWakeUpManager handleSleepTimerEvent:nil];
-        });
+		[timerScheduled invalidate];
+		timerScheduled = [NSTimer bk_scheduledTimerWithTimeInterval:timeLeft-1 block:^(NSTimer *timer) {
+			[EWWakeUpManager handleSleepTimerEvent:nil];
+		} repeats:NO];
+		NSLog(@"===========================>> Sleep Timer scheduled on %@ <<=============================", sleepTime.date2String);
     }
+	
+	if (timeLeft > 300) {
+		[NSTimer scheduledTimerWithTimeInterval:timeLeft/2 target:self selector:@selector(alarmTimerCheck) userInfo:nil repeats:NO];
+		DDLogVerbose(@"Next alarm timer check in %.1fs", timeLeft);
+	}
 }
 
 + (void)handleSleepTimerEvent:(UILocalNotification *)notification{

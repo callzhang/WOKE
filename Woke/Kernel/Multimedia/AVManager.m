@@ -58,30 +58,6 @@
 }
 
 #pragma mark - Audio Sessions
-//register the BACKGROUNDING audio session
-- (void)registerBackgroudingAudioSession{
-	[[UIApplication sharedApplication] endReceivingRemoteControlEvents];
-    
-    //audio session
-    [[AVAudioSession sharedInstance] setDelegate: self];
-    NSError *error = nil;
-    //set category
-    BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback
-                                                    withOptions: AVAudioSessionCategoryOptionMixWithOthers
-                                                          error:&error];
-    if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
-    //force speaker
-    //set active
-//    success = [[AVAudioSession sharedInstance] setActive:YES error:&error];
-//    if (!success || error){
-//        NSLog(@"Unable to activate BACKGROUNDING audio session:%@", error);
-//    }else{
-//        NSLog(@"BACKGROUNDING Audio session activated!");
-//    }
-    //set active bg sound
-    [self playSilentSound];
-}
-
 //register the ACTIVE playing session
 - (void)registerActiveAudioSession{
 	[self setDeviceVolume:1.0];
@@ -93,7 +69,7 @@
     
     //set category
     BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback
-													withOptions: nil
+													withOptions: AVAudioSessionCategoryOptionAllowBluetooth
 														  error: &error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     
@@ -113,7 +89,7 @@
     
     //set category
     BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord
-                                                    withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker
+                                                    withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker | AVAudioSessionCategoryOptionAllowBluetooth
                                                           error: &error];
     if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
     
@@ -476,31 +452,22 @@
 
 #pragma mark - AudioSeesion Delegate events
 - (void)beginInterruption{
-    [[EWBackgroundingManager sharedInstance] beginInterruption];
+	//
 }
 
 - (void)endInterruptionWithFlags:(NSUInteger)flags{
     if (flags) {
         if (AVAudioSessionInterruptionOptionShouldResume) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                
-                
-                EWBackgroundingManager *manager = [EWBackgroundingManager sharedInstance];
-                if (manager.sleeping == YES) {
-#ifdef DEBUG
-                    UILocalNotification *n = [UILocalNotification new];
-                    n.alertBody = @"Woke is active";
-                    [[UIApplication sharedApplication] scheduleLocalNotification:n];
-#endif
-                    [self registerBackgroudingAudioSession];
-                    [manager endInterruption];
-                }
+				if (self.media) {
+					[self.player play];
+				}
             });
         }
     }
 }
 
-#pragma mark - AVPlayer (used to play sound and keep the audio capability open)
+#pragma mark - AVPlayer (Depreciated)
 - (void)playAvplayerWithURL:(NSURL *)url{
     if (AVPlayerUpdateTimer) {
         [avplayer removeTimeObserver:AVPlayerUpdateTimer];
@@ -508,24 +475,9 @@
     }
     
     //AVPlayerItem *item = [AVPlayerItem playerItemWithURL:url];
-    avplayer = [AVPlayer playerWithURL:url];
-    [avplayer setActionAtItemEnd:AVPlayerActionAtItemEndNone];
-    avplayer.volume = 1.0;
-    if (avplayer.status == AVPlayerStatusFailed) {
-        NSLog(@"!!! AV player not ready to play.");
-    }
-    //[avplayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:NULL];
-    [avplayer play];
+    
 }
 
-- (void)playSilentSound{
-#if !TARGET_IPHONE_SIMULATOR
-    NSLog(@"Play silent sound");
-    //NSURL *path = [[NSBundle mainBundle] URLForResource:@"tock" withExtension:@"caf"];
-    NSURL *path = [[NSBundle mainBundle] URLForResource:@"bg" withExtension:@"caf"];
-    [self playAvplayerWithURL:path];
-#endif
-}
 
 - (void)stopAvplayer{
     [avplayer pause];
@@ -540,8 +492,6 @@
     
     avplayer = nil;
 }
-
-
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object

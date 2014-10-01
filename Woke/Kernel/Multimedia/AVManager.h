@@ -67,11 +67,6 @@
 // - (void)stopPlaying:(NSString *)fileName;
 - (void)stopAllPlaying;
 
-/**
- *register for NORMAL AudioSession for backgrounding
- @discussion This session starts with option of mix & speaker
- */
-- (void)registerBackgroudingAudioSession;
 
 /**
  *register for ACTIVE PLAYING AudioSession
@@ -86,9 +81,9 @@
 /**
  Play audio using AVPlayer
  */
-- (void)playAvplayerWithURL:(NSURL *)url;
-- (void)playSilentSound;
-- (void)stopAvplayer;
+//- (void)playAvplayerWithURL:(NSURL *)url;
+//- (void)playSilentSound;
+//- (void)stopAvplayer;
 
 /**
  Play sound with system sound service

@@ -916,9 +916,6 @@
             @catch (NSException *exception) {
                 [self.collectionView reloadData];
             }
-            
-            
-            
         }
         
         //need to ®record the time at the beginning
