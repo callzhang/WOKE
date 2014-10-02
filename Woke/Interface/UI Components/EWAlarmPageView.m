@@ -259,7 +259,7 @@
     }
     //self.timeLeftText.text = task.time.timeLeft;
 
-    float h = -task.time.timeElapsed/3600;
+    float h = task.time.timeIntervalSinceNow/3600;
     if (h < 0) {
         self.timeLeftText.text = @"Just alarmed";
 		return;
@@ -270,6 +270,6 @@
     }
 	
 	//timer
-    [NSTimer scheduledTimerWithTimeInterval:task.time.timeIntervalSinceNow/5 target:self selector:@selector(changeTimeLeftLabel) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:task.time.timeIntervalSinceNow/10 target:self selector:@selector(changeTimeLeftLabel) userInfo:nil repeats:NO];
 }
 @end
