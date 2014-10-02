@@ -19,6 +19,7 @@
 #import "EWNotification.h"
 #import "EWUIUtil.h"
 #import "EWStatisticsManager.h"
+#import "EWBackgroundingManager.h"
 
 
 @implementation EWDataStore
@@ -39,6 +40,7 @@
 	[[EWSync sharedInstance] setup];
 	//watch for login event
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginDataCheck) name:kPersonLoggedIn object:nil];
+	
 	return self;
 }
 
@@ -57,8 +59,12 @@
                 NSLog(@"*** Installation %@ failed to save: %@", currentInstallation.objectId, error.description);
             }
         }];
-    };
-    
+	};
+	
+	
+	//init backgrounding manager
+	[EWBackgroundingManager sharedInstance];
+	
     //continue upload to server if any
     NSLog(@"0. Continue uploading to server");
     [[EWSync sharedInstance] resumeUploadToServer];

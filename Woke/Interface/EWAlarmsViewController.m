@@ -900,9 +900,7 @@
                 
             }];
         
-            
-        }
-        
+			
         //need to ®record the time at the beginning
         lastUpdated = [NSDate date];
     }
