@@ -113,10 +113,6 @@ UIViewController *rootViewController;
     }
     
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[EWSocialGraphManager sharedInstance] loadAddressBook];
-    });
     return YES;
 }
 
