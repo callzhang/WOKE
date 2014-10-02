@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "EWPerson.h"
 
-
 @interface EWServer : NSObject
 
 #pragma mark - Handle Push Notification

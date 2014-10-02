@@ -78,10 +78,12 @@
     //check task
     NSLog(@"4. Start task schedule");
 	[[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
-		[EWPersonStore updateMe];
+		[NSTimer bk_scheduledTimerWithTimeInterval:60 block:^(NSTimer *timer) {
+			//[EWPersonStore updateMe];
+		} repeats:NO];
 	}];
 	
-	NSLog(@"5. Check past task activity");
+	NSLog(@"5. Check my social graph");
 	[[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
 	
     NSLog(@"4. Check my unread media");//media also will be checked with background fetch
@@ -98,14 +100,13 @@
 	[EWTaskStore.sharedInstance checkScheduledNotifications];
     
     //Update my relations cancelled here because the we should wait for all sync task finished before we can download the rest of the relation
-    //NSLog(@"7. Refresh my relation in background");
-    //[EWPersonStore updateMe];
+    NSLog(@"7. Refresh my media");
+    [[EWMediaStore sharedInstance] mediaCreatedByPerson:me];
 	
 	//location
-	if (!me.lastLocation) {
-		NSLog(@"8. Start location recurring update");
-		[EWUserManagement registerLocation];
-	}
+	NSLog(@"8. Start location recurring update");
+	[EWUserManagement registerLocation];
+	
     
     //update data with timely updates
 	//first time
@@ -139,18 +140,16 @@
 	[[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
 	
     //location
-    NSLog(@"[2] Start location recurring update");
-    [EWUserManagement registerLocation];
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+		NSLog(@"[2] Start location recurring update");
+		[EWUserManagement registerLocation];
+	}
     
     //check task
     NSLog(@"[3] Start recurring task schedule");
 	[[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
-		[EWPersonStore updateMe];
+		//[EWPersonStore updateMe];
 	}];
-    
-    //check alarm timer: alarm time check is done by backgrounding process
-    //NSLog(@"[4] Start recurring alarm timer check");
-    //[EWWakeUpManager alarmTimerCheck];
     
 }
 

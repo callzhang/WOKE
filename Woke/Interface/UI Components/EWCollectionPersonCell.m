@@ -14,6 +14,10 @@
 #import "EWTaskStore.h"
 #import "NSDate+Extend.h"
 
+@interface EWCollectionPersonCell()
+@property (nonatomic) BOOL needsUpdate;
+@end
+
 @implementation EWCollectionPersonCell
 
 - (void)applyHexagonMask{
@@ -44,62 +48,11 @@
     if ([self.person isEqual:person]) {
         return;
     }
-    
    
     _person = person;
-    [self addSubview:self.name];
-    //init state
-    self.selection.hidden = YES;
-    //[self applyHexagonMask];
-    
-    //profile picture
-    if (person.profilePic) {
-        self.profile.image = person.profilePic;
-    }else{
-        self.profile.image = [UIImage imageNamed:@"profile"];
-    }
+    _needsUpdate = YES;
     
     
-    //Name
-    BOOL isMe = person.isMe;
-    if (isMe) {
-        //self.initial.hidden = NO;
-        self.initial.text = @"YOU";
-    }else{
-        self.initial.text = @"";
-        if(self.showName){
-            self.name.alpha = 1;
-            self.name.text = person.name;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [UIView animateWithDuration:0.2 animations:^{
-                    self.name.alpha = 1;
-                    CGRect frame = self.name.frame;
-                    frame.origin.y += 20;
-                    self.name.frame = frame;
-                }];
-            });
-        }else{
-            self.name.text = @"";
-        }
-    }
-    
-    //info
-    self.info.text = @"";
-    if (isMe) {
-        return;
-    }else{
-        self.info.text = @"";
-        
-        if (self.showTime) {
-            self.info.text = [self timeString];
-        }
-        
-        //distance
-        if (self.showDistance && [self.info.text isEqualToString:@""]) {
-            self.info.text = [self distanceString];
-        }
-        
-    }
 }
 
 - (NSString *)distanceString{
@@ -129,16 +82,77 @@
 
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    NSNumber *a = change[NSKeyValueChangeNewKey];
-    float alpha = a.floatValue;
-    NSLog(@"alpha changed: %f", alpha);
-}
-
 
 - (void)drawRect:(CGRect)rect{
     [EWUIUtil applyHexagonSoftMaskForView:self.image];
     //[EWUIUtil applyShadow:self.contentView];
+}
+
+- (void)prepareForDisplay{
+    if (_needsUpdate) {
+        
+        //init state
+        self.selection.hidden = YES;
+        //[self applyHexagonMask];
+        
+        //profile picture
+        if (_person.profilePic) {
+            self.profile.image = _person.profilePic;
+        }else{
+            self.profile.image = [UIImage imageNamed:@"profile"];
+        }
+        
+        
+        //Name
+        BOOL isMe = _person.isMe;
+        if (isMe) {
+            //self.initial.hidden = NO;
+            self.initial.text = @"YOU";
+        }else{
+            self.initial.text = @"";
+            if(self.showName){
+                self.name.alpha = 1;
+                self.name.text = _person.name;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [UIView animateWithDuration:0.2 animations:^{
+                        self.name.alpha = 1;
+                        CGRect frame = self.name.frame;
+                        frame.origin.y += 20;
+                        self.name.frame = frame;
+                    }];
+                });
+            }else{
+                self.name.text = @"";
+            }
+        }
+        
+        //info
+        self.info.text = @"";
+        if (isMe) {
+            return;
+        }else{
+            self.info.text = @"";
+            
+            if (self.showTime) {
+                self.info.text = [self timeString];
+            }
+            
+            //distance
+            if (self.showDistance && [self.info.text isEqualToString:@""]) {
+                self.info.text = [self distanceString];
+            }
+            
+        }
+        
+        //draw hex
+        //[EWUIUtil applyHexagonSoftMaskForView:self.image];
+        
+        //draw shadow
+        [EWUIUtil applyShadow:self.contentView];
+        
+        _needsUpdate = NO;
+    }
+    
 }
 
 @end

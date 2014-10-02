@@ -112,32 +112,33 @@
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
 
     //fetch or create
-    EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:user.objectId];
+    EWPerson *person = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
+    if ([EWSync sharedInstance].workingQueue.count == 0) {
+        //if no pending uploads, refresh self
+        [me refresh];
+    }
     //save me
     [EWPersonStore sharedInstance].currentUser = person;
-    me.score = @100;
-    [me saveToLocal];
     
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     
-    //update everyone first: everyone is updated in data store
-    //[[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+    if (completionBlock) {
+        NSLog(@"[d] Run completion block.");
+        completionBlock();
+        
+        [[ATConnect sharedConnection] engage:@"login_success" fromViewController:rootViewController];
+    }
 
     //Broadcast user login event
-    //Here we don't update me because we have that task in the DataStore login tsak
     NSLog(@"[c] Broadcast Person login notification");
     [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
     
-    //background refresh
-    if (completionBlock) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"[d] Run completion block.");
-            completionBlock();
-            
-            [[ATConnect sharedConnection] engage:@"login_success" fromViewController:rootViewController];
-        });
+    
+    
+    //if new user, link with facebook
+    if([PFUser currentUser].isNew){
+        [EWUserManagement handleNewUser];
+        return;
     }
-
 }
 
 
@@ -225,7 +226,7 @@
 
 
 + (void)handleNewUser{
-    
+    [EWUserManagement linkWithFacebook];
     NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", me.name];
     EWAlert(msg);
     [EWServer broadcastMessage:msg onSuccess:NULL onFailure:NULL];
@@ -319,10 +320,6 @@
 
 #pragma mark - FACEBOOK
 + (void)loginParseWithFacebookWithCompletion:(ErrorBlock)block{
-    if([PFUser currentUser]){
-        [EWUserManagement linkWithFacebook];
-        return;
-    }
     
     //login with facebook
     [PFFacebookUtils logInWithPermissions:[EWUserManagement facebookPermissions] block:^(PFUser *user, NSError *error) {
@@ -360,7 +357,7 @@
 + (void)linkWithFacebook{
     NSParameterAssert([PFUser currentUser]);
     BOOL islinkedWithFb = [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
-    if (islinkedWithFb) {
+    if (!islinkedWithFb) {
         [PFFacebookUtils unlinkUser:[PFUser currentUser]];
     }
     [PFFacebookUtils linkUser:[PFUser currentUser] permissions:[EWUserManagement facebookPermissions] block:^(BOOL succeeded, NSError *error) {

@@ -110,8 +110,23 @@
 
 - (NSArray *)mediaCreatedByPerson:(EWPerson *)person{
     NSArray *medias = [person.medias allObjects];
-    if (medias.count == 0) {
+    if (medias.count == 0 && [person isMe]) {
         //query
+        PFQuery *q = [[[PFUser currentUser] relationForKey:EWPersonRelationships.medias] query];
+        [EWSync findServerObjectInBackgroundWithQuery:q completion:^(NSArray *objects, NSError *error) {
+            [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
+                EWPerson *localMe = [me inContext:localContext];
+                NSArray *newMedias = [objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [localMe.medias valueForKey:kParseObjectID]]];
+                for (PFObject *m in newMedias) {
+                    EWMediaItem *media = (EWMediaItem *)[m managedObjectInContext:localContext];
+                    [media refresh];
+                    [localMe addMediasObject:media];
+                    [media saveToLocal];
+                }
+                [localMe saveToLocal];
+                DDLogInfo(@"My media updated with %lu new medias", (unsigned long)newMedias.count);
+            }];
+        }];
     }
     return medias;
 }

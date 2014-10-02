@@ -194,7 +194,7 @@
                 NSData *data = [file getData:&error];
                 //[file getDataWithBlock:^(NSData *data, NSError *error) {
                 if (error || !data) {
-                    NSLog(@"@@@ Failed to download PFFile: %@", error.description);
+                    DDLogError(@"Failed to download PFFile: %@", error.description);
                     return;
                 }
                 NSManagedObject *localSelf = [self MR_inContext:localContext];
@@ -226,7 +226,7 @@
                     [self setValue:parseValue forKey:key];
                 }
                 @catch (NSException *exception) {
-                    NSLog(@"*** Failed to set value for key %@ on MO %@(%@)", key, self.entity.name, self.serverID);
+                    DDLogError(@"Failed to set value for key %@ on MO %@(%@)", key, self.entity.name, self.serverID);
                 }
             }
         }else{
@@ -281,7 +281,7 @@
 - (void)refreshInBackgroundWithCompletion:(void (^)(void))block{
     //network check
     if (![EWSync isReachable]) {
-        NSLog(@"Network not reachable, skip refreshing.");
+        DDLogDebug(@"Network not reachable, skip refreshing.");
         //refresh later
         [self refreshEventually];
         if (block) {
@@ -292,7 +292,7 @@
     
     NSString *parseObjectId = [self valueForKey:kParseObjectID];
     if (!parseObjectId) {
-        NSLog(@"When refreshing, MO missing serverID %@, prepare to upload", self.entity.name);
+        DDLogVerbose(@"When refreshing, MO missing serverID %@, prepare to upload", self.entity.name);
         [self uploadEventually];
         [EWSync save];
         if (block) {
@@ -300,14 +300,14 @@
         }
     }else{
         if ([self changedKeys]) {
-            NSLog(@"!!! The MO %@(%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
+            DDLogVerbose(@"The MO %@(%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
         }
         
         
         [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
             NSManagedObject *currentMO = [self inContext:localContext];
             if (!currentMO) {
-                NSLog(@"*** Failed to obtain object from database: %@", self);
+                DDLogError(@"*** Failed to obtain object from database: %@", self);
                 return;
             }
             //============ Refresh
@@ -328,7 +328,7 @@
 - (void)refresh{
     //check network
     if (![EWSync isReachable]) {
-        NSLog(@"Network not reachable, refresh later.");
+        DDLogDebug(@"Network not reachable, refresh later.");
         //refresh later
         [self refreshEventually];
         return;
@@ -338,13 +338,13 @@
     
     if (!parseObjectId) {
         //NSParameterAssert([self isInserted]);
-        NSLog(@"!!! The MO %@(%@) trying to refresh doesn't have servreID, skip! %@", self.entity.name, self.serverID, self);
+        DDLogWarn(@"!!! The MO %@(%@) trying to refresh doesn't have servreID, skip! %@", self.entity.name, self.serverID, self);
     }else{
         if ([self changedKeys]) {
-            NSLog(@"*** The MO%@ (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
+            DDLogVerbose(@"The MO%@ (%@) you are trying to refresh HAS CHANGES, which makes the process UNSAFE!(%@)", self.entity.name, self.serverID, self.changedKeys);
         }
         
-        NSLog(@"===>>>> Refreshing MO %@(%@)", self.entity.name, self.serverID);
+        DDLogInfo(@"===>>>> Refreshing MO %@(%@)", self.entity.name, self.serverID);
         //get the PO
         PFObject *object = self.parseObject;
         //Must update the PO

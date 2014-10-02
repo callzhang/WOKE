@@ -53,13 +53,16 @@
     }
     
     if (person.isMe) {
+        //first check from PFUser
+        PFObject *sg = [PFUser currentUser][EWPersonRelationships.socialGraph];
+        if (sg) {
+            EWSocialGraph *socialGraph = [sg managedObjectInContext:mainContext];
+        }
         //need to create one for self
         EWSocialGraph *graph = [self createSocialGraphForPerson:person];
         return graph;
     }
-    
-    //refresh from server again
-    [person refresh];
+
     
     return person.socialGraph;
 }

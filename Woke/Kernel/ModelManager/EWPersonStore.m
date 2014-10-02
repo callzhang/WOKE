@@ -58,15 +58,18 @@ EWPerson *me;
 #pragma mark - CREATE USER
 -(EWPerson *)createPersonWithParseObject:(PFUser *)user{
     EWPerson *newUser = (EWPerson *)[user managedObjectInContext:mainContext];
-    newUser.username = user.username;
-    newUser.profilePic = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];//TODO: new user profile
-    newUser.name = kDefaultUsername;
-    newUser.preference = kUserDefaults;
-    newUser.cachedInfo = [NSDictionary new];
-    if ([user isEqual:[PFUser currentUser]]) {
-        newUser.score = @100;
+    if (user.isNew) {
+        newUser.username = user.username;
+        newUser.profilePic = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];//TODO: new user profile
+        newUser.name = kDefaultUsername;
+        newUser.preference = kUserDefaults;
+        newUser.cachedInfo = [NSDictionary new];
+        if ([user isEqual:[PFUser currentUser]]) {
+            newUser.score = @100;
+        }
+        newUser.updatedAt = [NSDate date];
     }
-    newUser.updatedAt = [NSDate date];
+    
     //no need to save here
     return newUser;
 }
@@ -76,19 +79,7 @@ EWPerson *me;
     if(!ID) return nil;
     EWPerson *person = (EWPerson *)[EWSync managedObjectWithClass:@"EWPerson" withID:ID];
     
-    if (!person){
-        //only MO create for me
-        if ([[PFUser currentUser].objectId isEqualToString:ID]) {
-            person = [self createPersonWithParseObject:[PFUser currentUser]];
-            NSLog(@"New user %@ data has CREATED", person.name);
-        }
-    }
-    
     return person;
-}
-
-- (void)refreshPersonInBackgroundWithCompletion:(void (^)(void))block{
-    
 }
 
 
@@ -111,11 +102,12 @@ EWPerson *me;
                 
                 [EWPersonStore updateCachedFriends];
                 [EWUserManagement updateFacebookInfo];
-                
-                if ([PFUser currentUser].isNew) {
-                    [EWUserManagement handleNewUser];
-                }
             }];
+            //TODO: we need a better sync method
+            //1. query for medias
+            
+            
+            //2. check
         }];
         
         
@@ -141,9 +133,7 @@ EWPerson *me;
     NSParameterAssert([NSThread isMainThread]);
     
     //fetch from sever
-    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        [self getEveryoneInContext:localContext];
-    }];
+    [self getEveryoneInContext:mainContext];
     
     NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:mainContext];
     everyone = [allPerson sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"score" ascending:NO]]];
@@ -230,6 +220,7 @@ EWPerson *me;
     //change the returned people's score;
     for (PFUser *user in people) {
         EWPerson *person = (EWPerson *)[user managedObjectInContext:context];
+        [NSThread sleepForTimeInterval:0.1];//throttle down the new user creation speed, preven
         float score = 99 - [people indexOfObject:user] - arc4random_uniform(3);//add random for testing
         person.score = [NSNumber numberWithFloat:score];
         [allPerson addObject:person];
@@ -280,7 +271,7 @@ EWPerson *me;
         if ([keyPath isEqualToString:@"score"]) {
             NSNumber *score = change[NSKeyValueChangeNewKey];
             if ([score isKindOfClass:[NSNull class]] || [score integerValue] != 100) {
-                NSLog(@"My score resotred to 100");
+                DDLogError(@"My score resotred to 100");
                 me.score = @100;
             }
         }else if ([keyPath isEqualToString:@"profilePic"]){
@@ -290,7 +281,7 @@ EWPerson *me;
             
         }else if ([keyPath isEqualToString:@"lastLocation"]){
             NSLog(@"Last location updated, start grab everyone");
-            [self refreshPersonInBackgroundWithCompletion:NULL];
+            [self getEveryoneInBackgroundWithCompletion:NULL];
         }
         
     }

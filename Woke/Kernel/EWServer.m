@@ -61,6 +61,10 @@
 		NSString *notificationID = push[kPushNofiticationID];
 		[EWNotificationManager handleNotification:notificationID];
 	}
+    else if ([type isEqualToString:kPushTypeBroadcast]){
+        NSString *message = push[@"alert"];
+        EWAlert(message);
+    }
 	else{
 		// Other push type not supported
 		NSString *str = [NSString stringWithFormat:@"Unknown push type received: %@", push];
@@ -214,7 +218,8 @@
 + (void)broadcastMessage:msg onSuccess:(void (^)(void))block onFailure:(void (^)(void))failureBlock{
     
     NSDictionary *payload = @{@"alert": msg,
-                              @"sound": @"new.caf"};
+                              @"sound": @"new.caf",
+                              kPushType: kPushTypeBroadcast};
     
     PFQuery *pushQuery = [PFInstallation query];
     [pushQuery whereKeyExists:@"username"];

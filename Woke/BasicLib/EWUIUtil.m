@@ -213,7 +213,7 @@ static const float originalSize = 80.0;
 
 + (void)applyShadow:(UIView *)view{
     view.layer.shadowColor = [UIColor blackColor].CGColor;
-    float op = 0.4;
+    float op = 0.2;
     float r = 5;
     if ([view isKindOfClass:[UILabel class]]) {
         op = 1.0;

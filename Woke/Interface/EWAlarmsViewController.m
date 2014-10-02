@@ -724,6 +724,10 @@
     return cell;
 }
 
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
+    [(EWCollectionPersonCell *)cell prepareForDisplay];
+}
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     
     EWPerson *person = [self.fetchController objectAtIndexPath:indexPath];
@@ -811,15 +815,8 @@
     NSMutableDictionary *change = [NSMutableDictionary new];
     switch(type)
     {
-        case NSFetchedResultsChangeInsert:{
-            __block BOOL duplicated = NO;
-            [cellChangeArray enumerateObjectsUsingBlock:^(NSDictionary *change, NSUInteger idx, BOOL *stop) {
-                if([change[@(type)] isEqual:newIndexPath]){
-                    duplicated = YES;
-                }
-            }];
-            if(!duplicated) change[@(type)] = newIndexPath;
-        }
+        case NSFetchedResultsChangeInsert:
+            change[@(type)] = newIndexPath;
             break;
         case NSFetchedResultsChangeDelete:
             change[@(type)] = indexPath;
@@ -850,7 +847,11 @@
         return;
     }
     
-    if (cellChangeArray.count > 0){
+    //copy to local array
+    NSMutableArray *changeArray = cellChangeArray;
+    cellChangeArray = [NSMutableArray new];
+    
+    if (changeArray.count > 0){
         if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {
             // This is to prevent a bug in UICollectionView from occurring.
             // The bug presents itself when inserting the first object or deleting the last object in a collection view.
@@ -862,70 +863,48 @@
         } else {
             //add a update queue to handle exception when updating cell in batch updates block
             
-            NSMutableSet *update = [NSMutableSet new];
-            NSMutableSet *insert = [NSMutableSet new];
-            NSMutableSet *delete = [NSMutableSet new];
-            NSMutableSet *move = [NSMutableSet new];
             
-            @try {
-                [self.collectionView performBatchUpdates:^{
-                    
-                    [cellChangeArray bk_each:^(NSDictionary *obj) {
-                        [obj bk_each:^(id key, NSIndexPath *indexPath) {
-                            NSFetchedResultsChangeType type = [key unsignedIntegerValue];
-                            switch (type) {
-                                case NSFetchedResultsChangeInsert:
-                                    [insert addObject:indexPath];
-                                    break;
-                                case NSFetchedResultsChangeUpdate:
-                                    [update addObject:indexPath];
-                                    break;
-                                case NSFetchedResultsChangeDelete:
-                                    [delete addObject:indexPath];
-                                    break;
-                                case NSFetchedResultsChangeMove:
-                                    [move addObject:indexPath];
-                                    break;
-                                default:
-                                    break;
+            [self.collectionView performBatchUpdates:^{
+                
+                [changeArray bk_each:^(NSDictionary *obj) {
+                    [obj bk_each:^(id key, NSIndexPath *indexPath) {
+                        NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                        switch (type) {
+                            case NSFetchedResultsChangeInsert:
+                                [self.collectionView insertItemsAtIndexPaths:@[indexPath]];
+                                break;
+                            case NSFetchedResultsChangeUpdate:
+                                [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+                                break;
+                            case NSFetchedResultsChangeDelete:
+                                [self.collectionView deleteItemsAtIndexPaths:@[indexPath]];
+                                break;
+                            case NSFetchedResultsChangeMove:{
+                                NSArray *moveArray = (NSArray *)indexPath;
+                                [self.collectionView moveItemAtIndexPath:moveArray[0] toIndexPath:moveArray[1]];
                             }
-                        }];
-                    }];
-                    
-                    [self.collectionView insertItemsAtIndexPaths:insert.allObjects];
-                    [self.collectionView deleteItemsAtIndexPaths:delete.allObjects];
-                    
-                    for (NSArray *moveArray in move) {
-                        [self.collectionView moveItemAtIndexPath:moveArray[0] toIndexPath:moveArray[1]];
-                    }
-                    
-                }completion:^(BOOL finished){
-                    if (update.count) {
-                        //perform updates here
-                        [self.collectionView reloadData];
-                    }
-                    
-                    if (!finished) {
-                        if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-                            NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
+                                break;
+                            default:
+                                break;
                         }
-                    }
-                    
+                    }];
                 }];
-            }
-            @catch (NSException *exception) {
-                [self.collectionView reloadData];
-            }
-            
-            
+                
+            }completion:^(BOOL finished){
+                
+                if (!finished) {
+                    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+                        NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
+                    }
+                }
+                
+            }];
+        
             
         }
         
         //need to ®record the time at the beginning
         lastUpdated = [NSDate date];
-        
-        //after reload, we still need to update the view, do not clean the changeArray until updating the view.
-        [cellChangeArray removeAllObjects];
     }
 }
 
