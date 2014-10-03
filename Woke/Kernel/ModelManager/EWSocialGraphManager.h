@@ -22,6 +22,5 @@
 
 - (void)testFindWithUsersCompletion:(void (^)(NSArray *users))completion;
 - (BOOL)hasAddressBookAccess;
-- (void)loadAddressBook;
 - (void)loadAddressBookCompletion:(void (^)(NSArray *contacts, NSError *error))completion;
 @end
