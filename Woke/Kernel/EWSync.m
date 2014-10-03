@@ -479,20 +479,18 @@ NSManagedObjectContext *mainContext;
         if (succeeded) {
             //Good
             DDLogVerbose(@"~~~> PO %@(%@) deleted from server", parseObject.parseClassName, parseObject.objectId);
-            [self removeObjectFromDeleteQueue:parseObject];
-            
         }
 		else if (error.code == kPFErrorObjectNotFound){
             //fine
             DDLogWarn(@"~~~> Trying to deleted PO %@(%@) but not found", parseObject.parseClassName, parseObject.objectId);
-            [self removeObjectFromDeleteQueue:parseObject];
-            
         }
 		else{
             //not good
 			DDLogError(@"delete object failed, not sure why, %@(%@): error:%@", parseObject.parseClassName, parseObject.objectId, error);
-            [self removeObjectFromDeleteQueue:parseObject];
         }
+		
+		[self removeObjectFromDeleteQueue:parseObject];
+		[self.serverObjectPool removeObjectForKey:parseObject.objectId];
     }];
 }
 
@@ -833,10 +831,7 @@ NSManagedObjectContext *mainContext;
 }
 
 + (NSArray *)findServerObjectWithQuery:(PFQuery *)query error:(NSError **)error{
-	//cache query
-	query.cachePolicy = kPFCachePolicyCacheElseNetwork;
-	query.maxCacheAge = kPFQueryCacheLife;
-	//find
+
 	NSArray *result = [query findObjects:error];
 	for (PFObject *PO in result) {
 		[[EWSync sharedInstance] setCachedParseObject:PO];
@@ -845,8 +840,7 @@ NSManagedObjectContext *mainContext;
 }
 
 + (void)findServerObjectInBackgroundWithQuery:(PFQuery *)query completion:(PFArrayResultBlock)block{//cache query
-	query.cachePolicy = kPFCachePolicyCacheElseNetwork;
-	query.maxCacheAge = kPFQueryCacheLife;
+
 	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
 		
 		for (PFObject *PO in objects) {

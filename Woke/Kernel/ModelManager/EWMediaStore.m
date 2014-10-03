@@ -195,7 +195,7 @@
         //relationship
         NSMutableArray *receivers = po[@"receivers"];
         for (PFObject *receiver in receivers) {
-            if ([receiver.objectId isEqualToString:[PFUser currentUser].objectId]) {
+            if ([receiver.objectId isEqualToString:me.objectId]) {
                 [receivers removeObject:receiver];
                 break;
             }

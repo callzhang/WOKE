@@ -28,11 +28,12 @@
     if (notification.createdAt) {
         self.time.text = [notification.createdAt.timeElapsedString stringByAppendingString:@" ago"];
     }else{
+		__block EWNotification *blockNotification = _notification;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            PFObject *PO = [notification getParseObjectWithError:NULL];
+            PFObject *PO = [blockNotification getParseObjectWithError:NULL];
             dispatch_async(dispatch_get_main_queue(), ^{
-                notification.createdAt = PO.createdAt;
-                self.time.text = [notification.createdAt.timeElapsedString stringByAppendingString:@" ago"];
+                blockNotification.createdAt = PO.createdAt;
+                self.time.text = [blockNotification.createdAt.timeElapsedString stringByAppendingString:@" ago"];
             });
         });
         

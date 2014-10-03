@@ -29,6 +29,7 @@
         self.message.text = @"";
         self.backgroundColor = [UIColor clearColor];
         self.contentView.backgroundColor = [UIColor clearColor];
+		self.profilePic.contentMode = UIViewContentModeScaleAspectFill;
     }
     return self;
 }

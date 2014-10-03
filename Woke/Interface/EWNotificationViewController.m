@@ -37,7 +37,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reload) name:kNotificationCompleted object:nil];
     
     // Data source
-    notifications = [[EWNotificationManager allNotifications] mutableCopy];
+    notifications = [[EWNotificationManager myNotifications] mutableCopy];
     
     //tableview
     self.tableView.delegate = self;
@@ -58,9 +58,9 @@
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithCustomView:loading];
     [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:doneBtn rightItem:refreshBtn];
     
-     NSInteger nUnread = [EWNotificationManager myNotifications].count;
+     NSInteger nUnread = notifications.count;
     if (nUnread != 0){
-        self.title = [NSString stringWithFormat:@"Notifications(%ld)",(unsigned long)nUnread];
+        self.title = [NSString stringWithFormat:@"Notifications (%ld)",(unsigned long)nUnread];
     }
     else{
         self.title = @"Notifications";
@@ -97,11 +97,15 @@
             NSLog(@"Found new notification %@(%@)", notification.type, notification.objectId);
             notification.owner = me;
         }
-        notifications = [[EWNotificationManager allNotifications] mutableCopy];
+        notifications = [[EWNotificationManager myNotifications] mutableCopy];
         [self.tableView reloadData];
         
         //[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         [loading stopAnimating];
+		
+		if (notifications.count != 0){
+			self.title = [NSString stringWithFormat:@"Notifications (%ld)",(unsigned long)notifications.count];
+		}
     }];
 }
 

@@ -151,6 +151,8 @@ static const float initialDownSampling = 2;
 		//[self.zoomFilter addTarget:self.blendFilter];
 		[self updateFrame:nil];
 		
+		fromView.transform = CGAffineTransformIdentity;
+		
         [UIView animateWithDuration:duration-delay animations:^{
             
             fromView.alpha = 0;
