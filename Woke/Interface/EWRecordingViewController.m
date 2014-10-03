@@ -30,7 +30,7 @@
 #import "EWDataStore.h"
 #import "EWServer.h"
 #import "ATConnect.h"
-
+#import "EWBackgroundingManager.h"
 #import "UAProgressView.h"
 #define BUTTONCENTER  CGPointMake(470, EWScreenWidth/2)
 
@@ -207,13 +207,7 @@
 - (void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
     
-    [[AVManager sharedManager] registerBackgroudingAudioSession];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [[EWBackgroundingManager sharedInstance] registerBackgroudingAudioSession];
 }
 
 #pragma mark - collection view

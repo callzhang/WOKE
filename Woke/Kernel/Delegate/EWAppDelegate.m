@@ -25,7 +25,6 @@
 #import "EWServer.h"
 #import "EWUserManagement.h"
 #import "EWDataStore.h"
-#import "EWBackgroundingManager.h"
 
 #import "ATConnect.h"
 //global view for HUD
@@ -89,9 +88,6 @@ UIViewController *rootViewController;
     //init coredata and backend server
     [EWDataStore sharedInstance];
     
-    //init backgrounding manager
-    [EWBackgroundingManager sharedInstance];
-    
     //window
     [self.window makeKeyAndVisible];
     
@@ -113,6 +109,7 @@ UIViewController *rootViewController;
     }
     
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
+
     return YES;
 }
 

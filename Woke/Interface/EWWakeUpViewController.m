@@ -15,11 +15,11 @@
 #import "EWAppDelegate.h"
 #import "ImageViewController.h"
 #import "AVManager.h"
-#import "NSDate+Extend.h"
-#import "EWUIUtil.h"
 #import "EWMediaSlider.h"
 #import "EWWakeUpManager.h"
 #import "EWPostWakeUpViewController.h"
+#import "EWBackgroundingManager.h"
+#import "EWUIUtil.h"
 
 #define cellIdentifier                  @"EWMediaViewCell"
 
@@ -160,7 +160,7 @@
     NSLog(@"WakeUpViewController popped out of view: remote control event listner stopped. Observers removed.");
     
     //Resume to normal session
-    [[AVManager sharedManager] registerBackgroudingAudioSession];
+    [[EWBackgroundingManager sharedInstance] registerBackgroudingAudioSession];
     
     //invalid timer
     [timerTimer invalidate];

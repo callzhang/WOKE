@@ -139,8 +139,11 @@
 //push
 #define kPushType						@"type"
 #define kPushTypeAlarmTimer				@"timer"
-//media
+#define kPushTypeBroadcast				@"broadcast"
 #define kPushTypeMedia					@"media"
+#define kPushTypeNotification			@"notice"
+
+//media
 #define kPushMediaType					@"media_type"
 #define kPushMediaTypeBuzz				@"buzz"
 #define kPushMediaTypeVoice				@"voice"
@@ -148,7 +151,6 @@
 #define kPushTaskID						@"task"
 #define kPushMediaID					@"media"
 //notification
-#define kPushTypeNotification			@"notice"
 #define kPushNofiticationID				@"notificationID"
 
 //Audio & Video

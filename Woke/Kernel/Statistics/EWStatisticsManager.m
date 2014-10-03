@@ -204,10 +204,11 @@
             NSDate *bod = task.time.beginingOfDay;
             
             //woke to receivers
-            NSSet *myMedias = [me.medias copy];
             NSMutableArray *receivers = [NSMutableArray new];
-            for (EWMediaItem *m in myMedias) {
+            for (EWMediaItem *m in me.medias.copy) {
+				if (![mainContext existingObjectWithID:m.objectID error:NULL]) return;
                 for (EWTaskItem *t in m.tasks.copy) {
+					if (![mainContext existingObjectWithID:t.objectID error:NULL]) return;
                     if ([t.time isEarlierThan:eod] && [bod isEarlierThan:t.time]) {
                         NSString *receiver = t.owner.objectId;
                         if (receiver) {

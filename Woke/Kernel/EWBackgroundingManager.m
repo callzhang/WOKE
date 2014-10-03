@@ -9,10 +9,7 @@
 //
 
 #import "EWBackgroundingManager.h"
-#import "EWTaskItem.h"
 #import "EWWakeUpManager.h"
-#import "AVManager.h"
-
 
 
 @interface EWBackgroundingManager(){
@@ -21,11 +18,11 @@
     UILocalNotification *backgroundingFailNotification;
     BOOL BACKGROUNDING_FROM_START;
 }
-
+@property (nonatomic) AVPlayer *player;
 @end
 
 @implementation EWBackgroundingManager
-
+@synthesize player;
 + (EWBackgroundingManager *)sharedInstance{
     static EWBackgroundingManager *manager = nil;
     static dispatch_once_t onceToken;
@@ -49,6 +46,11 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didbecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
         
         BACKGROUNDING_FROM_START = YES;
+		
+		NSURL *path = [[NSBundle mainBundle] URLForResource:@"bg" withExtension:@"caf"];
+		player = [AVPlayer playerWithURL:path];
+		[player setActionAtItemEnd:AVPlayerActionAtItemEndPause];
+		player.volume = 0.01;
     }
     
     return self;
@@ -82,16 +84,13 @@
 
 - (void)enterForeground{
 	if (![EWWakeUpManager sharedInstance].isWakingUp) {
-		[[AVManager sharedManager] registerBackgroudingAudioSession];
+		[self registerBackgroudingAudioSession];
 	}
 	
     [backgroundingtimer invalidate];
     
-    if (!self.sleeping && !BACKGROUNDING_FROM_START) {
-        [self endBackgrounding];
-    }else{
-        //[self startBackgrounding];
-    }
+    [self endBackgrounding];
+
     
     for (UILocalNotification *note in [UIApplication sharedApplication].scheduledLocalNotifications) {
         if ([note.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeReactivate]) {
@@ -104,7 +103,6 @@
 - (void)willResignActive{
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-    //temporarily end backgrounding
     
     //Timer will fail automatically
     //backgroundTask will stop automatically
@@ -125,25 +123,21 @@
         notif.alertBody = @"Woke become active!";
         [app scheduleLocalNotification:notif];
     }
-    
-    if (self.sleeping || BACKGROUNDING_FROM_START) {
-        [self startBackgrounding];
-    }
 }
 
 #pragma mark - Backgrounding
 
 - (void)startBackgrounding{
-    self.sleeping = YES;
 	if (![EWWakeUpManager sharedInstance].isWakingUp) {
-		[[AVManager sharedManager] registerBackgroudingAudioSession];
+		[self registerBackgroudingAudioSession];
 	}
     [self backgroundKeepAlive:nil];
-    NSLog(@"Start Sleep");
+	[[NSNotificationCenter defaultCenter] postNotificationName:kBackgroundingEnterNotice object:self];
+    DDLogInfo(@"Start Backgrounding");
 }
 
 - (void)endBackgrounding{
-    NSLog(@"End Sleep");
+    DDLogInfo(@"End Backgrounding");
     self.sleeping = NO;
     
     UIApplication *application = [UIApplication sharedApplication];
@@ -167,73 +161,126 @@
             }
         }
     }
+	[[NSNotificationCenter defaultCenter] postNotificationName:kBackgroundingEndNotice object:self];
 }
 
-- (void)endInterruption{
-	//resume backgrounding
-	if (self.sleeping || BACKGROUNDING_FROM_START) {
-		[self startBackgrounding];
+#pragma mark Background worker
+- (void)backgroundKeepAlive:(NSTimer *)timer{
+	
+	//start silent sound
+	[self playSilentSound];
+	
+	UIApplication *application = [UIApplication sharedApplication];
+	NSMutableDictionary *userInfo;
+	if (timer) {
+		NSInteger count;
+		NSDate *start = timer.userInfo[@"start_date"];
+		count = [(NSNumber *)timer.userInfo[@"count"] integerValue];
+		DDLogInfo(@"Backgrounding started at %@ is checking the %ld times, backgrounding length: %.1f hours", start, (long)count, -[start timeIntervalSinceNow]/3600);
+		count++;
+		timer.userInfo[@"count"] = @(count);
+		userInfo = timer.userInfo;
+	}else{
+		//first time
+		userInfo = [NSMutableDictionary new];
+		userInfo[@"start_date"] = [NSDate date];
+		userInfo[@"count"] = @0;
+	}
+	
+	//keep old background task
+	UIBackgroundTaskIdentifier tempID = backgroundTaskIdentifier;
+	//begin a new background task
+	backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+		DDLogError(@"The backgound task ended!");
+	}];
+	//end old bg task
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		[application endBackgroundTask:tempID];
+	});
+	
+	//check time left
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		double timeLeft = application.backgroundTimeRemaining;
+		DDLogInfo(@"Background time left: %.1f", timeLeft>999?999:timeLeft);
+		
+		//schedule timer
+		if ([backgroundingtimer isValid]) [backgroundingtimer invalidate];
+		NSInteger randomInterval = kAlarmTimerCheckInterval + arc4random_uniform(40);
+		if(randomInterval > timeLeft) randomInterval = timeLeft - 10;
+		backgroundingtimer = [NSTimer scheduledTimerWithTimeInterval:randomInterval target:self selector:@selector(backgroundKeepAlive:) userInfo:userInfo repeats:NO];
+		DDLogVerbose(@"Scheduled timer %d", randomInterval);
+		
+	});
+	
+	
+	//alert user
+	if (backgroundingFailNotification) {
+		[[UIApplication sharedApplication] cancelLocalNotification:backgroundingFailNotification];
+	}
+	//if (self.sleeping) {
+		backgroundingFailNotification= [[UILocalNotification alloc] init];
+		backgroundingFailNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:200];
+		backgroundingFailNotification.alertBody = @"Woke stopped running. Tap here to reactivate it.";
+		backgroundingFailNotification.alertAction = @"Activate";
+		backgroundingFailNotification.userInfo = @{kLocalNotificationTypeKey: kLocalNotificationTypeReactivate};
+		backgroundingFailNotification.soundName = @"new.caf";
+		[[UIApplication sharedApplication] scheduleLocalNotification:backgroundingFailNotification];
+	//}
+	
+}
+
+- (void)playSilentSound{
+#if !TARGET_IPHONE_SIMULATOR
+	NSLog(@"Play silent sound");
+	if (player.status == AVPlayerStatusFailed) {
+		NSLog(@"!!! AV player not ready to play.");
+	}
+	[player play];
+#endif
+}
+
+
+//register the BACKGROUNDING audio session
+- (void)registerBackgroudingAudioSession{
+	[[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+	
+	//audio session
+	[[AVAudioSession sharedInstance] setDelegate: self];
+	NSError *error = nil;
+	//set category
+	BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback
+													withOptions: AVAudioSessionCategoryOptionMixWithOthers
+														  error:&error];
+	if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
+	[self playSilentSound];
+}
+
+
+#pragma mark - Audio session delegate
+
+- (void)beginInterruption{
+	[[UIApplication sharedApplication] cancelLocalNotification:backgroundingFailNotification];
+}
+
+- (void)endInterruptionWithFlags:(NSUInteger)flags{
+	if (flags) {
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			
+			
+			EWBackgroundingManager *manager = [EWBackgroundingManager sharedInstance];
+			if (manager.sleeping || BACKGROUNDING_FROM_START) {
+				[self startBackgrounding];
+#ifdef DEBUG
+				UILocalNotification *n = [UILocalNotification new];
+				n.alertBody = @"Woke is active";
+				[[UIApplication sharedApplication] scheduleLocalNotification:n];
+#endif
+				
+			}
+		});
 	}
 }
 
-- (void)beginInterruption{
-    [[UIApplication sharedApplication] cancelLocalNotification:backgroundingFailNotification];
-}
-
-- (void)backgroundKeepAlive:(NSTimer *)timer{
-    UIApplication *application = [UIApplication sharedApplication];
-    NSMutableDictionary *userInfo;
-    if (timer) {
-        NSInteger count;
-        NSDate *start = timer.userInfo[@"start_date"];
-        count = [(NSNumber *)timer.userInfo[@"count"] integerValue];
-        NSLog(@"Backgrounding started at %@ is checking the %ld times", start.date2detailDateString, (long)count);
-        count++;
-        timer.userInfo[@"count"] = @(count);
-        userInfo = timer.userInfo;
-    }else{
-        //first time
-        userInfo = [NSMutableDictionary new];
-        userInfo[@"start_date"] = [NSDate date];
-        userInfo[@"count"] = @0;
-    }
-    
-    //schedule timer
-    if ([backgroundingtimer isValid]) [backgroundingtimer invalidate];
-    NSInteger randomInterval = kAlarmTimerCheckInterval + arc4random_uniform(60);
-    backgroundingtimer = [NSTimer scheduledTimerWithTimeInterval:randomInterval target:self selector:@selector(backgroundKeepAlive:) userInfo:userInfo repeats:NO];
-    
-    //start silent sound
-    [[AVManager sharedManager] playSilentSound];
-    
-    //end old background task
-    [application endBackgroundTask:backgroundTaskIdentifier];
-    //begin a new background task
-    backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        //[self backgroundTaskKeepAlive:nil];
-        NSLog(@"The backgound task ended!");
-    }];
-    
-    //check time left
-    double timeLeft = application.backgroundTimeRemaining;
-    NSLog(@"Background time left: %.1f", timeLeft>999?999:timeLeft);
-    
-    //alert user
-    if (backgroundingFailNotification) {
-        [[UIApplication sharedApplication] cancelLocalNotification:backgroundingFailNotification];
-    }
-    backgroundingFailNotification= [[UILocalNotification alloc] init];
-    backgroundingFailNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:200];
-    backgroundingFailNotification.alertBody = @"Woke stopped running in background. Tap here to reactivate it.";
-    backgroundingFailNotification.alertAction = @"Activate";
-    backgroundingFailNotification.userInfo = @{kLocalNotificationTypeKey: kLocalNotificationTypeReactivate};
-    backgroundingFailNotification.soundName = @"new.caf";
-    [[UIApplication sharedApplication] scheduleLocalNotification:backgroundingFailNotification];
-    
-    //alarm timer check
-    [EWWakeUpManager alarmTimerCheck];
-    [EWWakeUpManager sleepTimerCheck];
-}
 
 
 @end
