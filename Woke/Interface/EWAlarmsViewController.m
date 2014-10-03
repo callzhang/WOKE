@@ -818,12 +818,12 @@
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
-			DDLogVerbose(@"Received insert on %d", newIndexPath.row);
+			DDLogVerbose(@"Received insert on %ld", (long)newIndexPath.row);
             change[@(type)] = newIndexPath;
             break;
         case NSFetchedResultsChangeDelete:
             change[@(type)] = indexPath;
-			DDLogVerbose(@"Received delete on %d", indexPath.row);
+			DDLogVerbose(@"Received delete on %ld", (long)indexPath.row);
             break;
         case NSFetchedResultsChangeUpdate:{
             __block BOOL duplicated = NO;
@@ -833,13 +833,13 @@
                 }
             }];
             if(!duplicated) change[@(type)] = indexPath;
-			DDLogVerbose(@"Received update on %d", newIndexPath.item);
+			DDLogVerbose(@"Received update on %ld", (long)newIndexPath.item);
         }
             
             break;
         case NSFetchedResultsChangeMove:
             change[@(type)] = @[indexPath, newIndexPath];
-			DDLogVerbose(@"Received move from %d to %d", indexPath.row, newIndexPath.row);
+			DDLogVerbose(@"Received move from %ld to %ld", (long)indexPath.row, (long)newIndexPath.row);
             break;
     }
     [cellChangeArray addObject:change];
@@ -856,7 +856,9 @@
     //copy to local array
     NSArray *changeArray = [cellChangeArray copy];
     cellChangeArray = [NSMutableArray new];
-	DDLogVerbose(@"Commit colloection view change: %@", changeArray);
+	if (changeArray.count != 1 || [(NSNumber *)[(NSDictionary *)changeArray.firstObject allKeys].firstObject unsignedIntegerValue] != NSFetchedResultsChangeUpdate ) {
+		DDLogVerbose(@"Commit colloection view change: %@", changeArray);
+	}
     
     if (changeArray.count > 0){
         if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {

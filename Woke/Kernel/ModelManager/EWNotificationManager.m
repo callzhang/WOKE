@@ -84,13 +84,7 @@
     if (!media) {
         return nil;
     }
-	//find if new media has been notified
-	for (EWNotification *note in [EWNotificationManager allNotifications]) {
-		if ([note.userInfo[@"media"] isEqualToString:media.objectId]) {
-			DDLogVerbose(@"Media has already been notified to user, skip.");
-			return nil;
-		}
-	}
+
     EWNotification *note = [EWNotificationManager newNotification];
     note.type = kNotificationTypeNextTaskHasMedia;
     note.userInfo = @{@"media": media.objectId};

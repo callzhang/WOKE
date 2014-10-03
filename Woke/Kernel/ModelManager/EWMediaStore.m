@@ -14,6 +14,7 @@
 #import "EWTaskItem.h"
 #import "EWUserManagement.h"
 #import "EWNotificationManager.h"
+#import "EWNotification.h"
 
 @implementation EWMediaStore
 //@synthesize context, model;
@@ -166,11 +167,8 @@
 - (BOOL)checkMediaAssets{
     NSParameterAssert([NSThread isMainThread]);
 
-    __block BOOL new;
-    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        new = [self checkMediaAssetsInContext:localContext];
-    }];
-    
+    BOOL new;
+    new = [self checkMediaAssetsInContext:mainContext];
     return new;
 }
 
@@ -186,9 +184,10 @@
     }
     PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
     [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
-    //NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
-    //[query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
+    NSSet *localAssetIDs = [me.mediaAssets valueForKey:kParseObjectID];
+    [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
     NSArray *mediaPOs = [EWSync findServerObjectWithQuery:query];
+	BOOL newMedia = NO;
     for (PFObject *po in mediaPOs) {
         EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:context];
         [mo refresh];//save to local marked
@@ -213,15 +212,28 @@
         //in order to upload change to server, we need to save to server
         [mo saveToServer];
         NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
-        
-        //create a notification or find existing one
-        dispatch_async(dispatch_get_main_queue(), ^{
-            EWMediaItem *media = (EWMediaItem *)[mo inContext:mainContext];
-            [EWNotificationManager newNotificationForMedia:media];
-        });
+		
+		//find if new media has been notified
+		BOOL notified = NO;
+		for (EWNotification *note in [EWNotificationManager allNotifications]) {
+			if ([note.userInfo[@"media"] isEqualToString:mo.objectId]) {
+				DDLogVerbose(@"Media has already been notified to user, skip.");
+				notified = YES;
+			}
+		}
+		
+        //create a notification
+		if (!notified) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				EWMediaItem *media = (EWMediaItem *)[mo inContext:mainContext];
+				[EWNotificationManager newNotificationForMedia:media];
+			});
+			newMedia = YES;
+		}
+		
     }
-    
-    if (mediaPOs.count) {
+	
+    if (newMedia) {
         //notify user for the new media
         dispatch_async(dispatch_get_main_queue(), ^{
             EWAlert(@"You got voice for your next wake up");
