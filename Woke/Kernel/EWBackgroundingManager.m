@@ -12,7 +12,6 @@
 #import "EWWakeUpManager.h"
 
 
-
 @interface EWBackgroundingManager(){
     NSTimer *backgroundingtimer;
     UIBackgroundTaskIdentifier backgroundTaskIdentifier;
@@ -123,10 +122,6 @@
         UILocalNotification *notif = [[UILocalNotification alloc] init];
         notif.alertBody = @"Woke become active!";
         [app scheduleLocalNotification:notif];
-    }
-    
-    if (self.sleeping || BACKGROUNDING_FROM_START) {
-        [self startBackgrounding];
     }
 }
 

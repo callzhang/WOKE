@@ -73,19 +73,16 @@
     if (time && [time timeIntervalSinceNow] > 0) {
         _timeLeft = [time timeIntervalSinceNow];
         return [time timeLeft];
-        
     }else{
         _timeLeft = 0;
         return @"";
-        
     }
-
 }
 
 
 - (void)drawRect:(CGRect)rect{
     [EWUIUtil applyHexagonSoftMaskForView:self.image];
-    //[EWUIUtil applyShadow:self.contentView];
+	//[EWUIUtil applyShadow:self.contentView];//hex takes too much GPU
 }
 
 - (void)prepareForDisplay{
@@ -143,12 +140,6 @@
             }
             
         }
-        
-        //draw hex
-        //[EWUIUtil applyHexagonSoftMaskForView:self.image];
-        
-        //draw shadow
-        [EWUIUtil applyShadow:self.contentView];
         
         _needsUpdate = NO;
     }

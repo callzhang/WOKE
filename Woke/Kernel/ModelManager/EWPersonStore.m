@@ -222,8 +222,10 @@ EWPerson *me;
         EWPerson *person = (EWPerson *)[user managedObjectInContext:context];
         [NSThread sleepForTimeInterval:0.1];//throttle down the new user creation speed, preven
         float score = 99 - [people indexOfObject:user] - arc4random_uniform(3);//add random for testing
-        person.score = [NSNumber numberWithFloat:score];
-        [allPerson addObject:person];
+		if (person.score && person.score.floatValue != score) {
+			person.score = [NSNumber numberWithFloat:score];
+			[allPerson addObject:person];
+		}
     }
     
     //batch save to local

@@ -816,10 +816,12 @@
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
+			DDLogVerbose(@"Received insert on %d", newIndexPath.row);
             change[@(type)] = newIndexPath;
             break;
         case NSFetchedResultsChangeDelete:
             change[@(type)] = indexPath;
+			DDLogVerbose(@"Received delete on %d", indexPath.row);
             break;
         case NSFetchedResultsChangeUpdate:{
             __block BOOL duplicated = NO;
@@ -829,11 +831,13 @@
                 }
             }];
             if(!duplicated) change[@(type)] = indexPath;
+			DDLogVerbose(@"Received update on %d", newIndexPath.item);
         }
             
             break;
         case NSFetchedResultsChangeMove:
             change[@(type)] = @[indexPath, newIndexPath];
+			DDLogVerbose(@"Received move from %d to %d", indexPath.row, newIndexPath.row);
             break;
     }
     [cellChangeArray addObject:change];
@@ -848,8 +852,9 @@
     }
     
     //copy to local array
-    NSMutableArray *changeArray = cellChangeArray;
+    NSArray *changeArray = [cellChangeArray copy];
     cellChangeArray = [NSMutableArray new];
+	DDLogVerbose(@"Commit colloection view change: %@", changeArray);
     
     if (changeArray.count > 0){
         if ([self shouldReloadCollectionViewToPreventKnownIssue] || self.collectionView.window == nil) {
@@ -900,7 +905,7 @@
                 
             }];
         
-			
+		}
         //need to ®record the time at the beginning
         lastUpdated = [NSDate date];
     }
