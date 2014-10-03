@@ -849,9 +849,6 @@
     //Lesson learned: do not update collectionView in parts, as the final count may not be equal to inserts/deletes applied partially.
     //Also, do not delay the update, as the change may not hold when accumulated with a lot of updates.
     static NSDate *lastUpdated;
-    if ([rootViewController.view viewWithTag:kMenuTag]) {
-        return;
-    }
     
     //copy to local array
     NSArray *changeArray = [cellChangeArray copy];
@@ -883,7 +880,7 @@
                                 [self.collectionView insertItemsAtIndexPaths:@[indexPath]];
                                 break;
                             case NSFetchedResultsChangeUpdate:
-                                [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+								//[self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
                                 break;
                             case NSFetchedResultsChangeDelete:
                                 [self.collectionView deleteItemsAtIndexPaths:@[indexPath]];
@@ -900,7 +897,7 @@
                 }];
                 
             }completion:^(BOOL finished){
-                
+				[self.collectionView reloadData];
                 if (!finished) {
                     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
                         NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);

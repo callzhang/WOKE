@@ -15,9 +15,10 @@
 @interface EWPopupMenu(){
     CGPoint cellCenter;
     EWCollectionPersonCell *cell;
-    UIScrollView *collectionView;
+    UICollectionView *collectionView;
     UILabel *name;
     UILabel *locationAndTimeLabel;
+	UIView *tempCell;
 }
 
 @end
@@ -27,7 +28,7 @@
 -(id)initWithCell:(EWCollectionPersonCell *)c
 {
     cell = c;
-    collectionView = (UIScrollView *)cell.superview;
+    collectionView = (UICollectionView *)cell.superview;
     self = [super initWithFrame: collectionView.bounds];
     if (!self) {
         return nil;
@@ -126,17 +127,21 @@
         //name.alpha = 0;
         
         
-        //bring cell to the top
-        [collectionView bringSubviewToFront:cell];
-        
-        
-        [UIView transitionWithView:cell
+        //bring cell to the top: depreciated
+		//[collectionView bringSubviewToFront:cell];
+		
+		//create a new cell
+		tempCell = [cell.image snapshotViewAfterScreenUpdates:NO];
+		tempCell.center = cellCenter;
+		[self addSubview:tempCell];
+		
+        [UIView transitionWithView:tempCell
                           duration:0.3
                            options:(/*UIViewAnimationOptionTransitionFlipFromLeft | */UIViewAnimationOptionAllowAnimatedContent)
                         animations:
          ^{
              CGAffineTransform scale = CGAffineTransformMakeScale(1.2, 1.2);
-             cell.transform = scale;
+             tempCell.transform = scale;
              
              //hide everything
              cell.info.alpha = 0;
@@ -197,7 +202,7 @@
     
     //[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
     
-    [UIView transitionWithView:cell
+    [UIView transitionWithView:tempCell
                       duration:0.25
                        options:(/*UIViewAnimationOptionTransitionFlipFromRight | */UIViewAnimationOptionAllowAnimatedContent)
                     animations:
@@ -210,10 +215,10 @@
          
          //scale
          CGAffineTransform scale = CGAffineTransformMakeScale(1.0, 1.0);
-         cell.transform = scale;
+         tempCell.transform = scale;
          
          //shadow
-         cell.layer.shadowRadius = 0;
+         tempCell.layer.shadowRadius = 0;
          
          //location
          _profileButton.center = cellCenter;
@@ -243,7 +248,7 @@
      } completion:^(BOOL finished) {
          collectionView.scrollEnabled = YES;
          [self removeFromSuperview];
-         
+		 tempCell = nil;
          if (block) {
              block();
          }

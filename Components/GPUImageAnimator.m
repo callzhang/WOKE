@@ -23,6 +23,7 @@ static const float delay = 0.1;
 static const float zoom = 1.5;
 static const float initialDownSampling = 2;
 
+
 @interface GPUImageAnimator (){
 	UIViewController* toViewController;
 	UIViewController* fromViewController;
@@ -114,7 +115,7 @@ static const float initialDownSampling = 2;
     if (self.type == UINavigationControllerOperationPush || self.type == kModelViewPresent) {
 		
         //pre animation toView set up
-        toView.alpha = 0;
+        toView.alpha = 0.01;
         toView.transform = CGAffineTransformMakeScale(zoom, zoom);
         [container addSubview:toView];
         
@@ -190,11 +191,11 @@ static const float initialDownSampling = 2;
 	//[self.zoomFilter setAffineTransform:CGAffineTransformMakeScale(1 - 0.05 * _progress, 1 - 0.05 * _progress)];
 	[self.brightnessFilter setRgbCompositeControlPoints:@[[NSValue valueWithCGPoint:CGPointMake(0.0, 0.0)],
 												[NSValue valueWithCGPoint:CGPointMake(0.3, 0.3 - 0.1 * _progress)],
-												[NSValue valueWithCGPoint:CGPointMake(0.7, 0.7 - 0.33 * _progress)],
+												[NSValue valueWithCGPoint:CGPointMake(0.7, 0.7 - 0.3 * _progress)],
 												[NSValue valueWithCGPoint:CGPointMake(1.0, 1.0 - 0.4 * _progress)]]];
 	self.blurFilter.saturation = 1 + 0.3 * _progress;
-    self.blurFilter.downsampling = initialDownSampling + _progress * 4;
-    self.blurFilter.blurRadiusInPixels = 0.1 + _progress * 8;
+    self.blurFilter.downsampling = initialDownSampling + _progress * 3;
+    self.blurFilter.blurRadiusInPixels = 1 + _progress * 7;
     [self triggerRenderOfNextFrame];
     
 	NSAssert(!self.interactive, @"Interactive transition is not supported");

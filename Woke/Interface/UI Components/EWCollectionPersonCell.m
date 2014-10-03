@@ -90,7 +90,6 @@
         
         //init state
         self.selection.hidden = YES;
-        //[self applyHexagonMask];
         
         //profile picture
         if (_person.profilePic) {
