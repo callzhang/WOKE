@@ -116,7 +116,6 @@ UIViewController *rootViewController;
     return YES;
 }
 
-
 #pragma mark - BACKGROUNDING
 //=================>> Point to enter background <<===================
 - (void)applicationDidEnterBackground:(UIApplication *)application {

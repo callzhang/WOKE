@@ -150,7 +150,9 @@
     [self showAlarmPageLoading:YES];
 }
 
-
+- (UIStatusBarStyle) preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
 
 - (void)refreshView{
     //update data and view

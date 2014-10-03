@@ -21,8 +21,6 @@ typedef enum {
     UITableView *_tableView;
     settingGroupList settingGroup;
     NSString *cellIdentifier;
-    //NSManagedObjectContext *context;
-    //NSDictionary *options;
     //preference
     EWRingtoneSelectionViewController *ringtoneVC;
 }

@@ -121,11 +121,6 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             continue;
         }
         EWAlarmItem *alarm = task.alarm;
-//        if (cell.task != task) {
-//            NSLog(@"!!! Cell/task mismatch (cell:%@, alarm:%@ and task:%@)", cell.myTime, alarm.time, task.time);
-//            continue;
-//        }
-        
         //state
         if (cell.alarmToggle.selected != alarm.state) {
             NSLog(@"Change alarm state for %@ to %@", alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
