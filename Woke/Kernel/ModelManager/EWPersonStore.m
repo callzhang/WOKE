@@ -220,7 +220,7 @@ EWPerson *me;
     //change the returned people's score;
     for (PFUser *user in people) {
         EWPerson *person = (EWPerson *)[user managedObjectInContext:context];
-        [NSThread sleepForTimeInterval:0.1];//throttle down the new user creation speed, preven
+        [NSThread sleepForTimeInterval:0.1];//throttle down the new user creation speed
         float score = 99 - [people indexOfObject:user] - arc4random_uniform(3);//add random for testing
 		if (person.score && person.score.floatValue != score) {
 			person.score = [NSNumber numberWithFloat:score];

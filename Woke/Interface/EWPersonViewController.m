@@ -878,12 +878,10 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 }
 -(void)imagePicker:(GKImagePicker *)imagePicker pickedImage:(UIImage *)image
 {
-    [_imagePicker.imagePickerController dismissViewControllerAnimated:YES completion:^(){
+	[_imagePicker.imagePickerController dismissViewControllerAnimated:YES completion:^(){
     
         [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];
-        
-        
-        
+		
         NSMutableString *urlString = [NSMutableString string];
         [urlString appendString:kParseUploadUrl];
         [urlString appendFormat:@"files/imagefile.jpg"];
@@ -905,7 +903,12 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
         NSString *fileUrl = [httpResponse allHeaderFields][@"Location"];
         
-        NSLog(@"%@",fileUrl);
+        NSLog(@"Uploaded image with URL:%@",fileUrl);
+		if (!fileUrl) {
+			DDLogWarn(@"Failed to upload image and get address");
+			[self.view showFailureNotification:@"Failed"];
+			return;
+		}
         
         [_photos addObject:fileUrl];
         
@@ -917,8 +920,6 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         [_photoBrower.view showSuccessNotification:@"Uploaded"];
         
         [_photoBrower addPhotoInBrowser:fileUrl];
-    
     }];
-    
 }
 @end

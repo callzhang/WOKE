@@ -417,6 +417,9 @@
             
             NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
             UIImage *img = [UIImage imageWithData:data];
+			if (!img) {
+				img = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];
+			}
             person.profilePic = img;
         }
         
