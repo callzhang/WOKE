@@ -259,7 +259,9 @@
 #pragma mark - Audio session delegate
 
 - (void)beginInterruption{
-	[[UIApplication sharedApplication] cancelLocalNotification:backgroundingFailNotification];
+    if (backgroundingFailNotification) {
+        [[UIApplication sharedApplication] cancelLocalNotification:backgroundingFailNotification];
+    }
 }
 
 - (void)endInterruptionWithFlags:(NSUInteger)flags{

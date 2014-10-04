@@ -193,9 +193,9 @@ static const float initialDownSampling = 2;
 												[NSValue valueWithCGPoint:CGPointMake(0.3, 0.3 - 0.1 * _progress)],
 												[NSValue valueWithCGPoint:CGPointMake(0.7, 0.7 - 0.3 * _progress)],
 												[NSValue valueWithCGPoint:CGPointMake(1.0, 1.0 - 0.4 * _progress)]]];
-	self.blurFilter.saturation = 1 + 0.3 * _progress;
-    self.blurFilter.downsampling = initialDownSampling + _progress * 3;
-    self.blurFilter.blurRadiusInPixels = 1 + _progress * 7;
+	self.blurFilter.saturation = 1 + 0.2 * _progress;
+    self.blurFilter.downsampling = initialDownSampling + _progress * 4;
+    self.blurFilter.blurRadiusInPixels = 1 + _progress * 9;
     [self triggerRenderOfNextFrame];
     
 	NSAssert(!self.interactive, @"Interactive transition is not supported");
