@@ -69,13 +69,17 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad{
     [super viewDidLoad];
     [self initProgressView];
     [self initButtonAndLabel];
-
     [self initView];
+    
+    //NavigationController
+    [EWUIUtil addTransparantNavigationBarToViewController:self withLeftItem:nil rightItem:nil];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"BackButton"] style:UIBarButtonItemStylePlain target:self action:@selector(close:)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"MoreButton"] style:UIBarButtonItemStylePlain target:self action:@selector(more:)];
+    
     //collection view
     UINib *nib = [UINib nibWithNibName:@"EWCollectionPersonCell" bundle:nil];
     [self.peopleView registerNib:nib forCellWithReuseIdentifier:@"cellIdentifier"];
@@ -89,11 +93,10 @@
     [AVManager sharedManager].playStopBtn = playBtn;
     [AVManager sharedManager].recordStopBtn = recordBtn;
 }
--(void)initProgressView
-{
-//    self.progressView.tintColor = [UIColor colorWithRed:5/255.0 green:204/255.0 blue:197/255.0 alpha:1.0];
+
+-(void)initProgressView{
+    
     self.progressView.tintColor = [UIColor whiteColor];
-    //不显示外层
 	self.progressView.borderWidth = 0.0;
 	self.progressView.lineWidth = 1;
     

@@ -727,7 +727,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
-    [(EWCollectionPersonCell *)cell prepareForDisplay];
+    //[(EWCollectionPersonCell *)cell prepareForDisplay];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
@@ -772,7 +772,7 @@
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
         
         [weakMenu closeMenuWithCompletion:^{
-            [self presentViewControllerWithBlurBackground:navController completion:NULL];
+            [self presentViewControllerWithBlurBackground:navController];
         }];
     };
     
@@ -788,9 +788,9 @@
         if(person.isFriend || [person.preference[kSocialLevel] isEqualToString:kSocialLevelEveryone]){
         EWPerson *person = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForItem:selectedPersonIndex inSection:0]];
         EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPerson:person];
-        
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
         [weakMenu closeMenuWithCompletion:^{
-            [self presentViewControllerWithBlurBackground:controller];
+            [self presentViewControllerWithBlurBackground:navController];
         }];
         }else{
             EWAlert(@"Please add me as friend before send me voice greetings.");

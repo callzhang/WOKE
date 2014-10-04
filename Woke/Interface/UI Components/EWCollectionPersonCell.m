@@ -51,12 +51,11 @@
    
     _person = person;
     _needsUpdate = YES;
-    
-    
+    [self prepareForDisplay];
 }
 
 - (NSString *)distanceString{
-    if (!_person.isMe && _person.lastLocation && me.lastLocation && !_distance) {
+    if (!_person.isMe && _person.lastLocation && me.lastLocation) {
         CLLocation *loc0 = me.lastLocation;
         CLLocation *loc1 = _person.lastLocation;
         _distance = [loc0 distanceFromLocation:loc1]/1000;
@@ -124,10 +123,7 @@
         
         //info
         self.info.text = @"";
-        if (isMe) {
-            return;
-        }else{
-            self.info.text = @"";
+        if (!isMe) {
             
             if (self.showTime) {
                 self.info.text = [self timeString];

@@ -475,23 +475,30 @@ NSManagedObjectContext *mainContext;
 }
 
 - (void)deleteParseObject:(PFObject *)parseObject{
-    [parseObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            //Good
-            DDLogVerbose(@"~~~> PO %@(%@) deleted from server", parseObject.parseClassName, parseObject.objectId);
-        }
-		else if (error.code == kPFErrorObjectNotFound){
-            //fine
-            DDLogWarn(@"~~~> Trying to deleted PO %@(%@) but not found", parseObject.parseClassName, parseObject.objectId);
-        }
-		else{
-            //not good
-			DDLogError(@"delete object failed, not sure why, %@(%@): error:%@", parseObject.parseClassName, parseObject.objectId, error);
-        }
-		
+	@try {
+		[parseObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+			if (succeeded) {
+				//Good
+				DDLogVerbose(@"~~~> PO %@(%@) deleted from server", parseObject.parseClassName, parseObject.objectId);
+			}
+			else if (error.code == kPFErrorObjectNotFound){
+				//fine
+				DDLogWarn(@"~~~> Trying to deleted PO %@(%@) but not found", parseObject.parseClassName, parseObject.objectId);
+			}
+			else{
+				//not good
+				DDLogError(@"delete object failed, not sure why, %@(%@): error:%@", parseObject.parseClassName, parseObject.objectId, error);
+			}
+			
+			[self removeObjectFromDeleteQueue:parseObject];
+			[self.serverObjectPool removeObjectForKey:parseObject.objectId];
+		}];
+	}
+	@catch (NSException *exception) {
+		DDLogError(@"Error in deleting PO: %@, reason: %@", parseObject, exception.description);
 		[self removeObjectFromDeleteQueue:parseObject];
 		[self.serverObjectPool removeObjectForKey:parseObject.objectId];
-    }];
+	}
 }
 
 

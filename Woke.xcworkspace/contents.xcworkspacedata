@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Woke/BasicLib/EWNavigationController.h">
+   </FileRef>
+   <FileRef
+      location = "group:Woke/BasicLib/EWNavigationController.m">
+   </FileRef>
+   <FileRef
       location = "group:Woke.xcodeproj">
    </FileRef>
    <FileRef
