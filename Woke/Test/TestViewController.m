@@ -19,7 +19,7 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 #import "EWLogInViewController.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWWakeUpManager.h"
 #import "EWMediaStore.h"
 #import "EWMediaItem.h"
@@ -252,7 +252,7 @@
         
         case 7:{//add some media
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+            EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
             NSInteger m = 6 - task.medias.count;
             for (unsigned i=0; i< m; i++) {
                 NSInteger x = arc4random_uniform(2);

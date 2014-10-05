@@ -10,7 +10,7 @@
 #import "EWMediaItem.h"
 #import "EWImageStore.h"
 #import "EWPerson.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWTaskItem.h"
 #import "EWUserManagement.h"
 #import "EWNotificationManager.h"
@@ -211,7 +211,7 @@
         
         //in order to upload change to server, we need to save to server
         [mo saveToServer];
-        NSLog(@"Received media(%@) from %@", mo.objectId, mo.author.name);
+        DDLogInfo(@"Received media(%@) from %@", mo.objectId, mo.author.name);
 		
 		//find if new media has been notified
 		BOOL notified = NO;

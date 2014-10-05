@@ -8,7 +8,7 @@
 
 #import "EWLocalNotificationViewController.h"
 #import "NSDate+Extend.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 
 @interface EWLocalNotificationViewController ()
 
@@ -80,7 +80,7 @@
 #pragma mark - ACTION
 - (void)cleanLocalNotif:(id)sender{
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
-    [EWTaskStore.sharedInstance checkScheduledNotifications];
+    [[EWTaskManager sharedInstance] checkScheduledNotifications];
     [self.tableView reloadData];
 }
 

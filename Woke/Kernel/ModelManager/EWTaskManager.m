@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
 
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWPerson.h"
 #import "EWMediaItem.h"
 #import "EWMediaStore.h"
@@ -20,18 +20,18 @@
 #import "EWStatisticsManager.h"
 #import "EWWakeUpManager.h"
 
-@implementation EWTaskStore
+@implementation EWTaskManager
 @synthesize isSchedulingTask = _isSchedulingTask;
 
-+(EWTaskStore *)sharedInstance{
++(EWTaskManager *)sharedInstance{
     
     //make sure core data stuff is always on main thread
     //NSParameterAssert([NSThread isMainThread]);
     
-    static EWTaskStore *sharedTaskStore_ = nil;
+    static EWTaskManager *sharedTaskStore_ = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedTaskStore_ = [[EWTaskStore alloc] init];
+        sharedTaskStore_ = [[EWTaskManager alloc] init];
         //Watch Alarm change
         [[NSNotificationCenter defaultCenter] addObserver:sharedTaskStore_ selector:@selector(updateTaskTime:) name:kAlarmTimeChangedNotification object:nil];
         //watch alarm state change
@@ -82,9 +82,9 @@
 
 + (NSArray *)myTasks{
     NSParameterAssert([NSThread isMainThread]);
-    NSArray *tasks = [[EWTaskStore sharedInstance] getTasksByPerson:me];
+    NSArray *tasks = [[EWTaskManager sharedInstance] getTasksByPerson:me];
     for (EWTaskItem *task in tasks) {
-        [task addObserver:[EWTaskStore sharedInstance] forKeyPath:@"owner" options:NSKeyValueObservingOptionNew context:nil];
+        [task addObserver:[EWTaskManager sharedInstance] forKeyPath:@"owner" options:NSKeyValueObservingOptionNew context:nil];
     }
     
     return tasks;
@@ -119,18 +119,6 @@
 }
 
 #pragma mark - Next task
-- (NSDate *)nextWakeUpTimeForPerson:(EWPerson *)person{
-    EWTaskItem *t = [self nextValidTaskForPerson:person];
-    NSDate *time;
-    if (t) {
-        time = t.time;
-    }else{
-        time = person.cachedInfo[kNextTaskTime];
-    }
-    
-    return time;
-}
-
 //next valid task
 - (EWTaskItem *)nextValidTaskForPerson:(EWPerson *)person{
     return [self nextNth:0 validTaskForPerson:person];
@@ -248,14 +236,14 @@
             EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:context];
             [task refresh];
             task.owner = [me inContext:context];
-            BOOL good = [EWTaskStore validateTask:task];
+            BOOL good = [EWTaskManager validateTask:task];
             if (!good) {
                 [self removeTask:task];
             }else if (![tasks containsObject:task]) {
                 [tasks addObject:task];
                 [newTask addObject:task];
                 // add schedule notification
-                [EWTaskStore scheduleNotificationOnServerForTask:task];
+                [EWTaskManager scheduleNotificationOnServerForTask:task];
                 
                 NSLog(@"New task found from server: %@(%@)", task.time.weekday, t.objectId);
             }
@@ -276,6 +264,9 @@
         
         for (unsigned i=0; i<nWeeksToScheduleTask; i++) {//loop for week
             
+            //first find
+            
+            
             //next time for alarm, this is what the time should be there
             NSDate *time = [a.time nextOccurTime:i withDevidingPoint:-kMaxWakeTime];
 			DDLogVerbose(@"Checking for alarm time: %@", time);
@@ -283,7 +274,7 @@
             //loop through the tasks to verify the target time has been scheduled
             for (EWTaskItem *t in tasks) {
                 if (abs([t.time timeIntervalSinceDate:time]) < 10) {
-                    BOOL good = [EWTaskStore validateTask:t];
+                    BOOL good = [EWTaskManager validateTask:t];
                     //find the task, move to good task
                     if (good) {
                         [goodTasks addObject:t];
@@ -338,7 +329,6 @@
     //save
     if (hasOutDatedTask || newTask.count) {
         
-        [self updateNextTaskTime];
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:nil userInfo:nil];
         });
@@ -347,9 +337,9 @@
             for (EWTaskItem *t in newTask) {
 				EWTaskItem *task = (EWTaskItem *)[t inContext:mainContext];
                 // remote notification
-                [EWTaskStore scheduleNotificationOnServerForTask:task];
+                [EWTaskManager scheduleNotificationOnServerForTask:task];
 				//check
-				DDLogInfo(@"Perform schedule task completion block: %d alarms and %d tasks", me.alarms.count, me.tasks.count);
+				DDLogInfo(@"Perform schedule task completion block: %lu alarms and %lu tasks", (unsigned long)me.alarms.count, (unsigned long)me.tasks.count);
 				if (me.tasks.count != 7*nWeeksToScheduleTask) {
 					DDLogError(@"Something wrong with my task: %@", me.tasks);
 				}
@@ -533,16 +523,14 @@
     }else{
         [NSException raise:@"No alarm/task info" format:@"Check notification"];
     }
-    [self updateNextTaskTime];
 }
 
 - (void)updateTaskStateForAlarm:(EWAlarmItem *)a{
     BOOL updated = NO;
-	if (a.tasks.count > nWeeksToScheduleTask) {
-		DDLogError(@"Serious error: alarm(%@) has extra tasks: %@", a.serverID, a.tasks);
-		if (![EWAlarmManager handleExcessiveTasksForAlarm:a]) {
-			return;
-		}
+	if (a.tasks.count != nWeeksToScheduleTask) {
+		DDLogError(@"Serious error: alarm(%@) has extra tasks: %lu", a.serverID, (unsigned long)a.tasks.count);
+        [self scheduleTasks];
+        return;
 	}
     for (EWTaskItem *t in a.tasks) {
         if (t.state != a.state) {
@@ -553,12 +541,9 @@
             if (t.state == YES) {
                 //schedule local notif
                 [self scheduleNotificationForTask:t];
-                [self updateNextTaskTime];
-                [self scheduleNotificationForTask:t];
             } else {
                 //cancel local notif
                 [self cancelNotificationForTask:t];
-                [self updateNextTaskTime];
             }
             
             //notification
@@ -578,19 +563,14 @@
 }
 
 - (void)updateTaskTimeForAlarm:(EWAlarmItem *)alarm{
-    if (!alarm.tasks.count) {
-        [alarm refresh];
-        NSLog(@"***Alarm's tasks not fetched, refresh from server. New tasks relation has %lu tasks", (unsigned long)alarm.tasks.count);
-    }
-	if (alarm.tasks.count > nWeeksToScheduleTask) {
-		DDLogError(@"Serious error: alarm(%@) has extra tasks: %@", alarm.serverID, alarm.tasks);
-		if (![EWAlarmManager handleExcessiveTasksForAlarm:alarm]) {
-			return;
-		}
+	if (alarm.tasks.count != nWeeksToScheduleTask) {
+		DDLogError(@"Serious error: alarm(%@) has incorrect number of tasks: %lu", alarm.serverID, (unsigned long)alarm.tasks.count);
+        [self scheduleTasks];
+        return;
 	}
 	NSSortDescriptor *des = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:YES];
 	NSArray *sortedTasks = [alarm.tasks sortedArrayUsingDescriptors:@[des]];
-    for (unsigned i=0; i<nWeeksToScheduleTask; i++) {
+    for (unsigned i=0; i<sortedTasks.count; i++) {
         EWTaskItem *t = sortedTasks[i];
         NSDate *nextTime = [alarm.time nextOccurTime:i];
         if (![t.time isEqualToDate:nextTime]) {
@@ -603,17 +583,15 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:kTaskTimeChangedNotification object:t userInfo:@{@"task": t}];
             // schedule on server
             if (t.objectId) {
-                [EWTaskStore scheduleNotificationOnServerForTask:t];
+                [EWTaskManager scheduleNotificationOnServerForTask:t];
             }else{
                 __block EWTaskItem *blockTask = t;
                 [EWSync saveWithCompletion:^{
-                    [EWTaskStore scheduleNotificationOnServerForTask:blockTask];
+                    [EWTaskManager scheduleNotificationOnServerForTask:blockTask];
                 }];
             }
-            
         }
     }
-    [self updateNextTaskTime];
     [EWSync save];
 }
 
@@ -628,21 +606,6 @@
     }
 }
 
-//update task when new media available
-//- (void)updateTaskMedia:(NSNotification *)notif{
-//    //NSString *mediaID = [notif userInfo][kPushMediaKey];
-//    NSString *taskID = [notif userInfo][kPushTaskKey];
-//    if ([taskID isEqualToString:@""]) return;
-//    EWTaskItem *task = [self getTaskByID:taskID];
-//    //EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
-//    //NSAssert([task.medias containsObject:media], @"Media and Task should have relation");
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        //[task.managedObjectContext refreshObject:task mergeChanges:YES];
-//        //[EWDataStore refreshObjectWithServer:task];
-//        EWTaskItem *task_ = (EWTaskItem *)[EWDataStore objectForCurrentContext:task];
-//        [[NSNotificationCenter defaultCenter] postNotificationName:kTaskChangedNotification object:self userInfo:@{kPushTaskKey: task_}];
-//    });
-//}
 
 - (void)alarmRemoved:(NSNotification *)notif{
     id objects = notif.object;
@@ -663,32 +626,6 @@
     [EWSync save];
 }
 
-/* add task by alarm, this function is replaced by scheduleTask
-- (void)alarmAdded:(NSNotification *)notif{
-    EWAlarmItem *alarm = notif.userInfo[@"alarm"];
-    NSLog(@"Add task for alarm %@", [alarm.time date2detailDateString]);
-    for (NSInteger i=0; i<nWeeksToScheduleTask; i++) {
-        EWTaskItem *task = [self newTask];
-        
-    }
-}*/
-
-//Update next task time in cache
-- (void)updateNextTaskTime{
-    [mainContext saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        EWPerson *localMe = [me inContext:localContext];
-        EWTaskItem *task = [self nextValidTaskForPerson:localMe];
-        NSMutableDictionary *cache = [localMe.cachedInfo mutableCopy]?:[NSMutableDictionary new];
-
-        if (![cache[kNextTaskTime] isEqual: task.time]) {
-            [cache setValue:task.time forKey:kNextTaskTime];
-            [cache setValue:task.statement forKeyPath:kNextTaskStatement];
-            localMe.cachedInfo = [cache copy];
-            
-            NSLog(@"Updated next task time: %@ to cacheInfo", task.time.date2detailDateString);
-        }
-    }];
-}
 
 #pragma mark - DELETE
 - (void)removeTask:(EWTaskItem *)task{
@@ -721,8 +658,6 @@
     } completion:^(BOOL success, NSError *error) {
         [[NSNotificationCenter defaultCenter] postNotificationName:kTaskNewNotification object:self userInfo:nil];
     }];
-    
-   
 }
 
 #pragma mark - Local Notification
@@ -797,7 +732,7 @@
     }
     
     //schedule sleep timer
-    [EWTaskStore scheduleSleepNotificationForTask:task];
+    [EWTaskManager scheduleSleepNotificationForTask:task];
     
 }
 
@@ -955,10 +890,10 @@
 #pragma mark - Sleep notification
 + (void)updateSleepNotification{
     //cancel all sleep notification first
-    [EWTaskStore cancelSleepNotification];
+    [EWTaskManager cancelSleepNotification];
     
     for (EWTaskItem *task in me.tasks) {
-        [EWTaskStore scheduleSleepNotificationForTask:task];
+        [EWTaskManager scheduleSleepNotificationForTask:task];
     }
 }
 
@@ -968,7 +903,7 @@
     NSDate *sleepTime = [task.time dateByAddingTimeInterval:-d*3600];
     
     //cancel if no change
-    NSArray *notifs = [[EWTaskStore sharedInstance] localNotificationForTask:task];
+    NSArray *notifs = [[EWTaskManager sharedInstance] localNotificationForTask:task];
     for (UILocalNotification *notif in notifs) {
         if ([notif.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
             if ([notif.fireDate isEqualToDate:sleepTime]) {
@@ -1016,7 +951,7 @@
 + (void)scheduleNotificationOnServerForTask:(EWTaskItem *)task{
     if (!task.time || !task.objectId) {
         DDLogError(@"*** The Task for schedule push doesn't have time or objectId: %@", task);
-        [[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
+        [[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
         return;
     }
     if ([task.time timeIntervalSinceNow] < 0) {

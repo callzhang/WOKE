@@ -12,7 +12,7 @@
 //#import "EWUserManagement.h"
 #import "EWPersonStore.h"
 #import "EWMediaStore.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWAlarmManager.h"
 
 #define kPFQueryCacheLife		60*60;
@@ -316,18 +316,17 @@ NSManagedObjectContext *mainContext;
             DDLogWarn(@"!!! Skip updating other's object %@ with changes %@", MO.serverID, MO.changedKeys);
             continue;
         }
-        
-        //if last updated doesn't exist, skip
-        if (![MO valueForKey:kUpdatedDateKey]){
-            //this is MY VALID UPDATED MO but doesn't have updatedAt, should check the cause if it.
-            DDLogError(@"*** MO %@(%@) doesn't have updatedAt, check how this object is being updated. Updated keys: %@", MO.entity.name, MO.serverID, MO.changedValues);
+		
+        //if last updated is older than PO, give warning
+        if ([MO.parseObject isNewerThanMO]){
+            DDLogError(@"When enqueue, MO %@(%@) is older than PO. Updated keys: %@", MO.entity.name, MO.serverID, MO.changedValues);
         }
         
         if ([insertedObjects containsObject:MO]) {
             //enqueue to insertQueue
             [self appendInsertQueue:MO];
             
-            //*** we should not add updatedAt here, as it is the criteria before enqueue. Two Inserts could be possible: downloaded from server or created here. Therefore we need to add createdAt at local creation point.
+            //*** we should not add updatedAt here, as it is the criteria for enqueue. Two Inserts could be possible: downloaded from server or created here. Therefore we need to add createdAt at local creation point.
             //change updatedAt
             //[MO setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
             continue;
@@ -348,7 +347,7 @@ NSManagedObjectContext *mainContext;
                 //add to queue
                 [self appendUpdateQueue:MO];
                 
-                //change updatedAt
+                //change updatedAt: If MO already has updatedAt, then update the timestamp
                 [MO setValue:[NSDate date] forKeyPath:kUpdatedDateKey];
             }
         }
@@ -748,13 +747,13 @@ NSManagedObjectContext *mainContext;
     
     NSString *type = mo.entity.name;
     if ([type isEqualToString:@"EWTaskItem"]) {
-        good = [EWTaskStore validateTask:(EWTaskItem *)mo];
+        good = [EWTaskManager validateTask:(EWTaskItem *)mo];
         if (!good) {
             if (!tryFix) {
                 return NO;
             }
             [mo refresh];
-            good = [EWTaskStore validateTask:(EWTaskItem *)mo];
+            good = [EWTaskManager validateTask:(EWTaskItem *)mo];
             
         }
     } else if([type isEqualToString:@"EWMediaItem"]){

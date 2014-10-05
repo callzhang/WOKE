@@ -15,7 +15,7 @@
 //container
 //@property (nonatomic) BOOL alarmEnable;
 @property (strong, nonatomic) IBOutlet UITextView *statementText;
-@property (nonatomic) EWTaskItem *task;
+//@property (nonatomic) EWTaskItem *task;
 @property (nonatomic) EWAlarmItem *alarm;
 @property (nonatomic, weak) UIViewController *presentingViewController;
 //data

@@ -11,8 +11,9 @@
 #import "EWPerson.h"
 #import "EWPersonStore.h"
 #import "EWTaskItem.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "NSDate+Extend.h"
+#import "EWAlarmManager.h"
 
 @interface EWCollectionPersonCell()
 @property (nonatomic) BOOL needsUpdate;
@@ -68,7 +69,7 @@
 }
 
 - (NSString *)timeString{
-    NSDate *time = _person.cachedInfo[kNextTaskTime];
+    NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:_person];;
     if (time && [time timeIntervalSinceNow] > 0) {
         _timeLeft = [time timeIntervalSinceNow];
         return [time timeLeft];

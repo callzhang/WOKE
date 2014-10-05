@@ -10,7 +10,7 @@
 #import "EWUserManagement.h"
 #import "EWPersonStore.h"
 #import "EWMediaStore.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWAlarmManager.h"
 #import "EWWakeUpManager.h"
 #import "EWServer.h"
@@ -83,14 +83,14 @@
     
     //check task
     NSLog(@"4. Start task schedule");
-	[[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
+	[[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
 		[NSTimer bk_scheduledTimerWithTimeInterval:60 block:^(NSTimer *timer) {
 			//[EWPersonStore updateMe];
 		} repeats:NO];
 	}];
 	
 	NSLog(@"5. Check my social graph");
-	[[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
+	[[EWTaskManager sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
 	
     NSLog(@"4. Check my unread media");//media also will be checked with background fetch
     [[EWMediaStore sharedInstance] checkMediaAssetsInBackground];
@@ -103,7 +103,7 @@
     //NSLog(@"6. Updating facebook info");
     //[EWUserManagement updateFacebookInfo];
 	NSLog(@"6. Check scheduled local notifications");
-	[EWTaskStore.sharedInstance checkScheduledNotifications];
+	[[EWTaskManager sharedInstance] checkScheduledNotifications];
     
     //Update my relations cancelled here because the we should wait for all sync task finished before we can download the rest of the relation
     NSLog(@"7. Refresh my media");
@@ -153,7 +153,7 @@
     
     //check task
     NSLog(@"[3] Start recurring task schedule");
-	[[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
+	[[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
 		//[EWPersonStore updateMe];
 	}];
     

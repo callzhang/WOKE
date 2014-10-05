@@ -15,7 +15,7 @@
 #import "EWDataStore.h"
 #import "EWPersonStore.h"
 #import "EWTaskItem.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWMediaItem.h"
 #import "EWMediaStore.h"
 #import "EWDownloadManager.h"
@@ -32,6 +32,7 @@
 
 //Tool
 #import "EWUIUtil.h"
+#import "EWAlarmManager.h"
 
 @implementation EWServer
 
@@ -112,7 +113,7 @@
     
     for (EWPerson *person in users) {
         //get next wake up time
-        NSDate *time = [[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:person];
+        NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];
         //create buzz
         EWMediaItem *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
         //add receiver: single direction
@@ -174,7 +175,7 @@
 + (void)pushMedia:(EWMediaItem *)media ForUser:(EWPerson *)person{
     
     NSString *mediaId = media.objectId;
-    NSDate *time = [[EWTaskStore sharedInstance] nextWakeUpTimeForPerson:person];
+    NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];
     
     NSMutableDictionary *pushMessage = [@{@"badge": @"Increment",
                                  @"alert": @"Someone has sent you an voice greeting",

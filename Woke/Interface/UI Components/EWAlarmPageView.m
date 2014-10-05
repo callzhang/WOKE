@@ -12,7 +12,7 @@
 #import "NSDate+Extend.h"
 #import "EWPerson.h"
 #import "EWTaskItem.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWWakeUpViewController.h"
 #import "EWAppDelegate.h"
 #import "EWMediaItem.h"

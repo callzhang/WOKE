@@ -9,9 +9,10 @@
 #import "EWSleepViewController.h"
 #import "EWBackgroundingManager.h"
 #import "AVManager.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWPersonStore.h"
 #import "EWTaskItem.h"
+#import "EWAlarmManager.h"
 
 @interface EWSleepViewController (){
     NSTimer *timer;
@@ -36,11 +37,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [[EWBackgroundingManager sharedInstance] startBackgrounding];
-	nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+	nextTask = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
 	
-	NSDate *cachedNextTime = me.cachedInfo[kNextTaskTime];
+	NSDate *cachedNextTime = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:me];
 	if (![cachedNextTime isEqualToDate:nextTask.time]) {
-		[[EWTaskStore sharedInstance] updateNextTaskTime];
+		[[EWAlarmManager sharedInstance] updateCachedAlarmTime];
 	}
 }
 

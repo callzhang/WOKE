@@ -13,15 +13,11 @@
 #import "EWUtil.h"
 #import "EWAlarmItem.h"
 #import "EWTaskItem.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWPerson.h"
 #import "EWPersonStore.h"
-//#import "EWPersonStore.h"
 #import "EWUserManagement.h"
-//AppDelegate
 #import "EWAppDelegate.h"
-//backend
-//VC
 #import "EWAlarmScheduleViewController.h"
 
 @implementation EWAlarmManager
@@ -33,9 +29,11 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[EWAlarmManager alloc] init];
-        manager.alarmNeedToSetup = NO;
-        manager.isSchedulingAlarm = NO;
-        //[[NSNotificationCenter defaultCenter] addObserver:manager selector:@selector(observedAlarmChange:) name:kAlarmChangedNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
+            for (EWAlarmItem *alarm in me.alarms) {
+                [manager observeForAlarm:alarm];
+            }
+        }];
     }); 
     
     return manager;
@@ -86,31 +84,45 @@
     return [[EWAlarmManager sharedInstance] alarmsForUser:me];
 }
 
-//- (EWAlarmItem *)nextAlarm{
-//    EWAlarmItem *nextA;
-//    NSArray *alarms = [self alarmsForUser:[EWPersonStore me]];
-//    //determine if the day need to be next week
-//    NSInteger dow = [[NSDate date] weekdayNumber];
-//    EWAlarmItem *a = alarms[dow];
-//    if ([a.time isEarlierThan:[NSDate date]]) {
-//        nextA = alarms[(dow+1)%7];
-//    }else{
-//        nextA = alarms[dow%7];
-//    }
-//    return nextA;
-//}
+- (NSDate *)nextAlarmTimeForPerson:(EWPerson *)person{
+    NSDate *nextTime;
+    //first try to get it from cache
+    NSDictionary *times = person.cachedInfo[kCachedAlarmTimes];
+    if (!times && person.isMe) {
+        [self updateCachedAlarmTime];
+    }
+    
+    for (NSDate *time in times.allValues) {
+        NSDate *t = [time nextOccurTime:0];
+        if (!nextTime || [t isEarlierThan:nextTime]) {
+            nextTime = t;
+        }
+    }
+    return nextTime;
+}
 
-//- (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm{
-//    if (alarm.tasks.count == 0) {
-//        return nil;
-//    }else if (alarm.tasks.count == 1){
-//        return alarm.tasks.anyObject;
-//    }
-//    NSMutableArray *tasks = [[alarm.tasks allObjects] mutableCopy];
-//    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
-//    [tasks sortUsingDescriptors:@[sort]];
-//    return tasks[0];
-//}
+- (NSString *)nextStatementForPerson:(EWPerson *)person{
+    //first try to get it from cache
+    NSDictionary *statements = person.cachedInfo[kCachedStatements];
+    NSDictionary *times = person.cachedInfo[kCachedAlarmTimes];
+    if (!statements && person.isMe) {
+        [self updateCachedStatement];
+    }
+    if (!times && person.isMe) {
+        [self updateCachedAlarmTime];
+    }
+    
+    __block NSString *nextWeekday;
+    NSDate *nextTime;
+    [times enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSDate *time, BOOL *stop) {
+        NSDate *t = [time nextOccurTime:0];
+        if (!nextTime || [t isEarlierThan:nextTime]) {
+            nextWeekday = key;
+        }
+    }];
+    NSString *nextStatement = statements[nextWeekday];
+    return nextStatement?:@"";
+}
 
 #pragma mark - SCHEDULE
 - (NSArray *)scheduleNewAlarms{
@@ -158,13 +170,11 @@
     }
     
     //check if need to check
-    if (alarms.count==0) {
-        if ([EWTaskStore myTasks].count == 0 && !_alarmNeedToSetup) {
-            //initial state task==0, need another indicator to break the lock
-            NSLog(@"Skip check alarm due to 0 tasks exists");
-            self.isSchedulingAlarm = NO;
-            return nil;
-        }
+    if (alarms.count==0 && !_alarmNeedToSetup) {
+        //initial state task==0, need another indicator to break the lock
+        NSLog(@"Skip check alarm due to 0 alarms exists");
+        self.isSchedulingAlarm = NO;
+        return nil;
     }
     
     //Fill array with alarm, delete redundency
@@ -195,7 +205,7 @@
     //remove excess
     [alarms removeObjectsInArray:newAlarms];
     for (EWAlarmItem *a in alarms) {
-        NSLog(@"Corruped alarm found and deleted: %@", a.serverID);
+        DDLogError(@"Corruped alarm found and deleted: %@", a.serverID);
         [self removeAlarm:a];
         hasChange = YES;
     }
@@ -237,13 +247,20 @@
     
     self.isSchedulingAlarm = NO;
     self.alarmNeedToSetup = NO;
+    
+    //KVO
+    for (EWAlarmItem *alarm in newAlarms) {
+        [self observeForAlarm:alarm];
+    }
+    
     return newAlarms;
 }
 
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
+    [self removeAlarm:alarm];
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:nil];
-    [alarm.managedObjectContext deleteObject:alarm];
+    [alarm deleteEntity];
     [EWSync save];
 }
 
@@ -322,24 +339,59 @@
 
 
 #pragma mark - NOTIFICATION & KVO
-//- (void)observedAlarmChange:(NSNotification *)notification{
-//    alarm change is handled in schedule alarm view controoler
-//}
-
-
-//KVO not recommended cause it doesn't preserve the observing state between app launches, which makes it a complex process to observe-remove etc..
-/*
-#pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([object isKindOfClass:[EWAlarmItem class]]) {
-        if ([keyPath isEqualToString:@"state"]) {
+        if ([keyPath isEqualToString:EWAlarmItemAttributes.state]) {
+            [self updateCachedAlarmTime];
+            [[EWAlarmManager sharedInstance] setSavedAlarmTimes];
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:object userInfo:@{@"alarm": object}];
-        }else if ([keyPath isEqualToString:@"time"]){
+        }
+        else if ([keyPath isEqualToString:EWAlarmItemAttributes.time]){
+            [self updateCachedAlarmTime];
             [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:object userInfo:@{@"alarm": object}];
+        }
+        else if ([keyPath isEqualToString:EWAlarmItemAttributes.tone]){
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:object userInfo:@{@"alarm": object}];
+        }
+        else if([keyPath isEqualToString:EWAlarmItemAttributes.statement]){
+            [self updateCachedStatement];
+        }
+        else{
+            DDLogError(@"Received unexpected KVO %@", keyPath);
         }
     }
 }
-*/
+
+
+- (void)updateCachedAlarmTime{
+    NSMutableDictionary *cache = me.cachedInfo.mutableCopy?:[NSMutableDictionary new];
+    NSMutableDictionary *timeTable = [cache[kCachedAlarmTimes] mutableCopy]?:[NSMutableDictionary new];
+    for (EWAlarmItem *alarm in me.alarms) {
+        if (alarm.state) {
+            NSString *wkday = alarm.time.weekday;
+            timeTable[wkday] = alarm.time;
+        }
+    }
+    cache[kCachedAlarmTimes] = timeTable;
+    me.cachedInfo = cache;
+    [EWSync save];
+    DDLogVerbose(@"Updated cached alarm times: %@", timeTable);
+}
+
+- (void)updateCachedStatement{
+    NSMutableDictionary *cache = me.cachedInfo.mutableCopy?:[NSMutableDictionary new];
+    NSMutableDictionary *statements = [cache[kCachedStatements] mutableCopy]?:[NSMutableDictionary new];
+    for (EWAlarmItem *alarm in me.alarms) {
+        if (alarm.state) {
+            NSString *wkday = alarm.time.weekday;
+            statements[wkday] = alarm.statement;
+        }
+    }
+    cache[kCachedStatements] = statements;
+    me.cachedInfo = cache;
+    [EWSync save];
+    DDLogVerbose(@"Updated cached statements: %@", statements);
+}
 
 #pragma mark - Validate alarm
 + (BOOL)validateAlarm:(EWAlarmItem *)alarm{
@@ -368,24 +420,21 @@
     return good;
 }
 
-
-#pragma mark - Error handling
-+ (BOOL)handleExcessiveTasksForAlarm:(EWAlarmItem *)alarm{
-	NSInteger nTasks = alarm.tasks.count;
-	for (EWTaskItem *t in alarm.tasks) {
-		if (![EWTaskStore validateTask:t]) {
-			[alarm removeTasksObject:t];
-			[t deleteEntity];
-			nTasks--;
-		}
-	}
-	if (nTasks != nWeeksToScheduleTask) {
-		DDLogError(@"after deleting invalid task, there are still %d task remained. Schedule task instead",nTasks);
-		[[EWTaskStore sharedInstance] scheduleTasks];
-		return NO;
-	}
-	return YES;
+- (void)observeForAlarm:(EWAlarmItem *)alarm{
+    [alarm addObserver:self forKeyPath:EWAlarmItemAttributes.tone options:NSKeyValueObservingOptionNew context:nil];
+    [alarm addObserver:self forKeyPath:EWAlarmItemAttributes.time options:NSKeyValueObservingOptionNew context:nil];
+    [alarm addObserver:self forKeyPath:EWAlarmItemAttributes.state options:NSKeyValueObservingOptionNew context:nil];
 }
 
+- (void)removeObserverForAlarm:(EWAlarmItem *)alarm{
+    @try {
+        [alarm removeObserver:self forKeyPath:EWAlarmItemAttributes.statement];
+        [alarm removeObserver:self forKeyPath:EWAlarmItemAttributes.time];
+        [alarm removeObserver:self forKeyPath:EWAlarmItemAttributes.tone];
+    }
+    @catch (NSException *exception) {
+        DDLogDebug(@"Failed to remove observer from alarm: %@", alarm.objectId);
+    }
+}
 
 @end

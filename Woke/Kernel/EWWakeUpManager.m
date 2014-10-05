@@ -8,7 +8,7 @@
 
 #import "EWWakeUpManager.h"
 #import "EWTaskItem.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWPersonStore.h"
 #import "AVManager.h"
 #import "EWAppDelegate.h"
@@ -82,7 +82,7 @@
 
     
     EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
     
     
     if ([type isEqualToString:kPushMediaTypeBuzz]) {
@@ -219,7 +219,7 @@
     
     BOOL isLaunchedFromLocalNotification = NO;
     BOOL isLaunchedFromRemoteNotification = NO;
-    EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+    EWTaskItem *nextTask = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
 	
     //get target task
     EWTaskItem *task;
@@ -229,7 +229,7 @@
         NSParameterAssert(taskID || taskLocalID);
         if (taskID) {
             isLaunchedFromRemoteNotification = YES;
-            task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+            task = [[EWTaskManager sharedInstance] getTaskByID:taskID];
         }else if (taskLocalID){
             isLaunchedFromLocalNotification = YES;
             NSURL *url = [NSURL URLWithString:taskLocalID];
@@ -281,7 +281,7 @@
     }
     if (task.time.timeElapsed > kMaxWakeTime) {
         NSLog(@"Task(%@) from notification has passed the wake up window. Handle it with checkPastTasks.", task.objectId);
-        [[EWTaskStore sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
+        [[EWTaskManager sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
         return;
     }
 #if !DEBUG
@@ -298,7 +298,7 @@
     NSArray *medias = me.mediaAssets.allObjects;
     
     //fill media from mediaAssets, if no media for task, create a pseudo media
-    NSInteger nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
+    NSInteger nVoice = [[EWTaskManager sharedInstance] numberOfVoiceInTask:task];
     NSInteger nVoiceNeeded = kMaxVoicePerTask - nVoice;
     
     for (EWMediaItem *media in medias) {
@@ -322,7 +322,7 @@
     }
     
     //add Woke media is needed
-    nVoice = [[EWTaskStore sharedInstance] numberOfVoiceInTask:task];
+    nVoice = [[EWTaskManager sharedInstance] numberOfVoiceInTask:task];
     if (nVoice == 0) {
         //need to create some voice
         EWMediaItem *media = [[EWMediaStore sharedInstance] getWokeVoice];
@@ -336,7 +336,7 @@
 	[[AVManager sharedManager] setDeviceVolume:1.0];
     
     //cancel local alarm
-    [[EWTaskStore sharedInstance] cancelNotificationForTask:task];
+    [[EWTaskManager sharedInstance] cancelNotificationForTask:task];
     
     if (isLaunchedFromLocalNotification) {
         
@@ -391,7 +391,7 @@
 
 + (void)presentWakeUpView{
     //get absolute next task
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
+    EWTaskItem *task = [[EWTaskManager sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
     //present
     [EWWakeUpManager presentWakeUpViewWithTask:task];
 }
@@ -421,7 +421,7 @@
     [[ATConnect sharedConnection] engage:kWakeupSuccess fromViewController:rootViewController];
     
     //set wakeup time, move to past, schedule and save
-    [[EWTaskStore sharedInstance] completedTask:task];
+    [[EWTaskManager sharedInstance] completedTask:task];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kWokeNotification object:nil];
     
@@ -435,7 +435,7 @@
 - (void) alarmTimerCheck{
     //check time
     if (!me) return;
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
     if (task.state == NO) return;
     
     //alarm time up
@@ -461,7 +461,7 @@
 - (void)sleepTimerCheck{
     //check time
     if (!me) return;
-    EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
     if (task.state == NO) return;
     
     //alarm time up
@@ -489,7 +489,7 @@
     NSString *taskID = notification.userInfo[kLocalTaskKey];
     if (me) {
         //logged in enter sleep mode
-        EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+        EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
         NSNumber *duration = me.preference[kSleepDuration];
         BOOL nextTaskMatched = [task.objectID.URIRepresentation.absoluteString isEqualToString:taskID];
         BOOL needSleep = task.time.timeIntervalSinceNow/3600 < duration.floatValue;

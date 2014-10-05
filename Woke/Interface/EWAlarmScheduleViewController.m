@@ -7,7 +7,7 @@
 //
 
 #import "EWAlarmScheduleViewController.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWTaskItem.h"
 #import "EWAlarmManager.h"
 #import "EWAlarmItem.h"
@@ -26,7 +26,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 @implementation EWAlarmScheduleViewController{
     NSInteger selected;
-    NSArray *tasks;
+    NSArray *alarms;
 }
 
 - (void)viewDidLoad{
@@ -50,34 +50,34 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     //data
     [self initData];
     
-    //add task observer
-    [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
-    [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+    //add alarm observer
+    [[EWAlarmManager sharedInstance] addObserver:self forKeyPath:@"isSchedulingAlarm" options:NSKeyValueObservingOptionNew context:nil];
+    [me addObserver:self forKeyPath:EWPersonRelationships.medias options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    if ([EWTaskStore sharedInstance].isSchedulingTask) {
+    if ([EWTaskManager sharedInstance].isSchedulingTask) {
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     }
 }
 
 - (void)dealloc{
-    [[EWTaskStore sharedInstance] removeObserver:self forKeyPath:@"isSchedulingTask"];
-    [me removeObserver:self forKeyPath:@"tasks"];
+    [[EWAlarmManager sharedInstance] removeObserver:self forKeyPath:@"isSchedulingAlarm"];
+    [me removeObserver:self forKeyPath:@"alarms"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if ([object isKindOfClass:[EWTaskStore class]]) {
+    if ([object isKindOfClass:[EWAlarmManager class]]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ([keyPath isEqualToString:@"isSchedulingTask"]) {
-                if (![EWTaskStore sharedInstance].isSchedulingTask) {
-                    NSLog(@"Schedule view detected task store finished scheduling");
+            if ([keyPath isEqualToString:@"isSchedulingAlarm"]) {
+                if (![EWAlarmManager sharedInstance].isSchedulingAlarm) {
+                    DDLogInfo(@"Schedule view detected alarm finished scheduling");
                     [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
                     [self initData];
                     
                 }else{
-                    NSLog(@"Schedule View detect task schedule");
+                    DDLogInfo(@"Schedule View detect alarm schedule");
                     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                 }
             }
@@ -96,8 +96,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)initData{
     //data source
-    //alarms = [EWAlarmManager myAlarms];
-    tasks = [EWTaskStore myTasks];
+    alarms = [EWAlarmManager myAlarms];
     selected = 99;
     [self.tableView reloadData];
 }
@@ -108,51 +107,46 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     BOOL hasChanges = NO;
     
     
-    for (NSInteger i=0; i<tasks.count; i++) {
+    for (NSInteger i=0; i<alarms.count; i++) {
         NSIndexPath *path = [NSIndexPath indexPathForItem:i inSection:0];
         EWAlarmEditCell *cell = (EWAlarmEditCell *)[_tableView cellForRowAtIndexPath:path];
         if (!cell ) {
             cell = (EWAlarmEditCell *)[self tableView:_tableView cellForRowAtIndexPath:path];
         }
         
-        EWTaskItem *task = cell.task;
-        if (!task) {
-            NSLog(@"*** Getting cell that has no task, skip");
+        EWAlarmItem *alarm = cell.alarm;
+        if (!alarm) {
+            DDLogError(@"*** Getting cell that has no alarm, skip");
             continue;
         }
-        EWAlarmItem *alarm = task.alarm;
         //state
         if (cell.alarmToggle.selected != alarm.state) {
             NSLog(@"Change alarm state for %@ to %@", alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
             alarm.state = cell.alarmToggle.selected?YES:NO;
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
+            //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
             hasChanges = YES;
         }
 
         //time
-        if (cell.myTime && ![cell.myTime isEqualToDate:task.time]) {
+        if (cell.myTime && ![cell.myTime isEqualToDate:alarm.time]) {
             
             NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
             alarm.time = cell.myTime;
 			//task.time = cell.myTime;
-			[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
+			//x[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
             hasChanges = YES;
         }
         
         //statement
-        if (cell.statement.text.length && ![cell.statement.text isEqualToString:task.statement]) {
+        if (cell.statement.text.length && ![cell.statement.text isEqualToString:alarm.statement]) {
             NSString *statement = [NSString stringWithFormat:@"%@", cell.statement.text];
             alarm.statement = statement;
-            task.statement = statement;
-            //hasChanges = YES;
+            hasChanges = YES;
         }
     }
     
 	if (hasChanges) {
 		//save
-		[EWSync save];
-        //save alarm time to user defaults
-        [[EWAlarmManager sharedInstance] setSavedAlarmTimes];
     }
     
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
@@ -177,7 +171,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 #pragma mark - tableViewController delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return tasks.count;
+    return alarms.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -190,9 +184,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     EWAlarmEditCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     //data
-    if (!cell.task) {
-        EWTaskItem *task = tasks[indexPath.row];
-        cell.task = task;//alarm set automatically
+    if (!cell.alarm) {
+        EWAlarmItem *alarm = alarms[indexPath.row];
+        cell.alarm = alarm;
     }
     
     //breaking MVC pattern to get ringtonVC work

@@ -19,7 +19,7 @@
 #import "EWPersonStore.h"
 #import "EWServer.h"
 #import "EWAlarmManager.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 
 //View
 #import "EWLogInViewController.h"
@@ -63,15 +63,15 @@
             [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                 if (!error) {
                     //fetch user in coredata cache(offline) with related objects
-                    NSLog(@"[b] Logged in to facebook");
+                    DDLogInfo(@"[b] Logged in to facebook");
                     
                 }else if([error.userInfo[FBErrorParsedJSONResponseKey][@"body"][@"error"][@"type"] isEqualToString:@"OAuthException"]) {
                     // Since the request failed, we can check if it was due to an invalid session
-                    EWAlert(@"The facebook session was expired");
+                    DDLogInfo(@"The facebook session was expired");
                     [EWUserManagement showLoginPanel];
                     
                 }else{
-                    NSLog(@"Failed to login facebook, error: %@", error.description);
+                    DDLogInfo(@"Failed to login facebook, error: %@", error.description);
                     //[EWUserManagement showLoginPanel];
                     [self handleFacebookException:error];
                     
@@ -113,26 +113,29 @@
 
     //fetch or create
     EWPerson *person = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
-    if ([EWSync sharedInstance].workingQueue.count == 0) {
-        //if no pending uploads, refresh self
-        [me refresh];
-    }
+    
     //save me
     [EWPersonStore sharedInstance].currentUser = person;
     
+    if ([EWSync sharedInstance].workingQueue.count == 0) {
+        //if no pending uploads, refresh self
+        [person refreshInBackgroundWithCompletion:^{
+            //Broadcast user login event
+            DDLogInfo(@"[c] Broadcast Person login notification");
+            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
+        }];
+    }else{
+        DDLogInfo(@"[c] Broadcast Person login notification");
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
+    }
+    
     
     if (completionBlock) {
-        NSLog(@"[d] Run completion block.");
+        DDLogInfo(@"[d] Run completion block.");
         completionBlock();
         
         [[ATConnect sharedConnection] engage:@"login_success" fromViewController:rootViewController];
     }
-
-    //Broadcast user login event
-    NSLog(@"[c] Broadcast Person login notification");
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
-    
-    
     
     //if new user, link with facebook
     if([PFUser currentUser].isNew){
@@ -182,7 +185,7 @@
                     }
                 }];
             }else{
-                NSLog(@"Failed to sign up new user: %@", error.description);
+                DDLogError(@"Failed to sign up new user: %@", error.description);
                 EWAlert(@"Server not available, please try again.");
                 [EWUserManagement showLoginPanel];
             }
@@ -196,7 +199,7 @@
     //log out SM
     if ([PFUser currentUser]) {
         [PFUser logOut];
-        NSLog(@"Successfully logged out");
+        DDLogInfo(@"Successfully logged out");
         //log out fb
         [FBSession.activeSession closeAndClearTokenInformation];
         //log in with device id
@@ -218,7 +221,7 @@
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueUpdate];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueWorking];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kParseQueueRefresh];
-    NSLog(@"Cleaned local queue");
+    DDLogInfo(@"Cleaned local queue");
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedOut object:self userInfo:nil];
     
@@ -230,7 +233,6 @@
     NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", me.name];
     EWAlert(msg);
     [EWServer broadcastMessage:msg onSuccess:NULL onFailure:NULL];
-    
 }
 
 
@@ -253,17 +255,17 @@
 
 //Danger Zone
 + (void)purgeUserData{
-    NSLog(@"Cleaning all cache and server data");
+    DDLogDebug(@"Cleaning all cache and server data");
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     
     //Alarm
     [EWAlarmManager.sharedInstance deleteAllAlarms];
     //task
-    [EWTaskStore.sharedInstance deleteAllTasks];
+    [[EWTaskManager sharedInstance] deleteAllTasks];
     //media
     //[EWMediaStore.sharedInstance deleteAllMedias];
     //check
-    [EWTaskStore.sharedInstance checkScheduledNotifications];
+    [[EWTaskManager sharedInstance ] checkScheduledNotifications];
     
     [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
     
@@ -294,7 +296,7 @@
         
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         
-        NSLog(@"Get user location with lat: %f, lon: %f", geoPoint.latitude, geoPoint.longitude);
+        DDLogVerbose(@"Get user location with lat: %f, lon: %f", geoPoint.latitude, geoPoint.longitude);
         
         //reverse search address
         CLGeocoder *geoloc = [[CLGeocoder alloc] init];
@@ -333,7 +335,7 @@
             [EWUserManagement loginWithServerUser:[PFUser currentUser] withCompletionBlock:^{
                 //background refresh
                 if (block) {
-                    NSLog(@"[d] Run completion block.");
+                    DDLogInfo(@"[d] Run completion block.");
                     block(nil);
                 }
             }];
@@ -362,7 +364,7 @@
     }
     [PFFacebookUtils linkUser:[PFUser currentUser] permissions:[EWUserManagement facebookPermissions] block:^(BOOL succeeded, NSError *error) {
         if (error) {
-            NSLog(@"Failed to get facebook info: %@", error.description);
+            DDLogError(@"Failed to get facebook info: %@", error.description);
             [EWUserManagement handleFacebookException:error];
             return ;
         }
@@ -431,10 +433,10 @@
 }
 
 + (void)getFacebookFriends{
-    NSLog(@"Updating facebook friends");
+    DDLogVerbose(@"Updating facebook friends");
     //check facebook id exist
     if (!me.facebook) {
-        NSLog(@"Current user doesn't have facebook ID, skip checking fb friends");
+        DDLogWarn(@"Current user doesn't have facebook ID, skip checking fb friends");
         return;
     }
     
@@ -442,9 +444,9 @@
     if (state != FBSessionStateOpen && state != FBSessionStateOpenTokenExtended) {
         
         //session not open, need to open
-        NSLog(@"facebook session state: %d", state);
+        DDLogVerbose(@"facebook session state: %d", state);
         [EWUserManagement openFacebookSessionWithCompletion:^{
-            NSLog(@"Facebook session opened: %d", [FBSession activeSession].state);
+            DDLogVerbose(@"Facebook session opened: %d", [FBSession activeSession].state);
             
             [EWUserManagement getFacebookFriends];
         }];
@@ -459,7 +461,7 @@
             EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:localMe];
             //skip if checked within a week
             if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
-                NSLog(@"Facebook friends check skipped.");
+                DDLogVerbose(@"Facebook friends check skipped.");
                 return;
             }
             
@@ -477,7 +479,7 @@
 + (void)getFacebookFriendsWithPath:(NSString *)path withReturnData:(NSMutableDictionary *)friendsHolder{
     [FBRequestConnection startWithGraphPath:path completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
         
-        NSLog(@"Got facebook friends list, start processing");
+        DDLogVerbose(@"Got facebook friends list, start processing");
         if (!error){
             NSArray *friends = (NSArray *)result[@"data"];
             NSString *nextPage = (NSString *)result[@"paging"][@"next"]	;
@@ -496,7 +498,7 @@
                 //NSLog(@"Continue facebook friends request: %@", nextPage);
                 [self getFacebookFriendsWithPath:nextPage withReturnData:friendsHolder];
             }else{
-                NSLog(@"Finished loading friends from facebook, transfer to social graph.");
+                DDLogVerbose(@"Finished loading friends from facebook, transfer to social graph.");
                 EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:me];
                 graph.facebookFriends = [friendsHolder copy];
                 graph.facebookUpdated = [NSDate date];
@@ -559,7 +561,7 @@
         // If the user cancelled login, do nothing
         if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryUserCancelled) {
             [MBProgressHUD hideHUDForView:rootViewController.view animated:YES];
-            NSLog(@"User cancelled login");
+            DDLogInfo(@"User cancelled login");
             alertTitle = @"User Cancelled Login";
             alertText = @"Please Try Again";
             
@@ -577,10 +579,10 @@
             [FBSession.activeSession closeAndClearTokenInformation];
         } else if (error.code == 5){
             if (![EWSync isReachable]) {
-                NSLog(@"No connection: %@", error.description);
+                DDLogError(@"No connection: %@", error.description);
             }else{
                 
-                NSLog(@"Error %@", error.description);
+                DDLogError(@"Error %@", error.description);
                 alertTitle = @"Something went wrong";
                 alertText = @"Operation couldn't be finished. We appologize for this. It may caused by weak internet connection.";
             }
@@ -592,7 +594,7 @@
             alertTitle = @"Something went wrong";
             alertText = [NSString stringWithFormat:@"Please retry. \n\n If the problem persists contact us and mention this error code: %@", [errorInformation objectForKey:@"message"]];
             //[self showMessage:alertText withTitle:alertTitle];
-            NSLog(@"Failed to login fb: %@", error.description);
+            DDLogError(@"Failed to login fb: %@", error.description);
             
             // Clear this token
             [FBSession.activeSession closeAndClearTokenInformation];

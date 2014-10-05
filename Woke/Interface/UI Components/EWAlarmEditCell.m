@@ -13,7 +13,7 @@
 #import "NSDate+Extend.h"
 //#import "EWCostumTextField.h"
 @implementation EWAlarmEditCell
-@synthesize task, alarm;
+@synthesize alarm;
 @synthesize myTime, myStatement;
 
 
@@ -48,35 +48,34 @@
     // Configure the view for the selected state
 }
 
-- (void)setTask:(EWTaskItem *)t{
-    if (task == t) {
-        return;
-    }
-    //data
-    task = t;
-    alarm = task.alarm;
-    //alarmOn = self.alarm.state;
-    myTime = self.task.time ;
-   
-    myStatement = self.task.statement;
-    
-    self.statement.text = myStatement;
-    
-    
-    //view
-    self.time.text = [myTime date2timeShort];
-    self.AM.text = [myTime date2am];
-    self.weekday.text = [myTime weekdayShort];
+//- (void)setTask:(EWTaskItem *)t{
+//    if (task == t) {
+//        return;
+//    }
+//    //data
+//    task = t;
+//    alarm = task.alarm;
+//    //alarmOn = self.alarm.state;
+//    myTime = self.task.time ;
+//   
+//    myStatement = self.task.statement;
+//    
+//    self.statement.text = myStatement;
+//    
+//    
+//    //view
+//    self.time.text = [myTime date2timeShort];
+//    self.AM.text = [myTime date2am];
+//    self.weekday.text = [myTime weekdayShort];
+//
+//    
+//    //NSString *alarmState = alarmOn ? @"ON":@"OFF";
+//    //[self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
+//    
+//    self.alarmToggle.selected = task.state;
+//    [self toggleAlarm:nil];
+//}
 
-    
-    //NSString *alarmState = alarmOn ? @"ON":@"OFF";
-    //[self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
-    
-    self.alarmToggle.selected = task.state;
-    [self toggleAlarm:nil];
-}
-
-//Not used
 - (void)setAlarm:(EWAlarmItem *)a{
     //data
     //task = [[EWAlarmManager sharedInstance] firstTaskForAlarm:a];
@@ -89,11 +88,7 @@
     self.time.text = [myTime date2timeShort];
     self.AM.text = [myTime date2am];
     self.weekday.text = [myTime weekday];
-    if (myStatement == nil || [myStatement isEqualToString:@""] ) {
-       self.statement.text = @"I want to hear a funny song about burrito...";
-    }
-    else
-         self.statement.text = myStatement;
+    self.statement.text = myStatement;
     //NSString *alarmState = alarmOn ? @"ON":@"OFF";
     //[self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];
     

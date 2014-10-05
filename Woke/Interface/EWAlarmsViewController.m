@@ -21,7 +21,7 @@
 // Manager
 #import "EWAlarmManager.h"
 #import "EWPersonStore.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWNotificationManager.h"
 #import "TestFlight.h"
 
@@ -92,7 +92,7 @@
         [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
         [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
         //listen to schedule signal
-        [[EWTaskStore sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
+        [[EWTaskManager sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
         
         //refresh
         [self refreshView];
@@ -167,7 +167,7 @@
     if (me) {
         //get alarm and task first
         alarms = [EWAlarmManager myAlarms];
-        tasks = [EWTaskStore myTasks];
+        tasks = [EWTaskManager myTasks];
         
         if (alarms.count == 0 && tasks.count == 0) {
             NSLog(@"Alarm and task is 0, skip schedule");
@@ -185,7 +185,7 @@
             
             if (tasks.count != 7 * nWeeksToScheduleTask) {
                 NSLog(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
-                [[EWTaskStore sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
+                [[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
                 
             }
         }
@@ -252,7 +252,7 @@
         if ([keyPath isEqualToString:@"tasks"]){
             
             NSInteger nTask = me.tasks.count;
-            if (![EWTaskStore sharedInstance].isSchedulingTask) {
+            if (![EWTaskManager sharedInstance].isSchedulingTask) {
                 //only refresh display when not scheduling
                 if (nTask == 7*nWeeksToScheduleTask){
                     [refreshViewTimer invalidate];
@@ -284,9 +284,9 @@
             }
         }
         
-    }else if (object == [EWTaskStore sharedInstance]){
+    }else if (object == [EWTaskManager sharedInstance]){
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ([EWTaskStore sharedInstance].isSchedulingTask) {
+            if ([EWTaskManager sharedInstance].isSchedulingTask) {
                 NSLog(@"Detected %@ is scheduling", [object class]);
                 [self showAlarmPageLoading:YES];
                 //taskScheduled = NO;
@@ -309,7 +309,7 @@
 - (void)reloadAlarmPage {
     //data
     alarms = [EWAlarmManager myAlarms];
-    tasks = [EWTaskStore myTasks];
+    tasks = [EWTaskManager myTasks];
     
     if (!me) {
         [self showAlarmPageLoading:YES];
@@ -510,7 +510,7 @@
 
 - (void)toggleSleepBtnVisibility{
     if (tasks.count == 7*nWeeksToScheduleTask) {
-		EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+		EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
         float h = -task.time.timeElapsed/3600;
         NSNumber *duration = me.preference[kSleepDuration];
         if (h < duration.floatValue && h>0) {
@@ -689,7 +689,7 @@
             if (me.alarms.count != 7) {
                 [[EWAlarmManager sharedInstance] scheduleNewAlarms];
             }
-            [[EWTaskStore sharedInstance] scheduleTasks];
+            [[EWTaskManager sharedInstance] scheduleTasks];
             [MBProgressHUD hideAllHUDsForView:controller.view animated:YES];
         }
     }];
@@ -818,28 +818,29 @@
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
-			DDLogVerbose(@"Received insert on %ld", (long)newIndexPath.row);
+			//DDLogVerbose(@"Received insert on %ld", (long)newIndexPath.row);
             change[@(type)] = newIndexPath;
             break;
         case NSFetchedResultsChangeDelete:
             change[@(type)] = indexPath;
-			DDLogVerbose(@"Received delete on %ld", (long)indexPath.row);
+			//DDLogVerbose(@"Received delete on %ld", (long)indexPath.row);
             break;
         case NSFetchedResultsChangeUpdate:{
-            __block BOOL duplicated = NO;
-            [cellChangeArray enumerateObjectsUsingBlock:^(NSDictionary *change, NSUInteger idx, BOOL *stop) {
-                if([change[@(type)] isEqual:newIndexPath]){
-                    duplicated = YES;
-                }
-            }];
-            if(!duplicated) change[@(type)] = indexPath;
-			DDLogVerbose(@"Received update on %ld", (long)newIndexPath.item);
+//            __block BOOL duplicated = NO;
+//            [cellChangeArray enumerateObjectsUsingBlock:^(NSDictionary *change, NSUInteger idx, BOOL *stop) {
+//                if([change[@(type)] isEqual:newIndexPath]){
+//                    duplicated = YES;
+//                }
+//            }];
+//            if(!duplicated) change[@(type)] = indexPath;
+            change[@(type)] = indexPath;
+			//DDLogVerbose(@"Received update on %ld", (long)newIndexPath.item);
         }
             
             break;
         case NSFetchedResultsChangeMove:
             change[@(type)] = @[indexPath, newIndexPath];
-			DDLogVerbose(@"Received move from %ld to %ld", (long)indexPath.row, (long)newIndexPath.row);
+			//DDLogVerbose(@"Received move from %ld to %ld", (long)indexPath.row, (long)newIndexPath.row);
             break;
     }
     [cellChangeArray addObject:change];
@@ -854,7 +855,7 @@
     NSArray *changeArray = [cellChangeArray copy];
     cellChangeArray = [NSMutableArray new];
 	if (changeArray.count != 1 || [(NSNumber *)[(NSDictionary *)changeArray.firstObject allKeys].firstObject unsignedIntegerValue] != NSFetchedResultsChangeUpdate ) {
-		DDLogVerbose(@"Commit colloection view change: %@", changeArray);
+		//DDLogVerbose(@"Commit colloection view change: %@", changeArray);
 	}
     
     if (changeArray.count > 0){

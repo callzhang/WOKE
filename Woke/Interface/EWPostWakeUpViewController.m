@@ -16,9 +16,10 @@
 #import <QuartzCore/QuartzCore.h>
 #import "EWAppDelegate.h"
 #import "EWRecordingViewController.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 
 #import "EWUIUtil.h"
+#import "EWAlarmManager.h"
 NSString * const selectAllCellId = @"selectAllCellId";
 @interface EWPostWakeUpViewController ()
 {
@@ -137,8 +138,8 @@ NSString * const selectAllCellId = @"selectAllCellId";
     [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:^{
         NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:mainContext];
         personArray = [allPerson sortedArrayUsingComparator:^NSComparisonResult(EWPerson *obj1, EWPerson *obj2) {
-            NSDate *time1 = obj1.cachedInfo[kNextTaskTime]?:[NSDate date];
-            NSDate *time2 = obj2.cachedInfo[kNextTaskTime]?:[NSDate date];
+            NSDate *time1 = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:obj1]?:[[NSDate date] timeByAddingMinutes:60];
+            NSDate *time2 = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:obj2]?:[[NSDate date] timeByAddingMinutes:60];
             if ([time1 isEarlierThan:time2]) {
                 return NSOrderedAscending;
             }else if ([time2 isEarlierThan:time1]){
@@ -293,28 +294,28 @@ NSString * const selectAllCellId = @"selectAllCellId";
 }
 -(void)selectAllCell
 {
+    BOOL selectAll = YES;
+    if (selectedPersonSet.count == personArray.count) {
+        //all selected, deselect all
+        selectAll = NO;
+    }
     for (int i =0 ; i < [personArray count]; i++) {
         NSIndexPath *selectedPath = [NSIndexPath indexPathForRow:i inSection:0];
         EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[collectionView cellForItemAtIndexPath:selectedPath];
         EWPerson * person = [personArray objectAtIndex:selectedPath.row];
         
-        if ([selectedPersonSet containsObject:person])
+        if (selectAll)
         {
-            
-//            [selectedPersonSet removeObject:person];
-//            cell.selectionView.hidden = YES;
-        }
-        else
-        {
-            //选中
             [selectedPersonSet addObject:person];
             cell.selection.hidden = NO;
         }
-
-//        [self collectionView:collectionView didSelectItemAtIndexPath:selectedPath];
+        else {
+            [selectedPersonSet removeObject:person];
+            cell.selection.hidden = YES;
+        }
     }
 }
-#pragma mark -
+
 #pragma mark - memorying warning -
 
 - (void)didReceiveMemoryWarning

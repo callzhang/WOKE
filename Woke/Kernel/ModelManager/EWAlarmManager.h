@@ -7,8 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-//#import "EWStore.h"
-//#define KEY_ID          @"alarm_ID"
+#define kCachedAlarmTimes                @"alarm_schedule"
+#define kCachedStatements                @"statements"
+
 
 @class EWAlarmItem, EWPerson, EWTaskItem;
 
@@ -28,15 +29,14 @@
 // Search
 - (NSArray *)alarmsForUser:(EWPerson *)user;
 + (NSArray *)myAlarms;
-//- (EWAlarmItem *)nextAlarm;
-//- (EWTaskItem *)firstTaskForAlarm:(EWAlarmItem *)alarm;
+- (NSDate *)nextAlarmTimeForPerson:(EWPerson *)person;
+- (NSString *)nextStatementForPerson:(EWPerson *)person;
 
-// change
-//- (void)setAlarm:(EWAlarmItem *)alarm;
-//- (void)setAlarmState:(BOOL)state atIndex:(NSUInteger)index;
+// schedule
 - (NSArray *)scheduleAlarm;
 - (NSArray *)scheduleNewAlarms;
-
+- (void)updateCachedAlarmTime;
+- (void)updateCachedStatement;
 
 //check
 + (BOOL)validateAlarm:(EWAlarmItem *)alarm;
@@ -47,6 +47,5 @@
 //UTIL
 - (NSDate *)getSavedAlarmTimeOnWeekday:(NSInteger)wkd;
 - (void)setSavedAlarmTimes;
-+ (BOOL)handleExcessiveTasksForAlarm:(EWAlarmItem *)alarm;
 
 @end

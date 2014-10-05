@@ -57,18 +57,18 @@
         if ([value isKindOfClass:[NSData class]]) {
             //data
             if (!expectChange && POValue) {
-                DDLogWarn(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
+                DDLogVerbose(@"MO attribute %@(%@)->%@ not change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
                 return;
             }
             //TODO: video file
-            NSString *fileName = [NSString stringWithFormat:@"%@.m4a", [PFUser currentUser].username];
+            NSString *fileName = [NSString stringWithFormat:@"%@.m4a", [PFUser currentUser][@"name"]];
             PFFile *dataFile = [PFFile fileWithName:fileName data:value];
             [self setObject:dataFile forKey:key];
         }
         else if ([value isKindOfClass:[UIImage class]]){
             //image
             if (!expectChange && POValue) {
-                DDLogWarn(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
+                DDLogVerbose(@"MO attribute %@(%@)->%@ not change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
                 return;
             }
             PFFile *dataFile = [PFFile fileWithName:@"Image.png" data:UIImagePNGRepresentation((UIImage *)value)];
@@ -78,13 +78,13 @@
         else if ([value isKindOfClass:[CLLocation class]]){
             //location
             if (!expectChange && POValue) {
-                DDLogWarn(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
+                DDLogVerbose(@"MO attribute %@(%@)->%@ no change", managedObject.entity.name, [managedObject valueForKey:kParseObjectID], key);
                 return;
             }
             PFGeoPoint *point = [PFGeoPoint geoPointWithLocation:(CLLocation *)value];
             [self setObject:point forKey:key];
         }
-        else if(value != nil){
+        else if(value){
             [self setObject:value forKey:key];
             
         }
@@ -234,29 +234,8 @@
             
             //relation cannot be to-many, as it's always has value
             //empty related object, delete PO relationship
-            //I doubt if we really need to delete inverse relation
             if ([self valueForKey:key]) {
-                
-                
-                NSLog(@"Empty relationship on MO %@(%@) -> %@, delete PO relation.", managedObject.entity.name, self.objectId, obj.name);
-                //                NSRelationshipDescription *inverseRelation = obj.inverseRelationship;
-                //                PFObject *inversePO = self[key];
-                //				if (inversePO.ACL != nil) {
-                //					BOOL write = [inversePO.ACL getWriteAccessForUser:[PFUser currentUser]] || [inversePO.ACL getPublicWriteAccess];
-                //				}
-                //                if (inverseRelation.isToMany) {
-                //                    //inverse to-many relation need to be updated
-                //                    [inversePO fetchIfNeeded];
-                //                    PFRelation *inversePFRelation = [inversePO relationForKey:inverseRelation.name];
-                //                    [inversePFRelation removeObject:self];
-                //                    [inversePO save:nil];
-                //                    NSLog(@"~~~> Removed inverse to-many relation: %@ -> %@", self.parseClassName, inversePO.parseClassName);
-                //                }else{
-                //                    //to-one
-                //                    [inversePO removeObjectForKey:inverseRelation.name];
-                //                }
-                //				[inversePO save];
-                
+                DDLogVerbose(@"Empty relationship on MO %@(%@) -> %@, delete PO relation.", managedObject.entity.name, self.objectId, obj.name);
                 [self removeObjectForKey:key];
                 
             }

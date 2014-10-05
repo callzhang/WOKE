@@ -8,15 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-#define kNextTaskTime                 @"next_task_time"
-#define kNextTaskStatement            @"next_task_statement"
-
-
 @class EWPerson, EWTaskItem, EWAlarmItem;
 
 #define kTaskUpdateInterval         3600 * 24
 
-@interface EWTaskStore : NSObject <NSKeyedArchiverDelegate>
+@interface EWTaskManager : NSObject <NSKeyedArchiverDelegate>
 @property (atomic) BOOL isSchedulingTask;
 @property NSDate *lastChecked;//last checked task with server
 @property NSDate *lastPastTaskChecked;
@@ -27,7 +23,7 @@
  */
 //@property (retain, nonatomic) NSArray *allTasks;
 
-+ (EWTaskStore *)sharedInstance;
++ (EWTaskManager *)sharedInstance;
 //find
 /**
  get future task for person
@@ -48,11 +44,6 @@
  */
 - (EWTaskItem *)nextValidTaskForPerson:(EWPerson *)person;
 - (EWTaskItem *)nextNth:(NSInteger)n validTaskForPerson:(EWPerson *)person;
-
-/**
- Next Wake Up Time For Person
- */
-- (NSDate *)nextWakeUpTimeForPerson:(EWPerson *)person;
 
 /**
  Main method for getting task:
@@ -108,7 +99,6 @@
  3. Delete unmatched local notif
  */
 - (void)checkScheduledNotifications;
-- (void)updateNextTaskTime;
 
 #pragma mark - check
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task;

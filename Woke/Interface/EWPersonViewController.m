@@ -23,7 +23,7 @@
 #import "EWAchievement.h"
 
 //manager
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWAlarmManager.h"
 #import "EWPersonStore.h"
 #import "EWMediaStore.h"
@@ -238,7 +238,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }
     
     //statement
-    EWTaskItem *t = [[EWTaskStore sharedInstance] nextNth:0 validTaskForPerson:person];
+    EWTaskItem *t = [[EWTaskManager sharedInstance] nextNth:0 validTaskForPerson:person];
     NSString *str;
     if (t.statement) {
         str = t.statement;
@@ -562,7 +562,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             }
             case 4://next task time
             {
-                NSDate *date = person.cachedInfo[kNextTaskTime];
+                NSDate *date = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];
                 cell.detailTextLabel.text = [[date time2HMMSS] stringByAppendingString:[date date2am]];
                 break;
             }

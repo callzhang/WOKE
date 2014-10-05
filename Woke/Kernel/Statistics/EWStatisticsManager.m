@@ -8,7 +8,7 @@
 
 #import "EWStatisticsManager.h"
 #import "EWTaskItem.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWUIUtil.h"
 #import "EWMediaStore.h"
 #import "EWMediaItem.h"
@@ -21,7 +21,7 @@
     person = p;
     if (p.isMe) {
         //newest on top
-        tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:p];
+        tasks = [[EWTaskManager sharedInstance] pastTasksByPerson:p];
     }else{
         [self getStatsFromCache];
     }
@@ -177,8 +177,8 @@
     
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *localMe = [me inContext:localContext];
-        [[EWTaskStore sharedInstance] checkPastTasks];
-        NSArray *tasks = [[EWTaskStore sharedInstance] pastTasksByPerson:localMe];//newest on top
+        [[EWTaskManager sharedInstance] checkPastTasks];
+        NSArray *tasks = [[EWTaskManager sharedInstance] pastTasksByPerson:localMe];//newest on top
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
         NSMutableDictionary *activity = [cache[kTaskActivityCache] mutableCopy]?:[NSMutableDictionary new];
         if (activity.count == tasks.count) {

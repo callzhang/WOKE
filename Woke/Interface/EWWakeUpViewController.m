@@ -80,11 +80,10 @@
         [self.task removeObserver:self forKeyPath:@"medias"];
     }
     @catch (NSException *exception) {
-        //
+        DDLogError(@"error in deallocating WakeUpViewController: %@", exception.description);
     }
     
-    
-    NSLog(@"WakeUpViewController deallocated. Observers removed.");
+    DDLogVerbose(@"WakeUpViewController deallocated. Observers removed.");
 }
 
 

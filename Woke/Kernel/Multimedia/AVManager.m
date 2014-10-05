@@ -10,7 +10,7 @@
 #import "EWMediaViewCell.h"
 #import "EWTaskItem.h"
 #import "EWMediaItem.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWDataStore.h"
 #import "EWMediaSlider.h"
 #import "EWMediaStore.h"
@@ -611,7 +611,7 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
         
         if (!m) m = media;
-        EWTaskItem *task = [[EWTaskStore sharedInstance] nextValidTaskForPerson:me];
+        EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
         
         NSString *title = [task.time weekday];
         

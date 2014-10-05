@@ -13,7 +13,7 @@
 #import "EWMediaItem.h"
 #import "EWMediaStore.h"
 #import "EWTaskItem.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWPersonViewController.h"
 #import "EWAppDelegate.h"
 #import "EWWakeUpManager.h"
@@ -164,7 +164,7 @@
         
         NSString *taskID = userInfo[kPushTaskID];
         if (!taskID) return;
-        EWTaskItem *task = [[EWTaskStore sharedInstance] getTaskByID:taskID];
+        EWTaskItem *task = [[EWTaskManager sharedInstance] getTaskByID:taskID];
         [EWNotificationManager sharedInstance].task = task;
         //it's now between alarm timer and before max wake time
         if (!task.completed) {

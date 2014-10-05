@@ -98,7 +98,7 @@
                 relatedParseObject = [parseObject valueForKey:key];
             }
             @catch (NSException *exception) {
-                NSLog(@"Failed to assign value of key: %@ from Parse Object %@ to ManagedObject %@ \n Error: %@", key, parseObject, self, exception.description);
+                DDLogError(@"Failed to assign value of key: %@ from Parse Object %@ to ManagedObject %@ \n Error: %@", key, parseObject, self, exception.description);
                 return;
             }
             if (relatedParseObject) {
@@ -106,20 +106,20 @@
                 NSManagedObject *relatedManagedObject = [relatedParseObject managedObjectInContext:localContext];
                 [self setValue:relatedManagedObject forKey:key];
             }else{
-                
+                //Handle no related PO, I doubt that we need to check the inverse related PO
                 BOOL inverseRelationExists;
                 NSManagedObject *relatedMO;
                 PFObject *relatedPO;//related PO get from relatedMO
                 
                 if (!obj.inverseRelationship) {
                     //no inverse relation, skip check
-                    inverseRelationExists = NO;
+                    return;
                 }else{
                     //relation empty, check inverse relation first
                     relatedMO = [self valueForKey:key];
                     if (!relatedMO) return;//no need to do anything
                     relatedPO = relatedMO.parseObject;//find relatedPO
-                                                      //check if relatedPO's inverse relation contains PO
+                    //check if relatedPO's inverse relation contains PO
                     if (obj.inverseRelationship.isToMany) {
                         PFRelation *reflectRelation = [relatedPO valueForKey:obj.inverseRelationship.name];
                         NSArray *reflectPOs = [[reflectRelation query] findObjects];
@@ -134,9 +134,9 @@
                 if (!inverseRelationExists) {
                     //both side of PO doesn't have
                     [self setValue:nil forKey:key];
-                    NSLog(@"~~~> Delete to-one relation on MO %@(%@)->%@(%@)", self.entity.name, parseObject.objectId, obj.name, [relatedMO valueForKey:kParseObjectID]);
+                    DDLogInfo(@"~~~> Delete to-one relation on MO %@(%@)->%@(%@)", self.entity.name, parseObject.objectId, obj.name, [relatedMO valueForKey:kParseObjectID]);
                 }else{
-                    NSLog(@"*** Something wrong, the inverse relation %@(%@) <-> %@(%@) deoesn't agree", self.entity.name, [self valueForKey:kParseObjectID], relatedMO.entity.name, [relatedMO valueForKey:kParseObjectID]);
+                    DDLogError(@"*** Something wrong, the inverse relation %@(%@) <-> %@(%@) deoesn't agree", self.entity.name, [self valueForKey:kParseObjectID], relatedMO.entity.name, [relatedMO valueForKey:kParseObjectID]);
                     if ([relatedPO.updatedAt isEarlierThan:parseObject.updatedAt]) {
                         //PO wins
                         [self setValue:nil forKey:key];
@@ -146,7 +146,6 @@
         }
     }];
     
-    //UpdatedDate here only when the relations is updated
     [self setValue:[NSDate date] forKey:kUpdatedDateKey];
     
     //pre save check
@@ -237,6 +236,8 @@
             }
         }
     }];
+    
+    [self setValue:object.updatedAt forKey:kUpdatedDateKey];
 }
 
 #pragma mark - Parse related

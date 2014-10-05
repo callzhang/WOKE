@@ -14,7 +14,7 @@
 #import "EWLogInViewController.h"
 #import "EWUserManagement.h"
 #import "EWSelectionViewController.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "RMDateSelectionViewController.h"
 #import "AVManager.h"
 
@@ -259,7 +259,7 @@ static const NSArray *pref;
                 preference[kSleepDuration] = @(d);
                 me.preference = preference.copy;
                 [_tableView reloadData];
-                [EWTaskStore updateSleepNotification];
+                [EWTaskManager updateSleepNotification];
             }
         } andCancelHandler:^(EWSelectionViewController *vc) {
             DDLogInfo(@"Date selection was canceled (with block)");
@@ -291,10 +291,10 @@ static const NSArray *pref;
     
     //schedule sleep notification
     if (sender.on == YES) {
-        [EWTaskStore updateSleepNotification];
+        [EWTaskManager updateSleepNotification];
     }
     else{
-        [EWTaskStore cancelSleepNotification];
+        [EWTaskManager cancelSleepNotification];
     }
 }
 

@@ -15,12 +15,12 @@
 #import "EWCollectionPersonCell.h"
 #import "SCSiriWaveformView.h"
 #import "EWUIUtil.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWDefines.h"
 #import "UAProgressView.h"
 //object
 #import "EWTaskItem.h"
-#import "EWTaskStore.h"
+#import "EWTaskManager.h"
 #import "EWMediaItem.h"
 #import "EWMediaStore.h"
 #import "EWPerson.h"
@@ -32,6 +32,7 @@
 #import "ATConnect.h"
 #import "EWBackgroundingManager.h"
 #import "UAProgressView.h"
+#import "EWAlarmManager.h"
 #define BUTTONCENTER  CGPointMake(470, EWScreenWidth/2)
 
 @interface EWRecordingViewController (){
@@ -177,22 +178,17 @@
     if (personSet.count == 1) {
         EWPerson *receiver = personSet[0];
         
-        self.wish.text = receiver.cachedInfo[kNextTaskStatement];
+        NSString *statement = [[EWAlarmManager sharedInstance] nextStatementForPerson:receiver];
         
         _detail.font = [UIFont fontWithName:@"Lato-Light.ttf" size:20];
         _wish.font = [UIFont fontWithName:@"Lato-Light.ttf" size:16];
         
         self.detail.text = [NSString stringWithFormat:@"%@ wants to hear", receiver.name];
-        EWTaskItem *nextTask = [[EWTaskStore sharedInstance] nextValidTaskForPerson:receiver];
-        NSString *str;
-        if (nextTask.statement) {
-            str = [NSString stringWithFormat:@"\"%@\"", nextTask.statement];
-        }else if (receiver.cachedInfo[kNextTaskStatement]){
-            str = [NSString stringWithFormat:@"\"%@\"", receiver.cachedInfo[kNextTaskStatement]];
+        if (statement) {
+            _wish.text = [NSString stringWithFormat:@"\"%@\"", statement];
         }else{
-            str = @"\"say good morning\"";
+            _wish.text = @"\"say good morning\"";
         }
-        self.wish.text = str;
         
     }else{
         self.detail.text = @"Sent voice greeting for their next morning";
