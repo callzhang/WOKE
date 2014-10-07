@@ -195,9 +195,12 @@
                 PFObject *relatedPO ;//TODO: test if we can use empty PO
                 if (parseID) {
                     NSError *error;
-                    relatedPO = [relatedMO getParseObjectWithError:&error];
+                    relatedPO = [[EWSync sharedInstance] getParseObjectWithClass:relatedMO.serverClassName ID:relatedMO.serverID error:&error];
                     if (error) {
-                        DDLogError(@"error: %@", error);
+                        DDLogError(@"Failed to get related PO: %@", error);
+                        if (kPFErrorObjectNotFound) {
+                            [relatedMO setValue:nil forKey:kParseObjectID];
+                        }
                     }
                     else {
                         [self setObject:relatedPO forKey:key];
@@ -293,10 +296,11 @@
     NSManagedObject *mo = [NSClassFromString(self.localClassName) findFirstByAttribute:kParseObjectID withValue:self.objectId];
     NSDate *updatedMO = [mo valueForKey:kUpdatedDateKey];
     if (updatedPO && updatedMO) {
-        if ([updatedPO isEarlierThan:updatedMO]) {
-            return NO;
-        }else{
+        if ([updatedPO timeIntervalSinceDate:updatedMO]>1) {
+            DDLogVerbose(@"PO is newer than MO: %@ > %@", updatedPO, updatedMO);
             return YES;
+        }else{
+            return NO;
         }
     }else if (updatedMO){
         return NO;

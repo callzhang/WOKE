@@ -30,7 +30,7 @@
     }else{
 		__block EWNotification *blockNotification = _notification;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            PFObject *PO = [blockNotification getParseObjectWithError:NULL];
+            PFObject *PO = blockNotification.parseObject;
             dispatch_async(dispatch_get_main_queue(), ^{
                 blockNotification.createdAt = PO.createdAt;
                 self.time.text = [blockNotification.createdAt.timeElapsedString stringByAppendingString:@" ago"];

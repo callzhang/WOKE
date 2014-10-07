@@ -511,9 +511,9 @@
 - (void)toggleSleepBtnVisibility{
     if (tasks.count == 7*nWeeksToScheduleTask) {
 		EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
-        float h = -task.time.timeElapsed/3600;
+        float h = task.time.timeIntervalSinceNow/3600;
         NSNumber *duration = me.preference[kSleepDuration];
-        if (h < duration.floatValue && h>0) {
+        if (h < duration.floatValue && h>1) {
             self.sleepBtn.layer.borderColor = [UIColor whiteColor].CGColor;
             //time to sleep
             if (self.sleepBtn.alpha < 1) {

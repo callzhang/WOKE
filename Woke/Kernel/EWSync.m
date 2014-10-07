@@ -316,11 +316,6 @@ NSManagedObjectContext *mainContext;
             DDLogWarn(@"!!! Skip updating other's object %@ with changes %@", MO.serverID, MO.changedKeys);
             continue;
         }
-		
-        //if last updated is older than PO, give warning
-        if ([MO.parseObject isNewerThanMO]){
-            DDLogError(@"When enqueue, MO %@(%@) is older than PO. Updated keys: %@", MO.entity.name, MO.serverID, MO.changedValues);
-        }
         
         if ([insertedObjects containsObject:MO]) {
             //enqueue to insertQueue
@@ -399,7 +394,7 @@ NSManagedObjectContext *mainContext;
     PFObject *object;
     if (parseObjectId) {
         //download
-        object =[managedObject getParseObjectWithError:&error];
+        object =[self getParseObjectWithClass:managedObject.serverClassName ID:parseObjectId error:&error];
         
         if (!object || error) {
             if ([error code] == kPFErrorObjectNotFound) {

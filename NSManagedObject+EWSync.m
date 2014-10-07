@@ -237,44 +237,23 @@
         }
     }];
     
-    [self setValue:object.updatedAt forKey:kUpdatedDateKey];
+    [self setValue:[NSDate date] forKey:kUpdatedDateKey];
 }
 
 #pragma mark - Parse related
 - (PFObject *)parseObject{
     
     NSError *err;
-    PFObject *object = [self getParseObjectWithError:&err];
+    PFObject *object = [[EWSync sharedInstance] getParseObjectWithClass:self.serverClassName ID:self.serverID error:&err];
     if (err) return nil;
     
     //update value
-    if (object && object.updatedAt.timeElapsed > kStalelessInterval) {
-        [object refresh];
+    if ([object isNewerThanMO]) {
+        [self assignValueFromParseObject:object];
     }
     return object;
 }
 
-- (PFObject *)getParseObjectWithError:(NSError **)err{
-    
-    PFObject *PO = [[EWSync sharedInstance] getParseObjectWithClass:self.entity.name ID:self.serverID error:err];
-    
-    if (!PO.isDataAvailable) {
-        if (err) {
-            if ((*err).code == kPFErrorObjectNotFound && [EWSync isReachable]) {
-                NSLog(@"*** PO %@(%@) doesn't exist on server", self.serverClassName, self.serverID);
-                NSManagedObject *trueSelf = [self.managedObjectContext existingObjectWithID:self.objectID error:NULL];
-                if (trueSelf) {
-                    [self setValue:nil forKeyPath:kParseObjectID];
-                }
-            }
-            else{
-                NSLog(@"*** Failed to get PO(%@) from server. %@", self.serverID, *err);
-            }
-        }
-        return nil;
-    }
-    return PO;
-}
 
 #pragma mark - Download methods
 

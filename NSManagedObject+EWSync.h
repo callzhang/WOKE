@@ -22,13 +22,9 @@
 - (void)updateValueAndRelationFromParseObject:(PFObject *)object;
 
 /**
- Get conterparty Parse Object and assign value to self
+ Get conterparty Parse Object and refresh from server if needed
  */
 - (PFObject *)parseObject;
-/**
- Get PO only
- */
-- (PFObject *)getParseObjectWithError:(NSError **)error;
 
 /**
  Refresh ManagedObject value from server in background

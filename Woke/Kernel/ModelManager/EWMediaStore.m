@@ -283,7 +283,7 @@
     PFObject *m = media.parseObject;
     PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
     for (EWPerson *p in receivers) {
-        PFObject *PO = [p getParseObjectWithError:NULL];
+        PFObject *PO = p.parseObject;
         [acl setReadAccess:YES forUser:(PFUser *)PO];
         [acl setReadAccess:YES forUser:(PFUser *)PO];
         

@@ -52,7 +52,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //add alarm observer
     [[EWAlarmManager sharedInstance] addObserver:self forKeyPath:@"isSchedulingAlarm" options:NSKeyValueObservingOptionNew context:nil];
-    [me addObserver:self forKeyPath:EWPersonRelationships.medias options:NSKeyValueObservingOptionNew context:nil];
+    [me addObserver:self forKeyPath:EWPersonRelationships.alarms options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -63,8 +63,13 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 }
 
 - (void)dealloc{
-    [[EWAlarmManager sharedInstance] removeObserver:self forKeyPath:@"isSchedulingAlarm"];
-    [me removeObserver:self forKeyPath:@"alarms"];
+    @try {
+        [[EWAlarmManager sharedInstance] removeObserver:self forKeyPath:@"isSchedulingAlarm"];
+        [me removeObserver:self forKeyPath:@"alarms"];
+    }
+    @catch (NSException *exception) {
+        DDLogError(@"Failed to remove observer: %@", exception.description);
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{

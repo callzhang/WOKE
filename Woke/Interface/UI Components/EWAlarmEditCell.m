@@ -87,7 +87,7 @@
     //view
     self.time.text = [myTime date2timeShort];
     self.AM.text = [myTime date2am];
-    self.weekday.text = [myTime weekday];
+    self.weekday.text = [myTime weekdayShort];
     self.statement.text = myStatement;
     //NSString *alarmState = alarmOn ? @"ON":@"OFF";
     //[self.alarmToggle setTitle:alarmState forState:UIControlStateNormal];

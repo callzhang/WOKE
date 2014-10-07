@@ -93,8 +93,7 @@
     alarm.state = sender.selected;
     
     //broadcast
-    [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:alarm userInfo:nil];
-    NSLog(@"Task on %@ changed to %@", task.time.weekday, (sender.selected?@"ON":@"OFF"));
+    DDLogInfo(@"Task on %@ changed to %@", task.time.weekday, (sender.selected?@"ON":@"OFF"));
     
     [EWSync save];
 }

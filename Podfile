@@ -5,7 +5,7 @@ xcodeproj 'Woke.xcodeproj'
 
 pod 'Weibo'
 pod 'Facebook-iOS-SDK'
-pod 'Reveal-iOS-SDK'
+#pod 'Reveal-iOS-SDK'
 pod 'TestFlightSDK'
 pod 'GPUImage'
 pod 'Parse'

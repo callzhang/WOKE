@@ -492,10 +492,12 @@
         EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
         NSNumber *duration = me.preference[kSleepDuration];
         BOOL nextTaskMatched = [task.objectID.URIRepresentation.absoluteString isEqualToString:taskID];
-        BOOL needSleep = task.time.timeIntervalSinceNow/3600 < duration.floatValue;
-        if (nextTaskMatched && needSleep) {
+        NSInteger h = task.time.timeIntervalSinceNow/3600;
+        BOOL needSleep = h < duration.floatValue && h > 1;
+        BOOL presenting = rootViewController.presentedViewController;
+        if (nextTaskMatched && needSleep && !presenting) {
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
-            [rootViewController presentWithBlur:controller withCompletion:NULL];
+            [rootViewController presentViewControllerWithBlurBackground:controller];
         }
         
     }

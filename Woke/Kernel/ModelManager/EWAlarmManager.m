@@ -258,7 +258,6 @@
 
 #pragma mark - DELETE
 - (void)removeAlarm:(EWAlarmItem *)alarm{
-    [self removeAlarm:alarm];
     [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:alarm userInfo:nil];
     [alarm deleteEntity];
     [EWSync save];
