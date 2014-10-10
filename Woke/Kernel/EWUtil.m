@@ -11,7 +11,8 @@
 #import <AdSupport/ASIdentifierManager.h>
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
-#import "TestFlightLogger.h"
+//#import "TestFlightLogger.h"
+#import <CrashlyticsLogger.h>
 
 //static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
@@ -174,11 +175,6 @@ void EWLogInit(){
     DDTTYLogger *log = [DDTTYLogger sharedInstance];
     [DDLog addLogger:log];
     
-    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
-    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
-    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
-    [DDLog addLogger:fileLogger];
-    
     // we also enable colors in Xcode debug console
     // because this require some setup for Xcode, commented out here.
     // https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/XcodeColors
@@ -188,9 +184,16 @@ void EWLogInit(){
 	[log setForegroundColor:[UIColor orangeColor] backgroundColor:nil forFlag:LOG_FLAG_INFO];
 	//white for debug
 	[log setForegroundColor:[UIColor darkGrayColor] backgroundColor:nil forFlag:LOG_FLAG_VERBOSE];
-#else
-    [DDLog addLogger:[TestFlightLogger sharedInstance]];
 #endif
+    
+    //file logger
+    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
+    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
+    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;//keep a week's log
+    [DDLog addLogger:fileLogger];
+    
+    //crashlytics logger
+    [DDLog addLogger:[CrashlyticsLogger sharedInstance]];
     
     //exception handler
     //TODO:UncaughtExceptionHandler

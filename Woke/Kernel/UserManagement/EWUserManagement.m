@@ -119,16 +119,8 @@
     
     if ([EWSync sharedInstance].workingQueue.count == 0) {
         //if no pending uploads, refresh self
-        [person refreshInBackgroundWithCompletion:^{
-            //Broadcast user login event
-            DDLogInfo(@"[c] Broadcast Person login notification");
-            [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
-        }];
-    }else{
-        DDLogInfo(@"[c] Broadcast Person login notification");
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
+        [person refreshInBackgroundWithCompletion:NULL];
     }
-    
     
     if (completionBlock) {
         DDLogInfo(@"[d] Run completion block.");
@@ -137,10 +129,13 @@
         [[ATConnect sharedConnection] engage:@"login_success" fromViewController:rootViewController];
     }
     
+    DDLogInfo(@"[c] Broadcast Person login notification");
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
+    
     //if new user, link with facebook
     if([PFUser currentUser].isNew){
         [EWUserManagement handleNewUser];
-        return;
+        [[ATConnect sharedConnection] engage:@"new_user" fromViewController:rootViewController];
     }
 }
 

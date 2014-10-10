@@ -14,8 +14,8 @@
 #import "EWUtil.h"
 #import "EWFirstTimeViewController.h"
 //tools
-#import "TestFlight.h"
-#import "TestFlight+ManualSessions.h"
+//#import "TestFlight.h"
+//#import "TestFlight+ManualSessions.h"
 #import "AVManager.h"
 #import "UIViewController+Blur.h"
 #import <Parse/Parse.h>
@@ -49,9 +49,9 @@ UIViewController *rootViewController;
     [Crashlytics startWithAPIKey:@"6ec9eab6ca26fcd18d51d0322752b861c63bc348"];
     
     //test flight
-    [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
-    [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
-    [TestFlight manuallyStartSession];
+//    [TestFlight setOptions:@{ TFOptionManualSessions : @YES }];
+//    [TestFlight takeOff:TESTFLIGHT_ACCESS_KEY];
+//    [TestFlight manuallyStartSession];
     
     //log
     EWLogInit();
@@ -136,9 +136,9 @@ UIViewController *rootViewController;
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     [FBSession.activeSession close];
-    NSLog(@"App is about to terminate");
+    DDLogInfo(@"App is about to terminate");
 
-    [TestFlight manuallyEndSession];
+    //[TestFlight manuallyEndSession];
 }
 
 

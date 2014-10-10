@@ -14,14 +14,12 @@
 #import	"EWSync.h"
 #import "EWBlockTypes.h"
 #import "UIView+Layout.h"
-//#import	"SFObservers.h"
 #import "NSString+Extend.h"
 #import "NSDate+Extend.h"
 #import "MBProgressHUD.h"
 #import "UIViewController+Blur.h"
 #import "UIView+Extend.h"
 #import <Parse/Parse.h>
-#import <TestFlightSDK/TestFlight.h>
 #import <CocoaLumberjack.h>
 #import "NSManagedObjectContext+ChainSave.h"
 #import "EWUtil.h"

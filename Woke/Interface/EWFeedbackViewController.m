@@ -7,7 +7,7 @@
 //
 
 #import "EWFeedbackViewController.h"
-#import "TestFlight.h"
+//#import "TestFlight.h"
 #import "EWUIUtil.h"
 
 #define titles                  @[@"Bug report", @"Feedback", @"Feature request"]
@@ -61,7 +61,7 @@
     NSString *content = self.content.text;
     NSString *feedback = [NSString stringWithFormat:@"%@: %@", type, content];
     
-    [TestFlight submitFeedback:feedback];
+    //[TestFlight submitFeedback:feedback];
     
     [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
 }

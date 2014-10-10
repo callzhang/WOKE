@@ -13,6 +13,7 @@
 #import "EWUIUtil.h"
 #import "UIViewController+Blur.h"
 #import "NSDate+Extend.h"
+#import "FTWCache.h"
 
 // Model
 #import "EWPerson.h"
@@ -777,8 +778,8 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 -(void)photoBrowser:(IDMPhotoBrowser *)photoBrowser detelePhotoAtIndexPath:(NSInteger)path
 {
     [photoBrowser setInitialPageIndex:0];
-    
-    [EWUtil deleteFileFromParseRESTwithURL:_photos[path-1]];
+    NSURL *url = [NSURL URLWithString:_photos[path-1]];
+    [EWUtil deleteFileFromParseRESTwithURL:url];
     [_photos removeObjectAtIndex:path-1];
     
     [MBProgressHUD showHUDAddedTo:_photoBrower.view animated:YES];

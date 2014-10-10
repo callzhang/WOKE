@@ -23,7 +23,6 @@
 #import "EWPersonStore.h"
 #import "EWTaskManager.h"
 #import "EWNotificationManager.h"
-#import "TestFlight.h"
 
 // Model
 #import "EWPerson.h"
