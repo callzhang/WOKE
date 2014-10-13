@@ -11,6 +11,7 @@
 #import "EWPersonStore.h"
 
 #define kCallOutBtnSize         40
+#define kPopupDuration			0.4
 
 @interface EWPopupMenu(){
     CGPoint cellCenter;
@@ -136,10 +137,10 @@
 		[self addSubview:tempCell];
 		
 
-        [UIView animateWithDuration:0.3
+        [UIView animateWithDuration:kPopupDuration
                               delay:0
-             usingSpringWithDamping:0.7
-              initialSpringVelocity:0.2
+             usingSpringWithDamping:0.6
+              initialSpringVelocity:0.6
                             options:0
                          animations:^
         {
@@ -204,7 +205,7 @@
     //[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
     
     [UIView transitionWithView:tempCell
-                      duration:0.25
+                      duration:kPopupDuration/2
                        options:(/*UIViewAnimationOptionTransitionFlipFromRight | */UIViewAnimationOptionAllowAnimatedContent)
                     animations:
      ^{

@@ -53,11 +53,7 @@
 #define TOCK                            NSLog(@"Time: %f", -[startTime timeIntervalSinceNow]);
 
 //Logging
-#ifdef DEBUG //send to DDLog
 #define NSLog                           EWLog
-#else //Send to TestFlight
-#define NSLog(__FORMAT__, ...)          TFLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-#endif
 
 //Global parameters
 #define nWeeksToScheduleTask            1

@@ -552,13 +552,12 @@
         static float const maxY = 190;
         
         CGPoint frameCenter = _collectionView.center;
-        //UICollectionViewCell *cell0 = [self collectionView:_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
         UICollectionViewLayoutAttributes *attribute = [_collectionView layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
         CGPoint center = [_collectionView convertPoint:attribute.center toView:self.view];
         float X = center.x - frameCenter.x;
         float Y = center.y - frameCenter.y;
         
-        if (fabsf(X)<160 + kCollectionViewCellWidth/2 && (Y > -280-kCollectionViewCellHeight/2 || Y < 280-kBlurBarHeight+kCollectionViewCellHeight/2)) {
+        if (fabsf(X)<160 + kCollectionViewCellWidth/2 && (Y > -280-kCollectionViewCellHeight/2 && Y < 280-kBlurBarHeight+kCollectionViewCellHeight/2)) {
             //in the screen
             if (self.youIndicator.alpha == 1) {
                 [self hideIndicator];
@@ -582,16 +581,15 @@
             if (self.youIndicator.hidden) {
                 self.youIndicator.hidden = NO;
                 [UIView transitionWithView:self.youIndicator duration:0.3 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                    self.youIndicator.transform = CGAffineTransformMakeTranslation(x1, y1);
-                    self.youBtn.transform = CGAffineTransformMakeRotation(degree);
                     self.youIndicator.alpha = 1;
                 } completion:^(BOOL finished) {
                     //
                 }];
-            }else{
-                self.youIndicator.transform = CGAffineTransformMakeTranslation(x1, y1);
-                self.youBtn.transform = CGAffineTransformMakeRotation(degree);
             }
+			
+			self.youIndicator.transform = CGAffineTransformMakeTranslation(x1, y1);
+			self.youBtn.transform = CGAffineTransformMakeRotation(degree);
+			
         }
                                        
         

@@ -142,32 +142,26 @@ void EWLog(NSString *format, ...){
     va_start(args, format);
     NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
     va_end(args);
-    
-#ifdef DEBUG
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        //dispatch to NSLOG
-        
-        NSArray *symbolList = logLevelSymbols;
-        if ([format hasPrefix:symbolList[0]]){
-            DDLogError(str);
-        }else if ([format hasPrefix:symbolList[1]]) {
-            DDLogWarn(str);
-        }else if ([format hasPrefix:symbolList[2]]) {
-            DDLogInfo(str);
-        }else if ([format hasPrefix:symbolList[3]]) {
-            DDLogDebug(str);
-        }else{
-            DDLogVerbose(str);
-        }
-    });
-#endif
-    
+	
+	NSArray *symbolList = logLevelSymbols;
+	if ([format hasPrefix:symbolList[0]]){
+		DDLogError(str);
+	}else if ([format hasPrefix:symbolList[1]]) {
+		DDLogWarn(str);
+	}else if ([format hasPrefix:symbolList[2]]) {
+		DDLogInfo(str);
+	}else if ([format hasPrefix:symbolList[3]]) {
+		DDLogDebug(str);
+	}else{
+		DDLogVerbose(str);
+	}
+	
 }
 
 void EWLogInit(){
 #ifdef DEBUG
     [DDLog addLogger:[DDASLLogger sharedInstance]];
-    
+	
     DDTTYLogger *log = [DDTTYLogger sharedInstance];
     [DDLog addLogger:log];
     
