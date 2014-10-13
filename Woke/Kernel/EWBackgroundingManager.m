@@ -10,7 +10,9 @@
 
 #import "EWBackgroundingManager.h"
 #import "EWWakeUpManager.h"
+#import "CrashlyticsLogger.h"
 
+OBJC_EXTERN void CLSLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2);
 
 @interface EWBackgroundingManager(){
     NSTimer *backgroundingtimer;
@@ -36,6 +38,10 @@
 - (id)init{
     self = [super init];
     if (self) {
+        
+        BACKGROUNDING_FROM_START = YES;
+        
+        
         //enter background
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
         //enter foreground
@@ -44,8 +50,15 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
         //become active
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didbecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-        
-        BACKGROUNDING_FROM_START = YES;
+        //terminate
+        //terminate
+        [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillTerminateNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+            NSDate *start = backgroundingtimer.userInfo[@"start"];
+            [UIDevice currentDevice].batteryMonitoringEnabled = YES;
+            NSString *words = [NSString stringWithFormat:@"Application will terminate after %.1f hours of running. Current battery level is %.1f%%", -start.timeIntervalSinceNow/3600, [UIDevice currentDevice].batteryLevel*100];
+            CLSLog(@"%@",words);
+            DDLogError(words);
+        }];
 		
 		NSURL *path = [[NSBundle mainBundle] URLForResource:@"bg" withExtension:@"caf"];
 		player = [AVPlayer playerWithURL:path];
@@ -208,7 +221,7 @@
 		NSInteger randomInterval = kAlarmTimerCheckInterval + arc4random_uniform(40);
 		if(randomInterval > timeLeft) randomInterval = timeLeft - 10;
 		backgroundingtimer = [NSTimer scheduledTimerWithTimeInterval:randomInterval target:self selector:@selector(backgroundKeepAlive:) userInfo:userInfo repeats:NO];
-		DDLogVerbose(@"Scheduled timer %d", randomInterval);
+		DDLogVerbose(@"Scheduled timer %ld", (long)randomInterval);
 		
 	});
 	

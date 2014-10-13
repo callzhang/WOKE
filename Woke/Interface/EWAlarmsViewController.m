@@ -134,7 +134,7 @@
     
     
     //add blur bar
-    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
+    UIToolbar *blurBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, kBlurBarHeight)];
     blurBar.barStyle = UIBarStyleBlack;
     [self.alarmBar insertSubview:blurBar belowSubview:self.scrollView];
     
@@ -558,7 +558,7 @@
         float X = center.x - frameCenter.x;
         float Y = center.y - frameCenter.y;
         
-        if (fabsf(X)<160 && fabsf(Y)<250) {
+        if (fabsf(X)<160 + kCollectionViewCellWidth/2 && (Y > -280-kCollectionViewCellHeight/2 || Y < 280-kBlurBarHeight+kCollectionViewCellHeight/2)) {
             //in the screen
             if (self.youIndicator.alpha == 1) {
                 [self hideIndicator];

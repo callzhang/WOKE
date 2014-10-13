@@ -16,6 +16,7 @@
 #define kMenuTag                    1003
 #define kAlarmPageTag               1004
 #define kCollectionViewTag          1005
+#define kBlurBarHeight              100
 
 @import CoreData;
 

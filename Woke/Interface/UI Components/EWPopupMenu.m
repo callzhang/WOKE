@@ -135,11 +135,14 @@
 		tempCell.center = cellCenter;
 		[self addSubview:tempCell];
 		
-        [UIView transitionWithView:tempCell
-                          duration:0.3
-                           options:(/*UIViewAnimationOptionTransitionFlipFromLeft | */UIViewAnimationOptionAllowAnimatedContent)
-                        animations:
-         ^{
+
+        [UIView animateWithDuration:0.3
+                              delay:0
+             usingSpringWithDamping:0.7
+              initialSpringVelocity:0.2
+                            options:0
+                         animations:^
+        {
              CGAffineTransform scale = CGAffineTransformMakeScale(1.2, 1.2);
              tempCell.transform = scale;
              
@@ -169,10 +172,8 @@
              
              [EWUIUtil applyShadow:name];
              //[EWUIUtil applyShadow:locationAndTimeLabel];
-             
-         } completion:^(BOOL finished){
-             
-         }];
+            
+        }completion:NULL];
     });
 
     return self;
