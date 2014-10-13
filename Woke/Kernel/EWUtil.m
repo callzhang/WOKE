@@ -111,7 +111,6 @@
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
     NSString *fileUrl = [httpResponse allHeaderFields][@"Location"];
     
-    NSLog(@"%@",fileUrl);
     return fileUrl;
 
 }
@@ -161,9 +160,6 @@ void EWLog(NSString *format, ...){
             DDLogVerbose(str);
         }
     });
-#else
-    //only send to TestFlight on release version
-    TFLog(str);
 #endif
     
 }
@@ -194,16 +190,6 @@ void EWLogInit(){
     
     //crashlytics logger
     [DDLog addLogger:[CrashlyticsLogger sharedInstance]];
-    
-    //exception handler
-    //TODO:UncaughtExceptionHandler
-    //NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
-}
-
-void uncaughtExceptionHandler(NSException *exception) {
-    DDLogError(@"Uncaught Exception (CRASH): %@", exception);
-    DDLogError(@"Stack Trace: %@", [exception callStackSymbols]);
-    // Internal error reporting
 }
 
 
