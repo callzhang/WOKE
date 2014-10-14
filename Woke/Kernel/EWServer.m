@@ -123,7 +123,7 @@
         buzz.buzzKey = sound;
         
         [EWSync saveWithCompletion:^{
-            NSParameterAssert(buzz.objectId);
+            if(!buzz.objectId) return;
             
             //push payload
             NSMutableDictionary *pushMessage = [@{@"content-available": @1,
@@ -172,7 +172,7 @@
 }
 
 #pragma mark - Send Voice tone
-+ (void)pushMedia:(EWMediaItem *)media ForUser:(EWPerson *)person{
++ (void)pushVoice:(EWMediaItem *)media toUser:(EWPerson *)person{
     
     NSString *mediaId = media.objectId;
     NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];

@@ -21,7 +21,7 @@
  *   active: sound + wakeupView
  *   suspend: not handle
  *
- *2. Media
+ *2. Voice
  *   active:
  *       alarm time passed but not woke(struggle): play media
  *       before alarm: download

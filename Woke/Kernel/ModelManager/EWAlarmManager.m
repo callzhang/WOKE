@@ -362,6 +362,25 @@
 }
 
 
+- (void)observeForAlarm:(EWAlarmItem *)alarm{
+    [alarm addObserver:self forKeyPath:EWAlarmItemAttributes.tone options:NSKeyValueObservingOptionNew context:nil];
+    [alarm addObserver:self forKeyPath:EWAlarmItemAttributes.time options:NSKeyValueObservingOptionNew context:nil];
+    [alarm addObserver:self forKeyPath:EWAlarmItemAttributes.state options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)removeObserverForAlarm:(EWAlarmItem *)alarm{
+    @try {
+        [alarm removeObserver:self forKeyPath:EWAlarmItemAttributes.statement];
+        [alarm removeObserver:self forKeyPath:EWAlarmItemAttributes.time];
+        [alarm removeObserver:self forKeyPath:EWAlarmItemAttributes.tone];
+    }
+    @catch (NSException *exception) {
+        DDLogDebug(@"Failed to remove observer from alarm: %@", alarm.objectId);
+    }
+}
+
+#pragma mark - Cached alarm time to user defaults
+
 - (void)updateCachedAlarmTime{
     NSMutableDictionary *cache = me.cachedInfo.mutableCopy?:[NSMutableDictionary new];
     NSMutableDictionary *timeTable = [cache[kCachedAlarmTimes] mutableCopy]?:[NSMutableDictionary new];
@@ -419,21 +438,5 @@
     return good;
 }
 
-- (void)observeForAlarm:(EWAlarmItem *)alarm{
-    [alarm addObserver:self forKeyPath:EWAlarmItemAttributes.tone options:NSKeyValueObservingOptionNew context:nil];
-    [alarm addObserver:self forKeyPath:EWAlarmItemAttributes.time options:NSKeyValueObservingOptionNew context:nil];
-    [alarm addObserver:self forKeyPath:EWAlarmItemAttributes.state options:NSKeyValueObservingOptionNew context:nil];
-}
-
-- (void)removeObserverForAlarm:(EWAlarmItem *)alarm{
-    @try {
-        [alarm removeObserver:self forKeyPath:EWAlarmItemAttributes.statement];
-        [alarm removeObserver:self forKeyPath:EWAlarmItemAttributes.time];
-        [alarm removeObserver:self forKeyPath:EWAlarmItemAttributes.tone];
-    }
-    @catch (NSException *exception) {
-        DDLogDebug(@"Failed to remove observer from alarm: %@", alarm.objectId);
-    }
-}
 
 @end

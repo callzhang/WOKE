@@ -367,7 +367,7 @@
             
             //send push notification
             for (EWPerson *receiver in personSet) {
-                [EWServer pushMedia:media ForUser:receiver];
+                [EWServer pushVoice:media toUser:receiver];
             }
         }];
         

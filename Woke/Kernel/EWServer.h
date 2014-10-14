@@ -28,7 +28,7 @@
  @params users: array of EWPerson
  @params taskId: taskId
  */
-+ (void)pushMedia:(EWMediaItem *)media ForUser:(EWPerson *)person;
++ (void)pushVoice:(EWMediaItem *)media toUser:(EWPerson *)person;
 
 #pragma mark - Push methods
 + (void)broadcastMessage:(NSString *)msg onSuccess:(void (^)(void))block onFailure:(void (^)(void))failureBlock;
@@ -85,7 +85,7 @@
 
 +(void)updatingStatusInFacebook:(NSString *)status;
 
-+(void)uploadOGStoryWithPhoto:(UIImage *)image;// use this to update a OG story 
++(void)uploadOGStoryWithPhoto:(UIImage *)image;// use this to update a OG story
 
 +(void)makeRequestToPostStoryWithId:(NSString *)objectId andUrlString:(NSString *)url;
 @end
