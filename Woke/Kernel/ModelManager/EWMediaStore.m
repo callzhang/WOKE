@@ -46,28 +46,6 @@
     m.author = me;
     return m;
 }
-
-- (EWMediaItem *)createPseudoMedia{
-    EWMediaItem *media = [self createMedia];
-    
-    //create ramdom media
-    NSInteger k = arc4random_uniform(6);
-    NSArray *vmList = @[@"vm1.m4a", @"vm2.m4a", @"vm3.m4a", @"vm3.m4a", @"vm5.m4a", @"vm6.m4a"];
-    NSString *vmName = vmList[k];
-    NSArray *name = [vmName componentsSeparatedByString:@"."];
-    NSString *path = [[NSBundle mainBundle] pathForResource:name[0] ofType:name[1]];
-    
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    media.audio = data;
-    media.type = kMediaTypeVoice;
-    media.message = @"This is a test voice tone";
-    media.type = kMediaTypeVoice;
-    
-    [EWSync save];
-    
-    return media;
-}
-
 - (EWMediaItem *)getWokeVoice{
     PFQuery *q = [PFQuery queryWithClassName:@"EWMediaItem"];
     [q whereKey:EWMediaItemRelationships.author equalTo:[PFQuery getUserObjectWithId:WokeUserID]];
@@ -219,6 +197,7 @@
 			if ([note.userInfo[@"media"] isEqualToString:mo.objectId]) {
 				DDLogVerbose(@"Media has already been notified to user, skip.");
 				notified = YES;
+                break;
 			}
 		}
 		
@@ -244,10 +223,6 @@
     return NO;
 }
 
-+ (EWTaskItem *)myTaskInMedia:(EWMediaItem *)media{
-    EWTaskItem *task = [[media.tasks filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owner = %@", me]] anyObject];
-    return task;
-}
 
 + (BOOL)validateMedia:(EWMediaItem *)media{
     BOOL good = YES;

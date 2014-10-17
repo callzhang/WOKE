@@ -215,7 +215,7 @@
 
 + (EWNotification *)getNotificationByID:(NSString *)notificationID{
     
-    EWNotification *notification = [EWSync managedObjectWithClass:@"EWNotification" withID:notificationID];
+    EWNotification *notification = (EWNotification *)[EWSync managedObjectWithClass:@"EWNotification" withID:notificationID];
     return notification;
 }
 
