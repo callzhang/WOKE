@@ -9,7 +9,7 @@
 #define kLevelCount                         @[@1, @6, @12, @18, @24, @30, @36, @42, @48]
 #define kLevelTotal                         @[@0, @1, @7, @19, @37, @61, @91]
 #define kDynamic                            NO
-#define kZoomEffect                         NO
+#define kZoomEffect                         YES
 #define kHexWidthRatio                      0.875
 
 @interface EWHexagonFlowLayout ()
@@ -298,6 +298,7 @@
     if (kZoomEffect) {
         //apply zoom
         CGRect bounds = self.collectionView.bounds;
+        
         //bounds.origin.x += self.collectionView.contentInset.left;
         //bounds.origin.y += self.collectionView.contentInset.top;
         bounds.origin.y -= self.collectionView.frame.origin.y;//compensate the frame origin

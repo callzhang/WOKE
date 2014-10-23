@@ -463,13 +463,14 @@
 
 
 - (IBAction)pinched:(UIPinchGestureRecognizer *)sender {
-    if (sender.scale < 0.5) {
-        EWHexagonFlowLayout *layout = (EWHexagonFlowLayout *)self.collectionView.collectionViewLayout;
-        [layout resetLayoutWithRatio:1.0];
-    }else if (sender.scale > 2){
-        EWHexagonFlowLayout *layout = (EWHexagonFlowLayout *)self.collectionView.collectionViewLayout;
-        [layout resetLayoutWithRatio:2.0];
-    }
+    self.collectionView.transform = CGAffineTransformMakeScale(sender.scale, sender.scale);
+//    if (sender.scale < 0.5) {
+//        EWHexagonFlowLayout *layout = (EWHexagonFlowLayout *)self.collectionView.collectionViewLayout;
+//        [layout resetLayoutWithRatio:1.0];
+//    }else if (sender.scale > 2){
+//        EWHexagonFlowLayout *layout = (EWHexagonFlowLayout *)self.collectionView.collectionViewLayout;
+//        [layout resetLayoutWithRatio:2.0];
+//    }
 }
 
 - (void)showAlarmPageLoading:(BOOL)on{
