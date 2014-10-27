@@ -112,7 +112,7 @@
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
 
     //fetch or create
-    EWPerson *person = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
+    EWPerson *person = [[EWPersonStore sharedInstance] findOrCreatePersonWithParseObject:user];
     
     //save me
     [EWPersonStore sharedInstance].currentUser = person;

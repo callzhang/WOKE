@@ -115,7 +115,7 @@
 - (NSArray *)scheduleAlarm{
     NSParameterAssert([NSThread isMainThread]);
     if ([EWSession sharedSession].isSchedulingAlarm) {
-        NSLog(@"Skip scheduling alarm because it is scheduling already!");
+        DDLogVerbose(@"Skip scheduling alarm because it is scheduling already!");
         return nil;
     }
     [EWSession sharedSession].isSchedulingAlarm = YES;
@@ -130,7 +130,7 @@
     if (alarms.count != 7 && [EWSync isReachable]) {
         //cannot check alarm for myself, which will cause a checking/schedule cycle
         
-        NSLog(@"Alarm for me is less than 7, fetch from server!");
+        DDLogVerbose(@"Alarm for me is less than 7, fetch from server!");
         PFQuery *alarmQuery = [PFQuery queryWithClassName:@"EWAlarmItem"];
         [alarmQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
         [alarmQuery whereKey:kParseObjectID notContainedIn:[alarms valueForKey:kParseObjectID]];
@@ -145,7 +145,7 @@
             }else if (![alarms containsObject:alarm]) {
                 [alarms addObject:alarm];
                 hasChange = YES;
-                NSLog(@"Alarm found from server %@", alarm);
+                DDLogVerbose(@"Alarm found from server %@", alarm);
             }
         }
     }
@@ -161,12 +161,12 @@
         //see if that day has alarm already
         if (![newAlarms[i] isEqual:@NO]){
             //remove duplicacy
-            NSLog(@"@@@ Duplicated alarm found. Delete! %@", a.time.date2detailDateString);
+            DDLogVerbose(@"@@@ Duplicated alarm found. Delete! %@", a.time.date2detailDateString);
             [a deleteEntity];
             hasChange = YES;
             continue;
         }else if (![a validate]){
-            NSLog(@"%s Something wrong with alarm(%@) Delete!", __func__, a.objectId);
+            DDLogVerbose(@"%s Something wrong with alarm(%@) Delete!", __func__, a.objectId);
             continue;
         }
         
@@ -190,7 +190,7 @@
             continue;
         }
     
-        NSLog(@"Alarm for weekday %ld missing, start add alarm", (long)i);
+        DDLogVerbose(@"Alarm for weekday %ld missing, start add alarm", (long)i);
         EWAlarm *a = [EWAlarm newAlarm];
         
         //get time
@@ -206,7 +206,7 @@
     //save
     if (hasChange) {
         //notification
-        NSLog(@"Saving new alarms");
+        DDLogVerbose(@"Saving new alarms");
         [EWSync save];
         [self setSavedAlarmTimes];
         
@@ -246,7 +246,7 @@
     comp.hour = hour;
     comp.minute = minute;
     time = [cal dateFromComponents:comp];
-    NSLog(@"Get saved alarm time %@", time);
+    DDLogVerbose(@"Get saved alarm time %@", time);
     return time;
 }
 

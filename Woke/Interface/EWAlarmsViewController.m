@@ -169,7 +169,7 @@
         tasks = [EWTaskManager myTasks];
         
         if (alarms.count == 0 && tasks.count == 0) {
-            NSLog(@"Alarm and task is 0, skip schedule");
+            DDLogVerbose(@"Alarm and task is 0, skip schedule");
             [self resetAlarmPage];
             return;
         }else if (alarms.count == 7 && tasks.count == 7*nWeeksToScheduleTask) {
@@ -179,11 +179,11 @@
         }else{
             if (alarms.count != 7){
                 [[EWAlarmManager sharedInstance] scheduleAlarm];
-                NSLog(@"!!! Alarm(%ld) ", (long)alarms.count);
+                DDLogVerbose(@"!!! Alarm(%ld) ", (long)alarms.count);
             }
             
             if (tasks.count != 7 * nWeeksToScheduleTask) {
-                NSLog(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
+                DDLogVerbose(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
                 [[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
                 
             }
@@ -236,7 +236,7 @@
     //fetch everyone
     NSError *err;
     if (![self.fetchController performFetch:&err]) {
-        NSLog(@"*** Failed to fetch everyone: %@", err);
+        DDLogVerbose(@"*** Failed to fetch everyone: %@", err);
     }
     
     return fetchController;
@@ -286,11 +286,11 @@
     }else if (object == [EWTaskManager sharedInstance]){
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([EWTaskManager sharedInstance].isSchedulingTask) {
-                NSLog(@"Detected %@ is scheduling", [object class]);
+                DDLogVerbose(@"Detected %@ is scheduling", [object class]);
                 [self showAlarmPageLoading:YES];
                 //taskScheduled = NO;
             }else{
-                NSLog(@"%s %@ finished scheduling", __func__, [object class]);
+                DDLogVerbose(@"%s %@ finished scheduling", __func__, [object class]);
                 
                 [self showAlarmPageLoading:NO];
                 [refreshViewTimer invalidate];
@@ -299,7 +299,7 @@
         });
         
     }else{
-        NSLog(@"@@@ Unhandled observation: %@", [object class]);
+        DDLogVerbose(@"@@@ Unhandled observation: %@", [object class]);
     }
     
 }
@@ -388,7 +388,7 @@
     for (UIView *view in self.scrollView.subviews) {
         if (view.frame.origin.x == self.scrollView.frame.size.width * page) {
             //[NSException raise:@"Duplicated alarm page" format:@"Please check"];
-            NSLog(@"@@@@ Duplicated alarm page at %ld", (long)page);
+            DDLogVerbose(@"@@@@ Duplicated alarm page at %ld", (long)page);
         }
     }
     
@@ -808,7 +808,7 @@
 
 #pragma mark - FetchedResultController delegate
 - (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id<NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type{
-    NSLog(@"FetchController detected session change");
+    DDLogVerbose(@"FetchController detected session change");
 }
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath{
@@ -899,7 +899,7 @@
 				[self.collectionView reloadData];
                 if (!finished) {
                     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-                        NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
+                        DDLogVerbose(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
                     }
                 }
                 

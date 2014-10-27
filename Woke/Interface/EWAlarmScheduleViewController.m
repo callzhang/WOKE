@@ -126,7 +126,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         }
         //state
         if (cell.alarmToggle.selected != alarm.state) {
-            NSLog(@"Change alarm state for %@ to %@", alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
+            DDLogVerbose(@"Change alarm state for %@ to %@", alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
             alarm.state = cell.alarmToggle.selected?YES:NO;
             //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
             hasChanges = YES;
@@ -135,7 +135,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         //time
         if (cell.myTime && ![cell.myTime isEqualToDate:alarm.time]) {
             
-            NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
+            DDLogVerbose(@"Time updated to %@", [cell.myTime date2detailDateString]);
             alarm.time = cell.myTime;
 			//task.time = cell.myTime;
 			//x[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
