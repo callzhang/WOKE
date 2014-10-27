@@ -135,7 +135,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
         //time
         if (cell.myTime && ![cell.myTime isEqualToDate:alarm.time]) {
             
-            NSLog(@"Time updated to %@", [cell.myTime date2detailDateString]);
+            DDLogVerbose(@"Time updated to %@", [cell.myTime date2detailDateString]);
             alarm.time = cell.myTime;
 			//task.time = cell.myTime;
 			//x[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];

@@ -50,7 +50,7 @@
 }
 
 #pragma mark - CREATE USER
--(EWPerson *)createPersonWithParseObject:(PFUser *)user{
+-(EWPerson *)findOrCreatePersonWithParseObject:(PFUser *)user{
     EWPerson *newUser = (EWPerson *)[user managedObjectInContext:mainContext];
     if (user.isNew) {
         newUser.username = user.username;

@@ -31,7 +31,7 @@
 @property BOOL isFetchingEveryone;
 
 + (EWPersonStore *)sharedInstance;
-- (EWPerson *)createPersonWithParseObject:(PFUser *)user;
+- (EWPerson *)findOrCreatePersonWithParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByServerID:(NSString *)ID;
 - (void)getEveryoneInBackgroundWithCompletion:(void (^)(void))block;
 

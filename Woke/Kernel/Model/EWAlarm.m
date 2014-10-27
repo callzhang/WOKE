@@ -16,7 +16,7 @@
 //add new alarm, save, add to current user, save user
 + (EWAlarm *)newAlarm{
     NSParameterAssert([NSThread isMainThread]);
-    NSLog(@"Create new Alarm");
+    DDLogVerbose(@"Create new Alarm");
     
     //add relation
     EWAlarm *a = [EWAlarm createEntity];

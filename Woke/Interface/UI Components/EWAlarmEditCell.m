@@ -149,7 +149,7 @@
     self.time.text = [myTime date2timeShort];
     self.AM.text = [myTime date2am];
     sender.value = 0;//reset to 0
-    //NSLog(@"New value is: %ld, and new time is: %@", (long)time2add, myTime.date2detailDateString);
+    //DDLogVerbose(@"New value is: %ld, and new time is: %@", (long)time2add, myTime.date2detailDateString);
     [self setNeedsDisplay];
 }
 

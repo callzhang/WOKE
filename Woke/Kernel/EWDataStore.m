@@ -47,16 +47,16 @@
 
 #pragma mark - Login Check
 - (void)loginDataCheck{
-    NSLog(@"=== [%s] Logged in, performing login tasks.===", __func__);
+    DDLogVerbose(@"=== [%s] Logged in, performing login tasks.===", __func__);
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     if (![currentInstallation[kParseObjectID] isEqualToString: [EWSession sharedSession].currentUser.objectId]){
         currentInstallation[kUserID] = [EWSession sharedSession].currentUser.objectId;
         currentInstallation[kUsername] = [EWSession sharedSession].currentUser.username;
         [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
-                NSLog(@"Installation %@ saved", currentInstallation.objectId);
+                DDLogVerbose(@"Installation %@ saved", currentInstallation.objectId);
             }else{
-                NSLog(@"*** Installation %@ failed to save: %@", currentInstallation.objectId, error.description);
+                DDLogVerbose(@"*** Installation %@ failed to save: %@", currentInstallation.objectId, error.description);
             }
         }];
 	};
@@ -66,43 +66,43 @@
 	[EWBackgroundingManager sharedInstance];
 	
     //continue upload to server if any
-    NSLog(@"0. Continue uploading to server");
+    DDLogVerbose(@"0. Continue uploading to server");
     [[EWSync sharedInstance] resumeUploadToServer];
 	
 	//fetch everyone
-	NSLog(@"1. Getting everyone");
+	DDLogVerbose(@"1. Getting everyone");
 	[[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
     
     //refresh current user
-    NSLog(@"2. Register AWS push key");
+    DDLogVerbose(@"2. Register AWS push key");
     [EWServer registerAPNS];
     
     //check alarm, task, and local notif
-    NSLog(@"3. Check alarm");
+    DDLogVerbose(@"3. Check alarm");
 	[[EWAlarmManager sharedInstance] scheduleAlarm];
     
     //check task
-    NSLog(@"4. Start task schedule");
+    DDLogVerbose(@"4. Start task schedule");
 	[[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
 		[NSTimer bk_scheduledTimerWithTimeInterval:60 block:^(NSTimer *timer) {
 			//[EWPersonStore updateMe];
 		} repeats:NO];
 	}];
 	
-	NSLog(@"5. Check my social graph");
+	DDLogVerbose(@"5. Check my social graph");
 	[[EWTaskManager sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
 	
-    NSLog(@"4. Check my unread media");//media also will be checked with background fetch
+    DDLogVerbose(@"4. Check my unread media");//media also will be checked with background fetch
     [[EWMediaStore sharedInstance] checkMediaAssetsInBackground];
     
     //updating facebook friends
-    NSLog(@"5. Updating facebook friends");
+    DDLogVerbose(@"5. Updating facebook friends");
     [EWUserManagement getFacebookFriends];
     
     //update facebook info
-    //NSLog(@"6. Updating facebook info");
+    //DDLogVerbose(@"6. Updating facebook info");
     //[EWUserManagement updateFacebookInfo];
-	NSLog(@"6. Check scheduled local notifications");
+	DDLogVerbose(@"6. Check scheduled local notifications");
 	[[EWTaskManager sharedInstance] checkScheduledNotifications];
     
     //Update my relations cancelled here because the we should wait for all sync task finished before we can download the rest of the relation
@@ -110,7 +110,7 @@
     [[EWMediaStore sharedInstance] mediaCreatedByPerson:[EWSession sharedSession].currentUser];
 	
 	//location
-	NSLog(@"8. Start location recurring update");
+	DDLogVerbose(@"8. Start location recurring update");
 	[EWUserManagement registerLocation];
 	
     
@@ -129,7 +129,7 @@
 		NSInteger count;
 		NSDate *start = timer.userInfo[@"start_date"];
 		count = [(NSNumber *)timer.userInfo[@"count"] integerValue];
-		NSLog(@"=== Server update started at %@ is running for the %ld times ===", start.date2detailDateString, (long)count);
+		DDLogVerbose(@"=== Server update started at %@ is running for the %ld times ===", start.date2detailDateString, (long)count);
 		count++;
 		timer.userInfo[@"count"] = @(count);
 	}
@@ -139,20 +139,20 @@
         return;
     }
     //this will run at the beginning and every 600s
-    NSLog(@"Start sync service");
+    DDLogVerbose(@"Start sync service");
 	
 	//fetch everyone
-	NSLog(@"[1] Getting everyone");
+	DDLogVerbose(@"[1] Getting everyone");
 	[[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
 	
     //location
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-		NSLog(@"[2] Start location recurring update");
+		DDLogVerbose(@"[2] Start location recurring update");
 		[EWUserManagement registerLocation];
 	}
     
     //check task
-    NSLog(@"[3] Start recurring task schedule");
+    DDLogVerbose(@"[3] Start recurring task schedule");
 	[[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
 		//[EWPersonStore updateMe];
 	}];
