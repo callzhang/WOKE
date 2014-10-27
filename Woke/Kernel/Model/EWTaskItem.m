@@ -7,7 +7,7 @@
 //
 
 #import "EWTaskItem.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "EWMediaItem.h"
 #import "EWPerson.h"
 

@@ -1,9 +1,9 @@
 // DO NOT EDIT. This file is machine-generated and constantly overwritten.
-// Make changes to EWAlarmItem.m instead.
+// Make changes to EWAlarm.m instead.
 
-#import "_EWAlarmItem.h"
+#import "_EWAlarm.h"
 
-const struct EWAlarmItemAttributes EWAlarmItemAttributes = {
+const struct EWAlarmAttributes EWAlarmAttributes = {
 	.important = @"important",
 	.state = @"state",
 	.statement = @"statement",
@@ -12,40 +12,37 @@ const struct EWAlarmItemAttributes EWAlarmItemAttributes = {
 	.tone = @"tone",
 };
 
-const struct EWAlarmItemRelationships EWAlarmItemRelationships = {
+const struct EWAlarmRelationships EWAlarmRelationships = {
 	.owner = @"owner",
 	.tasks = @"tasks",
 };
 
-const struct EWAlarmItemFetchedProperties EWAlarmItemFetchedProperties = {
-};
-
-@implementation EWAlarmItemID
+@implementation EWAlarmID
 @end
 
-@implementation _EWAlarmItem
+@implementation _EWAlarm
 
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_ {
 	NSParameterAssert(moc_);
-	return [NSEntityDescription insertNewObjectForEntityForName:@"EWAlarmItem" inManagedObjectContext:moc_];
+	return [NSEntityDescription insertNewObjectForEntityForName:@"EWAlarm" inManagedObjectContext:moc_];
 }
 
 + (NSString*)entityName {
-	return @"EWAlarmItem";
+	return @"EWAlarm";
 }
 
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_ {
 	NSParameterAssert(moc_);
-	return [NSEntityDescription entityForName:@"EWAlarmItem" inManagedObjectContext:moc_];
+	return [NSEntityDescription entityForName:@"EWAlarm" inManagedObjectContext:moc_];
 }
 
-- (EWAlarmItemID*)objectID {
-	return (EWAlarmItemID*)[super objectID];
+- (EWAlarmID*)objectID {
+	return (EWAlarmID*)[super objectID];
 }
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
+
 	if ([key isEqualToString:@"importantValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"important"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -60,12 +57,7 @@ const struct EWAlarmItemFetchedProperties EWAlarmItemFetchedProperties = {
 	return keyPaths;
 }
 
-
-
-
 @dynamic important;
-
-
 
 - (BOOL)importantValue {
 	NSNumber *result = [self important];
@@ -85,13 +77,7 @@ const struct EWAlarmItemFetchedProperties EWAlarmItemFetchedProperties = {
 	[self setPrimitiveImportant:[NSNumber numberWithBool:value_]];
 }
 
-
-
-
-
 @dynamic state;
-
-
 
 - (BOOL)stateValue {
 	NSNumber *result = [self state];
@@ -111,58 +97,26 @@ const struct EWAlarmItemFetchedProperties EWAlarmItemFetchedProperties = {
 	[self setPrimitiveState:[NSNumber numberWithBool:value_]];
 }
 
-
-
-
-
 @dynamic statement;
-
-
-
-
-
 
 @dynamic time;
 
-
-
-
-
-
 @dynamic todo;
-
-
-
-
-
 
 @dynamic tone;
 
-
-
-
-
-
 @dynamic owner;
-
-	
 
 @dynamic tasks;
 
-	
 - (NSMutableSet*)tasksSet {
 	[self willAccessValueForKey:@"tasks"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"tasks"];
-  
+
 	[self didAccessValueForKey:@"tasks"];
 	return result;
 }
-	
-
-
-
-
-
 
 @end
+

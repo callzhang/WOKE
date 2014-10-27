@@ -1,136 +1,78 @@
 // DO NOT EDIT. This file is machine-generated and constantly overwritten.
-// Make changes to EWAlarmItem.h instead.
+// Make changes to EWAlarm.h instead.
 
 #import <CoreData/CoreData.h>
 #import "EWServerObject.h"
 
-extern const struct EWAlarmItemAttributes {
+extern const struct EWAlarmAttributes {
 	__unsafe_unretained NSString *important;
 	__unsafe_unretained NSString *state;
 	__unsafe_unretained NSString *statement;
 	__unsafe_unretained NSString *time;
 	__unsafe_unretained NSString *todo;
 	__unsafe_unretained NSString *tone;
-} EWAlarmItemAttributes;
+} EWAlarmAttributes;
 
-extern const struct EWAlarmItemRelationships {
+extern const struct EWAlarmRelationships {
 	__unsafe_unretained NSString *owner;
 	__unsafe_unretained NSString *tasks;
-} EWAlarmItemRelationships;
-
-extern const struct EWAlarmItemFetchedProperties {
-} EWAlarmItemFetchedProperties;
+} EWAlarmRelationships;
 
 @class EWPerson;
 @class EWTaskItem;
 
-
-
-
-
-
-
-
-@interface EWAlarmItemID : NSManagedObjectID {}
+@interface EWAlarmID : EWServerObjectID {}
 @end
 
-@interface _EWAlarmItem : EWServerObject {}
+@interface _EWAlarm : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
-- (EWAlarmItemID*)objectID;
-
-
-
-
+@property (nonatomic, readonly, strong) EWAlarmID* objectID;
 
 @property (nonatomic, strong) NSNumber* important;
 
-
-
-@property BOOL importantValue;
+@property (atomic) BOOL importantValue;
 - (BOOL)importantValue;
 - (void)setImportantValue:(BOOL)value_;
 
 //- (BOOL)validateImportant:(id*)value_ error:(NSError**)error_;
 
-
-
-
-
 @property (nonatomic, strong) NSNumber* state;
 
-
-
-@property BOOL stateValue;
+@property (atomic) BOOL stateValue;
 - (BOOL)stateValue;
 - (void)setStateValue:(BOOL)value_;
 
 //- (BOOL)validateState:(id*)value_ error:(NSError**)error_;
 
-
-
-
-
 @property (nonatomic, strong) NSString* statement;
-
-
 
 //- (BOOL)validateStatement:(id*)value_ error:(NSError**)error_;
 
-
-
-
-
 @property (nonatomic, strong) NSDate* time;
-
-
 
 //- (BOOL)validateTime:(id*)value_ error:(NSError**)error_;
 
-
-
-
-
 @property (nonatomic, strong) NSString* todo;
-
-
 
 //- (BOOL)validateTodo:(id*)value_ error:(NSError**)error_;
 
-
-
-
-
 @property (nonatomic, strong) NSString* tone;
 
-
-
 //- (BOOL)validateTone:(id*)value_ error:(NSError**)error_;
-
-
-
-
 
 @property (nonatomic, strong) EWPerson *owner;
 
 //- (BOOL)validateOwner:(id*)value_ error:(NSError**)error_;
 
-
-
-
 @property (nonatomic, strong) NSSet *tasks;
 
 - (NSMutableSet*)tasksSet;
 
-
-
-
-
 @end
 
-@interface _EWAlarmItem (CoreDataGeneratedAccessors)
-
+@interface _EWAlarm (TasksCoreDataGeneratedAccessors)
 - (void)addTasks:(NSSet*)value_;
 - (void)removeTasks:(NSSet*)value_;
 - (void)addTasksObject:(EWTaskItem*)value_;
@@ -138,8 +80,7 @@ extern const struct EWAlarmItemFetchedProperties {
 
 @end
 
-@interface _EWAlarmItem (CoreDataGeneratedPrimitiveAccessors)
-
+@interface _EWAlarm (CoreDataGeneratedPrimitiveAccessors)
 
 - (NSNumber*)primitiveImportant;
 - (void)setPrimitiveImportant:(NSNumber*)value;
@@ -147,50 +88,28 @@ extern const struct EWAlarmItemFetchedProperties {
 - (BOOL)primitiveImportantValue;
 - (void)setPrimitiveImportantValue:(BOOL)value_;
 
-
-
-
 - (NSNumber*)primitiveState;
 - (void)setPrimitiveState:(NSNumber*)value;
 
 - (BOOL)primitiveStateValue;
 - (void)setPrimitiveStateValue:(BOOL)value_;
 
-
-
-
 - (NSString*)primitiveStatement;
 - (void)setPrimitiveStatement:(NSString*)value;
-
-
-
 
 - (NSDate*)primitiveTime;
 - (void)setPrimitiveTime:(NSDate*)value;
 
-
-
-
 - (NSString*)primitiveTodo;
 - (void)setPrimitiveTodo:(NSString*)value;
-
-
-
 
 - (NSString*)primitiveTone;
 - (void)setPrimitiveTone:(NSString*)value;
 
-
-
-
-
 - (EWPerson*)primitiveOwner;
 - (void)setPrimitiveOwner:(EWPerson*)value;
 
-
-
 - (NSMutableSet*)primitiveTasks;
 - (void)setPrimitiveTasks:(NSMutableSet*)value;
-
 
 @end

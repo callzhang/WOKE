@@ -11,7 +11,7 @@
 #import "EWMediaItem.h"
 #import "EWMediaStore.h"
 #import "EWTaskItem.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "EWAlarmManager.h"
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
@@ -256,7 +256,7 @@
     //for each alarm, find matching task, or create new task
     NSMutableArray *goodTasks = [NSMutableArray new];
     
-    for (EWAlarmItem *a in alarms){//loop through alarms
+    for (EWAlarm *a in alarms){//loop through alarms
         
         for (unsigned i=0; i<nWeeksToScheduleTask; i++) {//loop for week
             
@@ -512,8 +512,8 @@
 //state
 - (void)updateTaskState:(NSNotification *)notif{
     id object = notif.object;
-    if([object isKindOfClass:[EWAlarmItem class]]){
-        [self updateTaskStateForAlarm:(EWAlarmItem *)object];
+    if([object isKindOfClass:[EWAlarm class]]){
+        [self updateTaskStateForAlarm:(EWAlarm *)object];
     }else if([object isKindOfClass:[EWTaskItem class]]){
         [self scheduleNotificationForTask:(EWTaskItem *)object];
     }else{
@@ -521,7 +521,7 @@
     }
 }
 
-- (void)updateTaskStateForAlarm:(EWAlarmItem *)a{
+- (void)updateTaskStateForAlarm:(EWAlarm *)a{
     BOOL updated = NO;
 	if (a.tasks.count != nWeeksToScheduleTask) {
 		DDLogError(@"Serious error: alarm(%@) has extra tasks: %lu", a.serverID, (unsigned long)a.tasks.count);
@@ -553,12 +553,12 @@
 
 //time
 - (void)updateTaskTime:(NSNotification *)notif{
-    EWAlarmItem *a = notif.object;
+    EWAlarm *a = notif.object;
     if (!a) [NSException raise:@"No alarm info" format:@"Check notification"];
     [self updateTaskTimeForAlarm:a];
 }
 
-- (void)updateTaskTimeForAlarm:(EWAlarmItem *)alarm{
+- (void)updateTaskTimeForAlarm:(EWAlarm *)alarm{
 	if (alarm.tasks.count != nWeeksToScheduleTask) {
 		DDLogError(@"Serious error: alarm(%@) has incorrect number of tasks: %lu", alarm.serverID, (unsigned long)alarm.tasks.count);
         [self scheduleTasks];
@@ -593,7 +593,7 @@
 
 //Tone
 - (void)updateNotifTone:(NSNotification *)notif{
-    EWAlarmItem *alarm = notif.userInfo[@"alarm"];
+    EWAlarm *alarm = notif.userInfo[@"alarm"];
     
     for (EWTaskItem *t in alarm.tasks) {
         [self cancelNotificationForTask:t];
@@ -608,10 +608,10 @@
     NSArray *alarms;
     if ([objects isKindOfClass:[NSArray class]]) {
         alarms = objects;
-    }else if ([objects isKindOfClass:[EWAlarmItem class]]){
+    }else if ([objects isKindOfClass:[EWAlarm class]]){
         alarms = @[objects];
     }
-    for (EWAlarmItem *alarm in alarms) {
+    for (EWAlarm *alarm in alarms) {
         while (alarm.tasks.count > 0) {
             EWTaskItem *t = alarm.tasks.anyObject;
             NSLog(@"Delete task on %@ due to alarm deleted", t.time.weekday);
@@ -688,7 +688,7 @@
             }
             //schedule
             UILocalNotification *localNotif = [[UILocalNotification alloc] init];
-            EWAlarmItem *alarm = task.alarm;
+            EWAlarm *alarm = task.alarm;
             //set fire time
             localNotif.fireDate = time_i;
             localNotif.timeZone = [NSTimeZone systemTimeZone];
@@ -825,7 +825,7 @@
             PFObject *PO = task.parseObject;
             PFObject *aPO = PO[@"alarm"];
             if (aPO) {
-                task.alarm = (EWAlarmItem *)[aPO managedObjectInContext:task.managedObjectContext];
+                task.alarm = (EWAlarm *)[aPO managedObjectInContext:task.managedObjectContext];
             }else{
                 good = NO;
                 DDLogError(@"*** task (%@) missing alarm", task.serverID);

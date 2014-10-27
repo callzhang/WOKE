@@ -16,9 +16,6 @@ const struct EWMessageRelationships EWMessageRelationships = {
 	.task = @"task",
 };
 
-const struct EWMessageFetchedProperties EWMessageFetchedProperties = {
-};
-
 @implementation EWMessageID
 @end
 
@@ -44,54 +41,23 @@ const struct EWMessageFetchedProperties EWMessageFetchedProperties = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
 
 	return keyPaths;
 }
 
-
-
-
 @dynamic media;
-
-
-
-
-
 
 @dynamic text;
 
-
-
-
-
-
 @dynamic time;
-
-
-
-
-
 
 @dynamic groupTask;
 
-	
-
 @dynamic recipient;
-
-	
 
 @dynamic sender;
 
-	
-
 @dynamic task;
 
-	
-
-
-
-
-
-
 @end
+

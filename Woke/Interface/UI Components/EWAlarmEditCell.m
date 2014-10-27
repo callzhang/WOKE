@@ -9,7 +9,7 @@
 #import "EWAlarmEditCell.h"
 #import "EWTaskItem.h"
 #import "EWAlarmManager.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "NSDate+Extend.h"
 //#import "EWCostumTextField.h"
 @implementation EWAlarmEditCell
@@ -76,7 +76,7 @@
 //    [self toggleAlarm:nil];
 //}
 
-- (void)setAlarm:(EWAlarmItem *)a{
+- (void)setAlarm:(EWAlarm *)a{
     //data
     //task = [[EWAlarmManager sharedInstance] firstTaskForAlarm:a];
     alarm = a;

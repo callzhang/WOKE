@@ -42,9 +42,6 @@ const struct EWPersonRelationships EWPersonRelationships = {
 	.tasksHelped = @"tasksHelped",
 };
 
-const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
-};
-
 @implementation EWPersonID
 @end
 
@@ -70,7 +67,7 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
+
 	if ([key isEqualToString:@"scoreValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"score"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -80,110 +77,35 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 	return keyPaths;
 }
 
-
-
-
 @dynamic bgImage;
-
-
-
-
-
 
 @dynamic birthday;
 
-
-
-
-
-
 @dynamic cachedInfo;
-
-
-
-
-
 
 @dynamic city;
 
-
-
-
-
-
 @dynamic email;
-
-
-
-
-
 
 @dynamic facebook;
 
-
-
-
-
-
 @dynamic gender;
-
-
-
-
-
 
 @dynamic history;
 
-
-
-
-
-
 @dynamic images;
-
-
-
-
-
 
 @dynamic lastLocation;
 
-
-
-
-
-
 @dynamic name;
-
-
-
-
-
 
 @dynamic preference;
 
-
-
-
-
-
 @dynamic profilePic;
-
-
-
-
-
 
 @dynamic region;
 
-
-
-
-
-
 @dynamic score;
-
-
 
 - (float)scoreValue {
 	NSNumber *result = [self score];
@@ -203,220 +125,167 @@ const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
 	[self setPrimitiveScore:[NSNumber numberWithFloat:value_]];
 }
 
-
-
-
-
 @dynamic statement;
-
-
-
-
-
 
 @dynamic username;
 
-
-
-
-
-
 @dynamic weibo;
-
-
-
-
-
 
 @dynamic achievements;
 
-	
 - (NSMutableSet*)achievementsSet {
 	[self willAccessValueForKey:@"achievements"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"achievements"];
-  
+
 	[self didAccessValueForKey:@"achievements"];
 	return result;
 }
-	
 
 @dynamic alarms;
 
-	
-- (NSMutableOrderedSet*)alarmsSet {
+- (NSMutableSet*)alarmsSet {
 	[self willAccessValueForKey:@"alarms"];
-  
-	NSMutableOrderedSet *result = (NSMutableOrderedSet*)[self mutableOrderedSetValueForKey:@"alarms"];
-  
+
+	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"alarms"];
+
 	[self didAccessValueForKey:@"alarms"];
 	return result;
 }
-	
 
 @dynamic friends;
 
-	
 - (NSMutableSet*)friendsSet {
 	[self willAccessValueForKey:@"friends"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"friends"];
-  
+
 	[self didAccessValueForKey:@"friends"];
 	return result;
 }
-	
 
 @dynamic groupTasks;
 
-	
 - (NSMutableSet*)groupTasksSet {
 	[self willAccessValueForKey:@"groupTasks"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"groupTasks"];
-  
+
 	[self didAccessValueForKey:@"groupTasks"];
 	return result;
 }
-	
 
 @dynamic groups;
 
-	
 - (NSMutableSet*)groupsSet {
 	[self willAccessValueForKey:@"groups"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"groups"];
-  
+
 	[self didAccessValueForKey:@"groups"];
 	return result;
 }
-	
 
 @dynamic groupsManaging;
 
-	
 - (NSMutableSet*)groupsManagingSet {
 	[self willAccessValueForKey:@"groupsManaging"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"groupsManaging"];
-  
+
 	[self didAccessValueForKey:@"groupsManaging"];
 	return result;
 }
-	
 
 @dynamic mediaAssets;
 
-	
 - (NSMutableSet*)mediaAssetsSet {
 	[self willAccessValueForKey:@"mediaAssets"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"mediaAssets"];
-  
+
 	[self didAccessValueForKey:@"mediaAssets"];
 	return result;
 }
-	
 
 @dynamic medias;
 
-	
 - (NSMutableSet*)mediasSet {
 	[self willAccessValueForKey:@"medias"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"medias"];
-  
+
 	[self didAccessValueForKey:@"medias"];
 	return result;
 }
-	
 
 @dynamic notifications;
 
-	
 - (NSMutableSet*)notificationsSet {
 	[self willAccessValueForKey:@"notifications"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"notifications"];
-  
+
 	[self didAccessValueForKey:@"notifications"];
 	return result;
 }
-	
 
 @dynamic pastTasks;
 
-	
 - (NSMutableSet*)pastTasksSet {
 	[self willAccessValueForKey:@"pastTasks"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"pastTasks"];
-  
+
 	[self didAccessValueForKey:@"pastTasks"];
 	return result;
 }
-	
 
 @dynamic receivedMessages;
 
-	
 - (NSMutableSet*)receivedMessagesSet {
 	[self willAccessValueForKey:@"receivedMessages"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"receivedMessages"];
-  
+
 	[self didAccessValueForKey:@"receivedMessages"];
 	return result;
 }
-	
 
 @dynamic sentMessages;
 
-	
 - (NSMutableSet*)sentMessagesSet {
 	[self willAccessValueForKey:@"sentMessages"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"sentMessages"];
-  
+
 	[self didAccessValueForKey:@"sentMessages"];
 	return result;
 }
-	
 
 @dynamic socialGraph;
 
-	
-
 @dynamic tasks;
 
-	
-- (NSMutableOrderedSet*)tasksSet {
+- (NSMutableSet*)tasksSet {
 	[self willAccessValueForKey:@"tasks"];
-  
-	NSMutableOrderedSet *result = (NSMutableOrderedSet*)[self mutableOrderedSetValueForKey:@"tasks"];
-  
+
+	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"tasks"];
+
 	[self didAccessValueForKey:@"tasks"];
 	return result;
 }
-	
 
 @dynamic tasksHelped;
 
-	
 - (NSMutableSet*)tasksHelpedSet {
 	[self willAccessValueForKey:@"tasksHelped"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"tasksHelped"];
-  
+
 	[self didAccessValueForKey:@"tasksHelped"];
 	return result;
 }
-	
-
-
-
-
-
 
 @end
+

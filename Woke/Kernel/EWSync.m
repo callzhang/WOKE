@@ -770,13 +770,13 @@ NSManagedObjectContext *mainContext;
             good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
         }
     }else if ([type isEqualToString:@"EWAlarmItem"]){
-        good = [EWAlarmManager validateAlarm:(EWAlarmItem *)mo];
+        good = [EWAlarmManager validateAlarm:(EWAlarm *)mo];
         if (!good) {
             if (!tryFix) {
                 return NO;
             }
             [mo refresh];
-            good = [EWAlarmManager validateAlarm:(EWAlarmItem *)mo];
+            good = [EWAlarmManager validateAlarm:(EWAlarm *)mo];
         }
     }
     if (!good) {

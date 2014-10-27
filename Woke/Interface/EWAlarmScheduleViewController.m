@@ -10,7 +10,7 @@
 #import "EWTaskManager.h"
 #import "EWTaskItem.h"
 #import "EWAlarmManager.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "EWAlarmEditCell.h"
 #import "EWPersonStore.h"
 #import "UIViewController+Blur.h"
@@ -119,7 +119,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             cell = (EWAlarmEditCell *)[self tableView:_tableView cellForRowAtIndexPath:path];
         }
         
-        EWAlarmItem *alarm = cell.alarm;
+        EWAlarm *alarm = cell.alarm;
         if (!alarm) {
             DDLogError(@"*** Getting cell that has no alarm, skip");
             continue;
@@ -190,7 +190,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //data
     if (!cell.alarm) {
-        EWAlarmItem *alarm = alarms[indexPath.row];
+        EWAlarm *alarm = alarms[indexPath.row];
         cell.alarm = alarm;
     }
     

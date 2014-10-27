@@ -8,7 +8,7 @@
 
 #import "EWAlarmPageView.h"
 #import "EWAlarmManager.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "NSDate+Extend.h"
 #import "EWPerson.h"
 #import "EWTaskItem.h"
@@ -162,7 +162,7 @@
     [task addObserver:self forKeyPath:@"statement" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
-- (void)setAlarm:(EWAlarmItem *)a{
+- (void)setAlarm:(EWAlarm *)a{
     self.alarmState.selected = a.state;
 }
 
