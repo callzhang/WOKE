@@ -82,7 +82,7 @@
 
     
     EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
-    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
+    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
     
     
     if ([type isEqualToString:kPushMediaTypeBuzz]) {
@@ -91,7 +91,7 @@
         NSLog(@"Received buzz from %@", media.author.name);
         
         //sound
-        NSString *buzzSoundName = media.buzzKey?:me.preference[@"buzzSound"];
+        NSString *buzzSoundName = media.buzzKey?:[EWSession sharedSession].currentUser.preference[@"buzzSound"];
         NSDictionary *sounds = buzzSounds;
         NSString *buzzSound = sounds[buzzSoundName];
         
@@ -176,10 +176,10 @@
         }else{
             
             //Woke state -> assign media to next task, download
-            if (![me.mediaAssets containsObject:media]) {
-                [me addMediaAssetsObject:media];
+            if (![[EWSession sharedSession].currentUser.mediaAssets containsObject:media]) {
+                [[EWSession sharedSession].currentUser addMediaAssetsObject:media];
                 
-                NSSet *tasks = [media.tasks filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owner = %@", me]];
+                NSSet *tasks = [media.tasks filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owner = %@", [EWSession sharedSession].currentUser]];
                 for (EWTaskItem *task in tasks) {
                     
                     //need to move to media pool
@@ -219,7 +219,7 @@
     
     BOOL isLaunchedFromLocalNotification = NO;
     BOOL isLaunchedFromRemoteNotification = NO;
-    EWTaskItem *nextTask = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
+    EWTaskItem *nextTask = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
 	
     //get target task
     EWTaskItem *task;
@@ -295,7 +295,7 @@
     
     //update media
     [[EWMediaStore sharedInstance] checkMediaAssets];
-    NSArray *medias = me.mediaAssets.allObjects;
+    NSArray *medias = [EWSession sharedSession].currentUser.mediaAssets.allObjects;
     
     //fill media from mediaAssets, if no media for task, create a pseudo media
     NSInteger nVoice = [[EWTaskManager sharedInstance] numberOfVoiceInTask:task];
@@ -307,8 +307,8 @@
             //find media to add
             [task addMediasObject: media];
             //remove media from mediaAssets, need to remove relation doesn't have inverse relation. This is to make sure the sender doesn't need to modify other person
-            [me removeMediaAssetsObject:media];
-            [media removeReceiversObject:me];
+            [[EWSession sharedSession].currentUser removeMediaAssetsObject:media];
+            [media removeReceiversObject:[EWSession sharedSession].currentUser];
             
             //stop if enough
             if ([media.type isEqualToString: kMediaTypeVoice]) {
@@ -360,7 +360,7 @@
         [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
         
         //play sound
-        [[AVManager sharedManager] playSoundFromFileName:me.preference[@"DefaultTone"]];
+        [[AVManager sharedManager] playSoundFromFileName:[EWSession sharedSession].currentUser.preference[@"DefaultTone"]];
         
         //play sounds after 30s - time for alarm
         double d = 10;
@@ -391,7 +391,7 @@
 
 + (void)presentWakeUpView{
     //get absolute next task
-    EWTaskItem *task = [[EWTaskManager sharedInstance] nextTaskAtDayCount:0 ForPerson:me];
+    EWTaskItem *task = [[EWTaskManager sharedInstance] nextTaskAtDayCount:0 ForPerson:[EWSession sharedSession].currentUser];
     //present
     [EWWakeUpManager presentWakeUpViewWithTask:task];
 }
@@ -434,8 +434,8 @@
 #pragma mark - CHECK TIMER
 - (void) alarmTimerCheck{
     //check time
-    if (!me) return;
-    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
+    if (![EWSession sharedSession].currentUser) return;
+    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
     if (task.state == NO) return;
     
     //alarm time up
@@ -460,12 +460,12 @@
 
 - (void)sleepTimerCheck{
     //check time
-    if (!me) return;
-    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
+    if (![EWSession sharedSession].currentUser) return;
+    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
     if (task.state == NO) return;
     
     //alarm time up
-    NSNumber *sleepDuration = me.preference[kSleepDuration];
+    NSNumber *sleepDuration = [EWSession sharedSession].currentUser.preference[kSleepDuration];
     NSInteger durationInSeconds = sleepDuration.integerValue * 3600;
     NSDate *sleepTime = [task.time dateByAddingTimeInterval:-durationInSeconds];
 	NSTimeInterval timeLeft = sleepTime.timeIntervalSinceNow;
@@ -487,10 +487,10 @@
 
 + (void)handleSleepTimerEvent:(UILocalNotification *)notification{
     NSString *taskID = notification.userInfo[kLocalTaskKey];
-    if (me) {
+    if ([EWSession sharedSession].currentUser) {
         //logged in enter sleep mode
-        EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
-        NSNumber *duration = me.preference[kSleepDuration];
+        EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
+        NSNumber *duration = [EWSession sharedSession].currentUser.preference[kSleepDuration];
         BOOL nextTaskMatched = [task.objectID.URIRepresentation.absoluteString isEqualToString:taskID];
         NSInteger h = task.time.timeIntervalSinceNow/3600;
         BOOL needSleep = h < duration.floatValue && h > 1;

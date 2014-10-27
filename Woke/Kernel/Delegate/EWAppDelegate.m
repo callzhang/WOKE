@@ -220,7 +220,7 @@ UIViewController *rootViewController;
         [PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
     }
     
-    if (!me) {
+    if (![EWSession sharedSession].currentUser) {
         return;
     }
     

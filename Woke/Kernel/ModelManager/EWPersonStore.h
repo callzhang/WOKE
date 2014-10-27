@@ -19,9 +19,6 @@
 #define kLastCheckedMe                      @"last_checked_me"
 #define kCheckMeInternal                    3600 * 24 //1 day
 
-
-extern EWPerson *me;
-
 @class EWMediaStore, EWPerson;
 
 @interface EWPersonStore : NSObject
@@ -30,7 +27,6 @@ extern EWPerson *me;
  Possible people that are relevant, fetched from server(TODO)
  */
 @property (nonatomic) NSArray *everyone;
-@property (nonatomic) EWPerson *currentUser;
 @property (nonatomic) NSDate *timeEveryoneChecked;
 @property BOOL isFetchingEveryone;
 
@@ -38,9 +34,14 @@ extern EWPerson *me;
 - (EWPerson *)createPersonWithParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByServerID:(NSString *)ID;
 - (void)getEveryoneInBackgroundWithCompletion:(void (^)(void))block;
-+ (void)updateMe;
 
-- (EWPerson *)anyone;
+/**
+ Check from server at login.
+ Fetch current state of currentUser with a custom function to server
+ Get a json from server that includes all currentUser's value and relation
+ Check if any change is needed.
+ */
++ (void)updateMe;
 
 //friend
 + (void)requestFriend:(EWPerson *)person;

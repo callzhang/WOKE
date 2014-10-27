@@ -30,7 +30,7 @@
     dispatch_once(&onceToken, ^{
         manager = [[EWAlarmManager alloc] init];
         [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
-            for (EWAlarm *alarm in me.alarms) {
+            for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
                 [manager observeForAlarm:alarm];
             }
         }];
@@ -66,7 +66,7 @@
 
 + (NSArray *)myAlarms{
     NSParameterAssert([NSThread isMainThread]);
-    return [[EWAlarmManager sharedInstance] alarmsForUser:me];
+    return [[EWAlarmManager sharedInstance] alarmsForUser:[EWSession sharedSession].currentUser];
 }
 
 - (NSDate *)nextAlarmTimeForPerson:(EWPerson *)person{
@@ -121,7 +121,7 @@
     [EWSession sharedSession].isSchedulingAlarm = YES;
     
     //get alarms
-    NSMutableArray *alarms = [[self alarmsForUser:me] mutableCopy];
+    NSMutableArray *alarms = [[self alarmsForUser:[EWSession sharedSession].currentUser] mutableCopy];
     
     
     BOOL hasChange = NO;
@@ -139,7 +139,7 @@
         for (PFObject *a in objects) {
             EWAlarm *alarm = (EWAlarm *)[a managedObjectInContext:mainContext];;
             [alarm refresh];
-            alarm.owner = me;
+            alarm.owner = [EWSession sharedSession].currentUser;
             if (![alarm validate]) {
                 [alarm remove];
             }else if (![alarms containsObject:alarm]) {
@@ -255,7 +255,7 @@
     [mainContext performBlock:^{
         
         NSMutableArray *alarmTimes = [[self getSavedAlarmTimes] mutableCopy];
-        NSSet *alarms = me.alarms;
+        NSSet *alarms = [EWSession sharedSession].currentUser.alarms;
         
         for (EWAlarm *alarm in alarms) {
             NSInteger wkd = [alarm.time weekdayNumber];
@@ -332,31 +332,31 @@
 #pragma mark - Cached alarm time to user defaults
 
 - (void)updateCachedAlarmTime{
-    NSMutableDictionary *cache = me.cachedInfo.mutableCopy?:[NSMutableDictionary new];
+    NSMutableDictionary *cache = [EWSession sharedSession].currentUser.cachedInfo.mutableCopy?:[NSMutableDictionary new];
     NSMutableDictionary *timeTable = [cache[kCachedAlarmTimes] mutableCopy]?:[NSMutableDictionary new];
-    for (EWAlarm *alarm in me.alarms) {
+    for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
         if (alarm.state) {
             NSString *wkday = alarm.time.weekday;
             timeTable[wkday] = alarm.time;
         }
     }
     cache[kCachedAlarmTimes] = timeTable;
-    me.cachedInfo = cache;
+    [EWSession sharedSession].currentUser.cachedInfo = cache;
     [EWSync save];
     DDLogVerbose(@"Updated cached alarm times: %@", timeTable);
 }
 
 - (void)updateCachedStatement{
-    NSMutableDictionary *cache = me.cachedInfo.mutableCopy?:[NSMutableDictionary new];
+    NSMutableDictionary *cache = [EWSession sharedSession].currentUser.cachedInfo.mutableCopy?:[NSMutableDictionary new];
     NSMutableDictionary *statements = [cache[kCachedStatements] mutableCopy]?:[NSMutableDictionary new];
-    for (EWAlarm *alarm in me.alarms) {
+    for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
         if (alarm.state) {
             NSString *wkday = alarm.time.weekday;
             statements[wkday] = alarm.statement;
         }
     }
     cache[kCachedStatements] = statements;
-    me.cachedInfo = cache;
+    [EWSession sharedSession].currentUser.cachedInfo = cache;
     [EWSync save];
     DDLogVerbose(@"Updated cached statements: %@", statements);
 }

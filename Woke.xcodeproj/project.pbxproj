@@ -235,12 +235,6 @@
 		ABD53FC6194D7D2F00BBC8DA /* _EWServerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD53FC5194D7D2F00BBC8DA /* _EWServerObject.m */; };
 		ABD53FC9194D7DC900BBC8DA /* EWServerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD53FC8194D7DC900BBC8DA /* EWServerObject.m */; };
 		ABDE25EF18CF575D00DDBDB5 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABDE25EE18CF575D00DDBDB5 /* AudioToolbox.framework */; };
-		ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA95E17E027E70035DF4A /* vm1.m4a */; };
-		ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA95F17E027E70035DF4A /* vm2.m4a */; };
-		ABEEA96617E027E90035DF4A /* vm3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA96017E027E80035DF4A /* vm3.m4a */; };
-		ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA96117E027E80035DF4A /* vm4.m4a */; };
-		ABEEA96817E027E90035DF4A /* vm5.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA96217E027E80035DF4A /* vm5.m4a */; };
-		ABEEA96917E027E90035DF4A /* vm6.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABEEA96317E027E80035DF4A /* vm6.m4a */; };
 		ABF192AA18BF135C006A4AA2 /* UIAlertView+.m in Sources */ = {isa = PBXBuildFile; fileRef = ABF192A918BF135C006A4AA2 /* UIAlertView+.m */; };
 		ABF192AC18C03D71006A4AA2 /* media.caf in Resources */ = {isa = PBXBuildFile; fileRef = ABF192AB18C03D71006A4AA2 /* media.caf */; };
 		ABF3FB551908B72F0017D2EF /* 0.jpg in Resources */ = {isa = PBXBuildFile; fileRef = ABF3FB451908B72F0017D2EF /* 0.jpg */; };
@@ -286,7 +280,7 @@
 		0957E44819CA73CA005F2808 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		0957E44E19CA73CA005F2808 /* WOKE Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WOKE Tests-Info.plist"; sourceTree = "<group>"; };
 		0957E45019CA73CA005F2808 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		0957E45219CA73CA005F2808 /* WOKE_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WOKE_Tests.m; sourceTree = "<group>"; };
+		0957E45219CA73CA005F2808 /* WOKE_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = WOKE_Tests.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		0957E45419CA73CA005F2808 /* WOKE Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WOKE Tests-Prefix.pch"; sourceTree = "<group>"; };
 		0E01D7BC19AC657C0034570A /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		0E01D7BE19AC65880034570A /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
@@ -413,8 +407,8 @@
 		9B1CBCDF19AE95630069CC70 /* NSManagedObjectContext+ChainSave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+ChainSave.m"; sourceTree = "<group>"; };
 		9B1DF3EC19D3A1BC0060265D /* EWSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSync.h; sourceTree = "<group>"; usesTabs = 1; };
 		9B1DF3ED19D3A1BC0060265D /* EWSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSync.m; sourceTree = "<group>"; usesTabs = 1; };
-		9B1DF3EF19D3D6890060265D /* NSManagedObject+EWSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSManagedObject+EWSync.h"; path = "../../NSManagedObject+EWSync.h"; sourceTree = "<group>"; };
-		9B1DF3F019D3D6890060265D /* NSManagedObject+EWSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSManagedObject+EWSync.m"; path = "../../NSManagedObject+EWSync.m"; sourceTree = "<group>"; };
+		9B1DF3EF19D3D6890060265D /* NSManagedObject+EWSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+EWSync.h"; sourceTree = "<group>"; };
+		9B1DF3F019D3D6890060265D /* NSManagedObject+EWSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+EWSync.m"; sourceTree = "<group>"; };
 		9B1DF3F319D3D7AB0060265D /* PFObject+EWSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PFObject+EWSync.h"; sourceTree = "<group>"; };
 		9B1DF3F419D3D7AB0060265D /* PFObject+EWSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PFObject+EWSync.m"; sourceTree = "<group>"; };
 		9B2DEEF518B811EC0046EB80 /* EWServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWServer.h; sourceTree = "<group>"; };
@@ -540,7 +534,7 @@
 		AB15A43B186FE95B00C4547E /* EarlyWorm 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "EarlyWorm 2.xcdatamodel"; sourceTree = "<group>"; };
 		AB1951AB185AB2AD003C7EE0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		AB198C821861818B008C1F15 /* EWAlarm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWAlarm.h; sourceTree = "<group>"; };
-		AB198C831861818B008C1F15 /* EWAlarm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWAlarm.m; sourceTree = "<group>"; };
+		AB198C831861818B008C1F15 /* EWAlarm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWAlarm.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AB198C861861818B008C1F15 /* EWGroupTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EWGroupTask.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AB198C871861818B008C1F15 /* EWGroupTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWGroupTask.m; sourceTree = "<group>"; };
 		AB198C881861818B008C1F15 /* EWMediaItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EWMediaItem.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -679,13 +673,13 @@
 				AB245FA518CCD58800551721 /* MobileCoreServices.framework in Frameworks */,
 				AB245FAF18CCD70C00551721 /* CoreLocation.framework in Frameworks */,
 				AB245FAA18CCD5BB00551721 /* Accounts.framework in Frameworks */,
-				9B99267719C29D9B00A75427 /* Crashlytics.framework in Frameworks */,
 				9BF5F77A192973A10074BF97 /* Parse.framework in Frameworks */,
 				AB245FB018CCD75400551721 /* SystemConfiguration.framework in Frameworks */,
 				ABC8F96318E8890D0096C073 /* MediaPlayer.framework in Frameworks */,
 				AB245FB318CCD99E00551721 /* Foundation.framework in Frameworks */,
 				AB245FA618CCD58F00551721 /* UIKit.framework in Frameworks */,
 				9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */,
+				9B99267719C29D9B00A75427 /* Crashlytics.framework in Frameworks */,
 				12FEEF779FB9485690173CE2 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1549,7 +1543,6 @@
 				0EAE5C9D199A3F7400AED01B /* PLCameraSheetDoneButtonPressed.png in Resources */,
 				ABFCB2E3186E957100355781 /* Sunny Afternoon.caf in Resources */,
 				0E590FFE194DF35B000AD7C4 /* OFL.txt in Resources */,
-				ABEEA96417E027E90035DF4A /* vm1.m4a in Resources */,
 				9BF297ED1912F720008C136E /* EWTaskHistoryCell.xib in Resources */,
 				AB2C18C318733C7F0058BFAD /* image.xcassets in Resources */,
 				ABFECBF719075F4200DD5BDC /* bg.caf in Resources */,
@@ -1560,14 +1553,12 @@
 				0E590FFC194DF35B000AD7C4 /* Lato-Thin.ttf in Resources */,
 				0E590FEC194DF35B000AD7C4 /* Lato-Black.ttf in Resources */,
 				9BF297EF1912F720008C136E /* EWTextFieldCell.xib in Resources */,
-				ABEEA96517E027E90035DF4A /* vm2.m4a in Resources */,
 				9BF297B11912F713008C136E /* EWAlarmsView.xib in Resources */,
 				0E590FF7194DF35B000AD7C4 /* Lato-Medium.ttf in Resources */,
 				0E590FFF194DF35B000AD7C4 /* README.txt in Resources */,
 				ABF3FB641908B72F0017D2EF /* 15.jpg in Resources */,
 				0E590FFA194DF35B000AD7C4 /* Lato-Semibold.ttf in Resources */,
 				ABF3FB5D1908B72F0017D2EF /* 8.jpg in Resources */,
-				ABEEA96617E027E90035DF4A /* vm3.m4a in Resources */,
 				ABF3FB561908B72F0017D2EF /* 1.jpg in Resources */,
 				0E591000194DF35B000AD7C4 /* Montserrat-Bold.ttf in Resources */,
 				0E590FED194DF35B000AD7C4 /* Lato-BlackItalic.ttf in Resources */,
@@ -1576,18 +1567,15 @@
 				ABF3FB631908B72F0017D2EF /* 14.jpg in Resources */,
 				9BF297E11912F720008C136E /* EWAlarmEditCell.xib in Resources */,
 				0E590FF5194DF35B000AD7C4 /* Lato-Light.ttf in Resources */,
-				ABEEA96717E027E90035DF4A /* vm4.m4a in Resources */,
 				9BF297B91912F713008C136E /* EWNotificationViewController.xib in Resources */,
 				0E590FFB194DF35B000AD7C4 /* Lato-SemiboldItalic.ttf in Resources */,
 				0EAE5C99199A3F7400AED01B /* PLCameraSheetButtonPressed.png in Resources */,
 				ABF3FB5A1908B72F0017D2EF /* 5.jpg in Resources */,
 				0EAE5C98199A3F7400AED01B /* PLCameraSheetButton@2x.png in Resources */,
-				ABEEA96817E027E90035DF4A /* vm5.m4a in Resources */,
 				0E591001194DF35B000AD7C4 /* Montserrat-Regular.ttf in Resources */,
 				ABF3FB581908B72F0017D2EF /* 3.jpg in Resources */,
 				ABFCB2E2186E957100355781 /* Tropical Delight.caf in Resources */,
 				0E591002194DF35B000AD7C4 /* OFL.txt in Resources */,
-				ABEEA96917E027E90035DF4A /* vm6.m4a in Resources */,
 				AB4B837C18D2C5470087E654 /* new.caf in Resources */,
 				ABB8C3061932C630001F7832 /* EWPersonView.xib in Resources */,
 				9BF297C11912F713008C136E /* EWWakeUpView.xib in Resources */,
@@ -2013,7 +2001,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Derek Zhang (SRS98HY45T)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
@@ -2043,7 +2031,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "60a5b2c8-508d-4e30-ba33-a37a11113184";
+				PROVISIONING_PROFILE = "";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ $(PROJECT_DIR)/Pods/TestFlightSDK";
 				VALID_ARCHS = "${ARCHS_STANDARD}";
 				WRAPPER_EXTENSION = app;
@@ -2058,8 +2046,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2087,7 +2075,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "5aa0ac35-17c2-4804-be55-911dd7a75da5";
+				PROVISIONING_PROFILE = "";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ $(PROJECT_DIR)/Pods/TestFlightSDK";
 				VALID_ARCHS = "${ARCHS_STANDARD}";
 				WRAPPER_EXTENSION = app;

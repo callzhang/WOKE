@@ -49,9 +49,9 @@
 - (void)loginDataCheck{
     NSLog(@"=== [%s] Logged in, performing login tasks.===", __func__);
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    if (![currentInstallation[kParseObjectID] isEqualToString: me.objectId]){
-        currentInstallation[kUserID] = me.objectId;
-        currentInstallation[kUsername] = me.username;
+    if (![currentInstallation[kParseObjectID] isEqualToString: [EWSession sharedSession].currentUser.objectId]){
+        currentInstallation[kUserID] = [EWSession sharedSession].currentUser.objectId;
+        currentInstallation[kUsername] = [EWSession sharedSession].currentUser.username;
         [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
                 NSLog(@"Installation %@ saved", currentInstallation.objectId);
@@ -107,7 +107,7 @@
     
     //Update my relations cancelled here because the we should wait for all sync task finished before we can download the rest of the relation
     NSLog(@"7. Refresh my media");
-    [[EWMediaStore sharedInstance] mediaCreatedByPerson:me];
+    [[EWMediaStore sharedInstance] mediaCreatedByPerson:[EWSession sharedSession].currentUser];
 	
 	//location
 	NSLog(@"8. Start location recurring update");
@@ -135,7 +135,7 @@
 	}
 	
     //services that need to run periodically
-    if (!me) {
+    if (![EWSession sharedSession].currentUser) {
         return;
     }
     //this will run at the beginning and every 600s

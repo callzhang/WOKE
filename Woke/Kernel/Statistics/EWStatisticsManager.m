@@ -176,7 +176,7 @@
     //return
     
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        EWPerson *localMe = [me inContext:localContext];
+        EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
         [[EWTaskManager sharedInstance] checkPastTasks];
         NSArray *tasks = [[EWTaskManager sharedInstance] pastTasksByPerson:localMe];//newest on top
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
@@ -205,7 +205,7 @@
             
             //woke to receivers
             NSMutableArray *receivers = [NSMutableArray new];
-            for (EWMediaItem *m in me.medias.copy) {
+            for (EWMediaItem *m in [EWSession sharedSession].currentUser.medias.copy) {
 				if (![mainContext existingObjectWithID:m.objectID error:NULL]) return;
                 for (EWTaskItem *t in m.tasks.copy) {
 					if (![mainContext existingObjectWithID:t.objectID error:NULL]) return;
@@ -261,7 +261,7 @@
 }
 
 + (void)updateCacheWithFriendsAdded:(NSArray *)friendIDs{
-    NSMutableDictionary *cache = me.cachedInfo.mutableCopy;
+    NSMutableDictionary *cache = [EWSession sharedSession].currentUser.cachedInfo.mutableCopy;
     NSMutableDictionary *activity = [cache[kActivitiesCache] mutableCopy]?:[NSMutableDictionary new];
     NSMutableDictionary *friendsActivityDic = [activity[kFriended] mutableCopy] ?:[NSMutableDictionary new];
     NSString *dateKey = [NSDate date].date2YYMMDDString;
@@ -273,7 +273,7 @@
     friendsActivityDic[dateKey] = [friendedSet allObjects];
     activity[kFriended] = [friendsActivityDic copy];
     cache[kActivitiesCache] = [activity copy];
-    me.cachedInfo = [cache copy];
+    [EWSession sharedSession].currentUser.cachedInfo = [cache copy];
     
     [EWSync save];
 }

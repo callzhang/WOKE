@@ -66,7 +66,7 @@
         self.title = @"Notifications";
     }
     //refresh
-    if (me.isOutDated) {
+    if ([EWSession sharedSession].currentUser.isOutDated) {
         [self refresh];
     }
     
@@ -89,13 +89,13 @@
     [loading startAnimating];
     
     PFQuery *query = [PFQuery queryWithClassName:@"EWNotification"];
-    [query whereKey:kParseObjectID notContainedIn:[me.notifications valueForKey:kParseObjectID]];
+    [query whereKey:kParseObjectID notContainedIn:[[EWSession sharedSession].currentUser.notifications valueForKey:kParseObjectID]];
     [query whereKey:@"owner" equalTo:[PFUser currentUser]];
     [EWSync findServerObjectInBackgroundWithQuery:query completion:^(NSArray *objects, NSError *error) {
         for (PFObject *PO in objects) {
             EWNotification *notification = (EWNotification *)[PO managedObjectInContext:mainContext];
             NSLog(@"Found new notification %@(%@)", notification.type, notification.objectId);
-            notification.owner = me;
+            notification.owner = [EWSession sharedSession].currentUser;
         }
         notifications = [[EWNotificationManager myNotifications] mutableCopy];
         [self.tableView reloadData];

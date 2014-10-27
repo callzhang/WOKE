@@ -334,7 +334,7 @@
         [[ATConnect sharedConnection] engage:kRecordVoiceSuccess fromViewController:self];
         
         EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
-        media.author = me;
+        media.author = [EWSession sharedSession].currentUser;
         media.type = kMediaTypeVoice;
 //        media.message = self.message.text;
         
@@ -350,7 +350,7 @@
             
             //set ACL
             PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
-            if ([me.objectId isEqualToString:WokeUserID]) {
+            if ([[EWSession sharedSession].currentUser.objectId isEqualToString:WokeUserID]) {
                 //if WOKE, set public
                 [acl setPublicReadAccess:YES];
                 [acl setPublicWriteAccess:YES];

@@ -70,7 +70,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
         [EWPersonStore getFriendsForPerson:_person];
         dispatch_async(dispatch_get_main_queue(), ^{
             friends = [_person.friends allObjects];
-            NSMutableSet *myFriends = [me.friends mutableCopy];
+            NSMutableSet *myFriends = [[EWSession sharedSession].currentUser.friends mutableCopy];
             [myFriends intersectSet:[NSSet setWithArray:friends]];
             mutualFriends = [myFriends allObjects];
             [_friendsCollectionView reloadData];

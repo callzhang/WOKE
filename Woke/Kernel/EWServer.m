@@ -119,7 +119,7 @@
         //add receiver: single direction
         [buzz addReceiversObject:person];
         //add sound
-        NSString *sound = me.preference[@"buzzSound"]?:@"default";
+        NSString *sound = [EWSession sharedSession].currentUser.preference[@"buzzSound"]?:@"default";
         buzz.buzzKey = sound;
         
         [EWSync saveWithCompletion:^{
@@ -182,7 +182,7 @@
                                  @"content-available": @1,
                                  kPushType: kPushTypeMedia,
                                  kPushMediaType: kPushMediaTypeVoice,
-                                 kPushPersonID: me.objectId,
+                                 kPushPersonID: [EWSession sharedSession].currentUser.objectId,
                                  kPushMediaID: mediaId} mutableCopy];
     
     //form push payload

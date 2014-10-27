@@ -21,9 +21,9 @@
     //add relation
     EWAlarm *a = [EWAlarm createEntity];
     a.updatedAt = [NSDate date];
-    a.owner = me;
+    a.owner = [EWSession sharedSession].currentUser;
     a.state = @YES;
-    a.tone = me.preference[@"DefaultTone"];
+    a.tone = [EWSession sharedSession].currentUser.preference[@"DefaultTone"];
     
     return a;
 }
@@ -38,7 +38,7 @@
 + (void)deleteAll{
     //delete
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        for (EWAlarm *alarm in me.alarms) {
+        for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
             EWAlarm *localAlarm = [alarm inContext:localContext];
             [localAlarm remove];
         }
@@ -51,7 +51,7 @@
     BOOL good = YES;
     if (!self.owner) {
         DDLogError(@"Alarm（%@）missing owner", self.serverID);
-        self.owner = [me inContext:self.managedObjectContext];
+        self.owner = [[EWSession sharedSession].currentUser inContext:self.managedObjectContext];
     }
     if (!self.tasks || self.tasks.count == 0) {
         DDLogError(@"Alarm（%@）missing task", self.serverID);
@@ -64,7 +64,7 @@
     //check tone
     if (!self.tone) {
         DDLogError(@"Tone not set, fixed!");
-        self.tone = me.preference[@"DefaultTone"];
+        self.tone = [EWSession sharedSession].currentUser.preference[@"DefaultTone"];
     }
     
     if (!good) {

@@ -23,12 +23,7 @@
 #import "EWStatisticsManager.h"
 
 
-//===========the global shortcut to currentUser ===========
-EWPerson *me;
-//=========================================================
-
 @implementation EWPersonStore
-@synthesize currentUser;
 @synthesize everyone;
 @synthesize isFetchingEveryone = _isFetchingEveryone;
 @synthesize timeEveryoneChecked;
@@ -49,10 +44,9 @@ EWPerson *me;
 #pragma mark - ME
 //Current User MO at background thread
 - (void)setCurrentUser:(EWPerson *)user{
-    me = user;
-    currentUser = user;
-    [me addObserver:self forKeyPath:@"score" options:NSKeyValueObservingOptionNew context:nil];
-    [me addObserver:self forKeyPath:@"lastLocation" options:NSKeyValueObservingOptionNew context:nil];
+    [EWSession sharedSession].currentUser = user;
+    [[EWSession sharedSession].currentUser addObserver:self forKeyPath:@"score" options:NSKeyValueObservingOptionNew context:nil];
+    [[EWSession sharedSession].currentUser addObserver:self forKeyPath:@"lastLocation" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 #pragma mark - CREATE USER
@@ -86,7 +80,7 @@ EWPerson *me;
 //check my relation, used for new installation with existing user
 + (void)updateMe{
     NSDate *lastCheckedMe = [[NSUserDefaults standardUserDefaults] valueForKey:kLastCheckedMe];
-    BOOL good = [EWPersonStore validatePerson:me];
+    BOOL good = [EWPersonStore validatePerson:[EWSession sharedSession].currentUser];
     if (!good || !lastCheckedMe || lastCheckedMe.timeElapsed > kCheckMeInternal) {
         if (!good) {
             NSLog(@"Failed to validate me, refreshing from server");
@@ -97,7 +91,7 @@ EWPerson *me;
         }
         
         [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-            EWPerson *localMe = [me inContext:localContext];
+            EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
             [localMe refreshRelatedWithCompletion:^{
                 
                 [EWPersonStore updateCachedFriends];
@@ -166,7 +160,7 @@ EWPerson *me;
     
     NSMutableArray *allPerson = [NSMutableArray new];
     
-    EWPerson *localMe = [me inContext:context];
+    EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:context];
     NSString *parseObjectId = [localMe valueForKey:kParseObjectID];
     NSError *error;
     
@@ -181,8 +175,8 @@ EWPerson *me;
                            withParameters:@{@"objectId": parseObjectId,
                                             @"topk" : numberOfRelevantUsers,
                                             @"radius" : radiusOfRelevantUsers,
-                                            @"location": @{@"latitude": @(me.lastLocation.coordinate.latitude),
-                                                           @"longitude": @(me.lastLocation.coordinate.longitude)}}
+                                            @"location": @{@"latitude": @([EWSession sharedSession].currentUser.lastLocation.coordinate.latitude),
+                                                           @"longitude": @([EWSession sharedSession].currentUser.lastLocation.coordinate.longitude)}}
                                     error:&error];
     
     if (error && list.count == 0) {
@@ -212,7 +206,7 @@ EWPerson *me;
     }
     
     //make sure the rest of people's score is revert back to 0
-    NSArray *otherLocalPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"(NOT %K IN %@) AND score > 0 AND %K != %@", kParseObjectID, [people valueForKey:kParseObjectID], kParseObjectID, me.objectId] inContext:context];
+    NSArray *otherLocalPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"(NOT %K IN %@) AND score > 0 AND %K != %@", kParseObjectID, [people valueForKey:kParseObjectID], kParseObjectID, [EWSession sharedSession].currentUser.objectId] inContext:context];
     for (EWPerson *person in otherLocalPerson) {
         person.score = 0;
     }
@@ -256,7 +250,7 @@ EWPerson *me;
 #pragma mark - Notification
 - (void)userLoggedIn:(NSNotification *)notif{
     EWPerson *user = notif.object;
-    if (![me isEqual:user]) {
+    if (![[EWSession sharedSession].currentUser isEqual:user]) {
         self.currentUser = user;
     }
     
@@ -269,12 +263,12 @@ EWPerson *me;
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if ([object isEqual:me]) {
+    if ([object isEqual:[EWSession sharedSession].currentUser]) {
         if ([keyPath isEqualToString:@"score"]) {
             NSNumber *score = change[NSKeyValueChangeNewKey];
             if ([score isKindOfClass:[NSNull class]] || [score integerValue] != 100) {
                 DDLogError(@"My score resotred to 100");
-                me.score = @100;
+                [EWSession sharedSession].currentUser.score = @100;
             }
         }else if ([keyPath isEqualToString:@"profilePic"]){
             if (![object valueForKey:@"profilePic"]) {
@@ -291,8 +285,8 @@ EWPerson *me;
 
 #pragma mark - Friend
 + (void)requestFriend:(EWPerson *)person{
-    [EWPersonStore getFriendsForPerson:me];
-    [me addFriendsObject:person];
+    [EWPersonStore getFriendsForPerson:[EWSession sharedSession].currentUser];
+    [[EWSession sharedSession].currentUser addFriendsObject:person];
     [EWPersonStore updateCachedFriends];
     [EWNotificationManager sendFriendRequestNotificationToUser:person];
     
@@ -301,8 +295,8 @@ EWPerson *me;
 }
 
 + (void)acceptFriend:(EWPerson *)person{
-    [EWPersonStore getFriendsForPerson:me];
-    [me addFriendsObject:person];
+    [EWPersonStore getFriendsForPerson:[EWSession sharedSession].currentUser];
+    [[EWSession sharedSession].currentUser addFriendsObject:person];
     [EWPersonStore updateCachedFriends];
     [EWNotificationManager sendFriendAcceptNotificationToUser:person];
     
@@ -313,8 +307,8 @@ EWPerson *me;
 }
 
 + (void)unfriend:(EWPerson *)person{
-    [EWPersonStore getFriendsForPerson:me];
-    [me removeFriendsObject:person];
+    [EWPersonStore getFriendsForPerson:[EWSession sharedSession].currentUser];
+    [[EWSession sharedSession].currentUser removeFriendsObject:person];
     [EWPersonStore updateCachedFriends];
     //TODO: unfriend
     //[EWServer unfriend:user];
@@ -353,7 +347,7 @@ EWPerson *me;
 
 + (void)updateCachedFriends{
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        EWPerson *localMe = [me inContext:localContext];
+        EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
         NSSet *friends = [localMe.friends valueForKey:kParseObjectID];
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
         cache[kCachedFriends] = friends.allObjects;

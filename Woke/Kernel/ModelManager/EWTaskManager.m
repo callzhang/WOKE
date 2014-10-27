@@ -78,7 +78,7 @@
 
 + (NSArray *)myTasks{
     NSParameterAssert([NSThread isMainThread]);
-    NSArray *tasks = [[EWTaskManager sharedInstance] getTasksByPerson:me];
+    NSArray *tasks = [[EWTaskManager sharedInstance] getTasksByPerson:[EWSession sharedSession].currentUser];
     for (EWTaskItem *task in tasks) {
         [task addObserver:[EWTaskManager sharedInstance] forKeyPath:@"owner" options:NSKeyValueObservingOptionNew context:nil];
     }
@@ -165,7 +165,7 @@
         return nil;
     }
     [self scheduleTasksInContext:mainContext];
-    NSArray *myTasks = [self getTasksByPerson:me];
+    NSArray *myTasks = [self getTasksByPerson:[EWSession sharedSession].currentUser];
     return myTasks;
 }
 
@@ -202,7 +202,7 @@
     self.isSchedulingTask = YES;
     
     //check necessity
-    EWPerson *localPerson = [me inContext:context];
+    EWPerson *localPerson = [[EWSession sharedSession].currentUser inContext:context];
     NSMutableArray *tasks = [localPerson.tasks mutableCopy];
     NSArray *alarms = [[EWAlarmManager sharedInstance] alarmsForUser:localPerson];
     if (alarms.count != 7) {
@@ -231,7 +231,7 @@
         for (PFObject *t in objects) {
             EWTaskItem *task = (EWTaskItem *)[t managedObjectInContext:context];
             [task refresh];
-            task.owner = [me inContext:context];
+            task.owner = [[EWSession sharedSession].currentUser inContext:context];
             BOOL good = [EWTaskManager validateTask:task];
             if (!good) {
                 [self removeTask:task];
@@ -335,9 +335,9 @@
                 // remote notification
                 [EWTaskManager scheduleNotificationOnServerForTask:task];
 				//check
-				DDLogInfo(@"Perform schedule task completion block: %lu alarms and %lu tasks", (unsigned long)me.alarms.count, (unsigned long)me.tasks.count);
-				if (me.tasks.count != 7*nWeeksToScheduleTask) {
-					DDLogError(@"Something wrong with my task: %@", me.tasks);
+				DDLogInfo(@"Perform schedule task completion block: %lu alarms and %lu tasks", (unsigned long)[EWSession sharedSession].currentUser.alarms.count, (unsigned long)[EWSession sharedSession].currentUser.tasks.count);
+				if ([EWSession sharedSession].currentUser.tasks.count != 7*nWeeksToScheduleTask) {
+					DDLogError(@"Something wrong with my task: %@", [EWSession sharedSession].currentUser.tasks);
 				}
             }
         }];
@@ -383,7 +383,7 @@
     
     NSLog(@"=== Start checking past tasks ===");
     //First get outdated current task and move to past
-    EWPerson *localMe = [me inContext:localContext];
+    EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
     NSMutableSet *tasks = localMe.tasks.mutableCopy;
     
     //nullify old task's relation to alarm
@@ -392,7 +392,7 @@
     for (EWTaskItem *t in outDatedTasks) {
         t.alarm = nil;
         t.owner = nil;
-        t.pastOwner = [me inContext:t.managedObjectContext];
+        t.pastOwner = [[EWSession sharedSession].currentUser inContext:t.managedObjectContext];
         [tasks removeObject:t];
         NSLog(@"=== Task(%@) on %@ moved to past", t.objectId, [t.time date2dayString]);
         [[NSNotificationCenter defaultCenter] postNotificationName:kTaskDeleteNotification object:t];
@@ -487,7 +487,7 @@
     EWTaskItem *t = [EWTaskItem createEntityInContext:context];
     t.updatedAt = [NSDate date];
     //relation
-    t.owner = [me inContext:context];
+    t.owner = [[EWSession sharedSession].currentUser inContext:context];
     //others
     t.createdAt = [NSDate date];
     //[EWSync save];
@@ -638,7 +638,7 @@
 - (void)deleteAllTasks{
     NSLog(@"*** Deleting all tasks");
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        for (EWTaskItem *t in [self getTasksByPerson:[me inContext:localContext]]) {
+        for (EWTaskItem *t in [self getTasksByPerson:[[EWSession sharedSession].currentUser inContext:localContext]]) {
             //post notification
             dispatch_async(dispatch_get_main_queue(), ^{
                 EWTaskItem *task = (EWTaskItem *)[mainContext objectWithID:t.objectID];
@@ -755,7 +755,7 @@
 - (void)checkScheduledNotifications{
     NSParameterAssert([NSThread isMainThread]);
     NSMutableArray *allNotification = [[[UIApplication sharedApplication] scheduledLocalNotifications] mutableCopy];
-    NSArray *tasks = [self getTasksByPerson:me];
+    NSArray *tasks = [self getTasksByPerson:[EWSession sharedSession].currentUser];
 
     NSLog(@"There are %ld scheduled local notification and %ld stored task info", (long)allNotification.count, (long)tasks.count);
     
@@ -810,7 +810,7 @@
         }
         if (!task.pastOwner) {
             DDLogError(@"*** task missing pastOwner: %@", task);
-            task.pastOwner = [me inContext:task.managedObjectContext];
+            task.pastOwner = [[EWSession sharedSession].currentUser inContext:task.managedObjectContext];
             //good = NO;
         }else if(!task.pastOwner.isMe){
             //NSParameterAssert(task.pastOwner.isMe);
@@ -842,7 +842,7 @@
         if (!task.owner) {
             task.owner = task.alarm.owner;
             if (!task.owner) {
-                task.owner = [me inContext:task.managedObjectContext]?:task.alarm.owner;
+                task.owner = [[EWSession sharedSession].currentUser inContext:task.managedObjectContext]?:task.alarm.owner;
                 if (!task.owner) {
                     DDLogError(@"*** task (%@) missing owner", task.serverID);
                 }
@@ -888,13 +888,13 @@
     //cancel all sleep notification first
     [EWTaskManager cancelSleepNotification];
     
-    for (EWTaskItem *task in me.tasks) {
+    for (EWTaskItem *task in [EWSession sharedSession].currentUser.tasks) {
         [EWTaskManager scheduleSleepNotificationForTask:task];
     }
 }
 
 + (void)scheduleSleepNotificationForTask:(EWTaskItem *)task{
-    NSNumber *duration = me.preference[kSleepDuration];
+    NSNumber *duration = [EWSession sharedSession].currentUser.preference[kSleepDuration];
     float d = duration.floatValue;
     NSDate *sleepTime = [task.time dateByAddingTimeInterval:-d*3600];
     
@@ -989,7 +989,7 @@
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     
     
-    NSDictionary *dic = @{@"where":@{kUsername:me.username},
+    NSDictionary *dic = @{@"where":@{kUsername:[EWSession sharedSession].currentUser.username},
                           @"push_time":[NSNumber numberWithDouble:[time timeIntervalSince1970]+30],
                           @"data":@{@"alert":@"Time to get up",
                                     @"content-available":@1,

@@ -26,6 +26,8 @@
 - (BOOL)friendWaiting;
 - (NSString *)genderObjectiveCaseString;
 
+- (BOOL)validate;
+
 /*
 @property (nonatomic, strong) NSString* aws_id;
 @property (nonatomic, strong) NSDate* birthday;

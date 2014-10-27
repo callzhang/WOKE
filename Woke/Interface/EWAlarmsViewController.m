@@ -88,8 +88,8 @@
     //listen to user log in, and updates its view
     [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
         //user login listeners
-        [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
-        [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
+        [[EWSession sharedSession].currentUser addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+        [[EWSession sharedSession].currentUser addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
         //listen to schedule signal
         [[EWTaskManager sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
         
@@ -163,7 +163,7 @@
 - (void)initData {
     
     //init alarm page container
-    if (me) {
+    if ([EWSession sharedSession].currentUser) {
         //get alarm and task first
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskManager myTasks];
@@ -246,11 +246,11 @@
 
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if (object == me) {
+    if (object == [EWSession sharedSession].currentUser) {
         
         if ([keyPath isEqualToString:@"tasks"]){
             
-            NSInteger nTask = me.tasks.count;
+            NSInteger nTask = [EWSession sharedSession].currentUser.tasks.count;
             if (![EWTaskManager sharedInstance].isSchedulingTask) {
                 //only refresh display when not scheduling
                 if (nTask == 7*nWeeksToScheduleTask){
@@ -310,7 +310,7 @@
     alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskManager myTasks];
     
-    if (!me) {
+    if (![EWSession sharedSession].currentUser) {
         [self showAlarmPageLoading:YES];
         return;
     }
@@ -510,9 +510,9 @@
 
 - (void)toggleSleepBtnVisibility{
     if (tasks.count == 7*nWeeksToScheduleTask) {
-		EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
+		EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
         float h = task.time.timeIntervalSinceNow/3600;
-        NSNumber *duration = me.preference[kSleepDuration];
+        NSNumber *duration = [EWSession sharedSession].currentUser.preference[kSleepDuration];
         if (h < duration.floatValue && h>1) {
             self.sleepBtn.layer.borderColor = [UIColor whiteColor].CGColor;
             //time to sleep
@@ -684,8 +684,8 @@
         if (tasks.count != 7*nWeeksToScheduleTask) {
             
             [MBProgressHUD showHUDAddedTo:controller.view animated:YES];
-            if (me.alarms.count != 7) {
-                [[EWAlarmManager sharedInstance] scheduleNewAlarms];
+            if ([EWSession sharedSession].currentUser.alarms.count != 7) {
+                [[EWAlarmManager sharedInstance] scheduleAlarm];
             }
             [[EWTaskManager sharedInstance] scheduleTasks];
             [MBProgressHUD hideAllHUDsForView:controller.view animated:YES];

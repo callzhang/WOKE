@@ -173,7 +173,7 @@
     switch (indexPath.row) {
         case 0: {
             //Modify alarm that is due in 30s
-            for (EWAlarm *alarm in me.alarms.copy) {
+            for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms.copy) {
                 if (alarm.time.weekdayNumber == [NSDate date].weekdayNumber) {
                     //add time 30s
                     NSDate *t = alarm.time;
@@ -232,7 +232,7 @@
             [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
             //dismiss self to present popup view
             [self dismissBlurViewControllerWithCompletionHandler:^{
-                [EWServer buzz:@[me]];
+                [EWServer buzz:@[[EWSession sharedSession].currentUser]];
             }];
             break;
         }
@@ -252,7 +252,7 @@
         
         case 7:{//add some media
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
+            EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
             NSInteger m = 6 - task.medias.count;
             for (unsigned i=0; i< m; i++) {
                 NSInteger x = arc4random_uniform(2);
@@ -280,7 +280,7 @@
             
         case 8:{//facebook friends get
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:me];
+            EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWSession sharedSession].currentUser];
             graph.facebookUpdated = nil;
             [EWUserManagement getFacebookFriends];
             [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
@@ -298,26 +298,26 @@
             EWNotification *notice_system = [EWNotificationManager newNotification];
             //1
             notice_friending.type = kNotificationTypeFriendRequest;
-            notice_friending.owner = me;
+            notice_friending.owner = [EWSession sharedSession].currentUser;
             NSArray *people = [[EWPersonStore sharedInstance] everyone];
             NSInteger k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user = people[k];
             notice_friending.sender = user.objectId;
             //2
             notice_friended.type = kNotificationTypeFriendAccepted;
-            notice_friended.owner = me;
+            notice_friended.owner = [EWSession sharedSession].currentUser;
             k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user2 = people[k];
             notice_friended.sender = user2.objectId;
             //3
             notice_newMedia.type = kNotificationTypeNextTaskHasMedia;
-            notice_newMedia.owner = me;
+            notice_newMedia.owner = [EWSession sharedSession].currentUser;
             k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user3 = people[k];
             notice_newMedia.sender = user3.objectId;
             //4
             notice_system.type = kNotificationTypeSystemNotice;
-            notice_system.owner = me;
+            notice_system.owner = [EWSession sharedSession].currentUser;
             NSDictionary *dic = @{@"title": @"Test system notice", @"content": @"This is a test notice. An alert show pop up if you tap me.", @"link": @"WokeAlarm.com"};
             notice_system.userInfo = dic;
             notice_system.sender = nil;
@@ -331,7 +331,7 @@
             [EWServer searchForFriendsOnServer];
         }
         case 11:{//facebook story post
-            [EWServer uploadOGStoryWithPhoto:me.profilePic];
+            [EWServer uploadOGStoryWithPhoto:[EWSession sharedSession].currentUser.profilePic];
         }
         default:
             break;

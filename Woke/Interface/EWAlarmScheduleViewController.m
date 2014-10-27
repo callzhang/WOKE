@@ -52,7 +52,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     
     //add alarm observer
     [[EWAlarmManager sharedInstance] addObserver:self forKeyPath:@"isSchedulingAlarm" options:NSKeyValueObservingOptionNew context:nil];
-    [me addObserver:self forKeyPath:EWPersonRelationships.alarms options:NSKeyValueObservingOptionNew context:nil];
+    [[EWSession sharedSession].currentUser addObserver:self forKeyPath:EWPersonRelationships.alarms options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -65,7 +65,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 - (void)dealloc{
     @try {
         [[EWAlarmManager sharedInstance] removeObserver:self forKeyPath:@"isSchedulingAlarm"];
-        [me removeObserver:self forKeyPath:@"alarms"];
+        [[EWSession sharedSession].currentUser removeObserver:self forKeyPath:@"alarms"];
     }
     @catch (NSException *exception) {
         DDLogError(@"Failed to remove observer: %@", exception.description);
@@ -76,7 +76,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
     if ([object isKindOfClass:[EWAlarmManager class]]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([keyPath isEqualToString:@"isSchedulingAlarm"]) {
-                if (![EWAlarmManager sharedInstance].isSchedulingAlarm) {
+                if (![EWSession sharedSession].isSchedulingAlarm) {
                     DDLogInfo(@"Schedule view detected alarm finished scheduling");
                     [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
                     [self initData];
@@ -88,7 +88,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             }
         });
         
-    }else if (object == me){
+    }else if (object == [EWSession sharedSession].currentUser){
         [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
         [self initData];
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -125,9 +125,9 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
             continue;
         }
         //state
-        if (cell.alarmToggle.selected != alarm.state) {
+        if (cell.alarmToggle.selected != alarm.stateValue) {
             NSLog(@"Change alarm state for %@ to %@", alarm.time.weekday, cell.alarmToggle.selected?@"ON":@"OFF");
-            alarm.state = cell.alarmToggle.selected?YES:NO;
+            alarm.stateValue = cell.alarmToggle.selected?YES:NO;
             //[[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
             hasChanges = YES;
         }

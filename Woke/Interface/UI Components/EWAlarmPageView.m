@@ -90,7 +90,7 @@
     [self setNeedsDisplay];
     
     //set task state
-    alarm.state = sender.selected;
+    alarm.state = @(sender.selected);
     
     //broadcast
     DDLogInfo(@"Task on %@ changed to %@", task.time.weekday, (sender.selected?@"ON":@"OFF"));

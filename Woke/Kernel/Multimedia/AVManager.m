@@ -611,7 +611,7 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
         
         if (!m) m = media;
-        EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
+        EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
         
         NSString *title = [task.time weekday];
         
