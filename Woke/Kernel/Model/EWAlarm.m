@@ -47,7 +47,7 @@
 
 
 #pragma mark - Validate alarm
-- (BOOL)validateAlarm{
+- (BOOL)validate{
     BOOL good = YES;
     if (!self.owner) {
         DDLogError(@"Alarm（%@）missing owner", self.serverID);

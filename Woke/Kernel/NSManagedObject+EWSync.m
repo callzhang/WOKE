@@ -270,7 +270,7 @@
         return;
     }
     
-    NSString *parseObjectId = [self valueForKey:kParseObjectID];
+    NSString *parseObjectId = self.serverID;
     if (!parseObjectId) {
         DDLogVerbose(@"When refreshing, MO missing serverID %@, prepare to upload", self.entity.name);
         [self uploadEventually];
