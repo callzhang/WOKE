@@ -9,14 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "EWRingtoneSelectionViewController.h"
 #define kConstrainedSize CGSizeMake(10000,40)//字体最大
-@class EWAlarmItem, EWTaskItem;
+@class EWAlarm, EWTaskItem;
 @class EWCostumTextField;
 @interface EWAlarmEditCell : UITableViewCell<EWRingtoneSelectionDelegate,UITextFieldDelegate>
 //container
 //@property (nonatomic) BOOL alarmEnable;
 @property (strong, nonatomic) IBOutlet UITextView *statementText;
 //@property (nonatomic) EWTaskItem *task;
-@property (nonatomic) EWAlarmItem *alarm;
+@property (nonatomic) EWAlarm *alarm;
 @property (nonatomic, weak) UIViewController *presentingViewController;
 //data
 @property (nonatomic) NSDate *myTime;

@@ -29,7 +29,7 @@
 #import "EWNotification.h"
 #import "EWNotificationManager.h"
 #import "EWBackgroundingManager.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 
 @interface TestViewController ()
 
@@ -173,7 +173,7 @@
     switch (indexPath.row) {
         case 0: {
             //Modify alarm that is due in 30s
-            for (EWAlarmItem *alarm in me.alarms.copy) {
+            for (EWAlarm *alarm in me.alarms.copy) {
                 if (alarm.time.weekdayNumber == [NSDate date].weekdayNumber) {
                     //add time 30s
                     NSDate *t = alarm.time;

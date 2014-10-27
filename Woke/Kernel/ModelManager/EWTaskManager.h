@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class EWPerson, EWTaskItem, EWAlarmItem;
+@class EWPerson, EWTaskItem, EWAlarm;
 
 #define kTaskUpdateInterval         3600 * 24
 

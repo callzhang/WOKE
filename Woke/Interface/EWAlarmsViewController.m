@@ -26,7 +26,7 @@
 
 // Model
 #import "EWPerson.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "EWTaskItem.h"
 
 // UI

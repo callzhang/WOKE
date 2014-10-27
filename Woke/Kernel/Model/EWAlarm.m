@@ -1,0 +1,77 @@
+//
+//  EWAlarmItem.m
+//  EarlyWorm
+//
+//  Created by Lei on 8/27/13.
+//  Copyright (c) 2013 Shens. All rights reserved.
+//
+
+#import "EWAlarm.h"
+#import "EWPersonStore.h"
+
+@implementation EWAlarm
+
+
+#pragma mark - NEW
+//add new alarm, save, add to current user, save user
++ (EWAlarm *)newAlarm{
+    NSParameterAssert([NSThread isMainThread]);
+    NSLog(@"Create new Alarm");
+    
+    //add relation
+    EWAlarm *a = [EWAlarm createEntity];
+    a.updatedAt = [NSDate date];
+    a.owner = me;
+    a.state = @YES;
+    a.tone = me.preference[@"DefaultTone"];
+    
+    return a;
+}
+
+#pragma mark - DELETE
+- (void)remove{
+    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmDeleteNotification object:self userInfo:nil];
+    [self deleteEntity];
+    [EWSync save];
+}
+
++ (void)deleteAll{
+    //delete
+    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
+        for (EWAlarm *alarm in me.alarms) {
+            EWAlarm *localAlarm = [alarm inContext:localContext];
+            [localAlarm remove];
+        }
+    }];
+}
+
+
+#pragma mark - Validate alarm
+- (BOOL)validateAlarm{
+    BOOL good = YES;
+    if (!self.owner) {
+        DDLogError(@"Alarm（%@）missing owner", self.serverID);
+        self.owner = [me inContext:self.managedObjectContext];
+    }
+    if (!self.tasks || self.tasks.count == 0) {
+        DDLogError(@"Alarm（%@）missing task", self.serverID);
+        good = NO;
+    }
+    if (!self.time) {
+        DDLogError(@"Alarm（%@）missing time", self.serverID);
+        good = NO;
+    }
+    //check tone
+    if (!self.tone) {
+        DDLogError(@"Tone not set, fixed!");
+        self.tone = me.preference[@"DefaultTone"];
+    }
+    
+    if (!good) {
+        DDLogError(@"Alarm failed validation: %@", self);
+    }
+    return good;
+}
+
+
+@end

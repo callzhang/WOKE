@@ -8,11 +8,20 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "_EWAlarmItem.h"
+#import "_EWAlarm.h"
 
 @class EWTaskItem;
 
-@interface EWAlarmItem : _EWAlarmItem
-@property (nonatomic) BOOL important;
-@property (nonatomic) BOOL state;
+@interface EWAlarm : _EWAlarm
+
+// add
++ (EWAlarm *)newAlarm;
+
+// delete
+- (void)remove;
++ (void)deleteAll;
+
+//validate
+- (BOOL)validate;
+
 @end

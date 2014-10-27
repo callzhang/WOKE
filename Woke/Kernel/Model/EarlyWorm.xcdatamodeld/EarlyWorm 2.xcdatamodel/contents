@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6244" systemVersion="13E28" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="14A389" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="EWAchievement" representedClassName="EWAchievement" parentEntity="EWServerObject" syncable="YES">
         <attribute name="body" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Transformable" syncable="YES"/>
@@ -8,7 +8,7 @@
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="achievements" inverseEntity="EWPerson" syncable="YES"/>
     </entity>
-    <entity name="EWAlarmItem" representedClassName="EWAlarmItem" parentEntity="EWServerObject" syncable="YES">
+    <entity name="EWAlarm" representedClassName="EWAlarm" parentEntity="EWServerObject" syncable="YES">
         <attribute name="important" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="state" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
@@ -91,7 +91,7 @@
         <attribute name="username" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="weibo" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="achievements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWAchievement" inverseName="owner" inverseEntity="EWAchievement" syncable="YES"/>
-        <relationship name="alarms" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWAlarmItem" inverseName="owner" inverseEntity="EWAlarmItem" syncable="YES"/>
+        <relationship name="alarms" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWAlarm" inverseName="owner" inverseEntity="EWAlarm" syncable="YES"/>
         <relationship name="friends" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWPerson" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="member" inverseEntity="EWGroup" syncable="YES"/>
         <relationship name="groupsManaging" optional="YES" toMany="YES" minCount="1" deletionRule="Nullify" destinationEntity="EWGroup" inverseName="admin" inverseEntity="EWGroup" syncable="YES"/>
@@ -126,23 +126,23 @@
         <attribute name="state" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="statement" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
-        <relationship name="alarm" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="EWAlarmItem" inverseName="tasks" inverseEntity="EWAlarmItem" syncable="YES"/>
+        <relationship name="alarm" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="EWAlarm" inverseName="tasks" inverseEntity="EWAlarm" syncable="YES"/>
         <relationship name="medias" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMediaItem" inverseName="tasks" inverseEntity="EWMediaItem" syncable="YES"/>
         <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EWMessage" inverseName="task" inverseEntity="EWMessage" syncable="YES"/>
         <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="tasks" inverseEntity="EWPerson" syncable="YES"/>
         <relationship name="pastOwner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="pastTasks" inverseEntity="EWPerson" syncable="YES"/>
     </entity>
     <elements>
-        <element name="EWAchievement" positionX="0" positionY="0" width="128" height="135"/>
-        <element name="EWAlarmItem" positionX="0" positionY="0" width="128" height="163"/>
-        <element name="EWGroup" positionX="0" positionY="0" width="128" height="148"/>
-        <element name="EWGroupTask" positionX="9" positionY="99" width="128" height="150"/>
-        <element name="EWMediaItem" positionX="0" positionY="0" width="128" height="268"/>
-        <element name="EWMessage" positionX="0" positionY="0" width="128" height="150"/>
-        <element name="EWNotification" positionX="9" positionY="153" width="128" height="148"/>
-        <element name="EWPerson" positionX="0" positionY="0" width="128" height="540"/>
-        <element name="EWServerObject" positionX="9" positionY="153" width="128" height="90"/>
-        <element name="EWSocialGraph" positionX="9" positionY="153" width="128" height="148"/>
-        <element name="EWTaskItem" positionX="0" positionY="0" width="128" height="195"/>
+        <element name="EWAchievement" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWAlarm" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWGroup" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWGroupTask" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWMediaItem" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWMessage" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWNotification" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWPerson" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWServerObject" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWSocialGraph" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="EWTaskItem" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>

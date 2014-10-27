@@ -18,7 +18,7 @@
 // Model
 #import "EWPerson.h"
 #import "EWTaskItem.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "EWMediaItem.h"
 #import "NSDate+Extend.h"
 #import "EWAchievement.h"

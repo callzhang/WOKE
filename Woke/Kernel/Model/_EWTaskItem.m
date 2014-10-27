@@ -19,9 +19,6 @@ const struct EWTaskItemRelationships EWTaskItemRelationships = {
 	.pastOwner = @"pastOwner",
 };
 
-const struct EWTaskItemFetchedProperties EWTaskItemFetchedProperties = {
-};
-
 @implementation EWTaskItemID
 @end
 
@@ -47,7 +44,7 @@ const struct EWTaskItemFetchedProperties EWTaskItemFetchedProperties = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
+
 	if ([key isEqualToString:@"stateValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"state"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -57,26 +54,11 @@ const struct EWTaskItemFetchedProperties EWTaskItemFetchedProperties = {
 	return keyPaths;
 }
 
-
-
-
 @dynamic completed;
-
-
-
-
-
 
 @dynamic log;
 
-
-
-
-
-
 @dynamic state;
-
-
 
 - (BOOL)stateValue {
 	NSNumber *result = [self state];
@@ -96,65 +78,37 @@ const struct EWTaskItemFetchedProperties EWTaskItemFetchedProperties = {
 	[self setPrimitiveState:[NSNumber numberWithBool:value_]];
 }
 
-
-
-
-
 @dynamic statement;
-
-
-
-
-
 
 @dynamic time;
 
-
-
-
-
-
 @dynamic alarm;
-
-	
 
 @dynamic medias;
 
-	
 - (NSMutableSet*)mediasSet {
 	[self willAccessValueForKey:@"medias"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"medias"];
-  
+
 	[self didAccessValueForKey:@"medias"];
 	return result;
 }
-	
 
 @dynamic messages;
 
-	
 - (NSMutableSet*)messagesSet {
 	[self willAccessValueForKey:@"messages"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"messages"];
-  
+
 	[self didAccessValueForKey:@"messages"];
 	return result;
 }
-	
 
 @dynamic owner;
 
-	
-
 @dynamic pastOwner;
 
-	
-
-
-
-
-
-
 @end
+

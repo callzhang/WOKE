@@ -24,9 +24,6 @@ const struct EWMediaItemRelationships EWMediaItemRelationships = {
 	.tasks = @"tasks",
 };
 
-const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
-};
-
 @implementation EWMediaItemID
 @end
 
@@ -52,7 +49,7 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
+
 	if ([key isEqualToString:@"playedValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"played"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -67,40 +64,15 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 	return keyPaths;
 }
 
-
-
-
 @dynamic audio;
-
-
-
-
-
 
 @dynamic buzzKey;
 
-
-
-
-
-
 @dynamic image;
-
-
-
-
-
 
 @dynamic message;
 
-
-
-
-
-
 @dynamic played;
-
-
 
 - (BOOL)playedValue {
 	NSNumber *result = [self played];
@@ -120,13 +92,7 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 	[self setPrimitivePlayed:[NSNumber numberWithBool:value_]];
 }
 
-
-
-
-
 @dynamic priority;
-
-
 
 - (int64_t)priorityValue {
 	NSNumber *result = [self priority];
@@ -146,82 +112,41 @@ const struct EWMediaItemFetchedProperties EWMediaItemFetchedProperties = {
 	[self setPrimitivePriority:[NSNumber numberWithLongLong:value_]];
 }
 
-
-
-
-
 @dynamic readTime;
-
-
-
-
-
 
 @dynamic targetDate;
 
-
-
-
-
-
 @dynamic thumbnail;
-
-
-
-
-
 
 @dynamic type;
 
-
-
-
-
-
 @dynamic video;
-
-
-
-
-
 
 @dynamic author;
 
-	
-
 @dynamic groupTask;
-
-	
 
 @dynamic receivers;
 
-	
 - (NSMutableSet*)receiversSet {
 	[self willAccessValueForKey:@"receivers"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"receivers"];
-  
+
 	[self didAccessValueForKey:@"receivers"];
 	return result;
 }
-	
 
 @dynamic tasks;
 
-	
 - (NSMutableSet*)tasksSet {
 	[self willAccessValueForKey:@"tasks"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"tasks"];
-  
+
 	[self didAccessValueForKey:@"tasks"];
 	return result;
 }
-	
-
-
-
-
-
 
 @end
+
