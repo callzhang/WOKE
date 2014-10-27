@@ -18,6 +18,7 @@ pod 'CocoaLumberjack'
 pod 'BlocksKit', '~> 2.2.5'
 pod 'CrashlyticsLumberjack', '~>1.0.0'
 pod 'APAddressBook', '~> 0.1.2'
+pod 'CrashlyticsFramework'
 
 target "WOKE Tests" do
   pod 'OCMock', '~> 3.1.1'
