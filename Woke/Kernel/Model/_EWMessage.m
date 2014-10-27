@@ -4,16 +4,16 @@
 #import "_EWMessage.h"
 
 const struct EWMessageAttributes EWMessageAttributes = {
-	.media = @"media",
+	.attribute = @"attribute",
 	.text = @"text",
+	.thumbnail = @"thumbnail",
 	.time = @"time",
 };
 
 const struct EWMessageRelationships EWMessageRelationships = {
-	.groupTask = @"groupTask",
+	.media = @"media",
 	.recipient = @"recipient",
 	.sender = @"sender",
-	.task = @"task",
 };
 
 @implementation EWMessageID
@@ -45,19 +45,17 @@ const struct EWMessageRelationships EWMessageRelationships = {
 	return keyPaths;
 }
 
-@dynamic media;
-
 @dynamic text;
+
+@dynamic thumbnail;
 
 @dynamic time;
 
-@dynamic groupTask;
+@dynamic media;
 
 @dynamic recipient;
 
 @dynamic sender;
-
-@dynamic task;
 
 @end
 

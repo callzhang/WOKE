@@ -4,24 +4,21 @@
 #import "_EWMediaItem.h"
 
 const struct EWMediaItemAttributes EWMediaItemAttributes = {
-	.audio = @"audio",
-	.buzzKey = @"buzzKey",
-	.image = @"image",
+	.liked = @"liked",
 	.message = @"message",
 	.played = @"played",
 	.priority = @"priority",
-	.readTime = @"readTime",
+	.response = @"response",
 	.targetDate = @"targetDate",
-	.thumbnail = @"thumbnail",
 	.type = @"type",
-	.video = @"video",
 };
 
 const struct EWMediaItemRelationships EWMediaItemRelationships = {
+	.activity = @"activity",
 	.author = @"author",
-	.groupTask = @"groupTask",
+	.mediaFile = @"mediaFile",
+	.messages = @"messages",
 	.receivers = @"receivers",
-	.tasks = @"tasks",
 };
 
 @implementation EWMediaItemID
@@ -31,16 +28,16 @@ const struct EWMediaItemRelationships EWMediaItemRelationships = {
 
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_ {
 	NSParameterAssert(moc_);
-	return [NSEntityDescription insertNewObjectForEntityForName:@"EWMediaItem" inManagedObjectContext:moc_];
+	return [NSEntityDescription insertNewObjectForEntityForName:@"EWMedia" inManagedObjectContext:moc_];
 }
 
 + (NSString*)entityName {
-	return @"EWMediaItem";
+	return @"EWMedia";
 }
 
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_ {
 	NSParameterAssert(moc_);
-	return [NSEntityDescription entityForName:@"EWMediaItem" inManagedObjectContext:moc_];
+	return [NSEntityDescription entityForName:@"EWMedia" inManagedObjectContext:moc_];
 }
 
 - (EWMediaItemID*)objectID {
@@ -50,8 +47,8 @@ const struct EWMediaItemRelationships EWMediaItemRelationships = {
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
 
-	if ([key isEqualToString:@"playedValue"]) {
-		NSSet *affectingKey = [NSSet setWithObject:@"played"];
+	if ([key isEqualToString:@"likedValue"]) {
+		NSSet *affectingKey = [NSSet setWithObject:@"liked"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
 		return keyPaths;
 	}
@@ -64,33 +61,29 @@ const struct EWMediaItemRelationships EWMediaItemRelationships = {
 	return keyPaths;
 }
 
-@dynamic audio;
+@dynamic liked;
 
-@dynamic buzzKey;
+- (BOOL)likedValue {
+	NSNumber *result = [self liked];
+	return [result boolValue];
+}
 
-@dynamic image;
+- (void)setLikedValue:(BOOL)value_ {
+	[self setLiked:[NSNumber numberWithBool:value_]];
+}
+
+- (BOOL)primitiveLikedValue {
+	NSNumber *result = [self primitiveLiked];
+	return [result boolValue];
+}
+
+- (void)setPrimitiveLikedValue:(BOOL)value_ {
+	[self setPrimitiveLiked:[NSNumber numberWithBool:value_]];
+}
 
 @dynamic message;
 
 @dynamic played;
-
-- (BOOL)playedValue {
-	NSNumber *result = [self played];
-	return [result boolValue];
-}
-
-- (void)setPlayedValue:(BOOL)value_ {
-	[self setPlayed:[NSNumber numberWithBool:value_]];
-}
-
-- (BOOL)primitivePlayedValue {
-	NSNumber *result = [self primitivePlayed];
-	return [result boolValue];
-}
-
-- (void)setPrimitivePlayedValue:(BOOL)value_ {
-	[self setPrimitivePlayed:[NSNumber numberWithBool:value_]];
-}
 
 @dynamic priority;
 
@@ -112,19 +105,28 @@ const struct EWMediaItemRelationships EWMediaItemRelationships = {
 	[self setPrimitivePriority:[NSNumber numberWithLongLong:value_]];
 }
 
-@dynamic readTime;
+@dynamic response;
 
 @dynamic targetDate;
 
-@dynamic thumbnail;
-
 @dynamic type;
 
-@dynamic video;
+@dynamic activity;
 
 @dynamic author;
 
-@dynamic groupTask;
+@dynamic mediaFile;
+
+@dynamic messages;
+
+- (NSMutableSet*)messagesSet {
+	[self willAccessValueForKey:@"messages"];
+
+	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"messages"];
+
+	[self didAccessValueForKey:@"messages"];
+	return result;
+}
 
 @dynamic receivers;
 
@@ -134,17 +136,6 @@ const struct EWMediaItemRelationships EWMediaItemRelationships = {
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"receivers"];
 
 	[self didAccessValueForKey:@"receivers"];
-	return result;
-}
-
-@dynamic tasks;
-
-- (NSMutableSet*)tasksSet {
-	[self willAccessValueForKey:@"tasks"];
-
-	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"tasks"];
-
-	[self didAccessValueForKey:@"tasks"];
 	return result;
 }
 

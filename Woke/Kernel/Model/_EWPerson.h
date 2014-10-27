@@ -27,37 +27,23 @@ extern const struct EWPersonAttributes {
 
 extern const struct EWPersonRelationships {
 	__unsafe_unretained NSString *achievements;
+	__unsafe_unretained NSString *activities;
 	__unsafe_unretained NSString *alarms;
 	__unsafe_unretained NSString *friends;
-	__unsafe_unretained NSString *groupTasks;
-	__unsafe_unretained NSString *groups;
-	__unsafe_unretained NSString *groupsManaging;
 	__unsafe_unretained NSString *mediaAssets;
 	__unsafe_unretained NSString *medias;
 	__unsafe_unretained NSString *notifications;
-	__unsafe_unretained NSString *pastTasks;
-	__unsafe_unretained NSString *receivedMessages;
-	__unsafe_unretained NSString *sentMessages;
 	__unsafe_unretained NSString *socialGraph;
-	__unsafe_unretained NSString *tasks;
-	__unsafe_unretained NSString *tasksHelped;
 } EWPersonRelationships;
 
 @class EWAchievement;
+@class NSManagedObject;
 @class EWAlarm;
 @class EWPerson;
-@class EWGroupTask;
-@class EWGroup;
-@class EWGroup;
 @class EWMediaItem;
 @class EWMediaItem;
 @class EWNotification;
-@class EWTaskItem;
-@class EWMessage;
-@class EWMessage;
 @class EWSocialGraph;
-@class EWTaskItem;
-@class EWTaskItem;
 
 @class NSObject;
 
@@ -162,6 +148,10 @@ extern const struct EWPersonRelationships {
 
 - (NSMutableSet*)achievementsSet;
 
+@property (nonatomic, strong) NSManagedObject *activities;
+
+//- (BOOL)validateActivities:(id*)value_ error:(NSError**)error_;
+
 @property (nonatomic, strong) NSSet *alarms;
 
 - (NSMutableSet*)alarmsSet;
@@ -169,18 +159,6 @@ extern const struct EWPersonRelationships {
 @property (nonatomic, strong) NSSet *friends;
 
 - (NSMutableSet*)friendsSet;
-
-@property (nonatomic, strong) NSSet *groupTasks;
-
-- (NSMutableSet*)groupTasksSet;
-
-@property (nonatomic, strong) NSSet *groups;
-
-- (NSMutableSet*)groupsSet;
-
-@property (nonatomic, strong) NSSet *groupsManaging;
-
-- (NSMutableSet*)groupsManagingSet;
 
 @property (nonatomic, strong) NSSet *mediaAssets;
 
@@ -194,29 +172,9 @@ extern const struct EWPersonRelationships {
 
 - (NSMutableSet*)notificationsSet;
 
-@property (nonatomic, strong) NSSet *pastTasks;
-
-- (NSMutableSet*)pastTasksSet;
-
-@property (nonatomic, strong) NSSet *receivedMessages;
-
-- (NSMutableSet*)receivedMessagesSet;
-
-@property (nonatomic, strong) NSSet *sentMessages;
-
-- (NSMutableSet*)sentMessagesSet;
-
 @property (nonatomic, strong) EWSocialGraph *socialGraph;
 
 //- (BOOL)validateSocialGraph:(id*)value_ error:(NSError**)error_;
-
-@property (nonatomic, strong) NSSet *tasks;
-
-- (NSMutableSet*)tasksSet;
-
-@property (nonatomic, strong) NSSet *tasksHelped;
-
-- (NSMutableSet*)tasksHelpedSet;
 
 @end
 
@@ -244,30 +202,6 @@ extern const struct EWPersonRelationships {
 
 @end
 
-@interface _EWPerson (GroupTasksCoreDataGeneratedAccessors)
-- (void)addGroupTasks:(NSSet*)value_;
-- (void)removeGroupTasks:(NSSet*)value_;
-- (void)addGroupTasksObject:(EWGroupTask*)value_;
-- (void)removeGroupTasksObject:(EWGroupTask*)value_;
-
-@end
-
-@interface _EWPerson (GroupsCoreDataGeneratedAccessors)
-- (void)addGroups:(NSSet*)value_;
-- (void)removeGroups:(NSSet*)value_;
-- (void)addGroupsObject:(EWGroup*)value_;
-- (void)removeGroupsObject:(EWGroup*)value_;
-
-@end
-
-@interface _EWPerson (GroupsManagingCoreDataGeneratedAccessors)
-- (void)addGroupsManaging:(NSSet*)value_;
-- (void)removeGroupsManaging:(NSSet*)value_;
-- (void)addGroupsManagingObject:(EWGroup*)value_;
-- (void)removeGroupsManagingObject:(EWGroup*)value_;
-
-@end
-
 @interface _EWPerson (MediaAssetsCoreDataGeneratedAccessors)
 - (void)addMediaAssets:(NSSet*)value_;
 - (void)removeMediaAssets:(NSSet*)value_;
@@ -289,46 +223,6 @@ extern const struct EWPersonRelationships {
 - (void)removeNotifications:(NSSet*)value_;
 - (void)addNotificationsObject:(EWNotification*)value_;
 - (void)removeNotificationsObject:(EWNotification*)value_;
-
-@end
-
-@interface _EWPerson (PastTasksCoreDataGeneratedAccessors)
-- (void)addPastTasks:(NSSet*)value_;
-- (void)removePastTasks:(NSSet*)value_;
-- (void)addPastTasksObject:(EWTaskItem*)value_;
-- (void)removePastTasksObject:(EWTaskItem*)value_;
-
-@end
-
-@interface _EWPerson (ReceivedMessagesCoreDataGeneratedAccessors)
-- (void)addReceivedMessages:(NSSet*)value_;
-- (void)removeReceivedMessages:(NSSet*)value_;
-- (void)addReceivedMessagesObject:(EWMessage*)value_;
-- (void)removeReceivedMessagesObject:(EWMessage*)value_;
-
-@end
-
-@interface _EWPerson (SentMessagesCoreDataGeneratedAccessors)
-- (void)addSentMessages:(NSSet*)value_;
-- (void)removeSentMessages:(NSSet*)value_;
-- (void)addSentMessagesObject:(EWMessage*)value_;
-- (void)removeSentMessagesObject:(EWMessage*)value_;
-
-@end
-
-@interface _EWPerson (TasksCoreDataGeneratedAccessors)
-- (void)addTasks:(NSSet*)value_;
-- (void)removeTasks:(NSSet*)value_;
-- (void)addTasksObject:(EWTaskItem*)value_;
-- (void)removeTasksObject:(EWTaskItem*)value_;
-
-@end
-
-@interface _EWPerson (TasksHelpedCoreDataGeneratedAccessors)
-- (void)addTasksHelped:(NSSet*)value_;
-- (void)removeTasksHelped:(NSSet*)value_;
-- (void)addTasksHelpedObject:(EWTaskItem*)value_;
-- (void)removeTasksHelpedObject:(EWTaskItem*)value_;
 
 @end
 
@@ -394,20 +288,14 @@ extern const struct EWPersonRelationships {
 - (NSMutableSet*)primitiveAchievements;
 - (void)setPrimitiveAchievements:(NSMutableSet*)value;
 
+- (NSManagedObject*)primitiveActivities;
+- (void)setPrimitiveActivities:(NSManagedObject*)value;
+
 - (NSMutableSet*)primitiveAlarms;
 - (void)setPrimitiveAlarms:(NSMutableSet*)value;
 
 - (NSMutableSet*)primitiveFriends;
 - (void)setPrimitiveFriends:(NSMutableSet*)value;
-
-- (NSMutableSet*)primitiveGroupTasks;
-- (void)setPrimitiveGroupTasks:(NSMutableSet*)value;
-
-- (NSMutableSet*)primitiveGroups;
-- (void)setPrimitiveGroups:(NSMutableSet*)value;
-
-- (NSMutableSet*)primitiveGroupsManaging;
-- (void)setPrimitiveGroupsManaging:(NSMutableSet*)value;
 
 - (NSMutableSet*)primitiveMediaAssets;
 - (void)setPrimitiveMediaAssets:(NSMutableSet*)value;
@@ -418,22 +306,7 @@ extern const struct EWPersonRelationships {
 - (NSMutableSet*)primitiveNotifications;
 - (void)setPrimitiveNotifications:(NSMutableSet*)value;
 
-- (NSMutableSet*)primitivePastTasks;
-- (void)setPrimitivePastTasks:(NSMutableSet*)value;
-
-- (NSMutableSet*)primitiveReceivedMessages;
-- (void)setPrimitiveReceivedMessages:(NSMutableSet*)value;
-
-- (NSMutableSet*)primitiveSentMessages;
-- (void)setPrimitiveSentMessages:(NSMutableSet*)value;
-
 - (EWSocialGraph*)primitiveSocialGraph;
 - (void)setPrimitiveSocialGraph:(EWSocialGraph*)value;
-
-- (NSMutableSet*)primitiveTasks;
-- (void)setPrimitiveTasks:(NSMutableSet*)value;
-
-- (NSMutableSet*)primitiveTasksHelped;
-- (void)setPrimitiveTasksHelped:(NSMutableSet*)value;
 
 @end

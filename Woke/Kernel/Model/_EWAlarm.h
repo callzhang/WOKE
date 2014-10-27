@@ -19,7 +19,7 @@ extern const struct EWAlarmRelationships {
 } EWAlarmRelationships;
 
 @class EWPerson;
-@class EWTaskItem;
+@class ;
 
 @interface EWAlarmID : EWServerObjectID {}
 @end
@@ -75,8 +75,8 @@ extern const struct EWAlarmRelationships {
 @interface _EWAlarm (TasksCoreDataGeneratedAccessors)
 - (void)addTasks:(NSSet*)value_;
 - (void)removeTasks:(NSSet*)value_;
-- (void)addTasksObject:(EWTaskItem*)value_;
-- (void)removeTasksObject:(EWTaskItem*)value_;
+- (void)addTasksObject:(*)value_;
+- (void)removeTasksObject:(*)value_;
 
 @end
 

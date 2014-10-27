@@ -12,6 +12,7 @@
 
 #define kMediaTypeBuzz      @"buzz"
 #define kMediaTypeVoice     @"voice"
+#define kMediaTypeVideo     @"video"
 
 @class EWGroupTask, EWPerson, EWTaskItem;
 @interface EWMediaItem : _EWMediaItem
