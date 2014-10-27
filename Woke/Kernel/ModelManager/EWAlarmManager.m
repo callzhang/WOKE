@@ -131,7 +131,7 @@
         //cannot check alarm for myself, which will cause a checking/schedule cycle
         
         DDLogVerbose(@"Alarm for me is less than 7, fetch from server!");
-        PFQuery *alarmQuery = [PFQuery queryWithClassName:@"EWAlarmItem"];
+        PFQuery *alarmQuery = [PFQuery queryWithClassName:NSStringFromClass([EWAlarm class])];
         [alarmQuery whereKey:@"owner" equalTo:[PFUser currentUser]];
         [alarmQuery whereKey:kParseObjectID notContainedIn:[alarms valueForKey:kParseObjectID]];
         NSArray *objects = [EWSync findServerObjectWithQuery:alarmQuery error:NULL];
