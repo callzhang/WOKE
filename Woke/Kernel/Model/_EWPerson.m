@@ -29,10 +29,10 @@ const struct EWPersonRelationships EWPersonRelationships = {
 	.activities = @"activities",
 	.alarms = @"alarms",
 	.friends = @"friends",
-	.mediaAssets = @"mediaAssets",
 	.medias = @"medias",
 	.notifications = @"notifications",
 	.socialGraph = @"socialGraph",
+	.unreadMedias = @"unreadMedias",
 };
 
 @implementation EWPersonID
@@ -137,6 +137,15 @@ const struct EWPersonRelationships EWPersonRelationships = {
 
 @dynamic activities;
 
+- (NSMutableSet*)activitiesSet {
+	[self willAccessValueForKey:@"activities"];
+
+	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"activities"];
+
+	[self didAccessValueForKey:@"activities"];
+	return result;
+}
+
 @dynamic alarms;
 
 - (NSMutableSet*)alarmsSet {
@@ -156,17 +165,6 @@ const struct EWPersonRelationships EWPersonRelationships = {
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"friends"];
 
 	[self didAccessValueForKey:@"friends"];
-	return result;
-}
-
-@dynamic mediaAssets;
-
-- (NSMutableSet*)mediaAssetsSet {
-	[self willAccessValueForKey:@"mediaAssets"];
-
-	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"mediaAssets"];
-
-	[self didAccessValueForKey:@"mediaAssets"];
 	return result;
 }
 
@@ -193,6 +191,17 @@ const struct EWPersonRelationships EWPersonRelationships = {
 }
 
 @dynamic socialGraph;
+
+@dynamic unreadMedias;
+
+- (NSMutableSet*)unreadMediasSet {
+	[self willAccessValueForKey:@"unreadMedias"];
+
+	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"unreadMedias"];
+
+	[self didAccessValueForKey:@"unreadMedias"];
+	return result;
+}
 
 @end
 

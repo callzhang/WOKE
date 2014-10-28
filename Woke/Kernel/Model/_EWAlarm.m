@@ -14,7 +14,6 @@ const struct EWAlarmAttributes EWAlarmAttributes = {
 
 const struct EWAlarmRelationships EWAlarmRelationships = {
 	.owner = @"owner",
-	.tasks = @"tasks",
 };
 
 @implementation EWAlarmID
@@ -106,17 +105,6 @@ const struct EWAlarmRelationships EWAlarmRelationships = {
 @dynamic tone;
 
 @dynamic owner;
-
-@dynamic tasks;
-
-- (NSMutableSet*)tasksSet {
-	[self willAccessValueForKey:@"tasks"];
-
-	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"tasks"];
-
-	[self didAccessValueForKey:@"tasks"];
-	return result;
-}
 
 @end
 

@@ -19,7 +19,7 @@
 #import "EWPerson.h"
 #import "EWTaskItem.h"
 #import "EWAlarm.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "NSDate+Extend.h"
 #import "EWAchievement.h"
 
@@ -161,7 +161,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             return n1 < n2;
         }];
         if (person.isMe) {
-            if (!_taskActivity || _taskActivity.count != person.pastTasks.count) {
+            if (!_taskActivity || _taskActivity.count != person.activities.count) {
                 [EWStatisticsManager updateTaskActivityCacheWithCompletion:^{
                     _taskActivity = person.cachedInfo[kTaskActivityCache];
                     dates = _taskActivity.allKeys;

@@ -1,40 +1,40 @@
 // DO NOT EDIT. This file is machine-generated and constantly overwritten.
-// Make changes to EWMeidaFile.m instead.
+// Make changes to EWMediaFile.m instead.
 
-#import "_EWMeidaFile.h"
+#import "_EWMediaFile.h"
 
-const struct EWMeidaFileAttributes EWMeidaFileAttributes = {
+const struct EWMediaFileAttributes EWMediaFileAttributes = {
 	.audio = @"audio",
 	.image = @"image",
 	.thumbnail = @"thumbnail",
 	.video = @"video",
 };
 
-const struct EWMeidaFileRelationships EWMeidaFileRelationships = {
+const struct EWMediaFileRelationships EWMediaFileRelationships = {
 	.medias = @"medias",
 };
 
-@implementation EWMeidaFileID
+@implementation EWMediaFileID
 @end
 
-@implementation _EWMeidaFile
+@implementation _EWMediaFile
 
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_ {
 	NSParameterAssert(moc_);
-	return [NSEntityDescription insertNewObjectForEntityForName:@"EWMeidaFile" inManagedObjectContext:moc_];
+	return [NSEntityDescription insertNewObjectForEntityForName:@"EWMediaFile" inManagedObjectContext:moc_];
 }
 
 + (NSString*)entityName {
-	return @"EWMeidaFile";
+	return @"EWMediaFile";
 }
 
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_ {
 	NSParameterAssert(moc_);
-	return [NSEntityDescription entityForName:@"EWMeidaFile" inManagedObjectContext:moc_];
+	return [NSEntityDescription entityForName:@"EWMediaFile" inManagedObjectContext:moc_];
 }
 
-- (EWMeidaFileID*)objectID {
-	return (EWMeidaFileID*)[super objectID];
+- (EWMediaFileID*)objectID {
+	return (EWMediaFileID*)[super objectID];
 }
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {

@@ -22,7 +22,7 @@
 #import "EWTaskManager.h"
 #import "EWWakeUpManager.h"
 #import "EWMediaStore.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWTaskItem.h"
 #import "EWUserManagement.h"
 #import "EWSocialGraphManager.h"
@@ -258,12 +258,12 @@
                 NSInteger x = arc4random_uniform(2);
                 if (x==0) {
                     //buzz
-                    EWMediaItem *media = [[EWMediaStore sharedInstance] createBuzzMedia];
+                    EWMedia *media = [[EWMediaStore sharedInstance] createBuzzMedia];
                     [task addMediasObject:media];
                     [EWSync save];
                 }else{
                     //voice
-                    EWMediaItem *media = [[EWMediaStore sharedInstance] getWokeVoice];
+                    EWMedia *media = [[EWMediaStore sharedInstance] getWokeVoice];
                     //[task addMediasObject:media];
                     [media addTasksObject:task];
                     [EWSync save];

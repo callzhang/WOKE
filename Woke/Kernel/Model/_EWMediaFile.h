@@ -1,34 +1,34 @@
 // DO NOT EDIT. This file is machine-generated and constantly overwritten.
-// Make changes to EWMeidaFile.h instead.
+// Make changes to EWMediaFile.h instead.
 
 #import <CoreData/CoreData.h>
 #import "EWServerObject.h"
 
-extern const struct EWMeidaFileAttributes {
+extern const struct EWMediaFileAttributes {
 	__unsafe_unretained NSString *audio;
 	__unsafe_unretained NSString *image;
 	__unsafe_unretained NSString *thumbnail;
 	__unsafe_unretained NSString *video;
-} EWMeidaFileAttributes;
+} EWMediaFileAttributes;
 
-extern const struct EWMeidaFileRelationships {
+extern const struct EWMediaFileRelationships {
 	__unsafe_unretained NSString *medias;
-} EWMeidaFileRelationships;
+} EWMediaFileRelationships;
 
-@class EWMediaItem;
-
-@class NSObject;
+@class EWMedia;
 
 @class NSObject;
 
-@interface EWMeidaFileID : EWServerObjectID {}
+@class NSObject;
+
+@interface EWMediaFileID : EWServerObjectID {}
 @end
 
-@interface _EWMeidaFile : EWServerObject {}
+@interface _EWMediaFile : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
-@property (nonatomic, readonly, strong) EWMeidaFileID* objectID;
+@property (nonatomic, readonly, strong) EWMediaFileID* objectID;
 
 @property (nonatomic, strong) NSData* audio;
 
@@ -52,15 +52,15 @@ extern const struct EWMeidaFileRelationships {
 
 @end
 
-@interface _EWMeidaFile (MediasCoreDataGeneratedAccessors)
+@interface _EWMediaFile (MediasCoreDataGeneratedAccessors)
 - (void)addMedias:(NSSet*)value_;
 - (void)removeMedias:(NSSet*)value_;
-- (void)addMediasObject:(EWMediaItem*)value_;
-- (void)removeMediasObject:(EWMediaItem*)value_;
+- (void)addMediasObject:(EWMedia*)value_;
+- (void)removeMediasObject:(EWMedia*)value_;
 
 @end
 
-@interface _EWMeidaFile (CoreDataGeneratedPrimitiveAccessors)
+@interface _EWMediaFile (CoreDataGeneratedPrimitiveAccessors)
 
 - (NSData*)primitiveAudio;
 - (void)setPrimitiveAudio:(NSData*)value;

@@ -9,8 +9,8 @@
 #import "AVManager.h"
 #import "EWMediaViewCell.h"
 #import "EWTaskItem.h"
-#import "EWMediaItem.h"
-#import "EWTaskManager.h"
+#import "EWMedia.h"
+#import "EWMediaFile.h"
 #import "EWDataStore.h"
 #import "EWMediaSlider.h"
 #import "EWMediaStore.h"
@@ -132,7 +132,7 @@
 }
 
 
-- (void)playMedia:(EWMediaItem *)mi{
+- (void)playMedia:(EWMedia *)mi{
     NSParameterAssert([NSThread isMainThread]);
 	//set to max volume
 	[self setDeviceVolume:1.0];
@@ -155,15 +155,8 @@
 		
         if ([media.type isEqualToString:kMediaTypeVoice] || !media.type) {
             
-            [self playSoundFromData:mi.audio];
+            [self playSoundFromData:mi.mediaFile.audio];
 			
-        }else if([media.type isEqualToString:kMediaTypeBuzz]){
-            if ([media.buzzKey isEqualToString: @"default"]) {
-                [self playSoundFromFileName:@"buzz.caf"];
-            }else{
-                //TODO
-                [self playSoundFromFileName:media.buzzKey];
-            }
         }else{
             DDLogVerbose(@"Unknown type of media, skip");
             [self playSoundFromFileName:kSilentSound];
@@ -604,7 +597,7 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
 
 
 #pragma mark - Remote control
-- (void)displayNowPlayingInfoToLockScreen:(EWMediaItem *)m{
+- (void)displayNowPlayingInfoToLockScreen:(EWMedia *)m{
     if (!m.author) return;
         
     //only support iOS5+

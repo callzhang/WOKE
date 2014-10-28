@@ -7,7 +7,7 @@
 //
 
 #import "EWMediaStore.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWImageStore.h"
 #import "EWPerson.h"
 #import "EWTaskManager.h"
@@ -15,6 +15,7 @@
 #import "EWUserManagement.h"
 #import "EWNotificationManager.h"
 #import "EWNotification.h"
+#import "EWActivity.h"
 
 @implementation EWMediaStore
 //@synthesize context, model;
@@ -38,18 +39,10 @@
 }
 
 
-#pragma mark - create media
-- (EWMediaItem *)createMedia{
-    NSParameterAssert([NSThread isMainThread]);
-    EWMediaItem *m = [EWMediaItem createEntity];
-    m.updatedAt = [NSDate date];
-    m.author = [EWSession sharedSession].currentUser;
-    return m;
-}
-- (EWMediaItem *)getWokeVoice{
-    PFQuery *q = [PFQuery queryWithClassName:@"EWMediaItem"];
-    [q whereKey:EWMediaItemRelationships.author equalTo:[PFQuery getUserObjectWithId:WokeUserID]];
-    [q whereKey:EWMediaItemAttributes.type equalTo:kPushMediaTypeVoice];
+- (EWMedia *)getWokeVoice{
+    PFQuery *q = [PFQuery queryWithClassName:@"EWMedia"];
+    [q whereKey:EWMediaRelationships.author equalTo:[PFQuery getUserObjectWithId:WokeUserID]];
+    [q whereKey:EWMediaAttributes.type equalTo:kPushMediaTypeVoice];
     NSArray *mediasFromWoke = [EWSession sharedSession].currentUser.cachedInfo[kWokeVoiceReceived]?:[NSArray new];
 #if !DEBUG
     [q whereKey:kParseObjectID notContainedIn:mediasFromWoke];
@@ -58,7 +51,7 @@
     NSUInteger i = arc4random_uniform(voices.count);
     PFObject *voice = voices[i];
     if (voice) {
-        EWMediaItem *media = (EWMediaItem *)[voice managedObjectInContext:nil];
+        EWMedia *media = (EWMedia *)[voice managedObjectInContext:nil];
         [media refresh];
         //save
         NSMutableDictionary *cache = [[EWSession sharedSession].currentUser.cachedInfo mutableCopy];
@@ -73,20 +66,7 @@
     return nil;
 }
 
-- (EWMediaItem *)createBuzzMedia{
-    EWMediaItem *media = [self createMedia];
-    media.type = kMediaTypeBuzz;
-    media.buzzKey = [[EWSession sharedSession].currentUser.preference objectForKey:@"buzzSound"];
-    return media;
-}
-
-#pragma mark - SEARCH
-- (EWMediaItem *)getMediaByID:(NSString *)mediaID{
-    EWMediaItem *media = (EWMediaItem *)[EWSync managedObjectWithClass:@"EWMediaItem" withID:mediaID];
-    return media;
-}
-
-
+//possible redundant API, my media should be ready on start
 - (NSArray *)mediaCreatedByPerson:(EWPerson *)person{
     NSArray *medias = [person.medias allObjects];
     if (medias.count == 0 && [person isMe]) {
@@ -97,7 +77,7 @@
                 EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
                 NSArray *newMedias = [objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [localMe.medias valueForKey:kParseObjectID]]];
                 for (PFObject *m in newMedias) {
-                    EWMediaItem *media = (EWMediaItem *)[m managedObjectInContext:localContext];
+                    EWMedia *media = (EWMedia *)[m managedObjectInContext:localContext];
                     [media refresh];
                     [localMe addMediasObject:media];
                     [media saveToLocal];
@@ -111,35 +91,18 @@
 }
 
 - (NSArray *)mediasForPerson:(EWPerson *)person{
-    NSMutableSet *medias = [[NSMutableSet alloc] init];
-    for (EWTaskItem *task in [person.tasks setByAddingObjectsFromSet:person.pastTasks]) {
-        for (EWMediaItem *media in task.medias) {
+    NSMutableArray *medias = [[NSMutableArray alloc] init];
+    for (EWActivity *activity in person.activities) {
+        for (EWMedia *media in activity.medias) {
             [medias addObject:media];
         }
     }
-    //need to add Media Assets
+    //sort
+    [medias sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:EWServerObjectAttributes.createdAt ascending:YES]]];
     
-    return [medias allObjects];
+    return medias;
 }
 
-#pragma mark - DELETE
-- (void)deleteMedia:(EWMediaItem *)mi{
-
-    [mi.managedObjectContext deleteObject:mi];
-    [EWSync save];
-}
-
-
-- (void)deleteAllMedias{
-#ifdef DEBUG
-    NSLog(@"*** Delete all medias");
-    NSArray *medias = [self mediaCreatedByPerson:[EWSession sharedSession].currentUser];
-    for (EWMediaItem *m in medias) {
-        [m.managedObjectContext deleteObject:m];
-    }
-    [EWSync save];
-#endif
-}
 
 
 - (BOOL)checkMediaAssets{
@@ -160,14 +123,14 @@
     if (![PFUser currentUser]) {
         return NO;
     }
-    PFQuery *query = [PFQuery queryWithClassName:@"EWMediaItem"];
+    PFQuery *query = [PFQuery queryWithClassName:@"EWMedia"];
     [query whereKey:@"receivers" containedIn:@[[PFUser currentUser]]];
-    NSSet *localAssetIDs = [[EWSession sharedSession].currentUser.mediaAssets valueForKey:kParseObjectID];
+    NSSet *localAssetIDs = [[EWSession sharedSession].currentUser.unreadMedias valueForKey:kParseObjectID];
     [query whereKey:kParseObjectID notContainedIn:localAssetIDs.allObjects];
     NSArray *mediaPOs = [EWSync findServerObjectWithQuery:query];
 	BOOL newMedia = NO;
     for (PFObject *po in mediaPOs) {
-        EWMediaItem *mo = (EWMediaItem *)[po managedObjectInContext:context];
+        EWMedia *mo = (EWMedia *)[po managedObjectInContext:context];
         [mo refresh];//save to local marked
         //relationship
         NSMutableArray *receivers = po[@"receivers"];
@@ -184,8 +147,8 @@
             }
         }];
         
-        [mo removeReceiversObject:[EWSession sharedSession].currentUser];
-        [[EWSession sharedSession].currentUser addMediaAssetsObject:mo];
+        mo.receiver = nil;
+        [[EWSession sharedSession].currentUser addUnreadMediasObject:mo];
         
         //in order to upload change to server, we need to save to server
         [mo saveToServer];
@@ -204,7 +167,7 @@
         //create a notification
 		if (!notified) {
 			dispatch_async(dispatch_get_main_queue(), ^{
-				EWMediaItem *media = (EWMediaItem *)[mo inContext:mainContext];
+				EWMedia *media = (EWMedia *)[mo inContext:mainContext];
 				[EWNotificationManager newNotificationForMedia:media];
 			});
 			newMedia = YES;
@@ -224,46 +187,4 @@
 }
 
 
-+ (BOOL)validateMedia:(EWMediaItem *)media{
-    BOOL good = YES;
-    if(!media.type){
-        good = NO;
-    }
-    if (!media.author) {
-        good = NO;
-    }
-    if ([media.type isEqualToString:kMediaTypeVoice]) {
-        if(!media.audio){
-            DDLogError(@"Media %@ type voice with no audio.", media.serverID);
-            good = NO;
-        }
-    }else if ([media.type isEqualToString:kMediaTypeBuzz]){
-        if(!media.buzzKey){
-            DDLogError(@"Media %@ type buzz with no buzz type", media.serverID);
-            good = NO;
-        }
-    }
-    if (!media.receivers) {
-        if(media.tasks.count == 0){
-            DDLogError(@"Found media %@ with no receiver and no task.", media.serverID);
-            good = NO;
-        }
-    }
-    
-    return good;
-}
-
-+ (void)createACLForMedia:(EWMediaItem *)media{
-    NSSet *receivers = media.receivers;
-    PFObject *m = media.parseObject;
-    PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
-    for (EWPerson *p in receivers) {
-        PFObject *PO = p.parseObject;
-        [acl setReadAccess:YES forUser:(PFUser *)PO];
-        [acl setReadAccess:YES forUser:(PFUser *)PO];
-        
-    }
-    m.ACL = acl;
-    NSLog(@"ACL created for media(%@) with access for %@", media.objectId, [receivers valueForKey:kParseObjectID]);
-}
 @end

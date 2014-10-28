@@ -1,10 +1,10 @@
 // DO NOT EDIT. This file is machine-generated and constantly overwritten.
-// Make changes to EWMediaItem.h instead.
+// Make changes to EWMedia.h instead.
 
 #import <CoreData/CoreData.h>
 #import "EWServerObject.h"
 
-extern const struct EWMediaItemAttributes {
+extern const struct EWMediaAttributes {
 	__unsafe_unretained NSString *liked;
 	__unsafe_unretained NSString *message;
 	__unsafe_unretained NSString *played;
@@ -12,30 +12,30 @@ extern const struct EWMediaItemAttributes {
 	__unsafe_unretained NSString *response;
 	__unsafe_unretained NSString *targetDate;
 	__unsafe_unretained NSString *type;
-} EWMediaItemAttributes;
+} EWMediaAttributes;
 
-extern const struct EWMediaItemRelationships {
+extern const struct EWMediaRelationships {
 	__unsafe_unretained NSString *activity;
 	__unsafe_unretained NSString *author;
 	__unsafe_unretained NSString *mediaFile;
 	__unsafe_unretained NSString *messages;
-	__unsafe_unretained NSString *receivers;
-} EWMediaItemRelationships;
+	__unsafe_unretained NSString *receiver;
+} EWMediaRelationships;
 
-@class NSManagedObject;
+@class EWActivity;
 @class EWPerson;
-@class EWMeidaFile;
+@class EWMediaFile;
 @class EWMessage;
 @class EWPerson;
 
-@interface EWMediaItemID : EWServerObjectID {}
+@interface EWMediaID : EWServerObjectID {}
 @end
 
-@interface _EWMediaItem : EWServerObject {}
+@interface _EWMedia : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
-@property (nonatomic, readonly, strong) EWMediaItemID* objectID;
+@property (nonatomic, readonly, strong) EWMediaID* objectID;
 
 @property (nonatomic, strong) NSNumber* liked;
 
@@ -73,7 +73,7 @@ extern const struct EWMediaItemRelationships {
 
 //- (BOOL)validateType:(id*)value_ error:(NSError**)error_;
 
-@property (nonatomic, strong) NSManagedObject *activity;
+@property (nonatomic, strong) EWActivity *activity;
 
 //- (BOOL)validateActivity:(id*)value_ error:(NSError**)error_;
 
@@ -81,7 +81,7 @@ extern const struct EWMediaItemRelationships {
 
 //- (BOOL)validateAuthor:(id*)value_ error:(NSError**)error_;
 
-@property (nonatomic, strong) EWMeidaFile *mediaFile;
+@property (nonatomic, strong) EWMediaFile *mediaFile;
 
 //- (BOOL)validateMediaFile:(id*)value_ error:(NSError**)error_;
 
@@ -89,13 +89,13 @@ extern const struct EWMediaItemRelationships {
 
 - (NSMutableSet*)messagesSet;
 
-@property (nonatomic, strong) NSSet *receivers;
+@property (nonatomic, strong) EWPerson *receiver;
 
-- (NSMutableSet*)receiversSet;
+//- (BOOL)validateReceiver:(id*)value_ error:(NSError**)error_;
 
 @end
 
-@interface _EWMediaItem (MessagesCoreDataGeneratedAccessors)
+@interface _EWMedia (MessagesCoreDataGeneratedAccessors)
 - (void)addMessages:(NSSet*)value_;
 - (void)removeMessages:(NSSet*)value_;
 - (void)addMessagesObject:(EWMessage*)value_;
@@ -103,15 +103,7 @@ extern const struct EWMediaItemRelationships {
 
 @end
 
-@interface _EWMediaItem (ReceiversCoreDataGeneratedAccessors)
-- (void)addReceivers:(NSSet*)value_;
-- (void)removeReceivers:(NSSet*)value_;
-- (void)addReceiversObject:(EWPerson*)value_;
-- (void)removeReceiversObject:(EWPerson*)value_;
-
-@end
-
-@interface _EWMediaItem (CoreDataGeneratedPrimitiveAccessors)
+@interface _EWMedia (CoreDataGeneratedPrimitiveAccessors)
 
 - (NSNumber*)primitiveLiked;
 - (void)setPrimitiveLiked:(NSNumber*)value;
@@ -137,19 +129,19 @@ extern const struct EWMediaItemRelationships {
 - (NSDate*)primitiveTargetDate;
 - (void)setPrimitiveTargetDate:(NSDate*)value;
 
-- (NSManagedObject*)primitiveActivity;
-- (void)setPrimitiveActivity:(NSManagedObject*)value;
+- (EWActivity*)primitiveActivity;
+- (void)setPrimitiveActivity:(EWActivity*)value;
 
 - (EWPerson*)primitiveAuthor;
 - (void)setPrimitiveAuthor:(EWPerson*)value;
 
-- (EWMeidaFile*)primitiveMediaFile;
-- (void)setPrimitiveMediaFile:(EWMeidaFile*)value;
+- (EWMediaFile*)primitiveMediaFile;
+- (void)setPrimitiveMediaFile:(EWMediaFile*)value;
 
 - (NSMutableSet*)primitiveMessages;
 - (void)setPrimitiveMessages:(NSMutableSet*)value;
 
-- (NSMutableSet*)primitiveReceivers;
-- (void)setPrimitiveReceivers:(NSMutableSet*)value;
+- (EWPerson*)primitiveReceiver;
+- (void)setPrimitiveReceiver:(EWPerson*)value;
 
 @end

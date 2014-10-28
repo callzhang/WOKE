@@ -7,7 +7,7 @@
 //
 
 #import "EWDownloadManager.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWDataStore.h"
 #import "EWTaskItem.h"
 #import "NSString+MD5.h"
@@ -77,7 +77,7 @@
     [self downloadUrl:Url];
 }
 
-- (void)downloadMedia:(EWMediaItem *)media{
+- (void)downloadMedia:(EWMedia *)media{
     //assume only audio to be downloaded
     NSString *path = media.audioKey;
     
@@ -101,7 +101,7 @@
 - (void)downloadTask:(EWTaskItem *)t withCompletionHandler:(void (^)(void))block{
     //task = t;
     completionTask = block;
-    for (EWMediaItem *mi in t.medias) {
+    for (EWMedia *mi in t.medias) {
         
         [self downloadMedia:mi];
     }
@@ -155,7 +155,7 @@
     }
     
     //media
-    EWMediaItem *mi = downloadQueue[request.URL.absoluteString];
+    EWMedia *mi = downloadQueue[request.URL.absoluteString];
     if (mi) {
         NSLog(@"%s: media (%@) downloaded", __func__, mi.audioKey);
         //remove task from queue

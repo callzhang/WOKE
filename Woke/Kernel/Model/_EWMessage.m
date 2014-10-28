@@ -4,10 +4,11 @@
 #import "_EWMessage.h"
 
 const struct EWMessageAttributes EWMessageAttributes = {
-	.attribute = @"attribute",
+	.read = @"read",
 	.text = @"text",
 	.thumbnail = @"thumbnail",
 	.time = @"time",
+	.type = @"type",
 };
 
 const struct EWMessageRelationships EWMessageRelationships = {
@@ -45,11 +46,15 @@ const struct EWMessageRelationships EWMessageRelationships = {
 	return keyPaths;
 }
 
+@dynamic read;
+
 @dynamic text;
 
 @dynamic thumbnail;
 
 @dynamic time;
+
+@dynamic type;
 
 @dynamic media;
 

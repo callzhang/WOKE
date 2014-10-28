@@ -5,10 +5,11 @@
 #import "EWServerObject.h"
 
 extern const struct EWMessageAttributes {
-	__unsafe_unretained NSString *attribute;
+	__unsafe_unretained NSString *read;
 	__unsafe_unretained NSString *text;
 	__unsafe_unretained NSString *thumbnail;
 	__unsafe_unretained NSString *time;
+	__unsafe_unretained NSString *type;
 } EWMessageAttributes;
 
 extern const struct EWMessageRelationships {
@@ -17,7 +18,7 @@ extern const struct EWMessageRelationships {
 	__unsafe_unretained NSString *sender;
 } EWMessageRelationships;
 
-@class EWMediaItem;
+@class EWMedia;
 @class EWPerson;
 @class EWPerson;
 
@@ -32,6 +33,10 @@ extern const struct EWMessageRelationships {
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
 @property (nonatomic, readonly, strong) EWMessageID* objectID;
 
+@property (nonatomic, strong) NSDate* read;
+
+//- (BOOL)validateRead:(id*)value_ error:(NSError**)error_;
+
 @property (nonatomic, strong) NSString* text;
 
 //- (BOOL)validateText:(id*)value_ error:(NSError**)error_;
@@ -44,7 +49,11 @@ extern const struct EWMessageRelationships {
 
 //- (BOOL)validateTime:(id*)value_ error:(NSError**)error_;
 
-@property (nonatomic, strong) EWMediaItem *media;
+@property (nonatomic, strong) NSString* type;
+
+//- (BOOL)validateType:(id*)value_ error:(NSError**)error_;
+
+@property (nonatomic, strong) EWMedia *media;
 
 //- (BOOL)validateMedia:(id*)value_ error:(NSError**)error_;
 
@@ -60,6 +69,9 @@ extern const struct EWMessageRelationships {
 
 @interface _EWMessage (CoreDataGeneratedPrimitiveAccessors)
 
+- (NSDate*)primitiveRead;
+- (void)setPrimitiveRead:(NSDate*)value;
+
 - (NSString*)primitiveText;
 - (void)setPrimitiveText:(NSString*)value;
 
@@ -69,8 +81,8 @@ extern const struct EWMessageRelationships {
 - (NSDate*)primitiveTime;
 - (void)setPrimitiveTime:(NSDate*)value;
 
-- (EWMediaItem*)primitiveMedia;
-- (void)setPrimitiveMedia:(EWMediaItem*)value;
+- (EWMedia*)primitiveMedia;
+- (void)setPrimitiveMedia:(EWMedia*)value;
 
 - (EWPerson*)primitiveRecipient;
 - (void)setPrimitiveRecipient:(EWPerson*)value;

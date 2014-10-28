@@ -1,6 +1,6 @@
-#import "_EWMeidaFile.h"
+#import "_EWMediaFile.h"
 
-@interface EWMeidaFile : _EWMeidaFile {}
+@interface EWMediaFile : _EWMediaFile {}
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic, retain) UIImage *thumbnail;
 @property (nonatomic, retain) NSString *audioKey;

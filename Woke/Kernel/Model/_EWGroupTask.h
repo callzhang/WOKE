@@ -17,7 +17,7 @@ extern const struct EWGroupTaskRelationships {
 	__unsafe_unretained NSString *participents;
 } EWGroupTaskRelationships;
 
-@class EWMediaItem;
+@class EWMedia;
 @class EWMessage;
 @class EWPerson;
 
@@ -63,8 +63,8 @@ extern const struct EWGroupTaskRelationships {
 @interface _EWGroupTask (MediasCoreDataGeneratedAccessors)
 - (void)addMedias:(NSSet*)value_;
 - (void)removeMedias:(NSSet*)value_;
-- (void)addMediasObject:(EWMediaItem*)value_;
-- (void)removeMediasObject:(EWMediaItem*)value_;
+- (void)addMediasObject:(EWMedia*)value_;
+- (void)removeMediasObject:(EWMedia*)value_;
 
 @end
 

@@ -8,7 +8,7 @@
 
 #import "EWTaskManager.h"
 #import "EWPerson.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWMediaStore.h"
 #import "EWTaskItem.h"
 #import "EWAlarm.h"
@@ -785,7 +785,7 @@
 
 - (NSInteger)numberOfVoiceInTask:(EWTaskItem *)task{
     NSInteger nMedia = 0;
-    for (EWMediaItem *m in task.medias) {
+    for (EWMedia *m in task.medias) {
         if ([m.type isEqualToString: kMediaTypeVoice]) {
             nMedia++;
         }

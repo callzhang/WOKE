@@ -7,7 +7,7 @@
 //
 #import "EWShakeProgressView.h"
 #import <UIKit/UIKit.h>
-@class EWPerson, EWMediaItem, EWTaskItem;
+@class EWPerson, EWMedia, EWTaskItem;
 
 @interface EWWakeUpViewController : UIViewController <UIPopoverControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 //@property (weak, nonatomic) IBOutlet UILabel *title;

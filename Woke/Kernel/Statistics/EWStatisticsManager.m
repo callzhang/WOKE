@@ -11,7 +11,8 @@
 #import "EWTaskManager.h"
 #import "EWUIUtil.h"
 #import "EWMediaStore.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
+#import "EWActivity.h"
 
 
 @implementation EWStatisticsManager
@@ -205,9 +206,9 @@
             
             //woke to receivers
             NSMutableArray *receivers = [NSMutableArray new];
-            for (EWMediaItem *m in [EWSession sharedSession].currentUser.medias.copy) {
+            for (EWMedia *m in [EWSession sharedSession].currentUser.medias.copy) {
 				if (![mainContext existingObjectWithID:m.objectID error:NULL]) return;
-                for (EWTaskItem *t in m.tasks.copy) {
+                for (EWTaskItem *t in m.activity.copy) {
 					if (![mainContext existingObjectWithID:t.objectID error:NULL]) return;
                     if ([t.time isEarlierThan:eod] && [bod isEarlierThan:t.time]) {
                         NSString *receiver = t.owner.objectId;
@@ -223,7 +224,7 @@
             //woke by sender
             NSArray *wokeBy;
             NSMutableArray *senders = [NSMutableArray new];
-            for (EWMediaItem *m in task.medias) {
+            for (EWMedia *m in task.medias) {
                 NSString *sender = m.author.objectId;
                 if (!sender) continue;
                 [senders addObject:sender];

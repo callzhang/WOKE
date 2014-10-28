@@ -21,7 +21,7 @@ extern const struct EWTaskItemRelationships {
 } EWTaskItemRelationships;
 
 @class EWAlarm;
-@class EWMediaItem;
+@class EWMedia;
 @class EWMessage;
 @class EWPerson;
 @class EWPerson;
@@ -86,8 +86,8 @@ extern const struct EWTaskItemRelationships {
 @interface _EWTaskItem (MediasCoreDataGeneratedAccessors)
 - (void)addMedias:(NSSet*)value_;
 - (void)removeMedias:(NSSet*)value_;
-- (void)addMediasObject:(EWMediaItem*)value_;
-- (void)removeMediasObject:(EWMediaItem*)value_;
+- (void)addMediasObject:(EWMedia*)value_;
+- (void)removeMediasObject:(EWMedia*)value_;
 
 @end
 

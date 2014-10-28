@@ -15,11 +15,9 @@ extern const struct EWAlarmAttributes {
 
 extern const struct EWAlarmRelationships {
 	__unsafe_unretained NSString *owner;
-	__unsafe_unretained NSString *tasks;
 } EWAlarmRelationships;
 
 @class EWPerson;
-@class ;
 
 @interface EWAlarmID : EWServerObjectID {}
 @end
@@ -66,18 +64,6 @@ extern const struct EWAlarmRelationships {
 
 //- (BOOL)validateOwner:(id*)value_ error:(NSError**)error_;
 
-@property (nonatomic, strong) NSSet *tasks;
-
-- (NSMutableSet*)tasksSet;
-
-@end
-
-@interface _EWAlarm (TasksCoreDataGeneratedAccessors)
-- (void)addTasks:(NSSet*)value_;
-- (void)removeTasks:(NSSet*)value_;
-- (void)addTasksObject:(*)value_;
-- (void)removeTasksObject:(*)value_;
-
 @end
 
 @interface _EWAlarm (CoreDataGeneratedPrimitiveAccessors)
@@ -108,8 +94,5 @@ extern const struct EWAlarmRelationships {
 
 - (EWPerson*)primitiveOwner;
 - (void)setPrimitiveOwner:(EWPerson*)value;
-
-- (NSMutableSet*)primitiveTasks;
-- (void)setPrimitiveTasks:(NSMutableSet*)value;
 
 @end

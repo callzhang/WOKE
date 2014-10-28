@@ -30,20 +30,20 @@ extern const struct EWPersonRelationships {
 	__unsafe_unretained NSString *activities;
 	__unsafe_unretained NSString *alarms;
 	__unsafe_unretained NSString *friends;
-	__unsafe_unretained NSString *mediaAssets;
 	__unsafe_unretained NSString *medias;
 	__unsafe_unretained NSString *notifications;
 	__unsafe_unretained NSString *socialGraph;
+	__unsafe_unretained NSString *unreadMedias;
 } EWPersonRelationships;
 
 @class EWAchievement;
-@class NSManagedObject;
+@class EWActivity;
 @class EWAlarm;
 @class EWPerson;
-@class EWMediaItem;
-@class EWMediaItem;
+@class EWMedia;
 @class EWNotification;
 @class EWSocialGraph;
+@class EWMedia;
 
 @class NSObject;
 
@@ -148,9 +148,9 @@ extern const struct EWPersonRelationships {
 
 - (NSMutableSet*)achievementsSet;
 
-@property (nonatomic, strong) NSManagedObject *activities;
+@property (nonatomic, strong) NSSet *activities;
 
-//- (BOOL)validateActivities:(id*)value_ error:(NSError**)error_;
+- (NSMutableSet*)activitiesSet;
 
 @property (nonatomic, strong) NSSet *alarms;
 
@@ -159,10 +159,6 @@ extern const struct EWPersonRelationships {
 @property (nonatomic, strong) NSSet *friends;
 
 - (NSMutableSet*)friendsSet;
-
-@property (nonatomic, strong) NSSet *mediaAssets;
-
-- (NSMutableSet*)mediaAssetsSet;
 
 @property (nonatomic, strong) NSSet *medias;
 
@@ -176,6 +172,10 @@ extern const struct EWPersonRelationships {
 
 //- (BOOL)validateSocialGraph:(id*)value_ error:(NSError**)error_;
 
+@property (nonatomic, strong) NSSet *unreadMedias;
+
+- (NSMutableSet*)unreadMediasSet;
+
 @end
 
 @interface _EWPerson (AchievementsCoreDataGeneratedAccessors)
@@ -183,6 +183,14 @@ extern const struct EWPersonRelationships {
 - (void)removeAchievements:(NSSet*)value_;
 - (void)addAchievementsObject:(EWAchievement*)value_;
 - (void)removeAchievementsObject:(EWAchievement*)value_;
+
+@end
+
+@interface _EWPerson (ActivitiesCoreDataGeneratedAccessors)
+- (void)addActivities:(NSSet*)value_;
+- (void)removeActivities:(NSSet*)value_;
+- (void)addActivitiesObject:(EWActivity*)value_;
+- (void)removeActivitiesObject:(EWActivity*)value_;
 
 @end
 
@@ -202,19 +210,11 @@ extern const struct EWPersonRelationships {
 
 @end
 
-@interface _EWPerson (MediaAssetsCoreDataGeneratedAccessors)
-- (void)addMediaAssets:(NSSet*)value_;
-- (void)removeMediaAssets:(NSSet*)value_;
-- (void)addMediaAssetsObject:(EWMediaItem*)value_;
-- (void)removeMediaAssetsObject:(EWMediaItem*)value_;
-
-@end
-
 @interface _EWPerson (MediasCoreDataGeneratedAccessors)
 - (void)addMedias:(NSSet*)value_;
 - (void)removeMedias:(NSSet*)value_;
-- (void)addMediasObject:(EWMediaItem*)value_;
-- (void)removeMediasObject:(EWMediaItem*)value_;
+- (void)addMediasObject:(EWMedia*)value_;
+- (void)removeMediasObject:(EWMedia*)value_;
 
 @end
 
@@ -223,6 +223,14 @@ extern const struct EWPersonRelationships {
 - (void)removeNotifications:(NSSet*)value_;
 - (void)addNotificationsObject:(EWNotification*)value_;
 - (void)removeNotificationsObject:(EWNotification*)value_;
+
+@end
+
+@interface _EWPerson (UnreadMediasCoreDataGeneratedAccessors)
+- (void)addUnreadMedias:(NSSet*)value_;
+- (void)removeUnreadMedias:(NSSet*)value_;
+- (void)addUnreadMediasObject:(EWMedia*)value_;
+- (void)removeUnreadMediasObject:(EWMedia*)value_;
 
 @end
 
@@ -288,17 +296,14 @@ extern const struct EWPersonRelationships {
 - (NSMutableSet*)primitiveAchievements;
 - (void)setPrimitiveAchievements:(NSMutableSet*)value;
 
-- (NSManagedObject*)primitiveActivities;
-- (void)setPrimitiveActivities:(NSManagedObject*)value;
+- (NSMutableSet*)primitiveActivities;
+- (void)setPrimitiveActivities:(NSMutableSet*)value;
 
 - (NSMutableSet*)primitiveAlarms;
 - (void)setPrimitiveAlarms:(NSMutableSet*)value;
 
 - (NSMutableSet*)primitiveFriends;
 - (void)setPrimitiveFriends:(NSMutableSet*)value;
-
-- (NSMutableSet*)primitiveMediaAssets;
-- (void)setPrimitiveMediaAssets:(NSMutableSet*)value;
 
 - (NSMutableSet*)primitiveMedias;
 - (void)setPrimitiveMedias:(NSMutableSet*)value;
@@ -308,5 +313,8 @@ extern const struct EWPersonRelationships {
 
 - (EWSocialGraph*)primitiveSocialGraph;
 - (void)setPrimitiveSocialGraph:(EWSocialGraph*)value;
+
+- (NSMutableSet*)primitiveUnreadMedias;
+- (void)setPrimitiveUnreadMedias:(NSMutableSet*)value;
 
 @end

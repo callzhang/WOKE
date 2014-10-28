@@ -1,9 +1,9 @@
 // DO NOT EDIT. This file is machine-generated and constantly overwritten.
-// Make changes to EWMediaItem.m instead.
+// Make changes to EWMedia.m instead.
 
-#import "_EWMediaItem.h"
+#import "_EWMedia.h"
 
-const struct EWMediaItemAttributes EWMediaItemAttributes = {
+const struct EWMediaAttributes EWMediaAttributes = {
 	.liked = @"liked",
 	.message = @"message",
 	.played = @"played",
@@ -13,18 +13,18 @@ const struct EWMediaItemAttributes EWMediaItemAttributes = {
 	.type = @"type",
 };
 
-const struct EWMediaItemRelationships EWMediaItemRelationships = {
+const struct EWMediaRelationships EWMediaRelationships = {
 	.activity = @"activity",
 	.author = @"author",
 	.mediaFile = @"mediaFile",
 	.messages = @"messages",
-	.receivers = @"receivers",
+	.receiver = @"receiver",
 };
 
-@implementation EWMediaItemID
+@implementation EWMediaID
 @end
 
-@implementation _EWMediaItem
+@implementation _EWMedia
 
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_ {
 	NSParameterAssert(moc_);
@@ -40,8 +40,8 @@ const struct EWMediaItemRelationships EWMediaItemRelationships = {
 	return [NSEntityDescription entityForName:@"EWMedia" inManagedObjectContext:moc_];
 }
 
-- (EWMediaItemID*)objectID {
-	return (EWMediaItemID*)[super objectID];
+- (EWMediaID*)objectID {
+	return (EWMediaID*)[super objectID];
 }
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
@@ -128,16 +128,7 @@ const struct EWMediaItemRelationships EWMediaItemRelationships = {
 	return result;
 }
 
-@dynamic receivers;
-
-- (NSMutableSet*)receiversSet {
-	[self willAccessValueForKey:@"receivers"];
-
-	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"receivers"];
-
-	[self didAccessValueForKey:@"receivers"];
-	return result;
-}
+@dynamic receiver;
 
 @end
 

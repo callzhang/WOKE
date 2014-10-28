@@ -10,7 +10,7 @@
 #import "EWNotification.h"
 #import "EWPerson.h"
 #import "EWPersonStore.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWMediaStore.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
@@ -32,7 +32,7 @@
 @interface EWNotificationManager()
 @property EWPerson *person;
 @property EWTaskItem *task;
-@property EWMediaItem *media;
+@property EWMedia *media;
 @property (nonatomic)  EWNotification *notification;
 @end
 
@@ -80,7 +80,7 @@
 //    [EWNotificationManager sendNotification:notice];
 //}
 
-+ (EWNotification *)newNotificationForMedia:(EWMediaItem *)media{
++ (EWNotification *)newNotificationForMedia:(EWMedia *)media{
     if (!media) {
         return nil;
     }

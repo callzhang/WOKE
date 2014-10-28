@@ -10,7 +10,7 @@
 #import "EWMediaViewCell.h"
 #import "EWShakeManager.h"
 #import "EWMediaStore.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWTaskItem.h"
 #import "EWAppDelegate.h"
 #import "ImageViewController.h"
@@ -173,7 +173,7 @@
     
     //refresh media
     //Lesson learned: do not refresh media as they haven't uploaded their newly created relation with task and will be overwritten by old status, thus the media will gone from view.
-//    for (EWMediaItem *media in medias) {
+//    for (EWMedia *media in medias) {
 //        [media refreshInBackgroundWithCompletion:NULL];
 //    }
     
@@ -309,7 +309,7 @@
     //Use reusable cell or create a new cell
     EWMediaViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     //get media item
-    EWMediaItem *mi;
+    EWMedia *mi;
     if (indexPath.row >= medias.count) {
         NSLog(@"@@@ WakupView asking for deleted media");
         mi = nil;
@@ -337,7 +337,7 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         //media
         EWMediaViewCell *cell = (EWMediaViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-        EWMediaItem *mi = cell.media;
+        EWMedia *mi = cell.media;
         cell.media = nil;
         
         //stop play if media is being played
@@ -357,7 +357,7 @@
         
         //delete
         if (mi.author == [EWSession sharedSession].currentUser) {
-            [[EWMediaStore sharedInstance] deleteMedia:mi];
+            [mi remove];
         }
         [task removeMediasObject:mi];
         [EWSync save];
@@ -487,7 +487,7 @@
 }
 
 - (void)playNextCell:(NSNotification *)note{
-    EWMediaItem *mediaJustFinished;
+    EWMedia *mediaJustFinished;
     float t = 0;
     if (note) {
         mediaJustFinished = note.object;
@@ -638,7 +638,7 @@
             case UIEventSubtypeRemoteControlPause:{
                 DDLogVerbose(@"Received remote control pause");
                 if (manager.player.isPlaying) {
-                    EWMediaItem *m0 = manager.media;
+                    EWMedia *m0 = manager.media;
                     [manager.player pause];
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                         if (m0 == manager.media && !manager.player.isPlaying) {

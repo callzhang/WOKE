@@ -15,6 +15,7 @@
 #import "EWTaskManager.h"
 #import "EWAlarmManager.h"
 #import "EWAlarm.h"
+#import "EWMedia.h"
 
 #define kPFQueryCacheLife		60*60;
 
@@ -752,14 +753,14 @@ NSManagedObjectContext *mainContext;
             good = [EWTaskManager validateTask:(EWTaskItem *)mo];
             
         }
-    } else if([type isEqualToString:@"EWMediaItem"]){
-        good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
+    } else if([type isEqualToString:@"EWMedia"]){
+        good = [(EWMedia *)mo validate];
         if (!good) {
             if (!tryFix) {
                 return NO;
             }
             [mo refresh];
-            good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
+            good = [(EWMedia *)mo validate];
         }
     }else if ([type isEqualToString:@"EWPerson"]){
         good = [EWPersonStore validatePerson:(EWPerson *)mo];
@@ -768,7 +769,7 @@ NSManagedObjectContext *mainContext;
                 return NO;
             }
             [mo refresh];
-            good = [EWMediaStore validateMedia:(EWMediaItem *)mo];
+            good = [EWPersonStore validatePerson:(EWPerson *)mo];
         }
     }else if ([type isEqualToString:NSStringFromClass([EWAlarm class])]){
         good = [(EWAlarm *)mo validate];
