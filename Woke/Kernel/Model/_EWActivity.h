@@ -2,6 +2,7 @@
 // Make changes to EWActivity.h instead.
 
 #import <CoreData/CoreData.h>
+#import "EWServerObject.h"
 
 extern const struct EWActivityAttributes {
 	__unsafe_unretained NSString *completed;
@@ -21,10 +22,10 @@ extern const struct EWActivityRelationships {
 @class EWMedia;
 @class EWPerson;
 
-@interface EWActivityID : NSManagedObjectID {}
+@interface EWActivityID : EWServerObjectID {}
 @end
 
-@interface _EWActivity : NSManagedObject {}
+@interface _EWActivity : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;

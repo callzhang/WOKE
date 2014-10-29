@@ -23,6 +23,7 @@
 // Search
 - (NSArray *)alarmsForUser:(EWPerson *)user;
 + (NSArray *)myAlarms;
++ (EWAlarm *)myNextAlarm;
 
 //Get next alarm time from person's cachedInfo
 - (NSDate *)nextAlarmTimeForPerson:(EWPerson *)person;

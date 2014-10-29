@@ -139,6 +139,7 @@
 		9BACFE4819FF5D44009173C8 /* EWActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BACFE4619FF5D44009173C8 /* EWActivity.m */; };
 		9BACFE4B19FF6A9F009173C8 /* EWMediaFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BACFE4A19FF6A9F009173C8 /* EWMediaFile.m */; };
 		9BACFE4E19FF6AAB009173C8 /* _EWMediaFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BACFE4D19FF6AAB009173C8 /* _EWMediaFile.m */; };
+		9BACFE521A00A642009173C8 /* EWActivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BACFE511A00A642009173C8 /* EWActivityManager.m */; };
 		9BBA5F9818EB416700C07809 /* EWUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBA5F9718EB416700C07809 /* EWUtil.m */; };
 		9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BBA5F9918EF295200C07809 /* libz.dylib */; };
 		9BD995A419FDCF5400C07659 /* _EWAlarm.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD995A319FDCF5400C07659 /* _EWAlarm.m */; };
@@ -455,6 +456,8 @@
 		9BACFE4A19FF6A9F009173C8 /* EWMediaFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaFile.m; sourceTree = "<group>"; };
 		9BACFE4C19FF6AAB009173C8 /* _EWMediaFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _EWMediaFile.h; sourceTree = "<group>"; };
 		9BACFE4D19FF6AAB009173C8 /* _EWMediaFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EWMediaFile.m; sourceTree = "<group>"; };
+		9BACFE501A00A642009173C8 /* EWActivityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWActivityManager.h; sourceTree = "<group>"; };
+		9BACFE511A00A642009173C8 /* EWActivityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWActivityManager.m; sourceTree = "<group>"; };
 		9BBA5F9618EB416700C07809 /* EWUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWUtil.h; sourceTree = "<group>"; };
 		9BBA5F9718EB416700C07809 /* EWUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWUtil.m; sourceTree = "<group>"; };
 		9BBA5F9918EF295200C07809 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -1376,6 +1379,8 @@
 		ABB98B5B17D01ADE005D8903 /* ModelManager */ = {
 			isa = PBXGroup;
 			children = (
+				9BACFE501A00A642009173C8 /* EWActivityManager.h */,
+				9BACFE511A00A642009173C8 /* EWActivityManager.m */,
 				AB3ACDBE19037DDE0066CF3F /* EWNotificationManager.h */,
 				AB3ACDBF19037DDE0066CF3F /* EWNotificationManager.m */,
 				AB78078D18393A66007C8BFD /* EWAlarmManager.h */,
@@ -1748,6 +1753,7 @@
 				AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */,
 				0ECAF195197EB50100368D6B /* EWSelectionViewController.m in Sources */,
 				9B3EC17D1970DECF00BB52AA /* NavigationControllerDelegate.m in Sources */,
+				9BACFE521A00A642009173C8 /* EWActivityManager.m in Sources */,
 				9BF297B01912F713008C136E /* EWAlarmScheduleViewController.m in Sources */,
 				9B3EC17A1970DEBC00BB52AA /* GPUImageAnimator.m in Sources */,
 				AB207E69182FFFB60076D93F /* MBProgressHUD.m in Sources */,
