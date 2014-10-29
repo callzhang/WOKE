@@ -12,7 +12,7 @@
 #import "EWPersonStore.h"
 #import "AVManager.h"
 #import "EWAppDelegate.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWMediaStore.h"
 #import "EWNotificationManager.h"
 #import "EWPerson.h"
@@ -81,7 +81,7 @@
     }
 
     
-    EWMediaItem *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+    EWMedia *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
     EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
     
     
@@ -301,7 +301,7 @@
     NSInteger nVoice = [[EWTaskManager sharedInstance] numberOfVoiceInTask:task];
     NSInteger nVoiceNeeded = kMaxVoicePerTask - nVoice;
     
-    for (EWMediaItem *media in medias) {
+    for (EWMedia *media in medias) {
         if (!media.targetDate || [media.targetDate timeIntervalSinceNow]<0) {
             
             //find media to add
@@ -325,7 +325,7 @@
     nVoice = [[EWTaskManager sharedInstance] numberOfVoiceInTask:task];
     if (nVoice == 0) {
         //need to create some voice
-        EWMediaItem *media = [[EWMediaStore sharedInstance] getWokeVoice];
+        EWMedia *media = [[EWMediaStore sharedInstance] getWokeVoice];
         [task addMediasObject:media];
     }
     

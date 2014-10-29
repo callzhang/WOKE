@@ -15,7 +15,7 @@
 #import "EWWakeUpManager.h"
 #import "EWServer.h"
 #import "EWTaskItem.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWNotification.h"
 #import "EWUIUtil.h"
 #import "EWStatisticsManager.h"

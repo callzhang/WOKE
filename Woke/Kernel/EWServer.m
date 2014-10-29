@@ -16,7 +16,7 @@
 #import "EWPersonStore.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWMediaStore.h"
 #import "EWDownloadManager.h"
 #import "EWNotification.h"
@@ -115,7 +115,7 @@
         //get next wake up time
         NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];
         //create buzz
-        EWMediaItem *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
+        EWMedia *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
         //add receiver: single direction
         [buzz addReceiversObject:person];
         //add sound
@@ -172,7 +172,7 @@
 }
 
 #pragma mark - Send Voice tone
-+ (void)pushVoice:(EWMediaItem *)media toUser:(EWPerson *)person{
++ (void)pushVoice:(EWMedia *)media toUser:(EWPerson *)person{
     
     NSString *mediaId = media.objectId;
     NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];

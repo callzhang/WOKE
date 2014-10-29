@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWPerson.h"
 
-@class EWMediaSlider, EWMediaItem;
+@class EWMediaSlider, EWMedia;
 
 @interface EWMediaViewCell : UITableViewCell
 //controller
@@ -29,5 +29,5 @@
 - (IBAction)profile:(id)sender;
 
 //content
-@property (weak, nonatomic) EWMediaItem *media;
+@property (weak, nonatomic) EWMedia *media;
 @end

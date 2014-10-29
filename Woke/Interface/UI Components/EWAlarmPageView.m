@@ -15,7 +15,7 @@
 #import "EWTaskManager.h"
 #import "EWWakeUpViewController.h"
 #import "EWAppDelegate.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWWakeUpManager.h"
 #import "EWSleepViewController.h"
 

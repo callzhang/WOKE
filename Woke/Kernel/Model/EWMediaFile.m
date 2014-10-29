@@ -1,24 +1,16 @@
-//
-//  EWMediaItem.m
-//  EarlyWorm
-//
-//  Created by Lei on 8/27/13.
-//  Copyright (c) 2013 Shens. All rights reserved.
-//
+#import "EWMediaFile.h"
 
-#import "EWMediaItem.h"
-#import "EWAlarm.h"
-#import "EWPerson.h"
-#import "EWTaskItem.h"
+@interface EWMediaFile ()
 
-#import "EWDataStore.h"
+// Private interface goes here.
 
-@implementation EWMediaItem
-@dynamic played;
-@dynamic priority;
-@dynamic image;
+@end
+
+@implementation EWMediaFile
+
 @synthesize thumbnail;
 @synthesize audioKey;
+@dynamic image;
 
 - (NSString *)audioKey{
     if (audioKey) {
@@ -28,45 +20,6 @@
     [self.audio writeToFile:path atomically:YES];
     return path;
 }
-
-//@synthesize thumbnail;
-
-//- (id)init
-//{
-//    self = [super init];
-//    if (self) {
-//        [self setValue:[self assignObjectId] forKey:[self primaryKeyField]];
-//    }
-//    return self;
-//}
-
-//- (UIImage *)image{
-//    if (!self.imageKey || [self.imageKey isEqualToString:@""]) {
-//        return nil;
-//    }
-//    
-//    if (!image) {
-//        image = [UIImage imageWithData:[[EWDataStore sharedInstance] getRemoteDataWithKey:self.audioKey]];
-//    }
-//    
-//    return image;
-//}
-//
-//- (void)setImage:(UIImage *)img{ 
-//    
-//    //update memory
-//    image = img;
-//    
-//    NSData *picData = UIImagePNGRepresentation(img);
-//    //update cache
-//    [[EWDataStore sharedInstance] updateCacheForKey:self.imageKey withData:picData];
-//    
-//    //update server
-//    self.imageKey = [SMBinaryDataConversion stringForBinaryData:picData name:@"media.png" contentType:@"image/png"];
-//    
-//    [[EWDataStore currentContext] save];
-//}
-
 
 
 - (UIImage *)thumbnail{
@@ -119,7 +72,6 @@
     
     return smallImage;
 }
-
 
 
 @end

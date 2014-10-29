@@ -7,7 +7,7 @@
 //
 
 #import "EWGroupTask.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWPerson.h"
 #import "EWMessage.h"
 

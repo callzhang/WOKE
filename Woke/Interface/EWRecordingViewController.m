@@ -21,7 +21,7 @@
 //object
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWMediaStore.h"
 #import "EWPerson.h"
 #import "EWPersonStore.h"
@@ -42,7 +42,7 @@
     
     BOOL  everPlayed;
     BOOL  everRecord;
-    //EWMediaItem *media;
+    //EWMedia *media;
 }
 
 @end
@@ -333,7 +333,7 @@
         
         [[ATConnect sharedConnection] engage:kRecordVoiceSuccess fromViewController:self];
         
-        EWMediaItem *media = [[EWMediaStore sharedInstance] createMedia];
+        EWMedia *media = [[EWMediaStore sharedInstance] createMedia];
         media.author = [EWSession sharedSession].currentUser;
         media.type = kMediaTypeVoice;
 //        media.message = self.message.text;

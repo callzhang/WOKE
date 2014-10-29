@@ -5,22 +5,24 @@
 #import "EWServerObject.h"
 
 extern const struct EWMessageAttributes {
-	__unsafe_unretained NSString *media;
+	__unsafe_unretained NSString *read;
 	__unsafe_unretained NSString *text;
+	__unsafe_unretained NSString *thumbnail;
 	__unsafe_unretained NSString *time;
+	__unsafe_unretained NSString *type;
 } EWMessageAttributes;
 
 extern const struct EWMessageRelationships {
-	__unsafe_unretained NSString *groupTask;
+	__unsafe_unretained NSString *media;
 	__unsafe_unretained NSString *recipient;
 	__unsafe_unretained NSString *sender;
-	__unsafe_unretained NSString *task;
 } EWMessageRelationships;
 
-@class EWGroupTask;
+@class EWMedia;
 @class EWPerson;
 @class EWPerson;
-@class EWTaskItem;
+
+@class NSObject;
 
 @interface EWMessageID : EWServerObjectID {}
 @end
@@ -31,21 +33,29 @@ extern const struct EWMessageRelationships {
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
 @property (nonatomic, readonly, strong) EWMessageID* objectID;
 
-@property (nonatomic, strong) NSData* media;
+@property (nonatomic, strong) NSDate* read;
 
-//- (BOOL)validateMedia:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateRead:(id*)value_ error:(NSError**)error_;
 
 @property (nonatomic, strong) NSString* text;
 
 //- (BOOL)validateText:(id*)value_ error:(NSError**)error_;
 
+@property (nonatomic, strong) id thumbnail;
+
+//- (BOOL)validateThumbnail:(id*)value_ error:(NSError**)error_;
+
 @property (nonatomic, strong) NSDate* time;
 
 //- (BOOL)validateTime:(id*)value_ error:(NSError**)error_;
 
-@property (nonatomic, strong) EWGroupTask *groupTask;
+@property (nonatomic, strong) NSString* type;
 
-//- (BOOL)validateGroupTask:(id*)value_ error:(NSError**)error_;
+//- (BOOL)validateType:(id*)value_ error:(NSError**)error_;
+
+@property (nonatomic, strong) EWMedia *media;
+
+//- (BOOL)validateMedia:(id*)value_ error:(NSError**)error_;
 
 @property (nonatomic, strong) EWPerson *recipient;
 
@@ -55,33 +65,29 @@ extern const struct EWMessageRelationships {
 
 //- (BOOL)validateSender:(id*)value_ error:(NSError**)error_;
 
-@property (nonatomic, strong) EWTaskItem *task;
-
-//- (BOOL)validateTask:(id*)value_ error:(NSError**)error_;
-
 @end
 
 @interface _EWMessage (CoreDataGeneratedPrimitiveAccessors)
 
-- (NSData*)primitiveMedia;
-- (void)setPrimitiveMedia:(NSData*)value;
+- (NSDate*)primitiveRead;
+- (void)setPrimitiveRead:(NSDate*)value;
 
 - (NSString*)primitiveText;
 - (void)setPrimitiveText:(NSString*)value;
 
+- (id)primitiveThumbnail;
+- (void)setPrimitiveThumbnail:(id)value;
+
 - (NSDate*)primitiveTime;
 - (void)setPrimitiveTime:(NSDate*)value;
 
-- (EWGroupTask*)primitiveGroupTask;
-- (void)setPrimitiveGroupTask:(EWGroupTask*)value;
+- (EWMedia*)primitiveMedia;
+- (void)setPrimitiveMedia:(EWMedia*)value;
 
 - (EWPerson*)primitiveRecipient;
 - (void)setPrimitiveRecipient:(EWPerson*)value;
 
 - (EWPerson*)primitiveSender;
 - (void)setPrimitiveSender:(EWPerson*)value;
-
-- (EWTaskItem*)primitiveTask;
-- (void)setPrimitiveTask:(EWTaskItem*)value;
 
 @end

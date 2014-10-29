@@ -8,7 +8,7 @@
 
 #import "EWPersonStore.h"
 #import "EWMediaStore.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWPerson.h"
 #import "EWUtil.h"
 #import "EWAlarmManager.h"

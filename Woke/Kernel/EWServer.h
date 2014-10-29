@@ -28,7 +28,7 @@
  @params users: array of EWPerson
  @params taskId: taskId
  */
-+ (void)pushVoice:(EWMediaItem *)media toUser:(EWPerson *)person;
++ (void)pushVoice:(EWMedia *)media toUser:(EWPerson *)person;
 
 #pragma mark - Push methods
 + (void)broadcastMessage:(NSString *)msg onSuccess:(void (^)(void))block onFailure:(void (^)(void))failureBlock;

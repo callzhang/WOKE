@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "_EWGroupTask.h"
-@class EWMediaItem, EWMessage, EWPerson;
+@class EWMedia, EWMessage, EWPerson;
 
 @interface EWGroupTask : _EWGroupTask
 

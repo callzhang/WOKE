@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-@class EWMediaItem, EWTaskItem;
+@class EWMedia, EWTaskItem;
 
 @interface EWDownloadManager : NSObject <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate>
 
@@ -38,7 +38,7 @@
 /**
  The main method for download media in background when another user sends a voice tone when app is suspended
  */
-- (void)downloadMedia:(EWMediaItem *)media;
+- (void)downloadMedia:(EWMedia *)media;
 
 /**
  Download all medias (and anything needed) in task item in background mode.

@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-@class EWMediaItem;
+@class EWMedia;
 
 @interface EWMediaSlider : UISlider{
     UILabel *typeLabel;

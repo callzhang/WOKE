@@ -14,7 +14,7 @@
 #define buzzSounds                      @{@"default": @"buzz.caf"};
 #define kWokeVoiceReceived              @"woke_voice_received"//the ramdom voice alraddy received, stored in cache
 
-@class EWMediaItem;
+@class EWMedia;
 @interface EWMediaStore : NSObject //EWStore
 
 /*
@@ -24,16 +24,7 @@
 
 + (EWMediaStore *)sharedInstance;
 
-//add
-- (EWMediaItem *)createMedia;
-- (EWMediaItem *)createBuzzMedia;
 
-//delete
-- (void)deleteMedia:(EWMediaItem *)mi;
-- (void)deleteAllMedias;
-
-//search
-- (EWMediaItem *)getMediaByID:(NSString *)mediaID;
 /**
  Fetch media by author
  */
@@ -49,13 +40,5 @@
 - (void)checkMediaAssetsInBackground;
 
 //get ramdom voice
-- (EWMediaItem *)getWokeVoice;
-
-
-
-//Validation
-+ (BOOL)validateMedia:(EWMediaItem *)media;
-
-//ACL
-+ (void)createACLForMedia:(EWMediaItem *)media;
+- (EWMedia *)getWokeVoice;
 @end

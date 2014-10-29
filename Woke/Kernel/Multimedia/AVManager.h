@@ -24,7 +24,7 @@
 
 #define kSilentSound            @"Silence04s.caf"
 
-@class EWMediaViewCell, EWTaskItem, EWMediaItem, EWMediaSlider;
+@class EWMediaViewCell, EWTaskItem, EWMedia, EWMediaSlider;
 
 @interface AVManager : UIResponder <AVAudioPlayerDelegate, AVAudioRecorderDelegate, AVAudioSessionDelegate>
 {
@@ -38,7 +38,7 @@
 @property (retain, nonatomic) AVAudioPlayer *player;
 @property (retain, nonatomic) AVAudioRecorder *recorder;
 @property (weak, nonatomic) EWMediaViewCell *currentCell; //current cell, assigned by others
-@property (weak, nonatomic) EWMediaItem *media;
+@property (weak, nonatomic) EWMedia *media;
 @property (weak, nonatomic) UIButton *recordStopBtn;
 @property (weak, nonatomic) UIButton *playStopBtn;
 @property (nonatomic) EWMediaSlider *progressBar;
@@ -50,7 +50,7 @@
 
 //play
 - (void)playForCell:(UITableViewCell *)cell;
-- (void)playMedia:(EWMediaItem *)media;
+- (void)playMedia:(EWMedia *)media;
 
 /**
  Main play function. Support FTW cache method.
@@ -95,7 +95,7 @@
 /**
  Display the playing info to lock screen
  */
-- (void)displayNowPlayingInfoToLockScreen:(EWMediaItem *)media;
+- (void)displayNowPlayingInfoToLockScreen:(EWMedia *)media;
 
 ///**
 // *Register self as the first responder for remote control event

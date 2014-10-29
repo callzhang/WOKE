@@ -56,7 +56,7 @@
     
 }
 
-- (void)setMedia:(EWMediaItem *)m{
+- (void)setMedia:(EWMedia *)m{
     if (!m) return;
     if (media == m) return;
     media = m;
