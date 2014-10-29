@@ -8,7 +8,7 @@
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EWPerson" inverseName="achievements" inverseEntity="EWPerson" syncable="YES"/>
     </entity>
-    <entity name="EWActivity" representedClassName="EWActivity" syncable="YES">
+    <entity name="EWActivity" representedClassName="EWActivity" parentEntity="EWServerObject" syncable="YES">
         <attribute name="completed" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="friended" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="friendID" optional="YES" attributeType="String" syncable="YES"/>

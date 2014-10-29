@@ -30,6 +30,8 @@
 #import "EWNotificationManager.h"
 #import "EWBackgroundingManager.h"
 #import "EWAlarm.h"
+#import "EWAlarmManager.h"
+#import "EWSession.h"
 
 @interface TestViewController ()
 
@@ -252,22 +254,12 @@
         
         case 7:{//add some media
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
-            NSInteger m = 6 - task.medias.count;
-            for (unsigned i=0; i< m; i++) {
-                NSInteger x = arc4random_uniform(2);
-                if (x==0) {
-                    //buzz
-                    EWMedia *media = [[EWMediaStore sharedInstance] createBuzzMedia];
-                    [task addMediasObject:media];
-                    [EWSync save];
-                }else{
-                    //voice
-                    EWMedia *media = [[EWMediaStore sharedInstance] getWokeVoice];
-                    //[task addMediasObject:media];
-                    [media addTasksObject:task];
-                    [EWSync save];
-                }
+            if ([EWAlarmManager myNextAlarm]) {
+                //voice
+                EWMedia *media = [[EWMediaStore sharedInstance] getWokeVoice];
+                //[task addMediasObject:media];
+                media.author = [EWSession sharedSession].currentUser;
+                [EWSync save];
                 
             }
             

@@ -64,9 +64,25 @@
     return sortedAlarms;
 }
 
+
 + (NSArray *)myAlarms{
     NSParameterAssert([NSThread isMainThread]);
     return [[EWAlarmManager sharedInstance] alarmsForUser:[EWSession sharedSession].currentUser];
+}
+
++ (EWAlarm *)myNextAlarm{
+    float interval;
+    EWAlarm *next;
+    for (EWAlarm *alarm in [EWAlarmManager myAlarms]) {
+        float timeLeft = alarm.time.timeIntervalSinceNow;
+        if (alarm.state) {
+            if (interval == 0 || timeLeft < interval) {
+                interval = timeLeft;
+                next = alarm;
+            }
+        }
+    }
+    return next;
 }
 
 - (NSDate *)nextAlarmTimeForPerson:(EWPerson *)person{

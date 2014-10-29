@@ -46,26 +46,24 @@
     return good;
 }
 
-+ (void)createACLForMedia:(EWMedia *)media{
+- (void)createACLForMedia{
     NSSet *receivers = media.receivers;
-    PFObject *m = media.parseObject;
+    PFObject *m = self.parseObject;
     PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
     for (EWPerson *p in receivers) {
         PFObject *PO = p.parseObject;
         [acl setReadAccess:YES forUser:(PFUser *)PO];
         [acl setReadAccess:YES forUser:(PFUser *)PO];
-        
     }
     m.ACL = acl;
-    NSLog(@"ACL created for media(%@) with access for %@", media.objectId, [receivers valueForKey:kParseObjectID]);
+    NSLog(@"ACL created for media(%@) with access for %@", self.objectId, [receivers valueForKey:kParseObjectID]);
 }
 
 
 
 #pragma mark - DELETE
 - (void)remove{
-    
-    [mi.managedObjectContext deleteObject:mi];
+    [self deleteEntity];
     [EWSync save];
 }
 
