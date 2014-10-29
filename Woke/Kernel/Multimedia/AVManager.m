@@ -15,6 +15,8 @@
 #import "EWMediaSlider.h"
 #import "EWMediaStore.h"
 #import "EWBackgroundingManager.h"
+#import "EWAlarmManager.h"
+#import "EWAlarm.h"
 
 @import MediaPlayer;
 
@@ -604,9 +606,9 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
         
         if (!m) m = media;
-        EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
+        EWAlarm *nextAlarm = [EWAlarmManager myNextAlarm];
         
-        NSString *title = [task.time weekday];
+        NSString *title = nextAlarm.time.weekday;
         
         //info
         NSMutableDictionary *dict = [NSMutableDictionary new];
@@ -615,7 +617,7 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
         dict[MPMediaItemPropertyAlbumTitle] = title?:@"";
         
         //cover
-        UIImage *cover = media.image ?: media.author.profilePic;
+        UIImage *cover = media.mediaFile.image ?: media.author.profilePic;
         if (cover) {
             MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:cover];
             dict[MPMediaItemPropertyArtwork] = artwork;
