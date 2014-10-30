@@ -8,7 +8,7 @@
 
 #import "EWSettingsViewController.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWMediaViewCell.h"
 #import "EWFirstTimeViewController.h"
 #import "EWLogInViewController.h"

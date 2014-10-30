@@ -13,7 +13,7 @@
 #import "EWPerson.h"
 #import "CoreData+MagicalRecord.h"
 #import "EWDataStore.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWSync.h"
 #import "EWSocialGraphManager.h"
 #import "EWSession.h"

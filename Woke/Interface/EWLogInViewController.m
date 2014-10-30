@@ -8,7 +8,7 @@
 
 #import "EWLogInViewController.h"
 #import "EWAppDelegate.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWPerson.h"
 #import <FacebookSDK/FacebookSDK.h>
 #import "AFNetworking.h"

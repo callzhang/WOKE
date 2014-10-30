@@ -13,7 +13,7 @@
 #import "EWMediaFile.h"
 #import "EWDataStore.h"
 #import "EWMediaSlider.h"
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWBackgroundingManager.h"
 #import "EWAlarmManager.h"
 #import "EWAlarm.h"

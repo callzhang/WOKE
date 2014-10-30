@@ -10,7 +10,7 @@
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "EWUIUtil.h"
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWMedia.h"
 #import "EWActivity.h"
 

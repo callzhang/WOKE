@@ -9,7 +9,7 @@
 #import "EWCollectionPersonCell.h"
 #import "EWUIUtil.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "NSDate+Extend.h"

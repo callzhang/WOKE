@@ -10,8 +10,8 @@
 #import "EWUIUtil.h"
 #import "EWServerObject.h"
 //#import "EWUserManagement.h"
-#import "EWPersonStore.h"
-#import "EWMediaStore.h"
+#import "EWPersonManager.h"
+#import "EWMediaManager.h"
 #import "EWTaskManager.h"
 #import "EWAlarmManager.h"
 #import "EWAlarm.h"
@@ -763,13 +763,13 @@ NSManagedObjectContext *mainContext;
             good = [(EWMedia *)mo validate];
         }
     }else if ([type isEqualToString:@"EWPerson"]){
-        good = [EWPersonStore validatePerson:(EWPerson *)mo];
+        good = [EWPersonManager validatePerson:(EWPerson *)mo];
         if (!good) {
             if (!tryFix) {
                 return NO;
             }
             [mo refresh];
-            good = [EWPersonStore validatePerson:(EWPerson *)mo];
+            good = [EWPersonManager validatePerson:(EWPerson *)mo];
         }
     }else if ([type isEqualToString:NSStringFromClass([EWAlarm class])]){
         good = [(EWAlarm *)mo validate];

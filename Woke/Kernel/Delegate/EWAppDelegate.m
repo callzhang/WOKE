@@ -21,7 +21,7 @@
 #import <Parse/Parse.h>
 
 //Manager
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWServer.h"
 #import "EWUserManagement.h"
 #import "EWDataStore.h"
@@ -173,7 +173,7 @@ UIViewController *rootViewController;
     [[AVManager sharedManager] playSystemSound:nil];
     
     //check media assets
-    BOOL newMedia = [[EWMediaStore sharedInstance] checkMediaAssets];
+    BOOL newMedia = [[EWMediaManager sharedInstance] checkMediaAssets];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         DDLogVerbose(@"Returned background fetch handler with %@", newMedia?@"new data":@"no data");

@@ -15,7 +15,7 @@
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWUserManagement.h"
 #import "EWAppDelegate.h"
 #import "EWAlarmScheduleViewController.h"

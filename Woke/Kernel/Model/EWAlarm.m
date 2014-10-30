@@ -7,7 +7,7 @@
 //
 
 #import "EWAlarm.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 
 @implementation EWAlarm
 

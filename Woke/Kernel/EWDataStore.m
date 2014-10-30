@@ -8,8 +8,8 @@
 
 #import "EWDataStore.h"
 #import "EWUserManagement.h"
-#import "EWPersonStore.h"
-#import "EWMediaStore.h"
+#import "EWPersonManager.h"
+#import "EWMediaManager.h"
 #import "EWTaskManager.h"
 #import "EWAlarmManager.h"
 #import "EWWakeUpManager.h"
@@ -71,7 +71,7 @@
 	
 	//fetch everyone
 	DDLogVerbose(@"1. Getting everyone");
-	[[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+	[[EWPersonManager sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
     
     //refresh current user
     DDLogVerbose(@"2. Register AWS push key");
@@ -93,7 +93,7 @@
 	[[EWTaskManager sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
 	
     DDLogVerbose(@"4. Check my unread media");//media also will be checked with background fetch
-    [[EWMediaStore sharedInstance] checkMediaAssetsInBackground];
+    [[EWMediaManager sharedInstance] checkMediaAssetsInBackground];
     
     //updating facebook friends
     DDLogVerbose(@"5. Updating facebook friends");
@@ -107,7 +107,7 @@
     
     //Update my relations cancelled here because the we should wait for all sync task finished before we can download the rest of the relation
     NSLog(@"7. Refresh my media");
-    [[EWMediaStore sharedInstance] mediaCreatedByPerson:[EWSession sharedSession].currentUser];
+    [[EWMediaManager sharedInstance] mediaCreatedByPerson:[EWSession sharedSession].currentUser];
 	
 	//location
 	DDLogVerbose(@"8. Start location recurring update");
@@ -143,7 +143,7 @@
 	
 	//fetch everyone
 	DDLogVerbose(@"[1] Getting everyone");
-	[[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+	[[EWPersonManager sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
 	
     //location
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {

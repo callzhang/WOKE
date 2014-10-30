@@ -7,7 +7,7 @@
 //j
 
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 
 @implementation EWPerson
 @dynamic lastLocation;

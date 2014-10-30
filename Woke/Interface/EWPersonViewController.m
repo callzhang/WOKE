@@ -26,8 +26,8 @@
 //manager
 #import "EWTaskManager.h"
 #import "EWAlarmManager.h"
-#import "EWPersonStore.h"
-#import "EWMediaStore.h"
+#import "EWPersonManager.h"
+#import "EWMediaManager.h"
 #import "EWStatisticsManager.h"
 #import "EWNotificationManager.h"
 #import "EWUserManagement.h"
@@ -376,18 +376,18 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if ([title isEqualToString:@"Add friend"]) {
         
         //friend
-        [EWPersonStore requestFriend:person];
+        [EWPersonManager requestFriend:person];
         [self.view showSuccessNotification:@"Request sent"];
         
     }else if ([title isEqualToString:@"Unfriend"]){
         
         //unfriend
-        [EWPersonStore unfriend:person];
+        [EWPersonManager unfriend:person];
         [self.view showSuccessNotification:@"Unfriended"];
         
     }else if ([title isEqualToString:@"Accept friend"]){
         
-        [EWPersonStore acceptFriend:person];
+        [EWPersonManager acceptFriend:person];
         [self.view showSuccessNotification:@"Added"];
         
     }else if ([title isEqualToString:@"Send Voice Greeting"]){
@@ -518,7 +518,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 break;
             case 1:
             {
-                NSArray *receivedMedias = [[EWMediaStore sharedInstance] mediasForPerson:person];
+                NSArray *receivedMedias = [[EWMediaManager sharedInstance] mediasForPerson:person];
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)receivedMedias.count];
                 if (!person.isMe) {
                     cell.textLabel.text = male? @"People woke him up":@"People woke her up";
@@ -527,7 +527,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 break;
             case 2:
             {
-                NSArray *medias = [[EWMediaStore sharedInstance] mediaCreatedByPerson:person];
+                NSArray *medias = [[EWMediaManager sharedInstance] mediaCreatedByPerson:person];
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)medias.count];
                 if (!person.isMe) {
                     cell.textLabel.text = male? @"People he woke up":@"People she woke up";

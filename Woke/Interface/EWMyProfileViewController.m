@@ -7,7 +7,7 @@
 //
 
 #import "EWMyProfileViewController.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 @interface EWMyProfileViewController ()<UITableViewDelegate,UITableViewDataSource,UIAlertViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *myTableView;

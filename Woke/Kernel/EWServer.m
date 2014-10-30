@@ -13,11 +13,11 @@
 
 //model
 #import "EWDataStore.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "EWMedia.h"
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWDownloadManager.h"
 #import "EWNotification.h"
 #import "EWNotificationManager.h"
@@ -115,7 +115,7 @@
         //get next wake up time
         NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];
         //create buzz
-        EWMedia *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
+        EWMedia *buzz = [[EWMediaManager sharedInstance] createBuzzMedia];
         //add receiver: single direction
         [buzz addReceiversObject:person];
         //add sound

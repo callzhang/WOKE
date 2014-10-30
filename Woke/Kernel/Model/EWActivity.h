@@ -1,9 +1,8 @@
 #import "_EWActivity.h"
 
-extern const struct EWActivityType {
-    __unsafe_unretained NSString *media = @"media";
-    __unsafe_unretained NSString *friendship = @"friendship";
-};
+
+NSString *const EWActivityTypeMedia = @"media";
+NSString *const EWActivityTypeFriendship = @"friendship";
 
 @interface EWActivity : _EWActivity {}
 // add

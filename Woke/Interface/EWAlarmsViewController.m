@@ -20,7 +20,7 @@
 
 // Manager
 #import "EWAlarmManager.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWTaskManager.h"
 #import "EWNotificationManager.h"
 
@@ -661,8 +661,8 @@
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
             [self presentViewControllerWithBlurBackground:controller];
         }else if([title isEqualToString:@"Refresh people"]){
-            [EWPersonStore sharedInstance].timeEveryoneChecked = nil;
-            [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+            [EWPersonManager sharedInstance].timeEveryoneChecked = nil;
+            [[EWPersonManager sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
         }
     }else{
         EWAlert(@"Unknown alert sheet");

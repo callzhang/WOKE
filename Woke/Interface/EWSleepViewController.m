@@ -10,7 +10,7 @@
 #import "EWBackgroundingManager.h"
 #import "AVManager.h"
 #import "EWTaskManager.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWTaskItem.h"
 #import "EWAlarmManager.h"
 

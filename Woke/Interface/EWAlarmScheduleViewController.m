@@ -12,7 +12,7 @@
 #import "EWAlarmManager.h"
 #import "EWAlarm.h"
 #import "EWAlarmEditCell.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "UIViewController+Blur.h"
 
 //Util

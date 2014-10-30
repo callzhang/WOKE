@@ -8,7 +8,7 @@
 
 #import "EWSocialGraphManager.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWUserManagement.h"
 #import "APAddressBook.h"
 #import "APContact.h"

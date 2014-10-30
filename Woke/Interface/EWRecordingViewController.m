@@ -22,9 +22,9 @@
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "EWMedia.h"
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 
 //backend
 #import "EWDataStore.h"
@@ -333,7 +333,7 @@
         
         [[ATConnect sharedConnection] engage:kRecordVoiceSuccess fromViewController:self];
         
-        EWMedia *media = [[EWMediaStore sharedInstance] createMedia];
+        EWMedia *media = [[EWMediaManager sharedInstance] createMedia];
         media.author = [EWSession sharedSession].currentUser;
         media.type = kMediaTypeVoice;
 //        media.message = self.message.text;

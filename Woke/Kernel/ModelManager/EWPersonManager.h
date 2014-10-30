@@ -19,9 +19,9 @@
 #define kLastCheckedMe                      @"last_checked_me"
 #define kCheckMeInternal                    3600 * 24 //1 day
 
-@class EWMediaStore, EWPerson;
+@class EWMediaManager, EWPerson;
 
-@interface EWPersonStore : NSObject
+@interface EWPersonManager : NSObject
 
 /**
  Possible people that are relevant, fetched from server(TODO)
@@ -30,7 +30,7 @@
 @property (nonatomic) NSDate *timeEveryoneChecked;
 @property BOOL isFetchingEveryone;
 
-+ (EWPersonStore *)sharedInstance;
++ (EWPersonManager *)sharedInstance;
 - (EWPerson *)findOrCreatePersonWithParseObject:(PFUser *)user;
 - (EWPerson *)getPersonByServerID:(NSString *)ID;
 - (void)getEveryoneInBackgroundWithCompletion:(void (^)(void))block;

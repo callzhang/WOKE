@@ -10,7 +10,7 @@
 #import "EWNotificationManager.h"
 #import "EWNotification.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWUIUtil.h"
 
 #import "EWNotificationCell.h"

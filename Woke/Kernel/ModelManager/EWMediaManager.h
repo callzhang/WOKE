@@ -9,20 +9,20 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #include <stdlib.h>
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 
 #define buzzSounds                      @{@"default": @"buzz.caf"};
 #define kWokeVoiceReceived              @"woke_voice_received"//the ramdom voice alraddy received, stored in cache
 
 @class EWMedia;
-@interface EWMediaStore : NSObject //EWStore
+@interface EWMediaManager : NSObject //EWStore
 
 /*
  medias that has been played.
  **/
 @property (nonatomic) NSArray *myMedias;
 
-+ (EWMediaStore *)sharedInstance;
++ (EWMediaManager *)sharedInstance;
 
 
 /**

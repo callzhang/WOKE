@@ -12,7 +12,7 @@
 #import "EWFriendsCollectionCell.h"
 #import "EWUIUtil.h"
 #import "EWFriendsTableCell.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWPersonViewController.h"
 NSString * const tableViewCellId =@"MyFriendsTableViewCellId";
 NSString * const collectViewCellId = @"friendsCollectionViewCellId";
@@ -67,7 +67,7 @@ NSString * const collectViewCellId = @"friendsCollectionViewCellId";
     
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [EWPersonStore getFriendsForPerson:_person];
+        [EWPersonManager getFriendsForPerson:_person];
         dispatch_async(dispatch_get_main_queue(), ^{
             friends = [_person.friends allObjects];
             NSMutableSet *myFriends = [[EWSession sharedSession].currentUser.friends mutableCopy];

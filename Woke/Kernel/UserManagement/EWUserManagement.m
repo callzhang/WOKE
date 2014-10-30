@@ -16,7 +16,7 @@
 
 //model
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWServer.h"
 #import "EWAlarmManager.h"
 #import "EWTaskManager.h"
@@ -113,7 +113,7 @@
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
 
     //fetch or create
-    EWPerson *person = [[EWPersonStore sharedInstance] findOrCreatePersonWithParseObject:user];
+    EWPerson *person = [[EWPersonManager sharedInstance] findOrCreatePersonWithParseObject:user];
     
     //save me
     [EWSession sharedSession].currentUser = person;

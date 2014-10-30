@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
 
-#import "EWPersonStore.h"
-#import "EWMediaStore.h"
+#import "EWPersonManager.h"
+#import "EWMediaManager.h"
 #import "EWMedia.h"
 #import "EWPerson.h"
 #import "EWUtil.h"
@@ -23,16 +23,16 @@
 #import "EWStatisticsManager.h"
 
 
-@implementation EWPersonStore
+@implementation EWPersonManager
 @synthesize everyone;
 @synthesize isFetchingEveryone = _isFetchingEveryone;
 @synthesize timeEveryoneChecked;
 
-+(EWPersonStore *)sharedInstance{
-    static EWPersonStore *sharedPersonStore_ = nil;
++(EWPersonManager *)sharedInstance{
+    static EWPersonManager *sharedPersonStore_ = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedPersonStore_ = [[EWPersonStore alloc] init];
+        sharedPersonStore_ = [[EWPersonManager alloc] init];
         //listern to user log in events
         [[NSNotificationCenter defaultCenter] addObserver:sharedPersonStore_ selector:@selector(userLoggedIn:) name:kPersonLoggedIn object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:sharedPersonStore_ selector:@selector(userLoggedOut:) name:kPersonLoggedOut object:nil];
@@ -80,7 +80,7 @@
 //check my relation, used for new installation with existing user
 + (void)updateMe{
     NSDate *lastCheckedMe = [[NSUserDefaults standardUserDefaults] valueForKey:kLastCheckedMe];
-    BOOL good = [EWPersonStore validatePerson:[EWSession sharedSession].currentUser];
+    BOOL good = [EWPersonManager validatePerson:[EWSession sharedSession].currentUser];
     if (!good || !lastCheckedMe || lastCheckedMe.timeElapsed > kCheckMeInternal) {
         if (!good) {
             NSLog(@"Failed to validate me, refreshing from server");
@@ -94,7 +94,7 @@
             EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
             [localMe refreshRelatedWithCompletion:^{
                 
-                [EWPersonStore updateCachedFriends];
+                [EWPersonManager updateCachedFriends];
                 [EWUserManagement updateFacebookInfo];
             }];
             //TODO: we need a better sync method
@@ -285,9 +285,9 @@
 
 #pragma mark - Friend
 + (void)requestFriend:(EWPerson *)person{
-    [EWPersonStore getFriendsForPerson:[EWSession sharedSession].currentUser];
+    [EWPersonManager getFriendsForPerson:[EWSession sharedSession].currentUser];
     [[EWSession sharedSession].currentUser addFriendsObject:person];
-    [EWPersonStore updateCachedFriends];
+    [EWPersonManager updateCachedFriends];
     [EWNotificationManager sendFriendRequestNotificationToUser:person];
     
     [EWSync save];
@@ -295,9 +295,9 @@
 }
 
 + (void)acceptFriend:(EWPerson *)person{
-    [EWPersonStore getFriendsForPerson:[EWSession sharedSession].currentUser];
+    [EWPersonManager getFriendsForPerson:[EWSession sharedSession].currentUser];
     [[EWSession sharedSession].currentUser addFriendsObject:person];
-    [EWPersonStore updateCachedFriends];
+    [EWPersonManager updateCachedFriends];
     [EWNotificationManager sendFriendAcceptNotificationToUser:person];
     
     //update cache
@@ -307,9 +307,9 @@
 }
 
 + (void)unfriend:(EWPerson *)person{
-    [EWPersonStore getFriendsForPerson:[EWSession sharedSession].currentUser];
+    [EWPersonManager getFriendsForPerson:[EWSession sharedSession].currentUser];
     [[EWSession sharedSession].currentUser removeFriendsObject:person];
-    [EWPersonStore updateCachedFriends];
+    [EWPersonManager updateCachedFriends];
     //TODO: unfriend
     //[EWServer unfriend:user];
     [EWSync save];
@@ -340,7 +340,7 @@
         }
         person.friends = [friendsMO copy];
         if ([person.serverID isEqualToString: PFUser.currentUser.objectId ]) {
-            [EWPersonStore updateCachedFriends];
+            [EWPersonManager updateCachedFriends];
         }
     }
 }
@@ -409,7 +409,7 @@
     //friends
     NSArray *friendsID = person.cachedInfo[kFriended];
     if (person.friends.count != friendsID.count) {
-        [EWPersonStore getFriendsForPerson:person];
+        [EWPersonManager getFriendsForPerson:person];
     }
     
     return good;

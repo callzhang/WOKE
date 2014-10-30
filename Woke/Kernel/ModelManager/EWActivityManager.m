@@ -29,16 +29,19 @@
 
 - (EWActivity *)createMediaActivityWithMedia:(EWMedia *)media{
     EWActivity *activity = [EWActivity newActivity];
-    activity.type = EWActivityType.media;
+    activity.type = EWActivityTypeMedia;
     [activity addMediasObject:media];
     
     return activity;
 }
 
-- (EWActivity *)createFriendshipActivityWithPerson:(EWMedia *)media friended:(BOOL)friended{
+- (EWActivity *)createFriendshipActivityWithPerson:(EWPerson *)person friended:(BOOL)friended{
     EWActivity *activity = [EWActivity newActivity];
-    activity.type = EWActivityType.friendship;
+    activity.type = EWActivityTypeFriendship;
+    activity.friendedValue = friended;
+    activity.friendID = person.objectId;
     
+    return activity;
 }
 
 @end

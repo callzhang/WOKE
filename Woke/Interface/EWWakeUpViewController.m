@@ -9,7 +9,7 @@
 #import "EWWakeUpViewController.h"
 #import "EWMediaViewCell.h"
 #import "EWShakeManager.h"
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWMedia.h"
 #import "EWTaskItem.h"
 #import "EWAppDelegate.h"
@@ -129,7 +129,7 @@
     [self.view setNeedsDisplay];
     
     //pre download everyone for postWakeUpVC
-    [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+    [[EWPersonManager sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
     
     //send currently played cell info to avmanager
     if ([AVManager sharedManager].media) {

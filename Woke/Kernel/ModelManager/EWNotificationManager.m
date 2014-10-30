@@ -9,9 +9,9 @@
 #import "EWNotificationManager.h"
 #import "EWNotification.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWMedia.h"
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "EWPersonViewController.h"
@@ -118,7 +118,7 @@
         //EWPerson *person = notification.owner;
         
         NSString *personID = notification.sender;
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:personID];
+        EWPerson *person = [[EWPersonManager sharedInstance] getPersonByServerID:personID];
         [EWNotificationManager sharedInstance].person = person;
         
         //TODO: add image to alert
@@ -135,7 +135,7 @@
     } else if ([notification.type isEqualToString:kNotificationTypeFriendAccepted]) {
         
         NSString *personID = notification.sender;
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:personID];
+        EWPerson *person = [[EWPersonManager sharedInstance] getPersonByServerID:personID];
         //EWPerson *person = notification.owner;
         [EWNotificationManager sharedInstance].person = person;
         

@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
 
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWMedia.h"
 #import "EWImageStore.h"
 #import "EWPerson.h"
@@ -17,17 +17,17 @@
 #import "EWNotification.h"
 #import "EWActivity.h"
 
-@implementation EWMediaStore
+@implementation EWMediaManager
 //@synthesize context, model;
 @synthesize myMedias;
 //@synthesize context;
 
-+(EWMediaStore *)sharedInstance{
++(EWMediaManager *)sharedInstance{
     NSParameterAssert([NSThread isMainThread]);
-    static EWMediaStore *sharedStore_ = nil;
+    static EWMediaManager *sharedStore_ = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedStore_ = [[EWMediaStore alloc] init];
+        sharedStore_ = [[EWMediaManager alloc] init];
     });
     return sharedStore_;
 }

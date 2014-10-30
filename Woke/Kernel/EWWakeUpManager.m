@@ -9,11 +9,11 @@
 #import "EWWakeUpManager.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "AVManager.h"
 #import "EWAppDelegate.h"
 #import "EWMedia.h"
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWNotificationManager.h"
 #import "EWPerson.h"
 #import "EWUserManagement.h"
@@ -81,7 +81,7 @@
     }
 
     
-    EWMedia *media = [[EWMediaStore sharedInstance] getMediaByID:mediaID];
+    EWMedia *media = [[EWMediaManager sharedInstance] getMediaByID:mediaID];
     EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
     
     
@@ -294,7 +294,7 @@
     [EWWakeUpManager sharedInstance].isWakingUp = YES;
     
     //update media
-    [[EWMediaStore sharedInstance] checkMediaAssets];
+    [[EWMediaManager sharedInstance] checkMediaAssets];
     NSArray *medias = [EWSession sharedSession].currentUser.mediaAssets.allObjects;
     
     //fill media from mediaAssets, if no media for task, create a pseudo media
@@ -325,7 +325,7 @@
     nVoice = [[EWTaskManager sharedInstance] numberOfVoiceInTask:task];
     if (nVoice == 0) {
         //need to create some voice
-        EWMedia *media = [[EWMediaStore sharedInstance] getWokeVoice];
+        EWMedia *media = [[EWMediaManager sharedInstance] getWokeVoice];
         [task addMediasObject:media];
     }
     

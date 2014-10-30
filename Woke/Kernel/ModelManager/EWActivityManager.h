@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "EWPerson.h"
 
 @interface EWActivityManager : NSObject
 
@@ -14,6 +15,6 @@
 + (NSArray *)myActivities;
 
 - (EWActivity *)createMediaActivityWithMedia:(EWMedia *)media;
-- (EWActivity *)createFriendshipActivityWithPerson:(EWMedia *)media friended:(BOOL)friended;
+- (EWActivity *)createFriendshipActivityWithPerson:(EWPerson *)person friended:(BOOL)friended;
 
 @end

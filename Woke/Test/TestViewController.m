@@ -17,11 +17,11 @@
 #import "EWLocalNotificationViewController.h"
 #import "EWFirstTimeViewController.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWLogInViewController.h"
 #import "EWTaskManager.h"
 #import "EWWakeUpManager.h"
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWMedia.h"
 #import "EWTaskItem.h"
 #import "EWUserManagement.h"
@@ -256,7 +256,7 @@
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             if ([EWAlarmManager myNextAlarm]) {
                 //voice
-                EWMedia *media = [[EWMediaStore sharedInstance] getWokeVoice];
+                EWMedia *media = [[EWMediaManager sharedInstance] getWokeVoice];
                 //[task addMediasObject:media];
                 media.author = [EWSession sharedSession].currentUser;
                 [EWSync save];
@@ -291,7 +291,7 @@
             //1
             notice_friending.type = kNotificationTypeFriendRequest;
             notice_friending.owner = [EWSession sharedSession].currentUser;
-            NSArray *people = [[EWPersonStore sharedInstance] everyone];
+            NSArray *people = [[EWPersonManager sharedInstance] everyone];
             NSInteger k = arc4random_uniform((uint32_t)people.count);
             EWPerson *user = people[k];
             notice_friending.sender = user.objectId;
