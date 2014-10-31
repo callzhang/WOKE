@@ -19,20 +19,26 @@
 // Singleton
 + (EWAlarmManager *)sharedInstance ;
 
+//TODO: move to EWPerson(D)
++ (NSArray *)myAlarms;
 
 // Search
+//TODO: move to EWPerson(instance method) or create alternative method in EWAlarm(class method)
 - (NSArray *)alarmsForUser:(EWPerson *)user;
-+ (NSArray *)myAlarms;
 + (EWAlarm *)myNextAlarm;
 
+//TODO: discuss
 //Get next alarm time from person's cachedInfo
 - (NSDate *)nextAlarmTimeForPerson:(EWPerson *)person;
+//TODO: discuss
 //Get next alarm statement from person's cachedInfo
 - (NSString *)nextStatementForPerson:(EWPerson *)person;
 
 // schedule
 - (NSArray *)scheduleAlarm;
+//TODO: discuss
 - (void)updateCachedAlarmTime;
+//TODO: discuss
 - (void)updateCachedStatement;
 
 //UTIL

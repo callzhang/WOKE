@@ -24,4 +24,5 @@
 //validate
 - (BOOL)validate;
 
++ (NSArray *)alarmsForUser:(EWPerson *)user;
 @end
