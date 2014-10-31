@@ -20,4 +20,8 @@
     
     return session;
 }
+
++ (NSManagedObjectContext *)mainContext{
+    return [EWSession sharedSession].context;
+}
 @end

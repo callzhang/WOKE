@@ -8,13 +8,16 @@
 
 #import <Foundation/Foundation.h>
 #import "EWPerson.h"
+#import "NSManagedObject+MagicalFinders.h"
+
 
 @interface EWSession : NSObject
 
 @property BOOL isSchedulingAlarm;
 @property EWPerson *currentUser;
+@property (nonatomic) NSManagedObjectContext *context;
 
 + (EWSession *)sharedSession;
-
++ (NSManagedObjectContext *)mainContext;
 
 @end

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #import "EWPersonManager.h"
 
-#define buzzSounds                      @{@"default": @"buzz.caf"};
+//#define buzzSounds                      @{@"default": @"buzz.caf"};
 #define kWokeVoiceReceived              @"woke_voice_received"//the ramdom voice alraddy received, stored in cache
 
 @class EWMedia;

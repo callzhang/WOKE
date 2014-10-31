@@ -150,12 +150,10 @@
 		9BEEAF691992C75E008E6F34 /* EWSleepViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BEEAF671992C75E008E6F34 /* EWSleepViewController.xib */; };
 		9BF07AB7192324F800DED2E1 /* _EWAchievement.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AA4192324F800DED2E1 /* _EWAchievement.m */; };
 		9BF07AB9192324F800DED2E1 /* _EWGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AA8192324F800DED2E1 /* _EWGroup.m */; };
-		9BF07ABA192324F800DED2E1 /* _EWGroupTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AAA192324F800DED2E1 /* _EWGroupTask.m */; };
 		9BF07ABC192324F800DED2E1 /* _EWMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AAE192324F800DED2E1 /* _EWMessage.m */; };
 		9BF07ABD192324F800DED2E1 /* _EWNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AB0192324F800DED2E1 /* _EWNotification.m */; };
 		9BF07ABE192324F800DED2E1 /* _EWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AB2192324F800DED2E1 /* _EWPerson.m */; };
 		9BF07ABF192324F800DED2E1 /* _EWSocialGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AB4192324F800DED2E1 /* _EWSocialGraph.m */; };
-		9BF07AC0192324F800DED2E1 /* _EWTaskItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF07AB6192324F800DED2E1 /* _EWTaskItem.m */; };
 		9BF297AF1912F713008C136E /* EWAlarmScheduleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2978F1912F713008C136E /* EWAlarmScheduleView.xib */; };
 		9BF297B01912F713008C136E /* EWAlarmScheduleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297911912F713008C136E /* EWAlarmScheduleViewController.m */; };
 		9BF297B11912F713008C136E /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297921912F713008C136E /* EWAlarmsView.xib */; };
@@ -195,9 +193,7 @@
 		AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50618FE504200CF5AB1 /* EWSocialGraph.m */; };
 		AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0DF50918FE509C00CF5AB1 /* EWSocialGraphManager.m */; };
 		AB198C921861818B008C1F15 /* EWAlarm.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C831861818B008C1F15 /* EWAlarm.m */; };
-		AB198C941861818B008C1F15 /* EWGroupTask.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C871861818B008C1F15 /* EWGroupTask.m */; };
 		AB198C971861818B008C1F15 /* EWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8D1861818B008C1F15 /* EWPerson.m */; };
-		AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB198C8F1861818B008C1F15 /* EWTaskItem.m */; };
 		AB1B1409187E4F8D009D1DB2 /* EWStatisticsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1B1408187E4F8D009D1DB2 /* EWStatisticsManager.m */; };
 		AB1B140F187E661E009D1DB2 /* EWAchievement.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1B140E187E661E009D1DB2 /* EWAchievement.m */; };
 		AB1D2D0D1877A87200D2576F /* EWUserManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1D2D0C1877A87200D2576F /* EWUserManagement.m */; };
@@ -229,7 +225,6 @@
 		AB7807A318393A66007C8BFD /* EWMediaManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079618393A66007C8BFD /* EWMediaManager.m */; };
 		AB7807A418393A66007C8BFD /* EWPersonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079818393A66007C8BFD /* EWPersonManager.m */; };
 		AB7807A618393A66007C8BFD /* EWDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079C18393A66007C8BFD /* EWDataStore.m */; };
-		AB7807A718393A66007C8BFD /* EWTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB78079E18393A66007C8BFD /* EWTaskManager.m */; };
 		ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAB2FC3183DEB310095A3A5 /* EWLocalNotificationViewController.m */; };
 		ABB8C3061932C630001F7832 /* EWPersonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABB8C3051932C630001F7832 /* EWPersonView.xib */; };
 		ABBC47AC18530F35009A2E7D /* EarlyWorm.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ABBC47AA18530F35009A2E7D /* EarlyWorm.xcdatamodeld */; };
@@ -1474,7 +1469,7 @@
 						TestTargetID = 568CC783178DD2C900AB1579;
 					};
 					568CC783178DD2C900AB1579 = {
-						DevelopmentTeam = SDR7T9YB58;
+						DevelopmentTeam = 9Y7TGLZSB3;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -1782,12 +1777,9 @@
 				AB1D2D0D1877A87200D2576F /* EWUserManagement.m in Sources */,
 				ABD53FC6194D7D2F00BBC8DA /* _EWServerObject.m in Sources */,
 				9BF297F01912F720008C136E /* EWWeekDayPickerTableViewController.m in Sources */,
-				AB198C941861818B008C1F15 /* EWGroupTask.m in Sources */,
 				56E0C37017B2CEC200835A6B /* EWShakingDetectorView.m in Sources */,
 				ABC8F96618E92F180096C073 /* UIView+Extend.m in Sources */,
-				9BF07AC0192324F800DED2E1 /* _EWTaskItem.m in Sources */,
 				56E0C37117B2CEC200835A6B /* EWUnlockManager.m in Sources */,
-				AB7807A718393A66007C8BFD /* EWTaskManager.m in Sources */,
 				56D997F217B425D2003EDA53 /* NSString+Extend.m in Sources */,
 				AB1B140F187E661E009D1DB2 /* EWAchievement.m in Sources */,
 				9BF297EC1912F720008C136E /* EWTaskHistoryCell.m in Sources */,
@@ -1810,7 +1802,6 @@
 				AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */,
 				9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */,
 				9BACFE4719FF5D44009173C8 /* _EWActivity.m in Sources */,
-				AB198C981861818B008C1F15 /* EWTaskItem.m in Sources */,
 				ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */,
 				9BF297BD1912F713008C136E /* EWRecordingViewController.m in Sources */,
 				0EAE5C94199A3F7400AED01B /* GKImageCropViewController.m in Sources */,
@@ -1837,7 +1828,6 @@
 				AB198C971861818B008C1F15 /* EWPerson.m in Sources */,
 				AB7807A418393A66007C8BFD /* EWPersonManager.m in Sources */,
 				ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */,
-				9BF07ABA192324F800DED2E1 /* _EWGroupTask.m in Sources */,
 				0EAD75D71995C26F00186860 /* MYIntroductionPanel.m in Sources */,
 				0EAE5C92199A3F7400AED01B /* GKImageCropOverlayView.m in Sources */,
 				0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */,

@@ -26,14 +26,14 @@
     PFObject *selfPO = self.parseObject;
     if (!self.owner) {
         PFUser *ownerPO = selfPO[EWActivityRelationships.owner];
-        EWPerson *owner = [selfPO managedObjectInContext:[EWSession mainContext]];
+        EWPerson *owner = (EWPerson *)[ownerPO managedObjectInContext:mainContext];
         self.owner = owner;
         if (!self.owner) {
             good = NO;
         }
     }
     if (!self.type) {
-        self.type = selfPO.type;
+        self.type = selfPO[EWActivityAttributes.type];
         if (!self.type) {
             good = NO;
         }
