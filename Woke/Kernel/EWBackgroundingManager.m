@@ -244,9 +244,9 @@ OBJC_EXTERN void CLSLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2);
 
 - (void)playSilentSound{
 #if !TARGET_IPHONE_SIMULATOR
-	NSLog(@"Play silent sound");
+	DDLogVerbose(@"Play silent sound");
 	if (player.status == AVPlayerStatusFailed) {
-		NSLog(@"!!! AV player not ready to play.");
+		DDLogVerbose(@"!!! AV player not ready to play.");
 	}
 	[player play];
 #endif
@@ -264,7 +264,7 @@ OBJC_EXTERN void CLSLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2);
 	BOOL success = [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback
 													withOptions: AVAudioSessionCategoryOptionMixWithOthers
 														  error:&error];
-	if (!success) NSLog(@"AVAudioSession error setting category:%@",error);
+	if (!success) DDLogVerbose(@"AVAudioSession error setting category:%@",error);
 	[self playSilentSound];
 }
 

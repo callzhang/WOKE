@@ -21,7 +21,7 @@
 #import <Parse/Parse.h>
 
 //Manager
-#import "EWMediaStore.h"
+#import "EWMediaManager.h"
 #import "EWServer.h"
 #import "EWUserManagement.h"
 #import "EWDataStore.h"
@@ -100,10 +100,10 @@ UIViewController *rootViewController;
         NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
         //Let server class to handle notif info
         if (localNotif) {
-            NSLog(@"Launched with local notification: %@", localNotif);
+            DDLogVerbose(@"Launched with local notification: %@", localNotif);
             [EWServer handleLocalNotification:localNotif];
         }else if (remoteNotif){
-            NSLog(@"Launched with push notification: %@", remoteNotif);
+            DDLogVerbose(@"Launched with push notification: %@", remoteNotif);
             [EWServer handlePushNotification:remoteNotif];
         }
     }
@@ -118,7 +118,7 @@ UIViewController *rootViewController;
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    NSLog(@"Entered background with active time left: %f", application.backgroundTimeRemaining>999?999:application.backgroundTimeRemaining);
+    DDLogVerbose(@"Entered background with active time left: %f", application.backgroundTimeRemaining>999?999:application.backgroundTimeRemaining);
     
     //save core data
     [EWSync save];
@@ -167,16 +167,16 @@ UIViewController *rootViewController;
 #pragma mark - Background fetch method (this is called periodocially
 -(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    NSLog(@"======== Launched in background due to background fetch event ==========");
+    DDLogVerbose(@"======== Launched in background due to background fetch event ==========");
     //enable audio session and keep audio port
     //[[AVManager sharedManager] registerAudioSession];
     [[AVManager sharedManager] playSystemSound:nil];
     
     //check media assets
-    BOOL newMedia = [[EWMediaStore sharedInstance] checkMediaAssets];
+    BOOL newMedia = [[EWMediaManager sharedInstance] checkMediaAssets];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"Returned background fetch handler with %@", newMedia?@"new data":@"no data");
+        DDLogVerbose(@"Returned background fetch handler with %@", newMedia?@"new data":@"no data");
         if (newMedia) {
             completionHandler(UIBackgroundFetchResultNewData);
         }else{
@@ -201,7 +201,7 @@ UIViewController *rootViewController;
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
     //[NSException raise:@"Failed to regiester push token with apple" format:@"Reason: %@", err.description];
-    NSLog(@"*** Failed to regiester push token with apple. Error: %@", err.description);
+    DDLogVerbose(@"*** Failed to regiester push token with apple. Error: %@", err.description);
     NSString *str = [NSString stringWithFormat:@"Unable to regiester Push Notifications. Reason: %@", err.localizedDescription];
     EWAlert(str);
 }
@@ -220,14 +220,14 @@ UIViewController *rootViewController;
         [PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
     }
     
-    if (!me) {
+    if (![EWSession sharedSession].currentUser) {
         return;
     }
     
     if ([application applicationState] == UIApplicationStateActive) {
-        NSLog(@"Push Notification received when app is running: %@", userInfo);
+        DDLogVerbose(@"Push Notification received when app is running: %@", userInfo);
     }else{
-        NSLog(@"Push Notification received when app is in background(%ld): %@", (long)application.applicationState, userInfo);
+        DDLogVerbose(@"Push Notification received when app is in background(%ld): %@", (long)application.applicationState, userInfo);
     }
     
     //handle push
@@ -235,7 +235,7 @@ UIViewController *rootViewController;
     
     //return handler
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(29.0f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"@@@@@@@ Push conpletion handle returned. @@@@@@@@@");
+        DDLogVerbose(@"@@@@@@@ Push conpletion handle returned. @@@@@@@@@");
         completionHandler(UIBackgroundFetchResultNewData);
     });
 }
@@ -245,7 +245,7 @@ UIViewController *rootViewController;
 //Store the completion handler. The completion handler is invoked by the view controller's checkForAllDownloadsHavingCompleted method (if all the download tasks have been completed).
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
 {
-    NSLog(@"%s: APP received message and need to handle the background transfer events", __func__);
+    DDLogVerbose(@"%s: APP received message and need to handle the background transfer events", __func__);
     //store the completionHandler
     //EWDownloadManager *manager = [EWDownloadManager sharedInstance];
 	//manager.backgroundSessionCompletionHandler = completionHandler;
@@ -263,7 +263,7 @@ UIViewController *rootViewController;
 }
 
 - (void)EWDownloadMgr:(EWDownloadMgr *)mgr didFinishedDownload:(NSData *)result {
-    NSLog(@"Dowload Success %@, %@ ",mgr.description, mgr.urlString);
+    DDLogVerbose(@"Dowload Success %@, %@ ",mgr.description, mgr.urlString);
     
     [self handleDownlownedData:result fromManager:mgr];
 }

@@ -13,6 +13,7 @@
 #import "EWDefines.h"
 #import	"EWSync.h"
 #import "EWBlockTypes.h"
+#import "EWSession.h"
 #import "UIView+Layout.h"
 #import "NSString+Extend.h"
 #import "NSDate+Extend.h"

@@ -10,7 +10,7 @@
 #import "EWBackgroundingManager.h"
 #import "AVManager.h"
 #import "EWTaskManager.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWTaskItem.h"
 #import "EWAlarmManager.h"
 
@@ -37,9 +37,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [[EWBackgroundingManager sharedInstance] startBackgrounding];
-	nextTask = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
+	nextTask = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
 	
-	NSDate *cachedNextTime = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:me];
+	NSDate *cachedNextTime = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:[EWSession sharedSession].currentUser];
 	if (![cachedNextTime isEqualToDate:nextTask.time]) {
 		[[EWAlarmManager sharedInstance] updateCachedAlarmTime];
 	}

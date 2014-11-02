@@ -9,7 +9,7 @@
 #import "EWPostWakeUpViewController.h"
 
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWServer.h"
 #import "EWCollectionPersonCell.h"
 #import "EWTaskItem.h"
@@ -135,7 +135,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
 {
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //take the cached value or a new value
-    [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:^{
+    [[EWPersonManager sharedInstance] getEveryoneInBackgroundWithCompletion:^{
         NSArray *allPerson = [EWPerson findAllWithPredicate:[NSPredicate predicateWithFormat:@"score > 0"] inContext:mainContext];
         personArray = [allPerson sortedArrayUsingComparator:^NSComparisonResult(EWPerson *obj1, EWPerson *obj2) {
             NSDate *time1 = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:obj1]?:[[NSDate date] timeByAddingMinutes:60];

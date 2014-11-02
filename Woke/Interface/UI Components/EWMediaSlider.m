@@ -7,7 +7,7 @@
 //
 
 #import "EWMediaSlider.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 
 
 @implementation EWMediaSlider

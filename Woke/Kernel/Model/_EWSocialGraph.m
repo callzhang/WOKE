@@ -16,9 +16,6 @@ const struct EWSocialGraphRelationships EWSocialGraphRelationships = {
 	.owner = @"owner",
 };
 
-const struct EWSocialGraphFetchedProperties EWSocialGraphFetchedProperties = {
-};
-
 @implementation EWSocialGraphID
 @end
 
@@ -44,63 +41,23 @@ const struct EWSocialGraphFetchedProperties EWSocialGraphFetchedProperties = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
 
 	return keyPaths;
 }
 
-
-
-
 @dynamic facebookFriends;
-
-
-
-
-
 
 @dynamic facebookToken;
 
-
-
-
-
-
 @dynamic facebookUpdated;
-
-
-
-
-
 
 @dynamic weiboFriends;
 
-
-
-
-
-
 @dynamic weiboToken;
-
-
-
-
-
 
 @dynamic weiboUpdated;
 
-
-
-
-
-
 @dynamic owner;
 
-	
-
-
-
-
-
-
 @end
+

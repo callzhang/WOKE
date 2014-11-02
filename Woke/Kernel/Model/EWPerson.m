@@ -7,7 +7,7 @@
 //j
 
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 
 @implementation EWPerson
 @dynamic lastLocation;
@@ -21,8 +21,8 @@
 #pragma mark - Helper methods
 - (BOOL)isMe{
     BOOL isme = NO;
-    if (me) {
-        isme = [self.username isEqualToString:me.username];
+    if ([EWSession sharedSession].currentUser) {
+        isme = [self.username isEqualToString:[EWSession sharedSession].currentUser.username];
     }
     return isme;
 }
@@ -40,12 +40,12 @@
 
 //request pending
 - (BOOL)friendPending{
-    return [me.cachedInfo[kCachedFriends] containsObject:self.objectId];
+    return [[EWSession sharedSession].currentUser.cachedInfo[kCachedFriends] containsObject:self.objectId];
 }
 
 //wait for friend acceptance
 - (BOOL)friendWaiting{
-    return [self.cachedInfo[kCachedFriends] containsObject:me.objectId];
+    return [self.cachedInfo[kCachedFriends] containsObject:[EWSession sharedSession].currentUser.objectId];
 }
 
 - (NSString *)genderObjectiveCaseString{

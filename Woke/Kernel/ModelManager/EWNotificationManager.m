@@ -9,9 +9,9 @@
 #import "EWNotificationManager.h"
 #import "EWNotification.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
-#import "EWMediaItem.h"
-#import "EWMediaStore.h"
+#import "EWPersonManager.h"
+#import "EWMedia.h"
+#import "EWMediaManager.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "EWPersonViewController.h"
@@ -32,7 +32,7 @@
 @interface EWNotificationManager()
 @property EWPerson *person;
 @property EWTaskItem *task;
-@property EWMediaItem *media;
+@property EWMedia *media;
 @property (nonatomic)  EWNotification *notification;
 @end
 
@@ -54,7 +54,7 @@
 }
 
 + (NSArray *)allNotifications{
-    NSArray *notifications = [me.notifications allObjects];
+    NSArray *notifications = [[EWSession sharedSession].currentUser.notifications allObjects];
      NSSortDescriptor *sortCompelet = [NSSortDescriptor sortDescriptorWithKey:@"completed" ascending:NO];
     NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO];
     NSSortDescriptor *sortImportance = [NSSortDescriptor sortDescriptorWithKey:@"importance" ascending:NO];
@@ -68,7 +68,7 @@
     NSParameterAssert([NSThread isMainThread]);
     EWNotification *notice = [EWNotification createEntity];
     notice.updatedAt = [NSDate date];
-    notice.owner = me;
+    notice.owner = [EWSession sharedSession].currentUser;
     notice.importance = 0;
     return notice;
 }
@@ -80,7 +80,7 @@
 //    [EWNotificationManager sendNotification:notice];
 //}
 
-+ (EWNotification *)newNotificationForMedia:(EWMediaItem *)media{
++ (EWNotification *)newNotificationForMedia:(EWMedia *)media{
     if (!media) {
         return nil;
     }
@@ -118,7 +118,7 @@
         //EWPerson *person = notification.owner;
         
         NSString *personID = notification.sender;
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:personID];
+        EWPerson *person = [[EWPersonManager sharedInstance] getPersonByServerID:personID];
         [EWNotificationManager sharedInstance].person = person;
         
         //TODO: add image to alert
@@ -135,7 +135,7 @@
     } else if ([notification.type isEqualToString:kNotificationTypeFriendAccepted]) {
         
         NSString *personID = notification.sender;
-        EWPerson *person = [[EWPersonStore sharedInstance] getPersonByServerID:personID];
+        EWPerson *person = [[EWPersonManager sharedInstance] getPersonByServerID:personID];
         //EWPerson *person = notification.owner;
         [EWNotificationManager sharedInstance].person = person;
         
@@ -236,8 +236,8 @@
                 break;
                 
             case 1:{ //accepted
-                [me addFriendsObject:self.person];
-                [self.person addFriendsObject:me];
+                [[EWSession sharedSession].currentUser addFriendsObject:self.person];
+                [self.person addFriendsObject:[EWSession sharedSession].currentUser];
                 [EWNotificationManager sendFriendAcceptNotificationToUser:self.person];
                 [rootViewController.view showSuccessNotification:@"Accepted"];
                 break;
@@ -325,7 +325,7 @@
      */
     
     [PFCloud callFunctionInBackground:@"sendFriendRequestNotificationToUser"
-                       withParameters:@{@"sender": me.objectId,
+                       withParameters:@{@"sender": [EWSession sharedSession].currentUser.objectId,
                                         @"owner": person.objectId}
                                 block:^(id object, NSError *error)
      {
@@ -352,7 +352,7 @@
      userInfo: {User:user.objectId, Type: kNotificationTypeFriendAccepted}
      */
     [PFCloud callFunctionInBackground:@"sendFriendAcceptNotificationToUser"
-                       withParameters:@{@"sender": me.objectId, @"owner": person.objectId}
+                       withParameters:@{@"sender": [EWSession sharedSession].currentUser.objectId, @"owner": person.objectId}
                                 block:^(id object, NSError *error)
     {
         if (error) {

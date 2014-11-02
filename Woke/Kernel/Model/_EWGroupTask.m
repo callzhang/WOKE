@@ -16,9 +16,6 @@ const struct EWGroupTaskRelationships EWGroupTaskRelationships = {
 	.participents = @"participents",
 };
 
-const struct EWGroupTaskFetchedProperties EWGroupTaskFetchedProperties = {
-};
-
 @implementation EWGroupTaskID
 @end
 
@@ -44,75 +41,41 @@ const struct EWGroupTaskFetchedProperties EWGroupTaskFetchedProperties = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
 
 	return keyPaths;
 }
 
-
-
-
 @dynamic added;
-
-
-
-
-
 
 @dynamic city;
 
-
-
-
-
-
 @dynamic region;
-
-
-
-
-
 
 @dynamic time;
 
-
-
-
-
-
 @dynamic medias;
 
-	
 - (NSMutableSet*)mediasSet {
 	[self willAccessValueForKey:@"medias"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"medias"];
-  
+
 	[self didAccessValueForKey:@"medias"];
 	return result;
 }
-	
 
 @dynamic messages;
 
-	
-
 @dynamic participents;
 
-	
 - (NSMutableSet*)participentsSet {
 	[self willAccessValueForKey:@"participents"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"participents"];
-  
+
 	[self didAccessValueForKey:@"participents"];
 	return result;
 }
-	
-
-
-
-
-
 
 @end
+

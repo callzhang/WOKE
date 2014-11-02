@@ -10,8 +10,9 @@
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "EWUIUtil.h"
-#import "EWMediaStore.h"
-#import "EWMediaItem.h"
+#import "EWMediaManager.h"
+#import "EWMedia.h"
+#import "EWActivity.h"
 
 
 @implementation EWStatisticsManager
@@ -176,7 +177,7 @@
     //return
     
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        EWPerson *localMe = [me inContext:localContext];
+        EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
         [[EWTaskManager sharedInstance] checkPastTasks];
         NSArray *tasks = [[EWTaskManager sharedInstance] pastTasksByPerson:localMe];//newest on top
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
@@ -205,9 +206,9 @@
             
             //woke to receivers
             NSMutableArray *receivers = [NSMutableArray new];
-            for (EWMediaItem *m in me.medias.copy) {
+            for (EWMedia *m in [EWSession sharedSession].currentUser.medias.copy) {
 				if (![mainContext existingObjectWithID:m.objectID error:NULL]) return;
-                for (EWTaskItem *t in m.tasks.copy) {
+                for (EWTaskItem *t in m.activity.copy) {
 					if (![mainContext existingObjectWithID:t.objectID error:NULL]) return;
                     if ([t.time isEarlierThan:eod] && [bod isEarlierThan:t.time]) {
                         NSString *receiver = t.owner.objectId;
@@ -223,7 +224,7 @@
             //woke by sender
             NSArray *wokeBy;
             NSMutableArray *senders = [NSMutableArray new];
-            for (EWMediaItem *m in task.medias) {
+            for (EWMedia *m in task.medias) {
                 NSString *sender = m.author.objectId;
                 if (!sender) continue;
                 [senders addObject:sender];
@@ -261,7 +262,7 @@
 }
 
 + (void)updateCacheWithFriendsAdded:(NSArray *)friendIDs{
-    NSMutableDictionary *cache = me.cachedInfo.mutableCopy;
+    NSMutableDictionary *cache = [EWSession sharedSession].currentUser.cachedInfo.mutableCopy;
     NSMutableDictionary *activity = [cache[kActivitiesCache] mutableCopy]?:[NSMutableDictionary new];
     NSMutableDictionary *friendsActivityDic = [activity[kFriended] mutableCopy] ?:[NSMutableDictionary new];
     NSString *dateKey = [NSDate date].date2YYMMDDString;
@@ -273,7 +274,7 @@
     friendsActivityDic[dateKey] = [friendedSet allObjects];
     activity[kFriended] = [friendsActivityDic copy];
     cache[kActivitiesCache] = [activity copy];
-    me.cachedInfo = [cache copy];
+    [EWSession sharedSession].currentUser.cachedInfo = [cache copy];
     
     [EWSync save];
 }

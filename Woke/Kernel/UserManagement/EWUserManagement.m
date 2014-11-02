@@ -16,7 +16,7 @@
 
 //model
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWServer.h"
 #import "EWAlarmManager.h"
 #import "EWTaskManager.h"
@@ -33,6 +33,7 @@
 //social network
 #import "EWSocialGraph.h"
 #import "EWSocialGraphManager.h"
+#import "EWAlarm.h"
 
 
 
@@ -112,10 +113,10 @@
 + (void)loginWithServerUser:(PFUser *)user withCompletionBlock:(void (^)(void))completionBlock{
 
     //fetch or create
-    EWPerson *person = [[EWPersonStore sharedInstance] createPersonWithParseObject:user];
+    EWPerson *person = [[EWPersonManager sharedInstance] findOrCreatePersonWithParseObject:user];
     
     //save me
-    [EWPersonStore sharedInstance].currentUser = person;
+    [EWSession sharedSession].currentUser = person;
     
     if ([EWSync sharedInstance].workingQueue.count == 0) {
         //if no pending uploads, refresh self
@@ -130,7 +131,7 @@
     }
     
     DDLogInfo(@"[c] Broadcast Person login notification");
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:me userInfo:@{kUserLoggedInUserKey:me}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPersonLoggedIn object:[EWSession sharedSession].currentUser userInfo:@{kUserLoggedInUserKey:[EWSession sharedSession].currentUser}];
     
     //if new user, link with facebook
     if([PFUser currentUser].isNew){
@@ -225,7 +226,7 @@
 
 + (void)handleNewUser{
     [EWUserManagement linkWithFacebook];
-    NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", me.name];
+    NSString *msg = [NSString stringWithFormat:@"Welcome %@ joining Woke!", [EWSession sharedSession].currentUser.name];
     EWAlert(msg);
     [EWServer broadcastMessage:msg onSuccess:NULL onFailure:NULL];
 }
@@ -254,7 +255,7 @@
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     
     //Alarm
-    [EWAlarmManager.sharedInstance deleteAllAlarms];
+    [EWAlarm deleteAll];
     //task
     [[EWTaskManager sharedInstance] deleteAllTasks];
     //media
@@ -297,13 +298,13 @@
         CLGeocoder *geoloc = [[CLGeocoder alloc] init];
         [geoloc reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
             
-            me.lastLocation = location;
+            [EWSession sharedSession].currentUser.lastLocation = location;
             
             if (error == nil && [placemarks count] > 0) {
                 CLPlacemark *placemark = [placemarks lastObject];
                 //get info
-                me.city = placemark.locality;
-                me.region = placemark.country;
+                [EWSession sharedSession].currentUser.city = placemark.locality;
+                [EWSession sharedSession].currentUser.region = placemark.country;
             } else {
                 NSLog(@"%@", error.debugDescription);
             }
@@ -378,7 +379,7 @@
 //after fb login, fetch user managed object
 + (void)updateUserWithFBData:(NSDictionary<FBGraphUser> *)user{
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        EWPerson *person = [me inContext:localContext];
+        EWPerson *person = [[EWSession sharedSession].currentUser inContext:localContext];
         
         NSParameterAssert(person);
         
@@ -430,7 +431,7 @@
 + (void)getFacebookFriends{
     DDLogVerbose(@"Updating facebook friends");
     //check facebook id exist
-    if (!me.facebook) {
+    if (![EWSession sharedSession].currentUser.facebook) {
         DDLogWarn(@"Current user doesn't have facebook ID, skip checking fb friends");
         return;
     }
@@ -452,7 +453,7 @@
         //get social graph of current user
         //if not, create one
         [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-            EWPerson *localMe = [me inContext:localContext];
+            EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
             EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:localMe];
             //skip if checked within a week
             if (graph.facebookUpdated && abs([graph.facebookUpdated timeIntervalSinceNow]) < kSocialGraphUpdateInterval) {
@@ -494,7 +495,7 @@
                 [self getFacebookFriendsWithPath:nextPage withReturnData:friendsHolder];
             }else{
                 DDLogVerbose(@"Finished loading friends from facebook, transfer to social graph.");
-                EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:me];
+                EWSocialGraph *graph = [[EWSocialGraphManager sharedInstance] socialGraphForPerson:[EWSession sharedSession].currentUser];
                 graph.facebookFriends = [friendsHolder copy];
                 graph.facebookUpdated = [NSDate date];
                 

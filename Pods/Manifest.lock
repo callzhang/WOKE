@@ -48,6 +48,7 @@ PODS:
   - CocoaLumberjack/Core (2.0.0-beta)
   - CocoaLumberjack/Extensions (2.0.0-beta):
     - CocoaLumberjack/Core
+  - CrashlyticsFramework (2.2.5)
   - CrashlyticsLumberjack (1.0.1):
     - CocoaLumberjack/Core
   - DACircularProgress (2.2.0)
@@ -73,6 +74,7 @@ DEPENDENCIES:
   - apptentive-ios
   - BlocksKit (~> 2.2.5)
   - CocoaLumberjack
+  - CrashlyticsFramework
   - CrashlyticsLumberjack (~> 1.0.0)
   - Expecta (~> 0.3.1)
   - Facebook-iOS-SDK
@@ -94,6 +96,7 @@ SPEC CHECKSUMS:
   apptentive-ios: f1c0f7c63134837b17a1410b525c8703e7e4bc43
   BlocksKit: 4439e7f30a9f90743462ca63545a15c1f4304cef
   CocoaLumberjack: aadc76d7bd6c839ca84b38ed50cbf89d7cf8c693
+  CrashlyticsFramework: 82d124501d97d3b5d49bd6209dea21c6b7f0a33d
   CrashlyticsLumberjack: b2a184319db06a070ccc176c07c503720ebedf81
   DACircularProgress: 3b41941891a56dc6aa17971f5322a9a38a6f446e
   Expecta: 03aabd0a89d8dea843baecb19a7fd7466a69a31d
@@ -106,4 +109,4 @@ SPEC CHECKSUMS:
   SVProgressHUD: 5034c6e22b8c2ca3e09402e48d41ed0340aa1c50
   Weibo: 8ac9c24884290718ca62da62301165d209f7336c
 
-COCOAPODS: 0.34.1
+COCOAPODS: 0.34.4

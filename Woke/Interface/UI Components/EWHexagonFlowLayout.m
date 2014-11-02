@@ -9,7 +9,7 @@
 #define kLevelCount                         @[@1, @6, @12, @18, @24, @30, @36, @42, @48]
 #define kLevelTotal                         @[@0, @1, @7, @19, @37, @61, @91]
 #define kDynamic                            NO
-#define kZoomEffect                         YES
+#define kZoomEffect                         NO
 #define kHexWidthRatio                      0.875
 
 @interface EWHexagonFlowLayout ()

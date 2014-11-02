@@ -18,16 +18,16 @@
 // Model
 #import "EWPerson.h"
 #import "EWTaskItem.h"
-#import "EWAlarmItem.h"
-#import "EWMediaItem.h"
+#import "EWAlarm.h"
+#import "EWMedia.h"
 #import "NSDate+Extend.h"
 #import "EWAchievement.h"
 
 //manager
 #import "EWTaskManager.h"
 #import "EWAlarmManager.h"
-#import "EWPersonStore.h"
-#import "EWMediaStore.h"
+#import "EWPersonManager.h"
+#import "EWMediaManager.h"
 #import "EWStatisticsManager.h"
 #import "EWNotificationManager.h"
 #import "EWUserManagement.h"
@@ -161,7 +161,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             return n1 < n2;
         }];
         if (person.isMe) {
-            if (!_taskActivity || _taskActivity.count != person.pastTasks.count) {
+            if (!_taskActivity || _taskActivity.count != person.activities.count) {
                 [EWStatisticsManager updateTaskActivityCacheWithCompletion:^{
                     _taskActivity = person.cachedInfo[kTaskActivityCache];
                     dates = _taskActivity.allKeys;
@@ -223,7 +223,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     self.name.text = person.name;
     self.location.text = person.city;
     if (person.lastLocation && !person.isMe) {
-        CLLocation *loc0 = me.lastLocation;
+        CLLocation *loc0 = [EWSession sharedSession].currentUser.lastLocation;
         CLLocation *loc1 = person.lastLocation;
         float distance = [loc0 distanceFromLocation:loc1]/1000;
         if (person.city) {
@@ -290,7 +290,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 
 - (IBAction)login:(id)sender {
     
-    if (!me.facebook) {
+    if (![EWSession sharedSession].currentUser.facebook) {
         EWLogInViewController *loginVC = [[EWLogInViewController alloc] init];
         [loginVC connect:nil];
         return;
@@ -376,18 +376,18 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     if ([title isEqualToString:@"Add friend"]) {
         
         //friend
-        [EWPersonStore requestFriend:person];
+        [EWPersonManager requestFriend:person];
         [self.view showSuccessNotification:@"Request sent"];
         
     }else if ([title isEqualToString:@"Unfriend"]){
         
         //unfriend
-        [EWPersonStore unfriend:person];
+        [EWPersonManager unfriend:person];
         [self.view showSuccessNotification:@"Unfriended"];
         
     }else if ([title isEqualToString:@"Accept friend"]){
         
-        [EWPersonStore acceptFriend:person];
+        [EWPersonManager acceptFriend:person];
         [self.view showSuccessNotification:@"Added"];
         
     }else if ([title isEqualToString:@"Send Voice Greeting"]){
@@ -518,7 +518,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 break;
             case 1:
             {
-                NSArray *receivedMedias = [[EWMediaStore sharedInstance] mediasForPerson:person];
+                NSArray *receivedMedias = [[EWMediaManager sharedInstance] mediasForPerson:person];
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)receivedMedias.count];
                 if (!person.isMe) {
                     cell.textLabel.text = male? @"People woke him up":@"People woke her up";
@@ -527,7 +527,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
                 break;
             case 2:
             {
-                NSArray *medias = [[EWMediaStore sharedInstance] mediaCreatedByPerson:person];
+                NSArray *medias = [[EWMediaManager sharedInstance] mediaCreatedByPerson:person];
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)medias.count];
                 if (!person.isMe) {
                     cell.textLabel.text = male? @"People he woke up":@"People she woke up";
@@ -744,11 +744,11 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }else if (buttonIndex == 3){
         UIImage *image = [photoBrowser photoAtIndex:photoIndex].underlyingImage;
         // upload my profile and move to first place
-        NSString *fileUrl = [EWUtil uploadImageToParseREST:me.profilePic];
-        [EWUtil deleteFileFromParseRESTwithURL:me.images[photoIndex]];
+        NSString *fileUrl = [EWUtil uploadImageToParseREST:[EWSession sharedSession].currentUser.profilePic];
+        [EWUtil deleteFileFromParseRESTwithURL:[EWSession sharedSession].currentUser.images[photoIndex]];
         [_photos insertObject:fileUrl atIndex:0];
         // set my profile
-        me.profilePic = image;
+        [EWSession sharedSession].currentUser.profilePic = image;
         
         // delete original pic in array;
         [_photos removeObjectAtIndex:photoIndex];
@@ -798,7 +798,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
 {
     if (person.isMe) {
         // 结束时候保存一次
-        me.images = _photos;
+        [EWSession sharedSession].currentUser.images = _photos;
         [EWSync save];
     }
 }
@@ -821,7 +821,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
             
             [_photos addObject:fileUrl];
             
-            me.images = _photos;
+            [EWSession sharedSession].currentUser.images = _photos;
             //        [EWSync save];
             
             [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];
@@ -913,7 +913,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         
         [_photos addObject:fileUrl];
         
-        me.images = _photos;
+        [EWSession sharedSession].currentUser.images = _photos;
         [EWSync save];
         
         [MBProgressHUD hideAllHUDsForView:_photoBrower.view animated:YES];

@@ -16,130 +16,60 @@ extern const struct EWAchievementRelationships {
 	__unsafe_unretained NSString *owner;
 } EWAchievementRelationships;
 
-extern const struct EWAchievementFetchedProperties {
-} EWAchievementFetchedProperties;
-
 @class EWPerson;
-
 
 @class NSObject;
 
-
-
-
-@interface EWAchievementID : NSManagedObjectID {}
+@interface EWAchievementID : EWServerObjectID {}
 @end
 
 @interface _EWAchievement : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
-- (EWAchievementID*)objectID;
-
-
-
-
+@property (nonatomic, readonly, strong) EWAchievementID* objectID;
 
 @property (nonatomic, strong) NSString* body;
 
-
-
 //- (BOOL)validateBody:(id*)value_ error:(NSError**)error_;
-
-
-
-
 
 @property (nonatomic, strong) id image;
 
-
-
 //- (BOOL)validateImage:(id*)value_ error:(NSError**)error_;
-
-
-
-
 
 @property (nonatomic, strong) NSString* name;
 
-
-
 //- (BOOL)validateName:(id*)value_ error:(NSError**)error_;
-
-
-
-
 
 @property (nonatomic, strong) NSDate* time;
 
-
-
 //- (BOOL)validateTime:(id*)value_ error:(NSError**)error_;
-
-
-
-
 
 @property (nonatomic, strong) NSString* type;
 
-
-
 //- (BOOL)validateType:(id*)value_ error:(NSError**)error_;
-
-
-
-
 
 @property (nonatomic, strong) EWPerson *owner;
 
 //- (BOOL)validateOwner:(id*)value_ error:(NSError**)error_;
 
-
-
-
-
-@end
-
-@interface _EWAchievement (CoreDataGeneratedAccessors)
-
 @end
 
 @interface _EWAchievement (CoreDataGeneratedPrimitiveAccessors)
 
-
 - (NSString*)primitiveBody;
 - (void)setPrimitiveBody:(NSString*)value;
-
-
-
 
 - (id)primitiveImage;
 - (void)setPrimitiveImage:(id)value;
 
-
-
-
 - (NSString*)primitiveName;
 - (void)setPrimitiveName:(NSString*)value;
-
-
-
 
 - (NSDate*)primitiveTime;
 - (void)setPrimitiveTime:(NSDate*)value;
 
-
-
-
-- (NSString*)primitiveType;
-- (void)setPrimitiveType:(NSString*)value;
-
-
-
-
-
 - (EWPerson*)primitiveOwner;
 - (void)setPrimitiveOwner:(EWPerson*)value;
-
 
 @end

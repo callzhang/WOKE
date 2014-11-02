@@ -8,7 +8,7 @@
 
 #import "EWPopupMenu.h"
 #import "EWUIUtil.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 
 #define kCallOutBtnSize         40
 #define kPopupDuration			0.4

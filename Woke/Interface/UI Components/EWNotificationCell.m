@@ -10,7 +10,7 @@
 #import "EWNotification.h"
 #import "EWPerson.h"
 #import "EWUIUtil.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 
 @interface EWNotificationCell()
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *userLabelLeadingConstraint;
@@ -56,7 +56,7 @@
         //kNotificationTypeFriendAccepted
         
         NSString *personID = notification.sender;
-        EWPerson *sender = [[EWPersonStore sharedInstance] getPersonByServerID:personID];
+        EWPerson *sender = [[EWPersonManager sharedInstance] getPersonByServerID:personID];
         self.profilePic.hidden = NO;
         if (sender.profilePic) {
             self.profilePic.image = sender.profilePic;

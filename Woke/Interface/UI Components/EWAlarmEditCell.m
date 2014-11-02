@@ -9,7 +9,7 @@
 #import "EWAlarmEditCell.h"
 #import "EWTaskItem.h"
 #import "EWAlarmManager.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "NSDate+Extend.h"
 //#import "EWCostumTextField.h"
 @implementation EWAlarmEditCell
@@ -76,7 +76,7 @@
 //    [self toggleAlarm:nil];
 //}
 
-- (void)setAlarm:(EWAlarmItem *)a{
+- (void)setAlarm:(EWAlarm *)a{
     //data
     //task = [[EWAlarmManager sharedInstance] firstTaskForAlarm:a];
     alarm = a;
@@ -149,7 +149,7 @@
     self.time.text = [myTime date2timeShort];
     self.AM.text = [myTime date2am];
     sender.value = 0;//reset to 0
-    //NSLog(@"New value is: %ld, and new time is: %@", (long)time2add, myTime.date2detailDateString);
+    //DDLogVerbose(@"New value is: %ld, and new time is: %@", (long)time2add, myTime.date2detailDateString);
     [self setNeedsDisplay];
 }
 

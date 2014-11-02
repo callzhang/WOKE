@@ -4,19 +4,17 @@
 #import "_EWMessage.h"
 
 const struct EWMessageAttributes EWMessageAttributes = {
-	.media = @"media",
+	.read = @"read",
 	.text = @"text",
+	.thumbnail = @"thumbnail",
 	.time = @"time",
+	.type = @"type",
 };
 
 const struct EWMessageRelationships EWMessageRelationships = {
-	.groupTask = @"groupTask",
+	.media = @"media",
 	.recipient = @"recipient",
 	.sender = @"sender",
-	.task = @"task",
-};
-
-const struct EWMessageFetchedProperties EWMessageFetchedProperties = {
 };
 
 @implementation EWMessageID
@@ -44,54 +42,25 @@ const struct EWMessageFetchedProperties EWMessageFetchedProperties = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
 
 	return keyPaths;
 }
 
-
-
-
-@dynamic media;
-
-
-
-
-
+@dynamic read;
 
 @dynamic text;
 
-
-
-
-
+@dynamic thumbnail;
 
 @dynamic time;
 
+@dynamic type;
 
-
-
-
-
-@dynamic groupTask;
-
-	
+@dynamic media;
 
 @dynamic recipient;
 
-	
-
 @dynamic sender;
 
-	
-
-@dynamic task;
-
-	
-
-
-
-
-
-
 @end
+

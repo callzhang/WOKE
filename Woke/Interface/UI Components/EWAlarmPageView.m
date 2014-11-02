@@ -8,14 +8,14 @@
 
 #import "EWAlarmPageView.h"
 #import "EWAlarmManager.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "NSDate+Extend.h"
 #import "EWPerson.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "EWWakeUpViewController.h"
 #import "EWAppDelegate.h"
-#import "EWMediaItem.h"
+#import "EWMedia.h"
 #import "EWWakeUpManager.h"
 #import "EWSleepViewController.h"
 
@@ -61,10 +61,10 @@
     @try {
         [self stopObserveTask];
         //[[NSNotificationCenter defaultCenter] removeObserver:self name:kTaskDeleteNotification object:nil];
-        NSLog(@"Alarm page deallocated, KVO & Observer removed");
+        DDLogVerbose(@"Alarm page deallocated, KVO & Observer removed");
     }
     @catch (NSException *exception) {
-        NSLog(@"*** Alarm page unable to remove task observer: %@",exception);
+        DDLogVerbose(@"*** Alarm page unable to remove task observer: %@",exception);
     }
     [changeTimeTimer invalidate];
 }
@@ -90,7 +90,7 @@
     [self setNeedsDisplay];
     
     //set task state
-    alarm.state = sender.selected;
+    alarm.state = @(sender.selected);
     
     //broadcast
     DDLogInfo(@"Task on %@ changed to %@", task.time.weekday, (sender.selected?@"ON":@"OFF"));
@@ -162,7 +162,7 @@
     [task addObserver:self forKeyPath:@"statement" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
-- (void)setAlarm:(EWAlarmItem *)a{
+- (void)setAlarm:(EWAlarm *)a{
     self.alarmState.selected = a.state;
 }
 
@@ -171,7 +171,7 @@
 - (void)handleTaskDeletion:(NSNotification *)notification{
     id sender = [notification object];
     if (!sender) {
-        NSLog(@"*** task should be contained in notification");
+        DDLogVerbose(@"*** task should be contained in notification");
         return;
     }
     NSAssert([sender isKindOfClass:[EWTaskItem class]], @"Target is not task item, check code!");
@@ -185,7 +185,7 @@
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if (![object isEqual:task]) {
-        NSLog(@"*** Received task change that not belongs to this alarm page, check observer set up!");
+        DDLogVerbose(@"*** Received task change that not belongs to this alarm page, check observer set up!");
         return;
     }
     
@@ -200,7 +200,7 @@
 			[self.alarmState setImage:[UIImage imageNamed:@"Off_Btn"] forState:UIControlStateNormal];
 		}
 		[self.alarmState setNeedsDisplay];
-		//NSLog(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, task.state?@"YES":@"NO");
+		//DDLogVerbose(@"%s Task on %@ chenged to %@", __func__ , task.time.weekday, task.state?@"YES":@"NO");
 		
 		
 	}else if ([keyPath isEqualToString:@"medias"]){
@@ -227,25 +227,25 @@
 		
 	}else{
 		
-		NSLog(@"@@@ Unhandled task %@ change: %@", keyPath, change);
+		DDLogVerbose(@"@@@ Unhandled task %@ change: %@", keyPath, change);
 	}
 	[self setNeedsDisplay];
 }
 
 - (void)stopObserveTask{
     
-    NSLog(@"About to remove KVO to task (%@)", task.time.weekday);
+    DDLogVerbose(@"About to remove KVO to task (%@)", task.time.weekday);
     
     @try {
         [task removeObserver:self forKeyPath:@"state"];
         [task removeObserver:self forKeyPath:@"medias"];
         [task removeObserver:self forKeyPath:@"time"];
         [task removeObserver:self forKeyPath:@"statement"];
-        NSLog(@"Removed KVO to task (%@)", task.time.weekday);
+        DDLogVerbose(@"Removed KVO to task (%@)", task.time.weekday);
     }
     @catch (NSException *exception) {
         id observants = [task observationInfo];
-        NSLog(@"Failed to remove observer %@ with observation info: %@",self , observants);
+        DDLogVerbose(@"Failed to remove observer %@ with observation info: %@",self , observants);
     }
     
 }

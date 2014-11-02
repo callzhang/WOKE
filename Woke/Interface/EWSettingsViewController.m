@@ -8,7 +8,7 @@
 
 #import "EWSettingsViewController.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWMediaViewCell.h"
 #import "EWFirstTimeViewController.h"
 #import "EWLogInViewController.h"
@@ -51,12 +51,12 @@ static const NSArray *pref;
     [self initView];
 }
 -(void)viewWillDisappear:(BOOL)animated{
-    me.preference = [preference mutableCopy];
+    [EWSession sharedSession].currentUser.preference = [preference mutableCopy];
     [EWSync save];
 }
 - (void)initData {
     //profile
-    preference = [me.preference mutableCopy]?:[kUserDefaults mutableCopy];
+    preference = [[EWSession sharedSession].currentUser.preference mutableCopy]?:[kUserDefaults mutableCopy];
     settingGroup = settingGroupPreference;
     ringtoneList = ringtoneNameList;
     
@@ -102,7 +102,7 @@ static const NSArray *pref;
 - (void)ViewController:(EWRingtoneSelectionViewController *)controller didFinishSelectRingtone:(NSString *)tone{
     //set ringtone
     preference[@"DefaultTone"] = tone;
-    me.preference = preference;
+    [EWSession sharedSession].currentUser.preference = preference;
     [EWSync save];
 }
 
@@ -257,7 +257,7 @@ static const NSArray *pref;
             if (d != d0) {
                 DDLogInfo(@"Sleep duration changed from %f to %f", d0, d);
                 preference[kSleepDuration] = @(d);
-                me.preference = preference.copy;
+                [EWSession sharedSession].currentUser.preference = preference.copy;
                 [_tableView reloadData];
                 [EWTaskManager updateSleepNotification];
             }
@@ -286,7 +286,7 @@ static const NSArray *pref;
 
 - (void)OnBedTimeNotificationSwitchChanged:(UISwitch *)sender{
     [preference setObject:@(sender.on) forKey:kBedTimeNotification];
-    me.preference = preference;
+    [EWSession sharedSession].currentUser.preference = preference;
     [EWSync save];
     
     //schedule sleep notification

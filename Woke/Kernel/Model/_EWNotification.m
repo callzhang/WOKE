@@ -16,9 +16,6 @@ const struct EWNotificationRelationships EWNotificationRelationships = {
 	.owner = @"owner",
 };
 
-const struct EWNotificationFetchedProperties EWNotificationFetchedProperties = {
-};
-
 @implementation EWNotificationID
 @end
 
@@ -44,7 +41,7 @@ const struct EWNotificationFetchedProperties EWNotificationFetchedProperties = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
+
 	if ([key isEqualToString:@"importanceValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"importance"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -54,19 +51,9 @@ const struct EWNotificationFetchedProperties EWNotificationFetchedProperties = {
 	return keyPaths;
 }
 
-
-
-
 @dynamic completed;
 
-
-
-
-
-
 @dynamic importance;
-
-
 
 - (int64_t)importanceValue {
 	NSNumber *result = [self importance];
@@ -86,45 +73,15 @@ const struct EWNotificationFetchedProperties EWNotificationFetchedProperties = {
 	[self setPrimitiveImportance:[NSNumber numberWithLongLong:value_]];
 }
 
-
-
-
-
 @dynamic receiver;
-
-
-
-
-
 
 @dynamic sender;
 
-
-
-
-
-
 @dynamic type;
-
-
-
-
-
 
 @dynamic userInfo;
 
-
-
-
-
-
 @dynamic owner;
 
-	
-
-
-
-
-
-
 @end
+

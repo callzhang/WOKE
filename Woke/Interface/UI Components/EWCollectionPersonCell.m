@@ -9,7 +9,7 @@
 #import "EWCollectionPersonCell.h"
 #import "EWUIUtil.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
 #import "NSDate+Extend.h"
@@ -56,8 +56,8 @@
 }
 
 - (NSString *)distanceString{
-    if (!_person.isMe && _person.lastLocation && me.lastLocation) {
-        CLLocation *loc0 = me.lastLocation;
+    if (!_person.isMe && _person.lastLocation && [EWSession sharedSession].currentUser.lastLocation) {
+        CLLocation *loc0 = [EWSession sharedSession].currentUser.lastLocation;
         CLLocation *loc1 = _person.lastLocation;
         _distance = [loc0 distanceFromLocation:loc1]/1000;
     }

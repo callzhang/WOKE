@@ -13,9 +13,10 @@
 #import "EWPerson.h"
 #import "CoreData+MagicalRecord.h"
 #import "EWDataStore.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWSync.h"
 #import "EWSocialGraphManager.h"
+#import "EWSession.h"
 
 @interface WOKE_Tests : XCTestCase
 
@@ -51,16 +52,16 @@
 }
 
 - (void)testUploadMO {
-    NSArray *allPerson = [EWPerson MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [me.friends valueForKey:kParseObjectID]]];
+    NSArray *allPerson = [EWPerson MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"NOT %K IN %@", kParseObjectID, [[EWSession sharedSession].currentUser.friends valueForKey:kParseObjectID]]];
     
     EWPerson *friend = allPerson.firstObject;
     
-    [me addFriendsObject:friend];
+    [[EWSession sharedSession].currentUser addFriendsObject:friend];
     
     __block PFUser *aUser;
     [EWSync saveWithCompletion:^{
         NSLog(@"save");
-        aUser = (PFUser *)me.parseObject;
+        aUser = (PFUser *)[EWSession sharedSession].currentUser.parseObject;
     }];
     expect([[aUser[@"friends"] valueForKey:kParseObjectID] containsObject:friend.serverID]).after(13).to.beNil();
 }

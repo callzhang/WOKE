@@ -13,11 +13,11 @@
 
 //model
 #import "EWDataStore.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWTaskItem.h"
 #import "EWTaskManager.h"
-#import "EWMediaItem.h"
-#import "EWMediaStore.h"
+#import "EWMedia.h"
+#import "EWMediaManager.h"
 #import "EWDownloadManager.h"
 #import "EWNotification.h"
 #import "EWNotificationManager.h"
@@ -115,11 +115,11 @@
         //get next wake up time
         NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];
         //create buzz
-        EWMediaItem *buzz = [[EWMediaStore sharedInstance] createBuzzMedia];
+        EWMedia *buzz = [[EWMediaManager sharedInstance] createBuzzMedia];
         //add receiver: single direction
         [buzz addReceiversObject:person];
         //add sound
-        NSString *sound = me.preference[@"buzzSound"]?:@"default";
+        NSString *sound = [EWSession sharedSession].currentUser.preference[@"buzzSound"]?:@"default";
         buzz.buzzKey = sound;
         
         [EWSync saveWithCompletion:^{
@@ -172,7 +172,7 @@
 }
 
 #pragma mark - Send Voice tone
-+ (void)pushVoice:(EWMediaItem *)media toUser:(EWPerson *)person{
++ (void)pushVoice:(EWMedia *)media toUser:(EWPerson *)person{
     
     NSString *mediaId = media.objectId;
     NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];
@@ -182,7 +182,7 @@
                                  @"content-available": @1,
                                  kPushType: kPushTypeMedia,
                                  kPushMediaType: kPushMediaTypeVoice,
-                                 kPushPersonID: me.objectId,
+                                 kPushPersonID: [EWSession sharedSession].currentUser.objectId,
                                  kPushMediaID: mediaId} mutableCopy];
     
     //form push payload

@@ -8,7 +8,7 @@
 
 #import "EWSocialGraphManager.h"
 #import "EWPerson.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWUserManagement.h"
 #import "APAddressBook.h"
 #import "APContact.h"
@@ -40,9 +40,9 @@
 }
 
 - (EWSocialGraph *)mySocialGraph{
-    EWSocialGraph *sg = me.socialGraph;
+    EWSocialGraph *sg = [EWSession sharedSession].currentUser.socialGraph;
     if (!sg) {
-        sg = [self  createSocialGraphForPerson:me];
+        sg = [self  createSocialGraphForPerson:[EWSession sharedSession].currentUser];
     }
     return sg;
 }

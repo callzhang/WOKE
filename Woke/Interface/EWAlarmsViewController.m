@@ -20,13 +20,13 @@
 
 // Manager
 #import "EWAlarmManager.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWTaskManager.h"
 #import "EWNotificationManager.h"
 
 // Model
 #import "EWPerson.h"
-#import "EWAlarmItem.h"
+#import "EWAlarm.h"
 #import "EWTaskItem.h"
 
 // UI
@@ -88,8 +88,8 @@
     //listen to user log in, and updates its view
     [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
         //user login listeners
-        [me addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
-        [me addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
+        [[EWSession sharedSession].currentUser addObserver:self forKeyPath:@"tasks" options:NSKeyValueObservingOptionNew context:nil];
+        [[EWSession sharedSession].currentUser addObserver:self forKeyPath:@"notifications" options:NSKeyValueObservingOptionNew context:nil];
         //listen to schedule signal
         [[EWTaskManager sharedInstance] addObserver:self forKeyPath:@"isSchedulingTask" options:NSKeyValueObservingOptionNew context:nil];
         
@@ -163,13 +163,13 @@
 - (void)initData {
     
     //init alarm page container
-    if (me) {
+    if ([EWSession sharedSession].currentUser) {
         //get alarm and task first
         alarms = [EWAlarmManager myAlarms];
         tasks = [EWTaskManager myTasks];
         
         if (alarms.count == 0 && tasks.count == 0) {
-            NSLog(@"Alarm and task is 0, skip schedule");
+            DDLogVerbose(@"Alarm and task is 0, skip schedule");
             [self resetAlarmPage];
             return;
         }else if (alarms.count == 7 && tasks.count == 7*nWeeksToScheduleTask) {
@@ -179,11 +179,11 @@
         }else{
             if (alarms.count != 7){
                 [[EWAlarmManager sharedInstance] scheduleAlarm];
-                NSLog(@"!!! Alarm(%ld) ", (long)alarms.count);
+                DDLogVerbose(@"!!! Alarm(%ld) ", (long)alarms.count);
             }
             
             if (tasks.count != 7 * nWeeksToScheduleTask) {
-                NSLog(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
+                DDLogVerbose(@"%s !!! Task(%ld)", __func__, (long)tasks.count);
                 [[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:NULL];
                 
             }
@@ -236,7 +236,7 @@
     //fetch everyone
     NSError *err;
     if (![self.fetchController performFetch:&err]) {
-        NSLog(@"*** Failed to fetch everyone: %@", err);
+        DDLogVerbose(@"*** Failed to fetch everyone: %@", err);
     }
     
     return fetchController;
@@ -246,11 +246,11 @@
 
 #pragma mark - KVO & Notification
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if (object == me) {
+    if (object == [EWSession sharedSession].currentUser) {
         
         if ([keyPath isEqualToString:@"tasks"]){
             
-            NSInteger nTask = me.tasks.count;
+            NSInteger nTask = [EWSession sharedSession].currentUser.tasks.count;
             if (![EWTaskManager sharedInstance].isSchedulingTask) {
                 //only refresh display when not scheduling
                 if (nTask == 7*nWeeksToScheduleTask){
@@ -286,11 +286,11 @@
     }else if (object == [EWTaskManager sharedInstance]){
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([EWTaskManager sharedInstance].isSchedulingTask) {
-                NSLog(@"Detected %@ is scheduling", [object class]);
+                DDLogVerbose(@"Detected %@ is scheduling", [object class]);
                 [self showAlarmPageLoading:YES];
                 //taskScheduled = NO;
             }else{
-                NSLog(@"%s %@ finished scheduling", __func__, [object class]);
+                DDLogVerbose(@"%s %@ finished scheduling", __func__, [object class]);
                 
                 [self showAlarmPageLoading:NO];
                 [refreshViewTimer invalidate];
@@ -299,7 +299,7 @@
         });
         
     }else{
-        NSLog(@"@@@ Unhandled observation: %@", [object class]);
+        DDLogVerbose(@"@@@ Unhandled observation: %@", [object class]);
     }
     
 }
@@ -310,7 +310,7 @@
     alarms = [EWAlarmManager myAlarms];
     tasks = [EWTaskManager myTasks];
     
-    if (!me) {
+    if (![EWSession sharedSession].currentUser) {
         [self showAlarmPageLoading:YES];
         return;
     }
@@ -388,7 +388,7 @@
     for (UIView *view in self.scrollView.subviews) {
         if (view.frame.origin.x == self.scrollView.frame.size.width * page) {
             //[NSException raise:@"Duplicated alarm page" format:@"Please check"];
-            NSLog(@"@@@@ Duplicated alarm page at %ld", (long)page);
+            DDLogVerbose(@"@@@@ Duplicated alarm page at %ld", (long)page);
         }
     }
     
@@ -510,9 +510,9 @@
 
 - (void)toggleSleepBtnVisibility{
     if (tasks.count == 7*nWeeksToScheduleTask) {
-		EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:me];
+		EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
         float h = task.time.timeIntervalSinceNow/3600;
-        NSNumber *duration = me.preference[kSleepDuration];
+        NSNumber *duration = [EWSession sharedSession].currentUser.preference[kSleepDuration];
         if (h < duration.floatValue && h>1) {
             self.sleepBtn.layer.borderColor = [UIColor whiteColor].CGColor;
             //time to sleep
@@ -661,8 +661,8 @@
             EWSleepViewController *controller = [[EWSleepViewController alloc] initWithNibName:nil bundle:nil];
             [self presentViewControllerWithBlurBackground:controller];
         }else if([title isEqualToString:@"Refresh people"]){
-            [EWPersonStore sharedInstance].timeEveryoneChecked = nil;
-            [[EWPersonStore sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
+            [EWPersonManager sharedInstance].timeEveryoneChecked = nil;
+            [[EWPersonManager sharedInstance] getEveryoneInBackgroundWithCompletion:NULL];
         }
     }else{
         EWAlert(@"Unknown alert sheet");
@@ -684,8 +684,8 @@
         if (tasks.count != 7*nWeeksToScheduleTask) {
             
             [MBProgressHUD showHUDAddedTo:controller.view animated:YES];
-            if (me.alarms.count != 7) {
-                [[EWAlarmManager sharedInstance] scheduleNewAlarms];
+            if ([EWSession sharedSession].currentUser.alarms.count != 7) {
+                [[EWAlarmManager sharedInstance] scheduleAlarm];
             }
             [[EWTaskManager sharedInstance] scheduleTasks];
             [MBProgressHUD hideAllHUDsForView:controller.view animated:YES];
@@ -808,7 +808,7 @@
 
 #pragma mark - FetchedResultController delegate
 - (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id<NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type{
-    NSLog(@"FetchController detected session change");
+    DDLogVerbose(@"FetchController detected session change");
 }
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath{
@@ -899,7 +899,7 @@
 				[self.collectionView reloadData];
                 if (!finished) {
                     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-                        NSLog(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
+                        DDLogVerbose(@"*** Update of collection view failed. %f sec since last update.", lastUpdated.timeElapsed);
                     }
                 }
                 

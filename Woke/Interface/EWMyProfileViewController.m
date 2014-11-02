@@ -7,7 +7,7 @@
 //
 
 #import "EWMyProfileViewController.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 @interface EWMyProfileViewController ()<UITableViewDelegate,UITableViewDataSource,UIAlertViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *myTableView;
@@ -92,38 +92,38 @@
         case 0: {
             cell.textLabel.text = LOCALSTR(@"Profile Picture");
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            cell.imageView.image = me.profilePic;
+            cell.imageView.image = [EWSession sharedSession].currentUser.profilePic;
         }
                   break;
         case 1: {
             cell.textLabel.text = LOCALSTR(@"Name");
-            cell.detailTextLabel.text = me.name;
+            cell.detailTextLabel.text = [EWSession sharedSession].currentUser.name;
         }
             break;
             
         case 2: {
             cell.textLabel.text = LOCALSTR(@"ID");
-            cell.detailTextLabel.text = me.username;
+            cell.detailTextLabel.text = [EWSession sharedSession].currentUser.username;
         }
             break;
         case 3: {
             cell.textLabel.text = LOCALSTR(@"Facebook ID");
-            cell.detailTextLabel.text = me.facebook;
+            cell.detailTextLabel.text = [EWSession sharedSession].currentUser.facebook;
         }
             break;
         case 4:{
             cell.textLabel.text = LOCALSTR(@"Weibo ID");
-            cell.detailTextLabel.text = me.weibo;
+            cell.detailTextLabel.text = [EWSession sharedSession].currentUser.weibo;
         }
             break;
         case 5:{
             cell.textLabel.text = LOCALSTR(@"City");
-            cell.detailTextLabel.text = me.city;
+            cell.detailTextLabel.text = [EWSession sharedSession].currentUser.city;
         }
             break;
         case 6: {
             cell.textLabel.text = LOCALSTR(@"Region");
-            cell.detailTextLabel.text = me.region;
+            cell.detailTextLabel.text = [EWSession sharedSession].currentUser.region;
         }
             break;
         case 7:{

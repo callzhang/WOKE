@@ -16,9 +16,6 @@ const struct EWGroupRelationships EWGroupRelationships = {
 	.member = @"member",
 };
 
-const struct EWGroupFetchedProperties EWGroupFetchedProperties = {
-};
-
 @implementation EWGroupID
 @end
 
@@ -44,78 +41,41 @@ const struct EWGroupFetchedProperties EWGroupFetchedProperties = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-	
 
 	return keyPaths;
 }
 
-
-
-
 @dynamic imageKey;
-
-
-
-
-
 
 @dynamic name;
 
-
-
-
-
-
 @dynamic statement;
-
-
-
-
-
 
 @dynamic topic;
 
-
-
-
-
-
 @dynamic wakeupTime;
-
-
-
-
-
 
 @dynamic admin;
 
-	
 - (NSMutableSet*)adminSet {
 	[self willAccessValueForKey:@"admin"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"admin"];
-  
+
 	[self didAccessValueForKey:@"admin"];
 	return result;
 }
-	
 
 @dynamic member;
 
-	
 - (NSMutableSet*)memberSet {
 	[self willAccessValueForKey:@"member"];
-  
+
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"member"];
-  
+
 	[self didAccessValueForKey:@"member"];
 	return result;
 }
-	
-
-
-
-
-
 
 @end
+

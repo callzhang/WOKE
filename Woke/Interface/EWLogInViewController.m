@@ -8,7 +8,7 @@
 
 #import "EWLogInViewController.h"
 #import "EWAppDelegate.h"
-#import "EWPersonStore.h"
+#import "EWPersonManager.h"
 #import "EWPerson.h"
 #import <FacebookSDK/FacebookSDK.h>
 #import "AFNetworking.h"
@@ -54,9 +54,9 @@
     
     [self.indicator stopAnimating];
     
-    if (me) {
-        self.name.text = me.name;
-        self.profileView.image = me.profilePic;
+    if ([EWSession sharedSession].currentUser) {
+        self.name.text = [EWSession sharedSession].currentUser.name;
+        self.profileView.image = [EWSession sharedSession].currentUser.profilePic;
     }
 
 }
@@ -73,7 +73,7 @@
 }
 
 - (IBAction)check:(id)sender {
-    NSLog(@"Current user: %@", me);
+    NSLog(@"Current user: %@", [EWSession sharedSession].currentUser);
 }
 
 
