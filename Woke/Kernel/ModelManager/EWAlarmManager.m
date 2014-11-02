@@ -40,34 +40,11 @@
 }
 
 
-
 #pragma mark - SEARCH
-- (NSArray *)alarmsForUser:(EWPerson *)user{
-    NSMutableArray *alarms = [[user.alarms allObjects] mutableCopy];
-    
-    NSComparator alarmComparator = ^NSComparisonResult(id obj1, id obj2) {
-        NSInteger wkd1 = [(EWAlarm *)obj1 time].weekdayNumber;
-        NSInteger wkd2 = [(EWAlarm *)obj2 time].weekdayNumber;
-        if (wkd1 > wkd2) {
-            return NSOrderedDescending;
-        }else if (wkd1 < wkd2){
-            return NSOrderedAscending;
-        }else{
-            return NSOrderedSame;
-        }
-    };
-    
-    
-    //sort
-    NSArray *sortedAlarms = [alarms sortedArrayUsingComparator:alarmComparator];
-    
-    return sortedAlarms;
-}
-
 
 + (NSArray *)myAlarms{
     NSParameterAssert([NSThread isMainThread]);
-    return [[EWAlarmManager sharedInstance] alarmsForUser:[EWSession sharedSession].currentUser];
+    return [EWAlarm alarmsForUser:[EWSession sharedSession].currentUser];
 }
 
 + (EWAlarm *)myNextAlarm{

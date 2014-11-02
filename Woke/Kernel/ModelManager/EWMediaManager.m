@@ -103,8 +103,6 @@
     return medias;
 }
 
-
-
 - (BOOL)checkMediaAssets{
     NSParameterAssert([NSThread isMainThread]);
 
@@ -156,7 +154,7 @@
 		
 		//find if new media has been notified
 		BOOL notified = NO;
-		for (EWNotification *note in [EWNotificationManager allNotifications]) {
+		for (EWNotification *note in [EWPerson myNotifications]) {
 			if ([note.userInfo[@"media"] isEqualToString:mo.objectId]) {
 				DDLogVerbose(@"Media has already been notified to user, skip.");
 				notified = YES;
@@ -168,7 +166,7 @@
 		if (!notified) {
 			dispatch_async(dispatch_get_main_queue(), ^{
 				EWMedia *media = (EWMedia *)[mo inContext:mainContext];
-				[EWNotificationManager newNotificationForMedia:media];
+				[EWNotification newNotificationForMedia:media];
 			});
 			newMedia = YES;
 		}

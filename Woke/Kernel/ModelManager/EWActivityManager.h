@@ -10,11 +10,5 @@
 #import "EWPerson.h"
 
 @interface EWActivityManager : NSObject
-
 + (EWActivityManager *)sharedManager;
-+ (NSArray *)myActivities;
-
-- (EWActivity *)createMediaActivityWithMedia:(EWMedia *)media;
-- (EWActivity *)createFriendshipActivityWithPerson:(EWPerson *)person friended:(BOOL)friended;
-
 @end

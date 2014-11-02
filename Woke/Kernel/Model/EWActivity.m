@@ -44,5 +44,23 @@
     return good;
 }
 
+- (EWActivity *)createWithMedia:(EWMedia *)media {
+    EWActivity *activity = [EWActivity newActivity];
+    activity.type = EWActivityTypeMedia;
+    [activity addMediasObject:media];
+    
+    return activity;
+}
+
+
+- (EWActivity *)createpWithPerson:(EWPerson *)person friended:(BOOL)friended {
+    EWActivity *activity = [EWActivity newActivity];
+    activity.type = EWActivityTypeFriendship;
+    activity.friendedValue = friended;
+    activity.friendID = person.objectId;
+    
+    return activity;
+}
+
 
 @end

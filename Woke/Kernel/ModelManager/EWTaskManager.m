@@ -183,7 +183,6 @@
     
 }
 
-
 //schedule new task in the future
 - (NSArray *)scheduleTasksInContext:(NSManagedObjectContext *)context{
     NSParameterAssert(context);

@@ -53,4 +53,23 @@
     return str;
 }
 
++ (NSArray *)myActivities {
+    NSArray *activities = [EWSession sharedSession].currentUser.activities.allObjects;
+    return [activities sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:EWServerObjectAttributes.updatedAt ascending:NO]]];
+}
+
++ (NSArray *)myUnreadNotifications{
+    NSArray *notifications = [self myNotifications];
+    NSArray *unread = [notifications filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"completed == nil"]];
+    return unread;
+}
+
++ (NSArray *)myNotifications{
+    NSArray *notifications = [[EWSession sharedSession].currentUser.notifications allObjects];
+    NSSortDescriptor *sortCompelet = [NSSortDescriptor sortDescriptorWithKey:@"completed" ascending:NO];
+    NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO];
+    NSSortDescriptor *sortImportance = [NSSortDescriptor sortDescriptorWithKey:@"importance" ascending:NO];
+    notifications = [notifications sortedArrayUsingDescriptors:@[sortCompelet,sortImportance, sortDate]];
+    return notifications;
+}
 @end
