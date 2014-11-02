@@ -17,8 +17,6 @@
 
 + (EWNotificationManager *)sharedInstance;
 
-+ (NSArray *)myNotifications;//unread notification
-+ (NSArray *)allNotifications;//all notifications
 /**
  When new notification received, handle it
  1. Decide weather to alert user
@@ -35,13 +33,6 @@
  Tells the manager that user clicked the notice and ask for appropreate action
  */
 + (void)clickedNotification:(EWNotification *)notification;
-
-//Create
-+ (EWNotification *)newNotification;
-+ (EWNotification *)newNotificationForMedia:(EWMedia *)media;
-
-//delete
-+ (void)deleteNotification:(EWNotification *)notice;
 
 //Send
 + (void)sendFriendRequestNotificationToUser:(EWPerson *)person;

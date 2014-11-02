@@ -17,5 +17,12 @@
 @property (nonatomic) int64_t importance;
 @property (nonatomic, retain) NSDictionary *lastLocation;
 @property (nonatomic, retain) NSDictionary *userInfo;
++ (EWNotification *)newNotification;
++ (EWNotification *)newNotificationForMedia:(EWMedia *)media;
 
++ (NSArray *)myNotifications;//unread notification
++ (NSArray *)allNotifications;//all notifications
+
+//delete
++ (void)deleteNotification:(EWNotification *)notice;
 @end

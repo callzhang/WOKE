@@ -60,7 +60,6 @@
 }
 
 
-
 #pragma mark - DELETE
 - (void)remove{
     [self deleteEntity];

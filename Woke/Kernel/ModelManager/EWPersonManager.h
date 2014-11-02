@@ -44,6 +44,7 @@
 + (void)updateMe;
 
 //friend
+//TODO: move to EWPerson
 + (void)requestFriend:(EWPerson *)person;
 + (void)acceptFriend:(EWPerson *)person;
 + (void)unfriend:(EWPerson *)person;
