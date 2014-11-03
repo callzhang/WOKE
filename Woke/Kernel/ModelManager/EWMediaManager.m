@@ -154,7 +154,7 @@
 		
 		//find if new media has been notified
 		BOOL notified = NO;
-		for (EWNotification *note in [EWNotification allNotifications]) {
+		for (EWNotification *note in [EWPerson myNotifications]) {
 			if ([note.userInfo[@"media"] isEqualToString:mo.objectId]) {
 				DDLogVerbose(@"Media has already been notified to user, skip.");
 				notified = YES;

@@ -14,7 +14,7 @@ NSString *const EWActivityTypeFriendship = @"friendship";
 // valid
 - (BOOL)validate;
 
-- (EWActivity *)createMediaActivityWithMedia:(EWMedia *)media;
-- (EWActivity *)createFriendshipActivityWithPerson:(EWPerson *)person friended:(BOOL)friended;
+- (EWActivity *)createWithMedia:(EWMedia *)media;
+- (EWActivity *)createWithPerson:(EWPerson *)person friended:(BOOL)friended;
 + (NSArray *)myActivities;
 @end

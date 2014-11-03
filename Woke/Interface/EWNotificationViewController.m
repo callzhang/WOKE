@@ -37,7 +37,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reload) name:kNotificationCompleted object:nil];
     
     // Data source
-    notifications = [[EWNotificationManager myNotifications] mutableCopy];
+    notifications = [[EWPerson myUnreadNotifications] mutableCopy];
     
     //tableview
     self.tableView.delegate = self;
@@ -97,7 +97,7 @@
             NSLog(@"Found new notification %@(%@)", notification.type, notification.objectId);
             notification.owner = [EWSession sharedSession].currentUser;
         }
-        notifications = [[EWNotificationManager myNotifications] mutableCopy];
+        notifications = [[EWPerson myUnreadNotifications] mutableCopy];
         [self.tableView reloadData];
         
         //[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
@@ -167,7 +167,7 @@
         //remove from view with animation
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         
-        [EWNotificationManager deleteNotification:notice];
+        [notice remove];
     }
 }
 

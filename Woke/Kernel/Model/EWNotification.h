@@ -20,9 +20,7 @@
 + (EWNotification *)newNotification;
 + (EWNotification *)newNotificationForMedia:(EWMedia *)media;
 
-+ (NSArray *)myNotifications;//unread notification
-+ (NSArray *)allNotifications;//all notifications
 
 //delete
-+ (void)deleteNotification:(EWNotification *)notice;
+- (void)remove;
 @end

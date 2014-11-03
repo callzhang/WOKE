@@ -44,7 +44,7 @@
     return good;
 }
 
-- (EWActivity *)createMediaActivityWithMedia:(EWMedia *)media {
+- (EWActivity *)createWithMedia:(EWMedia *)media {
     EWActivity *activity = [EWActivity newActivity];
     activity.type = EWActivityTypeMedia;
     [activity addMediasObject:media];
@@ -53,7 +53,7 @@
 }
 
 
-- (EWActivity *)createFriendshipActivityWithPerson:(EWPerson *)person friended:(BOOL)friended {
+- (EWActivity *)createpWithPerson:(EWPerson *)person friended:(BOOL)friended {
     EWActivity *activity = [EWActivity newActivity];
     activity.type = EWActivityTypeFriendship;
     activity.friendedValue = friended;
@@ -62,8 +62,5 @@
     return activity;
 }
 
-+ (NSArray *)myActivities {
-    NSArray *activities = [EWSession sharedSession].currentUser.activities.allObjects;
-    return [activities sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:EWServerObjectAttributes.updatedAt ascending:NO]]];
-}
+
 @end

@@ -247,7 +247,7 @@
     }
     if ([notice.type isEqualToString:kNotificationTypeTimer]) {
         //delete
-        [EWNotification deleteNotification:notice];
+        [notice remove];
     }
     [EWSync save];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCompleted object:notice];

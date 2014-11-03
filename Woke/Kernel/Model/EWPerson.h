@@ -12,6 +12,7 @@
 
 @import CoreLocation;
 
+@class EWAlarm;
 @interface EWPerson : _EWPerson
 @property (nonatomic, strong) CLLocation* lastLocation;
 @property (nonatomic, strong) UIImage *profilePic;
@@ -28,22 +29,17 @@
 
 - (BOOL)validate;
 
-/*
-@property (nonatomic, strong) NSString* aws_id;
-@property (nonatomic, strong) NSDate* birthday;
-@property (nonatomic, strong) NSString* city;
-@property (nonatomic, strong) NSDate* createdAt;
-@property (nonatomic, strong) NSString* email;
-@property (nonatomic, strong) NSString* facebook;
-@property (nonatomic, strong) NSString* gender;
-@property (nonatomic, strong) NSString* name;
-@property (nonatomic, strong) NSString* objectId;
-@property (nonatomic, strong) id preference;
-@property (nonatomic, strong) NSString* region;
-@property (nonatomic, strong) NSString* statementi;
-@property (nonatomic, strong) NSDate* updatedAt;
-@property (nonatomic, strong) NSString* username;
-@property (nonatomic, strong) NSString* weibo;
-*/
++ (NSArray *)myActivities;
++ (NSArray *)myNotifications;
++ (NSArray *)myUnreadNotifications;
++ (NSArray *)myAlarms;
++ (EWAlarm *)myNextAlarm;
 
+- (void)getFriends;
+
++ (void)updateCachedInfoBasedOnMyAlarms;
++ (void)updateMyCachedInfoForAlarm:(EWAlarm *)alarm;
++ (void)updateCachedFriends;
+
++ (EWPerson *)findOrCreatePersonWithParseObject:(PFUser *)user;
 @end

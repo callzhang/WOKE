@@ -284,10 +284,10 @@
             
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             //create notifications
-            EWNotification *notice_friending = [EWNotificationManager newNotification];
-            EWNotification *notice_friended = [EWNotificationManager newNotification];
-            EWNotification *notice_newMedia = [EWNotificationManager newNotification];
-            EWNotification *notice_system = [EWNotificationManager newNotification];
+            EWNotification *notice_friending = [EWNotification newNotification];
+            EWNotification *notice_friended = [EWNotification newNotification];
+            EWNotification *notice_newMedia = [EWNotification newNotification];
+            EWNotification *notice_system = [EWNotification newNotification];
             //1
             notice_friending.type = kNotificationTypeFriendRequest;
             notice_friending.owner = [EWSession sharedSession].currentUser;

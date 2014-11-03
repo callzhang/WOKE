@@ -37,25 +37,9 @@
     return note;
 }
 
-+ (NSArray *)myNotifications{
-    NSArray *notifications = [self allNotifications];
-    NSArray *unread = [notifications filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"completed == nil"]];
-    return unread;
-}
-
-+ (NSArray *)allNotifications{
-    NSArray *notifications = [[EWSession sharedSession].currentUser.notifications allObjects];
-    NSSortDescriptor *sortCompelet = [NSSortDescriptor sortDescriptorWithKey:@"completed" ascending:NO];
-    NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO];
-    NSSortDescriptor *sortImportance = [NSSortDescriptor sortDescriptorWithKey:@"importance" ascending:NO];
-    notifications = [notifications sortedArrayUsingDescriptors:@[sortCompelet,sortImportance, sortDate]];
-    return notifications;
-}
-
-+ (void)deleteNotification:(EWNotification *)notice{
-    [notice deleteEntity];
+- (void)remove {
+    DDLogInfo(@"Notification of type %@ deleted", self.type);
+    [self deleteEntity];
     [EWSync save];
-    NSLog(@"Notification of type %@ deleted", notice.type);
-    
 }
 @end
