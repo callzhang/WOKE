@@ -11,17 +11,17 @@
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>8EF5E265AB5CE282CCFE2D382DE7A4899F116F22</key>
-		<string>https://github.com/callzhang/WOKE.git</string>
+		<string>github.com:callzhang/WOKE.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Woke.xcodeproj/project.xcworkspace</string>
+	<string>Woke.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>8EF5E265AB5CE282CCFE2D382DE7A4899F116F22</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/callzhang/WOKE.git</string>
+	<string>github.com:callzhang/WOKE.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
@@ -34,7 +34,7 @@
 			<key>IDESourceControlWCCIdentifierKey</key>
 			<string>8EF5E265AB5CE282CCFE2D382DE7A4899F116F22</string>
 			<key>IDESourceControlWCCName</key>
-			<string>WOKE</string>
+			<string>woke</string>
 		</dict>
 	</array>
 </dict>

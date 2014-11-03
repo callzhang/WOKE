@@ -13,9 +13,9 @@
 
 @interface EWSession : NSObject
 
-@property BOOL isSchedulingAlarm;
-@property EWPerson *currentUser;
-@property (nonatomic) NSManagedObjectContext *context;
+@property (nonatomic, assign) BOOL isSchedulingAlarm;
+@property (nonatomic, strong) EWPerson *currentUser;
+@property (nonatomic, strong) NSManagedObjectContext *context;
 
 + (EWSession *)sharedSession;
 + (NSManagedObjectContext *)mainContext;

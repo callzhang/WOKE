@@ -41,27 +41,6 @@
 
 
 #pragma mark - SEARCH
-
-+ (NSArray *)myAlarms{
-    NSParameterAssert([NSThread isMainThread]);
-    return [EWAlarm alarmsForUser:[EWSession sharedSession].currentUser];
-}
-
-+ (EWAlarm *)myNextAlarm{
-    float interval;
-    EWAlarm *next;
-    for (EWAlarm *alarm in [EWAlarmManager myAlarms]) {
-        float timeLeft = alarm.time.timeIntervalSinceNow;
-        if (alarm.state) {
-            if (interval == 0 || timeLeft < interval) {
-                interval = timeLeft;
-                next = alarm;
-            }
-        }
-    }
-    return next;
-}
-
 - (NSDate *)nextAlarmTimeForPerson:(EWPerson *)person{
     NSDate *nextTime;
     //first try to get it from cache
@@ -103,7 +82,6 @@
 }
 
 #pragma mark - SCHEDULE
-
 //schedule according to alarms array. If array is empty, schedule according to default template.
 - (NSArray *)scheduleAlarm{
     NSParameterAssert([NSThread isMainThread]);
@@ -114,7 +92,7 @@
     [EWSession sharedSession].isSchedulingAlarm = YES;
     
     //get alarms
-    NSMutableArray *alarms = [[self alarmsForUser:[EWSession sharedSession].currentUser] mutableCopy];
+    NSMutableArray *alarms = [[EWPerson myAlarms] mutableCopy];
     
     
     BOOL hasChange = NO;
@@ -221,10 +199,8 @@
     return newAlarms;
 }
 
-
 #pragma mark - Get/Set alarm to UserDefaults
 - (NSDate *)getSavedAlarmTimeOnWeekday:(NSInteger)targetDay{
-    
     //set weekday
     NSDate *today = [NSDate date];
     NSCalendar *cal = [NSCalendar currentCalendar];//TIMEZONE
@@ -244,9 +220,7 @@
 }
 
 - (void)setSavedAlarmTimes{
-    
     [mainContext performBlock:^{
-        
         NSMutableArray *alarmTimes = [[self getSavedAlarmTimes] mutableCopy];
         NSSet *alarms = [EWSession sharedSession].currentUser.alarms;
         

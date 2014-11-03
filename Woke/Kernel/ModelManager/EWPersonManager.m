@@ -50,63 +50,12 @@
 }
 
 #pragma mark - CREATE USER
--(EWPerson *)findOrCreatePersonWithParseObject:(PFUser *)user{
-    EWPerson *newUser = (EWPerson *)[user managedObjectInContext:mainContext];
-    if (user.isNew) {
-        newUser.username = user.username;
-        newUser.profilePic = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg", arc4random_uniform(15)]];//TODO: new user profile
-        newUser.name = kDefaultUsername;
-        newUser.preference = kUserDefaults;
-        newUser.cachedInfo = [NSDictionary new];
-        if ([user isEqual:[PFUser currentUser]]) {
-            newUser.score = @100;
-        }
-        newUser.updatedAt = [NSDate date];
-    }
-    
-    //no need to save here
-    return newUser;
-}
-
 -(EWPerson *)getPersonByServerID:(NSString *)ID{
     NSParameterAssert([NSThread isMainThread]);
     if(!ID) return nil;
     EWPerson *person = (EWPerson *)[EWSync managedObjectWithClass:@"EWPerson" withID:ID];
     
     return person;
-}
-
-
-//check my relation, used for new installation with existing user
-+ (void)updateMe{
-    NSDate *lastCheckedMe = [[NSUserDefaults standardUserDefaults] valueForKey:kLastCheckedMe];
-    BOOL good = [EWPersonManager validatePerson:[EWSession sharedSession].currentUser];
-    if (!good || !lastCheckedMe || lastCheckedMe.timeElapsed > kCheckMeInternal) {
-        if (!good) {
-            NSLog(@"Failed to validate me, refreshing from server");
-        }else if (!lastCheckedMe) {
-            NSLog(@"Didn't find lastCheckedMe date, start to refresh my relation in background");
-        }else{
-            NSLog(@"lastCheckedMe date is %@, which exceed the check interval %d, start to refresh my relation in background", lastCheckedMe.date2detailDateString, kCheckMeInternal);
-        }
-        
-        [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-            EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
-            [localMe refreshRelatedWithCompletion:^{
-                
-                [EWPersonManager updateCachedFriends];
-                [EWUserManagement updateFacebookInfo];
-            }];
-            //TODO: we need a better sync method
-            //1. query for medias
-            
-            
-            //2. check
-        }];
-        
-        
-        [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kLastCheckedMe];
-    }
 }
 
 #pragma mark - Everyone server code
@@ -171,6 +120,7 @@
         localMe.lastLocation = loc;
         
     }
+    //TODO: [LEI] move to category, took 3 parameters, one dic, one start, one length.
     NSArray *list = [PFCloud callFunction:@"getRelevantUsers"
                            withParameters:@{@"objectId": parseObjectId,
                                             @"topk" : numberOfRelevantUsers,
@@ -248,6 +198,7 @@
 
 
 #pragma mark - Notification
+//TODO: [ZITAO] move to account manager.
 - (void)userLoggedIn:(NSNotification *)notif{
     EWPerson *user = notif.object;
     if (![[EWSession sharedSession].currentUser isEqual:user]) {
@@ -262,6 +213,7 @@
 
 
 #pragma mark - KVO
+//TODO: [LEI] Remove KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([object isEqual:[EWSession sharedSession].currentUser]) {
         if ([keyPath isEqualToString:@"score"]) {
@@ -275,7 +227,9 @@
                 EWAlert(@"*** Profile picture missing");
             }
             
-        }else if ([keyPath isEqualToString:@"lastLocation"]){
+        }
+        
+        else if ([keyPath isEqualToString:@"lastLocation"]){
             NSLog(@"Last location updated, start grab everyone");
             [self getEveryoneInBackgroundWithCompletion:NULL];
         }
@@ -284,6 +238,7 @@
 }
 
 #pragma mark - Friend
+//TODO: [LEI] moved to Person, change to completion block.
 + (void)requestFriend:(EWPerson *)person{
     [EWPersonManager getFriendsForPerson:[EWSession sharedSession].currentUser];
     [[EWSession sharedSession].currentUser addFriendsObject:person];
@@ -291,7 +246,6 @@
     [EWNotificationManager sendFriendRequestNotificationToUser:person];
     
     [EWSync save];
-
 }
 
 + (void)acceptFriend:(EWPerson *)person{
@@ -309,51 +263,44 @@
 + (void)unfriend:(EWPerson *)person{
     [EWPersonManager getFriendsForPerson:[EWSession sharedSession].currentUser];
     [[EWSession sharedSession].currentUser removeFriendsObject:person];
-    [EWPersonManager updateCachedFriends];
+    [EWPerson updateCachedFriends];
     //TODO: unfriend
     //[EWServer unfriend:user];
     [EWSync save];
 }
 
+//TODO: [LEI] moved to Person, getFriends. check if needed to remove or improve.
 + (void)getFriendsForPerson:(EWPerson *)person{
-    NSArray *friendsCached = person.cachedInfo[kCachedFriends]?:[NSArray new];
-    NSSet *friends = person.friends;
-    BOOL friendsNeedUpdate = person.isMe && friendsCached.count !=person.friends.count;
-    if (!friends || friendsNeedUpdate) {
-        
-        DDLogInfo(@"Friends mismatch, fetch from server");
-        
-        //friend need update
-        PFQuery *q = [PFQuery queryWithClassName:person.serverClassName];
-        [q includeKey:@"friends"];
-        [q whereKey:kParseObjectID equalTo:person.serverID];
-        PFObject *user = [[EWSync findServerObjectWithQuery:q] firstObject];
-        NSArray *friendsPO = user[@"friends"];
-        if (friendsPO.count == 0) return;//prevent 0 friend corrupt data
-        NSMutableSet *friendsMO = [NSMutableSet new];
-        for (PFObject *f in friendsPO) {
-            if ([f isKindOfClass:[NSNull class]]) {
-                continue;
-            }
-            EWPerson *mo = (EWPerson *)[f managedObjectInContext:person.managedObjectContext];
-            [friendsMO addObject:mo];
-        }
-        person.friends = [friendsMO copy];
-        if ([person.serverID isEqualToString: PFUser.currentUser.objectId ]) {
-            [EWPersonManager updateCachedFriends];
-        }
-    }
+//    NSArray *friendsCached = person.cachedInfo[kCachedFriends]?:[NSArray new];
+//    NSSet *friends = person.friends;
+//    BOOL friendsNeedUpdate = person.isMe && friendsCached.count !=person.friends.count;
+//    if (!friends || friendsNeedUpdate) {
+//        
+//        DDLogInfo(@"Friends mismatch, fetch from server");
+//        
+//        //friend need update
+//        PFQuery *q = [PFQuery queryWithClassName:person.serverClassName];
+//        [q includeKey:@"friends"];
+//        [q whereKey:kParseObjectID equalTo:person.serverID];
+//        PFObject *user = [[EWSync findServerObjectWithQuery:q] firstObject];
+//        NSArray *friendsPO = user[@"friends"];
+//        if (friendsPO.count == 0) return;//prevent 0 friend corrupt data
+//        NSMutableSet *friendsMO = [NSMutableSet new];
+//        for (PFObject *f in friendsPO) {
+//            if ([f isKindOfClass:[NSNull class]]) {
+//                continue;
+//            }
+//            EWPerson *mo = (EWPerson *)[f managedObjectInContext:person.managedObjectContext];
+//            [friendsMO addObject:mo];
+//        }
+//        person.friends = [friendsMO copy];
+//        if ([person.serverID isEqualToString: PFUser.currentUser.objectId ]) {
+//            [EWPerson updateCachedFriends];
+//        }
+//    }
 }
 
-+ (void)updateCachedFriends{
-    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
-        NSSet *friends = [localMe.friends valueForKey:kParseObjectID];
-        NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
-        cache[kCachedFriends] = friends.allObjects;
-        localMe.cachedInfo = [cache copy];
-    }];
-}
+
 
 
 #pragma mark - Validation

@@ -9,6 +9,7 @@
 #import "EWAlarm.h"
 #import "EWPersonManager.h"
 
+
 @implementation EWAlarm
 
 
@@ -72,24 +73,31 @@
     return good;
 }
 
-+ (NSArray *)alarmsForUser:(EWPerson *)user{
-    NSMutableArray *alarms = [[user.alarms allObjects] mutableCopy];
-    
-    NSComparator alarmComparator = ^NSComparisonResult(id obj1, id obj2) {
-        NSInteger wkd1 = [(EWAlarm *)obj1 time].weekdayNumber;
-        NSInteger wkd2 = [(EWAlarm *)obj2 time].weekdayNumber;
-        if (wkd1 > wkd2) {
-            return NSOrderedDescending;
-        }else if (wkd1 < wkd2){
-            return NSOrderedAscending;
-        }else{
-            return NSOrderedSame;
-        }
-    };
-    
-    //sort
-    NSArray *sortedAlarms = [alarms sortedArrayUsingComparator:alarmComparator];
-    
-    return sortedAlarms;
+//TODO: [LEI] send notification, move update cacedinto to EWPerson, remove methods related in EWAlarmManager.
+- (void)setState:(NSNumber *)state {
+    [self willChangeValueForKey:EWAlarmAttributes.state];
+    [self setPrimitiveState:state];
+    [EWPerson updateMyCachedInfoForAlarm:self];
+    [self didChangeValueForKey:EWAlarmAttributes.state];
 }
+
+- (void)setTime:(NSDate *)time {
+    [self willChangeValueForKey:EWAlarmAttributes.time];
+    [self setPrimitiveTime:time];
+    [self didChangeValueForKey:EWAlarmAttributes.time];
+}
+
+- (void)setTone:(NSString *)tone {
+    [self willChangeValueForKey:EWAlarmAttributes.tone];
+    [self setPrimitiveTone:tone];
+    [self didChangeValueForKey:EWAlarmAttributes.tone];
+}
+
+- (void)setStatement:(NSString *)statement {
+    [self willChangeValueForKey:EWAlarmAttributes.statement];
+    [self setPrimitiveStatement:statement];
+    [self didChangeValueForKey:EWAlarmAttributes.statement];
+}
+#pragma mark -
+
 @end

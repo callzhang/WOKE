@@ -12,6 +12,7 @@
 
 @import CoreLocation;
 
+@class EWAlarm;
 @interface EWPerson : _EWPerson
 @property (nonatomic, strong) CLLocation* lastLocation;
 @property (nonatomic, strong) UIImage *profilePic;
@@ -28,8 +29,17 @@
 
 - (BOOL)validate;
 
-
 + (NSArray *)myActivities;
 + (NSArray *)myNotifications;
 + (NSArray *)myUnreadNotifications;
++ (NSArray *)myAlarms;
++ (EWAlarm *)myNextAlarm;
+
+- (void)getFriends;
+
++ (void)updateCachedInfoBasedOnMyAlarms;
++ (void)updateMyCachedInfoForAlarm:(EWAlarm *)alarm;
++ (void)updateCachedFriends;
+
++ (EWPerson *)findOrCreatePersonWithParseObject:(PFUser *)user;
 @end

@@ -37,6 +37,7 @@
 		0957E44B19CA73CA005F2808 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568CC787178DD2C900AB1579 /* UIKit.framework */; };
 		0957E45119CA73CA005F2808 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0957E44F19CA73CA005F2808 /* InfoPlist.strings */; };
 		0957E45319CA73CA005F2808 /* WOKE_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0957E45219CA73CA005F2808 /* WOKE_Tests.m */; };
+		09E96B2E1A06F24B000B0A1C /* PFQuery+EWQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 09E96B2D1A06F24B000B0A1C /* PFQuery+EWQuery.m */; };
 		0E01D7BD19AC657D0034570A /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E01D7BC19AC657C0034570A /* AddressBook.framework */; };
 		0E01D7BF19AC65880034570A /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E01D7BE19AC65880034570A /* AddressBookUI.framework */; };
 		0E590FEB194DF35B000AD7C4 /* lanenar.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E590FD1194DF35B000AD7C4 /* lanenar.ttf */; };
@@ -282,6 +283,8 @@
 		0957E45019CA73CA005F2808 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0957E45219CA73CA005F2808 /* WOKE_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = WOKE_Tests.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		0957E45419CA73CA005F2808 /* WOKE Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WOKE Tests-Prefix.pch"; sourceTree = "<group>"; };
+		09E96B2C1A06F24B000B0A1C /* PFQuery+EWQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PFQuery+EWQuery.h"; sourceTree = "<group>"; };
+		09E96B2D1A06F24B000B0A1C /* PFQuery+EWQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PFQuery+EWQuery.m"; sourceTree = "<group>"; };
 		0E01D7BC19AC657C0034570A /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		0E01D7BE19AC65880034570A /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		0E590FD1194DF35B000AD7C4 /* lanenar.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = lanenar.ttf; sourceTree = "<group>"; };
@@ -1184,6 +1187,8 @@
 				5671FDC817C126AC00794E0A /* Model */,
 				56FEA57C17A5763200FC2938 /* Delegate */,
 				56E0C36617B2CEC200835A6B /* AlarmKernel */,
+				09E96B2C1A06F24B000B0A1C /* PFQuery+EWQuery.h */,
+				09E96B2D1A06F24B000B0A1C /* PFQuery+EWQuery.m */,
 			);
 			path = Kernel;
 			sourceTree = "<group>";
@@ -1732,6 +1737,7 @@
 				9BF297E71912F720008C136E /* EWMediaSlider.m in Sources */,
 				9BF297EB1912F720008C136E /* EWRoundButton.m in Sources */,
 				0EB0C05919684F600061BC70 /* UAProgressView.m in Sources */,
+				09E96B2E1A06F24B000B0A1C /* PFQuery+EWQuery.m in Sources */,
 				9BF297BF1912F713008C136E /* EWRingtoneSelectionViewController.m in Sources */,
 				9BF07ABC192324F800DED2E1 /* _EWMessage.m in Sources */,
 				ABD34DAF185C054C008CD2B8 /* FTWCache.m in Sources */,
@@ -2066,13 +2072,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-<<<<<<< HEAD
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-=======
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lei Zhang (SDR7T9YB58)";
->>>>>>> FETCH_HEAD
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (

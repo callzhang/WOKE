@@ -182,3 +182,5 @@
 #define kWakeupSuccess          @"wake_success"
 #define kRecordVoiceSuccess     @"record_success"
 
+#define kCachedAlarmTimes                @"alarm_schedule"
+#define kCachedStatements                @"statements"
