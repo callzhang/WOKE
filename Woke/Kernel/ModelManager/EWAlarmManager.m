@@ -219,39 +219,8 @@
     return time;
 }
 
-- (void)setSavedAlarmTimes{
-    [mainContext performBlock:^{
-        NSMutableArray *alarmTimes = [[self getSavedAlarmTimes] mutableCopy];
-        NSSet *alarms = [EWSession sharedSession].currentUser.alarms;
-        
-        for (EWAlarm *alarm in alarms) {
-            NSInteger wkd = [alarm.time weekdayNumber];
-            NSCalendar *cal = [NSCalendar currentCalendar];
-            NSDateComponents *comp = [cal components: (NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:alarm.time];
-            double hour = comp.hour;
-            double minute = comp.minute;
-            double number = round(hour*100 + minute)/100.0;
-            [alarmTimes setObject:[NSNumber numberWithDouble:number] atIndexedSubscript:wkd];
-        }
-        
-        [[NSUserDefaults standardUserDefaults] setObject:alarmTimes.copy forKey:kSavedAlarms];
 
-    }];
-}
 
-- (NSArray *)getSavedAlarmTimes{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSArray *alarmTimes = [defaults valueForKey:kSavedAlarms];
-    //create if not exsit
-    if (!alarmTimes) {
-        //if asking saved value, the alarm is not scheduled
-        DDLogInfo(@"=== Saved alarm time not found, use default values!");
-        alarmTimes = defaultAlarmTimes;
-        [defaults setObject:alarmTimes forKey:kSavedAlarms];
-        [defaults synchronize];
-    }
-    return alarmTimes;
-}
 
 
 #pragma mark - NOTIFICATION & KVO
@@ -326,6 +295,57 @@
     [EWSession sharedSession].currentUser.cachedInfo = cache;
     [EWSync save];
     DDLogVerbose(@"Updated cached statements: %@", statements);
+}
+
+#pragma mark - Local Notification
+
+
+- (void)cancelNotificationForTask:(EWTaskItem *)task{
+	NSArray *notifications = [self localNotificationForTask:task];
+	for(UILocalNotification *aNotif in notifications) {
+		NSLog(@"Local Notification cancelled for:%@", aNotif.fireDate.date2detailDateString);
+		[[UIApplication sharedApplication] cancelLocalNotification:aNotif];
+	}
+}
+
+- (NSArray *)localNotificationForTask:(EWTaskItem *)task{
+	NSMutableArray *notifArray = [[NSMutableArray alloc] init];
+	for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
+		if([aNotif.userInfo[kLocalTaskKey] isEqualToString:task.objectID.URIRepresentation.absoluteString]) {
+			[notifArray addObject:aNotif];
+		}
+	}
+	
+	return notifArray;
+}
+
+
+- (void)checkScheduledNotifications{
+	NSParameterAssert([NSThread isMainThread]);
+	NSMutableArray *allNotification = [[[UIApplication sharedApplication] scheduledLocalNotifications] mutableCopy];
+	NSArray *tasks = [self getTasksByPerson:[EWSession sharedSession].currentUser];
+	
+	NSLog(@"There are %ld scheduled local notification and %ld stored task info", (long)allNotification.count, (long)tasks.count);
+	
+	//delete redundant alarm notif
+	for (EWTaskItem *task in tasks) {
+		[self scheduleNotificationForTask:task];
+		NSArray *notifs= [self localNotificationForTask:task];
+		[allNotification removeObjectsInArray:notifs];
+	}
+	
+	for (UILocalNotification *aNotif in allNotification) {
+		
+		NSLog(@"===== Deleted %@ (%@) =====", aNotif.userInfo[kLocalNotificationTypeKey], aNotif.fireDate.date2detailDateString);
+		[[UIApplication sharedApplication] cancelLocalNotification:aNotif];
+		
+	}
+	
+	if (allNotification.count > 0) {
+		//make sure the redundent notif didn't block
+		[self checkScheduledNotifications];
+	}
+	
 }
 
 

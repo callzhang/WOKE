@@ -19,7 +19,6 @@
 
 // delete
 - (void)remove;
-+ (void)deleteAll;
 
 //validate
 - (BOOL)validate;
