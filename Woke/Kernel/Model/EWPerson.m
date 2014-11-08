@@ -9,6 +9,9 @@
 #import "EWPerson.h"
 #import "EWPersonManager.h"
 #import "EWAlarm.h"
+#import "EWNotificationManager.h"
+#import "EWUserManagement.h"
+#import "EWStatisticsManager.h"
 
 @implementation EWPerson
 @dynamic lastLocation;
@@ -94,6 +97,10 @@
     return next;
 }
 
++ (NSArray *)myFriends{
+    return [EWSession sharedSession].currentUser.friends.allObjects;
+}
+
 + (NSArray *)alarmsForUser:(EWPerson *)user{
     NSMutableArray *alarms = [[user.alarms allObjects] mutableCopy];
     
@@ -140,8 +147,6 @@
     [EWPersonManager getFriendsForPerson:[EWSession sharedSession].currentUser];
     [[EWSession sharedSession].currentUser removeFriendsObject:person];
     [EWPerson updateCachedFriends];
-    //TODO: unfriend
-    //[EWServer unfriend:user];
     [EWSync save];
 }
 
@@ -213,7 +218,7 @@
             EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
             [localMe refreshRelatedWithCompletion:^{
                 
-                [EWPersonManager updateCachedFriends];
+                [EWPerson updateCachedFriends];
                 [EWUserManagement updateFacebookInfo];
             }];
             //TODO: we need a better sync method
@@ -230,7 +235,7 @@
 
 
 #pragma mark - Validation
-+ (BOOL)validate{
+- (BOOL)validate{
     if (!self.isMe) {
         //skip check other user
         return YES;
@@ -246,7 +251,7 @@
             needRefreshFacebook = YES;
         }
     }
-    if(!person.profilePic){
+    if(!self.profilePic){
         PFFile *pic = [PFUser currentUser][@"profilePic"];
         UIImage *img = [UIImage imageWithData:pic.getData];
         if (img) {
@@ -273,11 +278,11 @@
     
     //preference
     if (!self.preference) {
-        person.preference = kUserDefaults;
+        self.preference = kUserDefaults;
     }
     
     //friends
-    NSArray *friendsID = person.cachedInfo[kFriended];
+    NSArray *friendsID = self.cachedInfo[kFriended];
     if (self.friends.count != friendsID.count) {
         [EWPersonManager getFriendsForPerson:self];
     }

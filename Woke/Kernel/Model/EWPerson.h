@@ -35,7 +35,7 @@
 + (NSArray *)myAlarms;
 + (EWAlarm *)myNextAlarm;
 
-- (void)getFriends;
++ (NSArray *)myFriends;
 + (void)updateCachedFriends;
 
 + (EWPerson *)findOrCreatePersonWithParseObject:(PFUser *)user;
