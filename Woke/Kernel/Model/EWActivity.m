@@ -1,6 +1,11 @@
 #import "EWActivity.h"
 #import "EWSession.h"
 
+const struct EWAlarmAttributes EWActivityType = {
+    .media = @"media",
+    .friendship = @"friendship"
+};
+
 @interface EWActivity ()
 
 // Private interface goes here.

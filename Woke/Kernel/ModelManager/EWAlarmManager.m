@@ -228,15 +228,15 @@
     if ([object isKindOfClass:[EWAlarm class]]) {
         if ([keyPath isEqualToString:EWAlarmAttributes.state]) {
             [self updateCachedAlarmTime];
-            [[EWAlarmManager sharedInstance] setSavedAlarmTimes];
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:object userInfo:@{@"alarm": object}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:object];
         }
         else if ([keyPath isEqualToString:EWAlarmAttributes.time]){
             [self updateCachedAlarmTime];
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:object userInfo:@{@"alarm": object}];
+            [self setSavedAlarmTimes];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:object];
         }
         else if ([keyPath isEqualToString:EWAlarmAttributes.tone]){
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:object userInfo:@{@"alarm": object}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:object];
         }
         else if([keyPath isEqualToString:EWAlarmAttributes.statement]){
             [self updateCachedStatement];
@@ -348,5 +348,14 @@
 	
 }
 
+
++ (void)updateSleepNotification{
+    //cancel all sleep notification first
+    [EWTaskManager cancelSleepNotification];
+    
+    for (EWTaskItem *task in [EWSession sharedSession].currentUser.tasks) {
+        [EWTaskManager scheduleSleepNotificationForTask:task];
+    }
+}
 
 @end

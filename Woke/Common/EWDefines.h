@@ -56,7 +56,7 @@
 #define NSLog                           EWLog
 
 //Global parameters
-#define nWeeksToScheduleTask            1
+#define nWeeksToSchedule				1
 #define nLocalNotifPerTask              5
 #define kAlarmTimerCheckInterval        90 //10 min
 #define alarmInterval                   600 //10 min
@@ -102,19 +102,14 @@
 
 #pragma mark - Data event
 //alarm store
-#define kAlarmNewNotification           @"EWAlarmNew" //key: alarm
-#define kAlarmStateChangedNotification  @"EWAlarmStateChanged"//key: alarm
-#define kAlarmTimeChangedNotification   @"EWAlarmTimeChanged"//key: alarm
-#define kAlarmDeleteNotification        @"EWAlarmDelete" //key: tasks
-#define kAlarmChangedNotification       @"EWAlarmChanged" //key: alarm
-#define kAlarmToneChangedNotification   @"EWAlarmToneChanged" //key: alarm
-//task store
-#define kTasksAllNewNotification        @"EWTasksNew"  //key: tasks
-#define kTaskNewNotification            @"EWTaskNew"  //key: task
-#define kTaskStateChangedNotification   @"EWTasksStateChanged"  //key: task
-#define kTaskDeleteNotification         @"EWTaskDelete"  //key: task
-#define kTaskTimeChangedNotification    @"EWTaskTimeChanged"  //key: task
-//#define kTaskChangedNotification        @"EWTaskChanged" //key: task
+#define kAlarmNew						@"EWAlarmNew" //key: alarm
+#define kAlarmStateChanged				@"EWAlarmStateChanged"//key: alarm
+#define kAlarmTimeChanged				@"EWAlarmTimeChanged"//key: alarm
+#define kAlarmDelete					@"EWAlarmDelete" //key: tasks
+#define kAlarmChanged					@"EWAlarmChanged" //key: alarm
+#define kAlarmToneChanged				@"EWAlarmToneChanged" //key: alarm
+#define kAlarmStatementChanged			@"EWAlarmStatementChanged" //key: alarm
+
 
 //person store
 #define kPersonLoggedIn                 @"PersonLoggedIn"
@@ -127,7 +122,7 @@
 #define kPushAPNSRegisteredNotification @"APNSRegistered"
 
 //Notification key
-#define kLocalTaskKey                   @"task_object_id"
+#define kLocalAlarmKey                  @"alarm_object_id"
 #define kLocalNotificationTypeKey       @"type"
 #define kLocalNotificationTypeAlarmTimer    @"alarm_timer"
 #define kLocalNotificationTypeReactivate    @"reactivate"

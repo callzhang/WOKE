@@ -174,38 +174,8 @@
         }
     }
 }
-#pragma mark - Cached Info
-+ (void)updateCachedInfoStatementBasedOnMyAlarms {
-    for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
-        [self updateMyCachedInfoForAlarm:alarm];
-    }
-}
 
-+ (void)updateMyCachedInfoForAlarm:(EWAlarm *)alarm {
-    NSMutableDictionary *cache = [EWSession sharedSession].currentUser.cachedInfo.mutableCopy?:[NSMutableDictionary new];
-    NSMutableDictionary *timeTable = [cache[kCachedAlarmTimes] mutableCopy]?:[NSMutableDictionary new];
-    NSMutableDictionary *statements = [cache[kCachedStatements] mutableCopy]?:[NSMutableDictionary new];
-    
-    NSString *weekDay = alarm.time.weekday;
-    timeTable[weekDay] = alarm.time;
-    statements[weekDay] = alarm.statement;
-    
-    cache[kCachedAlarmTimes] = timeTable;
-    cache[kCachedStatements] = statements;
-    [EWSession sharedSession].currentUser.cachedInfo = cache;
-    [EWSync save];
-    DDLogVerbose(@"Updated cached alarm times: %@, statement: %@", timeTable, statements);
-}
 
-+ (void)updateCachedFriends {
-    [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
-        EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
-        NSSet *friends = [localMe.friends valueForKey:kParseObjectID];
-        NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
-        cache[kCachedFriends] = friends.allObjects;
-        localMe.cachedInfo = [cache copy];
-    }];
-}
 #pragma mark - Parsed
 + (EWPerson *)findOrCreatePersonWithParseObject:(PFUser *)user{
     EWPerson *newUser = (EWPerson *)[user managedObjectInContext:mainContext];
@@ -256,5 +226,62 @@
         
         [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kLastCheckedMe];
     }
+}
+
+
+#pragma mark - Validation
++ (BOOL)validate{
+    if (!self.isMe) {
+        //skip check other user
+        return YES;
+    }
+    
+    BOOL good = YES;
+    BOOL needRefreshFacebook = NO;
+    if(!self.name){
+        NSString *name = [PFUser currentUser][@"name"];
+        if (name) {
+            self.name = name;
+        }else{
+            needRefreshFacebook = YES;
+        }
+    }
+    if(!person.profilePic){
+        PFFile *pic = [PFUser currentUser][@"profilePic"];
+        UIImage *img = [UIImage imageWithData:pic.getData];
+        if (img) {
+            self.profilePic = img;
+        }else{
+            needRefreshFacebook = YES;
+        }
+    }
+    if(!self.username){
+        self.username = [PFUser currentUser].username;
+        DDLogError(@"Username is missing!");
+    }
+    
+    if (self.alarms.count == 7) {
+        good = YES;
+    }else{
+        good = NO;
+        DDLogError(@"The person failed validation: alarms: %ld", (long)self.alarms.count);
+    }
+    
+    if (needRefreshFacebook) {
+        [EWUserManagement updateFacebookInfo];
+    }
+    
+    //preference
+    if (!self.preference) {
+        person.preference = kUserDefaults;
+    }
+    
+    //friends
+    NSArray *friendsID = person.cachedInfo[kFriended];
+    if (self.friends.count != friendsID.count) {
+        [EWPersonManager getFriendsForPerson:self];
+    }
+    
+    return good;
 }
 @end

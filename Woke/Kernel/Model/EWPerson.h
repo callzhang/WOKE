@@ -36,9 +36,6 @@
 + (EWAlarm *)myNextAlarm;
 
 - (void)getFriends;
-
-+ (void)updateCachedInfoBasedOnMyAlarms;
-+ (void)updateMyCachedInfoForAlarm:(EWAlarm *)alarm;
 + (void)updateCachedFriends;
 
 + (EWPerson *)findOrCreatePersonWithParseObject:(PFUser *)user;

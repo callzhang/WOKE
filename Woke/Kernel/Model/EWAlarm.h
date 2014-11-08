@@ -24,4 +24,11 @@
 - (BOOL)validate;
 
 + (NSArray *)alarmsForUser:(EWPerson *)user;
+
+/*
+ Use REST to create a notification on server
+ when person is in his sleep mode
+ */
+#define kScheduledAlarmTimers       @"scheduled_alarm_timers"
+- (void)scheduleNotificationOnServer;
 @end

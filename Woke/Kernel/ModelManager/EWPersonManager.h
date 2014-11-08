@@ -41,7 +41,7 @@
  Get a json from server that includes all currentUser's value and relation
  Check if any change is needed.
  */
-+ (void)updateMe;
+//+ (void)updateMe;
 
 //friend
 //TODO: move to EWPerson

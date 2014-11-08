@@ -508,48 +508,6 @@
 }*/
 
 
-//state
-- (void)updateTaskState:(NSNotification *)notif{
-    id object = notif.object;
-    if([object isKindOfClass:[EWAlarm class]]){
-        [self updateTaskStateForAlarm:(EWAlarm *)object];
-    }else if([object isKindOfClass:[EWTaskItem class]]){
-        [self scheduleNotificationForTask:(EWTaskItem *)object];
-    }else{
-        [NSException raise:@"No alarm/task info" format:@"Check notification"];
-    }
-}
-
-- (void)updateTaskStateForAlarm:(EWAlarm *)a{
-    BOOL updated = NO;
-	if (a.tasks.count != nWeeksToScheduleTask) {
-		DDLogError(@"Serious error: alarm(%@) has extra tasks: %lu", a.serverID, (unsigned long)a.tasks.count);
-        [self scheduleTasks];
-        return;
-	}
-    for (EWTaskItem *t in a.tasks) {
-        if (t.state != a.state) {
-            updated = YES;
-            
-            t.state = a.state;
-            
-            if (t.state == YES) {
-                //schedule local notif
-                [self scheduleNotificationForTask:t];
-            } else {
-                //cancel local notif
-                [self cancelNotificationForTask:t];
-            }
-            
-            //notification
-            [[NSNotificationCenter defaultCenter] postNotificationName:kTaskStateChangedNotification object:t userInfo:@{@"task": t}];
-        }
-    }
-    if (updated) {
-        [EWSync save];
-    }
-}
-
 //time
 - (void)updateTaskTime:(NSNotification *)notif{
     EWAlarm *a = notif.object;
@@ -882,63 +840,6 @@
 }
 
 
-#pragma mark - Sleep notification
-+ (void)updateSleepNotification{
-    //cancel all sleep notification first
-    [EWTaskManager cancelSleepNotification];
-    
-    for (EWTaskItem *task in [EWSession sharedSession].currentUser.tasks) {
-        [EWTaskManager scheduleSleepNotificationForTask:task];
-    }
-}
-
-+ (void)scheduleSleepNotificationForTask:(EWTaskItem *)task{
-    NSNumber *duration = [EWSession sharedSession].currentUser.preference[kSleepDuration];
-    float d = duration.floatValue;
-    NSDate *sleepTime = [task.time dateByAddingTimeInterval:-d*3600];
-    
-    //cancel if no change
-    NSArray *notifs = [[EWTaskManager sharedInstance] localNotificationForTask:task];
-    for (UILocalNotification *notif in notifs) {
-        if ([notif.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
-            if ([notif.fireDate isEqualToDate:sleepTime]) {
-                //nothing to do
-                return;
-            }else{
-                [[UIApplication sharedApplication] cancelLocalNotification:notif];
-            }
-        }
-    }
-    
-    //local notification
-    UILocalNotification *sleepNotif = [[UILocalNotification alloc] init];
-    sleepNotif.timeZone = [NSTimeZone systemTimeZone];
-    sleepNotif.alertBody = [NSString stringWithFormat:@"It's time to sleep, press here to enter sleep mode (%@)", sleepTime.date2String];
-    sleepNotif.alertAction = @"Sleep";
-    sleepNotif.repeatInterval = NSWeekCalendarUnit;
-    sleepNotif.soundName = @"sleep mode.caf";
-    sleepNotif.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
-                            kLocalNotificationTypeKey: kLocalNotificationTypeSleepTimer};
-    if ([sleepTime timeIntervalSinceNow]>0) {
-        //future
-        sleepNotif.fireDate = sleepTime;
-    }
-    
-    [[UIApplication sharedApplication] scheduleLocalNotification:sleepNotif];
-    NSLog(@"Sleep notification schedule at %@", sleepNotif.fireDate.date2detailDateString);
-}
-
-+ (void)cancelSleepNotification{
-    NSArray *sleeps = [UIApplication sharedApplication].scheduledLocalNotifications;
-    NSInteger n = 0;
-    for (UILocalNotification *sleep in sleeps) {
-        if ([sleep.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
-            [[UIApplication sharedApplication] cancelLocalNotification:sleep];
-            n++;
-        }
-    }
-    NSLog(@"Cancelled %ld sleep notification", (long)n);
-}
 
 
 #pragma mark - Schedule Alarm Timer
