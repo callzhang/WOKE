@@ -9,10 +9,14 @@
 #import <Foundation/Foundation.h>
 #import "EWPerson.h"
 
+NSString *const EWActivityTypeAlarm = @"alarm";
+NSString *const EWActivityTypeFriendship = @"friendship";
+NSString *const EWActivityTypeMedia = @"media";
+
 
 
 @interface EWActivityManager : NSObject
 + (EWActivityManager *)sharedManager;
 + (NSArray *)myActivities;
-+ (EWActivity *)currentyActivity;
+@property (nonatomic, strong) EWActivity *currentAlarmActivity;
 @end

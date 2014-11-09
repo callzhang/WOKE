@@ -18,6 +18,8 @@
 #import "EWAppDelegate.h"
 #import "EWAlarmScheduleViewController.h"
 
+#import "AFNetworking.h"
+
 @implementation EWAlarmManager
 
 + (EWAlarmManager *)sharedInstance {
@@ -30,6 +32,27 @@
     }); 
     
     return manager;
+}
+
+- (EWAlarmManager *)init{
+    self = [super init];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(alarmChanged:) name:kAlarmTimeChanged object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(alarmChanged:) name:kAlarmStateChanged object:nil];
+    }
+    return self;
+}
+
+#pragma mark - alarm changed
+- (void)alarmChanged:(NSNotification *)note{
+    EWAlarm *alarm = note.object;
+    if ([note.name isEqualToString:kAlarmTimeChanged]) {
+        [self scheduleNotificationOnServerForAlarm:alarm];
+    }else if ([note.name isEqualToString:kAlarmStateChanged]){
+        if (alarm.stateValue) {
+            [self scheduleNotificationOnServerForAlarm:alarm];
+        }
+    }
 }
 
 
@@ -233,7 +256,7 @@
 	
 	//delete redundant alarm notif
 	for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
-		[alarm scheduleTimerAndSleepLocalNotification];
+		[alarm scheduleLocalNotification];
 		NSArray *notifs= [alarm localNotifications];
 		[allNotification removeObjectsInArray:notifs];
 	}
@@ -250,6 +273,85 @@
 		[self checkScheduledLocalNotifications];
 	}
 	
+}
+
+
+
+#pragma mark - Schedule Alarm Timer
+
+- (void)scheduleNotificationOnServerForAlarm:(EWAlarm *)alarm{
+    if (!alarm.time) {
+        DDLogError(@"*** The Task for schedule push doesn't have time: %@", alarm);
+        return;
+    }else if (!alarm.objectId){
+        __block EWAlarm *blockAlarm = alarm;
+        [EWSync saveWithCompletion:^{
+            [self scheduleNotificationOnServerForAlarm:alarm];
+        }];
+        return;
+    }
+    
+    if ([alarm.time timeIntervalSinceNow] < 0) {
+        DDLogWarn(@"The alarm you are trying to schedule on server is in the past: %@", alarm);
+        return;
+    }
+    NSString *alarmID = alarm.serverID;
+    NSDate *time = alarm.time;
+    //check local schedule records before make the REST call
+    __block NSMutableDictionary *timeTable = [[[NSUserDefaults standardUserDefaults] objectForKey:kScheduledAlarmTimers] mutableCopy] ?:[NSMutableDictionary new];
+    for (NSString *objectId in timeTable.allKeys) {
+        EWAlarm *alarm = [EWAlarm findFirstByAttribute:kParseObjectID withValue:objectId];
+        if (alarm.time.timeElapsed > 0) {
+            //delete from time table
+            [timeTable removeObjectForKey:objectId];
+            DDLogInfo(@"Past task on %@ has been removed from schedule table", alarm.time.date2detailDateString);
+        }
+    }
+    //add scheduled time to task
+    __block NSMutableArray *times = [[timeTable objectForKey:alarmID] mutableCopy]?:[NSMutableArray new];
+    if ([times containsObject:time]) {
+        DDLogInfo(@"===Task (%@) timer push (%@) has already been scheduled on server, skip.", alarmID, time);
+        return;
+    }else{
+        [times addObject:time];
+        [timeTable setObject:times.copy forKey:alarmID];
+        [[NSUserDefaults standardUserDefaults] setObject:timeTable.copy forKey:kScheduledAlarmTimers];
+        DDLogInfo(@"Scheduled task timer on server: %@", times);
+    }
+    
+    
+    //============ Start scheduling task timer on server ============
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    
+    [manager.requestSerializer setValue:kParseApplicationId forHTTPHeaderField:@"X-Parse-Application-Id"];
+    [manager.requestSerializer setValue:kParseRestAPIId forHTTPHeaderField:@"X-Parse-REST-API-Key"];
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    
+    
+    NSDictionary *dic = @{@"where":@{kUsername:[EWSession sharedSession].currentUser.username},
+                          @"push_time":[NSNumber numberWithDouble:[time timeIntervalSince1970]+30],
+                          @"data":@{@"alert":@"Time to get up",
+                                    @"content-available":@1,
+                                    kPushType: kPushTypeAlarmTimer,
+                                    kPushTaskID: alarmID},
+                          };
+    
+    [manager POST:kParsePushUrl parameters:dic
+          success:^(AFHTTPRequestOperation *operation,id responseObject) {
+              
+              DDLogVerbose(@"SCHEDULED alarm timer PUSH success for time %@", time.date2detailDateString);
+              [times addObject:time];
+              [timeTable setObject:times forKey:alarmID];
+              [[NSUserDefaults standardUserDefaults] setObject:timeTable.copy forKey:kScheduledAlarmTimers];
+              
+          }failure:^(AFHTTPRequestOperation *operation,NSError *error) {
+              
+              DDLogError(@"Schedule Push Error: %@", error);
+              
+          }];
+    
 }
 
 @end

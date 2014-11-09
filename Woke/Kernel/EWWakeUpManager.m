@@ -72,7 +72,7 @@
     NSParameterAssert([pushType isEqualToString:kPushTypeMedia]);
     NSString *type = notification[kPushMediaType];
     NSString *mediaID = notification[kPushMediaID];
-	//NSString *taskID = notification[kPushTaskID];
+    EWActivity *activity;
 	
     if (!mediaID) {
         NSLog(@"Push doesn't have media ID, abort!");

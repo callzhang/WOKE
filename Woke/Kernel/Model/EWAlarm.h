@@ -26,14 +26,8 @@
 + (NSArray *)alarmsForUser:(EWPerson *)user;
 
 //timer local notification
-- (void)scheduleTimerAndSleepLocalNotification;
-- (void)cancelTimerLocalNotification;
+- (void)scheduleLocalNotification;
+- (void)cancelLocalNotification;
 - (NSArray *)localNotifications;//both sleep and timer
 
-/*
- Use REST to create a notification on server
- when person is in his sleep mode
- */
-#define kScheduledAlarmTimers       @"scheduled_alarm_timers"
-- (void)scheduleNotificationOnServer;
 @end

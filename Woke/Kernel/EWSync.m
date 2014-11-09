@@ -9,13 +9,11 @@
 #import "EWSync.h"
 #import "EWUIUtil.h"
 #import "EWServerObject.h"
-//#import "EWUserManagement.h"
-#import "EWPersonManager.h"
-#import "EWMediaManager.h"
-#import "EWTaskManager.h"
-#import "EWAlarmManager.h"
-#import "EWAlarm.h"
-#import "EWMedia.h"
+//#import "EWActivity.h"
+//#import "EWPerson.h"
+//#import "EWMedia.h"
+//#import "EWAlarm.h"
+//#import "EWAlarm.h"
 
 #define kPFQueryCacheLife		60*60;
 
@@ -723,66 +721,37 @@ NSManagedObjectContext *mainContext;
 }
 
 
-+ (BOOL)validateMO:(NSManagedObject *)mo{
++ (BOOL)validateMO:(EWServerObject *)SO{
     //validate MO, only used when uploading MO to PO
-    BOOL good = [EWSync validateMO:mo andTryToFix:NO];
+    BOOL good = [EWSync validateMO:SO andTryToFix:NO];
     
     return good;
 }
 
-+ (BOOL)validateMO:(NSManagedObject *)mo andTryToFix:(BOOL)tryFix{
-    if (!mo) {
++ (BOOL)validateMO:(EWServerObject *)SO andTryToFix:(BOOL)tryFix{
+    if (!SO) {
         return NO;
     }
     //validate MO, only used when uploading MO to PO
     BOOL good = YES;
     
-    if (![mo valueForKey:kUpdatedDateKey] && mo.serverID) {
-        NSLog(@"The %@(%@) you are trying to validate haven't been downloaded fully. Skip validating.", mo.entity.name, mo.serverID);
+    if (![SO valueForKey:kUpdatedDateKey] && SO.serverID) {
+        NSLog(@"The %@(%@) you are trying to validate haven't been downloaded fully. Skip validating.", SO.entity.name, SO.serverID);
         return NO;
     }
-    
-    NSString *type = mo.entity.name;
-    if ([type isEqualToString:@"EWTaskItem"]) {
-        good = [EWTaskManager validateTask:(EWTaskItem *)mo];
-        if (!good) {
-            if (!tryFix) {
-                return NO;
-            }
-            [mo refresh];
-            good = [EWTaskManager validateTask:(EWTaskItem *)mo];
-            
-        }
-    } else if([type isEqualToString:@"EWMedia"]){
-        good = [(EWMedia *)mo validate];
-        if (!good) {
-            if (!tryFix) {
-                return NO;
-            }
-            [mo refresh];
-            good = [(EWMedia *)mo validate];
-        }
-    }else if ([type isEqualToString:@"EWPerson"]){
-        good = [EWPersonManager validatePerson:(EWPerson *)mo];
-        if (!good) {
-            if (!tryFix) {
-                return NO;
-            }
-            [mo refresh];
-            good = [EWPersonManager validatePerson:(EWPerson *)mo];
-        }
-    }else if ([type isEqualToString:NSStringFromClass([EWAlarm class])]){
-        good = [(EWAlarm *)mo validate];
-        if (!good) {
-            if (!tryFix) {
-                return NO;
-            }
-            [mo refresh];
-            good = [(EWAlarm *)mo validate];
-        }
-    }
+	
+	good = [SO validate];
+	if (!good) {
+		if (!tryFix) {
+			return NO;
+		}
+		[SO refresh];
+		good = [SO validate];
+		
+	}
+	
     if (!good) {
-        NSLog(@"*** %@(%@) failed in validation after trying to fix", mo.entity.name, mo.serverID);
+        NSLog(@"*** %@(%@) failed in validation after trying to fix", SO.entity.name, SO.serverID);
     }
     
     return good;

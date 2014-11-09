@@ -9,7 +9,10 @@
 
 
 @implementation EWServerObject
-
+- (BOOL)validate{
+    NSParameterAssert(YES);
+    return NO;
+}
 // Custom logic goes here.
 
 @end

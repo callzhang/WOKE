@@ -30,9 +30,7 @@
 // schedule
 - (NSArray *)scheduleAlarm;
 
-// delete all
-+ (void)deleteAll;
-
+//update cached info
 - (void)updateCachedAlarmTimes;
 - (void)updateCachedStatements;
 
@@ -40,4 +38,10 @@
 - (NSDate *)getSavedAlarmTimeOnWeekday:(NSInteger)wkd;
 //- (void)setSavedAlarmTimes;
 
+/*
+ Use REST to create a notification on server
+ when person is in his sleep mode
+ */
+#define kScheduledAlarmTimers       @"scheduled_alarm_timers"
+- (void)scheduleNotificationOnServerForAlarm:(EWAlarm *)alarm;
 @end

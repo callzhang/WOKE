@@ -12,6 +12,7 @@
 #import "EWAlarm.h"
 
 @implementation EWActivityManager
+
 + (EWActivityManager *)sharedManager{
     static EWActivityManager *manager;
     if (!manager) {
@@ -28,27 +29,27 @@
     return [activities sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:EWActivityAttributes.time ascending:NO]]];
 }
 
-+ (EWActivity *)currentyWakeActivity{
-    NSArray *activities = [EWActivityManager myActivities];
-    EWActivity *lastActivity = [activities bk_match:^BOOL(EWActivity *obj) {
-        if ([obj.type isEqualToString:@"timer"]) {
-            return YES;
+- (EWActivity *)currentAlarmActivity{
+    if (!_currentAlarmActivity) {
+        NSArray *activities = [EWActivityManager myActivities];
+        EWActivity *lastActivity = [activities bk_match:^BOOL(EWActivity *obj) {
+            return [obj.type isEqualToString:EWActivityTypeAlarm] ? YES : NO;
+        }];
+        
+        EWAlarm *nextAlarm = [EWPerson myNextAlarm];
+        if (lastActivity && fabs([lastActivity.time timeIntervalSinceDate: nextAlarm.time.nextOccurTime])<1) {
+            //the last activity is the current activity
+            return lastActivity;
         }
         else {
-            return NO;
+            lastActivity = [EWActivity newActivity];
+            lastActivity.owner = [EWSession sharedSession].currentUser;
+            lastActivity.type = EWActivityTypeAlarm;
+            lastActivity.time = nextAlarm.time.nextOccurTime;
         }
-    }];
-    
-    EWAlarm *nextAlarm = [EWPerson myNextAlarm];
-    if (fabs([lastActivity.time timeIntervalSinceDate: nextAlarm.time.nextOccurTime])<1) {
-        //the last activity is the current activity
-        return lastActivity;
+        _currentAlarmActivity = lastActivity;
     }
-    else {
-        lastActivity = [EWActivity newActivity];
-        lastActivity.owner = [EWSession sharedSession].currentUser;
-        lastActivity.type = @"timer";
-    }
-    return lastActivity;
+    return _currentAlarmActivity;
 }
+
 @end

@@ -12,6 +12,7 @@
 #import "Reachability.h"
 #import "NSManagedObject+EWSync.h"
 #import "PFObject+EWSync.h"
+#import "EWServerObject.h"
 
 extern NSManagedObjectContext *mainContext;
 typedef void (^EWSavingCallback)(void);
@@ -147,8 +148,8 @@ typedef void (^EWSavingCallback)(void);
 
 #pragma mark - CoreData
 + (NSManagedObject *)managedObjectWithClass:(NSString *)className withID:(NSString *)objectID;
-+ (BOOL)validateMO:(NSManagedObject *)mo;
-+ (BOOL)validateMO:(NSManagedObject *)mo andTryToFix:(BOOL)tryFix;
++ (BOOL)validateMO:(EWServerObject *)mo;
++ (BOOL)validateMO:(EWServerObject *)mo andTryToFix:(BOOL)tryFix;
 
 #pragma mark - Parse helper methods
 //PO query

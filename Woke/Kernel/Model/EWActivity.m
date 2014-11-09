@@ -58,7 +58,7 @@ const struct EWAlarmAttributes EWActivityType = {
 }
 
 
-- (EWActivity *)createpWithPerson:(EWPerson *)person friended:(BOOL)friended {
+- (EWActivity *)createWithPerson:(EWPerson *)person friended:(BOOL)friended {
     EWActivity *activity = [EWActivity newActivity];
     activity.type = EWActivityType.friendship;
     activity.friendedValue = friended;
