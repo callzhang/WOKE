@@ -126,7 +126,7 @@
     return weekdayOfDate - 1; //0:sunday ... 6:saturday
 }
 
-- (NSDate *)nextOccurTime:(NSInteger)n withDevidingPoint:(NSInteger)seconds{
+- (NSDate *)nextOccurTime:(NSInteger)n withExtraSeconds:(NSInteger)seconds{
     NSDate *time = self;
     //bring to past
     while ([time timeIntervalSinceNow]>seconds) {
@@ -149,7 +149,11 @@
 }
 
 - (NSDate *)nextOccurTime:(NSInteger)n{
-    return [self nextOccurTime:0 withDevidingPoint:0];
+    return [self nextOccurTime:n withExtraSeconds:0];
+}
+
+- (NSDate *)nextOccurTime{
+    return [self nextOccurTime:0];
 }
 
 - (NSDate *)nextWeekTime{

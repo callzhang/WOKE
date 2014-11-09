@@ -18,5 +18,4 @@ extern const struct EWAlarmAttributes {
 
 - (EWActivity *)createWithMedia:(EWMedia *)media;
 - (EWActivity *)createWithPerson:(EWPerson *)person friended:(BOOL)friended;
-+ (NSArray *)myActivities;
 @end

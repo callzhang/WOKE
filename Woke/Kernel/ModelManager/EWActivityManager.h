@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "EWPerson.h"
 
+
+
 @interface EWActivityManager : NSObject
 + (EWActivityManager *)sharedManager;
++ (NSArray *)myActivities;
++ (EWActivity *)currentyActivity;
 @end
