@@ -15,44 +15,81 @@ extern const struct EWMediaFileRelationships {
 	__unsafe_unretained NSString *medias;
 } EWMediaFileRelationships;
 
+extern const struct EWMediaFileFetchedProperties {
+} EWMediaFileFetchedProperties;
+
 @class EWMedia;
 
-@class NSObject;
 
 @class NSObject;
+@class NSObject;
 
-@interface EWMediaFileID : EWServerObjectID {}
+
+@interface EWMediaFileID : NSManagedObjectID {}
 @end
 
 @interface _EWMediaFile : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
-@property (nonatomic, readonly, strong) EWMediaFileID* objectID;
+- (EWMediaFileID*)objectID;
+
+
+
+
 
 @property (nonatomic, strong) NSData* audio;
 
+
+
 //- (BOOL)validateAudio:(id*)value_ error:(NSError**)error_;
+
+
+
+
 
 @property (nonatomic, strong) id image;
 
+
+
 //- (BOOL)validateImage:(id*)value_ error:(NSError**)error_;
+
+
+
+
 
 @property (nonatomic, strong) id thumbnail;
 
+
+
 //- (BOOL)validateThumbnail:(id*)value_ error:(NSError**)error_;
+
+
+
+
 
 @property (nonatomic, strong) NSData* video;
 
+
+
 //- (BOOL)validateVideo:(id*)value_ error:(NSError**)error_;
+
+
+
+
 
 @property (nonatomic, strong) NSSet *medias;
 
 - (NSMutableSet*)mediasSet;
 
+
+
+
+
 @end
 
-@interface _EWMediaFile (MediasCoreDataGeneratedAccessors)
+@interface _EWMediaFile (CoreDataGeneratedAccessors)
+
 - (void)addMedias:(NSSet*)value_;
 - (void)removeMedias:(NSSet*)value_;
 - (void)addMediasObject:(EWMedia*)value_;
@@ -62,19 +99,34 @@ extern const struct EWMediaFileRelationships {
 
 @interface _EWMediaFile (CoreDataGeneratedPrimitiveAccessors)
 
+
 - (NSData*)primitiveAudio;
 - (void)setPrimitiveAudio:(NSData*)value;
+
+
+
 
 - (id)primitiveImage;
 - (void)setPrimitiveImage:(id)value;
 
+
+
+
 - (id)primitiveThumbnail;
 - (void)setPrimitiveThumbnail:(id)value;
+
+
+
 
 - (NSData*)primitiveVideo;
 - (void)setPrimitiveVideo:(NSData*)value;
 
+
+
+
+
 - (NSMutableSet*)primitiveMedias;
 - (void)setPrimitiveMedias:(NSMutableSet*)value;
+
 
 @end

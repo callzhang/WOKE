@@ -14,6 +14,9 @@ const struct EWMediaFileRelationships EWMediaFileRelationships = {
 	.medias = @"medias",
 };
 
+const struct EWMediaFileFetchedProperties EWMediaFileFetchedProperties = {
+};
+
 @implementation EWMediaFileID
 @end
 
@@ -39,28 +42,58 @@ const struct EWMediaFileRelationships EWMediaFileRelationships = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
+	
 
 	return keyPaths;
 }
 
+
+
+
 @dynamic audio;
+
+
+
+
+
 
 @dynamic image;
 
+
+
+
+
+
 @dynamic thumbnail;
+
+
+
+
+
 
 @dynamic video;
 
+
+
+
+
+
 @dynamic medias;
 
+	
 - (NSMutableSet*)mediasSet {
 	[self willAccessValueForKey:@"medias"];
-
+  
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"medias"];
-
+  
 	[self didAccessValueForKey:@"medias"];
 	return result;
 }
+	
+
+
+
+
+
 
 @end
-

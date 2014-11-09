@@ -15,6 +15,9 @@ const struct EWAchievementRelationships EWAchievementRelationships = {
 	.owner = @"owner",
 };
 
+const struct EWAchievementFetchedProperties EWAchievementFetchedProperties = {
+};
+
 @implementation EWAchievementID
 @end
 
@@ -40,21 +43,56 @@ const struct EWAchievementRelationships EWAchievementRelationships = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
+	
 
 	return keyPaths;
 }
 
+
+
+
 @dynamic body;
+
+
+
+
+
 
 @dynamic image;
 
+
+
+
+
+
 @dynamic name;
+
+
+
+
+
 
 @dynamic time;
 
+
+
+
+
+
 @dynamic type;
+
+
+
+
+
 
 @dynamic owner;
 
-@end
+	
 
+
+
+
+
+
+@end

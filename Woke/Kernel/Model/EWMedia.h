@@ -11,7 +11,7 @@
 //delete
 - (void)remove;
 //search
-- (EWMedia *)getMediaByID:(NSString *)mediaID;
++ (EWMedia *)getMediaByID:(NSString *)mediaID;
 //validate
 - (BOOL)validate;
 //ACL

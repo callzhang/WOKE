@@ -144,20 +144,6 @@
 
 }
 
-//Get saved time in user defaults
-+ (NSArray *)getSavedAlarmTimes{
-	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	NSArray *alarmTimes = [defaults valueForKey:kSavedAlarms];
-	//create if not exsit
-	if (!alarmTimes) {
-		//if asking saved value, the alarm is not scheduled
-		DDLogInfo(@"=== Saved alarm time not found, use default values!");
-		alarmTimes = defaultAlarmTimes;
-		[defaults setObject:alarmTimes forKey:kSavedAlarms];
-		[defaults synchronize];
-	}
-	return alarmTimes;
-}
 
 #pragma mark - Cached alarm time to user defaults
 
@@ -192,7 +178,7 @@
 }
 
 #pragma mark - Local Notification
-- (void)scheduleLocalNotification{
+- (void)scheduleTimerAndSleepLocalNotification{
 	//check state
 	if (self.state == NO) {
 		[self cancelLocalNotification];
@@ -268,7 +254,7 @@
 }
 
 
-- (void)cancelLocalNotification{
+- (void)cancelTimerLocalNotification{
     NSArray *notifications = [self localNotifications];
     for(UILocalNotification *aNotif in notifications) {
         NSLog(@"Local Notification cancelled for:%@", aNotif.fireDate.date2detailDateString);

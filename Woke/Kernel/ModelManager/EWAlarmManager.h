@@ -17,7 +17,7 @@
 @interface EWAlarmManager : NSObject
 
 // Singleton
-+ (EWAlarmManager *)sharedInstance ;
++ (EWAlarmManager *)sharedInstance;
 
 
 //TODO: discuss
@@ -29,13 +29,15 @@
 
 // schedule
 - (NSArray *)scheduleAlarm;
-//TODO: discuss
-- (void)updateCachedAlarmTime;
-//TODO: discuss
-- (void)updateCachedStatement;
+
+// delete all
++ (void)deleteAll;
+
+- (void)updateCachedAlarmTimes;
+- (void)updateCachedStatements;
 
 //UTIL
 - (NSDate *)getSavedAlarmTimeOnWeekday:(NSInteger)wkd;
-- (void)setSavedAlarmTimes;
+//- (void)setSavedAlarmTimes;
 
 @end

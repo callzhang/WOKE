@@ -38,7 +38,7 @@
         }
     }
     
-    if (!self.receivers && s!elf.activity) {
+    if (!self.receiver && !self.activity) {
         DDLogError(@"Found media %@ with no receiver and no activity.", self.serverID);
         good = NO;
     }
@@ -46,17 +46,18 @@
     return good;
 }
 
-- (void)createACLForMedia{
-    NSSet *receivers = media.receivers;
+- (void)createACL{
     PFObject *m = self.parseObject;
     PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
-    for (EWPerson *p in receivers) {
-        PFObject *PO = p.parseObject;
-        [acl setReadAccess:YES forUser:(PFUser *)PO];
-        [acl setReadAccess:YES forUser:(PFUser *)PO];
-    }
+    PFObject *PO = self.receiver.parseObject;
+    [acl setReadAccess:YES forUser:(PFUser *)PO];
+    [acl setReadAccess:YES forUser:(PFUser *)PO];
     m.ACL = acl;
-    NSLog(@"ACL created for media(%@) with access for %@", self.objectId, [receivers valueForKey:kParseObjectID]);
+    NSLog(@"ACL created for media(%@) with access for %@", self.objectId, self.receiver.serverID);
+}
+
++ (EWMedia *)getMediaByID:(NSString *)mediaID{
+    return [EWMedia findByAttribute:kParseObjectID withValue:mediaID].firstObject;
 }
 
 

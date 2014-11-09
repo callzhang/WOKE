@@ -7,8 +7,6 @@
 //
 
 #import "EWWakeUpManager.h"
-#import "EWTaskItem.h"
-#import "EWTaskManager.h"
 #import "EWPersonManager.h"
 #import "AVManager.h"
 #import "EWAppDelegate.h"
@@ -20,6 +18,7 @@
 #import "EWServer.h"
 #import "ATConnect.h"
 #import "EWBackgroundingManager.h"
+#import "EWAlarm.h"
 
 //UI
 #import "EWWakeUpViewController.h"
@@ -81,70 +80,11 @@
     }
 
     
-    EWMedia *media = [[EWMediaManager sharedInstance] getMediaByID:mediaID];
-    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
+    EWMedia *media = [EWMedia getMediaByID:mediaID];
+    EWAlarm *nextAlarm = [EWPerson myNextAlarm];
+    //NSDate *nextTimer = nextAlarm.time;
     
-    
-    if ([type isEqualToString:kPushMediaTypeBuzz]) {
-        // ============== Buzz ===============
-        NSParameterAssert(mediaID);
-        NSLog(@"Received buzz from %@", media.author.name);
-        
-        //sound
-        NSString *buzzSoundName = media.buzzKey?:[EWSession sharedSession].currentUser.preference[@"buzzSound"];
-        NSDictionary *sounds = buzzSounds;
-        NSString *buzzSound = sounds[buzzSoundName];
-        
-#ifdef DEBUG
-        EWPerson *sender = media.author;
-        //alert
-        [[[UIAlertView alloc] initWithTitle:@"Buzz coming" message:[NSString stringWithFormat:@"Got a buzz from %@. (Testing)", sender.name] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-#endif
-        
-        if (task.completed || [[NSDate date] timeIntervalSinceDate:task.time] > kMaxWakeTime) {
-            
-            //============== the buzz window has passed ==============
-            NSLog(@"@@@ Buzz window has passed, save it to next day");
-            
-            //do nothing
-            
-            return;
-            
-        }else if ([[NSDate date] isEarlierThan:task.time]){
-            
-            //============== buzz earlier than alarm, schedule local notif ==============
-            
-            UILocalNotification *notif = [[UILocalNotification alloc] init];
-            //time: a random time after
-            NSDate *fireTime = [task.time timeByAddingSeconds:(150 + arc4random_uniform(5)*30)];
-            notif.fireDate = fireTime;
-            //sound
-            
-            notif.soundName = buzzSound;
-            //message
-            notif.alertBody = [NSString stringWithFormat:@"Buzz from %@", media.author.name];
-            notif.userInfo = @{kPushTaskID: task.objectId, kPushMediaID: mediaID, kLocalTaskKey: task.objectID.URIRepresentation.absoluteString};
-            //schedule
-            [[UIApplication sharedApplication] scheduleLocalNotification:notif];
-            
-            NSLog(@"Scheduled local notif on %@", [fireTime date2String]);
-            
-        }else{
-            
-            //============== struggle ==============
-            
-            [EWWakeUpManager presentWakeUpViewWithTask:task];
-            
-            //broadcast event so that wakeup VC can play it
-            //[[NSNotificationCenter defaultCenter] postNotificationName:kNewBuzzNotification object:self userInfo:@{kPushTaskKey: task.objectId}];
-            
-            [task addMediasObject:media];
-            [EWSync save];
-        }
-        
-
-        
-    }else if ([type isEqualToString:kPushMediaTypeVoice]){
+    if ([type isEqualToString:kPushMediaTypeVoice]) {
         // ============== Media ================
         NSParameterAssert(mediaID);
         NSLog(@"Received voice type push");
@@ -156,7 +96,7 @@
         //[[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded in test mode+
         
         //determin action based on task timing
-        if ([[NSDate date] isEarlierThan:task.time]) {
+        if ([[NSDate date] isEarlierThan:nextAlarm.time]) {
             
             //============== pre alarm -> download ==============
             
@@ -176,16 +116,10 @@
         }else{
             
             //Woke state -> assign media to next task, download
-            if (![[EWSession sharedSession].currentUser.mediaAssets containsObject:media]) {
-                [[EWSession sharedSession].currentUser addMediaAssetsObject:media];
+            if (![[EWSession sharedSession].currentUser.unreadMedias containsObject:media]) {
+                [[EWSession sharedSession].currentUser addUnreadMediasObject:media];
+                [EWSync save];
                 
-                NSSet *tasks = [media.tasks filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owner = %@", [EWSession sharedSession].currentUser]];
-                for (EWTaskItem *task in tasks) {
-                    
-                    //need to move to media pool
-                    [media removeTasksObject:task];
-                    [EWSync save];
-                }
             }
             
         }

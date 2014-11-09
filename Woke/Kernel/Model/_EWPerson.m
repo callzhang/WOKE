@@ -35,6 +35,9 @@ const struct EWPersonRelationships EWPersonRelationships = {
 	.unreadMedias = @"unreadMedias",
 };
 
+const struct EWPersonFetchedProperties EWPersonFetchedProperties = {
+};
+
 @implementation EWPersonID
 @end
 
@@ -60,7 +63,7 @@ const struct EWPersonRelationships EWPersonRelationships = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-
+	
 	if ([key isEqualToString:@"scoreValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"score"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -70,35 +73,110 @@ const struct EWPersonRelationships EWPersonRelationships = {
 	return keyPaths;
 }
 
+
+
+
 @dynamic bgImage;
+
+
+
+
+
 
 @dynamic birthday;
 
+
+
+
+
+
 @dynamic cachedInfo;
+
+
+
+
+
 
 @dynamic city;
 
+
+
+
+
+
 @dynamic email;
+
+
+
+
+
 
 @dynamic facebook;
 
+
+
+
+
+
 @dynamic gender;
+
+
+
+
+
 
 @dynamic history;
 
+
+
+
+
+
 @dynamic images;
+
+
+
+
+
 
 @dynamic lastLocation;
 
+
+
+
+
+
 @dynamic name;
+
+
+
+
+
 
 @dynamic preference;
 
+
+
+
+
+
 @dynamic profilePic;
+
+
+
+
+
 
 @dynamic region;
 
+
+
+
+
+
 @dynamic score;
+
+
 
 - (float)scoreValue {
 	NSNumber *result = [self score];
@@ -118,90 +196,129 @@ const struct EWPersonRelationships EWPersonRelationships = {
 	[self setPrimitiveScore:[NSNumber numberWithFloat:value_]];
 }
 
+
+
+
+
 @dynamic statement;
+
+
+
+
+
 
 @dynamic username;
 
+
+
+
+
+
 @dynamic weibo;
+
+
+
+
+
 
 @dynamic achievements;
 
+	
 - (NSMutableSet*)achievementsSet {
 	[self willAccessValueForKey:@"achievements"];
-
+  
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"achievements"];
-
+  
 	[self didAccessValueForKey:@"achievements"];
 	return result;
 }
+	
 
 @dynamic activities;
 
+	
 - (NSMutableSet*)activitiesSet {
 	[self willAccessValueForKey:@"activities"];
-
+  
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"activities"];
-
+  
 	[self didAccessValueForKey:@"activities"];
 	return result;
 }
+	
 
 @dynamic alarms;
 
+	
 - (NSMutableSet*)alarmsSet {
 	[self willAccessValueForKey:@"alarms"];
-
+  
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"alarms"];
-
+  
 	[self didAccessValueForKey:@"alarms"];
 	return result;
 }
+	
 
 @dynamic friends;
 
+	
 - (NSMutableSet*)friendsSet {
 	[self willAccessValueForKey:@"friends"];
-
+  
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"friends"];
-
+  
 	[self didAccessValueForKey:@"friends"];
 	return result;
 }
+	
 
 @dynamic medias;
 
+	
 - (NSMutableSet*)mediasSet {
 	[self willAccessValueForKey:@"medias"];
-
+  
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"medias"];
-
+  
 	[self didAccessValueForKey:@"medias"];
 	return result;
 }
+	
 
 @dynamic notifications;
 
+	
 - (NSMutableSet*)notificationsSet {
 	[self willAccessValueForKey:@"notifications"];
-
+  
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"notifications"];
-
+  
 	[self didAccessValueForKey:@"notifications"];
 	return result;
 }
+	
 
 @dynamic socialGraph;
 
+	
+
 @dynamic unreadMedias;
 
+	
 - (NSMutableSet*)unreadMediasSet {
 	[self willAccessValueForKey:@"unreadMedias"];
-
+  
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"unreadMedias"];
-
+  
 	[self didAccessValueForKey:@"unreadMedias"];
 	return result;
 }
+	
+
+
+
+
+
 
 @end
-

@@ -12,8 +12,6 @@
 #import "NSString+Extend.h"
 #import "EWUtil.h"
 #import "EWAlarm.h"
-#import "EWTaskItem.h"
-#import "EWTaskManager.h"
 #import "EWPerson.h"
 #import "EWPersonManager.h"
 #import "EWUserManagement.h"
@@ -29,11 +27,6 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[EWAlarmManager alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserverForName:kPersonLoggedIn object:nil queue:nil usingBlock:^(NSNotification *note) {
-            for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
-                [manager observeForAlarm:alarm];
-            }
-        }];
     }); 
     
     return manager;
@@ -46,7 +39,7 @@
     //first try to get it from cache
     NSDictionary *times = person.cachedInfo[kCachedAlarmTimes];
     if (!times && person.isMe) {
-        [self updateCachedAlarmTime];
+        [self updateCachedAlarmTimes];
     }
     
     for (NSDate *time in times.allValues) {
@@ -63,10 +56,10 @@
     NSDictionary *statements = person.cachedInfo[kCachedStatements];
     NSDictionary *times = person.cachedInfo[kCachedAlarmTimes];
     if (!statements && person.isMe) {
-        [self updateCachedStatement];
+        [self updateCachedStatements];
     }
     if (!times && person.isMe) {
-        [self updateCachedAlarmTime];
+        [self updateCachedAlarmTimes];
     }
     
     __block NSString *nextWeekday;
@@ -179,22 +172,16 @@
         //notification
         DDLogVerbose(@"Saving new alarms");
         [EWSync save];
-        [self setSavedAlarmTimes];
         
         //notification
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             //delay here to make sure the thread don't compete at the same time
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmChangedNotification object:self userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmChanged object:self userInfo:nil];
         });
         
     }
     
     [EWSession sharedSession].isSchedulingAlarm = NO;
-    
-    //KVO
-    for (EWAlarm *alarm in newAlarms) {
-        [self observeForAlarm:alarm];
-    }
     
     return newAlarms;
 }
@@ -221,116 +208,33 @@
 
 
 
-
-
-#pragma mark - NOTIFICATION & KVO
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if ([object isKindOfClass:[EWAlarm class]]) {
-        if ([keyPath isEqualToString:EWAlarmAttributes.state]) {
-            [self updateCachedAlarmTime];
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmStateChangedNotification object:object];
-        }
-        else if ([keyPath isEqualToString:EWAlarmAttributes.time]){
-            [self updateCachedAlarmTime];
-            [self setSavedAlarmTimes];
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:object];
-        }
-        else if ([keyPath isEqualToString:EWAlarmAttributes.tone]){
-            [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmToneChangedNotification object:object];
-        }
-        else if([keyPath isEqualToString:EWAlarmAttributes.statement]){
-            [self updateCachedStatement];
-        }
-        else{
-            DDLogError(@"Received unexpected KVO %@", keyPath);
-        }
+//Get saved time in user defaults
+- (NSArray *)getSavedAlarmTimes{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *alarmTimes = [defaults valueForKey:kSavedAlarms];
+    //create if not exsit
+    if (!alarmTimes) {
+        //if asking saved value, the alarm is not scheduled
+        DDLogInfo(@"=== Saved alarm time not found, use default values!");
+        alarmTimes = defaultAlarmTimes;
+        [defaults setObject:alarmTimes forKey:kSavedAlarms];
+        [defaults synchronize];
     }
+    return alarmTimes;
 }
 
 
-- (void)observeForAlarm:(EWAlarm *)alarm{
-    [alarm addObserver:self forKeyPath:EWAlarmAttributes.tone options:NSKeyValueObservingOptionNew context:nil];
-    [alarm addObserver:self forKeyPath:EWAlarmAttributes.time options:NSKeyValueObservingOptionNew context:nil];
-    [alarm addObserver:self forKeyPath:EWAlarmAttributes.state options:NSKeyValueObservingOptionNew context:nil];
-}
 
-- (void)removeObserverForAlarm:(EWAlarm *)alarm{
-    @try {
-        [alarm removeObserver:self forKeyPath:EWAlarmAttributes.statement];
-        [alarm removeObserver:self forKeyPath:EWAlarmAttributes.time];
-        [alarm removeObserver:self forKeyPath:EWAlarmAttributes.tone];
-    }
-    @catch (NSException *exception) {
-        DDLogDebug(@"Failed to remove observer from alarm: %@", alarm.objectId);
-    }
-}
-
-#pragma mark - Cached alarm time to user defaults
-
-- (void)updateCachedAlarmTime{
-    NSMutableDictionary *cache = [EWSession sharedSession].currentUser.cachedInfo.mutableCopy?:[NSMutableDictionary new];
-    NSMutableDictionary *timeTable = [cache[kCachedAlarmTimes] mutableCopy]?:[NSMutableDictionary new];
-    for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
-        if (alarm.state) {
-            NSString *wkday = alarm.time.weekday;
-            timeTable[wkday] = alarm.time;
-        }
-    }
-    cache[kCachedAlarmTimes] = timeTable;
-    [EWSession sharedSession].currentUser.cachedInfo = cache;
-    [EWSync save];
-    DDLogVerbose(@"Updated cached alarm times: %@", timeTable);
-}
-
-- (void)updateCachedStatement{
-    NSMutableDictionary *cache = [EWSession sharedSession].currentUser.cachedInfo.mutableCopy?:[NSMutableDictionary new];
-    NSMutableDictionary *statements = [cache[kCachedStatements] mutableCopy]?:[NSMutableDictionary new];
-    for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
-        if (alarm.state) {
-            NSString *wkday = alarm.time.weekday;
-            statements[wkday] = alarm.statement;
-        }
-    }
-    cache[kCachedStatements] = statements;
-    [EWSession sharedSession].currentUser.cachedInfo = cache;
-    [EWSync save];
-    DDLogVerbose(@"Updated cached statements: %@", statements);
-}
-
-#pragma mark - Local Notification
-
-
-- (void)cancelNotificationForTask:(EWTaskItem *)task{
-	NSArray *notifications = [self localNotificationForTask:task];
-	for(UILocalNotification *aNotif in notifications) {
-		NSLog(@"Local Notification cancelled for:%@", aNotif.fireDate.date2detailDateString);
-		[[UIApplication sharedApplication] cancelLocalNotification:aNotif];
-	}
-}
-
-- (NSArray *)localNotificationForTask:(EWTaskItem *)task{
-	NSMutableArray *notifArray = [[NSMutableArray alloc] init];
-	for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-		if([aNotif.userInfo[kLocalTaskKey] isEqualToString:task.objectID.URIRepresentation.absoluteString]) {
-			[notifArray addObject:aNotif];
-		}
-	}
-	
-	return notifArray;
-}
-
-
-- (void)checkScheduledNotifications{
+#pragma mark - Alarm timer local notofication
+- (void)checkScheduledLocalNotifications{
 	NSParameterAssert([NSThread isMainThread]);
 	NSMutableArray *allNotification = [[[UIApplication sharedApplication] scheduledLocalNotifications] mutableCopy];
-	NSArray *tasks = [self getTasksByPerson:[EWSession sharedSession].currentUser];
-	
-	NSLog(@"There are %ld scheduled local notification and %ld stored task info", (long)allNotification.count, (long)tasks.count);
+	NSLog(@"There are %ld scheduled local notification", (long)allNotification.count);
 	
 	//delete redundant alarm notif
-	for (EWTaskItem *task in tasks) {
-		[self scheduleNotificationForTask:task];
-		NSArray *notifs= [self localNotificationForTask:task];
+	for (EWAlarm *alarm in [EWSession sharedSession].currentUser.alarms) {
+		[alarm scheduleTimerAndSleepLocalNotification];
+		NSArray *notifs= [alarm localNotifications];
 		[allNotification removeObjectsInArray:notifs];
 	}
 	
@@ -342,20 +246,10 @@
 	}
 	
 	if (allNotification.count > 0) {
-		//make sure the redundent notif didn't block
-		[self checkScheduledNotifications];
+		//make sure the redundent notif didn't prevent scheduling of new notification
+		[self checkScheduledLocalNotifications];
 	}
 	
-}
-
-
-+ (void)updateSleepNotification{
-    //cancel all sleep notification first
-    [EWTaskManager cancelSleepNotification];
-    
-    for (EWTaskItem *task in [EWSession sharedSession].currentUser.tasks) {
-        [EWTaskManager scheduleSleepNotificationForTask:task];
-    }
 }
 
 @end

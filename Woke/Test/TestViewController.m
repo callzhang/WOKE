@@ -181,7 +181,7 @@
                     NSDate *t = alarm.time;
                     alarm.time = [[NSDate date] dateByAddingTimeInterval:30];
                     DDLogInfo(@"chenged alarm time from %@ to %@", t.date2String, alarm.time.date2String);
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChangedNotification object:alarm userInfo:@{@"alarm": alarm}];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kAlarmTimeChanged object:alarm userInfo:@{@"alarm": alarm}];
                     [EWSync saveWithCompletion:^{
                         [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:^{
                             [rootViewController.view showSuccessNotification:@"Exit app and wait for next alarm"];
@@ -254,7 +254,7 @@
         
         case 7:{//add some media
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            if ([EWAlarmManager myNextAlarm]) {
+            if ([EWPerson myNextAlarm]) {
                 //voice
                 EWMedia *media = [[EWMediaManager sharedInstance] getWokeVoice];
                 //[task addMediasObject:media];

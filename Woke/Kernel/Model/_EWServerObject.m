@@ -9,6 +9,12 @@ const struct EWServerObjectAttributes EWServerObjectAttributes = {
 	.updatedAt = @"updatedAt",
 };
 
+const struct EWServerObjectRelationships EWServerObjectRelationships = {
+};
+
+const struct EWServerObjectFetchedProperties EWServerObjectFetchedProperties = {
+};
+
 @implementation EWServerObjectID
 @end
 
@@ -34,15 +40,38 @@ const struct EWServerObjectAttributes EWServerObjectAttributes = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
+	
 
 	return keyPaths;
 }
 
+
+
+
 @dynamic createdAt;
+
+
+
+
+
 
 @dynamic objectId;
 
+
+
+
+
+
 @dynamic updatedAt;
 
-@end
 
+
+
+
+
+
+
+
+
+
+@end

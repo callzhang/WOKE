@@ -606,7 +606,7 @@ void systemSoundFinished (SystemSoundID sound, void *bgTaskId){
     if (NSClassFromString(@"MPNowPlayingInfoCenter")){
         
         if (!m) m = media;
-        EWAlarm *nextAlarm = [EWAlarmManager myNextAlarm];
+        EWAlarm *nextAlarm = [EWPerson myNextAlarm];
         
         NSString *title = nextAlarm.time.weekday;
         

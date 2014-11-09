@@ -16,6 +16,9 @@ const struct EWAlarmRelationships EWAlarmRelationships = {
 	.owner = @"owner",
 };
 
+const struct EWAlarmFetchedProperties EWAlarmFetchedProperties = {
+};
+
 @implementation EWAlarmID
 @end
 
@@ -41,7 +44,7 @@ const struct EWAlarmRelationships EWAlarmRelationships = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-
+	
 	if ([key isEqualToString:@"importantValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"important"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -56,7 +59,12 @@ const struct EWAlarmRelationships EWAlarmRelationships = {
 	return keyPaths;
 }
 
+
+
+
 @dynamic important;
+
+
 
 - (BOOL)importantValue {
 	NSNumber *result = [self important];
@@ -76,7 +84,13 @@ const struct EWAlarmRelationships EWAlarmRelationships = {
 	[self setPrimitiveImportant:[NSNumber numberWithBool:value_]];
 }
 
+
+
+
+
 @dynamic state;
+
+
 
 - (BOOL)stateValue {
 	NSNumber *result = [self state];
@@ -96,15 +110,45 @@ const struct EWAlarmRelationships EWAlarmRelationships = {
 	[self setPrimitiveState:[NSNumber numberWithBool:value_]];
 }
 
+
+
+
+
 @dynamic statement;
+
+
+
+
+
 
 @dynamic time;
 
+
+
+
+
+
 @dynamic todo;
+
+
+
+
+
 
 @dynamic tone;
 
+
+
+
+
+
 @dynamic owner;
 
-@end
+	
 
+
+
+
+
+
+@end

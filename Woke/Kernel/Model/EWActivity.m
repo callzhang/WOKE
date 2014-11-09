@@ -51,7 +51,7 @@ const struct EWAlarmAttributes EWActivityType = {
 
 - (EWActivity *)createWithMedia:(EWMedia *)media {
     EWActivity *activity = [EWActivity newActivity];
-    activity.type = EWActivityTypeMedia;
+    activity.type = EWActivityType.media;
     [activity addMediasObject:media];
     
     return activity;
@@ -60,7 +60,7 @@ const struct EWAlarmAttributes EWActivityType = {
 
 - (EWActivity *)createpWithPerson:(EWPerson *)person friended:(BOOL)friended {
     EWActivity *activity = [EWActivity newActivity];
-    activity.type = EWActivityTypeFriendship;
+    activity.type = EWActivityType.friendship;
     activity.friendedValue = friended;
     activity.friendID = person.objectId;
     

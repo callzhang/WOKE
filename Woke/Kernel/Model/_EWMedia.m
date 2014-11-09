@@ -21,6 +21,9 @@ const struct EWMediaRelationships EWMediaRelationships = {
 	.receiver = @"receiver",
 };
 
+const struct EWMediaFetchedProperties EWMediaFetchedProperties = {
+};
+
 @implementation EWMediaID
 @end
 
@@ -46,7 +49,7 @@ const struct EWMediaRelationships EWMediaRelationships = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-
+	
 	if ([key isEqualToString:@"likedValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"liked"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -61,7 +64,12 @@ const struct EWMediaRelationships EWMediaRelationships = {
 	return keyPaths;
 }
 
+
+
+
 @dynamic liked;
+
+
 
 - (BOOL)likedValue {
 	NSNumber *result = [self liked];
@@ -81,11 +89,27 @@ const struct EWMediaRelationships EWMediaRelationships = {
 	[self setPrimitiveLiked:[NSNumber numberWithBool:value_]];
 }
 
+
+
+
+
 @dynamic message;
+
+
+
+
+
 
 @dynamic played;
 
+
+
+
+
+
 @dynamic priority;
+
+
 
 - (int64_t)priorityValue {
 	NSNumber *result = [self priority];
@@ -105,30 +129,63 @@ const struct EWMediaRelationships EWMediaRelationships = {
 	[self setPrimitivePriority:[NSNumber numberWithLongLong:value_]];
 }
 
+
+
+
+
 @dynamic response;
+
+
+
+
+
 
 @dynamic targetDate;
 
+
+
+
+
+
 @dynamic type;
+
+
+
+
+
 
 @dynamic activity;
 
+	
+
 @dynamic author;
+
+	
 
 @dynamic mediaFile;
 
+	
+
 @dynamic messages;
 
+	
 - (NSMutableSet*)messagesSet {
 	[self willAccessValueForKey:@"messages"];
-
+  
 	NSMutableSet *result = (NSMutableSet*)[self mutableSetValueForKey:@"messages"];
-
+  
 	[self didAccessValueForKey:@"messages"];
 	return result;
 }
+	
 
 @dynamic receiver;
 
-@end
+	
 
+
+
+
+
+
+@end

@@ -17,6 +17,9 @@ const struct EWMessageRelationships EWMessageRelationships = {
 	.sender = @"sender",
 };
 
+const struct EWMessageFetchedProperties EWMessageFetchedProperties = {
+};
+
 @implementation EWMessageID
 @end
 
@@ -42,25 +45,64 @@ const struct EWMessageRelationships EWMessageRelationships = {
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
+	
 
 	return keyPaths;
 }
 
+
+
+
 @dynamic read;
+
+
+
+
+
 
 @dynamic text;
 
+
+
+
+
+
 @dynamic thumbnail;
+
+
+
+
+
 
 @dynamic time;
 
+
+
+
+
+
 @dynamic type;
+
+
+
+
+
 
 @dynamic media;
 
+	
+
 @dynamic recipient;
+
+	
 
 @dynamic sender;
 
-@end
+	
 
+
+
+
+
+
+@end

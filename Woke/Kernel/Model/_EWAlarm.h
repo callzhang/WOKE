@@ -17,56 +17,115 @@ extern const struct EWAlarmRelationships {
 	__unsafe_unretained NSString *owner;
 } EWAlarmRelationships;
 
+extern const struct EWAlarmFetchedProperties {
+} EWAlarmFetchedProperties;
+
 @class EWPerson;
 
-@interface EWAlarmID : EWServerObjectID {}
+
+
+
+
+
+
+
+@interface EWAlarmID : NSManagedObjectID {}
 @end
 
 @interface _EWAlarm : EWServerObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
-@property (nonatomic, readonly, strong) EWAlarmID* objectID;
+- (EWAlarmID*)objectID;
+
+
+
+
 
 @property (nonatomic, strong) NSNumber* important;
 
-@property (atomic) BOOL importantValue;
+
+
+@property BOOL importantValue;
 - (BOOL)importantValue;
 - (void)setImportantValue:(BOOL)value_;
 
 //- (BOOL)validateImportant:(id*)value_ error:(NSError**)error_;
 
+
+
+
+
 @property (nonatomic, strong) NSNumber* state;
 
-@property (atomic) BOOL stateValue;
+
+
+@property BOOL stateValue;
 - (BOOL)stateValue;
 - (void)setStateValue:(BOOL)value_;
 
 //- (BOOL)validateState:(id*)value_ error:(NSError**)error_;
 
+
+
+
+
 @property (nonatomic, strong) NSString* statement;
+
+
 
 //- (BOOL)validateStatement:(id*)value_ error:(NSError**)error_;
 
+
+
+
+
 @property (nonatomic, strong) NSDate* time;
+
+
 
 //- (BOOL)validateTime:(id*)value_ error:(NSError**)error_;
 
+
+
+
+
 @property (nonatomic, strong) NSString* todo;
+
+
 
 //- (BOOL)validateTodo:(id*)value_ error:(NSError**)error_;
 
+
+
+
+
 @property (nonatomic, strong) NSString* tone;
 
+
+
 //- (BOOL)validateTone:(id*)value_ error:(NSError**)error_;
+
+
+
+
 
 @property (nonatomic, strong) EWPerson *owner;
 
 //- (BOOL)validateOwner:(id*)value_ error:(NSError**)error_;
 
+
+
+
+
+@end
+
+@interface _EWAlarm (CoreDataGeneratedAccessors)
+
 @end
 
 @interface _EWAlarm (CoreDataGeneratedPrimitiveAccessors)
+
 
 - (NSNumber*)primitiveImportant;
 - (void)setPrimitiveImportant:(NSNumber*)value;
@@ -74,25 +133,45 @@ extern const struct EWAlarmRelationships {
 - (BOOL)primitiveImportantValue;
 - (void)setPrimitiveImportantValue:(BOOL)value_;
 
+
+
+
 - (NSNumber*)primitiveState;
 - (void)setPrimitiveState:(NSNumber*)value;
 
 - (BOOL)primitiveStateValue;
 - (void)setPrimitiveStateValue:(BOOL)value_;
 
+
+
+
 - (NSString*)primitiveStatement;
 - (void)setPrimitiveStatement:(NSString*)value;
+
+
+
 
 - (NSDate*)primitiveTime;
 - (void)setPrimitiveTime:(NSDate*)value;
 
+
+
+
 - (NSString*)primitiveTodo;
 - (void)setPrimitiveTodo:(NSString*)value;
+
+
+
 
 - (NSString*)primitiveTone;
 - (void)setPrimitiveTone:(NSString*)value;
 
+
+
+
+
 - (EWPerson*)primitiveOwner;
 - (void)setPrimitiveOwner:(EWPerson*)value;
+
 
 @end

@@ -101,7 +101,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)initData{
     //data source
-    alarms = [EWAlarmManager myAlarms];
+    alarms = [EWPerson myAlarms];
     selected = 99;
     [self.tableView reloadData];
 }

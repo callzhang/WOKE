@@ -255,7 +255,7 @@
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
     
     //Alarm
-    [EWAlarm deleteAll];
+    [EWAlarmManager deleteAll];
     //task
     [[EWTaskManager sharedInstance] deleteAllTasks];
     //media
