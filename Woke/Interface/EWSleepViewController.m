@@ -9,9 +9,9 @@
 #import "EWSleepViewController.h"
 #import "EWBackgroundingManager.h"
 #import "AVManager.h"
-#import "EWTaskManager.h"
+//#import "EWTaskManager.h"
 #import "EWPersonManager.h"
-#import "EWTaskItem.h"
+//#import "EWTaskItem.h"
 #import "EWAlarmManager.h"
 
 @interface EWSleepViewController (){

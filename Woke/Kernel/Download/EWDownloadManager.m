@@ -9,7 +9,7 @@
 #import "EWDownloadManager.h"
 #import "EWMedia.h"
 #import "EWDataStore.h"
-#import "EWTaskItem.h"
+//#import "EWTaskItem.h"
 #import "NSString+MD5.h"
 #import "AVManager.h"
 
@@ -79,39 +79,7 @@
 
 - (void)downloadMedia:(EWMedia *)media{
     //assume only audio to be downloaded
-    NSString *path = media.audioKey;
-    
-    //check if task has already exsited
-    if ([downloadQueue objectForKey:path]) {
-        return;
-        
-    }else{
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:path]];
-        //create task
-        NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithRequest:request];
-        //start task
-        [downloadTask resume];
-        //keep task info
-        [downloadQueue setObject:media forKey:path];
-        
-        NSLog(@"Media download task dispatched: %@", media.audioKey);
-    }
-}
-
-- (void)downloadTask:(EWTaskItem *)t withCompletionHandler:(void (^)(void))block{
-    //task = t;
-    completionTask = block;
-    for (EWMedia *mi in t.medias) {
-        
-        [self downloadMedia:mi];
-    }
-    
-    if (downloadQueue.count == 0) {
-        NSLog(@"All media is cached already, no audio will be downloaded. Run completion block.");
-        if (block) {
-            block();
-        }
-    }
+    [media refresh];
 }
 
 #pragma mark - URL delegate method

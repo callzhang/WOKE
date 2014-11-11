@@ -55,7 +55,7 @@
  @discussion If rootView is displaying anything else, it will dismiss other view first.
  */
 + (void)presentWakeUpView;
-+ (void)presentWakeUpViewWithTask:(EWTaskItem *)task;
++ (void)presentWakeUpViewWithAlarm:(EWAlarm *)alarm;
 
 /**
  Release the reference to wakeupVC

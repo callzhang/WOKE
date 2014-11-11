@@ -11,7 +11,6 @@
 #import "EWShakeManager.h"
 #import "EWMediaManager.h"
 #import "EWMedia.h"
-#import "EWTaskItem.h"
 #import "EWAppDelegate.h"
 #import "ImageViewController.h"
 #import "AVManager.h"
@@ -20,6 +19,7 @@
 #import "EWPostWakeUpViewController.h"
 #import "EWBackgroundingManager.h"
 #import "EWUIUtil.h"
+#import "EWActivity.h"
 
 #define cellIdentifier                  @"EWMediaViewCell"
 
@@ -38,18 +38,17 @@
 
 
 @implementation EWWakeUpViewController
-@synthesize tableView = tableView_;
+@synthesize tableView = _tableView;
 @synthesize timer, header;
-@synthesize person, task;
+@synthesize person;
 @synthesize footer;
 
-- (EWWakeUpViewController *)initWithTask:(EWTaskItem *)t{
+- (EWWakeUpViewController *)initWithActivity:(EWActivity *)activity{
     self = [self initWithNibName:nil bundle:nil];
-    task = t;
-    medias = [[task.medias allObjects] mutableCopy];
+    medias = activity.medias.allObjects.mutableCopy;
     
     //KVO
-    [self.task addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:nil];
+    [self.activity addObserver:self forKeyPath:@"medias" options:NSKeyValueObservingOptionNew context:nil];
     [self initData];
     
     //first time loop
@@ -59,7 +58,6 @@
     
     //notification
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playNextCell:) name:kAudioPlayerDidFinishPlaying object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewBuzzNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:kNewMediaNotification object:nil];
     //responder to remote control
     [self prepareRemoteControlEventsListener];
@@ -76,8 +74,7 @@
 - (void)dealloc {
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
-        [self.task removeObserver:self forKeyPath:@"medias"];
+        [self.activity removeObserver:self forKeyPath:@"medias"];
     }
     @catch (NSException *exception) {
         DDLogError(@"error in deallocating WakeUpViewController: %@", exception.description);
@@ -89,7 +86,7 @@
 
 - (void)refresh{
     [self initData];
-    [tableView_ reloadData];
+    [_tableView reloadData];
     [self startPlayCells];
 }
 
@@ -125,7 +122,7 @@
     [self updateTimer];
     
     //position the content
-    [self scrollViewDidScroll:tableView_];
+    [self scrollViewDidScroll:_tableView];
     [self.view setNeedsDisplay];
     
     //pre download everyone for postWakeUpVC
@@ -154,7 +151,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kAudioPlayerDidFinishPlaying object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewBuzzNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNewMediaNotification object:nil];
-    [task removeObserver:self forKeyPath:@"medias"];
+    [_activity removeObserver:self forKeyPath:@"medias"];
     
     NSLog(@"WakeUpViewController popped out of view: remote control event listner stopped. Observers removed.");
     
@@ -167,9 +164,9 @@
 
 - (void)initData {
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:YES];
-    medias = [[task.medias allObjects] mutableCopy];
+    medias = [[_activity.medias allObjects] mutableCopy];
     [medias sortUsingDescriptors:@[sort]];
-    [tableView_ reloadData];
+    [_tableView reloadData];
     
     //refresh media
     //Lesson learned: do not refresh media as they haven't uploaded their newly created relation with task and will be overwritten by old status, thus the media will gone from view.
@@ -187,23 +184,23 @@
     header.layer.borderColor = [UIColor whiteColor].CGColor;
     header.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.1];
     
-    timer.text = [task.time date2timeShort];
-    self.AM.text = [task.time date2am];
+    timer.text = self.activity.time.date2timeShort;
+    self.AM.text = self.activity.time.date2am;
     
     //table view
     //tableView_.frame = CGRectMake(0, 150, self.view.frame.size.width, self.view.frame.size.height-230);
-    tableView_.dataSource = self;
-    tableView_.delegate = self;
-    tableView_.separatorStyle = UITableViewCellSeparatorStyleNone;
-    tableView_.contentInset = UIEdgeInsetsMake(40, 0, 80, 0);//the distance of the content to the frame of tableview
+    _tableView.dataSource = self;
+    _tableView.delegate = self;
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _tableView.contentInset = UIEdgeInsetsMake(40, 0, 80, 0);//the distance of the content to the frame of tableview
     
     //load MediaViewCell
     UINib *nib = [UINib nibWithNibName:@"EWMediaViewCell" bundle:nil];
     //register the nib
-    [tableView_ registerNib:nib forCellReuseIdentifier:cellIdentifier];
+    [_tableView registerNib:nib forCellReuseIdentifier:cellIdentifier];
     
     //alpha mask
-    [EWUIUtil applyAlphaGradientForView:tableView_ withEndPoints:@[@0.2f, @0.9f]];
+    [EWUIUtil applyAlphaGradientForView:_tableView withEndPoints:@[@0.2f, @0.9f]];
     
     //show button first
     footer.top = [UIScreen mainScreen].bounds.size.height;
@@ -251,8 +248,8 @@
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if ([object isKindOfClass:[EWTaskItem class]]) {
-        if ([keyPath isEqualToString:@"medias"] && task.medias.count != medias.count) {
+    if ([object isKindOfClass:[EWActivity class]]) {
+        if ([keyPath isEqualToString:@"medias"] && self.activity.medias.count != medias.count) {
             //observed task.media changed
             [self refresh];
         }
@@ -465,9 +462,9 @@
     
     //get the cell
     if (medias.count > 0) {
-        EWMediaViewCell *cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
+        EWMediaViewCell *cell = (EWMediaViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:currentPlayingCellIndex inSection:0]];
         if (!cell) {
-            cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
+            cell = (EWMediaViewCell *)[self tableView:_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
         }
         if (!cell) {
             [[AVManager sharedManager] playMedia:medias[currentPlayingCellIndex]];
@@ -543,9 +540,9 @@
         
         //get cell
 		[[AVManager sharedManager] registerActiveAudioSession];
-        cell = (EWMediaViewCell *)[tableView_ cellForRowAtIndexPath:path];
+        cell = (EWMediaViewCell *)[_tableView cellForRowAtIndexPath:path];
         if (!cell) {
-            cell = (EWMediaViewCell *)[self tableView:tableView_ cellForRowAtIndexPath:path];
+            cell = (EWMediaViewCell *)[self tableView:_tableView cellForRowAtIndexPath:path];
         }
         if (cell) {
             [[AVManager sharedManager] playForCell:cell];
@@ -556,10 +553,10 @@
         
         //highlight
         if (path) {
-            if ([tableView_ cellForRowAtIndexPath:path]) {
-                [tableView_ selectRowAtIndexPath:path animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+            if ([_tableView cellForRowAtIndexPath:path]) {
+                [_tableView selectRowAtIndexPath:path animated:YES scrollPosition:UITableViewScrollPositionMiddle];
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [tableView_ deselectRowAtIndexPath:path animated:YES];
+                    [_tableView deselectRowAtIndexPath:path animated:YES];
                 });
             }
         }

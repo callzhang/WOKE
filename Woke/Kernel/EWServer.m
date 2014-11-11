@@ -14,8 +14,8 @@
 //model
 #import "EWDataStore.h"
 #import "EWPersonManager.h"
-#import "EWTaskItem.h"
-#import "EWTaskManager.h"
+//#import "EWTaskItem.h"
+//#import "EWTaskManager.h"
 #import "EWMedia.h"
 #import "EWMediaManager.h"
 #import "EWDownloadManager.h"

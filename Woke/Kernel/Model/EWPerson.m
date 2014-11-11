@@ -86,7 +86,7 @@
     float interval;
     EWAlarm *next;
     for (EWAlarm *alarm in [self myAlarms]) {
-        float timeLeft = alarm.time.timeIntervalSinceNow;
+        float timeLeft = alarm.time.nextOccurTime.timeIntervalSinceNow;
         if (alarm.state) {
             if (interval == 0 || timeLeft < interval) {
                 interval = timeLeft;

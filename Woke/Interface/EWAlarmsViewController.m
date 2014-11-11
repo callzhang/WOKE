@@ -21,13 +21,13 @@
 // Manager
 #import "EWAlarmManager.h"
 #import "EWPersonManager.h"
-#import "EWTaskManager.h"
+//#import "EWTaskManager.h"
 #import "EWNotificationManager.h"
 
 // Model
 #import "EWPerson.h"
 #import "EWAlarm.h"
-#import "EWTaskItem.h"
+//#import "EWTaskItem.h"
 
 // UI
 #import "TestViewController.h"

@@ -148,8 +148,8 @@ typedef void (^EWSavingCallback)(void);
 
 #pragma mark - CoreData
 + (NSManagedObject *)managedObjectWithClass:(NSString *)className withID:(NSString *)objectID;
-+ (BOOL)validateMO:(EWServerObject *)mo;
-+ (BOOL)validateMO:(EWServerObject *)mo andTryToFix:(BOOL)tryFix;
++ (BOOL)validateSO:(EWServerObject *)mo;
++ (BOOL)validateSO:(EWServerObject *)mo andTryToFix:(BOOL)tryFix;
 
 #pragma mark - Parse helper methods
 //PO query

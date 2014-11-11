@@ -8,7 +8,7 @@
 
 #import "AVManager.h"
 #import "EWMediaViewCell.h"
-#import "EWTaskItem.h"
+//#import "EWTaskItem.h"
 #import "EWMedia.h"
 #import "EWMediaFile.h"
 #import "EWDataStore.h"

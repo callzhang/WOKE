@@ -18,5 +18,6 @@ NSString *const EWActivityTypeMedia = @"media";
 @interface EWActivityManager : NSObject
 + (EWActivityManager *)sharedManager;
 + (NSArray *)myActivities;
++ (void)completeActivity:(EWActivity *)activity;
 @property (nonatomic, strong) EWActivity *currentAlarmActivity;
 @end

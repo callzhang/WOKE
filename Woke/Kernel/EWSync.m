@@ -301,7 +301,7 @@ NSManagedObjectContext *mainContext;
         }
 		
 		//Pre-save validate
-		BOOL good = [EWSync validateMO:MO];
+		BOOL good = [EWSync validateSO:MO];
 		if (!good) {
 			continue;
 		}
@@ -376,7 +376,7 @@ NSManagedObjectContext *mainContext;
     NSError *error;
     
     //validation
-    if (![EWSync validateMO:managedObject]) {
+    if (![EWSync validateSO:managedObject]) {
         NSLog(@"!!! Validation failed for %@(%@), skip upload. Detail: \n%@", managedObject.entity.name, managedObject.serverID, managedObject);
         return;
     }
@@ -716,14 +716,14 @@ NSManagedObjectContext *mainContext;
 }
 
 
-+ (BOOL)validateMO:(EWServerObject *)SO{
++ (BOOL)validateSO:(EWServerObject *)SO{
     //validate MO, only used when uploading MO to PO
-    BOOL good = [EWSync validateMO:SO andTryToFix:NO];
+    BOOL good = [EWSync validateSO:SO andTryToFix:NO];
     
     return good;
 }
 
-+ (BOOL)validateMO:(EWServerObject *)SO andTryToFix:(BOOL)tryFix{
++ (BOOL)validateSO:(EWServerObject *)SO andTryToFix:(BOOL)tryFix{
     if (!SO) {
         return NO;
     }

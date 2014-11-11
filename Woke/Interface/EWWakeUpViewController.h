@@ -7,7 +7,7 @@
 //
 #import "EWShakeProgressView.h"
 #import <UIKit/UIKit.h>
-@class EWPerson, EWMedia, EWTaskItem;
+@class EWPerson, EWMedia, EWAlarm;
 
 @interface EWWakeUpViewController : UIViewController <UIPopoverControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 //@property (weak, nonatomic) IBOutlet UILabel *title;
@@ -23,9 +23,9 @@
 
 
 @property (nonatomic, weak) EWPerson *person;
-@property (nonatomic, weak) EWTaskItem *task;
+@property (nonatomic, weak) EWActivity *activity;
 
-- (EWWakeUpViewController *)initWithTask:(EWTaskItem *)task;
+- (EWWakeUpViewController *)initWithAlarm:(EWAlarm *)alarm;
 //- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;
 - (void)startPlayCells;
 

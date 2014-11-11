@@ -17,14 +17,14 @@
 
 // Model
 #import "EWPerson.h"
-#import "EWTaskItem.h"
+//#import "EWTaskItem.h"
 #import "EWAlarm.h"
 #import "EWMedia.h"
 #import "NSDate+Extend.h"
 #import "EWAchievement.h"
 
 //manager
-#import "EWTaskManager.h"
+//#import "EWTaskManager.h"
 #import "EWAlarmManager.h"
 #import "EWPersonManager.h"
 #import "EWMediaManager.h"

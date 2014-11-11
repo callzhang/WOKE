@@ -96,7 +96,6 @@
 //App wide events
 #define kWokeNotification               @"woke"
 #define kSleepNotification              @"Sleep"
-#define kNewBuzzNotification            @"buzz_event"
 #define kNewMediaNotification           @"media_event" //key: task & media
 #define kNewTimerNotification           @"alarm_timer"
 
@@ -122,7 +121,6 @@
 #define kPushAPNSRegisteredNotification @"APNSRegistered"
 
 //Notification key
-#define kLocalAlarmKey                  @"alarm_object_id"
 #define kLocalNotificationTypeKey       @"type"
 #define kLocalNotificationTypeAlarmTimer    @"alarm_timer"
 #define kLocalNotificationTypeReactivate    @"reactivate"
@@ -139,7 +137,8 @@
 #define kPushMediaTypeBuzz				@"buzz"
 #define kPushMediaTypeVoice				@"voice"
 #define kPushPersonID					@"person"
-#define kPushTaskID						@"task"
+#define kPushAlarmID					@"alarm_server_ID"
+#define kLocalAlarmID					@"alarm_local_ID"
 #define kPushMediaID					@"media"
 //notification
 #define kPushNofiticationID				@"notificationID"

@@ -19,11 +19,14 @@
 #import "ATConnect.h"
 #import "EWBackgroundingManager.h"
 #import "EWAlarm.h"
+#import "EWActivity.h"
 
 //UI
 #import "EWWakeUpViewController.h"
 #import "EWSleepViewController.h"
 #import "EWPostWakeUpViewController.h"
+#import "EWActivityManager.h"
+#import "EWAlarmManager.h"
 
 
 @interface EWWakeUpManager()
@@ -72,7 +75,7 @@
     NSParameterAssert([pushType isEqualToString:kPushTypeMedia]);
     NSString *type = notification[kPushMediaType];
     NSString *mediaID = notification[kPushMediaID];
-    EWActivity *activity;
+    EWActivity *activity = [[EWActivityManager sharedManager] currentAlarmActivity];
 	
     if (!mediaID) {
         NSLog(@"Push doesn't have media ID, abort!");
@@ -81,7 +84,6 @@
 
     
     EWMedia *media = [EWMedia getMediaByID:mediaID];
-    EWAlarm *nextAlarm = [EWPerson myNextAlarm];
     //NSDate *nextTimer = nextAlarm.time;
     
     if ([type isEqualToString:kPushMediaTypeVoice]) {
@@ -92,25 +94,24 @@
 
         //download media
         NSLog(@"Downloading media: %@", media.objectId);
-        
-        //[[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded in test mode+
+        [[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded in test mode+
         
         //determin action based on task timing
-        if ([[NSDate date] isEarlierThan:nextAlarm.time]) {
+        if ([[NSDate date] isEarlierThan:activity.time]) {
             
             //============== pre alarm -> download ==============
             
-        }else if (!task.completed && [[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime){
+        }else if (!activity.completed && [[NSDate date] timeIntervalSinceDate:activity.time] < kMaxWakeTime){
             
             //============== struggle ==============
-            
-            [EWWakeUpManager presentWakeUpViewWithTask:task];
+            //!!!
+            [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
             
             //broadcast so wakeupVC can react to it
             //[[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: task.objectId}];
             
             //use KVO
-            [task addMediasObject:media];
+            [activity addMediasObject:media];
             [EWSync save];
             
         }else{
@@ -153,66 +154,51 @@
     
     BOOL isLaunchedFromLocalNotification = NO;
     BOOL isLaunchedFromRemoteNotification = NO;
-    EWTaskItem *nextTask = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
 	
-    //get target task
-    EWTaskItem *task;
+    //get target activity
+    EWAlarm *alarm;
+    EWActivity *activity = [[EWActivityManager sharedManager] currentAlarmActivity];
     if (info) {
-        NSString *taskID = info[kPushTaskID];
-        NSString *taskLocalID = info[kLocalTaskKey];
-        NSParameterAssert(taskID || taskLocalID);
-        if (taskID) {
+        NSString *alarmID = info[kPushAlarmID];
+        NSString *alarmLocalID = info[kLocalAlarmKey];
+        NSParameterAssert(alarmID || alarmLocalID);
+        if (alarmID) {
             isLaunchedFromRemoteNotification = YES;
-            task = [[EWTaskManager sharedInstance] getTaskByID:taskID];
-        }else if (taskLocalID){
+            alarm = (EWAlarm *)[EWSync managedObjectWithClass:@"EWAlarm" withID:alarmID];
+        }else if (alarmLocalID){
             isLaunchedFromLocalNotification = YES;
-            NSURL *url = [NSURL URLWithString:taskLocalID];
+            NSURL *url = [NSURL URLWithString:alarmLocalID];
             NSManagedObjectID *ID = [mainContext.persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
             if (ID) {
-                task = (EWTaskItem *)[mainContext existingObjectWithID:ID error:NULL];
+                alarm = (EWAlarm *)[mainContext existingObjectWithID:ID error:NULL];
             }else{
-                DDLogError(@"The task objectID is invalid for alarm timer local notif: %@",taskLocalID);
+                DDLogError(@"The task objectID is invalid for alarm timer local notif: %@",alarmLocalID);
             }
         }
 		
-		//check
-t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, task.time);
-				task = nextTask;
-			}
-		}
-		else{
-			if (isLaunchedFromLocalNotification) {
-				DDLogError(@"Task from local notif for wake doesn't exist!\n%@", taskLocalID);
-			}else if (isLaunchedFromRemoteNotification){
-				DDLogError(@"Task from remote notif for wake doesn't exist!\n%@", taskID);
-			}else{
-				DDLogError(@"Task for wake doesn't exist!\n%@", info);
-			}
-			return;
-		}
 	}else{
-		task = nextTask;
+		alarm = [EWPerson myNextAlarm];
 	}
 	
 	
     NSLog(@"Start handle timer event");
-    if (!task) {
-        NSLog(@"*** %s No task found for next task, abord", __func__);
+    if (!alarm) {
+        DDLogError(@"*** %s No alarm found for next alarm, abord", __func__);
         return;
     }
     
-    if (task.state == NO) {
-        NSLog(@"Task is OFF, skip today's alarm");
+    if (alarm.state == NO) {
+        NSLog(@"Alarm is OFF, skip today's alarm");
         return;
     }
     
-    if (task.completed) {
+    if (activity.completed) {
         // task completed
-        NSLog(@"Task has completed at %@, skip.", task.completed.date2String);
+        NSLog(@"Activity has completed at %@, skip.", activity.completed.date2String);
         return;
     }
-    if (task.time.timeElapsed > kMaxWakeTime) {
-        NSLog(@"Task(%@) from notification has passed the wake up window. Handle it with checkPastTasks.", task.objectId);
+    if (activity.time.timeElapsed > kMaxWakeTime) {
+        NSLog(@"Activity(%@) from notification has passed the wake up window. Handle it with checkPastTasks.", activity.objectId);
         [[EWTaskManager sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
         return;
     }
@@ -227,20 +213,19 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
     
     //update media
     [[EWMediaManager sharedInstance] checkMediaAssets];
-    NSArray *medias = [EWSession sharedSession].currentUser.mediaAssets.allObjects;
+    NSArray *medias = [EWSession sharedSession].currentUser.unreadMedias.allObjects;
     
     //fill media from mediaAssets, if no media for task, create a pseudo media
-    NSInteger nVoice = [[EWTaskManager sharedInstance] numberOfVoiceInTask:task];
-    NSInteger nVoiceNeeded = kMaxVoicePerTask - nVoice;
+    NSInteger nVoiceNeeded = 1;
     
     for (EWMedia *media in medias) {
         if (!media.targetDate || [media.targetDate timeIntervalSinceNow]<0) {
             
             //find media to add
-            [task addMediasObject: media];
+            [activity addMediasObject: media];
             //remove media from mediaAssets, need to remove relation doesn't have inverse relation. This is to make sure the sender doesn't need to modify other person
-            [[EWSession sharedSession].currentUser removeMediaAssetsObject:media];
-            [media removeReceiversObject:[EWSession sharedSession].currentUser];
+            [[EWSession sharedSession].currentUser removeUnreadMediasObject:media];
+            //!!!single directional relation? Remove media.receiver?
             
             //stop if enough
             if ([media.type isEqualToString: kMediaTypeVoice]) {
@@ -254,11 +239,10 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
     }
     
     //add Woke media is needed
-    nVoice = [[EWTaskManager sharedInstance] numberOfVoiceInTask:task];
-    if (nVoice == 0) {
+    if (activity.medias.count == 0) {
         //need to create some voice
         EWMedia *media = [[EWMediaManager sharedInstance] getWokeVoice];
-        [task addMediasObject:media];
+        [activity addMediasObject:media];
     }
     
     //save
@@ -268,28 +252,28 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
 	[[AVManager sharedManager] setDeviceVolume:1.0];
     
     //cancel local alarm
-    [[EWTaskManager sharedInstance] cancelNotificationForTask:task];
+    [alarm cancelLocalNotification];
     
     if (isLaunchedFromLocalNotification) {
         
         NSLog(@"Entered from local notification, start wakeup view now");
-        [EWWakeUpManager presentWakeUpViewWithTask:task];
+        [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
         
     }else if (isLaunchedFromRemoteNotification){
         
         NSLog(@"Entered from remote notification, start wakeup view now");
-        [EWWakeUpManager presentWakeUpViewWithTask:task];
+        [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
         
     }else{
         //fire an alarm
         NSLog(@"=============> Firing Alarm timer notification <===============");
-        UILocalNotification *alarm = [[UILocalNotification alloc] init];
-        alarm.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [task.time date2String]];
-        alarm.alertAction = @"Wake up!";
+        UILocalNotification *note = [[UILocalNotification alloc] init];
+        note.alertBody = [NSString stringWithFormat:@"It's time to wake up (%@)", [alarm.time date2String]];
+        note.alertAction = @"Wake up!";
         //alarm.soundName = me.preference[@"DefaultTone"];
-        alarm.userInfo = @{kLocalTaskKey: task.objectID.URIRepresentation.absoluteString,
+        note.userInfo = @{kLocalAlarmID: alarm.objectID.URIRepresentation.absoluteString,
                            kLocalNotificationTypeKey: kLocalNotificationTypeAlarmTimer};
-        [[UIApplication sharedApplication] scheduleLocalNotification:alarm];
+        [[UIApplication sharedApplication] scheduleLocalNotification:note];
         
         //play sound
         [[AVManager sharedManager] playSoundFromFileName:[EWSession sharedSession].currentUser.preference[@"DefaultTone"]];
@@ -302,7 +286,7 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(d * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             //present wakeupVC and paly when displayed
             [[AVManager sharedManager] volumeFadeWithCompletion:^{
-                [EWWakeUpManager presentWakeUpViewWithTask:task];
+                [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
             }];
             
         });
@@ -323,15 +307,15 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
 
 + (void)presentWakeUpView{
     //get absolute next task
-    EWTaskItem *task = [[EWTaskManager sharedInstance] nextTaskAtDayCount:0 ForPerson:[EWSession sharedSession].currentUser];
+    EWAlarm *alarm = [EWPerson myNextAlarm];
     //present
-    [EWWakeUpManager presentWakeUpViewWithTask:task];
+    [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
 }
 
-+ (void)presentWakeUpViewWithTask:(EWTaskItem *)task{
++ (void)presentWakeUpViewWithAlarm:(EWAlarm *)alarm{
     if (![EWWakeUpManager isRootPresentingWakeUpView] && ![EWWakeUpManager sharedInstance].controller) {
         //init wake up view controller
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithTask:task];
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithAlarm:alarm];
         //save to manager
         [EWWakeUpManager sharedInstance].controller = controller;
         
@@ -345,7 +329,7 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
 }
 
 //indicate that the user has woke
-+ (void)woke:(EWTaskItem *)task{
++ (void)woke:(EWActivity *)activity{
     [EWWakeUpManager sharedInstance].controller = nil;
     [EWWakeUpManager sharedInstance].isWakingUp = NO;
     
@@ -353,7 +337,7 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
     [[ATConnect sharedConnection] engage:kWakeupSuccess fromViewController:rootViewController];
     
     //set wakeup time, move to past, schedule and save
-    [[EWTaskManager sharedInstance] completedTask:task];
+    [EWActivityManager completeActivity:activity];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kWokeNotification object:nil];
     
@@ -367,21 +351,21 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
 - (void) alarmTimerCheck{
     //check time
     if (![EWSession sharedSession].currentUser) return;
-    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
-    if (task.state == NO) return;
+    EWAlarm *alarm = [EWPerson myNextAlarm];
+    if (alarm.state == NO) return;
     
     //alarm time up
-    NSTimeInterval timeLeft = [task.time timeIntervalSinceNow];
+    NSTimeInterval timeLeft = [alarm.time timeIntervalSinceNow];
 
 	
     static NSTimer *timerScheduled;
-    if (timeLeft > 0 && (!timerScheduled || ![timerScheduled.fireDate isEqualToDate:task.time])) {
+    if (timeLeft > 0 && (!timerScheduled || ![timerScheduled.fireDate isEqualToDate:alarm.time])) {
         NSLog(@"%s: About to init alart timer in %fs", __func__, timeLeft);
 		[timerScheduled invalidate];
 		[NSTimer bk_scheduledTimerWithTimeInterval:timeLeft-1 block:^(NSTimer *timer) {
 			[EWWakeUpManager handleAlarmTimerEvent:nil];
 		} repeats:NO];
-		NSLog(@"===========================>> Alarm Timer scheduled on %@) <<=============================", task.time.date2String);
+		NSLog(@"===========================>> Alarm Timer scheduled on %@) <<=============================", alarm.time.date2String);
     }
 	
 	if (timeLeft > kServerUpdateInterval) {
@@ -393,13 +377,13 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
 - (void)sleepTimerCheck{
     //check time
     if (![EWSession sharedSession].currentUser) return;
-    EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
-    if (task.state == NO) return;
+    EWAlarm *alarm = [EWPerson myNextAlarm];
+    if (alarm.state == NO) return;
     
     //alarm time up
     NSNumber *sleepDuration = [EWSession sharedSession].currentUser.preference[kSleepDuration];
     NSInteger durationInSeconds = sleepDuration.integerValue * 3600;
-    NSDate *sleepTime = [task.time dateByAddingTimeInterval:-durationInSeconds];
+    NSDate *sleepTime = [alarm.time dateByAddingTimeInterval:-durationInSeconds];
 	NSTimeInterval timeLeft = sleepTime.timeIntervalSinceNow;
     static NSTimer *timerScheduled;
     if (timeLeft > 0 && (!timerScheduled || ![timerScheduled.fireDate isEqualToDate:sleepTime])) {
@@ -418,13 +402,13 @@ t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, tas
 }
 
 + (void)handleSleepTimerEvent:(UILocalNotification *)notification{
-    NSString *taskID = notification.userInfo[kLocalTaskKey];
+    NSString *taskID = notification.userInfo[kLocalAlarmID];
     if ([EWSession sharedSession].currentUser) {
         //logged in enter sleep mode
-        EWTaskItem *task = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
+        EWAlarm *alarm = [EWPerson myNextAlarm];
         NSNumber *duration = [EWSession sharedSession].currentUser.preference[kSleepDuration];
-        BOOL nextTaskMatched = [task.objectID.URIRepresentation.absoluteString isEqualToString:taskID];
-        NSInteger h = task.time.timeIntervalSinceNow/3600;
+        BOOL nextTaskMatched = [alarm.objectID.URIRepresentation.absoluteString isEqualToString:taskID];
+        NSInteger h = alarm.time.timeIntervalSinceNow/3600;
         BOOL needSleep = h < duration.floatValue && h > 1;
         BOOL presenting = rootViewController.presentedViewController;
         if (nextTaskMatched && needSleep && !presenting) {

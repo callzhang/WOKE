@@ -12,11 +12,11 @@
 #import "EWPersonManager.h"
 #import "EWServer.h"
 #import "EWCollectionPersonCell.h"
-#import "EWTaskItem.h"
+//#import "EWTaskItem.h"
 #import <QuartzCore/QuartzCore.h>
 #import "EWAppDelegate.h"
 #import "EWRecordingViewController.h"
-#import "EWTaskManager.h"
+//#import "EWTaskManager.h"
 
 #import "EWUIUtil.h"
 #import "EWAlarmManager.h"
