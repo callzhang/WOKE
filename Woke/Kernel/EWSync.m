@@ -9,11 +9,6 @@
 #import "EWSync.h"
 #import "EWUIUtil.h"
 #import "EWServerObject.h"
-//#import "EWActivity.h"
-//#import "EWPerson.h"
-//#import "EWMedia.h"
-//#import "EWAlarm.h"
-//#import "EWAlarm.h"
 
 #define kPFQueryCacheLife		60*60;
 
@@ -56,7 +51,7 @@ NSManagedObjectContext *mainContext;
     [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
     
     //core data
-    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Woke"];
+    [MagicalRecord setupCoreDataStack];
     [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelWarn];
     _context = [NSManagedObjectContext defaultContext];
     mainContext = _context;

@@ -176,9 +176,7 @@
         }
 		
 		//check
-		if (task) {
-			if (![nextTask isEqual: task]){
-				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, task.time);
+t				DDLogWarn(@"Task passed in %@(%@) is not the next task", task.serverID, task.time);
 				task = nextTask;
 			}
 		}
