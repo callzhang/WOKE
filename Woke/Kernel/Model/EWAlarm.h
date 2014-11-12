@@ -10,8 +10,6 @@
 #import <CoreData/CoreData.h>
 #import "_EWAlarm.h"
 
-@class EWTaskItem;
-
 @interface EWAlarm : _EWAlarm
 
 // add
@@ -22,8 +20,6 @@
 
 //validate
 - (BOOL)validate;
-
-+ (NSArray *)alarmsForUser:(EWPerson *)user;
 
 //timer local notification
 - (void)scheduleLocalNotification;

@@ -57,7 +57,7 @@ static NSString *cellIdentifier = @"scheduleAlarmCell";
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    if ([EWTaskManager sharedInstance].isSchedulingTask) {
+    if ([EWAlarmManager sharedInstance].isSchedulingAlarms) {
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     }
 }

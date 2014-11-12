@@ -25,7 +25,7 @@
 @property (nonatomic, weak) EWPerson *person;
 @property (nonatomic, weak) EWActivity *activity;
 
-- (EWWakeUpViewController *)initWithAlarm:(EWAlarm *)alarm;
+- (EWWakeUpViewController *)initWithActivity:(EWActivity *)activity;
 //- (void)playMedia:(id)sender atIndex:(NSIndexPath *)indexPath;
 - (void)startPlayCells;
 

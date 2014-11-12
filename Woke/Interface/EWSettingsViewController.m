@@ -9,7 +9,7 @@
 #import "EWSettingsViewController.h"
 #import "EWPerson.h"
 #import "EWPersonManager.h"
-#import "EWMediaViewCell.h"
+#import "EWMediaCell.h"
 #import "EWFirstTimeViewController.h"
 #import "EWLogInViewController.h"
 #import "EWUserManagement.h"
@@ -17,6 +17,7 @@
 //#import "EWTaskManager.h"
 #import "RMDateSelectionViewController.h"
 #import "AVManager.h"
+#import "EWAlarmManager.h"
 
 static const NSArray *sleepDurations;
 static const NSArray *socialLevels;
@@ -259,7 +260,7 @@ static const NSArray *pref;
                 preference[kSleepDuration] = @(d);
                 [EWSession sharedSession].currentUser.preference = preference.copy;
                 [_tableView reloadData];
-                [EWTaskManager updateSleepNotification];
+                [[EWAlarmManager sharedInstance] scheduleSleepNotifications];
             }
         } andCancelHandler:^(EWSelectionViewController *vc) {
             DDLogInfo(@"Date selection was canceled (with block)");
@@ -291,10 +292,10 @@ static const NSArray *pref;
     
     //schedule sleep notification
     if (sender.on == YES) {
-        [EWTaskManager updateSleepNotification];
+        [[EWAlarmManager sharedInstance] scheduleSleepNotifications];
     }
     else{
-        [EWTaskManager cancelSleepNotification];
+        [[EWAlarmManager sharedInstance] cancelSleepNotifications];
     }
 }
 

@@ -102,74 +102,7 @@
 
 }
 
-#pragma mark - Push buzz
 
-+ (void)buzz:(NSArray *)users{
-    //delayed hide
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-    });
-    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-    
-    for (EWPerson *person in users) {
-        //get next wake up time
-        NSDate *time = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:person];
-        //create buzz
-        EWMedia *buzz = [[EWMediaManager sharedInstance] createBuzzMedia];
-        //add receiver: single direction
-        [buzz addReceiversObject:person];
-        //add sound
-        NSString *sound = [EWSession sharedSession].currentUser.preference[@"buzzSound"]?:@"default";
-        buzz.buzzKey = sound;
-        
-        [EWSync saveWithCompletion:^{
-            if(!buzz.objectId) return;
-            
-            //push payload
-            NSMutableDictionary *pushMessage = [@{@"content-available": @1,
-                                                  @"badge": @"Increment",
-                                                  kPushMediaID: buzz.objectId,
-                                                  kPushType: kPushTypeMedia,
-                                                  kPushMediaType: kPushMediaTypeBuzz}
-                                                mutableCopy];
-            
-            
-            if ([[NSDate date] isEarlierThan:time]) {
-                //before wake up
-                //silent push
-                
-                
-            }else if (time.timeElapsed < kMaxWakeTime){
-                //struggle state
-                //send push notification, The payload can consist of the alert, badge, and sound keys.
-                
-                NSString *buzzType = buzz.buzzKey;
-                NSDictionary *sounds = buzzSounds;
-                NSString *buzzSound = sounds[buzzType];
-                
-                pushMessage[@"alert"] = @"Someone has sent you an buzz";
-                pushMessage[@"sound"] = buzzSound;
-                
-            }else{
-                
-                //tomorrow's task
-                //silent push
-            }
-            
-            //send
-            [EWServer parsePush:pushMessage toUsers:@[person] completion:^(BOOL succeeded, NSError *error) {
-                if (succeeded) {
-                    [rootViewController.view showSuccessNotification:@"Sent"];
-                }else{
-                    NSLog(@"Send push message about media %@ failed. Reason:%@", buzz.objectId, error.description);
-                    [rootViewController.view showFailureNotification:@"Failed"];
-                }
-            }];
-        }];
-        
-    }
-    
-}
 
 #pragma mark - Send Voice tone
 + (void)pushVoice:(EWMedia *)media toUser:(EWPerson *)person{

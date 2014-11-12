@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Shens. All rights reserved.
 //
 
-#import "EWMediaViewCell.h"
+#import "EWMediaCell.h"
 #import "EWWakeUpViewController.h"
 #import "AVManager.h"
 #import "EWMediaSlider.h"
@@ -17,7 +17,7 @@
 #define maxBytes            150000
 #define progressBarLength   200
 
-@implementation EWMediaViewCell
+@implementation EWMediaCell
 @synthesize media;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -60,10 +60,7 @@
     if (!m) return;
     if (media == m) return;
     media = m;
-    if ([media.type isEqualToString:kMediaTypeBuzz]) {
-        self.mediaBar.hidden = YES;
-        [self.icon setImage:[UIImage imageNamed:@"Buzz Icon"] forState:UIControlStateNormal];
-    }else if([media.type isEqualToString:kMediaTypeVoice]){
+    if([media.type isEqualToString:kMediaTypeVoice]){
         self.mediaBar.hidden = NO;
         [self.icon setImage:[UIImage imageNamed:@"Voice Icon"] forState:UIControlStateNormal];
         

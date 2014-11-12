@@ -9,9 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "EWPerson.h"
 
-NSString *const EWActivityTypeAlarm = @"alarm";
-NSString *const EWActivityTypeFriendship = @"friendship";
-NSString *const EWActivityTypeMedia = @"media";
+extern NSString *const EWActivityTypeAlarm;
+extern NSString *const EWActivityTypeFriendship;
+extern NSString *const EWActivityTypeMedia;
 
 
 

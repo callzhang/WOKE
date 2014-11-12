@@ -80,17 +80,9 @@
     //check alarm, task, and local notif
     DDLogVerbose(@"3. Check alarm");
 	[[EWAlarmManager sharedInstance] scheduleAlarm];
-    
-    //check task
-    DDLogVerbose(@"4. Start task schedule");
-	[[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
-		[NSTimer bk_scheduledTimerWithTimeInterval:60 block:^(NSTimer *timer) {
-			//[EWPersonStore updateMe];
-		} repeats:NO];
-	}];
 	
 	DDLogVerbose(@"5. Check my social graph");
-	[[EWTaskManager sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
+	//
 	
     DDLogVerbose(@"4. Check my unread media");//media also will be checked with background fetch
     [[EWMediaManager sharedInstance] checkMediaAssetsInBackground];
@@ -103,7 +95,7 @@
     //DDLogVerbose(@"6. Updating facebook info");
     //[EWUserManagement updateFacebookInfo];
 	DDLogVerbose(@"6. Check scheduled local notifications");
-	[[EWTaskManager sharedInstance] checkScheduledNotifications];
+	[[EWAlarmManager sharedInstance] checkScheduledLocalNotifications];
     
     //Update my relations cancelled here because the we should wait for all sync task finished before we can download the rest of the relation
     NSLog(@"7. Refresh my media");
@@ -150,12 +142,6 @@
 		DDLogVerbose(@"[2] Start location recurring update");
 		[EWUserManagement registerLocation];
 	}
-    
-    //check task
-    DDLogVerbose(@"[3] Start recurring task schedule");
-	[[EWTaskManager sharedInstance] scheduleTasksInBackgroundWithCompletion:^{
-		//[EWPersonStore updateMe];
-	}];
     
 }
 

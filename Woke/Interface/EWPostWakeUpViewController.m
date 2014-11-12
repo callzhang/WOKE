@@ -51,24 +51,13 @@ NSString * const selectAllCellId = @"selectAllCellId";
 
 @implementation EWPostWakeUpViewController
 
-@synthesize personArray;
-@synthesize taskItem;
-@synthesize selectedPersonSet;
-
--(void)dealloc
-{
-    personArray = nil;
-    taskItem = nil;
-    personArray = nil;
-}
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
         personArray = [NSArray new];
-        selectedPersonSet = [NSMutableSet new];
+        _selectedPersonSet = [NSMutableSet new];
         time = 0;
     }
     return self;
@@ -158,17 +147,17 @@ NSString * const selectAllCellId = @"selectAllCellId";
 #pragma mark -
 #pragma mark - get buzzing time & unit -
 
-- (void)setTaskItem:(EWTaskItem *)t{
-    taskItem = t;
-    NSLog(@"Time interval is %@", [taskItem.time timeLeft]);
+- (void)setActivity:(EWActivity *)activity{
+    _activity = activity;
+    NSLog(@"Time interval is %@", [_activity.time timeLeft]);
 }
 
 #pragma mark -
 #pragma mark - IBAction -
 
 -(IBAction)wakeEm:(id)sender{
-    if ([selectedPersonSet count] != 0){
-        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPeople:selectedPersonSet];
+    if ([_selectedPersonSet count] != 0){
+        EWRecordingViewController *controller = [[EWRecordingViewController alloc] initWithPeople:_selectedPersonSet];
         [self presentViewControllerWithBlurBackground:controller];
     }
     else{
@@ -179,10 +168,10 @@ NSString * const selectAllCellId = @"selectAllCellId";
 
 - (IBAction)buzzEm:(id)sender{
     [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-    if ([selectedPersonSet count] != 0)
+    if ([_selectedPersonSet count] != 0)
     {
         
-        for (EWPerson *person in selectedPersonSet) {
+        for (EWPerson *person in _selectedPersonSet) {
             
             //======== buzz ========
             double delayInSeconds = 0.1;
@@ -261,16 +250,16 @@ NSString * const selectAllCellId = @"selectAllCellId";
     
     EWCollectionPersonCell *cell = (EWCollectionPersonCell *)[cView cellForItemAtIndexPath:indexPath];
     EWPerson * person = [personArray objectAtIndex:indexPath.row];
-    if ([selectedPersonSet containsObject:person])
+    if ([_selectedPersonSet containsObject:person])
     {
         //取消被选中状态
-        [selectedPersonSet removeObject:person];
+        [_selectedPersonSet removeObject:person];
         cell.selection.hidden = YES;
     }
     else
     {
         //选中
-        [selectedPersonSet addObject:person];
+        [_selectedPersonSet addObject:person];
         cell.selection.hidden = NO;
     }
     
@@ -295,7 +284,7 @@ NSString * const selectAllCellId = @"selectAllCellId";
 -(void)selectAllCell
 {
     BOOL selectAll = YES;
-    if (selectedPersonSet.count == personArray.count) {
+    if (_selectedPersonSet.count == personArray.count) {
         //all selected, deselect all
         selectAll = NO;
     }
@@ -306,11 +295,11 @@ NSString * const selectAllCellId = @"selectAllCellId";
         
         if (selectAll)
         {
-            [selectedPersonSet addObject:person];
+            [_selectedPersonSet addObject:person];
             cell.selection.hidden = NO;
         }
         else {
-            [selectedPersonSet removeObject:person];
+            [_selectedPersonSet removeObject:person];
             cell.selection.hidden = YES;
         }
     }

@@ -221,7 +221,7 @@
 			
 			//======= user information passed to app delegate =======
             //Use Alarm's objectID as the identifier instead of serverID to avoid cases where alarm doesn't have one
-			localNotif.userInfo = @{kLocalAlarmKey: self.objectID.URIRepresentation.absoluteString,
+			localNotif.userInfo = @{kLocalAlarmID: self.objectID.URIRepresentation.absoluteString,
 									kLocalNotificationTypeKey: kLocalNotificationTypeAlarmTimer};
 			//=======================================================
 			
@@ -262,7 +262,7 @@
 - (NSArray *)localNotifications{
     NSMutableArray *notifArray = [[NSMutableArray alloc] init];
     for(UILocalNotification *aNotif in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-        if([aNotif.userInfo[kLocalAlarmKey] isEqualToString:self.objectID.URIRepresentation.absoluteString]) {
+        if([aNotif.userInfo[kLocalAlarmID] isEqualToString:self.objectID.URIRepresentation.absoluteString]) {
             [notifArray addObject:aNotif];
         }
     }
@@ -278,17 +278,7 @@
     NSDate *sleepTime = [self.time dateByAddingTimeInterval:-d*3600];
     
     //cancel if no change
-    NSArray *notifs = [self localNotifications];
-    for (UILocalNotification *notif in notifs) {
-        if ([notif.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
-            if ([notif.fireDate isEqualToDate:sleepTime]) {
-                //nothing to do
-                return;
-            }else{
-                [[UIApplication sharedApplication] cancelLocalNotification:notif];
-            }
-        }
-    }
+    [self cancelLocalNotification];
     
     //local notification
     UILocalNotification *sleepNotif = [[UILocalNotification alloc] init];
@@ -297,7 +287,7 @@
     sleepNotif.alertAction = @"Sleep";
     sleepNotif.repeatInterval = NSWeekCalendarUnit;
     sleepNotif.soundName = @"sleep mode.caf";
-    sleepNotif.userInfo = @{kLocalAlarmKey: self.objectID.URIRepresentation.absoluteString,
+    sleepNotif.userInfo = @{kLocalAlarmID: self.objectID.URIRepresentation.absoluteString,
                             kLocalNotificationTypeKey: kLocalNotificationTypeSleepTimer};
     if ([sleepTime timeIntervalSinceNow]>0) {
         //future
@@ -313,8 +303,12 @@
     NSInteger n = 0;
     for (UILocalNotification *sleep in sleeps) {
         if ([sleep.userInfo[kLocalNotificationTypeKey] isEqualToString:kLocalNotificationTypeSleepTimer]) {
-            [[UIApplication sharedApplication] cancelLocalNotification:sleep];
-            n++;
+            if ([sleep.userInfo[kLocalAlarmID] isEqualToString:self.objectID.URIRepresentation.absoluteString]) {
+                [[UIApplication sharedApplication] cancelLocalNotification:sleep];
+                n++;
+            }
+            
+            
         }
     }
     NSLog(@"Cancelled %ld sleep notification", (long)n);

@@ -15,6 +15,7 @@
 @class EWAlarm, EWPerson, EWTaskItem;
 
 @interface EWAlarmManager : NSObject
+@property BOOL isSchedulingAlarms;
 
 // Singleton
 + (EWAlarmManager *)sharedInstance;
@@ -36,7 +37,11 @@
 
 //UTIL
 - (NSDate *)getSavedAlarmTimeOnWeekday:(NSInteger)wkd;
-//- (void)setSavedAlarmTimes;
+
+//local notification
+- (void)checkScheduledLocalNotifications;
+- (void)scheduleSleepNotifications;
+- (void)cancelSleepNotifications;
 
 /*
  Use REST to create a notification on server

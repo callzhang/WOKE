@@ -24,7 +24,7 @@
 
 #define kSilentSound            @"Silence04s.caf"
 
-@class EWMediaViewCell, EWTaskItem, EWMedia, EWMediaSlider;
+@class EWMediaCell, EWMedia, EWMediaSlider;
 
 @interface AVManager : UIResponder <AVAudioPlayerDelegate, AVAudioRecorderDelegate, AVAudioSessionDelegate>
 {
@@ -37,7 +37,7 @@
 
 @property (retain, nonatomic) AVAudioPlayer *player;
 @property (retain, nonatomic) AVAudioRecorder *recorder;
-@property (weak, nonatomic) EWMediaViewCell *currentCell; //current cell, assigned by others
+@property (weak, nonatomic) EWMediaCell *currentCell; //current cell, assigned by others
 @property (weak, nonatomic) EWMedia *media;
 @property (weak, nonatomic) UIButton *recordStopBtn;
 @property (weak, nonatomic) UIButton *playStopBtn;

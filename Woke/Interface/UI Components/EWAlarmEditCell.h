@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "EWRingtoneSelectionViewController.h"
 #define kConstrainedSize CGSizeMake(10000,40)//字体最大
-@class EWAlarm, EWTaskItem;
+@class EWAlarm;
 @class EWCostumTextField;
 @interface EWAlarmEditCell : UITableViewCell<EWRingtoneSelectionDelegate,UITextFieldDelegate>
 //container

@@ -158,7 +158,6 @@
 		9BF297AF1912F713008C136E /* EWAlarmScheduleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2978F1912F713008C136E /* EWAlarmScheduleView.xib */; };
 		9BF297B01912F713008C136E /* EWAlarmScheduleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297911912F713008C136E /* EWAlarmScheduleViewController.m */; };
 		9BF297B11912F713008C136E /* EWAlarmsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297921912F713008C136E /* EWAlarmsView.xib */; };
-		9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297941912F713008C136E /* EWAlarmsViewController.m */; };
 		9BF297B61912F713008C136E /* EWLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2979B1912F713008C136E /* EWLogInViewController.m */; };
 		9BF297B71912F713008C136E /* EWLogInView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF2979C1912F713008C136E /* EWLogInView.xib */; };
 		9BF297B81912F713008C136E /* EWNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF2979E1912F713008C136E /* EWNotificationViewController.m */; };
@@ -180,8 +179,8 @@
 		9BF297E51912F720008C136E /* EWCollectionPersonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297CC1912F71F008C136E /* EWCollectionPersonCell.xib */; };
 		9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297CE1912F71F008C136E /* EWHexagonFlowLayout.m */; };
 		9BF297E71912F720008C136E /* EWMediaSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D01912F71F008C136E /* EWMediaSlider.m */; };
-		9BF297E81912F720008C136E /* EWMediaViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D21912F71F008C136E /* EWMediaViewCell.m */; };
-		9BF297E91912F720008C136E /* EWMediaViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297D31912F71F008C136E /* EWMediaViewCell.xib */; };
+		9BF297E81912F720008C136E /* EWMediaCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D21912F71F008C136E /* EWMediaCell.m */; };
+		9BF297E91912F720008C136E /* EWMediaCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF297D31912F71F008C136E /* EWMediaCell.xib */; };
 		9BF297EA1912F720008C136E /* EWPopupMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D51912F71F008C136E /* EWPopupMenu.m */; };
 		9BF297EB1912F720008C136E /* EWRoundButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D71912F71F008C136E /* EWRoundButton.m */; };
 		9BF297EC1912F720008C136E /* EWTaskHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF297D91912F71F008C136E /* EWTaskHistoryCell.m */; };
@@ -525,9 +524,9 @@
 		9BF297CE1912F71F008C136E /* EWHexagonFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWHexagonFlowLayout.m; sourceTree = "<group>"; };
 		9BF297CF1912F71F008C136E /* EWMediaSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EWMediaSlider.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		9BF297D01912F71F008C136E /* EWMediaSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EWMediaSlider.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		9BF297D11912F71F008C136E /* EWMediaViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMediaViewCell.h; sourceTree = "<group>"; };
-		9BF297D21912F71F008C136E /* EWMediaViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaViewCell.m; sourceTree = "<group>"; };
-		9BF297D31912F71F008C136E /* EWMediaViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMediaViewCell.xib; sourceTree = "<group>"; };
+		9BF297D11912F71F008C136E /* EWMediaCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWMediaCell.h; sourceTree = "<group>"; };
+		9BF297D21912F71F008C136E /* EWMediaCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWMediaCell.m; sourceTree = "<group>"; };
+		9BF297D31912F71F008C136E /* EWMediaCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EWMediaCell.xib; sourceTree = "<group>"; };
 		9BF297D41912F71F008C136E /* EWPopupMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWPopupMenu.h; sourceTree = "<group>"; };
 		9BF297D51912F71F008C136E /* EWPopupMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWPopupMenu.m; sourceTree = "<group>"; };
 		9BF297D61912F71F008C136E /* EWRoundButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWRoundButton.h; sourceTree = "<group>"; };
@@ -1267,9 +1266,9 @@
 				9BF297CE1912F71F008C136E /* EWHexagonFlowLayout.m */,
 				9BF297CF1912F71F008C136E /* EWMediaSlider.h */,
 				9BF297D01912F71F008C136E /* EWMediaSlider.m */,
-				9BF297D11912F71F008C136E /* EWMediaViewCell.h */,
-				9BF297D21912F71F008C136E /* EWMediaViewCell.m */,
-				9BF297D31912F71F008C136E /* EWMediaViewCell.xib */,
+				9BF297D11912F71F008C136E /* EWMediaCell.h */,
+				9BF297D21912F71F008C136E /* EWMediaCell.m */,
+				9BF297D31912F71F008C136E /* EWMediaCell.xib */,
 				9BF297D41912F71F008C136E /* EWPopupMenu.h */,
 				9BF297D51912F71F008C136E /* EWPopupMenu.m */,
 				9BF297D61912F71F008C136E /* EWRoundButton.h */,
@@ -1560,7 +1559,7 @@
 				ABFCB2E0186E957100355781 /* Daybreak.caf in Resources */,
 				ABF3FB571908B72F0017D2EF /* 2.jpg in Resources */,
 				0EAE5C9E199A3F7400AED01B /* PLCameraSheetDoneButtonPressed@2x.png in Resources */,
-				9BF297E91912F720008C136E /* EWMediaViewCell.xib in Resources */,
+				9BF297E91912F720008C136E /* EWMediaCell.xib in Resources */,
 				0E590FF6194DF35B000AD7C4 /* Lato-LightItalic.ttf in Resources */,
 				9B5A2F95197C53DD0076F2BD /* EWFeedbackViewController.xib in Resources */,
 				0EB02D06195F1C7700ECACED /* EWMyProfileViewController.xib in Resources */,
@@ -1806,7 +1805,6 @@
 				ABF3FB70190A05E80017D2EF /* SCSiriWaveformView.m in Sources */,
 				0EAE5C93199A3F7400AED01B /* GKImageCropView.m in Sources */,
 				AB0DF50A18FE509C00CF5AB1 /* EWSocialGraphManager.m in Sources */,
-				9BF297B21912F713008C136E /* EWAlarmsViewController.m in Sources */,
 				9BACFE4719FF5D44009173C8 /* _EWActivity.m in Sources */,
 				ABD34DB0185C054C008CD2B8 /* NSString+MD5.m in Sources */,
 				9BF297BD1912F713008C136E /* EWRecordingViewController.m in Sources */,
@@ -1823,7 +1821,7 @@
 				9BACFE4B19FF6A9F009173C8 /* EWMediaFile.m in Sources */,
 				9B1DF3F519D3D7AB0060265D /* PFObject+EWSync.m in Sources */,
 				AB3ACDC4190387C10066CF3F /* EWNotification.m in Sources */,
-				9BF297E81912F720008C136E /* EWMediaViewCell.m in Sources */,
+				9BF297E81912F720008C136E /* EWMediaCell.m in Sources */,
 				9BF297B81912F713008C136E /* EWNotificationViewController.m in Sources */,
 				AB0DF50718FE504200CF5AB1 /* EWSocialGraph.m in Sources */,
 				0EAD6FB7195A62EC00DDB052 /* EWFriendsTableCell.m in Sources */,

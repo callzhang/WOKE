@@ -2,12 +2,11 @@
 
 #define kMediaTypeVoice     @"voice"
 
-@class EWGroupTask, EWPerson, EWMediaFile;
 @interface EWMedia : _EWMedia
 
 
 //new
-- (EWMedia *)newMedia;
++ (EWMedia *)newMedia;
 //delete
 - (void)remove;
 //search
@@ -16,4 +15,10 @@
 - (BOOL)validate;
 //ACL
 - (void)createACL;
+//download
+- (void)downloadMediaFile;
+
+//data
+- (NSData *)audio;
+- (NSString *)audioKey;
 @end

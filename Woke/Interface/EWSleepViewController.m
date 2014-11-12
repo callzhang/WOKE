@@ -13,10 +13,12 @@
 #import "EWPersonManager.h"
 //#import "EWTaskItem.h"
 #import "EWAlarmManager.h"
+#import "EWActivityManager.h"
+#import "EWActivity.h"
 
 @interface EWSleepViewController (){
     NSTimer *timer;
-	EWTaskItem *nextTask;
+    EWActivity *currentActivity;
 }
 
 @end
@@ -37,11 +39,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [[EWBackgroundingManager sharedInstance] startBackgrounding];
-	nextTask = [[EWTaskManager sharedInstance] nextValidTaskForPerson:[EWSession sharedSession].currentUser];
+	currentActivity = [EWActivityManager sharedManager].currentAlarmActivity;
 	
 	NSDate *cachedNextTime = [[EWAlarmManager sharedInstance] nextAlarmTimeForPerson:[EWSession sharedSession].currentUser];
-	if (![cachedNextTime isEqualToDate:nextTask.time]) {
-		[[EWAlarmManager sharedInstance] updateCachedAlarmTime];
+	if (![cachedNextTime isEqualToDate:currentActivity.time]) {
+		[[EWAlarmManager sharedInstance] updateCachedAlarmTimes];
 	}
 }
 
@@ -70,16 +72,16 @@
     NSDate *t = [NSDate date];
     self.timeLabel.text = t.date2String;
 	
-	self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", nextTask.time.timeLeft];
-    self.alarmTime.text = [NSString stringWithFormat:@"Alarm %@", nextTask.time.date2String];
+	self.timeLeftLabel.text = [NSString stringWithFormat:@"%@ left", currentActivity.time.timeLeft];
+    self.alarmTime.text = [NSString stringWithFormat:@"Alarm %@", currentActivity.time.date2String];
     
-    if (nextTask.time.timeIntervalSinceNow <0) {
+    if (currentActivity.time.timeIntervalSinceNow <0) {
         //task has past
 		[timer invalidate];
         [self.presentingViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }
     
     //timer
-    timer = [NSTimer scheduledTimerWithTimeInterval:nextTask.time.timeIntervalSinceNow/30 target:self selector:@selector(updateTimer:) userInfo:nil repeats:NO];
+    timer = [NSTimer scheduledTimerWithTimeInterval:currentActivity.time.timeIntervalSinceNow/30 target:self selector:@selector(updateTimer:) userInfo:nil repeats:NO];
 }
 @end

@@ -6,14 +6,12 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@class EWTaskItem;
+#import "EWActivity.h"
 
 @interface EWPostWakeUpViewController : UIViewController<UICollectionViewDelegate,UICollectionViewDataSource>
 {
     
     NSArray * personArray;
-    EWTaskItem * taskItem;
     __weak IBOutlet UICollectionView *collectionView;
     IBOutlet UIButton *buzzButton;
     IBOutlet UIButton *voiceMessageButton;
@@ -27,6 +25,6 @@
 /**
  * @brief taskItem : save task item
  */
-@property(nonatomic,strong)EWTaskItem * taskItem;
+@property(nonatomic,strong)EWActivity * activity;
 
 @end

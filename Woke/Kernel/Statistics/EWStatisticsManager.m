@@ -7,22 +7,22 @@
 //
 
 #import "EWStatisticsManager.h"
-//#import "EWTaskItem.h"
+//#import "EWActivity.h"
 //#import "EWTaskManager.h"
 #import "EWUIUtil.h"
 #import "EWMediaManager.h"
 #import "EWMedia.h"
 #import "EWActivity.h"
+#import "EWActivityManager.h"
 
 
 @implementation EWStatisticsManager
-@synthesize person, tasks;
 
 - (void)setPerson:(EWPerson *)p{
-    person = p;
+    _person = p;
     if (p.isMe) {
         //newest on top
-        tasks = [[EWTaskManager sharedInstance] pastTasksByPerson:p];
+        _activities = [EWPerson myActivities];
     }else{
         [self getStatsFromCache];
     }
@@ -57,17 +57,16 @@
         return _aveWakingLength;
     }
     
-    if (tasks.count) {
+    if (_activities.count) {
         NSInteger totalTime = 0;
         NSUInteger wakes = 0;
         
-        for (EWTaskItem *t in self.tasks) {
-            if (!t.state) continue;
+        for (EWActivity *activity in self.activities) {
             
             wakes++;
             NSInteger length;
-            if (t.completed) {
-                length = MAX([t.completed timeIntervalSinceDate:t.time], kMaxWakeTime);
+            if (activity.completed) {
+                length = MAX([activity.completed timeIntervalSinceDate:activity.time], kMaxWakeTime);
             }else{
                 length = kMaxWakeTime;
             }
@@ -96,19 +95,19 @@
         return _successRate;
     }
     
-    if (tasks.count) {
+    if (_activities.count) {
         float rate = 0.0;
         float wakes = 0;
         float validTasks = 0;
-        
-        for (EWTaskItem *task in self.tasks) {
-            if (task.state == YES) {
-                validTasks++;
-                if (task.completed && [task.completed timeIntervalSinceDate:task.time] < kMaxWakeTime) {
-                    wakes++;
-                }
-            }
-        }
+//        
+//        for (EWActivity *_activity in self.tasks) {
+//            if (ac.state == YES) {
+//                validTasks++;
+//                if (task.completed && [task.completed timeIntervalSinceDate:task.time] < kMaxWakeTime) {
+//                    wakes++;
+//                }
+//            }
+//        }
         rate = wakes / validTasks;
         
         _successRate =  [NSNumber numberWithFloat:rate];
@@ -129,7 +128,7 @@
         return _wakability;
     }
     
-    if (tasks.count) {
+    if (_activities.count) {
         double ratio = MIN(self.aveWakingLength.integerValue / kMaxWakabilityTime, 1);
         double level = 10 - ratio*10;
         _wakability = [NSNumber numberWithDouble:level];
@@ -150,15 +149,14 @@
         return _aveWakeUpTime;
     }
     
-    if (tasks.count) {
+    if (_activities.count) {
         NSInteger totalTime = 0;
         NSUInteger wakes = 0;
         
-        for (EWTaskItem *t in self.tasks) {
-            if (t.state == NO) continue;
+        for (EWActivity *activity in self.activities) {
             
             wakes++;
-            totalTime += t.time.minutesFrom5am;
+            totalTime += activity.time.minutesFrom5am;
         }
         NSInteger aveTime = totalTime / wakes;
         NSDate *time = [[NSDate date] timeByMinutesFrom5am:aveTime];
@@ -172,10 +170,10 @@
 
 
 #pragma mark - Update Activity
-+ (void)updateTaskActivityCacheWithCompletion:(void (^)(void))block{
++ (void)updateActivityCacheWithCompletion:(void (^)(void))block{
     //test
     //return
-    
+    /*
     [mainContext saveWithBlock:^(NSManagedObjectContext *localContext) {
         EWPerson *localMe = [[EWSession sharedSession].currentUser inContext:localContext];
         [[EWTaskManager sharedInstance] checkPastTasks];
@@ -183,13 +181,13 @@
         NSMutableDictionary *cache = localMe.cachedInfo.mutableCopy;
         NSMutableDictionary *activity = [cache[kTaskActivityCache] mutableCopy]?:[NSMutableDictionary new];
         if (activity.count == tasks.count) {
-            NSLog(@"=== cached task activities count is same as past task count (%ld)", (long)tasks.count);
+            NSLog(@"=== cached _activity activities count is same as past _activity count (%ld)", (long)tasks.count);
             return;
         }
         
         for (NSInteger i =0; i<tasks.count; i++) {
             //start from the newest task
-            EWTaskItem *task = tasks[i];
+            EWActivity *_activity = tasks[i];
             
             NSDate *wakeTime;
             NSArray *wokeTo;
@@ -208,7 +206,7 @@
             NSMutableArray *receivers = [NSMutableArray new];
             for (EWMedia *m in [EWSession sharedSession].currentUser.medias.copy) {
 				if (![mainContext existingObjectWithID:m.objectID error:NULL]) return;
-                for (EWTaskItem *t in m.activity.copy) {
+                for (EWActivity *t in m.activity.copy) {
 					if (![mainContext existingObjectWithID:t.objectID error:NULL]) return;
                     if ([t.time isEarlierThan:eod] && [bod isEarlierThan:t.time]) {
                         NSString *receiver = t.owner.objectId;
@@ -242,7 +240,7 @@
                 activity[dateKey] = taskActivity;
             }
             @catch (NSException *exception) {
-                NSLog(@"*** Failed to generate task activity: %@", exception.description);
+                NSLog(@"*** Failed to generate _activity activity: %@", exception.description);
             }
             
         }
@@ -250,15 +248,15 @@
         cache[kTaskActivityCache] = [activity copy];
         localMe.cachedInfo = [cache copy];
         
-        NSLog(@"Task activity cache updated with %d records", activity.count);
+        NSLog(@"_activity activity cache updated with %d records", activity.count);
 
     } completion:^(BOOL success, NSError *error) {
-        NSLog(@"Finished updating task activity cache");
+        NSLog(@"Finished updating _activity activity cache");
         if (block) {
             block();
         }
     }];
-    
+    */
 }
 
 + (void)updateCacheWithFriendsAdded:(NSArray *)friendIDs{

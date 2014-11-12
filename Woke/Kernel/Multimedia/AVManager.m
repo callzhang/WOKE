@@ -7,7 +7,7 @@
 //
 
 #import "AVManager.h"
-#import "EWMediaViewCell.h"
+#import "EWMediaCell.h"
 //#import "EWTaskItem.h"
 #import "EWMedia.h"
 #import "EWMediaFile.h"
@@ -111,8 +111,8 @@
     //[self registerActiveAudioSession];
     
     //determine cell type
-    if (![cell isKindOfClass:[EWMediaViewCell class]]) return;
-    EWMediaViewCell *mediaCell = (EWMediaViewCell *)cell;
+    if (![cell isKindOfClass:[EWMediaCell class]]) return;
+    EWMediaCell *mediaCell = (EWMediaCell *)cell;
     
     //link progress bar with cell's progress bar
     self.currentCell = mediaCell;
@@ -125,7 +125,7 @@
     
 }
 
-- (void)setCurrentCell:(EWMediaViewCell *)cell{
+- (void)setCurrentCell:(EWMediaCell *)cell{
     
     //assign new value
     progressBar = cell.mediaBar;

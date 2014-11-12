@@ -116,38 +116,6 @@
         }
         
         
-    } else if ([notification.type isEqualToString:kNotificationTypeTimer]) {
-        
-        NSString *taskID = userInfo[kPushTaskID];
-        if (!taskID) return;
-        EWTaskItem *task = [[EWTaskManager sharedInstance] getTaskByID:taskID];
-        [EWNotificationManager sharedInstance].task = task;
-        //it's now between alarm timer and before max wake time
-        if (!task.completed) {
-            if ([[NSDate date] timeIntervalSinceDate:task.time] < kMaxWakeTime) {
-                //valid task
-                if (![EWWakeUpManager isRootPresentingWakeUpView]) {
-                    [EWWakeUpManager handleAlarmTimerEvent:nil];
-                }
-            } else {
-                //passed
-                [[[UIAlertView alloc] initWithTitle:@"Past alarm"
-                                            message:@"The alarm has passed, try to wake up earlier next timee to find out what people sent to you."
-                                           delegate:[EWNotificationManager sharedInstance]
-                                  cancelButtonTitle:@"OK"
-                                  otherButtonTitles:nil] show];
-                //complete task
-                task.completed = [NSDate date];
-                [EWSync save];
-                //completed task
-                [[EWNotificationManager sharedInstance] finishedNotification:notification];
-            }
-            
-            
-        }else{
-            //completed task
-            [[EWNotificationManager sharedInstance] finishedNotification:notification];
-        }
         
     } else if ([notification.type isEqualToString:kNotificationTypeSystemNotice]) {
         //UserInfo
@@ -244,10 +212,6 @@
     if (!notice.completed) {
         
         notice.completed = [NSDate date];
-    }
-    if ([notice.type isEqualToString:kNotificationTypeTimer]) {
-        //delete
-        [notice remove];
     }
     [EWSync save];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCompleted object:notice];

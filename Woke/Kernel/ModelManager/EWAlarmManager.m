@@ -276,6 +276,17 @@
 }
 
 
+#pragma mark - Sleep notification
+
+- (void)scheduleSleepNotifications{
+    //TODO
+}
+
+- (void)cancelSleepNotificationss{
+    //TODO
+}
+
+
 
 #pragma mark - Schedule Alarm Timer
 
@@ -284,7 +295,6 @@
         DDLogError(@"*** The Task for schedule push doesn't have time: %@", alarm);
         return;
     }else if (!alarm.objectId){
-        __block EWAlarm *blockAlarm = alarm;
         [EWSync saveWithCompletion:^{
             [self scheduleNotificationOnServerForAlarm:alarm];
         }];
@@ -335,7 +345,7 @@
                           @"data":@{@"alert":@"Time to get up",
                                     @"content-available":@1,
                                     kPushType: kPushTypeAlarmTimer,
-                                    kPushTaskID: alarmID},
+                                    kPushAlarmID: alarmID},
                           };
     
     [manager POST:kParsePushUrl parameters:dic

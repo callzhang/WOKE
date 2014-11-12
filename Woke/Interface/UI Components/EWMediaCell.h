@@ -12,7 +12,7 @@
 
 @class EWMediaSlider, EWMedia;
 
-@interface EWMediaViewCell : UITableViewCell
+@interface EWMediaCell : UITableViewCell
 //controller
 @property (weak, nonatomic) id controller;
 

@@ -11,7 +11,7 @@
 
 
 #pragma mark - create media
-- (EWMedia *)newMedia{
++ (EWMedia *)newMedia{
     NSParameterAssert([NSThread isMainThread]);
     EWMedia *m = [EWMedia createEntity];
     m.updatedAt = [NSDate date];
@@ -68,4 +68,18 @@
 }
 
 
+- (void)downloadMediaFile{
+    //TODO;
+}
+
+#pragma mark - Underlying data
+- (NSData *)audio{
+    //TODO
+    return nil;
+}
+
+- (NSString *)audioKey{
+    //TODO
+    return nil;
+}
 @end

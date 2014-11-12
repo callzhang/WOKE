@@ -162,7 +162,7 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
         }];
         if (person.isMe) {
             if (!_taskActivity || _taskActivity.count != person.activities.count) {
-                [EWStatisticsManager updateTaskActivityCacheWithCompletion:^{
+                [EWStatisticsManager updateActivityCacheWithCompletion:^{
                     _taskActivity = person.cachedInfo[kTaskActivityCache];
                     dates = _taskActivity.allKeys;
                     dates = [dates sortedArrayUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
@@ -239,19 +239,15 @@ NSString *const activitiyCellIdentifier = @"ActivityCell";
     }
     
     //statement
-    EWTaskItem *t = [[EWTaskManager sharedInstance] nextNth:0 validTaskForPerson:person];
+    EWAlarm *alarm = [EWPerson myNextAlarm];
     NSString *str;
-    if (t.statement) {
-        str = t.statement;
-    }else if (t.alarm.statement){
-        str = t.alarm.statement;
-    }else if (person.statement){
-        str = person.statement;
-    }else{
+    if (alarm.statement) {
+        str = alarm.statement;
+    }
+    else{
         str = @"No statement written";
     }
     self.statement.text = [NSString stringWithFormat:@"\"%@\"",str];
-    [self.view setNeedsDisplay];
     
 }
 

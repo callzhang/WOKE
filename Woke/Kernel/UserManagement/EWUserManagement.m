@@ -248,35 +248,35 @@
 //    
 //}
 
-
-//Danger Zone
-+ (void)purgeUserData{
-    DDLogDebug(@"Cleaning all cache and server data");
-    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
-    
-    //Alarm
-    [EWAlarmManager deleteAll];
-    //task
-    [[EWTaskManager sharedInstance] deleteAllTasks];
-    //media
-    //[EWMediaStore.sharedInstance deleteAllMedias];
-    //check
-    [[EWTaskManager sharedInstance ] checkScheduledNotifications];
-    
-    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
-    
-    [EWSync save];
-    //person
-    //me = nil;
-    
-    //alert
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alert show];
-    //logout
-    //[EWUserManagement logout];
-    
-    
-}
+//
+////Danger Zone
+//+ (void)purgeUserData{
+//    DDLogDebug(@"Cleaning all cache and server data");
+//    [MBProgressHUD showHUDAddedTo:rootViewController.view animated:YES];
+//    
+//    //Alarm
+//    [EWAlarmManager deleteAll];
+//    //task
+//    [[EWTaskManager sharedInstance] deleteAllTasks];
+//    //media
+//    //[EWMediaStore.sharedInstance deleteAllMedias];
+//    //check
+//    [[EWTaskManager sharedInstance ] checkScheduledNotifications];
+//    
+//    [MBProgressHUD hideAllHUDsForView:rootViewController.view animated:YES];
+//    
+//    [EWSync save];
+//    //person
+//    //me = nil;
+//    
+//    //alert
+//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Data" message:@"All data has been cleaned." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//    [alert show];
+//    //logout
+//    //[EWUserManagement logout];
+//    
+//    
+//}
 
 
 #pragma mark - location

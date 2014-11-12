@@ -1,10 +1,10 @@
 #import "_EWActivity.h"
 
 
-extern const struct EWAlarmAttributes {
+extern const struct EWActivityTypes {
     __unsafe_unretained NSString *media;
     __unsafe_unretained NSString *friendship;
-} EWActivityType;
+} EWActivityTypes;
 
 @interface EWActivity : _EWActivity {}
 // add

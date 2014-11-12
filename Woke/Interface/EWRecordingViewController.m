@@ -321,65 +321,65 @@
         
         
         //finished recording, prepare for data
-        NSError *err;
-        NSData *recordData = [NSData dataWithContentsOfFile:[recordingFileUrl path] options:0 error:&err];
-        if (!recordData) {
-            return;
-        }
-        //NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", me.username, [[NSDate date] date2numberDateString]];
-        
-        //save data to task
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        
-        [[ATConnect sharedConnection] engage:kRecordVoiceSuccess fromViewController:self];
-        
-        EWMedia *media = [[EWMediaManager sharedInstance] createMedia];
-        media.author = [EWSession sharedSession].currentUser;
-        media.type = kMediaTypeVoice;
-//        media.message = self.message.text;
-        
-        //Add to media queue instead of task
-        media.receivers = [NSSet setWithArray:personSet];
-        
-        media.audio = recordData;
-        media.createdAt = [NSDate date];
-        
-        
-        //save
-        [EWSync saveWithCompletion:^{
-            
-            //set ACL
-            PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
-            if ([[EWSession sharedSession].currentUser.objectId isEqualToString:WokeUserID]) {
-                //if WOKE, set public
-                [acl setPublicReadAccess:YES];
-                [acl setPublicWriteAccess:YES];
-            }else{
-                for (NSString *userID in [personSet valueForKey:kParseObjectID]) {
-                    [acl setReadAccess:YES forUserId:userID];
-                    [acl setWriteAccess:YES forUserId:userID];
-                }
-            }
-            
-            PFObject *object = media.parseObject;
-            [object setACL:acl];
-            [object saveInBackground];
-            
-            //send push notification
-            for (EWPerson *receiver in personSet) {
-                [EWServer pushVoice:media toUser:receiver];
-            }
-        }];
-        
-        
-        //clean up
-        recordingFileUrl = nil;
-        
-        //dismiss hud
-        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-        
-        //dismiss
-        [rootViewController dismissBlurViewControllerWithCompletionHandler:NULL];
+//        NSError *err;
+//        NSData *recordData = [NSData dataWithContentsOfFile:[recordingFileUrl path] options:0 error:&err];
+//        if (!recordData) {
+//            return;
+//        }
+//        //NSString *fileName = [NSString stringWithFormat:@"voice_%@_%@.m4a", me.username, [[NSDate date] date2numberDateString]];
+//        
+//        //save data to task
+//        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+//        
+//        [[ATConnect sharedConnection] engage:kRecordVoiceSuccess fromViewController:self];
+//        
+//        EWMedia *media = [EWMedia newMedia];
+//        media.author = [EWSession sharedSession].currentUser;
+//        media.type = kMediaTypeVoice;
+////        media.message = self.message.text;
+//        
+//        //Add to media queue instead of task
+//        media.receiver = personSet;
+//        
+//        media.audio = recordData;
+//        media.createdAt = [NSDate date];
+//        
+//        
+//        //save
+//        [EWSync saveWithCompletion:^{
+//            
+//            //set ACL
+//            PFACL *acl = [PFACL ACLWithUser:[PFUser currentUser]];
+//            if ([[EWSession sharedSession].currentUser.objectId isEqualToString:WokeUserID]) {
+//                //if WOKE, set public
+//                [acl setPublicReadAccess:YES];
+//                [acl setPublicWriteAccess:YES];
+//            }else{
+//                for (NSString *userID in [personSet valueForKey:kParseObjectID]) {
+//                    [acl setReadAccess:YES forUserId:userID];
+//                    [acl setWriteAccess:YES forUserId:userID];
+//                }
+//            }
+//            
+//            PFObject *object = media.parseObject;
+//            [object setACL:acl];
+//            [object saveInBackground];
+//            
+//            //send push notification
+//            for (EWPerson *receiver in personSet) {
+//                [EWServer pushVoice:media toUser:receiver];
+//            }
+//        }];
+//        
+//        
+//        //clean up
+//        recordingFileUrl = nil;
+//        
+//        //dismiss hud
+//        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+//        
+//        //dismiss
+//        [rootViewController dismissBlurViewControllerWithCompletionHandler:NULL];
     }
 }
 

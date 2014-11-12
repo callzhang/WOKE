@@ -36,7 +36,7 @@
 @interface EWStatisticsManager : NSObject
 
 @property (nonatomic) EWPerson *person;
-@property (nonatomic) NSArray *tasks;
+@property (nonatomic) NSArray *activities;
 @property (nonatomic) NSNumber *aveWakingLength;
 @property (nonatomic) NSString *aveWakingLengthString;
 @property (nonatomic) NSString *aveWakeUpTime;
@@ -45,7 +45,7 @@
 @property (nonatomic) NSNumber *wakability;
 @property (nonatomic) NSString *wakabilityStr;
 
-+ (void)updateTaskActivityCacheWithCompletion:(void (^)(void))block;
++ (void)updateActivityCacheWithCompletion:(void (^)(void))block;
 + (void)updateCacheWithFriendsAdded:(NSArray *)friendIDs;
 
 @end

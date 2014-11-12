@@ -94,7 +94,7 @@
 
         //download media
         NSLog(@"Downloading media: %@", media.objectId);
-        [[EWDownloadManager sharedInstance] downloadMedia:media];//will play after downloaded in test mode+
+        [media downloadMediaFile];
         
         //determin action based on task timing
         if ([[NSDate date] isEarlierThan:activity.time]) {
@@ -104,8 +104,7 @@
         }else if (!activity.completed && [[NSDate date] timeIntervalSinceDate:activity.time] < kMaxWakeTime){
             
             //============== struggle ==============
-            //!!!
-            [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
+            [EWWakeUpManager presentWakeUpViewWithActivity:activity];
             
             //broadcast so wakeupVC can react to it
             //[[NSNotificationCenter defaultCenter] postNotificationName:kNewMediaNotification object:self userInfo:@{kPushMediaKey: mediaID, kPushTaskKey: task.objectId}];
@@ -137,8 +136,6 @@
         NSLog(@"Received === test === type push");
         [UIApplication sharedApplication].applicationIconBadgeNumber = 9;
         
-        [[AVManager sharedManager] playSystemSound:[NSURL URLWithString:media.audioKey]];
-        
     }
 }
 
@@ -160,7 +157,7 @@
     EWActivity *activity = [[EWActivityManager sharedManager] currentAlarmActivity];
     if (info) {
         NSString *alarmID = info[kPushAlarmID];
-        NSString *alarmLocalID = info[kLocalAlarmKey];
+        NSString *alarmLocalID = info[kLocalAlarmID];
         NSParameterAssert(alarmID || alarmLocalID);
         if (alarmID) {
             isLaunchedFromRemoteNotification = YES;
@@ -199,7 +196,7 @@
     }
     if (activity.time.timeElapsed > kMaxWakeTime) {
         NSLog(@"Activity(%@) from notification has passed the wake up window. Handle it with checkPastTasks.", activity.objectId);
-        [[EWTaskManager sharedInstance] checkPastTasksInBackgroundWithCompletion:NULL];
+        [[EWActivityManager sharedManager] currentAlarmActivity];
         return;
     }
 #if !DEBUG
@@ -257,12 +254,12 @@
     if (isLaunchedFromLocalNotification) {
         
         NSLog(@"Entered from local notification, start wakeup view now");
-        [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
+        [EWWakeUpManager presentWakeUpViewWithActivity:activity];
         
     }else if (isLaunchedFromRemoteNotification){
         
         NSLog(@"Entered from remote notification, start wakeup view now");
-        [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
+        [EWWakeUpManager presentWakeUpViewWithActivity:activity];
         
     }else{
         //fire an alarm
@@ -286,7 +283,7 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(d * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             //present wakeupVC and paly when displayed
             [[AVManager sharedManager] volumeFadeWithCompletion:^{
-                [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
+                [EWWakeUpManager presentWakeUpViewWithActivity:activity];
             }];
             
         });
@@ -307,15 +304,15 @@
 
 + (void)presentWakeUpView{
     //get absolute next task
-    EWAlarm *alarm = [EWPerson myNextAlarm];
+    EWActivity *activity = [EWActivityManager sharedManager].currentAlarmActivity;
     //present
-    [EWWakeUpManager presentWakeUpViewWithAlarm:alarm];
+    [EWWakeUpManager presentWakeUpViewWithActivity:activity];
 }
 
-+ (void)presentWakeUpViewWithAlarm:(EWAlarm *)alarm{
++ (void)presentWakeUpViewWithActivity:(EWActivity *)activity{
     if (![EWWakeUpManager isRootPresentingWakeUpView] && ![EWWakeUpManager sharedInstance].controller) {
         //init wake up view controller
-        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithAlarm:alarm];
+        EWWakeUpViewController *controller = [[EWWakeUpViewController alloc] initWithActivity:activity];
         //save to manager
         [EWWakeUpManager sharedInstance].controller = controller;
         

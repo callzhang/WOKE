@@ -1,7 +1,7 @@
 #import "EWActivity.h"
 #import "EWSession.h"
 
-const struct EWAlarmAttributes EWActivityType = {
+const struct EWActivityTypes EWActivityTypes = {
     .media = @"media",
     .friendship = @"friendship"
 };
@@ -51,7 +51,7 @@ const struct EWAlarmAttributes EWActivityType = {
 
 - (EWActivity *)createWithMedia:(EWMedia *)media {
     EWActivity *activity = [EWActivity newActivity];
-    activity.type = EWActivityType.media;
+    activity.type = EWActivityTypes.media;
     [activity addMediasObject:media];
     
     return activity;
@@ -60,7 +60,7 @@ const struct EWAlarmAttributes EWActivityType = {
 
 - (EWActivity *)createWithPerson:(EWPerson *)person friended:(BOOL)friended {
     EWActivity *activity = [EWActivity newActivity];
-    activity.type = EWActivityType.friendship;
+    activity.type = EWActivityTypes.friendship;
     activity.friendedValue = friended;
     activity.friendID = person.objectId;
     

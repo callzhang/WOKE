@@ -9,7 +9,6 @@
 
 #import "EWAppDelegate.h"
 //view controller
-#import "EWAlarmsViewController.h"
 #import "EWWakeUpManager.h"
 #import "EWUtil.h"
 #import "EWFirstTimeViewController.h"
@@ -81,8 +80,8 @@ UIViewController *rootViewController;
     
     //window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    EWAlarmsViewController *controler = [[EWAlarmsViewController alloc] initWithNibName:nil bundle:nil];
-    self.window.rootViewController = controler;
+    //EWAlarmsViewController *controler = [[EWAlarmsViewController alloc] initWithNibName:nil bundle:nil];
+    //self.window.rootViewController = controler;
     rootViewController = self.window.rootViewController;
     
     //init coredata and backend server

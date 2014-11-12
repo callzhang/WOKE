@@ -80,7 +80,7 @@
 #pragma mark - ACTION
 - (void)cleanLocalNotif:(id)sender{
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
-    [[EWTaskManager sharedInstance] checkScheduledNotifications];
+    //[[EWTaskManager sharedInstance] checkScheduledNotifications];
     [self.tableView reloadData];
 }
 

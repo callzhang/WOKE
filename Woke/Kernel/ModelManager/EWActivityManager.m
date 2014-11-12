@@ -11,6 +11,10 @@
 #import "EWActivity.h"
 #import "EWAlarm.h"
 
+NSString *const EWActivityTypeAlarm = @"alarm";
+NSString *const EWActivityTypeFriendship = @"friendship";
+NSString *const EWActivityTypeMedia = @"media";
+
 @implementation EWActivityManager
 
 + (EWActivityManager *)sharedManager{
@@ -32,24 +36,29 @@
 - (EWActivity *)currentAlarmActivity{
     if (!_currentAlarmActivity) {
         NSArray *activities = [EWActivityManager myActivities];
-        EWActivity *lastActivity = [activities bk_match:^BOOL(EWActivity *obj) {
+        _currentAlarmActivity = [activities bk_match:^BOOL(EWActivity *obj) {
             return [obj.type isEqualToString:EWActivityTypeAlarm] ? YES : NO;
         }];
         
-        EWAlarm *nextAlarm = [EWPerson myNextAlarm];
-        if (lastActivity && fabs([lastActivity.time timeIntervalSinceDate: nextAlarm.time.nextOccurTime])<1) {
-            //the last activity is the current activity
-            return lastActivity;
-        }
-        else {
-            lastActivity = [EWActivity newActivity];
-            lastActivity.owner = [EWSession sharedSession].currentUser;
-            lastActivity.type = EWActivityTypeAlarm;
-            lastActivity.time = nextAlarm.time.nextOccurTime;
-        }
-        _currentAlarmActivity = lastActivity;
     }
+    
+    EWAlarm *nextAlarm = [EWPerson myNextAlarm];
+    if (_currentAlarmActivity && fabs([_currentAlarmActivity.time timeIntervalSinceDate: nextAlarm.time.nextOccurTime])<1) {
+        //the last activity is the current activity
+        return _currentAlarmActivity;
+    }
+    else {
+        _currentAlarmActivity = [EWActivity newActivity];
+        _currentAlarmActivity.owner = [EWSession sharedSession].currentUser;
+        _currentAlarmActivity.type = EWActivityTypeAlarm;
+        _currentAlarmActivity.time = nextAlarm.time.nextOccurTime;
+    }
+
     return _currentAlarmActivity;
+}
+
++ (void)completeActivity:(EWActivity *)activity{
+    //TODO
 }
 
 @end

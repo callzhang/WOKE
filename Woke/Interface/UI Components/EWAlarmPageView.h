@@ -7,13 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-@class EWTaskItem;
 @class EWAlarmPageView;
 @class EWAlarm;
 
 @protocol EWAlarmItemEditProtocal <NSObject>
-@optional
-- (void)editTask:(EWTaskItem *)task forPage:(EWAlarmPageView *)page;
 @required
 - (void)scheduleAlarm;
 @end
@@ -23,7 +20,6 @@
 
 @property (nonatomic, weak) id <EWAlarmItemEditProtocal> delegate;
 
-@property (nonatomic, retain) EWTaskItem *task;
 @property (nonatomic, retain) EWAlarm *alarm;
 @property (strong, nonatomic) IBOutlet UILabel *timeText;
 @property (strong, nonatomic) IBOutlet UILabel *timeLeftText;
