@@ -19,7 +19,6 @@
 
 @interface NSString (Color)
 
-#define EWSTR2COLOR(x) [x string2Color]
 - (UIColor *)string2Color;
 
 @end

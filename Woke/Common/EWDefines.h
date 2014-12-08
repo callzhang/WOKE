@@ -17,7 +17,7 @@
 #define kAppVersion                     @"0.8.0"
 #define BACKGROUND_TEST                 YES
 
-
+#define EWSTR2COLOR(x)					[x string2Color]
 #define kCustomWhite                    EWSTR2COLOR(@"#F5F5F5")
 #define kCustomGray                     EWSTR2COLOR(@"48494B")
 #define kColorMediumGray                EWSTR2COLOR(@"7e7e7e")

@@ -145,6 +145,7 @@
 		9BBA5F9A18EF295200C07809 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BBA5F9918EF295200C07809 /* libz.dylib */; };
 		9BD995A419FDCF5400C07659 /* _EWAlarm.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD995A319FDCF5400C07659 /* _EWAlarm.m */; };
 		9BD995A719FDD1C400C07659 /* EWSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD995A619FDD1C400C07659 /* EWSession.m */; };
+		9BDF60831A149222009E3C4A /* SCSiriWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BDF60821A149222009E3C4A /* SCSiriWaveformView.m */; };
 		9BEE145619786DFC0068FC08 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BEE145519786DFC0068FC08 /* OpenGLES.framework */; };
 		9BEEAF641992B227008E6F34 /* EWBackgroundingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEEAF631992B227008E6F34 /* EWBackgroundingManager.m */; };
 		9BEEAF681992C75E008E6F34 /* EWSleepViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEEAF661992C75E008E6F34 /* EWSleepViewController.m */; };
@@ -462,6 +463,8 @@
 		9BD995A319FDCF5400C07659 /* _EWAlarm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _EWAlarm.m; sourceTree = "<group>"; };
 		9BD995A519FDD1C300C07659 /* EWSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWSession.h; sourceTree = "<group>"; };
 		9BD995A619FDD1C400C07659 /* EWSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWSession.m; sourceTree = "<group>"; };
+		9BDF60811A149222009E3C4A /* SCSiriWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSiriWaveformView.h; sourceTree = "<group>"; };
+		9BDF60821A149222009E3C4A /* SCSiriWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSiriWaveformView.m; sourceTree = "<group>"; };
 		9BEE145519786DFC0068FC08 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		9BEEAF621992B227008E6F34 /* EWBackgroundingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EWBackgroundingManager.h; sourceTree = "<group>"; };
 		9BEEAF631992B227008E6F34 /* EWBackgroundingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EWBackgroundingManager.m; sourceTree = "<group>"; };
@@ -1139,6 +1142,7 @@
 		56FEA57417A5763200FC2938 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				9BDF60801A149222009E3C4A /* SCSiriWaveformView */,
 				9B5359EC19DB51CD004B9A72 /* Reachability */,
 				0EAE5C7A199A3F5200AED01B /* GKPickerView */,
 				0EAD75D81995C27D00186860 /* MYBlurIntroductionView */,
@@ -1245,6 +1249,15 @@
 				9B5A2F97197CD4880076F2BD /* UINavigationController+StatusBarHidden.m */,
 			);
 			path = NGAParallaxMotion;
+			sourceTree = "<group>";
+		};
+		9BDF60801A149222009E3C4A /* SCSiriWaveformView */ = {
+			isa = PBXGroup;
+			children = (
+				9BDF60811A149222009E3C4A /* SCSiriWaveformView.h */,
+				9BDF60821A149222009E3C4A /* SCSiriWaveformView.m */,
+			);
+			path = SCSiriWaveformView;
 			sourceTree = "<group>";
 		};
 		9BF297C31912F71F008C136E /* UI Components */ = {
@@ -1834,6 +1847,7 @@
 				ABAB2FC4183DEB310095A3A5 /* EWLocalNotificationViewController.m in Sources */,
 				0EAD75D71995C26F00186860 /* MYIntroductionPanel.m in Sources */,
 				0EAE5C92199A3F7400AED01B /* GKImageCropOverlayView.m in Sources */,
+				9BDF60831A149222009E3C4A /* SCSiriWaveformView.m in Sources */,
 				0EB02D05195F1C7700ECACED /* EWMyProfileViewController.m in Sources */,
 				9BF297E01912F720008C136E /* EWAlarmEditCell.m in Sources */,
 				9BF297E61912F720008C136E /* EWHexagonFlowLayout.m in Sources */,
